@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["opposite_edge"],"struct":["EdgeConstraint","NeighborRules"]};

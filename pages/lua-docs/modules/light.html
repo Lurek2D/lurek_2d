@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.light - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a class="active" href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.light</h1>
+  <p>`lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state. - Registers `lurek.light.*` functions and types via `register()`. - `LuaLight`: userdata type exposed to Lua. - `LuaOccluder`: userdata type exposed to Lua. - Bridges 99 Lua-callable methods via `mlua`. - See `docs/specs/light.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>20 functions</span><span>2 classes</span><span>src/lua_api/light_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 99</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.light.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-advanceflickers"><div class="item-row-main"><h3>advanceFlickers</h3><pre class="inline-signature">lurek.light.advanceFlickers(dt: number)</pre><p>Advances flicker animation for all indexed flickering lights.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1446</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(200, 200, 100)
+    light:addFlicker(0.5, 1.0, 4.0)
+    light:setFlickerEnabled(true)
+    lurek.light.advanceFlickers(0.016)
+    print(&quot;flickers advanced&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.light.clear()</pre><p>Removes all lights and occluders from the light world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1377</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.newLight(0, 0, 50)
+    lurek.light.clear()
+    print(&quot;after clear: lights = &quot; .. lurek.light.getLightCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">lurek.light.drawToImage(width: integer, height: integer) -&gt; LImageData</pre><p>Renders an approximate light-map preview of this world into an ImageData.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1535</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local light = lurek.light.newLight(200, 150, 120)
+    light:setColor(1.0, 0.9, 0.6, 1.0)
+    local img = lurek.light.drawToImage(400, 300)
+    print(&quot;lurek.light.drawToImage type=&quot; .. type(img))
+    print(&quot;lurek.light.drawToImage hasLight = &quot; .. tostring(light:isValid()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getambient"><div class="item-row-main"><h3>getAmbient</h3><pre class="inline-signature">lurek.light.getAmbient() -&gt; number</pre><p>Returns global ambient light color.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1313</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local r, g, b, a = lurek.light.getAmbient()
+    print(&quot;ambient&quot;, r, g, b, a)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgodrayhints"><div class="item-row-main"><h3>getGodRayHints</h3><pre class="inline-signature">lurek.light.getGodRayHints() -&gt; table</pre><p>Returns directional light hints for god-ray style effects.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1474</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local light = lurek.light.newLight(120, 90, 160)
+    light:setLightType(&quot;directional&quot;)
+    light:setDirection(0.75)
+    local hints = lurek.light.getGodRayHints()
+    print(&quot;god ray hints = &quot; .. #hints)
+    print(&quot;first hint angle = &quot; .. hints[1].angle)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgroupcount"><div class="item-row-main"><h3>getGroupCount</h3><pre class="inline-signature">lurek.light.getGroupCount(group_id: integer) -&gt; integer</pre><p>Returns the number of lights in a group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1436</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local a = lurek.light.newLight(0, 0, 50)
+    local b = lurek.light.newLight(10, 10, 50)
+    a:setGroupId(1)
+    b:setGroupId(1)
+    print(&quot;group 1 count = &quot; .. lurek.light.getGroupCount(1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlightcount"><div class="item-row-main"><h3>getLightCount</h3><pre class="inline-signature">lurek.light.getLightCount() -&gt; integer</pre><p>Returns the number of live lights. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1343</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    lurek.light.newLight(0, 0, 100)
+    lurek.light.newLight(50, 50, 80)
+    print(&quot;lights = &quot; .. lurek.light.getLightCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmaxlights"><div class="item-row-main"><h3>getMaxLights</h3><pre class="inline-signature">lurek.light.getMaxLights() -&gt; integer</pre><p>Returns the maximum configured light count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1359</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.setMaxLights(128)
+    print(&quot;max lights = &quot; .. lurek.light.getMaxLights())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getnormalmaphints"><div class="item-row-main"><h3>getNormalMapHints</h3><pre class="inline-signature">lurek.light.getNormalMapHints() -&gt; table</pre><p>Returns light hints that reference normal maps.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1503</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local light = lurek.light.newLight(80, 60, 120)
+    light:setNormalMap(&quot;assets/textures/sample_normal.png&quot;)
+    light:setNormalStrength(0.8)
+    local hints = lurek.light.getNormalMapHints()
+    print(&quot;normal map hints = &quot; .. #hints)
+    print(&quot;first hint strength = &quot; .. hints[1].strength)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getoccludercount"><div class="item-row-main"><h3>getOccluderCount</h3><pre class="inline-signature">lurek.light.getOccluderCount() -&gt; integer</pre><p>Returns the number of live occluders.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1351</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    lurek.light.newOccluder({20, 20, 30, 20, 30, 30, 20, 30})
+    print(&quot;occluders = &quot; .. lurek.light.getOccluderCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-isenabled"><div class="item-row-main"><h3>isEnabled</h3><pre class="inline-signature">lurek.light.isEnabled() -&gt; boolean</pre><p>Returns whether the shared light world is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1335</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local enabled = lurek.light.isEnabled()
+    print(&quot;enabled = &quot; .. tostring(enabled))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlight"><div class="item-row-main"><h3>newLight</h3><pre class="inline-signature">lurek.light.newLight(x: number, y: number, radius: number, opts: table?) -&gt; LLight</pre><p>Creates a light and applies optional light settings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1251</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(400, 300, 200)
+    print(&quot;radius = &quot; .. light:getRadius())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newoccluder"><div class="item-row-main"><h3>newOccluder</h3><pre class="inline-signature">lurek.light.newOccluder(vtbl: table, opts: table?) -&gt; LOccluder</pre><p>Creates an occluder from a flat vertex coordinate table and optional settings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1277</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local verts = {0, 0, 100, 0, 100, 50, 0, 50}
+    local occ = lurek.light.newOccluder(verts)
+    print(&quot;occluder valid = &quot; .. tostring(occ:isValid()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setambient"><div class="item-row-main"><h3>setAmbient</h3><pre class="inline-signature">lurek.light.setAmbient(r: number, g: number, b: number, a: number?)</pre><p>Sets global ambient light color. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1299</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
+    local r, g, b, a = lurek.light.getAmbient()
+    print(&quot;ambient = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setenabled"><div class="item-row-main"><h3>setEnabled</h3><pre class="inline-signature">lurek.light.setEnabled(enabled: boolean)</pre><p>Enables or disables the shared light world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1324</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.setEnabled(true)
+    print(&quot;light world enabled = &quot; .. tostring(lurek.light.isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgroupcolor"><div class="item-row-main"><h3>setGroupColor</h3><pre class="inline-signature">lurek.light.setGroupColor(group_id: integer, r: number, g: number, b: number, a: number?)</pre><p>Sets color for all lights in a group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local first = lurek.light.newLight(10, 10, 60)
+    local second = lurek.light.newLight(30, 20, 60)
+    first:setGroupId(1)
+    second:setGroupId(1)
+    lurek.light.setGroupColor(1, 1, 0, 0, 1)
+    local r, g, b, a = first:getColor()
+    print(&quot;group 1 count = &quot; .. lurek.light.getGroupCount(1))
+    print(&quot;group 1 color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgroupenabled"><div class="item-row-main"><h3>setGroupEnabled</h3><pre class="inline-signature">lurek.light.setGroupEnabled(group_id: integer, enabled: boolean)</pre><p>Enables or disables all lights in a group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1389</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local first = lurek.light.newLight(20, 20, 70)
+    local second = lurek.light.newLight(40, 40, 70)
+    first:setGroupId(1)
+    second:setGroupId(1)
+    lurek.light.setGroupEnabled(1, false)
+    print(&quot;group 1 count = &quot; .. lurek.light.getGroupCount(1))
+    print(&quot;group 1 enabled = &quot; .. tostring(first:isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgroupintensity"><div class="item-row-main"><h3>setGroupIntensity</h3><pre class="inline-signature">lurek.light.setGroupIntensity(group_id: integer, intensity: number)</pre><p>Sets intensity for all lights in a group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1403</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.clear()
+    local first = lurek.light.newLight(20, 20, 70)
+    local second = lurek.light.newLight(40, 40, 70)
+    first:setGroupId(1)
+    second:setGroupId(1)
+    lurek.light.setGroupIntensity(1, 3.0)
+    print(&quot;group 1 count = &quot; .. lurek.light.getGroupCount(1))
+    print(&quot;group 1 intensity = &quot; .. first:getIntensity())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setmaxlights"><div class="item-row-main"><h3>setMaxLights</h3><pre class="inline-signature">lurek.light.setMaxLights(n: integer)</pre><p>Sets the maximum configured light count, clamped to 1 through 256.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1367</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.setMaxLights(64)
+    print(&quot;max lights = &quot; .. lurek.light.getMaxLights())
+end</code></pre></details></article><article class="item-row api-row" id="fn-syncambient"><div class="item-row-main"><h3>syncAmbient</h3><pre class="inline-signature">lurek.light.syncAmbient() -&gt; number</pre><p>Returns the light world&#x27;s ambient color hint.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/light_api.rs:1460</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    lurek.light.setAmbient(0.2, 0.25, 0.3, 1.0)
+    local r, g, b, a = lurek.light.syncAmbient()
+    print(&quot;sync ambient = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLight.html">LLight</a></h3><p>Lua-side handle for a light stored in the shared light world.</p></div><div class="item-row-meta"><span>65 methods</span><span>module light</span></div><div class="card-note">Example: light.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LOccluder.html">LOccluder</a></h3><p>Lua-side handle for an occluder stored in the shared light world.</p></div><div class="item-row-meta"><span>14 methods</span><span>module light</span></div><div class="card-note">Example: light.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

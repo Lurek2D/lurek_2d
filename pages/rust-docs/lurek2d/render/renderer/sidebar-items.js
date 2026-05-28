@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BevelStyle","BlendMode","CompareMode","DepthMode","DrawMode","DrawableKind","GradientDirection","HexOrientation","ParticleRenderShape","PathSegment","RenderCommand","StencilAction","TextAlign"],"struct":["ParticleInstance","PhysicsDebugConfig","PhysicsDebugShape","PostFxPass","SpineSlotDraw","StencilMode","TextSpan","TextureData"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["build_border_style_gpu_records","build_gpu_records"],"struct":["BorderStyleGpuRecord","ProvinceGpuRecord"]};

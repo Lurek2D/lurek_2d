@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["LOBBY_PORT"],"fn":["broadcast_lobby","create_room","discover_lobbies","join_room","leave_room","list_rooms"],"struct":["LobbyInfo","RoomInfo"]};

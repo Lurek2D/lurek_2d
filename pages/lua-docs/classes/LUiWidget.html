@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUiWidget - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a class="active" href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LUiWidget</h1>
+  <p>Creates a Lua table representing a widget with all shared base methods common to every widget type.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/ui.html">lurek.ui</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:slideIn(0, -50)
+    w:slideOut(0, 50)
+    local t = w:type()
+    local ok = w:typeOf(&quot;LUiWidget&quot;)
+    w:unbind()
+    print(&quot;slideIn/slideOut ok; type:&quot;, t, &quot;typeOf:&quot;, ok)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LUiWidget userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addchild"><div class="item-row-main"><h3>addChild</h3><pre class="inline-signature">LUiWidget:addChild(child: LUiWidget|integer)</pre><p>Adds a child widget to this widget&#x27;s hierarchy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:645</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local layout = lurek.ui.newLayout(&quot;vertical&quot;)
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    local btn3 = lurek.ui.newButton(&quot;Third&quot;)
+    layout:addChild(btn1)
+    layout:addChild(btn2)
+    layout:addChild(btn3)
+    print(&quot;children = &quot; .. layout:getChildCount())
+    layout:removeChild(btn2)
+    print(&quot;after remove = &quot; .. layout:getChildCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-animatealpha"><div class="item-row-main"><h3>animateAlpha</h3><pre class="inline-signature">LUiWidget:animateAlpha(target: number, duration: number?, hide_on_complete: boolean?) -&gt; table</pre><p>Smoothly animates this widget&#x27;s opacity toward a target value over the given duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1256</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Fade&quot;)
+    btn:setAlpha(1.0)
+    btn:animateAlpha(0.0, 0.5)
+    print(&quot;animating = &quot; .. tostring(btn:isAnimating()))
+    btn:cancelAnimations()
+    btn:animateAlpha(0.0, 0.3, true)
+    print(&quot;fade-out with hide_on_complete started&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-animateposition"><div class="item-row-main"><h3>animatePosition</h3><pre class="inline-signature">LUiWidget:animatePosition(x: number, y: number, duration: number?) -&gt; table</pre><p>Smoothly animates this widget&#x27;s position toward the target coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1283</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setPosition(0, 0)
+    panel:animatePosition(200, 100, 0.5)
+    print(&quot;animating = &quot; .. tostring(panel:isAnimating()))
+    print(&quot;target = 200, 100&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-attachtoentity"><div class="item-row-main"><h3>attachToEntity</h3><pre class="inline-signature">LUiWidget:attachToEntity(entity_id: integer)</pre><p>Attaches this widget to a game entity so it follows the entity&#x27;s position on screen.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1315</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false)
+    local animating = w:isAnimating()
+    w:cancelAnimations()
+    w:bind(&quot;click&quot;)
+    w:detachFromEntity()
+    print(&quot;attachToEntity/bind/cancelAnimations ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-bind"><div class="item-row-main"><h3>bind</h3><pre class="inline-signature">LUiWidget:bind(key: string)</pre><p>Binds this widget to a data key for use with update_bindings.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1114</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false)
+    local animating = w:isAnimating()
+    w:cancelAnimations()
+    w:bind(&quot;click&quot;)
+    w:detachFromEntity()
+    print(&quot;attachToEntity/bind/cancelAnimations ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-cancelanimations"><div class="item-row-main"><h3>cancelAnimations</h3><pre class="inline-signature">LUiWidget:cancelAnimations() -&gt; boolean</pre><p>Cancels all active animations on this widget, leaving it at its current state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1306</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    w:attachToEntity(1)
+    w:animateAlpha(0.0, 1.0, false)
+    local animating = w:isAnimating()
+    w:cancelAnimations()
+    w:bind(&quot;click&quot;)
+    w:detachFromEntity()
+    print(&quot;attachToEntity/bind/cancelAnimations ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearanchor"><div class="item-row-main"><h3>clearAnchor</h3><pre class="inline-signature">LUiWidget:clearAnchor()</pre><p>Removes all anchor constraints from this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1045</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Anchored&quot;)
+    btn:setAnchor(10, 10, 10, nil)
+    print(&quot;anchors applied&quot;)
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print(&quot;center anchor applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearfont"><div class="item-row-main"><h3>clearFont</h3><pre class="inline-signature">LUiWidget:clearFont()</pre><p>Clears any font override on this widget so it inherits from its parent again.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:237</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for clearFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using clearFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked clearFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="method-containspoint"><div class="item-row-main"><h3>containsPoint</h3><pre class="inline-signature">LUiWidget:containsPoint(x: number, y: number) -&gt; boolean</pre><p>Tests whether the given screen-space point is inside this widget&#x27;s bounds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:792</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Hit Test&quot;)
+    btn:setPosition(50, 50)
+    btn:setSize(100, 40)
+    print(&quot;(75,60) inside = &quot; .. tostring(btn:containsPoint(75, 60)))
+    print(&quot;(200,200) inside = &quot; .. tostring(btn:containsPoint(200, 200)))
+end</code></pre></details></article><article class="item-row api-row" id="method-detachfromentity"><div class="item-row-main"><h3>detachFromEntity</h3><pre class="inline-signature">LUiWidget:detachFromEntity()</pre><p>Detaches this widget from any previously attached entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1329</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:setAnchor(0, 0, 1, 0)
+    w:clearAnchor()
+    w:setPosition(10, 10)
+    local hit = w:containsPoint(15, 15)
+    w:attachToEntity(2)
+    w:detachFromEntity()
+    print(&quot;clearAnchor/containsPoint:&quot;, hit, &quot;detachFromEntity ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-fadein"><div class="item-row-main"><h3>fadeIn</h3><pre class="inline-signature">LUiWidget:fadeIn()</pre><p>Instantly makes this widget fully opaque and visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1186</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel(&quot;Fading&quot;)
+    lbl:setAlpha(0)
+    lbl:fadeIn()
+    print(&quot;fading in, animating = &quot; .. tostring(lbl:isAnimating()))
+end</code></pre></details></article><article class="item-row api-row" id="method-fadeout"><div class="item-row-main"><h3>fadeOut</h3><pre class="inline-signature">LUiWidget:fadeOut()</pre><p>Instantly makes this widget fully transparent and hidden.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1201</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel(&quot;Fading&quot;)
+    lbl:fadeOut()
+    print(&quot;fading out&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-findbyid"><div class="item-row-main"><h3>findById</h3><pre class="inline-signature">LUiWidget:findById(id: string) -&gt; LWidget</pre><p>Searches this widget&#x27;s subtree for a child with the given ID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:730</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local root = lurek.ui.newLayout(&quot;vertical&quot;)
+    local btn = lurek.ui.newButton(&quot;Find Me&quot;)
+    btn:setId(&quot;target_btn&quot;)
+    root:addChild(btn)
+    local found = root:findById(&quot;target_btn&quot;)
+    print(&quot;found = &quot; .. tostring(found ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getalpha"><div class="item-row-main"><h3>getAlpha</h3><pre class="inline-signature">LUiWidget:getAlpha() -&gt; number</pre><p>Returns the current opacity of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1175</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    print(&quot;alpha = &quot; .. panel:getAlpha())
+    panel:setAlpha(0.5)
+    print(&quot;set to 50% = &quot; .. panel:getAlpha())
+    panel:setAlpha(1.0)
+end</code></pre></details></article><article class="item-row api-row" id="method-getchildcount"><div class="item-row-main"><h3>getChildCount</h3><pre class="inline-signature">LUiWidget:getChildCount() -&gt; integer</pre><p>Returns the number of direct child widgets attached to this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:689</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local layout = lurek.ui.newLayout(&quot;vertical&quot;)
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    local btn3 = lurek.ui.newButton(&quot;Third&quot;)
+    layout:addChild(btn1)
+    layout:addChild(btn2)
+    layout:addChild(btn3)
+    print(&quot;children = &quot; .. layout:getChildCount())
+    layout:removeChild(btn2)
+    print(&quot;after remove = &quot; .. layout:getChildCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getchildren"><div class="item-row-main"><h3>getChildren</h3><pre class="inline-signature">LUiWidget:getChildren() -&gt; table</pre><p>Returns a table of lightweight child widget references, each containing an _idx field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:addChild(lurek.ui.newLabel(&quot;A&quot;))
+    panel:addChild(lurek.ui.newLabel(&quot;B&quot;))
+    panel:addChild(lurek.ui.newLabel(&quot;C&quot;))
+    local children = panel:getChildren()
+    print(&quot;child list length = &quot; .. #children)
+end</code></pre></details></article><article class="item-row api-row" id="method-getflexgrow"><div class="item-row-main"><h3>getFlexGrow</h3><pre class="inline-signature">LUiWidget:getFlexGrow() -&gt; number</pre><p>Returns the flex-grow factor of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1075</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local row = lurek.ui.newLayout(&quot;horizontal&quot;)
+    local left = lurek.ui.newPanel()
+    local right = lurek.ui.newPanel()
+    left:setFlexGrow(1)
+    right:setFlexGrow(2)
+    row:addChild(left)
+    row:addChild(right)
+    print(&quot;left grow = &quot; .. left:getFlexGrow())
+    print(&quot;right grow = &quot; .. right:getFlexGrow())
+end</code></pre></details></article><article class="item-row api-row" id="method-getflexshrink"><div class="item-row-main"><h3>getFlexShrink</h3><pre class="inline-signature">LUiWidget:getFlexShrink() -&gt; number</pre><p>Returns the flex-shrink factor of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1102</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Shrinkable&quot;)
+    btn:setFlexShrink(0)
+    print(&quot;shrink = &quot; .. btn:getFlexShrink())
+    btn:setFlexShrink(1)
+    print(&quot;shrink = &quot; .. btn:getFlexShrink())
+end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LUiWidget:getId() -&gt; string</pre><p>Returns the string identifier assigned to this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:587</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Info&quot;)
+    btn:setId(&quot;info_button&quot;)
+    btn:setTooltip(&quot;Click for more information&quot;)
+    print(&quot;id = &quot; .. btn:getId())
+    print(&quot;tooltip = &quot; .. btn:getTooltip())
+end</code></pre></details></article><article class="item-row api-row" id="method-getmargin"><div class="item-row-main"><h3>getMargin</h3><pre class="inline-signature">LUiWidget:getMargin() -&gt; number, number, number, number</pre><p>Returns the outer margin of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:883</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Margin&quot;)
+    btn:setMargin(10, 20, 10, 20)
+    local top, right, bottom, left = btn:getMargin()
+    print(&quot;margin = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+    btn:setMargin(5)
+    top, right, bottom, left = btn:getMargin()
+    print(&quot;uniform = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+end</code></pre></details></article><article class="item-row api-row" id="method-getmaxsize"><div class="item-row-main"><h3>getMaxSize</h3><pre class="inline-signature">LUiWidget:getMaxSize() -&gt; number, number</pre><p>Returns the maximum width and height of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:979</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize()
+    print(&quot;min = &quot; .. minW .. &quot;x&quot; .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print(&quot;max = &quot; .. maxW .. &quot;x&quot; .. maxH)
+end</code></pre></details></article><article class="item-row api-row" id="method-getminsize"><div class="item-row-main"><h3>getMinSize</h3><pre class="inline-signature">LUiWidget:getMinSize() -&gt; number, number</pre><p>Returns the minimum width and height of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:945</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize()
+    print(&quot;min = &quot; .. minW .. &quot;x&quot; .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print(&quot;max = &quot; .. maxW .. &quot;x&quot; .. maxH)
+end</code></pre></details></article><article class="item-row api-row" id="method-getmousefilter"><div class="item-row-main"><h3>getMouseFilter</h3><pre class="inline-signature">LUiWidget:getMouseFilter() -&gt; string</pre><p>Returns the mouse filter of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Retrieves the current mouse filter behavior of a widget.
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter(&quot;pass&quot;)
+    local filter = panel:getMouseFilter()
+    print(&quot;mouse filter: &quot; .. filter)
+end</code></pre></details></article><article class="item-row api-row" id="method-getpadding"><div class="item-row-main"><h3>getPadding</h3><pre class="inline-signature">LUiWidget:getPadding() -&gt; number, number, number, number</pre><p>Returns the inner padding of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:836</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setPadding(8, 16, 8, 16)
+    local top, right, bottom, left = panel:getPadding()
+    print(&quot;padding = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LUiWidget:getPosition() -&gt; number, number</pre><p>Returns the local position of this widget relative to its parent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:162</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;Pos Test&quot;)
+    btn:setPosition(100, 50)
+    local x, y = btn:getPosition()
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrect"><div class="item-row-main"><h3>getRect</h3><pre class="inline-signature">LUiWidget:getRect() -&gt; number, number, number, number</pre><p>Returns the computed bounding rectangle of this widget in screen coordinates after layout.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:252</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Bounds&quot;)
+    btn:setPosition(50, 30)
+    btn:setSize(120, 40)
+    local x, y, w, h = btn:getRect()
+    print(&quot;rect = &quot; .. x .. &quot;,&quot; .. y .. &quot; &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getsize"><div class="item-row-main"><h3>getSize</h3><pre class="inline-signature">LUiWidget:getSize() -&gt; number, number</pre><p>Returns the width and height of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:197</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    local w, h = panel:getSize()
+    print(&quot;size = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getstate"><div class="item-row-main"><h3>getState</h3><pre class="inline-signature">LUiWidget:getState() -&gt; string</pre><p>Returns the current interaction state of this widget (e.g. &quot;normal&quot;, &quot;hovered&quot;, &quot;pressed&quot;, &quot;disabled&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:630</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;State&quot;)
+    local state = btn:getState()
+    print(&quot;state = &quot; .. state)
+end</code></pre></details></article><article class="item-row api-row" id="method-getstyleclass"><div class="item-row-main"><h3>getStyleClass</h3><pre class="inline-signature">LUiWidget:getStyleClass() -&gt; string</pre><p>Returns the style class of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:288</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Retrieves the currently assigned style class of a widget, or an empty string if none.
+    local btn = lurek.ui.newButton(&quot;Cancel&quot;)
+    btn:setStyleClass(&quot;danger&quot;)
+    local class = btn:getStyleClass()
+    print(&quot;style class: &quot; .. class)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettooltip"><div class="item-row-main"><h3>getTooltip</h3><pre class="inline-signature">LUiWidget:getTooltip() -&gt; string</pre><p>Returns the tooltip text of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:616</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Info&quot;)
+    btn:setId(&quot;info_button&quot;)
+    btn:setTooltip(&quot;Click for more information&quot;)
+    print(&quot;id = &quot; .. btn:getId())
+    print(&quot;tooltip = &quot; .. btn:getTooltip())
+end</code></pre></details></article><article class="item-row api-row" id="method-getzorder"><div class="item-row-main"><h3>getZOrder</h3><pre class="inline-signature">LUiWidget:getZOrder() -&gt; integer</pre><p>Returns the z-order (draw priority) of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:915</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local front = lurek.ui.newPanel()
+    local back = lurek.ui.newPanel()
+    front:setZOrder(10)
+    back:setZOrder(1)
+    print(&quot;front z = &quot; .. front:getZOrder())
+    print(&quot;back z = &quot; .. back:getZOrder())
+end</code></pre></details></article><article class="item-row api-row" id="method-isanimating"><div class="item-row-main"><h3>isAnimating</h3><pre class="inline-signature">LUiWidget:isAnimating() -&gt; boolean</pre><p>Returns whether this widget currently has an active animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1297</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:setZOrder(5)
+    local z = w:getZOrder()
+    local animating = w:isAnimating()
+    local enabled = w:isEnabled()
+    w:setEnabled(false)
+    print(&quot;zOrder:&quot;, z, &quot;isAnimating:&quot;, animating, &quot;isEnabled:&quot;, enabled)
+end</code></pre></details></article><article class="item-row api-row" id="method-isenabled"><div class="item-row-main"><h3>isEnabled</h3><pre class="inline-signature">LUiWidget:isEnabled() -&gt; boolean</pre><p>Returns whether this widget is currently enabled and can receive input.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:560</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;Action&quot;)
+    print(&quot;enabled = &quot; .. tostring(btn:isEnabled()))
+    btn:setEnabled(false)
+    print(&quot;disabled = &quot; .. tostring(btn:isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">LUiWidget:isVisible() -&gt; boolean</pre><p>Returns whether this widget is currently visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:527</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel(&quot;Toggle Me&quot;)
+    print(&quot;visible = &quot; .. tostring(lbl:isVisible()))
+    lbl:setVisible(false)
+    print(&quot;hidden = &quot; .. tostring(lbl:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-removechild"><div class="item-row-main"><h3>removeChild</h3><pre class="inline-signature">LUiWidget:removeChild(child: LUiWidget|integer)</pre><p>Removes a child widget from this widget&#x27;s hierarchy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local layout = lurek.ui.newLayout(&quot;vertical&quot;)
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    local btn3 = lurek.ui.newButton(&quot;Third&quot;)
+    layout:addChild(btn1)
+    layout:addChild(btn2)
+    layout:addChild(btn3)
+    print(&quot;children = &quot; .. layout:getChildCount())
+    layout:removeChild(btn2)
+    print(&quot;after remove = &quot; .. layout:getChildCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setalpha"><div class="item-row-main"><h3>setAlpha</h3><pre class="inline-signature">LUiWidget:setAlpha(alpha: number)</pre><p>Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1160</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    print(&quot;alpha = &quot; .. panel:getAlpha())
+    panel:setAlpha(0.5)
+    print(&quot;set to 50% = &quot; .. panel:getAlpha())
+    panel:setAlpha(1.0)
+end</code></pre></details></article><article class="item-row api-row" id="method-setanchor"><div class="item-row-main"><h3>setAnchor</h3><pre class="inline-signature">LUiWidget:setAnchor(left: number?, top: number?, right: number?, bottom: number?)</pre><p>Anchors this widget to its parent&#x27;s edges. Pass nil for any side to leave it unanchored.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:998</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Anchored&quot;)
+    btn:setAnchor(10, 10, 10, nil)
+    print(&quot;anchors applied&quot;)
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print(&quot;center anchor applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setanchorcenter"><div class="item-row-main"><h3>setAnchorCenter</h3><pre class="inline-signature">LUiWidget:setAnchorCenter(cx: number?, cy: number?)</pre><p>Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1027</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Anchored&quot;)
+    btn:setAnchor(10, 10, 10, nil)
+    print(&quot;anchors applied&quot;)
+    btn:clearAnchor()
+    btn:setAnchorCenter(0.5, 0.5)
+    print(&quot;center anchor applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setarianame"><div class="item-row-main"><h3>setAriaName</h3><pre class="inline-signature">LUiWidget:setAriaName(name: string)</pre><p>Sets the accessible name metadata for this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:480</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Save&quot;)
+    btn:setAriaName(&quot;Save game&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setbindkey"><div class="item-row-main"><h3>setBindKey</h3><pre class="inline-signature">LUiWidget:setBindKey(key: string) -&gt; boolean</pre><p>Binds this widget to a data key and reports whether the widget exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1130</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for setBindKey
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using setBindKey&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked setBindKey on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="method-setenabled"><div class="item-row-main"><h3>setEnabled</h3><pre class="inline-signature">LUiWidget:setEnabled(v: boolean)</pre><p>Enables or disables this widget. Disabled widgets appear grayed out and ignore input.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:539</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;Action&quot;)
+    btn:setEnabled(false)
+    print(&quot;disabled = &quot; .. tostring(btn:isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setflexgrow"><div class="item-row-main"><h3>setFlexGrow</h3><pre class="inline-signature">LUiWidget:setFlexGrow(grow: number)</pre><p>Sets the flex-grow factor controlling how much extra space this widget receives in a layout.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1060</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local row = lurek.ui.newLayout(&quot;horizontal&quot;)
+    local left = lurek.ui.newPanel()
+    local right = lurek.ui.newPanel()
+    left:setFlexGrow(1)
+    right:setFlexGrow(2)
+    row:addChild(left)
+    row:addChild(right)
+    print(&quot;left grow = &quot; .. left:getFlexGrow())
+    print(&quot;right grow = &quot; .. right:getFlexGrow())
+end</code></pre></details></article><article class="item-row api-row" id="method-setflexshrink"><div class="item-row-main"><h3>setFlexShrink</h3><pre class="inline-signature">LUiWidget:setFlexShrink(shrink: number)</pre><p>Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1087</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Shrinkable&quot;)
+    btn:setFlexShrink(0)
+    print(&quot;shrink = &quot; .. btn:getFlexShrink())
+    btn:setFlexShrink(1)
+    print(&quot;shrink = &quot; .. btn:getFlexShrink())
+end</code></pre></details></article><article class="item-row api-row" id="method-setfocusgroup"><div class="item-row-main"><h3>setFocusGroup</h3><pre class="inline-signature">LUiWidget:setFocusGroup(group: string)</pre><p>Sets the focus traversal group for this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:418</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Group&quot;)
+    btn:setFocusGroup(&quot;menu&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfocusneighbor"><div class="item-row-main"><h3>setFocusNeighbor</h3><pre class="inline-signature">LUiWidget:setFocusNeighbor(direction: string, target: integer?) -&gt; boolean</pre><p>Sets an explicit directional focus neighbor for this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:437</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local a = lurek.ui.newButton(&quot;A&quot;)
+    local b = lurek.ui.newButton(&quot;B&quot;)
+    a:setFocusNeighbor(&quot;right&quot;, b._idx)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfocusable"><div class="item-row-main"><h3>setFocusable</h3><pre class="inline-signature">LUiWidget:setFocusable(value: boolean)</pre><p>Sets whether this widget participates in keyboard focus traversal.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:384</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Focusable&quot;)
+    btn:setFocusable(true)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfont"><div class="item-row-main"><h3>setFont</h3><pre class="inline-signature">LUiWidget:setFont(font: LFont)</pre><p>Assigns a specific font to this widget and its descendants unless overridden further down the tree.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:214</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for setFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using setFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked setFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="method-setid"><div class="item-row-main"><h3>setId</h3><pre class="inline-signature">LUiWidget:setId(id: string)</pre><p>Assigns a string identifier to this widget for lookup with findById.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:572</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Info&quot;)
+    btn:setId(&quot;info_button&quot;)
+    btn:setTooltip(&quot;Click for more information&quot;)
+    print(&quot;id = &quot; .. btn:getId())
+    print(&quot;tooltip = &quot; .. btn:getTooltip())
+end</code></pre></details></article><article class="item-row api-row" id="method-setmargin"><div class="item-row-main"><h3>setMargin</h3><pre class="inline-signature">LUiWidget:setMargin(top: number, right: number?, bottom: number?, left: number?)</pre><p>Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:856</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Margin&quot;)
+    btn:setMargin(10, 20, 10, 20)
+    local top, right, bottom, left = btn:getMargin()
+    print(&quot;margin = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+    btn:setMargin(5)
+    top, right, bottom, left = btn:getMargin()
+    print(&quot;uniform = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmaxsize"><div class="item-row-main"><h3>setMaxSize</h3><pre class="inline-signature">LUiWidget:setMaxSize(w: number, h: number)</pre><p>Sets the maximum allowed width and height for this widget during layout.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:962</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize()
+    print(&quot;min = &quot; .. minW .. &quot;x&quot; .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print(&quot;max = &quot; .. maxW .. &quot;x&quot; .. maxH)
+end</code></pre></details></article><article class="item-row api-row" id="method-setminsize"><div class="item-row-main"><h3>setMinSize</h3><pre class="inline-signature">LUiWidget:setMinSize(w: number, h: number)</pre><p>Sets the minimum allowed width and height for this widget during layout.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:928</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setMinSize(100, 50)
+    local minW, minH = panel:getMinSize()
+    print(&quot;min = &quot; .. minW .. &quot;x&quot; .. minH)
+    panel:setMaxSize(400, 300)
+    local maxW, maxH = panel:getMaxSize()
+    print(&quot;max = &quot; .. maxW .. &quot;x&quot; .. maxH)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmousefilter"><div class="item-row-main"><h3>setMouseFilter</h3><pre class="inline-signature">LUiWidget:setMouseFilter(filter: string) -&gt; boolean</pre><p>Sets the mouse filter for this widget (&quot;stop&quot;, &quot;pass&quot;, &quot;ignore&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:305</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Sets the mouse filter mode on a panel. &quot;ignore&quot; passes events to underlying widgets,
+    -- useful for decorative overlays or transparent layout containers.
+    local panel = lurek.ui.newPanel()
+    panel:setMouseFilter(&quot;ignore&quot;)
+    print(&quot;mouse filter set to ignore&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setonchange"><div class="item-row-main"><h3>setOnChange</h3><pre class="inline-signature">LUiWidget:setOnChange(f: function)</pre><p>Registers a callback function invoked when this widget&#x27;s value changes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:764</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:setOnChange(function() print(&quot;changed&quot;) end)
+    w:setOnClick(function() print(&quot;clicked&quot;) end)
+    w:setOnDraw(function() print(&quot;drawing&quot;) end)
+    local id = w:getId()
+    local vis = w:isVisible()
+    print(&quot;setOnChange/setOnClick/setOnDraw ok; id:&quot;, id, &quot;vis:&quot;, vis)
+end</code></pre></details></article><article class="item-row api-row" id="method-setonclick"><div class="item-row-main"><h3>setOnClick</h3><pre class="inline-signature">LUiWidget:setOnClick(f: function)</pre><p>Registers a callback function invoked when this widget is clicked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:751</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:setOnChange(function() print(&quot;changed&quot;) end)
+    w:setOnClick(function() print(&quot;clicked&quot;) end)
+    w:setOnDraw(function() print(&quot;drawing&quot;) end)
+    local id = w:getId()
+    local vis = w:isVisible()
+    print(&quot;setOnChange/setOnClick/setOnDraw ok; id:&quot;, id, &quot;vis:&quot;, vis)
+end</code></pre></details></article><article class="item-row api-row" id="method-setondraw"><div class="item-row-main"><h3>setOnDraw</h3><pre class="inline-signature">LUiWidget:setOnDraw(f: function)</pre><p>Registers a custom draw callback for this widget, invoked each frame during the draw pass.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:777</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:setOnChange(function() print(&quot;changed&quot;) end)
+    w:setOnClick(function() print(&quot;clicked&quot;) end)
+    w:setOnDraw(function() print(&quot;drawing&quot;) end)
+    local id = w:getId()
+    local vis = w:isVisible()
+    print(&quot;setOnChange/setOnClick/setOnDraw ok; id:&quot;, id, &quot;vis:&quot;, vis)
+end</code></pre></details></article><article class="item-row api-row" id="method-setpadding"><div class="item-row-main"><h3>setPadding</h3><pre class="inline-signature">LUiWidget:setPadding(top: number, right: number?, bottom: number?, left: number?)</pre><p>Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:809</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setPadding(8, 16, 8, 16)
+    local top, right, bottom, left = panel:getPadding()
+    print(&quot;padding = &quot; .. top .. &quot; &quot; .. right .. &quot; &quot; .. bottom .. &quot; &quot; .. left)
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LUiWidget:setPosition(x: number, y: number)</pre><p>Sets the local position of this widget relative to its parent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:145</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;Pos Test&quot;)
+    btn:setPosition(100, 50)
+    local x, y = btn:getPosition()
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrole"><div class="item-row-main"><h3>setRole</h3><pre class="inline-signature">LUiWidget:setRole(role: string)</pre><p>Sets a semantic role string for this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:463</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Save&quot;)
+    btn:setRole(&quot;button&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setsize"><div class="item-row-main"><h3>setSize</h3><pre class="inline-signature">LUiWidget:setSize(w: number, h: number)</pre><p>Sets the width and height of this widget in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:180</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    local w, h = panel:getSize()
+    print(&quot;size = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-setstyleclass"><div class="item-row-main"><h3>setStyleClass</h3><pre class="inline-signature">LUiWidget:setStyleClass(class: string) -&gt; boolean</pre><p>Sets the style class of this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Assigns a custom style class to a widget. If defined in the active theme,
+    -- the button will use &quot;primary&quot; colors and metrics instead of default ones.
+    local btn = lurek.ui.newButton(&quot;Submit&quot;)
+    btn:setStyleClass(&quot;primary&quot;)
+    print(&quot;style class set to primary&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-settabindex"><div class="item-row-main"><h3>setTabIndex</h3><pre class="inline-signature">LUiWidget:setTabIndex(value: integer)</pre><p>Sets the tab-order index for this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:401</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Tab&quot;)
+    btn:setTabIndex(10)
+end</code></pre></details></article><article class="item-row api-row" id="method-settextellipsis"><div class="item-row-main"><h3>setTextEllipsis</h3><pre class="inline-signature">LUiWidget:setTextEllipsis(ellipsis: boolean)</pre><p>Enables or disables ellipsis clipping for overflowing single-line text.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:346</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local lbl = lurek.ui.newLabel(&quot;This is a very long one-line text&quot;)
+    lbl:setTextEllipsis(true)
+end</code></pre></details></article><article class="item-row api-row" id="method-settextvalign"><div class="item-row-main"><h3>setTextVAlign</h3><pre class="inline-signature">LUiWidget:setTextVAlign(align: string) -&gt; boolean</pre><p>Sets the vertical alignment of text inside this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local lbl = lurek.ui.newLabel(&quot;Centered&quot;)
+    lbl:setTextVAlign(&quot;middle&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-settextwrap"><div class="item-row-main"><h3>setTextWrap</h3><pre class="inline-signature">LUiWidget:setTextWrap(wrap: boolean)</pre><p>Enables or disables word-wrap for text inside this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:329</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local lbl = lurek.ui.newLabel(&quot;This is a long text that can wrap&quot;)
+    lbl:setTextWrap(true)
+end</code></pre></details></article><article class="item-row api-row" id="method-settooltip"><div class="item-row-main"><h3>setTooltip</h3><pre class="inline-signature">LUiWidget:setTooltip(text: string)</pre><p>Sets the tooltip text shown when the user hovers over this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:601</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Info&quot;)
+    btn:setId(&quot;info_button&quot;)
+    btn:setTooltip(&quot;Click for more information&quot;)
+    print(&quot;id = &quot; .. btn:getId())
+    print(&quot;tooltip = &quot; .. btn:getTooltip())
+end</code></pre></details></article><article class="item-row api-row" id="method-setvisible"><div class="item-row-main"><h3>setVisible</h3><pre class="inline-signature">LUiWidget:setVisible(v: boolean)</pre><p>Shows or hides this widget. Hidden widgets are not drawn and do not receive input.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:512</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LLabel
+    local lbl = lurek.ui.newLabel(&quot;Toggle Me&quot;)
+    lbl:setVisible(false)
+    print(&quot;hidden = &quot; .. tostring(lbl:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setzorder"><div class="item-row-main"><h3>setZOrder</h3><pre class="inline-signature">LUiWidget:setZOrder(z: integer)</pre><p>Sets the z-order (draw priority) of this widget. Higher values draw on top.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:900</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local front = lurek.ui.newPanel()
+    local back = lurek.ui.newPanel()
+    front:setZOrder(10)
+    back:setZOrder(1)
+    print(&quot;front z = &quot; .. front:getZOrder())
+    print(&quot;back z = &quot; .. back:getZOrder())
+end</code></pre></details></article><article class="item-row api-row" id="method-slidein"><div class="item-row-main"><h3>slideIn</h3><pre class="inline-signature">LUiWidget:slideIn(x: number, y: number)</pre><p>Moves this widget to the given position and makes it visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1218</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:cancelAnimations()
+    panel:slideIn(300, 0)
+    local x, y = panel:getPosition()
+    print(&quot;visible = &quot; .. tostring(panel:isVisible()))
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-slideout"><div class="item-row-main"><h3>slideOut</h3><pre class="inline-signature">LUiWidget:slideOut(x: number, y: number)</pre><p>Moves this widget to the given position and hides it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1236</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newPanel()
+    panel:setVisible(true)
+    panel:setPosition(40, 20)
+    panel:slideOut(320, 20)
+    local x, y = panel:getPosition()
+    print(&quot;visible = &quot; .. tostring(panel:isVisible()))
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LUiWidget:type() -&gt; string</pre><p>Returns the type name string of this widget (e.g. &quot;LButton&quot;, &quot;LSlider&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:124</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    w:slideIn(0, -50)
+    w:slideOut(0, 50)
+    local t = w:type()
+    local ok = w:typeOf(&quot;LUiWidget&quot;)
+    w:unbind()
+    print(&quot;slideIn/slideOut ok; type:&quot;, t, &quot;typeOf:&quot;, ok)
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LUiWidget:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this widget matches the given type name, including base types &quot;LWidget&quot; and &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    w:bind(&quot;click&quot;)
+    w:unbind()
+    local ok1 = w:typeOf(&quot;LUiWidget&quot;)
+    local ok2 = w:typeOf(&quot;LButton&quot;)
+    local t = w:type()
+    print(&quot;typeOf LUiWidget:&quot;, ok1, &quot;typeOf LButton:&quot;, ok2, &quot;type:&quot;, t)
+end</code></pre></details></article><article class="item-row api-row" id="method-unbind"><div class="item-row-main"><h3>unbind</h3><pre class="inline-signature">LUiWidget:unbind()</pre><p>Removes the data binding from this widget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ui_api.rs:1145</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    w:bind(&quot;click&quot;)
+    w:unbind()
+    local ok1 = w:typeOf(&quot;LUiWidget&quot;)
+    local ok2 = w:typeOf(&quot;LButton&quot;)
+    local t = w:type()
+    print(&quot;typeOf LUiWidget:&quot;, ok1, &quot;typeOf LButton:&quot;, ok2, &quot;type:&quot;, t)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

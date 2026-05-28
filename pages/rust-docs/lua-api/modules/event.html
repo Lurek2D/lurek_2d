@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.signal - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a class="active" href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.signal</h1>
+  <p>`lurek.event` -- Event queue and signal bindings for quit/restart requests, polling, waiting, immediate and deferred event pushes, priority delivery, optional history capture, and Lua callback signal dispatch.</p>
+  <div class="api-meta api-meta-header"><span>16 functions</span><span>1 classes</span><span>src/lua_api/event_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 28</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.signal.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.signal.clear()</pre><p>Clears all pending events from the shared event queue.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:307</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.push(&quot;discard_me&quot;, 1)
+    lurek.event.clear()
+    print(&quot;queue cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearhistory"><div class="item-row-main"><h3>clearHistory</h3><pre class="inline-signature">lurek.signal.clearHistory()</pre><p>Clears retained pushed event history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:529</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.clearHistory()
+    print(&quot;history cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-enablehistory"><div class="item-row-main"><h3>enableHistory</h3><pre class="inline-signature">lurek.signal.enableHistory(capacity: integer)</pre><p>Enables event push history with a maximum retained capacity.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:488</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.enableHistory(100)
+    print(&quot;history enabled, capacity = 100&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exit"><div class="item-row-main"><h3>exit</h3><pre class="inline-signature">lurek.signal.exit(code: integer?)</pre><p>Requests engine shutdown with an optional process exit code.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:283</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    print(&quot;exit function available = &quot; .. tostring(type(lurek.event.exit) == &quot;function&quot;))
+    print(&quot;exit(code) requests shutdown, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.quit
+do
+    print(&quot;quit function available = &quot; .. tostring(type(lurek.event.quit) == &quot;function&quot;))
+    print(&quot;quit() requests shutdown, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.restart
+do
+    print(&quot;restart function available = &quot; .. tostring(type(lurek.event.restart) == &quot;function&quot;))
+    print(&quot;restart() requests a runtime restart, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.newSignal
+do
+    local sig = lurek.event.newSignal()
+    print(&quot;signal type = &quot; .. sig:type())
+end
+
+--@api-stub: LSignal:connect
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:connect(&quot;damage&quot;, function(amount)
+        print(&quot;took &quot; .. tostring(amount) .. &quot; damage&quot;)
+    end)
+    print(&quot;connected, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:register
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:register(&quot;heal&quot;, function(amount)
+        print(&quot;healed &quot; .. tostring(amount))
+    end)
+    print(&quot;registered, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:registerWithFilter
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:registerWithFilter(&quot;hit&quot;, function(dmg)
+        print(&quot;critical hit: &quot; .. tostring(dmg))
+    end, function(dmg)
+        return dmg &gt; 50</code></pre></details></article><article class="item-row api-row" id="fn-flushdeferred"><div class="item-row-main"><h3>flushDeferred</h3><pre class="inline-signature">lurek.signal.flushDeferred() -&gt; integer</pre><p>Moves all deferred events into the shared event queue and clears the deferred buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:467</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.pushDeferred(&quot;a&quot;, 1)
+    lurek.event.pushDeferred(&quot;b&quot;, 2)
+    local count = lurek.event.flushDeferred()
+    print(&quot;flushed &quot; .. count .. &quot; deferred events&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-gethistory"><div class="item-row-main"><h3>getHistory</h3><pre class="inline-signature">lurek.signal.getHistory() -&gt; table</pre><p>Returns retained pushed event history entries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:505</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.enableHistory(50)
+    lurek.event.push(&quot;score&quot;, 999)
+    local history = lurek.event.getHistory()
+    print(&quot;history entries = &quot; .. #history)
+    if history[1] then
+        print(&quot;latest name = &quot; .. tostring(history[#history].name))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsignal"><div class="item-row-main"><h3>newSignal</h3><pre class="inline-signature">lurek.signal.newSignal() -&gt; LSignal</pre><p>Creates an isolated signal dispatcher for Lua callbacks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:317</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    local sig = lurek.event.newSignal()
+    print(&quot;signal type = &quot; .. sig:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-poll"><div class="item-row-main"><h3>poll</h3><pre class="inline-signature">lurek.signal.poll() -&gt; function</pre><p>Creates a polling function that returns the next queued event each time it is called.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:294</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.push(&quot;test_event&quot;, 42)
+    local next_event = lurek.event.poll()
+    for name, a1 in next_event do
+        print(&quot;polled: &quot; .. name .. &quot; arg=&quot; .. tostring(a1))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-pump"><div class="item-row-main"><h3>pump</h3><pre class="inline-signature">lurek.signal.pump()</pre><p>Pumps the shared event queue without removing events for Lua.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:331</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.pump()
+    print(&quot;pumped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-push"><div class="item-row-main"><h3>push</h3><pre class="inline-signature">lurek.signal.push(name: string, ...: any)</pre><p>Pushes a normal-priority event into the shared event queue and optional history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:543</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.push(&quot;player_hit&quot;, 25)
+    print(&quot;pushed &#x27;player_hit&#x27; event&quot;)
+    print(&quot;push function type = &quot; .. type(lurek.event.push))
+end
+
+--@api-stub: lurek.event.pushPriority
+do
+    lurek.event.pushPriority(&quot;critical_error&quot;, &quot;high&quot;, &quot;out of memory&quot;)
+    print(&quot;pushed high-priority event&quot;)
+    print(&quot;priority helper ready = &quot; .. tostring(type(lurek.event.pushPriority) == &quot;function&quot;))
+end
+
+--@api-stub: lurek.event.pushDeferred
+do
+    lurek.event.pushDeferred(&quot;scene_ready&quot;, &quot;main_menu&quot;)
+    print(&quot;deferred &#x27;scene_ready&#x27;&quot;)
+    print(&quot;deferred helper type = &quot; .. type(lurek.event.pushDeferred))
+end
+
+--@api-stub: lurek.event.pushDeferredPriority
+do
+    lurek.event.pushDeferredPriority(&quot;system_alert&quot;, &quot;high&quot;, &quot;low battery&quot;)
+    print(&quot;deferred high-priority &#x27;system_alert&#x27;&quot;)
+    print(&quot;deferred priority helper type = &quot; .. type(lurek.event.pushDeferredPriority))
+end
+
+--@api-stub: lurek.event.flushDeferred
+do
+    lurek.event.pushDeferred(&quot;a&quot;, 1)
+    lurek.event.pushDeferred(&quot;b&quot;, 2)
+    local count = lurek.event.flushDeferred()
+    print(&quot;flushed &quot; .. count .. &quot; deferred events&quot;)
+end
+
+--@api-stub: lurek.event.poll
+do
+    lurek.event.push(&quot;test_event&quot;, 42)
+    local next_event = lurek.event.poll()
+    for name, a1 in next_event do
+        print(&quot;polled: &quot; .. name .. &quot; arg=&quot; .. tostring(a1))
+    end
+end
+
+--@api-stub: lurek.event.wait
+do
+    lurek.event.push(&quot;wake_up&quot;, &quot;now&quot;)
+    local ok, name, args = lurek.event.wait(0.1)</code></pre></details></article><article class="item-row api-row" id="fn-pushdeferred"><div class="item-row-main"><h3>pushDeferred</h3><pre class="inline-signature">lurek.signal.pushDeferred(name: string, ...: any)</pre><p>Adds a normal-priority event to the deferred buffer instead of the live queue.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:400</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.pushDeferred(&quot;scene_ready&quot;, &quot;main_menu&quot;)
+    print(&quot;deferred &#x27;scene_ready&#x27;&quot;)
+    print(&quot;deferred helper type = &quot; .. type(lurek.event.pushDeferred))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushdeferredpriority"><div class="item-row-main"><h3>pushDeferredPriority</h3><pre class="inline-signature">lurek.signal.pushDeferredPriority(name: string, priority: string, ...: any)</pre><p>Adds an event with explicit priority to the deferred buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:431</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.pushDeferredPriority(&quot;system_alert&quot;, &quot;high&quot;, &quot;low battery&quot;)
+    print(&quot;deferred high-priority &#x27;system_alert&#x27;&quot;)
+    print(&quot;deferred priority helper type = &quot; .. type(lurek.event.pushDeferredPriority))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushpriority"><div class="item-row-main"><h3>pushPriority</h3><pre class="inline-signature">lurek.signal.pushPriority(name: string, priority: string, ...: any)</pre><p>Pushes an event with explicit priority into the shared event queue and optional history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:584</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.pushPriority(&quot;critical_error&quot;, &quot;high&quot;, &quot;out of memory&quot;)
+    print(&quot;pushed high-priority event&quot;)
+    print(&quot;priority helper ready = &quot; .. tostring(type(lurek.event.pushPriority) == &quot;function&quot;))
+end
+
+--@api-stub: lurek.event.pushDeferred
+do
+    lurek.event.pushDeferred(&quot;scene_ready&quot;, &quot;main_menu&quot;)
+    print(&quot;deferred &#x27;scene_ready&#x27;&quot;)
+    print(&quot;deferred helper type = &quot; .. type(lurek.event.pushDeferred))
+end
+
+--@api-stub: lurek.event.pushDeferredPriority
+do
+    lurek.event.pushDeferredPriority(&quot;system_alert&quot;, &quot;high&quot;, &quot;low battery&quot;)
+    print(&quot;deferred high-priority &#x27;system_alert&#x27;&quot;)
+    print(&quot;deferred priority helper type = &quot; .. type(lurek.event.pushDeferredPriority))
+end
+
+--@api-stub: lurek.event.flushDeferred
+do
+    lurek.event.pushDeferred(&quot;a&quot;, 1)
+    lurek.event.pushDeferred(&quot;b&quot;, 2)
+    local count = lurek.event.flushDeferred()
+    print(&quot;flushed &quot; .. count .. &quot; deferred events&quot;)
+end
+
+--@api-stub: lurek.event.poll
+do
+    lurek.event.push(&quot;test_event&quot;, 42)
+    local next_event = lurek.event.poll()
+    for name, a1 in next_event do
+        print(&quot;polled: &quot; .. name .. &quot; arg=&quot; .. tostring(a1))
+    end
+end
+
+--@api-stub: lurek.event.wait
+do
+    lurek.event.push(&quot;wake_up&quot;, &quot;now&quot;)
+    local ok, name, args = lurek.event.wait(0.1)
+    print(ok and (&quot;received: &quot; .. name) or &quot;timed out&quot;)
+    if ok then
+        print(&quot;arg count = &quot; .. #args)
+        print(&quot;first arg = &quot; .. tostring(args[1]))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-quit"><div class="item-row-main"><h3>quit</h3><pre class="inline-signature">lurek.signal.quit()</pre><p>Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:386</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    print(&quot;quit function available = &quot; .. tostring(type(lurek.event.quit) == &quot;function&quot;))
+    print(&quot;quit() requests shutdown, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.restart
+do
+    print(&quot;restart function available = &quot; .. tostring(type(lurek.event.restart) == &quot;function&quot;))
+    print(&quot;restart() requests a runtime restart, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.newSignal
+do
+    local sig = lurek.event.newSignal()
+    print(&quot;signal type = &quot; .. sig:type())
+end
+
+--@api-stub: LSignal:connect
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:connect(&quot;damage&quot;, function(amount)
+        print(&quot;took &quot; .. tostring(amount) .. &quot; damage&quot;)
+    end)
+    print(&quot;connected, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:register
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:register(&quot;heal&quot;, function(amount)
+        print(&quot;healed &quot; .. tostring(amount))
+    end)
+    print(&quot;registered, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:registerWithFilter
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:registerWithFilter(&quot;hit&quot;, function(dmg)
+        print(&quot;critical hit: &quot; .. tostring(dmg))
+    end, function(dmg)
+        return dmg &gt; 50
+    end)
+    print(&quot;registered with filter, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:once
+do</code></pre></details></article><article class="item-row api-row" id="fn-restart"><div class="item-row-main"><h3>restart</h3><pre class="inline-signature">lurek.signal.restart()</pre><p>Requests a full engine restart cycle from the runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:376</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    print(&quot;restart function available = &quot; .. tostring(type(lurek.event.restart) == &quot;function&quot;))
+    print(&quot;restart() requests a runtime restart, so this example does not call it&quot;)
+end
+
+--@api-stub: lurek.event.newSignal
+do
+    local sig = lurek.event.newSignal()
+    print(&quot;signal type = &quot; .. sig:type())
+end
+
+--@api-stub: LSignal:connect
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:connect(&quot;damage&quot;, function(amount)
+        print(&quot;took &quot; .. tostring(amount) .. &quot; damage&quot;)
+    end)
+    print(&quot;connected, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:register
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:register(&quot;heal&quot;, function(amount)
+        print(&quot;healed &quot; .. tostring(amount))
+    end)
+    print(&quot;registered, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:registerWithFilter
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:registerWithFilter(&quot;hit&quot;, function(dmg)
+        print(&quot;critical hit: &quot; .. tostring(dmg))
+    end, function(dmg)
+        return dmg &gt; 50
+    end)
+    print(&quot;registered with filter, handle = &quot; .. handle)
+end
+
+--@api-stub: LSignal:once
+do
+    local sig = lurek.event.newSignal()
+    local handle = sig:once(&quot;init&quot;, function()
+        print(&quot;initialized (fires once)&quot;)
+    end)
+    print(&quot;once handle = &quot; .. handle)
+end</code></pre></details></article><article class="item-row api-row" id="fn-wait"><div class="item-row-main"><h3>wait</h3><pre class="inline-signature">lurek.signal.wait(timeout: number?) -&gt; boolean</pre><p>Waits for the next queued event and returns success, name, and argument table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/event_api.rs:345</span></div><details class="example-block"><summary>Example · Exact example · event.lua</summary><pre><code>do
+    lurek.event.push(&quot;wake_up&quot;, &quot;now&quot;)
+    local ok, name, args = lurek.event.wait(0.1)
+    print(ok and (&quot;received: &quot; .. name) or &quot;timed out&quot;)
+    if ok then
+        print(&quot;arg count = &quot; .. #args)
+        print(&quot;first arg = &quot; .. tostring(args[1]))
+    end
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSignal.html">LSignal</a></h3><p>Lua-side signal object storing subscriptions and Lua callback registry keys.</p></div><div class="item-row-meta"><span>12 methods</span><span>module signal</span></div><div class="card-note">Example: event.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

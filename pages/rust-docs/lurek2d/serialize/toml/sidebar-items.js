@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["encode_toml","from_toml","parse_toml","to_toml"]};

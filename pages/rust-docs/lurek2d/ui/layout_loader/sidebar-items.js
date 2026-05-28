@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["load_layout_def","load_layout_toml","render_to_image"],"struct":["LayoutDef","WidgetDef"]};

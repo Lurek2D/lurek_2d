@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["char_advance","measure_line","measure_text"],"struct":["GlyphMetrics","LineMetrics","TextMetrics"]};

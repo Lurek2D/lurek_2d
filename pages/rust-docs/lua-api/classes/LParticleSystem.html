@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LParticleSystem - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a class="active" href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LParticleSystem</h1>
+  <p>Lua-side handle for a particle system stored in shared runtime state.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/particle.html">lurek.particle</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        emissionRate = 200,
+        maxParticles = 1024,
+    })
+    ps:setPosition(320, 240)
+    ps:setSpeed(100, 300)
+    ps:setDirection(-math.pi / 2)
+    ps:setSpread(math.pi / 8)
+    ps:setGravity(0, 400)
+    ps:start()
+
+    for _ = 1, 10 do
+        ps:update(0.016)
+    end
+
+    print(&quot;count after update = &quot; .. ps:count())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LParticleSystem userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addattractor"><div class="item-row-main"><h3>addAttractor</h3><pre class="inline-signature">LParticleSystem:addAttractor(x: number, y: number, strength: number, radius: number)</pre><p>Adds an attractor to the particle system.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1116</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 512,
+        emissionRate = 100,
+    })
+    ps:setPosition(400, 300)
+    ps:setSpeed(50, 150)
+    ps:setSpread(math.pi * 2)
+    ps:addAttractor(400, 300, 200, 100)
+    ps:addAttractor(200, 200, -50, 60)
+
+    print(&quot;attractors = &quot; .. ps:getAttractorCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addsubemitter"><div class="item-row-main"><h3>addSubEmitter</h3><pre class="inline-signature">LParticleSystem:addSubEmitter(config_tbl: table, burst_count: integer?)</pre><p>Configures a death sub-emitter from a config table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1209</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 256,
+    })
+    ps:addSubEmitter({
+        emissionRate = 20,
+        speedMin = 10,
+        speedMax = 30,
+        lifetimeMin = 0.2,
+        lifetimeMax = 0.5,
+    }, 5)
+
+    print(&quot;sub-systems = &quot; .. ps:subSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addsubsystem"><div class="item-row-main"><h3>addSubSystem</h3><pre class="inline-signature">LParticleSystem:addSubSystem(config_tbl: table) -&gt; integer</pre><p>Adds a particle sub-system from a config table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1281</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 256,
+    })
+    local idx = ps:addSubSystem({
+        emissionRate = 10,
+        speedMin = 5,
+        speedMax = 15,
+        lifetimeMin = 0.3,
+        lifetimeMax = 0.6,
+    })
+
+    print(&quot;sub-system index = &quot; .. idx)
+    print(&quot;sub-system count = &quot; .. ps:subSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearattractors"><div class="item-row-main"><h3>clearAttractors</h3><pre class="inline-signature">LParticleSystem:clearAttractors()</pre><p>Clears all attractors on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1129</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 512,
+        emissionRate = 100,
+    })
+    ps:addAttractor(400, 300, 200, 100)
+    ps:addAttractor(200, 200, -50, 60)
+
+    print(&quot;before clear = &quot; .. ps:getAttractorCount())
+    ps:clearAttractors()
+    print(&quot;after clear = &quot; .. ps:getAttractorCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearbounds"><div class="item-row-main"><h3>clearBounds</h3><pre class="inline-signature">LParticleSystem:clearBounds()</pre><p>Clears collision bounds on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1169</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setBounds(0, 800, 0, 600, 0.5)
+
+    print(&quot;bounds set&quot;)
+    ps:clearBounds()
+    print(&quot;bounds cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearcollideswithphysics"><div class="item-row-main"><h3>clearCollidesWithPhysics</h3><pre class="inline-signature">LParticleSystem:clearCollidesWithPhysics()</pre><p>Disables particle collision against a physics world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1195</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 200,
+    })
+    local world = lurek.physics.newWorld(0, 0)
+
+    ps:setCollidesWithPhysics(world, 4.0, 0.3)
+
+    print(&quot;has collisions = &quot; .. tostring(ps:hasCollidesWithPhysics()))
+    ps:clearCollidesWithPhysics()
+    print(&quot;has collisions = &quot; .. tostring(ps:hasCollidesWithPhysics()))
+end</code></pre></details></article><article class="item-row api-row" id="method-clone"><div class="item-row-main"><h3>clone</h3><pre class="inline-signature">LParticleSystem:clone() -&gt; LParticleSystem</pre><p>Clones this particle system configuration into a new system handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:985</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 256,
+        emissionRate = 75,
+    })
+    ps:setSpeed(80, 160)
+    ps:setGravity(0, 100)
+
+    local copy = ps:clone()
+    print(&quot;clone buffer = &quot; .. copy:getBufferSize())
+    print(&quot;clone rate = &quot; .. copy:getEmissionRate())
+end</code></pre></details></article><article class="item-row api-row" id="method-count"><div class="item-row-main"><h3>count</h3><pre class="inline-signature">LParticleSystem:count() -&gt; integer</pre><p>Returns the current particle count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:190</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 10,
+    })
+    ps:emit(6)
+
+    print(&quot;count = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawexplosiontoimage"><div class="item-row-main"><h3>drawExplosionToImage</h3><pre class="inline-signature">LParticleSystem:drawExplosionToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws particles as an explosion preview image.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1038</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;fire&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawExplosionToImage(128, 128)
+    print(&quot;explosion type = &quot; .. image:type())
+    print(&quot;explosion width = &quot; .. image:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawoverimage"><div class="item-row-main"><h3>drawOverImage</h3><pre class="inline-signature">LParticleSystem:drawOverImage(image: LImageData) -&gt; LImageData</pre><p>Draws particles over an existing image and returns a composited copy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1076</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;sparks&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(128, 128)
+    image:fill(16, 16, 16, 255)
+
+    local over = ps:drawOverImage(image)
+    print(&quot;overlay type = &quot; .. over:type())
+    print(&quot;overlay width = &quot; .. over:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawraintoimage"><div class="item-row-main"><h3>drawRainToImage</h3><pre class="inline-signature">LParticleSystem:drawRainToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws particles as a rain preview image.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1051</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;rain&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawRainToImage(128, 128)
+    print(&quot;rain type = &quot; .. image:type())
+    print(&quot;rain height = &quot; .. image:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawsparktrailtoimage"><div class="item-row-main"><h3>drawSparkTrailToImage</h3><pre class="inline-signature">LParticleSystem:drawSparkTrailToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws particles as a spark-trail preview image.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1064</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;sparks&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawSparkTrailToImage(128, 128)
+    print(&quot;spark type = &quot; .. image:type())
+    print(&quot;spark width = &quot; .. image:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LParticleSystem:drawToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws particles to image data. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1010</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;sparks&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawToImage(128, 128)
+    print(&quot;drawToImage type = &quot; .. image:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-emit"><div class="item-row-main"><h3>emit</h3><pre class="inline-signature">LParticleSystem:emit(count: integer)</pre><p>Emits particles immediately. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:124</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 512,
+    })
+    ps:setPosition(400, 300)
+    ps:setSpeed(50, 150)
+    ps:setSpread(math.pi * 2)
+    ps:emit(100)
+
+    print(&quot;after emit = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-getattractorcount"><div class="item-row-main"><h3>getAttractorCount</h3><pre class="inline-signature">LParticleSystem:getAttractorCount() -&gt; integer</pre><p>Returns attractor count. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1141</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 512,
+        emissionRate = 100,
+    })
+    ps:addAttractor(400, 300, 200, 100)
+    ps:addAttractor(200, 200, -50, 60)
+
+    print(&quot;attractors = &quot; .. ps:getAttractorCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getbuffersize"><div class="item-row-main"><h3>getBufferSize</h3><pre class="inline-signature">LParticleSystem:getBufferSize() -&gt; integer</pre><p>Returns maximum particle buffer size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:828</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setBufferSize(1024)
+
+    print(&quot;buffer = &quot; .. ps:getBufferSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcolors"><div class="item-row-main"><h3>getColors</h3><pre class="inline-signature">LParticleSystem:getColors() -&gt; table</pre><p>Returns particle color keyframes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:739</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
+
+    local colors = ps:getColors()
+    print(&quot;color keyframes = &quot; .. #colors)
+    print(&quot;last alpha = &quot; .. colors[#colors][4])
+end</code></pre></details></article><article class="item-row api-row" id="method-getcount"><div class="item-row-main"><h3>getCount</h3><pre class="inline-signature">LParticleSystem:getCount() -&gt; integer</pre><p>Returns particle count and errors if the handle was released.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:255</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 10,
+    })
+    ps:emit(6)
+
+    print(&quot;getCount = &quot; .. ps:getCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LParticleSystem:getDirection() -&gt; number</pre><p>Returns emission direction. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:410</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setDirection(math.pi / 2)
+
+    print(&quot;dir = &quot; .. ps:getDirection())
+end</code></pre></details></article><article class="item-row api-row" id="method-getemissionarea"><div class="item-row-main"><h3>getEmissionArea</h3><pre class="inline-signature">LParticleSystem:getEmissionArea() -&gt; string</pre><p>Returns emission area distribution and size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:867</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionArea(&quot;uniform&quot;, 100, 50)
+
+    local dist, width, height = ps:getEmissionArea()
+    print(&quot;area = &quot; .. dist .. &quot; &quot; .. width .. &quot;x&quot; .. height)
+end</code></pre></details></article><article class="item-row api-row" id="method-getemissionrate"><div class="item-row-main"><h3>getEmissionRate</h3><pre class="inline-signature">LParticleSystem:getEmissionRate() -&gt; number</pre><p>Returns emission rate. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:318</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(100)
+
+    print(&quot;rate = &quot; .. ps:getEmissionRate())
+end</code></pre></details></article><article class="item-row api-row" id="method-getemitterlifetime"><div class="item-row-main"><h3>getEmitterLifetime</h3><pre class="inline-signature">LParticleSystem:getEmitterLifetime() -&gt; number</pre><p>Returns emitter lifetime. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmitterLifetime(5.0)
+
+    print(&quot;emitter lifetime = &quot; .. ps:getEmitterLifetime())
+end</code></pre></details></article><article class="item-row api-row" id="method-getflipbook"><div class="item-row-main"><h3>getFlipbook</h3><pre class="inline-signature">LParticleSystem:getFlipbook() -&gt; integer</pre><p>Returns flipbook grid and frame rate when configured.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1257</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setFlipbook(4, 4, 12)
+
+    local cols, rows, fps = ps:getFlipbook()
+    print(&quot;flipbook = &quot; .. cols .. &quot;x&quot; .. rows .. &quot; @&quot; .. fps .. &quot;fps&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getgravity"><div class="item-row-main"><h3>getGravity</h3><pre class="inline-signature">LParticleSystem:getGravity() -&gt; number</pre><p>Returns particle gravity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:941</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setGravity(0, 200)
+
+    local gx, gy = ps:getGravity()
+    print(&quot;gravity = &quot; .. gx .. &quot;,&quot; .. gy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getinsertmode"><div class="item-row-main"><h3>getInsertMode</h3><pre class="inline-signature">LParticleSystem:getInsertMode() -&gt; string</pre><p>Returns particle insert mode. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:801</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setInsertMode(&quot;bottom&quot;)
+
+    print(&quot;mode = &quot; .. ps:getInsertMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlinearacceleration"><div class="item-row-main"><h3>getLinearAcceleration</h3><pre class="inline-signature">LParticleSystem:getLinearAcceleration() -&gt; number</pre><p>Returns linear acceleration range.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:462</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setLinearAcceleration(-10, 50, 10, 100)
+
+    local xmin, ymin, xmax, ymax = ps:getLinearAcceleration()
+    print(&quot;accel = &quot; .. xmin .. &quot;,&quot; .. ymin .. &quot;..&quot; .. xmax .. &quot;,&quot; .. ymax)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlineardamping"><div class="item-row-main"><h3>getLinearDamping</h3><pre class="inline-signature">LParticleSystem:getLinearDamping() -&gt; number</pre><p>Returns linear damping range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:554</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setLinearDamping(0.1, 0.5)
+
+    local min_damping, max_damping = ps:getLinearDamping()
+    print(&quot;damping = &quot; .. min_damping .. &quot;..&quot; .. max_damping)
+end</code></pre></details></article><article class="item-row api-row" id="method-getoffset"><div class="item-row-main"><h3>getOffset</h3><pre class="inline-signature">LParticleSystem:getOffset() -&gt; number</pre><p>Returns particle spawn offset. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:772</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setOffset(16, 16)
+
+    local ox, oy = ps:getOffset()
+    print(&quot;offset = &quot; .. ox .. &quot;,&quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getparticlelifetime"><div class="item-row-main"><h3>getParticleLifetime</h3><pre class="inline-signature">LParticleSystem:getParticleLifetime() -&gt; number</pre><p>Returns particle lifetime range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:341</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setParticleLifetime(0.5, 3.0)
+
+    local min_life, max_life = ps:getParticleLifetime()
+    print(&quot;lifetime = &quot; .. min_life .. &quot;..&quot; .. max_life)
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LParticleSystem:getPosition() -&gt; number</pre><p>Returns emitter position. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setPosition(100, 200)
+
+    local x, y = ps:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-getradialacceleration"><div class="item-row-main"><h3>getRadialAcceleration</h3><pre class="inline-signature">LParticleSystem:getRadialAcceleration() -&gt; number</pre><p>Returns radial acceleration range.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRadialAcceleration(-50, 50)
+
+    local min_radial, max_radial = ps:getRadialAcceleration()
+    print(&quot;radial = &quot; .. min_radial .. &quot;..&quot; .. max_radial)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrotation"><div class="item-row-main"><h3>getRotation</h3><pre class="inline-signature">LParticleSystem:getRotation() -&gt; number</pre><p>Returns particle rotation range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:633</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRotation(0, math.pi * 2)
+
+    local min_rotation, max_rotation = ps:getRotation()
+    print(&quot;rotation = &quot; .. min_rotation .. &quot;..&quot; .. max_rotation)
+end</code></pre></details></article><article class="item-row api-row" id="method-getshape"><div class="item-row-main"><h3>getShape</h3><pre class="inline-signature">LParticleSystem:getShape() -&gt; string</pre><p>Returns particle shape. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:917</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setShape(&quot;circle&quot;)
+
+    print(&quot;shape = &quot; .. ps:getShape())
+end</code></pre></details></article><article class="item-row api-row" id="method-getsizevariation"><div class="item-row-main"><h3>getSizeVariation</h3><pre class="inline-signature">LParticleSystem:getSizeVariation() -&gt; number</pre><p>Returns size variation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSizes(4, 2, 1)
+    ps:setSizeVariation(0.3)
+
+    print(&quot;size variation = &quot; .. ps:getSizeVariation())
+end</code></pre></details></article><article class="item-row api-row" id="method-getsizes"><div class="item-row-main"><h3>getSizes</h3><pre class="inline-signature">LParticleSystem:getSizes() -&gt; number[]</pre><p>Returns particle size keyframes. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:585</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSizes(4, 2, 1)
+
+    local sizes = ps:getSizes()
+    print(&quot;size count = &quot; .. #sizes)
+    print(&quot;last size = &quot; .. sizes[#sizes])
+end</code></pre></details></article><article class="item-row api-row" id="method-getspeed"><div class="item-row-main"><h3>getSpeed</h3><pre class="inline-signature">LParticleSystem:getSpeed() -&gt; number</pre><p>Returns particle speed range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:387</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpeed(50, 200)
+
+    local min_speed, max_speed = ps:getSpeed()
+    print(&quot;speed = &quot; .. min_speed .. &quot;..&quot; .. max_speed)
+end</code></pre></details></article><article class="item-row api-row" id="method-getspin"><div class="item-row-main"><h3>getSpin</h3><pre class="inline-signature">LParticleSystem:getSpin() -&gt; number</pre><p>Returns particle spin range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:659</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpin(-3, 3)
+
+    local min_spin, max_spin = ps:getSpin()
+    print(&quot;spin = &quot; .. min_spin .. &quot;..&quot; .. max_spin)
+end</code></pre></details></article><article class="item-row api-row" id="method-getspinvariation"><div class="item-row-main"><h3>getSpinVariation</h3><pre class="inline-signature">LParticleSystem:getSpinVariation() -&gt; number</pre><p>Returns spin variation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:682</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpinVariation(0.5)
+
+    print(&quot;spin variation = &quot; .. ps:getSpinVariation())
+end</code></pre></details></article><article class="item-row api-row" id="method-getspread"><div class="item-row-main"><h3>getSpread</h3><pre class="inline-signature">LParticleSystem:getSpread() -&gt; number</pre><p>Returns emission spread. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:430</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpread(math.pi / 6)
+
+    print(&quot;spread = &quot; .. ps:getSpread())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettangentialacceleration"><div class="item-row-main"><h3>getTangentialAcceleration</h3><pre class="inline-signature">LParticleSystem:getTangentialAcceleration() -&gt; number</pre><p>Returns tangential acceleration range.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:525</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setTangentialAcceleration(-20, 20)
+
+    local min_tangent, max_tangent = ps:getTangentialAcceleration()
+    print(&quot;tangential = &quot; .. min_tangent .. &quot;..&quot; .. max_tangent)
+end</code></pre></details></article><article class="item-row api-row" id="method-hascollideswithphysics"><div class="item-row-main"><h3>hasCollidesWithPhysics</h3><pre class="inline-signature">LParticleSystem:hasCollidesWithPhysics() -&gt; boolean</pre><p>Returns whether particle physics collision is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1202</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 200,
+    })
+    local world = lurek.physics.newWorld(0, 0)
+
+    ps:setCollidesWithPhysics(world, 4.0, 0.3)
+
+    print(&quot;has collisions = &quot; .. tostring(ps:hasCollidesWithPhysics()))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasrelativerotation"><div class="item-row-main"><h3>hasRelativeRotation</h3><pre class="inline-signature">LParticleSystem:hasRelativeRotation() -&gt; boolean</pre><p>Returns whether relative rotation is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRelativeRotation(true)
+
+    print(&quot;relative rotation = &quot; .. tostring(ps:hasRelativeRotation()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LParticleSystem:isActive() -&gt; boolean</pre><p>Returns whether the particle system is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:197</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(80)
+    ps:start()
+
+    print(&quot;active = &quot; .. tostring(ps:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isempty"><div class="item-row-main"><h3>isEmpty</h3><pre class="inline-signature">LParticleSystem:isEmpty() -&gt; boolean</pre><p>Returns whether the particle system has no particles or is missing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:227</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 10,
+    })
+
+    print(&quot;empty = &quot; .. tostring(ps:isEmpty()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isfull"><div class="item-row-main"><h3>isFull</h3><pre class="inline-signature">LParticleSystem:isFull() -&gt; boolean</pre><p>Returns whether the particle system has reached capacity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:237</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 10,
+    })
+    ps:emit(10)
+
+    print(&quot;full = &quot; .. tostring(ps:isFull()))
+end</code></pre></details></article><article class="item-row api-row" id="method-ispaused"><div class="item-row-main"><h3>isPaused</h3><pre class="inline-signature">LParticleSystem:isPaused() -&gt; boolean</pre><p>Returns whether the particle system is paused.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:207</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(50)
+    ps:start()
+    ps:pause()
+
+    print(&quot;paused = &quot; .. tostring(ps:isPaused()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isstopped"><div class="item-row-main"><h3>isStopped</h3><pre class="inline-signature">LParticleSystem:isStopped() -&gt; boolean</pre><p>Returns whether the particle system is stopped or missing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:217</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(80)
+    ps:start()
+    ps:stop()
+
+    print(&quot;stopped = &quot; .. tostring(ps:isStopped()))
+end</code></pre></details></article><article class="item-row api-row" id="method-moveto"><div class="item-row-main"><h3>moveTo</h3><pre class="inline-signature">LParticleSystem:moveTo(x: number, y: number)</pre><p>Moves the particle emitter. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:180</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setPosition(40, 60)
+    ps:moveTo(300, 400)
+
+    local x, y = ps:getPosition()
+    print(&quot;moved = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-paintonto"><div class="item-row-main"><h3>paintOnto</h3><pre class="inline-signature">LParticleSystem:paintOnto(image: LImageData)</pre><p>Paints live particles directly onto an existing image in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1088</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;fire&quot;)
+    ps:setPosition(32, 32)
+    ps:emit(12)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(64, 64)
+
+    ps:paintOnto(image)
+    print(&quot;paint target type = &quot; .. image:type())
+    print(&quot;paint target height = &quot; .. image:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LParticleSystem:pause()</pre><p>Pauses particle emission and updates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:151</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(50)
+    ps:start()
+    ps:pause()
+
+    print(&quot;paused = &quot; .. tostring(ps:isPaused()))
+end</code></pre></details></article><article class="item-row api-row" id="method-release"><div class="item-row-main"><h3>release</h3><pre class="inline-signature">LParticleSystem:release() -&gt; boolean</pre><p>Releases the particle system from shared storage.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:247</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:emit(5)
+
+    local ok = ps:release()
+    print(&quot;released = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LParticleSystem:render(ox: number?, oy: number?)</pre><p>Enqueues particle render commands with an optional offset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:967</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        emissionRate = 200,
+        maxParticles = 1024,
+    })
+    ps:setPosition(320, 240)
+    ps:setSpeed(100, 300)
+    ps:setDirection(-math.pi / 2)
+    ps:setSpread(math.pi / 8)
+    ps:setGravity(0, 400)
+    ps:start()
+
+    for _ = 1, 10 do
+        ps:update(0.016)
+    end
+
+    ps:render()
+    ps:render(10, 5)
+    print(&quot;count before render = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LParticleSystem:reset()</pre><p>Resets particles and emitter state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:169</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(100)
+    ps:start()
+    ps:update(1.0)
+
+    print(&quot;before reset = &quot; .. ps:count())
+    ps:reset()
+    print(&quot;after reset = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">LParticleSystem:resume()</pre><p>Resumes a paused particle system if it was previously paused.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:160</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(50)
+    ps:start()
+    ps:pause()
+    ps:resume()
+
+    print(&quot;paused = &quot; .. tostring(ps:isPaused()))
+    print(&quot;active = &quot; .. tostring(ps:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setbounds"><div class="item-row-main"><h3>setBounds</h3><pre class="inline-signature">LParticleSystem:setBounds(xmin: number, xmax: number, ymin: number, ymax: number, restitution: number)</pre><p>Sets collision bounds for particles.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1156</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setBounds(0, 800, 0, 600, 0.5)
+
+    print(&quot;bounds set&quot;)
+    ps:clearBounds()
+    print(&quot;bounds cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setbuffersize"><div class="item-row-main"><h3>setBufferSize</h3><pre class="inline-signature">LParticleSystem:setBufferSize(n: integer)</pre><p>Sets maximum particle buffer size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:817</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setBufferSize(1024)
+
+    print(&quot;buffer = &quot; .. ps:getBufferSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-setcollideswithphysics"><div class="item-row-main"><h3>setCollidesWithPhysics</h3><pre class="inline-signature">LParticleSystem:setCollidesWithPhysics(world_ud: LWorld, probe_radius: number?, restitution: number?)</pre><p>Enables particle collision against a physics world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1183</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 200,
+    })
+    local world = lurek.physics.newWorld(0, 0)
+
+    ps:setCollidesWithPhysics(world, 4.0, 0.3)
+
+    print(&quot;has collisions = &quot; .. tostring(ps:hasCollidesWithPhysics()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcolors"><div class="item-row-main"><h3>setColors</h3><pre class="inline-signature">LParticleSystem:setColors(...: table)</pre><p>Sets particle color keyframes from one or more RGBA tables.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:713</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setColors({1, 0.5, 0, 1}, {1, 0, 0, 0})
+
+    local colors = ps:getColors()
+    print(&quot;color keyframes = &quot; .. #colors)
+    print(&quot;first alpha = &quot; .. colors[1][4])
+end</code></pre></details></article><article class="item-row api-row" id="method-setcustomemissionshape"><div class="item-row-main"><h3>setCustomEmissionShape</h3><pre class="inline-signature">LParticleSystem:setCustomEmissionShape(cb: function)</pre><p>Sets a Lua callback for custom emission positions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1304</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    local step = 0
+
+    ps:setCustomEmissionShape(function()
+        step = step + 1
+        local angle = step * (math.pi / 4)
+        local radius = 50
+        return 400 + math.cos(angle) * radius, 300 + math.sin(angle) * radius
+    end)
+
+    ps:emit(10)
+    ps:update(0.016)
+    print(&quot;custom shape emitted = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-setdirection"><div class="item-row-main"><h3>setDirection</h3><pre class="inline-signature">LParticleSystem:setDirection(dir: number)</pre><p>Sets emission direction. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:400</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setDirection(math.pi / 2)
+
+    print(&quot;dir = &quot; .. ps:getDirection())
+end</code></pre></details></article><article class="item-row api-row" id="method-setemissionarea"><div class="item-row-main"><h3>setEmissionArea</h3><pre class="inline-signature">LParticleSystem:setEmissionArea(dist: string, w: number, h: number, angle: number?, dir_rel: boolean?)</pre><p>Sets emission area distribution and size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:842</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionArea(&quot;uniform&quot;, 100, 50)
+
+    local dist, width, height = ps:getEmissionArea()
+    print(&quot;area = &quot; .. dist .. &quot; &quot; .. width .. &quot;x&quot; .. height)
+
+    ps:setEmissionArea(&quot;normal&quot;, 80, 80, math.pi / 4, true)
+    local next_dist, next_width, next_height = ps:getEmissionArea()
+    print(&quot;area = &quot; .. next_dist .. &quot; &quot; .. next_width .. &quot;x&quot; .. next_height)
+end</code></pre></details></article><article class="item-row api-row" id="method-setemissionrate"><div class="item-row-main"><h3>setEmissionRate</h3><pre class="inline-signature">LParticleSystem:setEmissionRate(rate: number)</pre><p>Sets emission rate. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:308</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmissionRate(100)
+
+    print(&quot;rate = &quot; .. ps:getEmissionRate())
+end</code></pre></details></article><article class="item-row api-row" id="method-setemitterlifetime"><div class="item-row-main"><h3>setEmitterLifetime</h3><pre class="inline-signature">LParticleSystem:setEmitterLifetime(t: number)</pre><p>Sets emitter lifetime. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:354</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setEmitterLifetime(5.0)
+
+    print(&quot;emitter lifetime = &quot; .. ps:getEmitterLifetime())
+end</code></pre></details></article><article class="item-row api-row" id="method-setflipbook"><div class="item-row-main"><h3>setFlipbook</h3><pre class="inline-signature">LParticleSystem:setFlipbook(cols: integer, rows: integer, fps: number)</pre><p>Sets flipbook grid and frame rate. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1227</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setFlipbook(4, 4, 12)
+
+    local cols, rows, fps = ps:getFlipbook()
+    print(&quot;flipbook = &quot; .. cols .. &quot;x&quot; .. rows .. &quot; @&quot; .. fps .. &quot;fps&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravity"><div class="item-row-main"><h3>setGravity</h3><pre class="inline-signature">LParticleSystem:setGravity(gx: number, gy: number)</pre><p>Sets particle gravity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:955</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setGravity(0, 200)
+
+    local gx, gy = ps:getGravity()
+    print(&quot;gravity = &quot; .. gx .. &quot;,&quot; .. gy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setinsertmode"><div class="item-row-main"><h3>setInsertMode</h3><pre class="inline-signature">LParticleSystem:setInsertMode(mode: string)</pre><p>Sets particle insert mode. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:785</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setInsertMode(&quot;top&quot;)
+
+    print(&quot;mode = &quot; .. ps:getInsertMode())
+    ps:setInsertMode(&quot;random&quot;)
+    print(&quot;mode = &quot; .. ps:getInsertMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlinearacceleration"><div class="item-row-main"><h3>setLinearAcceleration</h3><pre class="inline-signature">LParticleSystem:setLinearAcceleration(xmin: number, ymin: number, xmax: number, ymax: number)</pre><p>Sets linear acceleration range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:443</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setLinearAcceleration(-10, 50, 10, 100)
+
+    local xmin, ymin, xmax, ymax = ps:getLinearAcceleration()
+    print(&quot;accel = &quot; .. xmin .. &quot;,&quot; .. ymin .. &quot;..&quot; .. xmax .. &quot;,&quot; .. ymax)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlineardamping"><div class="item-row-main"><h3>setLinearDamping</h3><pre class="inline-signature">LParticleSystem:setLinearDamping(min: number, max: number)</pre><p>Sets linear damping range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:542</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setLinearDamping(0.1, 0.5)
+
+    local min_damping, max_damping = ps:getLinearDamping()
+    print(&quot;damping = &quot; .. min_damping .. &quot;..&quot; .. max_damping)
+end</code></pre></details></article><article class="item-row api-row" id="method-setoffset"><div class="item-row-main"><h3>setOffset</h3><pre class="inline-signature">LParticleSystem:setOffset(ox: number, oy: number)</pre><p>Sets particle spawn offset. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:760</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setOffset(16, 16)
+
+    local ox, oy = ps:getOffset()
+    print(&quot;offset = &quot; .. ox .. &quot;,&quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setondeathbatch"><div class="item-row-main"><h3>setOnDeathBatch</h3><pre class="inline-signature">LParticleSystem:setOnDeathBatch(cb: function)</pre><p>Sets a Lua callback invoked with batched particle death records.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1317</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 64,
+        emissionRate = 0,
+        lifetimeMin = 0.1,
+        lifetimeMax = 0.2,
+    })
+    local death_count = 0
+
+    ps:setOnDeathBatch(function(batch)
+        death_count = death_count + #batch
+    end)
+
+    ps:emit(8)
+    ps:update(0.5)
+    print(&quot;deaths = &quot; .. death_count)
+end</code></pre></details></article><article class="item-row api-row" id="method-setparticlelifetime"><div class="item-row-main"><h3>setParticleLifetime</h3><pre class="inline-signature">LParticleSystem:setParticleLifetime(min: number, max: number)</pre><p>Sets particle lifetime range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:329</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setParticleLifetime(0.5, 3.0)
+
+    local min_life, max_life = ps:getParticleLifetime()
+    print(&quot;lifetime = &quot; .. min_life .. &quot;..&quot; .. max_life)
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LParticleSystem:setPosition(x: number, y: number)</pre><p>Sets emitter position. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:285</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setPosition(100, 200)
+
+    local x, y = ps:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-setradialacceleration"><div class="item-row-main"><h3>setRadialAcceleration</h3><pre class="inline-signature">LParticleSystem:setRadialAcceleration(min: number, max: number)</pre><p>Sets radial acceleration range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:481</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRadialAcceleration(-50, 50)
+
+    local min_radial, max_radial = ps:getRadialAcceleration()
+    print(&quot;radial = &quot; .. min_radial .. &quot;..&quot; .. max_radial)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrelativerotation"><div class="item-row-main"><h3>setRelativeRotation</h3><pre class="inline-signature">LParticleSystem:setRelativeRotation(v: boolean)</pre><p>Sets whether particle rotation is relative to movement.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:692</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRelativeRotation(true)
+
+    print(&quot;relative rotation = &quot; .. tostring(ps:hasRelativeRotation()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setrotation"><div class="item-row-main"><h3>setRotation</h3><pre class="inline-signature">LParticleSystem:setRotation(min: number, max: number)</pre><p>Sets particle rotation range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:621</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setRotation(0, math.pi * 2)
+
+    local min_rotation, max_rotation = ps:getRotation()
+    print(&quot;rotation = &quot; .. min_rotation .. &quot;..&quot; .. max_rotation)
+end</code></pre></details></article><article class="item-row api-row" id="method-setshape"><div class="item-row-main"><h3>setShape</h3><pre class="inline-signature">LParticleSystem:setShape(shape: string)</pre><p>Sets particle shape. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:889</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setShape(&quot;circle&quot;)
+
+    print(&quot;shape = &quot; .. ps:getShape())
+end</code></pre></details></article><article class="item-row api-row" id="method-setsizevariation"><div class="item-row-main"><h3>setSizeVariation</h3><pre class="inline-signature">LParticleSystem:setSizeVariation(v: number)</pre><p>Sets size variation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:600</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSizes(4, 2, 1)
+    ps:setSizeVariation(0.3)
+
+    print(&quot;size variation = &quot; .. ps:getSizeVariation())
+end</code></pre></details></article><article class="item-row api-row" id="method-setsizes"><div class="item-row-main"><h3>setSizes</h3><pre class="inline-signature">LParticleSystem:setSizes(...: number)</pre><p>Sets the particle size keyframes used during a particle&#x27;s lifetime. Pass two or more values to interpolate between them.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:567</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSizes(4, 2, 1)
+
+    local sizes = ps:getSizes()
+    print(&quot;size count = &quot; .. #sizes)
+    print(&quot;first size = &quot; .. sizes[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-setspeed"><div class="item-row-main"><h3>setSpeed</h3><pre class="inline-signature">LParticleSystem:setSpeed(min: number, max: number)</pre><p>Sets particle speed range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:375</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpeed(50, 200)
+
+    local min_speed, max_speed = ps:getSpeed()
+    print(&quot;speed = &quot; .. min_speed .. &quot;..&quot; .. max_speed)
+end</code></pre></details></article><article class="item-row api-row" id="method-setspin"><div class="item-row-main"><h3>setSpin</h3><pre class="inline-signature">LParticleSystem:setSpin(min: number, max: number)</pre><p>Sets particle spin range. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:647</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpin(-3, 3)
+
+    local min_spin, max_spin = ps:getSpin()
+    print(&quot;spin = &quot; .. min_spin .. &quot;..&quot; .. max_spin)
+end</code></pre></details></article><article class="item-row api-row" id="method-setspinvariation"><div class="item-row-main"><h3>setSpinVariation</h3><pre class="inline-signature">LParticleSystem:setSpinVariation(v: number)</pre><p>Sets spin variation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:672</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpinVariation(0.5)
+
+    print(&quot;spin variation = &quot; .. ps:getSpinVariation())
+end</code></pre></details></article><article class="item-row api-row" id="method-setspread"><div class="item-row-main"><h3>setSpread</h3><pre class="inline-signature">LParticleSystem:setSpread(spread: number)</pre><p>Sets emission spread. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:420</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setSpread(math.pi / 6)
+
+    print(&quot;spread = &quot; .. ps:getSpread())
+end</code></pre></details></article><article class="item-row api-row" id="method-settangentialacceleration"><div class="item-row-main"><h3>setTangentialAcceleration</h3><pre class="inline-signature">LParticleSystem:setTangentialAcceleration(min: number, max: number)</pre><p>Sets tangential acceleration range for emitted particles.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:510</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+    ps:setTangentialAcceleration(-20, 20)
+
+    local min_tangent, max_tangent = ps:getTangentialAcceleration()
+    print(&quot;tangential = &quot; .. min_tangent .. &quot;..&quot; .. max_tangent)
+end</code></pre></details></article><article class="item-row api-row" id="method-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">LParticleSystem:start()</pre><p>Starts particle emission on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        emissionRate = 100,
+        lifetimeMin = 1.0,
+        lifetimeMax = 2.0,
+    })
+    ps:start()
+
+    print(&quot;active = &quot; .. tostring(ps:isActive()))
+    print(&quot;stopped = &quot; .. tostring(ps:isStopped()))
+end</code></pre></details></article><article class="item-row api-row" id="method-stop"><div class="item-row-main"><h3>stop</h3><pre class="inline-signature">LParticleSystem:stop()</pre><p>Stops particle emission on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:142</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        emissionRate = 100,
+        lifetimeMin = 1.0,
+        lifetimeMax = 2.0,
+    })
+    ps:start()
+
+    ps:stop()
+    print(&quot;active = &quot; .. tostring(ps:isActive()))
+    print(&quot;stopped = &quot; .. tostring(ps:isStopped()))
+end</code></pre></details></article><article class="item-row api-row" id="method-subsystemcount"><div class="item-row-main"><h3>subSystemCount</h3><pre class="inline-signature">LParticleSystem:subSystemCount() -&gt; integer</pre><p>Returns particle sub-system count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1294</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        maxParticles = 256,
+    })
+    ps:addSubSystem({
+        emissionRate = 10,
+        speedMin = 5,
+        speedMax = 15,
+        lifetimeMin = 0.3,
+        lifetimeMax = 0.6,
+    })
+
+    print(&quot;sub-system count = &quot; .. ps:subSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-toimage"><div class="item-row-main"><h3>toImage</h3><pre class="inline-signature">LParticleSystem:toImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws particles to image data. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1024</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;sparks&quot;)
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:toImage(128, 128)
+    print(&quot;toImage type = &quot; .. image:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LParticleSystem:type() -&gt; string</pre><p>Returns the Lua-visible type name for this particle system handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+
+    print(&quot;type = &quot; .. ps:type())
+    print(&quot;is particle = &quot; .. tostring(ps:typeOf(&quot;LParticleSystem&quot;)))
+    print(&quot;is drawable = &quot; .. tostring(ps:typeOf(&quot;LDrawable&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LParticleSystem:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this particle system handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:276</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem()
+
+    print(&quot;particle = &quot; .. tostring(ps:typeOf(&quot;LParticleSystem&quot;)))
+    print(&quot;drawable = &quot; .. tostring(ps:typeOf(&quot;LDrawable&quot;)))
+    print(&quot;object = &quot; .. tostring(ps:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LParticleSystem:update(dt: number)</pre><p>Updates the particle system, applies optional physics collision, and invokes pending callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:44</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newSystem({
+        emissionRate = 200,
+        maxParticles = 1024,
+    })
+    ps:setPosition(320, 240)
+    ps:setSpeed(100, 300)
+    ps:setDirection(-math.pi / 2)
+    ps:setSpread(math.pi / 8)
+    ps:setGravity(0, 400)
+    ps:start()
+
+    for _ = 1, 10 do
+        ps:update(0.016)
+    end
+
+    print(&quot;count after update = &quot; .. ps:count())
+end</code></pre></details></article><article class="item-row api-row" id="method-warmup"><div class="item-row-main"><h3>warmUp</h3><pre class="inline-signature">LParticleSystem:warmUp(seconds: number)</pre><p>Advances the system by a warm-up duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1101</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local ps = lurek.particle.newPreset(&quot;rain&quot;)
+    ps:start()
+    ps:warmUp(2.0)
+
+    print(&quot;warmed count = &quot; .. ps:count())
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

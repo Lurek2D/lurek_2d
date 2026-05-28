@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.serialize - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a class="active" href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.serialize</h1>
+  <p>`lurek.serialize` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange. - Registers `lurek.serialize.*` functions and types via `register()`. - Bridges 15 Lua-callable methods via `mlua`. - See `docs/specs/serialize.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>15 functions</span><span>0 classes</span><span>src/lua_api/serialize_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 15</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.serialize.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-applydefaults"><div class="item-row-main"><h3>applyDefaults</h3><pre class="inline-signature">lurek.serialize.applyDefaults(value: any, schema: table) -&gt; table</pre><p>Merges a schema&#x27;s default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:322</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local schema = { fields = { width = { default = 800 }, height = { default = 600 }, title = { default = &quot;Untitled&quot; } } }
+    local filled = lurek.serial.applyDefaults({ width = 1280 }, schema)
+    print(&quot;width = &quot; .. filled.width)
+    print(&quot;height = &quot; .. filled.height)
+    print(&quot;title = &quot; .. filled.title)
+end</code></pre></details></article><article class="item-row api-row" id="fn-decode"><div class="item-row-main"><h3>decode</h3><pre class="inline-signature">lurek.serialize.decode(payload: string, format: string?, opts: table?) -&gt; table</pre><p>Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:227</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local jsonPayload = &#x27;{&quot;auto&quot;: true, &quot;score&quot;: 99}&#x27;
+    local result = lurek.serial.decode(jsonPayload)
+    print(&quot;auto-detected json: auto = &quot; .. tostring(result.auto))
+    print(&quot;score = &quot; .. result.score)
+end</code></pre></details></article><article class="item-row api-row" id="fn-decodemsgpack"><div class="item-row-main"><h3>decodeMsgPack</h3><pre class="inline-signature">lurek.serialize.decodeMsgPack(bytes: string) -&gt; table</pre><p>Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:171</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local bytes = lurek.serial.encodeMsgPack({ x = 1, y = 2 })
+    local decoded = lurek.serial.decodeMsgPack(bytes)
+    print(&quot;x = &quot; .. tostring(decoded.x))
+    print(&quot;y = &quot; .. tostring(decoded.y))
+end</code></pre></details></article><article class="item-row api-row" id="fn-decodexml"><div class="item-row-main"><h3>decodeXml</h3><pre class="inline-signature">lurek.serialize.decodeXml(text: string) -&gt; table</pre><p>Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:184</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local doc = lurek.serial.decodeXml(&#x27;&lt;tilemap&gt;&lt;layer name=&quot;ground&quot; visible=&quot;true&quot;/&gt;&lt;/tilemap&gt;&#x27;)
+    print(&quot;root tag = &quot; .. (doc.tag or doc.name or &quot;unknown&quot;))
+    print(&quot;decoded xml type = &quot; .. type(doc))
+end</code></pre></details></article><article class="item-row api-row" id="fn-detectformat"><div class="item-row-main"><h3>detectFormat</h3><pre class="inline-signature">lurek.serialize.detectFormat(text: string) -&gt; string</pre><p>Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:214</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local format = lurek.serial.detectFormat(&#x27;{&quot;key&quot;: &quot;value&quot;}&#x27;)
+    print(&quot;json detected = &quot; .. tostring(format))
+end</code></pre></details></article><article class="item-row api-row" id="fn-encode"><div class="item-row-main"><h3>encode</h3><pre class="inline-signature">lurek.serialize.encode(value: any, format: string, opts: table?) -&gt; string</pre><p>Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local jsonOut = lurek.serial.encode({ greeting = &quot;hello&quot;, count = 42 }, &quot;json&quot;, { pretty = true })
+    print(&quot;json encode = &quot; .. jsonOut)
+    print(&quot;count = &quot; .. lurek.serial.decode(jsonOut, &quot;json&quot;).count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-encodemsgpack"><div class="item-row-main"><h3>encodeMsgPack</h3><pre class="inline-signature">lurek.serialize.encodeMsgPack(value: table) -&gt; string</pre><p>Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:153</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local packed = lurek.serial.encodeMsgPack({ version = 2, entities = { { id = 1, hp = 100 } } })
+    local unpacked = lurek.serial.decodeMsgPack(packed)
+    print(&quot;version = &quot; .. unpacked.version)
+    print(&quot;entities = &quot; .. #unpacked.entities)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromcsv"><div class="item-row-main"><h3>fromCsv</h3><pre class="inline-signature">lurek.serialize.fromCsv(text: string, delimiter: string?, hasHeaders: boolean?) -&gt; table</pre><p>Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:115</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local csvWithHeaders = &quot;name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk&quot;
+    local rows = lurek.serial.fromCsv(csvWithHeaders, &quot;,&quot;, true)
+    print(&quot;rows with headers = &quot; .. #rows)
+    print(&quot;first row name = &quot; .. rows[1].name)
+    print(&quot;second row city = &quot; .. rows[2].city)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromini"><div class="item-row-main"><h3>fromIni</h3><pre class="inline-signature">lurek.serialize.fromIni(text: string) -&gt; table</pre><p>Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:89</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local iniStr = &#x27;[player]\nname = Hero\nclass = warrior\n[controls]\njump = space&#x27;
+    local ini = lurek.serial.fromIni(iniStr)
+    print(&quot;player name = &quot; .. ini.player.name)
+    print(&quot;jump key = &quot; .. ini.controls.jump)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromjson"><div class="item-row-main"><h3>fromJson</h3><pre class="inline-signature">lurek.serialize.fromJson(text: string) -&gt; table</pre><p>Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:52</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local jsonStr = &#x27;{&quot;name&quot;:&quot;warrior&quot;,&quot;level&quot;:12,&quot;alive&quot;:true,&quot;items&quot;:[&quot;sword&quot;,&quot;shield&quot;]}&#x27;
+    local data = lurek.serial.fromJson(jsonStr)
+    print(&quot;name = &quot; .. data.name)
+    print(&quot;items count = &quot; .. #data.items)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromtoml"><div class="item-row-main"><h3>fromToml</h3><pre class="inline-signature">lurek.serialize.fromToml(text: string) -&gt; table</pre><p>Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:77</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local tomlStr = &#x27;[game]\ntitle = &quot;Dungeon Quest&quot;\n[window]\nwidth = 1920\nheight = 1080&#x27;
+    local config = lurek.serial.fromToml(tomlStr)
+    print(&quot;title = &quot; .. config.game.title)
+    print(&quot;window = &quot; .. config.window.width .. &quot;x&quot; .. config.window.height)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tocsv"><div class="item-row-main"><h3>toCsv</h3><pre class="inline-signature">lurek.serialize.toCsv(value: table, delimiter: string?, hasHeaders: boolean?) -&gt; string</pre><p>Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:135</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local csv = lurek.serial.toCsv({ { name = &quot;Alice&quot;, score = 100 }, { name = &quot;Bob&quot;, score = 90 } }, &quot;,&quot;, true)
+    print(&quot;csv length = &quot; .. #csv)
+    print(&quot;contains header = &quot; .. tostring(csv:find(&quot;name&quot;) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-tojson"><div class="item-row-main"><h3>toJson</h3><pre class="inline-signature">lurek.serialize.toJson(value: any, pretty: boolean?) -&gt; string</pre><p>Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:65</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local json = lurek.serial.toJson({ player = { name = &quot;Alice&quot;, level = 2 } }, true)
+    print(&quot;encoded length = &quot; .. #json)
+    print(&quot;has player = &quot; .. tostring(json:find(&#x27;&quot;player&quot;&#x27;) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-totoml"><div class="item-row-main"><h3>toToml</h3><pre class="inline-signature">lurek.serialize.toToml(value: table) -&gt; string</pre><p>Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:101</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local toml = lurek.serial.toToml({ version = &quot;1.0&quot;, debug = false })
+    print(&quot;toml length = &quot; .. #toml)
+    print(&quot;contains version = &quot; .. tostring(toml:find(&quot;version&quot;) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-validate"><div class="item-row-main"><h3>validate</h3><pre class="inline-signature">lurek.serialize.validate(value: any, schema: table) -&gt; boolean</pre><p>Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:198</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
+    local schema = { type = &quot;object&quot;, required = { &quot;name&quot;, &quot;level&quot; } }
+    local ok, err = lurek.serial.validate({ name = &quot;Knight&quot;, level = 50 }, schema)
+    print(&quot;valid data ok = &quot; .. tostring(ok))
+    print(&quot;valid err = &quot; .. tostring(err))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

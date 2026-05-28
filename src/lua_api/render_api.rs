@@ -23,6 +23,7 @@ use crate::runtime::resource_keys::*;
 use crate::runtime::ScreenshotRequest;
 use crate::sprite::sprite_batch::BatchEntry;
 use crate::sprite::SpriteBatch;
+use super::scene_api::LuaDepthSorter;
 use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
@@ -4947,6 +4948,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     /// Performs the 'render' operation.
+    // -- newDepthSorter --
+    /// Creates a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
+    /// @return | LDepthSorter | A fresh depth sorter with no queued entries.
+    graphics.set(
+        "newDepthSorter",
+        lua.create_function(|_, ()| Ok(LuaDepthSorter::new()))?,
+    )?;
     lurek.set("render", graphics)?;
     Ok(())
 }

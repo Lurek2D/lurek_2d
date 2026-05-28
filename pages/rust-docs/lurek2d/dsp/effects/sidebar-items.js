@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EffectType"],"fn":["add_effect_to_shared_chain","remove_effect_from_shared_chain","set_shared_chain_effect_param"],"struct":["ActiveEffect","AtomicParam","DynamicEffectSource","EffectParams","SharedEffectGraph"]};

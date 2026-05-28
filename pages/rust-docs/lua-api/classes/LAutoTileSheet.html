@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAutoTileSheet - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a class="active" href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LAutoTileSheet</h1>
+  <p>Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/tilemap.html">lurek.tilemap</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    local layout = sheet:getLayout()
+    print(&quot;layout:&quot;, layout)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LAutoTileSheet userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-applytotileset"><div class="item-row-main"><h3>applyToTileSet</h3><pre class="inline-signature">LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, startGid: integer?)</pre><p>Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:963</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+
+    sheet:applyToTileSet(ts, &quot;terrain&quot;)
+    local id = ts:getAutoTileId(&quot;terrain&quot;, 5)
+    print(&quot;after apply, bitmask 5 -&gt; tile &quot; .. tostring(id))
+
+    sheet:applyToTileSet(ts, &quot;water&quot;, 17)
+    id = ts:getAutoTileId(&quot;water&quot;, 0)
+    print(&quot;water bitmask 0 -&gt; tile &quot; .. tostring(id))
+end</code></pre></details></article><article class="item-row api-row" id="method-getbitmaskfortile"><div class="item-row-main"><h3>getBitmaskForTile</h3><pre class="inline-signature">LAutoTileSheet:getBitmaskForTile(tileId: integer) -&gt; integer</pre><p>Returns the bitmask associated with a tile in this auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:979</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LAutoTileSheet
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+    local bitmask = sheet:getBitmaskForTile(3)
+    print(&quot;tile 3 has bitmask = &quot; .. bitmask)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayout"><div class="item-row-main"><h3>getLayout</h3><pre class="inline-signature">LAutoTileSheet:getLayout() -&gt; string</pre><p>Returns the auto-tile layout type as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:932</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    local layout = sheet:getLayout()
+    print(&quot;layout:&quot;, layout)
+end</code></pre></details></article><article class="item-row api-row" id="method-getquad"><div class="item-row-main"><h3>getQuad</h3><pre class="inline-signature">LAutoTileSheet:getQuad(tileId: integer) -&gt; integer</pre><p>Returns the source rectangle for a tile in the auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1005</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LAutoTileSheet
+    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;composite48&quot;)
+    print(&quot;composite48 count = &quot; .. sheet:getTileCount())
+    local x, y, w, h = sheet:getQuad(1)
+    print(&quot;quad 1: x=&quot; .. x .. &quot; y=&quot; .. y .. &quot; w=&quot; .. w .. &quot; h=&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettilecount"><div class="item-row-main"><h3>getTileCount</h3><pre class="inline-signature">LAutoTileSheet:getTileCount() -&gt; integer</pre><p>Returns the total number of tiles in this auto-tile sheet.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:943</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    local count = sheet:getTileCount()
+    print(&quot;tileCount:&quot;, count)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettileforbitmask"><div class="item-row-main"><h3>getTileForBitmask</h3><pre class="inline-signature">LAutoTileSheet:getTileForBitmask(bitmask: integer) -&gt; integer</pre><p>Looks up which tile corresponds to a given bitmask value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:991</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LAutoTileSheet
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+    local tile = sheet:getTileForBitmask(7)
+    print(&quot;bitmask 7 -&gt; tile &quot; .. tile)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettileheight"><div class="item-row-main"><h3>getTileHeight</h3><pre class="inline-signature">LAutoTileSheet:getTileHeight() -&gt; integer</pre><p>Returns the height of each tile in the auto-tile sheet, in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:955</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    local h = sheet:getTileHeight()
+    print(&quot;tileHeight:&quot;, h)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettilewidth"><div class="item-row-main"><h3>getTileWidth</h3><pre class="inline-signature">LAutoTileSheet:getTileWidth() -&gt; integer</pre><p>Returns the width of each tile in the auto-tile sheet, in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:949</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
+    local w = sheet:getTileWidth()
+    print(&quot;tileWidth:&quot;, w)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAutoTileSheet:type() -&gt; string</pre><p>Returns the type name of this userdata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1017</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
+    local t = sheet:type()
+    print(&quot;type:&quot;, t)
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAutoTileSheet:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:1022</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sheet = lurek.tilemap.newAutoTileSheet(32, 32, &quot;minimal16&quot;)
+    local ok = sheet:typeOf(&quot;LAutoTileSheet&quot;)
+    print(&quot;typeOf:&quot;, ok)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

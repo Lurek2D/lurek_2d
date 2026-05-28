@@ -11646,6 +11646,10 @@ function LBandit:armCount() end
 ---@return number Zero-based best arm index.
 function LBandit:bestArm() end
 
+--- Alias for `select`. Selects an arm using the configured bandit strategy.
+---@return number Zero-based selected arm index.
+function LBandit:predict() end
+
 --- Resets all bandit arm statistics. This method is available to Lua scripts.
 function LBandit:reset() end
 
@@ -11709,6 +11713,24 @@ function LGeneticAlgorithm:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LGeneticAlgorithm:typeOf(name) end
 
+--- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
+---@class LModel
+LModel = {}
+
+--- Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
+---@param input any State index (integer) for QLearner/Bandit, or number array table for NeuralNet.
+---@return any Action index (integer) for QLearner/Bandit, or number array for NeuralNet.
+function LModel:predict(input) end
+
+--- Returns the type name `"LModel"`.
+---@return string The string `LModel`.
+function LModel:type() end
+
+--- Returns whether this model wrapper matches a supported type name.
+---@param name string Type name to compare against `LModel` and `Object`.
+---@return boolean True when the supplied type name matches this wrapper.
+function LModel:typeOf(name) end
+
 --- Lua handle for a feed-forward neural network.
 ---@class LNeuralNet
 LNeuralNet = {}
@@ -11735,6 +11757,11 @@ function LNeuralNet:layerCount() end
 --- Returns the total number of trainable parameters.
 ---@return number Parameter count.
 function LNeuralNet:paramCount() end
+
+--- Alias for `forward`. Runs a forward pass and returns output values.
+---@param input table Array of numeric input values.
+---@return number[] Numeric output values.
+function LNeuralNet:predict(input) end
 
 --- Replaces the network weights from a flat numeric array.
 ---@param weights table Flat array of numeric weights in engine layer order.
@@ -11854,6 +11881,11 @@ function LQLearner:getStateCount() end
 ---@param next_state number One-based next state index.
 function LQLearner:learn(state, action, reward, next_state) end
 
+--- Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
+---@param state number One-based state index.
+---@return number One-based chosen action index.
+function LQLearner:predict(state) end
+
 --- Serializes the Q-learner state to a JSON string.
 ---@return string JSON representation of this learner.
 function LQLearner:serialize() end
@@ -11920,6 +11952,11 @@ lurek.learning.newNeuroevolution = function(layer_spec, pop_size, seed) end
 ---@param ac number Number of discrete actions.
 ---@return LQLearner New Q-learner handle.
 lurek.learning.newQLearner = function(sc, ac) end
+
+--- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
+---@param model any An LQLearner, LNeuralNet, or LBandit instance.
+---@return LModel A uniform model wrapper exposing predict().
+lurek.learning.wrap = function(model) end
 
 ---@class lurek.light
 lurek.light = {}
@@ -15154,6 +15191,13 @@ LNetworkRuntime = {}
 ---@return number Request id.
 function LNetworkRuntime:httpGet(url, headers) end
 
+--- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
+---@param url string Request URL.
+---@param body string JSON string to send as the request body.
+---@param headers? table Optional additional headers table.
+---@return number Request id.
+function LNetworkRuntime:httpJson(url, body, headers) end
+
 --- Starts an HTTP POST request. This method is available to Lua scripts.
 ---@param url string Request URL.
 ---@param body string Request body.
@@ -15165,6 +15209,13 @@ function LNetworkRuntime:httpPost(url, body, headers) end
 ---@param opts table Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
 ---@return number Request id.
 function LNetworkRuntime:httpRequest(opts) end
+
+--- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
+---@param url string Request URL.
+---@param headers? table Optional headers table.
+---@param timeout_secs? number Optional timeout override in seconds.
+---@return number Request id.
+function LNetworkRuntime:httpStream(url, headers, timeout_secs) end
 
 ---@class LNetworkRuntimePollResult
 ---@field type string Response type (http, tcp, ws).
@@ -18773,7 +18824,7 @@ function LBody:setMass(mass) end
 function LBody:setPosition(x, y) end
 
 --- Sets the body's restitution (bounciness) value.
----@param restitution number New restitution (0â€“1).
+---@param restitution number New restitution (0Ă˘â‚¬â€ś1).
 function LBody:setRestitution(restitution) end
 
 --- Controls whether the body can enter sleep state. Disable for bodies that must stay active.
@@ -18803,88 +18854,6 @@ function LBody:typeOf(name) end
 
 --- Wakes the body from sleep, making it active in the simulation again.
 function LBody:wakeUp() end
-
---- A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
----@class LCellular
-LCellular = {}
-
---- Counts how many cells of a given material type exist in the grid.
----@param cellType number Material type constant to count.
----@return number Cell count.
-function LCellular:countCells(cellType) end
-
---- Fills a circular region of cells with a material type.
----@param cx number Center cell column.
----@param cy number Center cell row.
----@param r number Radius in cells.
----@param cellType number Material type constant.
-function LCellular:fillCircle(cx, cy, r, cellType) end
-
---- Fills a rectangular region of cells with a material type.
----@param cx0 number Top-left cell column.
----@param cy0 number Top-left cell row.
----@param cw number Width in cells.
----@param ch number Height in cells.
----@param cellType number Material type constant.
-function LCellular:fillRect(cx0, cy0, cw, ch, cellType) end
-
----@class LCellularFindCellsResult
----@field x number X.
----@field y number Y.
-
---- Returns positions of all cells matching a material type.
----@param cellType number Material type constant to find.
----@return LCellularFindCellsResult Array of {x, y} tables with cell coordinates.
-function LCellular:findCells(cellType) end
-
---- Returns the material type of a cell at the given grid position.
----@param cx number Cell column.
----@param cy number Cell row.
----@return number Material type constant.
-function LCellular:getCell(cx, cy) end
-
---- Restores cellular grid state from binary data previously produced by toBytes.
----@param data string Binary cellular data.
----@return boolean True if loading succeeded, false if data was invalid.
-function LCellular:loadFromBytes(data) end
-
---- Sets a single cell in the cellular grid to a specific material type.
----@param cx number Cell column (0-based).
----@param cy number Cell row (0-based).
----@param cellType number Material type constant (CELL_AIR, CELL_SAND, etc.).
-function LCellular:setCell(cx, cy, cellType) end
-
---- Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-function LCellular:step() end
-
---- Advances the cellular simulation by N ticks in a single call.
----@param n number Number of simulation ticks to run.
-function LCellular:stepN(n) end
-
---- Serializes the cellular grid to a compact binary format for saving.
----@return string Binary cellular data.
-function LCellular:toBytes() end
-
---- Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
----@return string Raw RGBA pixel bytes (width * height * 4).
-function LCellular:toImageData() end
-
---- Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
----@param cx0 number Top-left cell column.
----@param cy0 number Top-left cell row.
----@param cw number Width in cells.
----@param ch number Height in cells.
----@return string Raw RGBA pixel bytes (cw * ch * 4).
-function LCellular:toImageDataRegion(cx0, cy0, cw, ch) end
-
---- Returns the type name of this object ("LCellular").
----@return string "LCellular".
-function LCellular:type() end
-
---- Checks if this object is of a given type name.
----@param name string Type name to check.
----@return boolean True if the object matches.
-function LCellular:typeOf(name) end
 
 --- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 ---@class LPhysicsShape
@@ -19069,7 +19038,7 @@ function LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) end
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
----@param factor number Correction factor (0â€“1), higher = faster convergence.
+---@param factor number Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence.
 ---@return number The joint ID.
 function LWorld:addMotorJoint(bodyA, bodyB, factor) end
 
@@ -19464,7 +19433,7 @@ function LWorld:setEndContact(callback) end
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
 ---@param fixtureIndex number Zero-based fixture index on the body.
----@param friction number New friction value (0â€“1 typical range).
+---@param friction number New friction value (0Ă˘â‚¬â€ś1 typical range).
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
 
 --- Updates the restitution (bounciness) of a specific fixture on a body.
@@ -19516,7 +19485,7 @@ function LWorld:setMeter(ppm) end
 function LWorld:setMouseJointTarget(jointId, x, y) end
 
 --- Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
----@param n number Number of iterations (default is typically 4â€“8).
+---@param n number Number of iterations (default is typically 4Ă˘â‚¬â€ś8).
 function LWorld:setSolverIterations(n) end
 
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
@@ -19672,12 +19641,6 @@ lurek.physics.isSleepingAllowed = function(world, body) end
 ---@param bodyType string Body type: "static", "dynamic", "kinematic", or "sensor".
 ---@return LBody The newly created body.
 lurek.physics.newBody = function(world, x, y, bodyType) end
-
---- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
----@param width number Grid width in cells.
----@param height number Grid height in cells.
----@return LCellular The cellular simulation object.
-lurek.physics.newCellular = function(width, height) end
 
 --- Creates a chain (polyline) collision shape. Useful for terrain outlines.
 ---@param closed boolean If true, connects last vertex to first.
@@ -20140,6 +20103,88 @@ function LBiomeClassifier:type() end
 ---@return boolean True if the object is of the specified type.
 function LBiomeClassifier:typeOf(name) end
 
+--- A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
+---@class LCellular
+LCellular = {}
+
+--- Counts how many cells of a given material type exist in the grid.
+---@param cellType number Material type constant to count.
+---@return number Cell count.
+function LCellular:countCells(cellType) end
+
+--- Fills a circular region of cells with a material type.
+---@param cx number Center cell column.
+---@param cy number Center cell row.
+---@param r number Radius in cells.
+---@param cellType number Material type constant.
+function LCellular:fillCircle(cx, cy, r, cellType) end
+
+--- Fills a rectangular region of cells with a material type.
+---@param cx0 number Top-left cell column.
+---@param cy0 number Top-left cell row.
+---@param cw number Width in cells.
+---@param ch number Height in cells.
+---@param cellType number Material type constant.
+function LCellular:fillRect(cx0, cy0, cw, ch, cellType) end
+
+---@class LCellularFindCellsResult
+---@field x number X coordinate.
+---@field y number Y coordinate.
+
+--- Returns positions of all cells matching a material type.
+---@param cellType number Material type constant to find.
+---@return LCellularFindCellsResult Array of {x, y} tables with cell coordinates.
+function LCellular:findCells(cellType) end
+
+--- Returns the material type of a cell at the given grid position.
+---@param cx number Cell column.
+---@param cy number Cell row.
+---@return number Material type constant.
+function LCellular:getCell(cx, cy) end
+
+--- Restores cellular grid state from binary data previously produced by toBytes.
+---@param data string Binary cellular data.
+---@return boolean True if loading succeeded, false if data was invalid.
+function LCellular:loadFromBytes(data) end
+
+--- Sets a single cell in the cellular grid to a specific material type.
+---@param cx number Cell column (0-based).
+---@param cy number Cell row (0-based).
+---@param cellType number Material type constant (CELL_AIR, CELL_SAND, etc.).
+function LCellular:setCell(cx, cy, cellType) end
+
+--- Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
+function LCellular:step() end
+
+--- Advances the cellular simulation by N ticks in a single call.
+---@param n number Number of simulation ticks to run.
+function LCellular:stepN(n) end
+
+--- Serializes the cellular grid to a compact binary format for saving.
+---@return string Binary cellular data.
+function LCellular:toBytes() end
+
+--- Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
+---@return string Raw RGBA pixel bytes (width * height * 4).
+function LCellular:toImageData() end
+
+--- Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
+---@param cx0 number Top-left cell column.
+---@param cy0 number Top-left cell row.
+---@param cw number Width in cells.
+---@param ch number Height in cells.
+---@return string Raw RGBA pixel bytes (cw * ch * 4).
+function LCellular:toImageDataRegion(cx0, cy0, cw, ch) end
+
+--- Returns the type name of this object ("LCellular").
+---@return string "LCellular".
+function LCellular:type() end
+
+--- Checks if this object is of a given type name.
+---@param name string Type name to check.
+---@return boolean True if the object matches.
+function LCellular:typeOf(name) end
+
 --- Lua-side wrapper for a procedural noise generator.
 ---@class LNoiseGenerator
 LNoiseGenerator = {}
@@ -20394,6 +20439,12 @@ lurek.procgen.lsystemSegments = function(opts, angle, step) end
 ---@param opts? table Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
 ---@return LBiomeClassifier A classifier object with :classify() and :classifyMap() methods.
 lurek.procgen.newBiomeClassifier = function(opts) end
+
+--- Performs the 'procgen' operation.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@return LCellular The cellular simulation object.
+lurek.procgen.newCellular = function(width, height) end
 
 --- Creates a procedural noise generator with an optional seed.
 ---@param seed? number Seed value (default 0).
@@ -22456,6 +22507,10 @@ lurek.render.loadObj = function(path) end
 ---@return LCanvas The created canvas handle.
 lurek.render.newCanvas = function(width, height) end
 
+--- Performs the 'render' operation.
+---@return LDepthSorter A fresh depth sorter with no queued entries.
+lurek.render.newDepthSorter = function() end
+
 --- Creates a new z-ordered draw layer for sorting draw callbacks by depth.
 ---@return LDrawLayer The created draw layer.
 lurek.render.newDrawLayer = function() end
@@ -23162,7 +23217,7 @@ lurek.scene.isUpdateEnabled = function(target) end
 ---@return SceneNewResult A new instance table with `def` as its metatable `__index`.
 lurek.scene.new = function(def) end
 
---- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
+--- Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order.
 ---@return LDepthSorter A fresh depth sorter with no queued entries.
 lurek.scene.newDepthSorter = function() end
 

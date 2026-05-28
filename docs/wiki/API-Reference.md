@@ -11,6 +11,8 @@
 - [lurek.agent](#lurekagent)
   - [LAgent](#lagent)
   - [LAgentManager](#lagentmanager)
+  - [LAISystem](#laisystem)
+  - [LOllamaManager](#lollamamanager)
 - [lurek.ai](#lurekai)
   - [LAgent](#lagent)
   - [LAIBlackboard](#laiblackboard)
@@ -143,6 +145,7 @@
 - [lurek.learning](#lureklearning)
   - [LBandit](#lbandit)
   - [LGeneticAlgorithm](#lgeneticalgorithm)
+  - [LModel](#lmodel)
   - [LNeuralNet](#lneuralnet)
   - [LNeuroevolution](#lneuroevolution)
   - [LQLearner](#lqlearner)
@@ -228,7 +231,6 @@
   - [LWeightedRandom](#lweightedrandom)
 - [lurek.physics](#lurekphysics)
   - [LBody](#lbody)
-  - [LCellular](#lcellular)
   - [LPhysicsShape](#lphysicsshape)
   - [LTerrain](#lterrain)
   - [LWorld](#lworld)
@@ -238,6 +240,7 @@
   - [LPipelineStep](#lpipelinestep)
 - [lurek.procgen](#lurekprocgen)
   - [LBiomeClassifier](#lbiomeclassifier)
+  - [LCellular](#lcellular)
   - [LNoiseGenerator](#lnoisegenerator)
 - [lurek.province](#lurekprovince)
   - [LProvinceRegistry](#lprovinceregistry)
@@ -356,25 +359,89 @@ Compact index of all functions and methods. Parameter details and examples live 
 [Module page](Module-agent)
 
 ```lua
-lurek.agent.new(config: table) -> LAgent -- Creates a new LLM Agent instance. The configuration table must specify at least the endpoint URL, model, fo...
-lurek.agent.newManager() -> LAgentManager -- Creates a new Agent Manager for batching and handling multiple LLM agents across a shared thread pool.
+lurek.agent.new(config: table) -> LAgent -- Creates a new LLM Agent instance.
+lurek.agent.newManager() -> LAgentManager -- Creates a new Agent Manager for batching multiple LLM agents over a shared client.
+lurek.agent.newOllama([config]: table) -> LOllamaManager -- Creates an Ollama infrastructure manager for server lifecycle and model management.
+lurek.agent.newSystem(config: table) -> LAISystem -- Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
 ```
 
 ### LAgent
 
 ```lua
-LAgent:addSkill(name: string, prompt: string) -- Adds a skill to the agent's context.
-LAgent:evalCode(code: string) -> boolean -- Evaluates Lua code securely within the VM.
+LAgent:addSkill(name: string, prompt: string) -- Appends a named skill prompt to the agent's context block.
+LAgent:cancel(callback_id: integer) -- Cancels an in-flight or pending request by callback ID.
+LAgent:clearSkills() -- Removes all registered skills from the agent's context.
+LAgent:evalCode(code: string) -> boolean -- Evaluates a Lua code string inside the active VM.
+LAgent:getDescription() -> string -- Returns the agent's role description.
+LAgent:getFormat() -> string -- Returns the current response format string.
+LAgent:getModel() -> string -- Returns the current model identifier.
+LAgent:getName() -> string -- Returns the agent's name identifier.
+LAgent:getUrl() -> string -- Returns the current LLM endpoint URL.
+LAgent:hasSkill(name: string) -> boolean -- Returns `true` if a skill with `name` is registered.
+LAgent:listSkills() -> table -- Returns a list of registered skill names in insertion order.
+LAgent:pendingCount() -> integer -- Returns the number of in-flight requests that have not yet completed.
 LAgent:prompt(instruction: string, callback: function) -> integer -- Sends an instructional prompt to the LLM asynchronously.
 LAgent:promptBatch(instructions: table, callback: function) -> integer -- Sends a batch of prompts to the LLM asynchronously.
-LAgent:update() -- Polls the background client for completed LLM requests.
+LAgent:setContextSize(n: integer) -- Sets the token context window size forwarded to the LLM backend.
+LAgent:setDescription(description: string) -- Sets the agent's role description injected after the system prompt when routed through an AISystem.
+LAgent:setFormat(format: string) -- Changes the response format for future prompts.
+LAgent:setMaxRetries(n: integer) -- Sets the maximum retry count on transient network or timeout errors.
+LAgent:setModel(model: string) -- Changes the model identifier for future prompts.
+LAgent:setName(name: string) -- Sets the agent's name identifier used when added to an AISystem.
+LAgent:setOption(key: string, value: any) -- Sets a single model option forwarded to the LLM backend.
+LAgent:setTemperature(t: number) -- Sets the sampling temperature forwarded to the LLM backend.
+LAgent:setTimeout(secs: integer) -- Sets the per-request timeout in seconds (0 uses the default 60 s).
+LAgent:setUrl(url: string) -- Changes the LLM endpoint URL for future prompts.
+LAgent:skillCount() -> integer -- Returns the number of registered skills.
+LAgent:update() -- Polls the background client for completed LLM requests and dispatches callbacks.
 ```
 
 ### LAgentManager
 
 ```lua
-LAgentManager:runAll(tasks: table, callback: function) -> integer -- Runs multiple agent tasks in parallel.
-LAgentManager:update() -- Polls the manager's background client for completed tasks.
+LAgentManager:runAll(tasks: table, callback: function) -> integer -- Runs multiple agent tasks in parallel and calls a single callback when all finish.
+LAgentManager:update() -- Polls the manager's background client for completed tasks and dispatches callbacks.
+```
+
+### LAISystem
+
+```lua
+LAISystem:addAgent(name: string, agent: LAgent) -- Registers a named agent in the system.
+LAISystem:addInstruction(key: string, text: string) -- Adds a named instruction block the user can explicitly include per prompt.
+LAISystem:addSkill(name: string, keywords: table, prompt: string) -- Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
+LAISystem:agentCount() -> integer -- Returns the number of registered agents.
+LAISystem:buildContext(instruction: string, [opts]: table) -> string -- Builds and returns the full context string that would be sent for a given prompt.
+LAISystem:hasAgent(name: string) -> boolean -- Returns `true` if an agent with `name` is registered.
+LAISystem:hasInstruction(key: string) -> boolean -- Returns `true` if an instruction with `key` is registered.
+LAISystem:hasSkill(name: string) -> boolean -- Returns `true` if a system skill with `name` is registered.
+LAISystem:instructionCount() -> integer -- Returns the number of registered instruction blocks.
+LAISystem:listAgents() -> table -- Returns a sorted list of all registered agent names.
+LAISystem:listInstructions() -> table -- Returns a list of registered instruction keys in insertion order.
+LAISystem:prompt(agent_name: string, instruction: string, callback: function, opts: table) -> integer -- Sends a prompt to a named agent through the system, auto-injecting matching context.
+LAISystem:removeAgent(name: string) -> boolean -- Removes a registered agent by name.
+LAISystem:removeInstruction(key: string) -> boolean -- Removes an instruction block by key.
+LAISystem:removeSkill(name: string) -> boolean -- Removes a system skill by name.
+LAISystem:runAll(tasks: table, callback: function) -> integer -- Dispatches multiple named-agent tasks in parallel through the system.
+LAISystem:skillCount() -> integer -- Returns the number of registered system skills.
+LAISystem:update() -- Polls the system's background client for completed requests and dispatches callbacks.
+```
+
+### LOllamaManager
+
+```lua
+LOllamaManager:baseUrl() -> string -- Returns the base URL this manager was created with.
+LOllamaManager:deleteModel(name: string) -> boolean -- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+LOllamaManager:hasModel(name: string) -> boolean -- Returns `true` if a model with the given name (or name prefix) is available locally.
+LOllamaManager:isRunning() -> boolean -- Returns `true` if the Ollama HTTP server responds within 5 seconds.
+LOllamaManager:listModels() -> table -- Returns a table of locally available models, each with `name` and `size_gb` fields.
+LOllamaManager:modelNames() -> table -- Returns a string array of locally available model names; empty if Ollama is not running.
+LOllamaManager:pendingCount() -> integer -- Returns the number of in-flight model pull operations.
+LOllamaManager:pullModel(name: string, callback: function) -> integer -- Dispatches an async model download; calls `callback(success, err_msg)` on completion.
+LOllamaManager:restart() -> boolean -- Stops then restarts the managed Ollama process. Returns `true` on success.
+LOllamaManager:start() -> boolean -- Spawns `ollama serve` as a managed child process. Returns `true` on success.
+LOllamaManager:stop() -> boolean -- Kills the Ollama process started by this manager. Returns `true` if it was running.
+LOllamaManager:update() -- Polls completed pull operations and dispatches registered callbacks.
+LOllamaManager:version() -> string -- Returns the Ollama version string, or an empty string if not running.
 ```
 
 ## lurek.ai
@@ -3228,6 +3295,7 @@ lurek.learning.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed:
 lurek.learning.newNeuralNet() -> LNeuralNet -- Creates an empty feed-forward neural network.
 lurek.learning.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution -- Creates a neuroevolution population from a layer specification table.
 lurek.learning.newQLearner(sc: integer, ac: integer) -> LQLearner -- Creates a Q-learner with fixed state and action counts.
+lurek.learning.wrap(model: any) -> LModel -- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
 ```
 
 ### LBandit
@@ -3235,6 +3303,7 @@ lurek.learning.newQLearner(sc: integer, ac: integer) -> LQLearner -- Creates a Q
 ```lua
 LBandit:armCount() -> integer -- Returns the number of arms in this bandit.
 LBandit:bestArm() -> integer -- Returns the arm with the best current estimate.
+LBandit:predict() -> integer -- Alias for `select`. Selects an arm using the configured bandit strategy.
 LBandit:reset() -- Resets all bandit arm statistics. This method is available to Lua scripts.
 LBandit:select() -> integer -- Selects an arm using the configured bandit strategy.
 LBandit:totalPulls() -> integer -- Returns the total number of arm selections recorded by this bandit.
@@ -3256,6 +3325,14 @@ LGeneticAlgorithm:type() -> string -- Returns the Lua-visible type name for this
 LGeneticAlgorithm:typeOf(name: string) -> boolean -- Returns whether this genetic algorithm handle matches a supported type name.
 ```
 
+### LModel
+
+```lua
+LModel:predict(input: any) -> any -- Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
+LModel:type() -> string -- Returns the type name `"LModel"`.
+LModel:typeOf(name: string) -> boolean -- Returns whether this model wrapper matches a supported type name.
+```
+
 ### LNeuralNet
 
 ```lua
@@ -3264,6 +3341,7 @@ LNeuralNet:forward(input: table) -> number[] -- Runs a forward pass and returns 
 LNeuralNet:getWeights() -> number[] -- Returns the network weights as a flat numeric array.
 LNeuralNet:layerCount() -> integer -- Returns the number of layers in the network.
 LNeuralNet:paramCount() -> integer -- Returns the total number of trainable parameters.
+LNeuralNet:predict(input: table) -> number[] -- Alias for `forward`. Runs a forward pass and returns output values.
 LNeuralNet:setWeights(weights: table) -> boolean -- Replaces the network weights from a flat numeric array.
 LNeuralNet:type() -> string -- Returns the Lua-visible type name for this neural network handle.
 LNeuralNet:typeOf(name: string) -> boolean -- Returns whether this neural network handle matches a supported type name.
@@ -3299,6 +3377,7 @@ LQLearner:getLearningRate() -> number -- Returns the Q-learning alpha learning r
 LQLearner:getQValue(state: integer, action: integer) -> number -- Returns the stored Q-value for a one-based state and action pair.
 LQLearner:getStateCount() -> integer -- Returns the number of states represented by this learner.
 LQLearner:learn(state: integer, action: integer, reward: number, next_state: integer) -- Applies one Q-learning update from a transition and reward.
+LQLearner:predict(state: integer) -> integer -- Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
 LQLearner:serialize() -> string -- Serializes the Q-learner state to a JSON string.
 LQLearner:setDiscountFactor(v: number) -- Sets the Q-learning gamma discount factor.
 LQLearner:setExplorationDecay(v: number) -- Sets the exploration decay multiplier applied across episodes.
@@ -4113,8 +4192,10 @@ LNetworkHost:typeOf(name: string) -> boolean -- Returns whether this network hos
 
 ```lua
 LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer -- Starts an HTTP GET request. This method is available to Lua scripts.
+LNetworkRuntime:httpJson(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
 LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer -- Starts an HTTP POST request. This method is available to Lua scripts.
 LNetworkRuntime:httpRequest(opts: table) -> integer -- Starts an HTTP request from an options table and returns its request id.
+LNetworkRuntime:httpStream(url: string, [headers]: table, [timeout_secs]: integer) -> integer -- Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
 LNetworkRuntime:poll() -> table -- Polls runtime responses for HTTP, TCP, and WebSocket operations.
 LNetworkRuntime:shutdown() -- Shuts down the network runtime and cancels pending requests.
 LNetworkRuntime:tcpClose(id: integer) -- Closes a TCP connection. This method is available to Lua scripts.
@@ -4960,7 +5041,6 @@ lurek.physics.getBody(world: LWorld, body: LBody) -> number -- Returns position 
 lurek.physics.getCollisions(world: LWorld) -> table -- Returns all collision events from the last world step as {body_a, body_b} pairs.
 lurek.physics.isSleepingAllowed(world: LWorld, body: LBody) -> boolean -- Checks if sleeping is allowed on a body (free-function variant).
 lurek.physics.newBody(world: LWorld, x: number, y: number, bodyType: string) -> LBody -- Creates a new body in a world (free-function variant).
-lurek.physics.newCellular(width: integer, height: integer) -> LCellular -- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
 lurek.physics.newChainShape(closed: boolean, ...: number) -> LPhysicsShape -- Creates a chain (polyline) collision shape. Useful for terrain outlines.
 lurek.physics.newCircleShape(r: number) -> LPhysicsShape -- Creates a circle collision shape with the given radius.
 lurek.physics.newEdgeShape(x1: number, y1: number, x2: number, y2: number) -> LPhysicsShape -- Creates an edge (line segment) collision shape between two local points.
@@ -5028,25 +5108,6 @@ LBody:sleep() -- Forces the body into sleep state, pausing its simulation until 
 LBody:type() -> string -- Returns the type name of this object ("LBody").
 LBody:typeOf(name: string) -> boolean -- Checks if this object is of a given type name.
 LBody:wakeUp() -- Wakes the body from sleep, making it active in the simulation again.
-```
-
-### LCellular
-
-```lua
-LCellular:countCells(cellType: integer) -> integer -- Counts how many cells of a given material type exist in the grid.
-LCellular:fillCircle(cx: integer, cy: integer, r: integer, cellType: integer) -- Fills a circular region of cells with a material type.
-LCellular:fillRect(cx0: integer, cy0: integer, cw: integer, ch: integer, cellType: integer) -- Fills a rectangular region of cells with a material type.
-LCellular:findCells(cellType: integer) -> table -- Returns positions of all cells matching a material type.
-LCellular:getCell(cx: integer, cy: integer) -> integer -- Returns the material type of a cell at the given grid position.
-LCellular:loadFromBytes(data: string) -> boolean -- Restores cellular grid state from binary data previously produced by toBytes.
-LCellular:setCell(cx: integer, cy: integer, cellType: integer) -- Sets a single cell in the cellular grid to a specific material type.
-LCellular:step() -- Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-LCellular:stepN(n: integer) -- Advances the cellular simulation by N ticks in a single call.
-LCellular:toBytes() -> string -- Serializes the cellular grid to a compact binary format for saving.
-LCellular:toImageData() -> string -- Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
-LCellular:toImageDataRegion(cx0: integer, cy0: integer, cw: integer, ch: integer) -> string -- Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
-LCellular:type() -> string -- Returns the type name of this object ("LCellular").
-LCellular:typeOf(name: string) -> boolean -- Checks if this object is of a given type name.
 ```
 
 ### LPhysicsShape
@@ -5290,6 +5351,7 @@ lurek.procgen.heightmapFromCellular(width: integer, height: integer, cells: tabl
 lurek.procgen.lsystem(opts: table) -> string -- Expand an L-system grammar and return the resulting string. Useful for generating branching structures like...
 lurek.procgen.lsystemSegments(opts: table, [angle]: number, [step]: number) -> table -- Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
 lurek.procgen.newBiomeClassifier([opts]: table) -> LBiomeClassifier -- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biom...
+lurek.procgen.newCellular(width: integer, height: integer) -> LCellular -- Performs the 'procgen' operation.
 lurek.procgen.newNoiseGenerator([seed]: integer) -> LNoiseGenerator -- Creates a procedural noise generator with an optional seed.
 lurek.procgen.noiseMap(width: integer, height: integer, [opts]: table) -> number[] -- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
 lurek.procgen.noiseMapParallel(width: integer, height: integer, [opts]: table) -> number[] -- Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
@@ -5316,6 +5378,25 @@ LBiomeClassifier:classify(height: number, moisture: number, temperature: number)
 LBiomeClassifier:classifyMap(width: integer, height: integer, heights: table, moisture: table, [temperature]: table) -> string[] -- Classify an entire grid of points into biome types in bulk.
 LBiomeClassifier:type() -> string -- Returns the type name of this object.
 LBiomeClassifier:typeOf(name: string) -> boolean -- Check whether this object matches a given type name.
+```
+
+### LCellular
+
+```lua
+LCellular:countCells(cellType: integer) -> integer -- Counts how many cells of a given material type exist in the grid.
+LCellular:fillCircle(cx: integer, cy: integer, r: integer, cellType: integer) -- Fills a circular region of cells with a material type.
+LCellular:fillRect(cx0: integer, cy0: integer, cw: integer, ch: integer, cellType: integer) -- Fills a rectangular region of cells with a material type.
+LCellular:findCells(cellType: integer) -> table -- Returns positions of all cells matching a material type.
+LCellular:getCell(cx: integer, cy: integer) -> integer -- Returns the material type of a cell at the given grid position.
+LCellular:loadFromBytes(data: string) -> boolean -- Restores cellular grid state from binary data previously produced by toBytes.
+LCellular:setCell(cx: integer, cy: integer, cellType: integer) -- Sets a single cell in the cellular grid to a specific material type.
+LCellular:step() -- Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
+LCellular:stepN(n: integer) -- Advances the cellular simulation by N ticks in a single call.
+LCellular:toBytes() -> string -- Serializes the cellular grid to a compact binary format for saving.
+LCellular:toImageData() -> string -- Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
+LCellular:toImageDataRegion(cx0: integer, cy0: integer, cw: integer, ch: integer) -> string -- Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
+LCellular:type() -> string -- Returns the type name of this object ("LCellular").
+LCellular:typeOf(name: string) -> boolean -- Checks if this object is of a given type name.
 ```
 
 ### LNoiseGenerator
@@ -5582,6 +5663,7 @@ lurek.render.line(...: number) -- Draws a line between two points, or a polyline
 lurek.render.loadModel(path: string) -> LObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 lurek.render.loadObj(path: string) -> LObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 lurek.render.newCanvas(width: integer, height: integer) -> LCanvas -- Creates a new off-screen render target with the given dimensions.
+lurek.render.newDepthSorter() -> LDepthSorter -- Performs the 'render' operation.
 lurek.render.newDrawLayer() -> LDrawLayer -- Creates a new z-ordered draw layer for sorting draw callbacks by depth.
 lurek.render.newFont(pathOrSize: any, [size]: number) -> LFont -- Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
 lurek.render.newImage(pathOrData: string|LImageData, [colorSpace]: string) -> LImage -- Loads a texture from a file path or creates one from an ImageData object.

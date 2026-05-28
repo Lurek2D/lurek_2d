@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_PALETTE"],"struct":["ChartConfig","ChartDataFrameOptions","ChartMargin","ChartSeries"]};

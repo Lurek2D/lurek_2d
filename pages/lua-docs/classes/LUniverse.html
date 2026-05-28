@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LUniverse - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a class="active" href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LUniverse</h1>
+  <p>Lua-side handle for one ECS universe.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/ecs.html">lurek.ecs</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    print(&quot;spawned entity id = &quot; .. id)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LUniverse userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addrelation"><div class="item-row-main"><h3>addRelation</h3><pre class="inline-signature">LUniverse:addRelation(from: integer, name: string, to: integer)</pre><p>Adds a named directed relation from one entity to another.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:727</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    local b = uni:spawn()
+    uni:addRelation(a, &quot;likes&quot;, b)
+    print(&quot;relation added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-addsystem"><div class="item-row-main"><h3>addSystem</h3><pre class="inline-signature">LUniverse:addSystem(system: table, opts: table?)</pre><p>Registers a Lua system table with optional phase, priority, name, and dependency metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:129</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local sys = { update = function(self, universe, dt) end }
+    uni:addSystem(sys, {name = &quot;movement&quot;, priority = 1})
+    print(&quot;systems = &quot; .. uni:getSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addtag"><div class="item-row-main"><h3>addTag</h3><pre class="inline-signature">LUniverse:addTag(id: integer, tag: string)</pre><p>Assigns a string tag name to an entity in this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:374</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;enemy&quot;)
+    print(u:hasTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-applysnapshot"><div class="item-row-main"><h3>applySnapshot</h3><pre class="inline-signature">LUniverse:applySnapshot(snapshot: table)</pre><p>Replaces this universe state from a Lua table snapshot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:311</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:set(e, &quot;pos&quot;, { x = 1, y = 2 })
+    local snap = u:snapshot()
+    u:clear()
+    u:applySnapshot(snap)
+    print(&quot;entities after apply = &quot; .. u:getEntityCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-bitmaptag"><div class="item-row-main"><h3>bitmapTag</h3><pre class="inline-signature">LUniverse:bitmapTag(id: integer, name: string) -&gt; integer</pre><p>Adds a bitmap tag to an entity, defining the tag if needed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:448</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    print(u:hasBitmapTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitmapuntag"><div class="item-row-main"><h3>bitmapUntag</h3><pre class="inline-signature">LUniverse:bitmapUntag(id: integer, name: string)</pre><p>Removes a bitmap tag from an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:455</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    u:bitmapUntag(e, &quot;enemy&quot;)
+    print(u:hasBitmapTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LUniverse:clear()</pre><p>Clears all entities, components, systems, and ECS state from this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:spawn()
+    u:clear()
+    print(&quot;entities after clear = &quot; .. u:getEntityCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearrelations"><div class="item-row-main"><h3>clearRelations</h3><pre class="inline-signature">LUniverse:clearRelations(from: integer, name: string)</pre><p>Removes every target for one named relation from an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:770</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    local b = uni:spawn()
+    uni:addRelation(a, &quot;sees&quot;, b)
+    uni:clearRelations(a, &quot;sees&quot;)
+    local targets = uni:getRelated(a, &quot;sees&quot;)
+    print(&quot;after clear = &quot; .. #targets)
+end</code></pre></details></article><article class="item-row api-row" id="method-defineblueprint"><div class="item-row-main"><h3>defineBlueprint</h3><pre class="inline-signature">LUniverse:defineBlueprint(name: string, components: table)</pre><p>Defines a named entity blueprint from a component table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:505</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:defineBlueprint(&quot;enemy&quot;, {pos = {x = 0, y = 0}, hp = {value = 50}, tag = {value = &quot;hostile&quot;}})
+    print(&quot;blueprint defined&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-definetag"><div class="item-row-main"><h3>defineTag</h3><pre class="inline-signature">LUniverse:defineTag(name: string) -&gt; integer</pre><p>Defines a bitmap tag name and assigns it a bit slot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:440</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;enemy&quot;)
+    print(u:hasTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-deserialize"><div class="item-row-main"><h3>deserialize</h3><pre class="inline-signature">LUniverse:deserialize(snapshot: table)</pre><p>Replaces this universe state from a serialized Lua snapshot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:627</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;score&quot;, {value = 99})
+    uni:deserialize(uni:serialize())
+    print(&quot;deserialized, count = &quot; .. uni:getEntityCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-each"><div class="item-row-main"><h3>each</h3><pre class="inline-signature">LUniverse:each(name: string, callback: function)</pre><p>Iterates entities with one component and calls a Lua callback for each match.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:107</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;name&quot;, {value = &quot;hero&quot;})
+    local count = 0
+    uni:each(&quot;name&quot;, function(entity_id, name_value)
+        count = count + 1
+        print(&quot;visited entity = &quot; .. tostring(entity_id))
+        print(&quot;name.value = &quot; .. tostring(name_value.value))
+    end)
+    print(&quot;each count = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-emit"><div class="item-row-main"><h3>emit</h3><pre class="inline-signature">LUniverse:emit(event: string, ...: any)</pre><p>Calls matching event-named functions on registered systems.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:214</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local got = false
+    uni:addSystem({on_damage = function() got = true end})
+    uni:emit(&quot;on_damage&quot;)
+    print(&quot;emit received = &quot; .. tostring(got))
+end</code></pre></details></article><article class="item-row api-row" id="method-extendblueprint"><div class="item-row-main"><h3>extendBlueprint</h3><pre class="inline-signature">LUniverse:extendBlueprint(name: string, parent: string, overrides: table)</pre><p>Defines a blueprint that inherits from a parent blueprint and applies overrides.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:518</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint(&quot;base&quot;, { hp = 100 })
+    u:extendBlueprint(&quot;enemy&quot;, &quot;base&quot;, { damage = 10 })
+    print(u:hasBlueprint(&quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-flushobservers"><div class="item-row-main"><h3>flushObservers</h3><pre class="inline-signature">LUniverse:flushObservers()</pre><p>Delivers queued component add and remove events to registered observer callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:666</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:flushObservers()
+    print(&quot;observers flushed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LUniverse:get(id: integer, name: string) -&gt; table|number|string|boolean|nil</pre><p>Returns a component value from an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:64</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;hp&quot;, {value = 100})
+    local hp = uni:get(id, &quot;hp&quot;)
+    print(&quot;hp.value = &quot; .. tostring(hp.value))
+end</code></pre></details></article><article class="item-row api-row" id="method-getbitmaptagbit"><div class="item-row-main"><h3>getBitmapTagBit</h3><pre class="inline-signature">LUniverse:getBitmapTagBit(name: string) -&gt; integer</pre><p>Returns the bit index assigned to a bitmap tag name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:498</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    print(&quot;bit = &quot; .. tostring(u:getBitmapTagBit(&quot;enemy&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getblueprintcomponents"><div class="item-row-main"><h3>getBlueprintComponents</h3><pre class="inline-signature">LUniverse:getBlueprintComponents(name: string) -&gt; table</pre><p>Returns the component table stored for a blueprint.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:563</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:defineBlueprint(&quot;item&quot;, {name = {value = &quot;sword&quot;}, damage = {value = 10}})
+    local comps = uni:getBlueprintComponents(&quot;item&quot;)
+    print(&quot;blueprint comps type = &quot; .. type(comps))
+    print(&quot;damage = &quot; .. tostring(comps.damage.value))
+end</code></pre></details></article><article class="item-row api-row" id="method-getchildren"><div class="item-row-main"><h3>getChildren</h3><pre class="inline-signature">LUniverse:getChildren(parent_id: integer) -&gt; integer[]</pre><p>Returns child entity ids for a parent entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local parent = uni:spawn()
+    local c1 = uni:spawn()
+    local c2 = uni:spawn()
+    uni:setParent(c1, parent)
+    uni:setParent(c2, parent)
+    local children = uni:getChildren(parent)
+    print(&quot;children = &quot; .. #children)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcomponents"><div class="item-row-main"><h3>getComponents</h3><pre class="inline-signature">LUniverse:getComponents(id: integer) -&gt; string[]</pre><p>Returns component names currently stored on an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:86</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;pos&quot;, {x = 0, y = 0})
+    uni:set(id, &quot;vel&quot;, {x = 1, y = 0})
+    local names = uni:getComponents(id)
+    print(&quot;components = &quot; .. #names)
+end</code></pre></details></article><article class="item-row api-row" id="method-getdirtyentities"><div class="item-row-main"><h3>getDirtyEntities</h3><pre class="inline-signature">LUniverse:getDirtyEntities() -&gt; integer[]</pre><p>Returns entities marked dirty by recent ECS mutations.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:276</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;x&quot;, {value = 1})
+    local dirty = uni:getDirtyEntities()
+    print(&quot;dirty = &quot; .. #dirty)
+end</code></pre></details></article><article class="item-row api-row" id="method-getentities"><div class="item-row-main"><h3>getEntities</h3><pre class="inline-signature">LUniverse:getEntities() -&gt; integer[]</pre><p>Returns all live entity ids in this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:116</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:spawn()
+    uni:spawn()
+    local all = uni:getEntities()
+    print(&quot;entities = &quot; .. #all)
+end</code></pre></details></article><article class="item-row api-row" id="method-getentitiesbylayer"><div class="item-row-main"><h3>getEntitiesByLayer</h3><pre class="inline-signature">LUniverse:getEntitiesByLayer(layer: integer) -&gt; integer[]</pre><p>Returns entities assigned to a numeric layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    print(#u:getEntitiesByLayer(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-getentitiesbytag"><div class="item-row-main"><h3>getEntitiesByTag</h3><pre class="inline-signature">LUniverse:getEntitiesByTag(tag: string) -&gt; integer[]</pre><p>Returns entities that have a string tag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:405</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;unit&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;unit&quot;)
+    print(#u:getEntitiesByTag(&quot;unit&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-getentitiessorted"><div class="item-row-main"><h3>getEntitiesSorted</h3><pre class="inline-signature">LUniverse:getEntitiesSorted() -&gt; integer[]</pre><p>Returns live entities sorted by ECS layer and stable entity ordering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:433</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    print(&quot;sorted count = &quot; .. #u:getEntitiesSorted())
+end</code></pre></details></article><article class="item-row api-row" id="method-getentitycount"><div class="item-row-main"><h3>getEntityCount</h3><pre class="inline-signature">LUniverse:getEntityCount() -&gt; integer</pre><p>Returns the number of live entities in this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:122</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:spawn()
+    uni:spawn()
+    uni:spawn()
+    print(&quot;count = &quot; .. uni:getEntityCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayer"><div class="item-row-main"><h3>getLayer</h3><pre class="inline-signature">LUniverse:getLayer(id: integer) -&gt; integer</pre><p>Returns the numeric layer assigned to an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:420</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    print(&quot;layer = &quot; .. tostring(u:getLayer(e)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getparent"><div class="item-row-main"><h3>getParent</h3><pre class="inline-signature">LUniverse:getParent(child_id: integer) -&gt; integer</pre><p>Returns the parent entity id for a child entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:581</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local parent = uni:spawn()
+    local child = uni:spawn()
+    uni:setParent(child, parent)
+    local p = uni:getParent(child)
+    print(&quot;parent = &quot; .. p)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrelated"><div class="item-row-main"><h3>getRelated</h3><pre class="inline-signature">LUniverse:getRelated(from: integer, name: string) -&gt; integer[]</pre><p>Returns targets linked from an entity by a named relation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:742</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    local b = uni:spawn()
+    local c = uni:spawn()
+    uni:addRelation(a, &quot;friend&quot;, b)
+    uni:addRelation(a, &quot;friend&quot;, c)
+    local friends = uni:getRelated(a, &quot;friend&quot;)
+    print(&quot;friends = &quot; .. #friends)
+end</code></pre></details></article><article class="item-row api-row" id="method-getsystemcount"><div class="item-row-main"><h3>getSystemCount</h3><pre class="inline-signature">LUniverse:getSystemCount() -&gt; integer</pre><p>Returns the number of registered systems.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:247</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:addSystem({update = function() end})
+    uni:addSystem({draw = function() end})
+    print(&quot;system count = &quot; .. uni:getSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettags"><div class="item-row-main"><h3>getTags</h3><pre class="inline-signature">LUniverse:getTags(id: integer) -&gt; string[]</pre><p>Returns string tags assigned to an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:398</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;enemy&quot;)
+    print(#u:getTags(e))
+end</code></pre></details></article><article class="item-row api-row" id="method-has"><div class="item-row-main"><h3>has</h3><pre class="inline-signature">LUniverse:has(id: integer, name: string) -&gt; boolean</pre><p>Returns whether an entity has a named component.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:72</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;speed&quot;, {value = 5})
+    print(&quot;has speed = &quot; .. tostring(uni:has(id, &quot;speed&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasbitmaptag"><div class="item-row-main"><h3>hasBitmapTag</h3><pre class="inline-signature">LUniverse:hasBitmapTag(id: integer, name: string) -&gt; boolean</pre><p>Returns whether an entity has a bitmap tag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:464</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    print(u:hasBitmapTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasblueprint"><div class="item-row-main"><h3>hasBlueprint</h3><pre class="inline-signature">LUniverse:hasBlueprint(name: string) -&gt; boolean</pre><p>Returns whether a named blueprint exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:543</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint(&quot;base&quot;, { hp = 100 })
+    u:extendBlueprint(&quot;enemy&quot;, &quot;base&quot;, { damage = 10 })
+    print(u:hasBlueprint(&quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasrelation"><div class="item-row-main"><h3>hasRelation</h3><pre class="inline-signature">LUniverse:hasRelation(from: integer, name: string, to: integer) -&gt; boolean</pre><p>Returns whether a named directed relation exists between two entities.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:783</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    local b = uni:spawn()
+    uni:addRelation(a, &quot;attacks&quot;, b)
+    print(&quot;has relation = &quot; .. tostring(uni:hasRelation(a, &quot;attacks&quot;, b)))
+end</code></pre></details></article><article class="item-row api-row" id="method-hastag"><div class="item-row-main"><h3>hasTag</h3><pre class="inline-signature">LUniverse:hasTag(id: integer, tag: string) -&gt; boolean</pre><p>Returns whether an entity has a string tag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:391</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;enemy&quot;)
+    print(u:hasTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-isalive"><div class="item-row-main"><h3>isAlive</h3><pre class="inline-signature">LUniverse:isAlive(id: integer) -&gt; boolean</pre><p>Returns whether an entity id currently exists in this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:45</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    print(&quot;alive = &quot; .. tostring(uni:isAlive(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-kill"><div class="item-row-main"><h3>kill</h3><pre class="inline-signature">LUniverse:kill(id: integer)</pre><p>Deletes an entity and removes its components from this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:36</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:kill(id)
+    print(&quot;killed, alive = &quot; .. tostring(uni:isAlive(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-killrecursive"><div class="item-row-main"><h3>killRecursive</h3><pre class="inline-signature">LUniverse:killRecursive(id: integer)</pre><p>Deletes an entity and all descendant entities in its hierarchy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:594</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local root = uni:spawn()
+    local child = uni:spawn()
+    uni:setParent(child, root)
+    uni:killRecursive(root)
+    print(&quot;child alive = &quot; .. tostring(uni:isAlive(child)))
+end</code></pre></details></article><article class="item-row api-row" id="method-listblueprints"><div class="item-row-main"><h3>listBlueprints</h3><pre class="inline-signature">LUniverse:listBlueprints() -&gt; string[]</pre><p>Returns names of all registered blueprints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:556</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint(&quot;base&quot;, { hp = 100 })
+    u:extendBlueprint(&quot;enemy&quot;, &quot;base&quot;, { damage = 10 })
+    print(#u:listBlueprints())
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomponentadded"><div class="item-row-main"><h3>onComponentAdded</h3><pre class="inline-signature">LUniverse:onComponentAdded(name: string, cb: function)</pre><p>Registers a callback for queued component-add events with a given component name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:636</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local added = false
+    uni:onComponentAdded(&quot;hp&quot;, function() added = true end)
+    local id = uni:spawn()
+    uni:set(id, &quot;hp&quot;, {value = 100})
+    uni:flushObservers()
+    print(&quot;added callback fired = &quot; .. tostring(added))
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomponentremoved"><div class="item-row-main"><h3>onComponentRemoved</h3><pre class="inline-signature">LUniverse:onComponentRemoved(name: string, cb: function)</pre><p>Registers a callback for queued component-remove events with a given component name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:652</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local removed = false
+    uni:onComponentRemoved(&quot;hp&quot;, function() removed = true end)
+    local id = uni:spawn()
+    uni:set(id, &quot;hp&quot;, {value = 50})
+    uni:remove(id, &quot;hp&quot;)
+    uni:flushObservers()
+    print(&quot;removed callback fired = &quot; .. tostring(removed))
+end</code></pre></details></article><article class="item-row api-row" id="method-query"><div class="item-row-main"><h3>query</h3><pre class="inline-signature">LUniverse:query(...: string) -&gt; integer[]</pre><p>Returns entities that have all component names passed as varargs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:93</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    uni:set(a, &quot;pos&quot;, {x = 0, y = 0})
+    uni:set(a, &quot;vel&quot;, {x = 1, y = 0})
+    local b = uni:spawn()
+    uni:set(b, &quot;pos&quot;, {x = 5, y = 5})
+    print(&quot;with pos+vel = &quot; .. #uni:query(&quot;pos&quot;, &quot;vel&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-querybitmapall"><div class="item-row-main"><h3>queryBitmapAll</h3><pre class="inline-signature">LUniverse:queryBitmapAll(names: table) -&gt; integer[]</pre><p>Returns entities that have every bitmap tag from a list.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:488</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    print(#u:queryBitmapAll({&quot;enemy&quot;}))
+end</code></pre></details></article><article class="item-row api-row" id="method-querybitmapany"><div class="item-row-main"><h3>queryBitmapAny</h3><pre class="inline-signature">LUniverse:queryBitmapAny(names: table) -&gt; integer[]</pre><p>Returns entities with at least one bitmap tag from a list.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:478</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    print(#u:queryBitmapAny({&quot;enemy&quot;}))
+end</code></pre></details></article><article class="item-row api-row" id="method-querybitmaptag"><div class="item-row-main"><h3>queryBitmapTag</h3><pre class="inline-signature">LUniverse:queryBitmapTag(name: string) -&gt; integer[]</pre><p>Returns entities with one bitmap tag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:471</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:bitmapTag(e, &quot;enemy&quot;)
+    print(#u:queryBitmapTag(&quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-querymulti"><div class="item-row-main"><h3>queryMulti</h3><pre class="inline-signature">LUniverse:queryMulti(names_table: table, callback: function)</pre><p>Iterates entities that have all component names from a table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:288</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;a&quot;, {value = 1})
+    uni:set(id, &quot;b&quot;, {value = 2})
+    local count = 0
+    uni:queryMulti({&quot;a&quot;, &quot;b&quot;}, function(entity_id, a_value, b_value)
+        count = count + 1
+        print(&quot;queryMulti entity = &quot; .. tostring(entity_id))
+        print(&quot;values = &quot; .. tostring(a_value.value) .. &quot;,&quot; .. tostring(b_value.value))
+    end)
+    print(&quot;queryMulti = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-querynot"><div class="item-row-main"><h3>queryNot</h3><pre class="inline-signature">LUniverse:queryNot(with_tbl: table, without_tbl: table) -&gt; integer[]</pre><p>Returns entities that include one component set and exclude another component set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:602</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a = uni:spawn()
+    local b = uni:spawn()
+    uni:set(a, &quot;pos&quot;, {x = 0, y = 0})
+    uni:set(a, &quot;static&quot;, {flag = true})
+    uni:set(b, &quot;pos&quot;, {x = 1, y = 1})
+    print(&quot;moving entities = &quot; .. #uni:queryNot({&quot;pos&quot;}, {&quot;static&quot;}))
+end</code></pre></details></article><article class="item-row api-row" id="method-release"><div class="item-row-main"><h3>release</h3><pre class="inline-signature">LUniverse:release()</pre><p>Releases universe contents by clearing all ECS state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:367</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:release()
+    print(&quot;released&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LUniverse:remove(id: integer, name: string)</pre><p>Removes a named component from an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:79</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;temp&quot;, {flag = true})
+    uni:remove(id, &quot;temp&quot;)
+    print(&quot;after remove has = &quot; .. tostring(uni:has(id, &quot;temp&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-removeblueprint"><div class="item-row-main"><h3>removeBlueprint</h3><pre class="inline-signature">LUniverse:removeBlueprint(name: string) -&gt; boolean</pre><p>Removes a named blueprint from this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:550</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint(&quot;base&quot;, { hp = 100 })
+    u:extendBlueprint(&quot;enemy&quot;, &quot;base&quot;, { damage = 10 })
+    u:removeBlueprint(&quot;enemy&quot;)
+    print(u:hasBlueprint(&quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-removerelation"><div class="item-row-main"><h3>removeRelation</h3><pre class="inline-signature">LUniverse:removeRelation(from: integer, name: string, to: integer)</pre><p>Removes a named directed relation between two entities.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:756</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local a, b = uni:spawn(), uni:spawn()
+    uni:addRelation(a, &quot;owns&quot;, b)
+    uni:removeRelation(a, &quot;owns&quot;, b)
+    print(&quot;relation removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-removesystem"><div class="item-row-main"><h3>removeSystem</h3><pre class="inline-signature">LUniverse:removeSystem(system: table)</pre><p>Removes a previously registered Lua system table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:161</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local sys = {update = function() end}
+    uni:addSystem(sys)
+    uni:removeSystem(sys)
+    print(&quot;after remove systems = &quot; .. uni:getSystemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-removetag"><div class="item-row-main"><h3>removeTag</h3><pre class="inline-signature">LUniverse:removeTag(id: integer, tag: string)</pre><p>Removes a string tag from an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:382</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    u:defineTag(&quot;enemy&quot;)
+    local e = u:spawn()
+    u:addTag(e, &quot;enemy&quot;)
+    u:removeTag(e, &quot;enemy&quot;)
+    print(u:hasTag(e, &quot;enemy&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LUniverse:render()</pre><p>Runs registered render-phase systems using their render or draw callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:188</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local drawn = false
+    uni:addSystem({draw = function() drawn = true end})
+    uni:render()
+    print(&quot;render called = &quot; .. tostring(drawn))
+end</code></pre></details></article><article class="item-row api-row" id="method-serialize"><div class="item-row-main"><h3>serialize</h3><pre class="inline-signature">LUniverse:serialize() -&gt; table</pre><p>Serializes this universe into a Lua table snapshot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:621</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;data&quot;, {k = &quot;v&quot;})
+    local snap = uni:serialize()
+    print(&quot;entities in snapshot = &quot; .. #snap.entities)
+end</code></pre></details></article><article class="item-row api-row" id="method-set"><div class="item-row-main"><h3>set</h3><pre class="inline-signature">LUniverse:set(id: integer, name: string, value: any)</pre><p>Stores or replaces a component value on an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:53</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;position&quot;, {x = 10, y = 20})
+    print(&quot;position set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayer"><div class="item-row-main"><h3>setLayer</h3><pre class="inline-signature">LUniverse:setLayer(id: integer, layer: integer)</pre><p>Assigns a numeric layer to an entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:412</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    print(&quot;layer = &quot; .. tostring(u:getLayer(e)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setparent"><div class="item-row-main"><h3>setParent</h3><pre class="inline-signature">LUniverse:setParent(child_id: integer, parent_id: integer?)</pre><p>Sets or clears the parent entity for a child entity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:570</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local parent = uni:spawn()
+    local child = uni:spawn()
+    uni:setParent(child, parent)
+    print(&quot;parent set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-snapshot"><div class="item-row-main"><h3>snapshot</h3><pre class="inline-signature">LUniverse:snapshot() -&gt; table</pre><p>Serializes this universe into a Lua table snapshot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:305</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    uni:set(id, &quot;val&quot;, {value = 42})
+    local snap = uni:snapshot()
+    print(&quot;snapshot type = &quot; .. type(snap))
+    print(&quot;snapshot entities = &quot; .. #snap.entities)
+end</code></pre></details></article><article class="item-row api-row" id="method-spawn"><div class="item-row-main"><h3>spawn</h3><pre class="inline-signature">LUniverse:spawn() -&gt; integer</pre><p>Creates a new entity in this universe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:30</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local id = uni:spawn()
+    print(&quot;spawned entity id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="method-spawnblueprint"><div class="item-row-main"><h3>spawnBlueprint</h3><pre class="inline-signature">LUniverse:spawnBlueprint(name: string, overrides: table?) -&gt; integer</pre><p>Spawns an entity from a named blueprint with optional component overrides.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:531</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:defineBlueprint(&quot;npc&quot;, {pos = {x = 0, y = 0}})
+    local id = uni:spawnBlueprint(&quot;npc&quot;, {pos = {x = 5, y = 5}})
+    print(&quot;spawned from blueprint id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="method-spawnbulk"><div class="item-row-main"><h3>spawnBulk</h3><pre class="inline-signature">LUniverse:spawnBulk(name: string, count: integer, overrides: table?) -&gt; integer[]</pre><p>Spawns multiple entities from a blueprint using shared optional overrides.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:714</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    uni:defineBlueprint(&quot;bullet&quot;, {pos = {x = 0, y = 0}})
+    local ids = uni:spawnBulk(&quot;bullet&quot;, 10)
+    print(&quot;bulk spawned = &quot; .. #ids)
+end</code></pre></details></article><article class="item-row api-row" id="method-takesnapshotdiff"><div class="item-row-main"><h3>takeSnapshotDiff</h3><pre class="inline-signature">LUniverse:takeSnapshotDiff() -&gt; table</pre><p>Returns and clears accumulated ECS snapshot diff data.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:323</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:set(e, &quot;pos&quot;, { x = 1, y = 2 })
+    local diff = u:takeSnapshotDiff()
+    print(&quot;dirty entities = &quot; .. tostring(#diff.dirty_entities))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LUniverse:type() -&gt; string</pre><p>Returns the Lua-visible type name for this universe handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:792</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    print(&quot;type = &quot; .. uni:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LUniverse:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this universe handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:797</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    print(&quot;is LUniverse = &quot; .. tostring(uni:typeOf(&quot;LUniverse&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LUniverse:update(dt: number)</pre><p>Runs registered update-phase systems with a frame delta.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:167</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local called = false
+    uni:addSystem({update = function() called = true end})
+    uni:update(1 / 60)
+    print(&quot;update called = &quot; .. tostring(called))
+end</code></pre></details></article><article class="item-row api-row" id="method-updatephase"><div class="item-row-main"><h3>updatePhase</h3><pre class="inline-signature">LUniverse:updatePhase(phase: string, dt: number)</pre><p>Runs registered systems assigned to a named phase.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ecs_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · ecs.lua</summary><pre><code>do
+    local uni = lurek.ecs.newUniverse()
+    local ran = false
+    uni:addSystem({update = function() ran = true end}, {phase = &quot;physics&quot;})
+    uni:updatePhase(&quot;physics&quot;, 1 / 60)
+    print(&quot;phase ran = &quot; .. tostring(ran))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

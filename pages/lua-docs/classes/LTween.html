@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTween - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a class="active" href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LTween</h1>
+  <p>Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/tween.html">lurek.tween</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { w = 100 }
+    local tw = lurek.tween.tween(1.0, obj, { w = 200 })
+
+    lurek.tween.update(0.3)
+    print(&quot;before cancel: w=&quot; .. obj.w)
+    tw:cancel()
+    print(&quot;active after cancel = &quot; .. tostring(tw:isActive()))
+    lurek.tween.update(1.0)
+    print(&quot;after update: w=&quot; .. obj.w)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LTween userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-await"><div class="item-row-main"><h3>await</h3><pre class="inline-signature">LTween:await()</pre><p>Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    local co = coroutine.create(function()
+        tw:await()
+        print(&quot;await resumed at x=&quot; .. target.x)
+    end)
+
+    coroutine.resume(co)
+    lurek.tween.update(1.0)
+    print(&quot;coroutine status = &quot; .. coroutine.status(co))
+end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTween:cancel()</pre><p>Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:507</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { w = 100 }
+    local tw = lurek.tween.tween(1.0, obj, { w = 200 })
+
+    lurek.tween.update(0.3)
+    print(&quot;before cancel: w=&quot; .. obj.w)
+    tw:cancel()
+    print(&quot;active after cancel = &quot; .. tostring(tw:isActive()))
+    lurek.tween.update(1.0)
+    print(&quot;after update: w=&quot; .. obj.w)
+end</code></pre></details></article><article class="item-row api-row" id="method-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">LTween:getDuration() -&gt; number</pre><p>Returns the total duration of this tween in seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:552</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    print(&quot;duration=&quot; .. tw:getDuration())
+    print(&quot;remaining=&quot; .. tw:getRemaining())
+end</code></pre></details></article><article class="item-row api-row" id="method-getelapsed"><div class="item-row-main"><h3>getElapsed</h3><pre class="inline-signature">LTween:getElapsed() -&gt; number</pre><p>Returns the number of seconds that have elapsed since the tween started.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:547</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    lurek.tween.update(0.25)
+    print(&quot;elapsed=&quot; .. tw:getElapsed())
+    print(&quot;x=&quot; .. target.x)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfields"><div class="item-row-main"><h3>getFields</h3><pre class="inline-signature">LTween:getFields() -&gt; string[]</pre><p>Returns an array of field names being tweened on the target table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:561</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { a = 0, b = 0, c = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { a = 1, b = 2, c = 3 })
+    local fields = tw:getFields()
+    print(&quot;fields: &quot; .. table.concat(fields, &quot;, &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-getprogress"><div class="item-row-main"><h3>getProgress</h3><pre class="inline-signature">LTween:getProgress() -&gt; number</pre><p>Returns the eased progress of this tween as a value from 0.0 to 1.0.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:542</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    lurek.tween.update(0.5)
+    print(&quot;progress=&quot; .. tw:getProgress())
+    print(&quot;x=&quot; .. target.x)
+end</code></pre></details></article><article class="item-row api-row" id="method-getremaining"><div class="item-row-main"><h3>getRemaining</h3><pre class="inline-signature">LTween:getRemaining() -&gt; number</pre><p>Returns the number of seconds remaining until this tween completes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:557</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    lurek.tween.update(0.25)
+    print(&quot;remaining=&quot; .. tw:getRemaining())
+    print(&quot;active=&quot; .. tostring(tw:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTween:isActive() -&gt; boolean</pre><p>Returns whether this tween is still running (not cancelled or completed).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:537</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    print(&quot;active before = &quot; .. tostring(tw:isActive()))
+    tw:cancel()
+    print(&quot;active after = &quot; .. tostring(tw:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-oncancel"><div class="item-row-main"><h3>onCancel</h3><pre class="inline-signature">LTween:onCancel(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:663</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { scale = 1 }
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onCancel(function() print(&quot;  cancelled&quot;) end)
+    tw:cancel()
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTween:onComplete(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween completes. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:628</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { scale = 1 }
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onComplete(function() print(&quot;  completed! scale=&quot; .. obj.scale) end)
+    lurek.tween.update(0.5)
+end</code></pre></details></article><article class="item-row api-row" id="method-onupdate"><div class="item-row-main"><h3>onUpdate</h3><pre class="inline-signature">LTween:onUpdate(f: function) -&gt; LTween</pre><p>Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:647</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { scale = 1 }
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onUpdate(function(t) print(&quot;  update t=&quot; .. string.format(&quot;%.2f&quot;, t)) end)
+    lurek.tween.update(0.5)
+end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LTween:pause()</pre><p>Pauses this tween so it stops advancing until resumed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:522</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { rotation = 0 }
+    local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
+
+    lurek.tween.update(0.5)
+    print(&quot;before pause: &quot; .. obj.rotation)
+    tw:pause()
+    lurek.tween.update(1.0)
+    print(&quot;while paused: &quot; .. obj.rotation)
+end</code></pre></details></article><article class="item-row api-row" id="method-relative"><div class="item-row-main"><h3>relative</h3><pre class="inline-signature">LTween:relative(enabled: boolean) -&gt; LTween</pre><p>Chainable version of `setRelative`. Returns the tween for fluent API usage.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:580</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { x = 50, y = 50 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { x = 30, y = -20 }):relative(true)
+    lurek.tween.update(1.0)
+    print(&quot;relative result: x=&quot; .. obj.x .. &quot; y=&quot; .. obj.y)
+end</code></pre></details></article><article class="item-row api-row" id="method-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">LTween:resume()</pre><p>Resumes a paused tween so it continues advancing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:529</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { rotation = 0 }
+    local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
+
+    lurek.tween.update(0.5)
+    print(&quot;before pause: &quot; .. obj.rotation)
+    tw:pause()
+    lurek.tween.update(1.0)
+    print(&quot;while paused: &quot; .. obj.rotation)
+
+    tw:resume()
+    lurek.tween.update(0.5)
+    print(&quot;after resume: &quot; .. obj.rotation)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrelative"><div class="item-row-main"><h3>setRelative</h3><pre class="inline-signature">LTween:setRelative(enabled: boolean)</pre><p>Sets whether the tween end values are relative to the start values instead of absolute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:571</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 10.0 }
+    local tw = lurek.tween.to(target, { x = 5 }, 1.0, &quot;linear&quot;)
+    tw:setRelative(true)
+    lurek.tween.update(1.0)
+    print(&quot;relative x=&quot; .. target.x)
+    print(&quot;type=&quot; .. tw:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-setrepeat"><div class="item-row-main"><h3>setRepeat</h3><pre class="inline-signature">LTween:setRepeat(n: integer)</pre><p>Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:611</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { x = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(0.5, obj, { x = 100 })
+    tw:setRepeat(3)
+    print(&quot;repeat set&quot;)
+end
+
+--@api-stub: LTween:setYoyo
+do
+    local obj = { x = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(0.5, obj, { x = 100 })
+    tw:setYoyo(true)
+    print(&quot;yoyo set&quot;)
+end
+
+--@api-stub: LTween:relative
+do
+    local obj = { x = 50, y = 50 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { x = 30, y = -20 }):relative(true)
+    lurek.tween.update(1.0)
+    print(&quot;relative result: x=&quot; .. obj.x .. &quot; y=&quot; .. obj.y)
+end
+
+--@api-stub: LTween:getFields
+do
+    local obj = { a = 0, b = 0, c = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { a = 1, b = 2, c = 3 })
+    local fields = tw:getFields()
+    print(&quot;fields: &quot; .. table.concat(fields, &quot;, &quot;))
+end
+
+--@api-stub: lurek.tween.tweenColor
+do
+    local color = { r = 1.0, g = 0.0, b = 0.0, a = 1.0 }
+    local tw = lurek.tween.tweenColor(2.0, color, { r = 0.0, g = 0.0, b = 1.0 }, &quot;linear&quot;)
+
+    lurek.tween.update(1.0)
+    print(&quot;midpoint: r=&quot; .. string.format(&quot;%.2f&quot;, color.r) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, color.g) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, color.b))
+    lurek.tween.update(1.0)
+    print(&quot;end: r=&quot; .. color.r .. &quot; b=&quot; .. color.b)
+end</code></pre></details></article><article class="item-row api-row" id="method-setyoyo"><div class="item-row-main"><h3>setYoyo</h3><pre class="inline-signature">LTween:setYoyo(enabled: boolean)</pre><p>Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:619</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local obj = { x = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(0.5, obj, { x = 100 })
+    tw:setYoyo(true)
+    print(&quot;yoyo set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTween:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:677</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    print(&quot;type=&quot; .. tw:type())
+    print(&quot;active=&quot; .. tostring(tw:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTween:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:683</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
+    print(&quot;typeOf LTween = &quot; .. tostring(tw:typeOf(&quot;LTween&quot;)))
+    print(&quot;typeOf Object = &quot; .. tostring(tw:typeOf(&quot;Object&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

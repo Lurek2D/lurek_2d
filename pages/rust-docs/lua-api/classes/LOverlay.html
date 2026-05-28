@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOverlay - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a class="active" href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LOverlay</h1>
+  <p>Lua-side handle for screen overlay, ambient, weather, and transition visual state.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/overlay.html">lurek.overlay</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerShake(5.0, 1.0)
+    ov:update(0.016)
+    print(&quot;LOverlay:update isShaking=&quot; .. tostring(ov:isShaking()))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LOverlay userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LOverlay:clear()</pre><p>Clears active overlay effects and resets transient state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:84</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFlash(1, 1, 1, 0.5, 0.1)
+    print(&quot;LOverlay:clear before=&quot; .. tostring(ov:isActive()))
+    ov:clear()
+    print(&quot;LOverlay:clear after=&quot; .. tostring(ov:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LOverlay:drawToImage(w: integer, h: integer) -&gt; Image</pre><p>Renders overlay state into an image object of the requested size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:528</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(200, 150)
+    ov:flash(0.9, 0.95, 1.0, 0.6, 0.2)
+    local img = ov:drawToImage(200, 150)
+    print(&quot;LOverlay:drawToImage type=&quot; .. type(img))
+    print(&quot;LOverlay:drawToImage active=&quot; .. tostring(ov:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-fade"><div class="item-row-main"><h3>fade</h3><pre class="inline-signature">LOverlay:fade(r: number, g: number, b: number, a: number?, dur: number?)</pre><p>Starts a fade overlay with optional alpha and duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:504</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:fade(0.05, 0.05, 0.10, 0.85, 0.5)
+    print(&quot;LOverlay:fade isFading=&quot; .. tostring(ov:isFading()))
+    print(&quot;LOverlay:fade active=&quot; .. tostring(ov:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-flash"><div class="item-row-main"><h3>flash</h3><pre class="inline-signature">LOverlay:flash(r: number, g: number, b: number, a: number?, dur: number?)</pre><p>Starts a short flash overlay with optional alpha and duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:473</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:flash(1.0, 0.95, 0.70, 0.8, 0.2)
+    print(&quot;LOverlay:flash isFlashing=&quot; .. tostring(ov:isFlashing()))
+    print(&quot;LOverlay:flash alpha=&quot; .. f2(ov:getFlashAlpha()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getambientcolor"><div class="item-row-main"><h3>getAmbientColor</h3><pre class="inline-signature">LOverlay:getAmbientColor() -&gt; number</pre><p>Returns overlay ambient RGBA color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:155</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAmbientColor(0.2, 0.1, 0.3, 0.5)
+    local r, g, b, a = ov:getAmbientColor()
+    print(&quot;LOverlay:getAmbientColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcloudcount"><div class="item-row-main"><h3>getCloudCount</h3><pre class="inline-signature">LOverlay:getCloudCount() -&gt; integer</pre><p>Returns the overlay cloud shadow count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:341</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudCount(8)
+    print(&quot;LOverlay:getCloudCount=&quot; .. ov:getCloudCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcloudopacity"><div class="item-row-main"><h3>getCloudOpacity</h3><pre class="inline-signature">LOverlay:getCloudOpacity() -&gt; number</pre><p>Returns cloud shadow opacity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:374</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudOpacity(0.7)
+    print(&quot;LOverlay:getCloudOpacity=&quot; .. f2(ov:getCloudOpacity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcloudscale"><div class="item-row-main"><h3>getCloudScale</h3><pre class="inline-signature">LOverlay:getCloudScale() -&gt; number</pre><p>Returns cloud shadow scale. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:363</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudScale(1.5)
+    print(&quot;LOverlay:getCloudScale=&quot; .. f2(ov:getCloudScale()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcloudspeed"><div class="item-row-main"><h3>getCloudSpeed</h3><pre class="inline-signature">LOverlay:getCloudSpeed() -&gt; number</pre><p>Returns cloud shadow movement speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudSpeed(0.3)
+    print(&quot;LOverlay:getCloudSpeed=&quot; .. f2(ov:getCloudSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">LOverlay:getDimensions() -&gt; integer</pre><p>Returns the overlay dimensions. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:108</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    local w, h = ov:getDimensions()
+    print(&quot;LOverlay:getDimensions=&quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfilmgrainintensity"><div class="item-row-main"><h3>getFilmGrainIntensity</h3><pre class="inline-signature">LOverlay:getFilmGrainIntensity() -&gt; number</pre><p>Returns overlay film grain intensity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:315</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFilmGrainIntensity(0.4)
+    print(&quot;LOverlay:getFilmGrainIntensity=&quot; .. f2(ov:getFilmGrainIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getflashalpha"><div class="item-row-main"><h3>getFlashAlpha</h3><pre class="inline-signature">LOverlay:getFlashAlpha() -&gt; number</pre><p>Returns the current flash alpha. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:114</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:flash(1, 1, 0, 1.0, 0.5)
+    print(&quot;LOverlay:getFlashAlpha=&quot; .. f2(ov:getFlashAlpha()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getfogcolor"><div class="item-row-main"><h3>getFogColor</h3><pre class="inline-signature">LOverlay:getFogColor() -&gt; number</pre><p>Returns overlay fog RGBA color. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:236</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogColor(0.5, 0.5, 0.5, 0.8)
+    local r, g, b, a = ov:getFogColor()
+    print(&quot;LOverlay:getFogColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-getfogdensity"><div class="item-row-main"><h3>getFogDensity</h3><pre class="inline-signature">LOverlay:getFogDensity() -&gt; number</pre><p>Returns overlay fog density. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:216</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogDensity(0.6)
+    print(&quot;LOverlay:getFogDensity=&quot; .. f2(ov:getFogDensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getheathazeintensity"><div class="item-row-main"><h3>getHeatHazeIntensity</h3><pre class="inline-signature">LOverlay:getHeatHazeIntensity() -&gt; number</pre><p>Returns overlay heat haze intensity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:263</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setHeatHazeIntensity(0.4)
+    print(&quot;LOverlay:getHeatHazeIntensity=&quot; .. f2(ov:getHeatHazeIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LOverlay:getHeight() -&gt; integer</pre><p>Returns the overlay height. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:103</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    print(&quot;LOverlay:getHeight=&quot; .. ov:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlightningalpha"><div class="item-row-main"><h3>getLightningAlpha</h3><pre class="inline-signature">LOverlay:getLightningAlpha() -&gt; number</pre><p>Returns the current lightning alpha.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:120</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerLightning()
+    print(&quot;LOverlay:getLightningAlpha=&quot; .. f2(ov:getLightningAlpha()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getlightningcolor"><div class="item-row-main"><h3>getLightningColor</h3><pre class="inline-signature">LOverlay:getLightningColor() -&gt; number</pre><p>Returns overlay lightning RGBA color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:462</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setLightningColor(0.9, 0.9, 1.0, 1.0)
+    local r, g, b, a = ov:getLightningColor()
+    print(&quot;LOverlay:getLightningColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-getshakeoffset"><div class="item-row-main"><h3>getShakeOffset</h3><pre class="inline-signature">LOverlay:getShakeOffset() -&gt; number</pre><p>Returns the current screen shake offset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:75</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:shake(5.0, 0.3)
+    local ox, oy = ov:getShakeOffset()
+    print(&quot;LOverlay:getShakeOffset=&quot; .. pair_text(ox, oy))
+end</code></pre></details></article><article class="item-row api-row" id="method-gettimeofday"><div class="item-row-main"><h3>getTimeOfDay</h3><pre class="inline-signature">LOverlay:getTimeOfDay() -&gt; number</pre><p>Returns the overlay time-of-day value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:192</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setTimeOfDay(0.75)
+    print(&quot;LOverlay:getTimeOfDay=&quot; .. ov:getTimeOfDay())
+end</code></pre></details></article><article class="item-row api-row" id="method-getvignettestrength"><div class="item-row-main"><h3>getVignetteStrength</h3><pre class="inline-signature">LOverlay:getVignetteStrength() -&gt; number</pre><p>Returns overlay vignette strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:289</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setVignetteStrength(0.6)
+    print(&quot;LOverlay:getVignetteStrength=&quot; .. f2(ov:getVignetteStrength()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getwater"><div class="item-row-main"><h3>getWater</h3><pre class="inline-signature">LOverlay:getWater() -&gt; table</pre><p>Returns a table describing the current water effect settings.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:586</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWater(0.20, 1.10, 0.35)
+    local w = ov:getWater()
+    print(&quot;LOverlay:getWater enabled=&quot; .. tostring(w.enabled))
+    print(&quot;LOverlay:getWater wave=&quot; .. f2(w.amplitude) .. &quot;,&quot; .. f2(w.frequency) .. &quot;,&quot; .. f2(w.speed))
+end</code></pre></details></article><article class="item-row api-row" id="method-getweather"><div class="item-row-main"><h3>getWeather</h3><pre class="inline-signature">LOverlay:getWeather() -&gt; string</pre><p>Returns the overlay weather type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:401</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeather(&quot;rain&quot;)
+    print(&quot;LOverlay:getWeather=&quot; .. ov:getWeather())
+end</code></pre></details></article><article class="item-row api-row" id="method-getweatherintensity"><div class="item-row-main"><h3>getWeatherIntensity</h3><pre class="inline-signature">LOverlay:getWeatherIntensity() -&gt; number</pre><p>Returns weather intensity for the current weather type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:414</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherIntensity(0.7)
+    print(&quot;LOverlay:getWeatherIntensity=&quot; .. f2(ov:getWeatherIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LOverlay:getWidth() -&gt; integer</pre><p>Returns the overlay width. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:99</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    print(&quot;LOverlay:getWidth=&quot; .. ov:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getwinddirection"><div class="item-row-main"><h3>getWindDirection</h3><pre class="inline-signature">LOverlay:getWindDirection() -&gt; number</pre><p>Returns the overlay weather wind direction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWindDirection(0.79)
+    print(&quot;LOverlay:getWindDirection=&quot; .. f2(ov:getWindDirection()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getwindspeed"><div class="item-row-main"><h3>getWindSpeed</h3><pre class="inline-signature">LOverlay:getWindSpeed() -&gt; number</pre><p>Returns the overlay weather wind speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:440</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWindSpeed(12.0)
+    print(&quot;LOverlay:getWindSpeed=&quot; .. f2(ov:getWindSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LOverlay:isActive() -&gt; boolean</pre><p>Returns whether any overlay effect is currently active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:81</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFlash(1, 1, 1, 0.5, 0.3)
+    print(&quot;LOverlay:isActive=&quot; .. tostring(ov:isActive()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isambientenabled"><div class="item-row-main"><h3>isAmbientEnabled</h3><pre class="inline-signature">LOverlay:isAmbientEnabled() -&gt; boolean</pre><p>Returns whether overlay ambient color rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAmbientEnabled(true)
+    print(&quot;LOverlay:isAmbientEnabled=&quot; .. tostring(ov:isAmbientEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-iscloudshadowsenabled"><div class="item-row-main"><h3>isCloudShadowsEnabled</h3><pre class="inline-signature">LOverlay:isCloudShadowsEnabled() -&gt; boolean</pre><p>Returns whether overlay cloud shadow rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:328</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudShadows(true)
+    print(&quot;LOverlay:isCloudShadowsEnabled=&quot; .. tostring(ov:isCloudShadowsEnabled()))
+    print(&quot;LOverlay:isCloudShadowsEnabled count=&quot; .. ov:getCloudCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-isfading"><div class="item-row-main"><h3>isFading</h3><pre class="inline-signature">LOverlay:isFading() -&gt; boolean</pre><p>Returns whether the fade overlay is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:515</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFade(0.0, 0.0, 0.0, 1.0, 0.4)
+    print(&quot;LOverlay:isFading=&quot; .. tostring(ov:isFading()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isfilmgrainenabled"><div class="item-row-main"><h3>isFilmGrainEnabled</h3><pre class="inline-signature">LOverlay:isFilmGrainEnabled() -&gt; boolean</pre><p>Returns whether overlay film grain rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFilmGrainEnabled(true)
+    print(&quot;LOverlay:isFilmGrainEnabled=&quot; .. tostring(ov:isFilmGrainEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isflashing"><div class="item-row-main"><h3>isFlashing</h3><pre class="inline-signature">LOverlay:isFlashing() -&gt; boolean</pre><p>Returns whether the flash overlay is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:484</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFlash(1, 0, 0, 1.0, 0.5)
+    print(&quot;LOverlay:isFlashing=&quot; .. tostring(ov:isFlashing()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isfogenabled"><div class="item-row-main"><h3>isFogEnabled</h3><pre class="inline-signature">LOverlay:isFogEnabled() -&gt; boolean</pre><p>Returns whether overlay fog rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:205</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogEnabled(true)
+    print(&quot;LOverlay:isFogEnabled=&quot; .. tostring(ov:isFogEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isheathazeenabled"><div class="item-row-main"><h3>isHeatHazeEnabled</h3><pre class="inline-signature">LOverlay:isHeatHazeEnabled() -&gt; boolean</pre><p>Returns whether overlay heat haze rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setHeatHazeEnabled(true)
+    print(&quot;LOverlay:isHeatHazeEnabled=&quot; .. tostring(ov:isHeatHazeEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isshaking"><div class="item-row-main"><h3>isShaking</h3><pre class="inline-signature">LOverlay:isShaking() -&gt; boolean</pre><p>Returns whether the screen shake effect is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerShake(5.0, 0.5)
+    print(&quot;LOverlay:isShaking=&quot; .. tostring(ov:isShaking()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvignetteenabled"><div class="item-row-main"><h3>isVignetteEnabled</h3><pre class="inline-signature">LOverlay:isVignetteEnabled() -&gt; boolean</pre><p>Returns whether overlay vignette rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:276</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setVignetteEnabled(true)
+    print(&quot;LOverlay:isVignetteEnabled=&quot; .. tostring(ov:isVignetteEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isweatherenabled"><div class="item-row-main"><h3>isWeatherEnabled</h3><pre class="inline-signature">LOverlay:isWeatherEnabled() -&gt; boolean</pre><p>Returns whether overlay weather rendering is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:387</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherEnabled(true)
+    print(&quot;LOverlay:isWeatherEnabled=&quot; .. tostring(ov:isWeatherEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-pullambientfromlight"><div class="item-row-main"><h3>pullAmbientFromLight</h3><pre class="inline-signature">LOverlay:pullAmbientFromLight()</pre><p>Copies ambient color from the shared light world into this overlay.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:161</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local source = lurek.overlay.new(800, 600)
+    source:setAmbientColor(0.12, 0.18, 0.30, 0.65)
+    source:pushAmbientToLight()
+
+    local ov = lurek.overlay.new(800, 600)
+    ov:pullAmbientFromLight()
+    local r, g, b, a = ov:getAmbientColor()
+    print(&quot;LOverlay:pullAmbientFromLight=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-pushambienttolight"><div class="item-row-main"><h3>pushAmbientToLight</h3><pre class="inline-signature">LOverlay:pushAmbientToLight()</pre><p>Copies this overlay ambient color into the shared light world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:168</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local source = lurek.overlay.new(800, 600)
+    source:setAmbientColor(0.30, 0.20, 0.50, 0.40)
+    source:pushAmbientToLight()
+
+    local probe = lurek.overlay.new(800, 600)
+    probe:pullAmbientFromLight()
+    local r, g, b, a = probe:getAmbientColor()
+    print(&quot;LOverlay:pushAmbientToLight=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LOverlay:render()</pre><p>Queues renderer commands for the overlay&#x27;s current visual state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:518</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:flash(1.0, 1.0, 1.0, 0.5, 0.2)
+    ov:render()
+    print(&quot;LOverlay:render active=&quot; .. tostring(ov:isActive()))
+    print(&quot;LOverlay:render flashAlpha=&quot; .. f2(ov:getFlashAlpha()))
+end</code></pre></details></article><article class="item-row api-row" id="method-resize"><div class="item-row-main"><h3>resize</h3><pre class="inline-signature">LOverlay:resize(w: integer, h: integer)</pre><p>Resizes the overlay target dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:92</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:resize(1280, 720)
+    print(&quot;LOverlay:resize=&quot; .. ov:getWidth() .. &quot;x&quot; .. ov:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-setambientcolor"><div class="item-row-main"><h3>setAmbientColor</h3><pre class="inline-signature">LOverlay:setAmbientColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the overlay ambient color from RGBA channels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:142</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAmbientColor(0.2, 0.1, 0.3, 0.5)
+    local r, g, b, a = ov:getAmbientColor()
+    print(&quot;LOverlay:setAmbientColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-setambientenabled"><div class="item-row-main"><h3>setAmbientEnabled</h3><pre class="inline-signature">LOverlay:setAmbientEnabled(v: boolean)</pre><p>Enables or disables overlay ambient color rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:126</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAmbientEnabled(true)
+    print(&quot;LOverlay:setAmbientEnabled=&quot; .. tostring(ov:isAmbientEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcloudcount"><div class="item-row-main"><h3>setCloudCount</h3><pre class="inline-signature">LOverlay:setCloudCount(v: integer)</pre><p>Sets the overlay cloud shadow count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:334</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudCount(12)
+    print(&quot;LOverlay:setCloudCount=&quot; .. ov:getCloudCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setcloudopacity"><div class="item-row-main"><h3>setCloudOpacity</h3><pre class="inline-signature">LOverlay:setCloudOpacity(v: number)</pre><p>Sets cloud shadow opacity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:367</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudOpacity(0.5)
+    print(&quot;LOverlay:setCloudOpacity=&quot; .. f2(ov:getCloudOpacity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcloudscale"><div class="item-row-main"><h3>setCloudScale</h3><pre class="inline-signature">LOverlay:setCloudScale(v: number)</pre><p>Sets cloud shadow scale. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:356</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudScale(2.0)
+    print(&quot;LOverlay:setCloudScale=&quot; .. f2(ov:getCloudScale()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcloudshadows"><div class="item-row-main"><h3>setCloudShadows</h3><pre class="inline-signature">LOverlay:setCloudShadows(v: boolean)</pre><p>Enables or disables overlay cloud shadow rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:321</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudShadows(true)
+    print(&quot;LOverlay:setCloudShadows=&quot; .. tostring(ov:isCloudShadowsEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcloudspeed"><div class="item-row-main"><h3>setCloudSpeed</h3><pre class="inline-signature">LOverlay:setCloudSpeed(v: number)</pre><p>Sets cloud shadow movement speed. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:345</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCloudSpeed(0.5)
+    print(&quot;LOverlay:setCloudSpeed=&quot; .. f2(ov:getCloudSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcustomshader"><div class="item-row-main"><h3>setCustomShader</h3><pre class="inline-signature">LOverlay:setCustomShader(name: string?)</pre><p>Sets or clears the custom overlay shader name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:566</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setCustomShader(&quot;scanlines&quot;)
+    local img_with_shader = ov:drawToImage(96, 64)
+    ov:setCustomShader(nil)
+    local img_without_shader = ov:drawToImage(96, 64)
+    print(&quot;LOverlay:setCustomShader types=&quot; .. type(img_with_shader) .. &quot;,&quot; .. type(img_without_shader))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfilmgrainenabled"><div class="item-row-main"><h3>setFilmGrainEnabled</h3><pre class="inline-signature">LOverlay:setFilmGrainEnabled(v: boolean)</pre><p>Enables or disables overlay film grain rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:295</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFilmGrainEnabled(true)
+    print(&quot;LOverlay:setFilmGrainEnabled=&quot; .. tostring(ov:isFilmGrainEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfilmgrainintensity"><div class="item-row-main"><h3>setFilmGrainIntensity</h3><pre class="inline-signature">LOverlay:setFilmGrainIntensity(v: number)</pre><p>Sets overlay film grain intensity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:308</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFilmGrainIntensity(0.3)
+    print(&quot;LOverlay:setFilmGrainIntensity=&quot; .. f2(ov:getFilmGrainIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogcolor"><div class="item-row-main"><h3>setFogColor</h3><pre class="inline-signature">LOverlay:setFogColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the overlay fog color from RGBA channels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:223</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogColor(0.7, 0.7, 0.8, 0.6)
+    local r, g, b, a = ov:getFogColor()
+    print(&quot;LOverlay:setFogColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogdensity"><div class="item-row-main"><h3>setFogDensity</h3><pre class="inline-signature">LOverlay:setFogDensity(v: number)</pre><p>Sets overlay fog density. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogDensity(0.5)
+    print(&quot;LOverlay:setFogDensity=&quot; .. f2(ov:getFogDensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogenabled"><div class="item-row-main"><h3>setFogEnabled</h3><pre class="inline-signature">LOverlay:setFogEnabled(v: boolean)</pre><p>Enables or disables overlay fog rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:198</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setFogEnabled(true)
+    print(&quot;LOverlay:setFogEnabled=&quot; .. tostring(ov:isFogEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setheathazeenabled"><div class="item-row-main"><h3>setHeatHazeEnabled</h3><pre class="inline-signature">LOverlay:setHeatHazeEnabled(v: boolean)</pre><p>Enables or disables overlay heat haze rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:243</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setHeatHazeEnabled(true)
+    print(&quot;LOverlay:setHeatHazeEnabled=&quot; .. tostring(ov:isHeatHazeEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setheathazeintensity"><div class="item-row-main"><h3>setHeatHazeIntensity</h3><pre class="inline-signature">LOverlay:setHeatHazeIntensity(v: number)</pre><p>Sets overlay heat haze intensity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:256</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setHeatHazeIntensity(0.5)
+    print(&quot;LOverlay:setHeatHazeIntensity=&quot; .. f2(ov:getHeatHazeIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setlightningcolor"><div class="item-row-main"><h3>setLightningColor</h3><pre class="inline-signature">LOverlay:setLightningColor(r: number, g: number, b: number, a: number?)</pre><p>Sets overlay lightning RGBA color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:449</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setLightningColor(1.0, 1.0, 0.8, 1.0)
+    local r, g, b, a = ov:getLightningColor()
+    print(&quot;LOverlay:setLightningColor=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-settimeofday"><div class="item-row-main"><h3>setTimeOfDay</h3><pre class="inline-signature">LOverlay:setTimeOfDay(v: number)</pre><p>Sets the overlay time-of-day value used by ambient effects.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:185</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setTimeOfDay(0.5)
+    print(&quot;LOverlay:setTimeOfDay=&quot; .. ov:getTimeOfDay())
+end</code></pre></details></article><article class="item-row api-row" id="method-setvignetteenabled"><div class="item-row-main"><h3>setVignetteEnabled</h3><pre class="inline-signature">LOverlay:setVignetteEnabled(v: boolean)</pre><p>Enables or disables overlay vignette rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:269</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setVignetteEnabled(true)
+    print(&quot;LOverlay:setVignetteEnabled=&quot; .. tostring(ov:isVignetteEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setvignettestrength"><div class="item-row-main"><h3>setVignetteStrength</h3><pre class="inline-signature">LOverlay:setVignetteStrength(v: number)</pre><p>Sets overlay vignette strength. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:282</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setVignetteStrength(0.7)
+    print(&quot;LOverlay:setVignetteStrength=&quot; .. f2(ov:getVignetteStrength()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setwater"><div class="item-row-main"><h3>setWater</h3><pre class="inline-signature">LOverlay:setWater(amplitude: number, frequency: number, speed: number)</pre><p>Enables water distortion and sets wave amplitude, frequency, and speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:537</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWater(0.25, 1.25, 0.60)
+    local w = ov:getWater()
+    print(&quot;LOverlay:setWater enabled=&quot; .. tostring(w.enabled))
+    print(&quot;LOverlay:setWater wave=&quot; .. f2(w.amplitude) .. &quot;,&quot; .. f2(w.frequency) .. &quot;,&quot; .. f2(w.speed))
+end</code></pre></details></article><article class="item-row api-row" id="method-setwatertint"><div class="item-row-main"><h3>setWaterTint</h3><pre class="inline-signature">LOverlay:setWaterTint(r: number, g: number, b: number, strength: number)</pre><p>Sets the water tint color and strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:553</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWater(0.20, 1.10, 0.35)
+    ov:setWaterTint(0.1, 0.3, 0.7, 0.8)
+    local w = ov:getWater()
+    print(&quot;LOverlay:setWaterTint tint=&quot; .. f2(w.tint_r) .. &quot;,&quot; .. f2(w.tint_g) .. &quot;,&quot; .. f2(w.tint_b) .. &quot;,&quot; .. f2(w.tint_strength))
+end</code></pre></details></article><article class="item-row api-row" id="method-setweather"><div class="item-row-main"><h3>setWeather</h3><pre class="inline-signature">LOverlay:setWeather(name: string)</pre><p>Sets the overlay weather type by name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeather(&quot;snow&quot;)
+    print(&quot;LOverlay:setWeather=&quot; .. ov:getWeather())
+end</code></pre></details></article><article class="item-row api-row" id="method-setweatherenabled"><div class="item-row-main"><h3>setWeatherEnabled</h3><pre class="inline-signature">LOverlay:setWeatherEnabled(v: boolean)</pre><p>Enables or disables overlay weather rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherEnabled(true)
+    print(&quot;LOverlay:setWeatherEnabled=&quot; .. tostring(ov:isWeatherEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setweatherintensity"><div class="item-row-main"><h3>setWeatherIntensity</h3><pre class="inline-signature">LOverlay:setWeatherIntensity(v: number)</pre><p>Sets weather intensity for the current weather type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:407</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWeatherIntensity(0.8)
+    print(&quot;LOverlay:setWeatherIntensity=&quot; .. f2(ov:getWeatherIntensity()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setwinddirection"><div class="item-row-main"><h3>setWindDirection</h3><pre class="inline-signature">LOverlay:setWindDirection(v: number)</pre><p>Sets the overlay weather wind direction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:420</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWindDirection(1.57)
+    print(&quot;LOverlay:setWindDirection=&quot; .. f2(ov:getWindDirection()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setwindspeed"><div class="item-row-main"><h3>setWindSpeed</h3><pre class="inline-signature">LOverlay:setWindSpeed(v: number)</pre><p>Sets the overlay weather wind speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:433</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setWindSpeed(8.0)
+    print(&quot;LOverlay:setWindSpeed=&quot; .. f2(ov:getWindSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-shake"><div class="item-row-main"><h3>shake</h3><pre class="inline-signature">LOverlay:shake(intensity: number, dur: number?)</pre><p>Starts a screen shake with optional duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:489</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:shake(8.0, 0.4)
+    print(&quot;LOverlay:shake isShaking=&quot; .. tostring(ov:isShaking()))
+end</code></pre></details></article><article class="item-row api-row" id="method-syncambientwithlight"><div class="item-row-main"><h3>syncAmbientWithLight</h3><pre class="inline-signature">LOverlay:syncAmbientWithLight(mode: string)</pre><p>Resolves overlay and light ambient colors using a named mode and writes both stores.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:176</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:setAmbientColor(0.20, 0.10, 0.40, 0.60)
+    ov:syncAmbientWithLight(&quot;overlay&quot;)
+
+    local probe = lurek.overlay.new(800, 600)
+    probe:pullAmbientFromLight()
+    local r, g, b, a = probe:getAmbientColor()
+    print(&quot;LOverlay:syncAmbientWithLight=&quot; .. rgba_text(r, g, b, a))
+end</code></pre></details></article><article class="item-row api-row" id="method-triggerfade"><div class="item-row-main"><h3>triggerFade</h3><pre class="inline-signature">LOverlay:triggerFade(r: number, g: number, b: number, target_alpha: number, duration: number)</pre><p>Starts a fade overlay toward a target alpha.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:58</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFade(1.0, 0, 0, 0, 0.2)
+    print(&quot;LOverlay:triggerFade isFading=&quot; .. tostring(ov:isFading()))
+end</code></pre></details></article><article class="item-row api-row" id="method-triggerflash"><div class="item-row-main"><h3>triggerFlash</h3><pre class="inline-signature">LOverlay:triggerFlash(r: number, g: number, b: number, a: number, duration: number)</pre><p>Starts a screen flash with explicit RGBA color and duration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:33</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerFlash(1, 1, 0, 1.0, 0.2)
+    print(&quot;LOverlay:triggerFlash isFlashing=&quot; .. tostring(ov:isFlashing()))
+end</code></pre></details></article><article class="item-row api-row" id="method-triggerlightning"><div class="item-row-main"><h3>triggerLightning</h3><pre class="inline-signature">LOverlay:triggerLightning()</pre><p>Starts a lightning flash using the overlay lightning state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:67</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerLightning()
+    print(&quot;LOverlay:triggerLightning alpha=&quot; .. f2(ov:getLightningAlpha()))
+end</code></pre></details></article><article class="item-row api-row" id="method-triggershake"><div class="item-row-main"><h3>triggerShake</h3><pre class="inline-signature">LOverlay:triggerShake(intensity: number, duration: number)</pre><p>Starts a screen shake effect. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:44</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerShake(6.0, 0.3)
+    print(&quot;LOverlay:triggerShake isShaking=&quot; .. tostring(ov:isShaking()))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LOverlay:type() -&gt; string</pre><p>Returns the Lua-visible type name for this overlay handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:607</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    print(&quot;LOverlay:type=&quot; .. ov:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LOverlay:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this overlay handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:612</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    print(&quot;LOverlay:typeOf LOverlay=&quot; .. tostring(ov:typeOf(&quot;LOverlay&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LOverlay:update(dt: number)</pre><p>Advances overlay timers and animated effect state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/overlay_api.rs:22</span></div><details class="example-block"><summary>Example · Exact example · overlay.lua</summary><pre><code>do
+    local ov = lurek.overlay.new(800, 600)
+    ov:triggerShake(5.0, 1.0)
+    ov:update(0.016)
+    print(&quot;LOverlay:update isShaking=&quot; .. tostring(ov:isShaking()))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

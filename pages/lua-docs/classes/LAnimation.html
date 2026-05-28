@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAnimation - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a class="active" href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LAnimation</h1>
+  <p>Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/animation.html">lurek.animation</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    print(&quot;frames = &quot; .. anim:getFrameCount())
+    print(&quot;current frame = &quot; .. anim:getCurrentFrame())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LAnimation userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addclip"><div class="item-row-main"><h3>addClip</h3><pre class="inline-signature">LAnimation:addClip(name: string, indices_tbl: table, fps: number, looping: boolean, mode: string?)</pre><p>Adds a named clip using existing frame indices.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:80</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
+    anim:addClip(&quot;walk&quot;, { 0, 1, 2, 3 }, 10, true, &quot;forward&quot;)
+    print(&quot;clips = &quot; .. anim:getClipCount())
+    print(&quot;walk mode = &quot; .. tostring(anim:getClipMode(&quot;walk&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-addclipfromgrid"><div class="item-row-main"><h3>addClipFromGrid</h3><pre class="inline-signature">LAnimation:addClipFromGrid(name: string, tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer, fps: number, looping: boolean)</pre><p>Adds frames from a texture grid and creates a clip that references the new frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:136</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addClipFromGrid(&quot;sprint&quot;, 256, 64, 32, 32, 0, 8, 15, true)
+    print(&quot;clip from grid, frames = &quot; .. anim:getFrameCount())
+    print(&quot;clip count = &quot; .. anim:getClipCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addframe"><div class="item-row-main"><h3>addFrame</h3><pre class="inline-signature">LAnimation:addFrame(x: number, y: number, w: number, h: number) -&gt; integer</pre><p>Adds one frame rectangle to this animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:37</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    print(&quot;frames = &quot; .. anim:getFrameCount())
+    print(&quot;current frame = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article><article class="item-row api-row" id="method-addframesfromgrid"><div class="item-row-main"><h3>addFramesFromGrid</h3><pre class="inline-signature">LAnimation:addFramesFromGrid(tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer) -&gt; integer</pre><p>Adds frames by slicing a texture grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:49</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    local count = anim:addFramesFromGrid(256, 256, 32, 32, 0, 8)
+    print(&quot;added &quot; .. count .. &quot; frames from grid&quot;)
+    print(&quot;frame count = &quot; .. anim:getFrameCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addframesfromrects"><div class="item-row-main"><h3>addFramesFromRects</h3><pre class="inline-signature">LAnimation:addFramesFromRects(rects: table) -&gt; integer</pre><p>Adds frames from an array of rectangle tables.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:61</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromRects({ { x = 0, y = 0, w = 16, h = 16 }, { x = 16, y = 0, w = 16, h = 16 } })
+    print(&quot;frames from rects = &quot; .. anim:getFrameCount())
+    print(&quot;animation type = &quot; .. anim:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-crossfade"><div class="item-row-main"><h3>crossfade</h3><pre class="inline-signature">LAnimation:crossfade(clip_name: string, duration: number) -&gt; boolean</pre><p>Starts a crossfade from the current clip to another clip.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
+    anim:addClip(&quot;idle&quot;, { 0, 1 }, 4, true)
+    anim:addClip(&quot;run&quot;, { 2, 3 }, 8, true)
+    anim:play(&quot;idle&quot;)
+    anim:crossfade(&quot;run&quot;, 0.3)
+    print(&quot;crossfading to run&quot;)
+    print(&quot;blend state exists = &quot; .. tostring(anim:getBlendState() ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-draw"><div class="item-row-main"><h3>draw</h3><pre class="inline-signature">LAnimation:draw(image: LImage?, x: number?, y: number?, opts: table?) -&gt; boolean</pre><p>Draws the current animation frame without advancing playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:224</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local atlas = lurek.render.newImage(&quot;assets/icon.png&quot;)
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;idle&quot;, { 0 }, 1, true)
+    anim:play(&quot;idle&quot;)
+    local queued = anim:draw(atlas, 20, 24, { scale = 2.0 })
+    print(&quot;animation draw queued = &quot; .. tostring(queued))
+    anim:setImage(atlas)
+    local queued2 = anim:draw(20, 24, { scale = 2.0 })
+    print(&quot;animation draw (stored image) queued = &quot; .. tostring(queued2))
+end</code></pre></details></article><article class="item-row api-row" id="method-drawpreviewgrid"><div class="item-row-main"><h3>drawPreviewGrid</h3><pre class="inline-signature">LAnimation:drawPreviewGrid(columns: integer, cell_size: integer) -&gt; LImageData</pre><p>Rasterizes all animation frames into a preview grid image.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:358</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
+    anim:drawPreviewGrid(4, 36)
+    print(&quot;preview grid drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LAnimation:drawToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Rasterizes the current animation frame into an image userdata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:349</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;snap&quot;, { 0 }, 1, false)
+    anim:play(&quot;snap&quot;)
+    local img = anim:drawToImage(64, 64)
+    print(&quot;drawn to image = &quot; .. tostring(img ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getblendstate"><div class="item-row-main"><h3>getBlendState</h3><pre class="inline-signature">LAnimation:getBlendState() -&gt; LuaValue</pre><p>Returns current crossfade rectangles and blend factor when a crossfade is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:311</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;a&quot;, { 0 }, 5, true)
+    anim:play(&quot;a&quot;)
+    local bs = anim:getBlendState()
+    print(&quot;blend state = &quot; .. tostring(bs ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getclip"><div class="item-row-main"><h3>getClip</h3><pre class="inline-signature">LAnimation:getClip() -&gt; LuaValue</pre><p>Returns the current clip name when a clip is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:258</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;walk&quot;, { 0 }, 8, true)
+    anim:play(&quot;walk&quot;)
+    print(&quot;clip = &quot; .. anim:getClip())
+end</code></pre></details></article><article class="item-row api-row" id="method-getclipcount"><div class="item-row-main"><h3>getClipCount</h3><pre class="inline-signature">LAnimation:getClipCount() -&gt; integer</pre><p>Returns the number of named clips stored in this animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:281</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;a&quot;, { 0 }, 5, false)
+    anim:addClip(&quot;b&quot;, { 0 }, 5, true)
+    print(&quot;clip count = &quot; .. anim:getClipCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getclipmode"><div class="item-row-main"><h3>getClipMode</h3><pre class="inline-signature">LAnimation:getClipMode(name: string) -&gt; LuaValue</pre><p>Returns the playback mode name for a clip when it exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:119</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;run&quot;, { 0 }, 12, true, &quot;pingpong&quot;)
+    local mode = anim:getClipMode(&quot;run&quot;)
+    print(&quot;run mode = &quot; .. mode)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcurrentframe"><div class="item-row-main"><h3>getCurrentFrame</h3><pre class="inline-signature">LAnimation:getCurrentFrame() -&gt; integer</pre><p>Returns the current frame index. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:287</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
+    anim:addClip(&quot;pair&quot;, { 0, 1 }, 4, true)
+    anim:play(&quot;pair&quot;)
+    print(&quot;current frame = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article><article class="item-row api-row" id="method-getframecount"><div class="item-row-main"><h3>getFrameCount</h3><pre class="inline-signature">LAnimation:getFrameCount() -&gt; integer</pre><p>Returns the number of frame rectangles stored in this animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:275</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addFrame(32, 0, 32, 32)
+    print(&quot;frame count = &quot; .. anim:getFrameCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getquad"><div class="item-row-main"><h3>getQuad</h3><pre class="inline-signature">LAnimation:getQuad() -&gt; LuaValue</pre><p>Returns the current frame rectangle as a table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:189</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;single&quot;, { 0 }, 1, false)
+    anim:play(&quot;single&quot;)
+    local q = anim:getQuad()
+    print(&quot;quad = &quot; .. tostring(q ~= nil))
+    print(&quot;frame = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article><article class="item-row api-row" id="method-getspeed"><div class="item-row-main"><h3>getSpeed</h3><pre class="inline-signature">LAnimation:getSpeed() -&gt; number</pre><p>Returns the animation playback speed multiplier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    print(&quot;default speed = &quot; .. anim:getSpeed())
+    print(&quot;type = &quot; .. anim:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-islooping"><div class="item-row-main"><h3>isLooping</h3><pre class="inline-signature">LAnimation:isLooping() -&gt; boolean</pre><p>Returns whether the current clip loops.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;loop_clip&quot;, { 0 }, 5, true)
+    anim:play(&quot;loop_clip&quot;)
+    print(&quot;looping = &quot; .. tostring(anim:isLooping()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isplaying"><div class="item-row-main"><h3>isPlaying</h3><pre class="inline-signature">LAnimation:isPlaying() -&gt; boolean</pre><p>Returns whether this animation is currently playing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;x&quot;, { 0 }, 1, false)
+    anim:play(&quot;x&quot;)
+    print(&quot;after play = &quot; .. tostring(anim:isPlaying()))
+end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LAnimation:pause()</pre><p>Pauses animation playback without changing the current clip.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:169</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;b&quot;, { 0 }, 5, true)
+    anim:play(&quot;b&quot;)
+    anim:pause()
+    print(&quot;playing after pause = &quot; .. tostring(anim:isPlaying()))
+    print(&quot;clip after pause = &quot; .. tostring(anim:getClip()))
+end</code></pre></details></article><article class="item-row api-row" id="method-play"><div class="item-row-main"><h3>play</h3><pre class="inline-signature">LAnimation:play(name: string) -&gt; boolean</pre><p>Starts playback of a named clip. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:160</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
+    anim:addClip(&quot;idle&quot;, { 0, 1, 2, 3 }, 8, true)
+    anim:play(&quot;idle&quot;)
+    print(&quot;playing = &quot; .. tostring(anim:isPlaying()))
+end</code></pre></details></article><article class="item-row api-row" id="method-pollevents"><div class="item-row-main"><h3>pollEvents</h3><pre class="inline-signature">LAnimation:pollEvents() -&gt; table</pre><p>Drains animation events produced since the previous poll.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:232</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;once&quot;, { 0 }, 10, false)
+    anim:play(&quot;once&quot;)
+    anim:update(1.0)
+    local events = anim:pollEvents()
+    print(&quot;events count = &quot; .. #events)
+end</code></pre></details></article><article class="item-row api-row" id="method-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">LAnimation:resume()</pre><p>Resumes playback of a paused animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:175</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;c&quot;, { 0 }, 5, true)
+    anim:play(&quot;c&quot;)
+    anim:pause()
+    anim:resume()
+    print(&quot;playing after resume = &quot; .. tostring(anim:isPlaying()))
+    print(&quot;clip after resume = &quot; .. tostring(anim:getClip()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setclipmode"><div class="item-row-main"><h3>setClipMode</h3><pre class="inline-signature">LAnimation:setClipMode(name: string, mode: string) -&gt; boolean</pre><p>Changes the playback mode for an existing clip.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:106</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;test&quot;, { 0 }, 5, true, &quot;forward&quot;)
+    anim:setClipMode(&quot;test&quot;, &quot;reverse&quot;)
+    print(&quot;clip mode set to reverse&quot;)
+    print(&quot;clip mode now = &quot; .. tostring(anim:getClipMode(&quot;test&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setframe"><div class="item-row-main"><h3>setFrame</h3><pre class="inline-signature">LAnimation:setFrame(index: integer)</pre><p>Sets the current frame index directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:293</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
+    anim:addClip(&quot;seq&quot;, { 0, 1, 2, 3 }, 8, true)
+    anim:play(&quot;seq&quot;)
+    anim:setFrame(2)
+    print(&quot;frame after setFrame = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article><article class="item-row api-row" id="method-setimage"><div class="item-row-main"><h3>setImage</h3><pre class="inline-signature">LAnimation:setImage(image: LImage)</pre><p>Stores a spritesheet image on this animation so draw can be called without an explicit image argument.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:208</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local atlas = lurek.render.newImage(&quot;assets/icon.png&quot;)
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 16, 16)
+    anim:addClip(&quot;idle&quot;, { 0 }, 1, true)
+    anim:play(&quot;idle&quot;)
+    anim:setImage(atlas)
+    local queued = anim:draw(20, 24)
+    print(&quot;setImage draw queued = &quot; .. tostring(queued))
+end</code></pre></details></article><article class="item-row api-row" id="method-setspeed"><div class="item-row-main"><h3>setSpeed</h3><pre class="inline-signature">LAnimation:setSpeed(speed: number)</pre><p>Sets the animation playback speed multiplier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:268</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:setSpeed(2.0)
+    print(&quot;speed = &quot; .. anim:getSpeed())
+end</code></pre></details></article><article class="item-row api-row" id="method-stop"><div class="item-row-main"><h3>stop</h3><pre class="inline-signature">LAnimation:stop()</pre><p>Stops playback and resets animation playback state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:163</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFrame(0, 0, 32, 32)
+    anim:addClip(&quot;a&quot;, { 0 }, 5, true)
+    anim:play(&quot;a&quot;)
+    anim:stop()
+    print(&quot;playing after stop = &quot; .. tostring(anim:isPlaying()))
+    print(&quot;current frame after stop = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAnimation:type() -&gt; string</pre><p>Returns the Lua-visible type name for this animation handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:368</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    print(&quot;type = &quot; .. anim:type())
+    print(&quot;matches = &quot; .. tostring(anim:typeOf(&quot;LAnimation&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAnimation:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this animation handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    print(&quot;is LAnimation = &quot; .. tostring(anim:typeOf(&quot;LAnimation&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LAnimation:update(dt: number)</pre><p>Advances animation playback and records any frame or clip events.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/animation_api.rs:182</span></div><details class="example-block"><summary>Example · Exact example · animation.lua</summary><pre><code>do
+    local anim = lurek.animation.new()
+    anim:addFramesFromGrid(64, 32, 32, 32, 0, 2)
+    anim:addClip(&quot;tick&quot;, { 0, 1 }, 2, true)
+    anim:play(&quot;tick&quot;)
+    anim:update(0.6)
+    print(&quot;current frame after update = &quot; .. anim:getCurrentFrame())
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

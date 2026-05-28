@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["spectrogram_to_png","waveform_to_png"]};

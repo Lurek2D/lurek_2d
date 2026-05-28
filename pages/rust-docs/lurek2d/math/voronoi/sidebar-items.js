@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["voronoi_from_points"],"struct":["VoronoiCell"]};

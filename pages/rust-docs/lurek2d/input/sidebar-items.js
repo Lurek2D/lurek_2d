@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["combo","events","gamepad","keyboard","mouse","recorder","touch"]};

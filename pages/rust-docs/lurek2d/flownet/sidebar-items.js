@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["algorithms","core","edge","item","node","pathfinding","render","simulation","supply_demand","types"]};

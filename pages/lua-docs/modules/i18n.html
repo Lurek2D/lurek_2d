@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.i18n - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a class="active" href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.i18n</h1>
+  <p>`lurek.i18n` -- Localization bindings for in-memory catalogs, locale selection, fallback lists, translation lookup, interpolation, plural and gender variants, search indexes, formatting helpers, locale validation, and coverage gap reports. - Registers `lurek.i18n.*` functions and types via `register()`. - Bridges 36 Lua-callable methods via `mlua`. - See `docs/specs/i18n.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>36 functions</span><span>0 classes</span><span>src/lua_api/i18n_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 36</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.i18n.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-buildindex"><div class="item-row-main"><h3>buildIndex</h3><pre class="inline-signature">lurek.i18n.buildIndex() -&gt; table</pre><p>Builds a word-to-keys search index from the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:440</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello traveler&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local indexed = lurek.i18n.buildIndex()
+    print(&quot;index built = &quot; .. tostring(type(indexed) == &quot;table&quot;))
+    print(&quot;has greeting bucket = &quot; .. tostring(indexed.greeting ~= nil or indexed.hello ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-categories"><div class="item-row-main"><h3>categories</h3><pre class="inline-signature">lurek.i18n.categories() -&gt; string[]</pre><p>Returns top-level translation key categories.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello&quot; }, ui = { ok = &quot;OK&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local cats = lurek.i18n.categories()
+    print(&quot;categories = &quot; .. #cats)
+end</code></pre></details></article><article class="item-row api-row" id="fn-detectlocale"><div class="item-row-main"><h3>detectLocale</h3><pre class="inline-signature">lurek.i18n.detectLocale() -&gt; string</pre><p>Detects the system locale when available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:611</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local detected = lurek.i18n.detectLocale()
+    print(&quot;detected = &quot; .. tostring(detected))
+end</code></pre></details></article><article class="item-row api-row" id="fn-formatdate"><div class="item-row-main"><h3>formatDate</h3><pre class="inline-signature">lurek.i18n.formatDate(timestamp: integer, fmt: string?) -&gt; string</pre><p>Formats a timestamp with the active locale and a named format.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:537</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local str = lurek.i18n.formatDate(1700000000)
+    print(&quot;date = &quot; .. str)
+end</code></pre></details></article><article class="item-row api-row" id="fn-formatnumber"><div class="item-row-main"><h3>formatNumber</h3><pre class="inline-signature">lurek.i18n.formatNumber(n: number, opts: table?) -&gt; string</pre><p>Formats a number with locale-aware separators and optional decimal precision.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local str = lurek.i18n.formatNumber(1234567.89)
+    print(&quot;formatted = &quot; .. str)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getavailablelanguages"><div class="item-row-main"><h3>getAvailableLanguages</h3><pre class="inline-signature">lurek.i18n.getAvailableLanguages() -&gt; string[]</pre><p>Returns sorted locale codes currently loaded in the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:304</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local avail = lurek.i18n.getAvailableLanguages()
+    print(&quot;available = &quot; .. #avail)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbase"><div class="item-row-main"><h3>getBase</h3><pre class="inline-signature">lurek.i18n.getBase() -&gt; string</pre><p>Returns the base locale string stored by the localization module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:332</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setBase(&quot;en&quot;)
+    local base = lurek.i18n.getBase()
+    print(&quot;base = &quot; .. base)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfallbacks"><div class="item-row-main"><h3>getFallbacks</h3><pre class="inline-signature">lurek.i18n.getFallbacks() -&gt; string[]</pre><p>Returns fallback locale codes in lookup order.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:172</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setFallbacks({&quot;en&quot;})
+    local fb = lurek.i18n.getFallbacks()
+    print(&quot;fallbacks = &quot; .. #fb)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getkeys"><div class="item-row-main"><h3>getKeys</h3><pre class="inline-signature">lurek.i18n.getKeys() -&gt; string[]</pre><p>Returns sorted translation keys known to the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello&quot; }, ui = { ok = &quot;OK&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local keys = lurek.i18n.getKeys()
+    print(&quot;key count = &quot; .. #keys)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlanguage"><div class="item-row-main"><h3>getLanguage</h3><pre class="inline-signature">lurek.i18n.getLanguage() -&gt; string</pre><p>Returns the active locale code string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:125</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setLanguage(&quot;pl&quot;)
+    local lang = lurek.i18n.getLanguage()
+    print(&quot;current = &quot; .. lang)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlanguages"><div class="item-row-main"><h3>getLanguages</h3><pre class="inline-signature">lurek.i18n.getLanguages() -&gt; string[]</pre><p>Returns sorted locale codes currently loaded in the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:140</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local langs = lurek.i18n.getLanguages()
+    print(&quot;languages: &quot; .. #langs)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getloadedlocales"><div class="item-row-main"><h3>getLoadedLocales</h3><pre class="inline-signature">lurek.i18n.getLoadedLocales() -&gt; string[]</pre><p>Returns locale codes currently loaded in the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:576</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { ui = { ok = &quot;OK&quot; } })
+    lurek.i18n.loadTable(&quot;pl&quot;, { ui = { ok = &quot;OK&quot; } })
+    local loaded = lurek.i18n.getLoadedLocales()
+    print(&quot;loaded = &quot; .. #loaded)
+end</code></pre></details></article><article class="item-row api-row" id="fn-haskey"><div class="item-row-main"><h3>hasKey</h3><pre class="inline-signature">lurek.i18n.hasKey(key: string) -&gt; boolean</pre><p>Returns whether the catalog contains a translation key in active or fallback locales.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:222</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local ok = lurek.i18n.hasKey(&quot;greetings.hello&quot;)
+    print(&quot;has key = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-haslanguage"><div class="item-row-main"><h3>hasLanguage</h3><pre class="inline-signature">lurek.i18n.hasLanguage(locale: string) -&gt; boolean</pre><p>Returns whether a locale has translations loaded.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local ok = lurek.i18n.hasLanguage(&quot;en&quot;)
+    print(&quot;has en = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-interpolate"><div class="item-row-main"><h3>interpolate</h3><pre class="inline-signature">lurek.i18n.interpolate(template: string, vars: table) -&gt; string</pre><p>Replaces `{name}` placeholders in a template using string variables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:261</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local result = lurek.i18n.interpolate(&quot;Hello {name}!&quot;, {name = &quot;Player&quot;})
+    print(&quot;interpolated = &quot; .. result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isrtl"><div class="item-row-main"><h3>isRTL</h3><pre class="inline-signature">lurek.i18n.isRTL(locale: string?) -&gt; boolean</pre><p>Returns whether a locale is written right-to-left.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:593</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local rtl = lurek.i18n.isRTL(&quot;ar&quot;)
+    print(&quot;arabic RTL = &quot; .. tostring(rtl))
+end</code></pre></details></article><article class="item-row api-row" id="fn-keycount"><div class="item-row-main"><h3>keyCount</h3><pre class="inline-signature">lurek.i18n.keyCount() -&gt; integer</pre><p>Returns the number of translation keys known to the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:365</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { ui = { ok = &quot;OK&quot;, cancel = &quot;Cancel&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local n = lurek.i18n.keyCount()
+    print(&quot;total keys = &quot; .. n)
+end</code></pre></details></article><article class="item-row api-row" id="fn-keysincategory"><div class="item-row-main"><h3>keysInCategory</h3><pre class="inline-signature">lurek.i18n.keysInCategory(category: string) -&gt; string[]</pre><p>Returns translation keys belonging to one category prefix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:389</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello&quot;, bye = &quot;Bye&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local keys = lurek.i18n.keysInCategory(&quot;greetings&quot;)
+    print(&quot;greeting keys = &quot; .. #keys)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadstring"><div class="item-row-main"><h3>loadString</h3><pre class="inline-signature">lurek.i18n.loadString(locale: string, content: string, format: string)</pre><p>Loads translations for a locale from TOML or JSON source text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:624</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadString(&quot;en&quot;, &#x27;[greetings]\nhello = &quot;Hello&quot;&#x27;, &quot;toml&quot;)
+    print(&quot;loaded from string&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadtable"><div class="item-row-main"><h3>loadTable</h3><pre class="inline-signature">lurek.i18n.loadTable(locale: string, tbl: table)</pre><p>Loads translations for a locale from a nested Lua table flattened with dot-separated keys.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:78</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, {[&quot;greetings.hello&quot;] = &quot;Hello&quot;})
+    print(&quot;locale table loaded&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-localecoverage"><div class="item-row-main"><h3>localeCoverage</h3><pre class="inline-signature">lurek.i18n.localeCoverage(reference: string) -&gt; table</pre><p>Returns missing translation keys for all locales compared to a reference locale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:650</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { ui = { ok = &quot;OK&quot;, cancel = &quot;Cancel&quot; } })
+    lurek.i18n.loadTable(&quot;pl&quot;, { ui = { ok = &quot;OK&quot; } })
+    local cov = lurek.i18n.localeCoverage(&quot;en&quot;)
+    print(&quot;coverage gaps = &quot; .. #cov)
+end</code></pre></details></article><article class="item-row api-row" id="fn-mergelocale"><div class="item-row-main"><h3>mergeLocale</h3><pre class="inline-signature">lurek.i18n.mergeLocale(locale: string, entries: table)</pre><p>Merges flat translation entries into an existing locale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:502</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.mergeLocale(&quot;en&quot;, {[&quot;ui.ok&quot;] = &quot;OK&quot;, [&quot;ui.cancel&quot;] = &quot;Cancel&quot;})
+    print(&quot;locale merged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-offchange"><div class="item-row-main"><h3>offChange</h3><pre class="inline-signature">lurek.i18n.offChange()</pre><p>Removes every registered locale-change callback.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:351</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.onChange(function() end)
+    lurek.i18n.offChange()
+    print(&quot;callbacks removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-onchange"><div class="item-row-main"><h3>onChange</h3><pre class="inline-signature">lurek.i18n.onChange(cb: function)</pre><p>Registers a locale-change callback using the shorter alias name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:340</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.onChange(function(new_locale, old_locale)
+        print(&quot;something changed&quot;)
+    end)
+    print(&quot;change callback registered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-onlanguagechange"><div class="item-row-main"><h3>onLanguageChange</h3><pre class="inline-signature">lurek.i18n.onLanguageChange(cb: function)</pre><p>Registers a callback invoked when the active locale changes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:283</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.onLanguageChange(function(new_locale, old_locale)
+        print(&quot;language changed!&quot;)
+    end)
+    print(&quot;language change callback registered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pluralfor"><div class="item-row-main"><h3>pluralFor</h3><pre class="inline-signature">lurek.i18n.pluralFor(n: number) -&gt; string</pre><p>Returns the English plural category key for a number.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:275</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local text = lurek.i18n.pluralFor(5)
+    print(&quot;plural = &quot; .. text)
+end</code></pre></details></article><article class="item-row api-row" id="fn-search"><div class="item-row-main"><h3>search</h3><pre class="inline-signature">lurek.i18n.search(query: string, limit: integer?) -&gt; table</pre><p>Searches translation keys and values for a query string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:414</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello there&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local results = lurek.i18n.search(&quot;hello&quot;)
+    print(&quot;search results = &quot; .. #results)
+end</code></pre></details></article><article class="item-row api-row" id="fn-searchindexed"><div class="item-row-main"><h3>searchIndexed</h3><pre class="inline-signature">lurek.i18n.searchIndexed(index: table, query: string, limit: integer?) -&gt; string[]</pre><p>Searches a prebuilt word index and returns matching keys.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:461</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello traveler&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local idx = lurek.i18n.buildIndex()
+    local results = lurek.i18n.searchIndexed(idx, &quot;greet&quot;)
+    print(&quot;indexed results = &quot; .. #results)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbase"><div class="item-row-main"><h3>setBase</h3><pre class="inline-signature">lurek.i18n.setBase(locale: string)</pre><p>Sets the base locale string stored by the localization module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:321</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setBase(&quot;en&quot;)
+    print(&quot;base set to en&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfallbacks"><div class="item-row-main"><h3>setFallbacks</h3><pre class="inline-signature">lurek.i18n.setFallbacks(locales: table)</pre><p>Replaces the fallback locale list used for missing translations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setFallbacks({&quot;en&quot;, &quot;de&quot;})
+    print(&quot;fallbacks set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setkey"><div class="item-row-main"><h3>setKey</h3><pre class="inline-signature">lurek.i18n.setKey(locale: string, key: string, value: string)</pre><p>Sets one translation value for one locale and key.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:249</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setKey(&quot;en&quot;, &quot;custom.msg&quot;, &quot;Hello!&quot;)
+    print(&quot;key set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlanguage"><div class="item-row-main"><h3>setLanguage</h3><pre class="inline-signature">lurek.i18n.setLanguage(locale: string)</pre><p>Sets the active locale and invokes registered change callbacks with new and old locale values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:100</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    print(&quot;language set to en&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-t"><div class="item-row-main"><h3>t</h3><pre class="inline-signature">lurek.i18n.t(key: string, vars: table?, count: number?) -&gt; string</pre><p>Translates a key using the active locale, optional variables, and optional English plural selection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:190</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, { greetings = { hello = &quot;Hello&quot; } })
+    lurek.i18n.setLanguage(&quot;en&quot;)
+    local text = lurek.i18n.t(&quot;greetings.hello&quot;)
+    print(&quot;translated = &quot; .. text)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tgender"><div class="item-row-main"><h3>tGender</h3><pre class="inline-signature">lurek.i18n.tGender(key: string, gender: string, vars: table?) -&gt; string</pre><p>Translates a gender-specific key variant when present, then falls back to the base key.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:552</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local text = lurek.i18n.tGender(&quot;greeting.formal&quot;, &quot;female&quot;)
+    print(&quot;gendered = &quot; .. text)
+end</code></pre></details></article><article class="item-row api-row" id="fn-unloadtable"><div class="item-row-main"><h3>unloadTable</h3><pre class="inline-signature">lurek.i18n.unloadTable(locale: string) -&gt; boolean</pre><p>Removes all translations for a locale from the catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:92</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    lurek.i18n.loadTable(&quot;en&quot;, {[&quot;test.key&quot;] = &quot;value&quot;})
+    lurek.i18n.unloadTable(&quot;en&quot;)
+    print(&quot;unloaded&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-validatelocale"><div class="item-row-main"><h3>validateLocale</h3><pre class="inline-signature">lurek.i18n.validateLocale(locale: string) -&gt; boolean</pre><p>Returns whether a locale code has a valid syntax.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/i18n_api.rs:604</span></div><details class="example-block"><summary>Example · Exact example · i18n.lua</summary><pre><code>do
+    local ok = lurek.i18n.validateLocale(&quot;en&quot;)
+    print(&quot;valid = &quot; .. tostring(ok))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

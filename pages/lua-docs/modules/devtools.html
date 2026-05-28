@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.devtools - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a class="active" href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.devtools</h1>
+  <p>`lurek.devtools` -- Developer tooling bindings for logs, profiling, frame stats, file watching, console state, watch expressions, snapshots, REPL, and debugger-style eval helpers. - Registers `lurek.devtools.*` functions and types via `register()`. - `LuaFileWatcher`: userdata type exposed to Lua. - `LuaReplConsole`: userdata type exposed to Lua. - Bridges 62 Lua-callable methods via `mlua`. - See `docs/specs/devtools.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>50 functions</span><span>2 classes</span><span>src/lua_api/devtools_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 62</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.devtools.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-clearlog"><div class="item-row-main"><h3>clearLog</h3><pre class="inline-signature">lurek.devtools.clearLog()</pre><p>Clears all in-memory devtools log entries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:343</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.info(&quot;will be cleared&quot;)
+    lurek.devtools.clearLog()
+    print(&quot;log cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearwatches"><div class="item-row-main"><h3>clearWatches</h3><pre class="inline-signature">lurek.devtools.clearWatches()</pre><p>Removes every path from the module-level file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:658</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.watch(&quot;content/examples/assets/layouts/sample_menu.html&quot;)
+    lurek.devtools.clearWatches()
+    print(&quot;watches cleared, count = &quot; .. #lurek.devtools.getWatchedPaths())
+end</code></pre></details></article><article class="item-row api-row" id="fn-debug"><div class="item-row-main"><h3>debug</h3><pre class="inline-signature">lurek.devtools.debug(message: string)</pre><p>Adds a debug-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:179</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.debug(&quot;player pos = 100, 200&quot;)
+    print(&quot;debug logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-error"><div class="item-row-main"><h3>error</h3><pre class="inline-signature">lurek.devtools.error(message: string)</pre><p>Adds an error-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:215</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.error(&quot;save file warning emitted&quot;)
+    print(&quot;error logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-eval"><div class="item-row-main"><h3>eval</h3><pre class="inline-signature">lurek.devtools.eval(code: string) -&gt; LuaValue</pre><p>Evaluates Lua code in the current state and returns success plus values or failure plus an error message.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:719</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local ok, value = lurek.devtools.eval(&quot;return 2 + 2&quot;)
+    print(&quot;eval ok = &quot; .. tostring(ok))
+    print(&quot;eval value = &quot; .. tostring(value))
+end</code></pre></details></article><article class="item-row api-row" id="fn-exposewatch"><div class="item-row-main"><h3>exposeWatch</h3><pre class="inline-signature">lurek.devtools.exposeWatch(name: string, getter: function, category: string) -&gt; integer</pre><p>Registers a watch expression callback for snapshots and watch panels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:786</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local id = lurek.devtools.exposeWatch(&quot;health&quot;, function() return 100 end, &quot;player&quot;)
+    print(&quot;watch id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fatal"><div class="item-row-main"><h3>fatal</h3><pre class="inline-signature">lurek.devtools.fatal(message: string)</pre><p>Adds a fatal-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:227</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.fatal(&quot;unrecoverable GPU error&quot;)
+    print(&quot;fatal logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcallstack"><div class="item-row-main"><h3>getCallStack</h3><pre class="inline-signature">lurek.devtools.getCallStack(max_depth: integer?) -&gt; table</pre><p>Returns Lua call stack frames using the Lua debug library.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:691</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local frames = lurek.devtools.getCallStack(5)
+    print(&quot;stack frames = &quot; .. #frames)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getframehistory"><div class="item-row-main"><h3>getFrameHistory</h3><pre class="inline-signature">lurek.devtools.getFrameHistory() -&gt; number[]</pre><p>Returns retained CPU frame duration samples in insertion order.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:560</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordFrameTime(0.016)
+    local h = lurek.devtools.getFrameHistory()
+    print(&quot;history count = &quot; .. #h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getframehistorysize"><div class="item-row-main"><h3>getFrameHistorySize</h3><pre class="inline-signature">lurek.devtools.getFrameHistorySize() -&gt; integer</pre><p>Returns the current CPU frame history capacity.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local n = lurek.devtools.getFrameHistorySize()
+    print(&quot;history capacity = &quot; .. n)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getframestats"><div class="item-row-main"><h3>getFrameStats</h3><pre class="inline-signature">lurek.devtools.getFrameStats() -&gt; table</pre><p>Returns aggregate CPU frame timing statistics from recorded samples.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:477</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordFrameTime(0.016)
+    lurek.devtools.recordFrameTime(0.018)
+    local stats = lurek.devtools.getFrameStats()
+    print(&quot;fps = &quot; .. tostring(stats.fps))
+    print(&quot;samples = &quot; .. tostring(stats.samples))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgpuframestats"><div class="item-row-main"><h3>getGpuFrameStats</h3><pre class="inline-signature">lurek.devtools.getGpuFrameStats() -&gt; table</pre><p>Returns aggregate GPU frame timing statistics from recorded samples.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:529</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordGpuFrameTime(0.008)
+    lurek.devtools.recordGpuFrameTime(0.009)
+    local stats = lurek.devtools.getGpuFrameStats()
+    print(&quot;gpu fps = &quot; .. tostring(stats.fps))
+    print(&quot;gpu samples = &quot; .. tostring(stats.samples))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlogconsole"><div class="item-row-main"><h3>getLogConsole</h3><pre class="inline-signature">lurek.devtools.getLogConsole() -&gt; boolean</pre><p>Returns whether devtools log entries are mirrored to the console.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:275</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local console = lurek.devtools.getLogConsole()
+    print(&quot;console = &quot; .. tostring(console))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlogfile"><div class="item-row-main"><h3>getLogFile</h3><pre class="inline-signature">lurek.devtools.getLogFile() -&gt; string</pre><p>Returns the file path currently stored as the devtools log target.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local fp = lurek.devtools.getLogFile()
+    print(&quot;log file = &quot; .. fp)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getloghistory"><div class="item-row-main"><h3>getLogHistory</h3><pre class="inline-signature">lurek.devtools.getLogHistory(count: integer?) -&gt; table</pre><p>Returns recent devtools log entries as structured tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:312</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.info(&quot;test entry&quot;)
+    local entries = lurek.devtools.getLogHistory(5)
+    print(&quot;log entries = &quot; .. #entries)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getloglevel"><div class="item-row-main"><h3>getLogLevel</h3><pre class="inline-signature">lurek.devtools.getLogLevel() -&gt; string</pre><p>Returns the minimum severity currently used by devtools log output.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local level = lurek.devtools.getLogLevel()
+    print(&quot;log level = &quot; .. level)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getprofiledata"><div class="item-row-main"><h3>getProfileData</h3><pre class="inline-signature">lurek.devtools.getProfileData(frame: integer?) -&gt; table</pre><p>Returns the profiler zone tree for a retained frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    lurek.devtools.profilePush(&quot;update&quot;)
+    lurek.devtools.profilePop()
+    lurek.devtools.profileFrame()
+    local frames = lurek.devtools.getProfileData()
+    print(&quot;profile rows = &quot; .. #frames)
+    if frames[1] then
+        print(&quot;first zone = &quot; .. tostring(frames[1].name))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-getprofileframecount"><div class="item-row-main"><h3>getProfileFrameCount</h3><pre class="inline-signature">lurek.devtools.getProfileFrameCount() -&gt; integer</pre><p>Returns how many profiling frames are currently stored.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:411</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local n = lurek.devtools.getProfileFrameCount()
+    print(&quot;profile frames = &quot; .. n)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwatchinterval"><div class="item-row-main"><h3>getWatchInterval</h3><pre class="inline-signature">lurek.devtools.getWatchInterval() -&gt; number</pre><p>Returns the polling interval hint used by devtools watch UIs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:670</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local v = lurek.devtools.getWatchInterval()
+    print(&quot;interval = &quot; .. v)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwatchedpaths"><div class="item-row-main"><h3>getWatchedPaths</h3><pre class="inline-signature">lurek.devtools.getWatchedPaths() -&gt; string[]</pre><p>Returns all paths currently watched by the module-level file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:624</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.watch(&quot;content/examples/assets/images&quot;)
+    local paths = lurek.devtools.getWatchedPaths()
+    print(&quot;watched = &quot; .. #paths)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwatches"><div class="item-row-main"><h3>getWatches</h3><pre class="inline-signature">lurek.devtools.getWatches() -&gt; table</pre><p>Evaluates exposed watch callbacks and returns their current values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:832</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.exposeWatch(&quot;score&quot;, function() return 42 end)
+    local watches = lurek.devtools.getWatches()
+    print(&quot;watch entries = &quot; .. #watches)
+end</code></pre></details></article><article class="item-row api-row" id="fn-info"><div class="item-row-main"><h3>info</h3><pre class="inline-signature">lurek.devtools.info(message: string)</pre><p>Adds an info-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:191</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.info(&quot;level loaded&quot;)
+    print(&quot;info logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isconsoleopen"><div class="item-row-main"><h3>isConsoleOpen</h3><pre class="inline-signature">lurek.devtools.isConsoleOpen() -&gt; boolean</pre><p>Returns whether the devtools console is marked open.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local v = lurek.devtools.isConsoleOpen()
+    print(&quot;console open = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isentityinspectoropen"><div class="item-row-main"><h3>isEntityInspectorOpen</h3><pre class="inline-signature">lurek.devtools.isEntityInspectorOpen() -&gt; boolean</pre><p>Returns whether the devtools entity inspector is marked open.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:774</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local v = lurek.devtools.isEntityInspectorOpen()
+    print(&quot;inspector open = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isprofilingenabled"><div class="item-row-main"><h3>isProfilingEnabled</h3><pre class="inline-signature">lurek.devtools.isProfilingEnabled() -&gt; boolean</pre><p>Returns whether CPU profiling zone collection is currently enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:367</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local v = lurek.devtools.isProfilingEnabled()
+    print(&quot;profiling = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-log"><div class="item-row-main"><h3>log</h3><pre class="inline-signature">lurek.devtools.log(level: string, message: string)</pre><p>Adds a message to the devtools log using an explicit severity level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:155</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.log(&quot;info&quot;, &quot;game started&quot;)
+    print(&quot;logged info message&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfilewatcher"><div class="item-row-main"><h3>newFileWatcher</h3><pre class="inline-signature">lurek.devtools.newFileWatcher(path: string) -&gt; LFileWatcher</pre><p>Creates a dedicated file watcher userdata for one path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:1007</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local watcher = lurek.devtools.newFileWatcher(&quot;content/&quot;)
+    print(&quot;watcher path = &quot; .. watcher:getPath())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrepl"><div class="item-row-main"><h3>newRepl</h3><pre class="inline-signature">lurek.devtools.newRepl(max_history: integer?) -&gt; LReplConsole</pre><p>Creates a REPL console userdata with bounded command history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:1024</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local repl = lurek.devtools.newRepl(50)
+    repl:eval(&quot;return 5 * 5&quot;)
+    print(&quot;repl type = &quot; .. repl:type())
+    print(&quot;history len = &quot; .. repl:len())
+end</code></pre></details></article><article class="item-row api-row" id="fn-openconsole"><div class="item-row-main"><h3>openConsole</h3><pre class="inline-signature">lurek.devtools.openConsole() -&gt; boolean</pre><p>Marks the devtools console as open for UI state tracking.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:741</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local ok = lurek.devtools.openConsole()
+    print(&quot;console opened = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-openentityinspector"><div class="item-row-main"><h3>openEntityInspector</h3><pre class="inline-signature">lurek.devtools.openEntityInspector() -&gt; boolean</pre><p>Marks the devtools entity inspector as open for UI state tracking.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:762</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local ok = lurek.devtools.openEntityInspector()
+    print(&quot;inspector opened = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-profileframe"><div class="item-row-main"><h3>profileFrame</h3><pre class="inline-signature">lurek.devtools.profileFrame()</pre><p>Closes the current profiling frame and stores its zone tree for later inspection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:399</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    lurek.devtools.profilePush(&quot;update&quot;)
+    lurek.devtools.profilePop()
+    lurek.devtools.profileFrame()
+    print(&quot;frame stored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-profilepop"><div class="item-row-main"><h3>profilePop</h3><pre class="inline-signature">lurek.devtools.profilePop(name: string?)</pre><p>Ends the current profiling zone on the profiler stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:388</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    lurek.devtools.profilePush(&quot;render&quot;)
+    lurek.devtools.profilePop()
+    print(&quot;popped render zone&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-profilepush"><div class="item-row-main"><h3>profilePush</h3><pre class="inline-signature">lurek.devtools.profilePush(name: string)</pre><p>Starts a named profiling zone on the current profiler stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:376</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    lurek.devtools.profilePush(&quot;physics&quot;)
+    print(&quot;pushed physics zone&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-profilerreport"><div class="item-row-main"><h3>profilerReport</h3><pre class="inline-signature">lurek.devtools.profilerReport() -&gt; table</pre><p>Aggregates retained profiler frames into per-zone timing rows.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:948</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    lurek.devtools.profilePush(&quot;render&quot;)
+    lurek.devtools.profilePop()
+    lurek.devtools.profileFrame()
+    local report = lurek.devtools.profilerReport()
+    print(&quot;report rows = &quot; .. #report)
+    if report[1] then
+        print(&quot;first report zone = &quot; .. tostring(report[1].name))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-recordframetime"><div class="item-row-main"><h3>recordFrameTime</h3><pre class="inline-signature">lurek.devtools.recordFrameTime(dt_val: number)</pre><p>Records one CPU frame duration sample for devtools frame statistics.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:456</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordFrameTime(0.016)
+    lurek.devtools.recordFrameTime(0.017)
+    print(&quot;frame times recorded&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-recordgpuframetime"><div class="item-row-main"><h3>recordGpuFrameTime</h3><pre class="inline-signature">lurek.devtools.recordGpuFrameTime(dt_val: number)</pre><p>Records one GPU frame duration sample for devtools frame statistics.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:508</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordGpuFrameTime(0.008)
+    print(&quot;gpu frame time recorded&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-removewatch"><div class="item-row-main"><h3>removeWatch</h3><pre class="inline-signature">lurek.devtools.removeWatch(id: integer) -&gt; boolean</pre><p>Removes a previously exposed watch expression by id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:809</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local id = lurek.devtools.exposeWatch(&quot;temp&quot;, function() return 0 end)
+    local ok = lurek.devtools.removeWatch(id)
+    print(&quot;removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-resetprofile"><div class="item-row-main"><h3>resetProfile</h3><pre class="inline-signature">lurek.devtools.resetProfile()</pre><p>Clears profiler state, active zones, and retained profiling frames.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:444</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.resetProfile()
+    print(&quot;profile reset, frames = &quot; .. lurek.devtools.getProfileFrameCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-scan"><div class="item-row-main"><h3>scan</h3><pre class="inline-signature">lurek.devtools.scan() -&gt; string[]</pre><p>Polls module-level file watches and returns paths that changed since the previous scan.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:642</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.watch(&quot;content/examples/assets/layouts/sample_menu.html&quot;)
+    local changed = lurek.devtools.scan()
+    print(&quot;changed files = &quot; .. #changed)
+    print(&quot;watched paths = &quot; .. #lurek.devtools.getWatchedPaths())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setframehistorysize"><div class="item-row-main"><h3>setFrameHistorySize</h3><pre class="inline-signature">lurek.devtools.setFrameHistorySize(size: integer)</pre><p>Sets the maximum number of CPU frame duration samples retained by devtools.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:576</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setFrameHistorySize(120)
+    print(&quot;history size set to 120&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlogconsole"><div class="item-row-main"><h3>setLogConsole</h3><pre class="inline-signature">lurek.devtools.setLogConsole(enabled: boolean)</pre><p>Enables or disables mirroring devtools log entries to the console.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:263</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setLogConsole(true)
+    print(&quot;console logging enabled&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlogfile"><div class="item-row-main"><h3>setLogFile</h3><pre class="inline-signature">lurek.devtools.setLogFile(path: string)</pre><p>Sets the file path used by devtools file logging state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:284</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setLogFile(&quot;logs/devtools.log&quot;)
+    print(&quot;log file set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setloglevel"><div class="item-row-main"><h3>setLogLevel</h3><pre class="inline-signature">lurek.devtools.setLogLevel(level: string)</pre><p>Sets the minimum severity that remains visible in devtools log output.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:239</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setLogLevel(&quot;warn&quot;)
+    print(&quot;log level set to warn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setprofilingenabled"><div class="item-row-main"><h3>setProfilingEnabled</h3><pre class="inline-signature">lurek.devtools.setProfilingEnabled(enabled: boolean)</pre><p>Enables or disables collection of CPU profiling zones.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:355</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setProfilingEnabled(true)
+    print(&quot;profiling enabled&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setwatchinterval"><div class="item-row-main"><h3>setWatchInterval</h3><pre class="inline-signature">lurek.devtools.setWatchInterval(interval: number)</pre><p>Sets the polling interval hint used by devtools watch UIs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:679</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.setWatchInterval(0.5)
+    print(&quot;interval set to 0.5s&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-snapshot"><div class="item-row-main"><h3>snapshot</h3><pre class="inline-signature">lurek.devtools.snapshot() -&gt; table</pre><p>Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:869</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.recordFrameTime(0.016)
+    lurek.devtools.info(&quot;snapshot ready&quot;)
+    lurek.devtools.exposeWatch(&quot;score&quot;, function()
+        return 42
+    end, &quot;hud&quot;)
+    local snap = lurek.devtools.snapshot()
+    print(&quot;watch count = &quot; .. tostring(snap.watchCount))
+    print(&quot;log rows = &quot; .. tostring(#snap.log))
+end</code></pre></details></article><article class="item-row api-row" id="fn-trace"><div class="item-row-main"><h3>trace</h3><pre class="inline-signature">lurek.devtools.trace(message: string)</pre><p>Adds a trace-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:167</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.trace(&quot;entering update loop&quot;)
+    print(&quot;trace logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-unwatch"><div class="item-row-main"><h3>unwatch</h3><pre class="inline-signature">lurek.devtools.unwatch(path: string) -&gt; boolean</pre><p>Removes a path from the module-level devtools file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:615</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.watch(&quot;content/examples/assets/layouts/sample_menu.html&quot;)
+    local removed = lurek.devtools.unwatch(&quot;content/examples/assets/layouts/sample_menu.html&quot;)
+    print(&quot;removed = &quot; .. tostring(removed))
+end</code></pre></details></article><article class="item-row api-row" id="fn-warn"><div class="item-row-main"><h3>warn</h3><pre class="inline-signature">lurek.devtools.warn(message: string)</pre><p>Adds a warning-level diagnostic message to the devtools log.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:203</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    lurek.devtools.warn(&quot;texture missing fallback used&quot;)
+    print(&quot;warn logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-watch"><div class="item-row-main"><h3>watch</h3><pre class="inline-signature">lurek.devtools.watch(path: string) -&gt; boolean</pre><p>Adds a path to the module-level devtools file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/devtools_api.rs:598</span></div><details class="example-block"><summary>Example · Exact example · devtools.lua</summary><pre><code>do
+    local added = lurek.devtools.watch(&quot;content/examples/assets/layouts/sample_menu.html&quot;)
+    print(&quot;watch added = &quot; .. tostring(added))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFileWatcher.html">LFileWatcher</a></h3><p>Lua-side file watcher with an optional change callback.</p></div><div class="item-row-meta"><span>6 methods</span><span>module devtools</span></div><div class="card-note">Example: devtools.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LReplConsole.html">LReplConsole</a></h3><p>Lua-side REPL console handle with bounded history.</p></div><div class="item-row-meta"><span>6 methods</span><span>module devtools</span></div><div class="card-note">Example: devtools.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

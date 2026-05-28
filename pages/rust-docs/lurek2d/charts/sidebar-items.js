@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["area","bar","config","line","pie","render_utils","scatter"]};

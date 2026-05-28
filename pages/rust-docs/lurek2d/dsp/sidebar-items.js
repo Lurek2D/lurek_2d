@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["analysis","effects","graph","offline","synthesis","visualizer"]};

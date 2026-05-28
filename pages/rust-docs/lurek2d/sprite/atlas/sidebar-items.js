@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["parse_aseprite_json","parse_texturepacker_json"],"struct":["AtlasEntry","SpriteAtlas"]};

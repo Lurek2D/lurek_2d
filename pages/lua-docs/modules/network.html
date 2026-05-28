@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.network - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.network</h1>
+  <p>`lurek.network` -- Lua bindings for ENet-style hosts, async network runtime, message packing, lobby helpers, relay tickets, and snapshot prediction. - Registers `lurek.network.*` functions and types via `register()`. - `LuaNetworkHost`: userdata type exposed to Lua. - `LuaNetworkRuntime`: userdata type exposed to Lua. - Bridges 64 Lua-callable methods via `mlua`. - See `docs/specs/network.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>19 functions</span><span>2 classes</span><span>src/lua_api/network_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 61</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.network.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-createlobby"><div class="item-row-main"><h3>createLobby</h3><pre class="inline-signature">lurek.network.createLobby(name: string, port: integer, player_count: integer?, max_players: integer?) -&gt; table</pre><p>Broadcasts lobby information and returns it as a table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:961</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local lobby = lurek.network.createLobby(&quot;My Game&quot;, 7777, 1, 4)
+    local found = lurek.network.discoverLobbies(200)
+    print(&quot;lobby=&quot; .. lobby.name .. &quot;:&quot; .. lobby.port)
+    print(&quot;discovered=&quot; .. #found)
+end</code></pre></details></article><article class="item-row api-row" id="fn-createroom"><div class="item-row-main"><h3>createRoom</h3><pre class="inline-signature">lurek.network.createRoom(name: string, host: string, max_players: integer?) -&gt; table</pre><p>Creates a local room record. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1028</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local room = lurek.network.createRoom(&quot;Arena&quot;, &quot;player1&quot;, 8)
+    local joined = lurek.network.joinRoom(room.id)
+    local left = lurek.network.leaveRoom(room.id)
+    print(&quot;room_id=&quot; .. room.id)
+    print(&quot;players=&quot; .. joined.player_count .. &quot;-&gt;&quot; .. left.player_count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-discoverlobbies"><div class="item-row-main"><h3>discoverLobbies</h3><pre class="inline-signature">lurek.network.discoverLobbies(timeout_ms: integer?) -&gt; table</pre><p>Discovers broadcast lobbies. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:995</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    lurek.network.createLobby(&quot;Discovery&quot;, 7788, 1, 4)
+    local lobbies = lurek.network.discoverLobbies(200)
+    print(&quot;lobbies=&quot; .. #lobbies)
+    print(&quot;first_name=&quot; .. tostring(lobbies[1] and lobbies[1].name or &quot;nil&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-joinroom"><div class="item-row-main"><h3>joinRoom</h3><pre class="inline-signature">lurek.network.joinRoom(id: string) -&gt; table</pre><p>Joins a room by id when available. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1065</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local room = lurek.network.createRoom(&quot;Joinable&quot;, &quot;host-B&quot;, 4)
+    local joined = lurek.network.joinRoom(room.id)
+    print(&quot;room_id=&quot; .. room.id)
+    print(&quot;player_count=&quot; .. joined.player_count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-leaveroom"><div class="item-row-main"><h3>leaveRoom</h3><pre class="inline-signature">lurek.network.leaveRoom(id: string) -&gt; table</pre><p>Leaves a room by id when available. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1083</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local room = lurek.network.createRoom(&quot;Leavable&quot;, &quot;host-C&quot;, 4)
+    lurek.network.joinRoom(room.id)
+    local left = lurek.network.leaveRoom(room.id)
+    print(&quot;room_id=&quot; .. room.id)
+    print(&quot;player_count=&quot; .. left.player_count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-listrooms"><div class="item-row-main"><h3>listRooms</h3><pre class="inline-signature">lurek.network.listRooms() -&gt; table</pre><p>Lists known local room records. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1045</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local rooms = lurek.network.listRooms()
+    local room = lurek.network.createRoom(&quot;Listed&quot;, &quot;host-D&quot;, 3)
+    rooms = lurek.network.listRooms()
+    print(&quot;rooms=&quot; .. #rooms)
+    print(&quot;last_room=&quot; .. room.name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-makepunchprobe"><div class="item-row-main"><h3>makePunchProbe</h3><pre class="inline-signature">lurek.network.makePunchProbe(peer_id: string) -&gt; string</pre><p>Creates a relay punch probe payload for a peer id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1179</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local probe = lurek.network.makePunchProbe(&quot;peer_99&quot;)
+    local peer_id = lurek.network.parsePunchProbe(probe)
+    print(&quot;probe_bytes=&quot; .. #probe)
+    print(&quot;peer_id=&quot; .. tostring(peer_id))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newclient"><div class="item-row-main"><h3>newClient</h3><pre class="inline-signature">lurek.network.newClient(opts: table) -&gt; LNetworkHost</pre><p>Creates a client host and connects to an address.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:893</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local server = lurek.network.newServer({port = 7778, maxPeers = 4, channels = 2})
+    local client = lurek.network.newClient({addr = &quot;127.0.0.1:7778&quot;, channels = 2, data = 21})
+    print(&quot;role=&quot; .. client:getRole())
+    print(&quot;type=&quot; .. client:type())
+    client:destroy()
+    server:destroy()
+end</code></pre></details></article><article class="item-row api-row" id="fn-newhost"><div class="item-row-main"><h3>newHost</h3><pre class="inline-signature">lurek.network.newHost(opts: table) -&gt; LNetworkHost</pre><p>Creates a network host from an options table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:844</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local host = lurek.network.newHost({addr = &quot;0.0.0.0:8888&quot;, maxPeers = 32, channels = 4})
+    print(&quot;address=&quot; .. host:getAddress())
+    print(&quot;channels=&quot; .. host:getChannelLimit())
+    host:destroy()
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrelayticket"><div class="item-row-main"><h3>newRelayTicket</h3><pre class="inline-signature">lurek.network.newRelayTicket(room_id: string, peer_id: string) -&gt; string</pre><p>Creates an encoded relay ticket. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1140</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local token = lurek.network.newRelayTicket(&quot;room_abc&quot;, &quot;peer_42&quot;)
+    local ticket = lurek.network.parseRelayTicket(token)
+    print(&quot;ticket=&quot; .. token)
+    print(&quot;peer_id=&quot; .. ticket.peer_id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newruntime"><div class="item-row-main"><h3>newRuntime</h3><pre class="inline-signature">lurek.network.newRuntime() -&gt; LNetworkRuntime</pre><p>Creates a background network runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:911</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local rt = lurek.network.newRuntime()
+    print(&quot;type=&quot; .. rt:type())
+    print(&quot;typeOf=&quot; .. tostring(rt:typeOf(&quot;LNetworkRuntime&quot;)))
+    rt:shutdown()
+end</code></pre></details></article><article class="item-row api-row" id="fn-newserver"><div class="item-row-main"><h3>newServer</h3><pre class="inline-signature">lurek.network.newServer(opts: table) -&gt; LNetworkHost</pre><p>Creates a server host from an options table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:872</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
+    print(&quot;role=&quot; .. server:getRole())
+    print(&quot;peer_limit=&quot; .. server:getPeerLimit())
+    server:destroy()
+end</code></pre></details></article><article class="item-row api-row" id="fn-pack"><div class="item-row-main"><h3>pack</h3><pre class="inline-signature">lurek.network.pack(value: any) -&gt; string</pre><p>Packs a supported Lua value into a binary network message string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:924</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = &quot;Hero&quot;}
+    local packed = lurek.network.pack(data)
+    local unpacked = lurek.network.unpack(packed)
+    print(&quot;packed_bytes=&quot; .. #packed)
+    print(&quot;unpacked_name=&quot; .. unpacked.name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-parsepunchprobe"><div class="item-row-main"><h3>parsePunchProbe</h3><pre class="inline-signature">lurek.network.parsePunchProbe(payload: string) -&gt; string</pre><p>Parses a relay punch probe payload.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1189</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local probe = lurek.network.makePunchProbe(&quot;peer_parse&quot;)
+    local peer_id = lurek.network.parsePunchProbe(probe)
+    print(&quot;peer_id=&quot; .. tostring(peer_id))
+end</code></pre></details></article><article class="item-row api-row" id="fn-parserelayticket"><div class="item-row-main"><h3>parseRelayTicket</h3><pre class="inline-signature">lurek.network.parseRelayTicket(token: string) -&gt; table</pre><p>Parses an encoded relay ticket. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1159</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local token = lurek.network.newRelayTicket(&quot;room_parse&quot;, &quot;peer_parse&quot;)
+    local ticket = lurek.network.parseRelayTicket(token)
+    print(&quot;room_id=&quot; .. ticket.room_id)
+    print(&quot;peer_id=&quot; .. ticket.peer_id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-predictlinear"><div class="item-row-main"><h3>predictLinear</h3><pre class="inline-signature">lurek.network.predictLinear(snapshot: table, dt: number) -&gt; table</pre><p>Predicts an entity snapshot forward by linear velocity.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1206</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
+    local predicted = lurek.network.predictLinear(snapshot, 0.016)
+    print(&quot;tick=&quot; .. predicted.tick)
+    print(&quot;x=&quot; .. predicted.x)
+end</code></pre></details></article><article class="item-row api-row" id="fn-reconcilesnapshot"><div class="item-row-main"><h3>reconcileSnapshot</h3><pre class="inline-signature">lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -&gt; table</pre><p>Reconciles a predicted snapshot toward an authoritative snapshot.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1246</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local pred = {id = 3, tick = 20, x = 10, y = 10, vx = 1, vy = 0}
+    local auth = {id = 3, tick = 21, x = 12, y = 11, vx = 1, vy = 0}
+    local result = lurek.network.reconcileSnapshot(pred, auth, 0.5)
+    print(&quot;tick=&quot; .. result.tick)
+    print(&quot;x=&quot; .. result.x)
+end</code></pre></details></article><article class="item-row api-row" id="fn-syncentity"><div class="item-row-main"><h3>syncEntity</h3><pre class="inline-signature">lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, channel: integer?, reliable: boolean?)</pre><p>Broadcasts a packed entity sync payload through a network host.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:1099</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local server, client = connect_pair(7797, 2)
+    lurek.network.syncEntity(server, 1, {x = 100, y = 200, hp = 50}, 0, true)
+    server:flush()
+    local event = wait_for_event(client, &quot;receive&quot;)
+    local payload = lurek.network.unpack(event.data)
+    print(&quot;entity_id=&quot; .. payload.id)
+    print(&quot;hp=&quot; .. payload.data.hp)
+    client:destroy()
+    server:destroy()
+end</code></pre></details></article><article class="item-row api-row" id="fn-unpack"><div class="item-row-main"><h3>unpack</h3><pre class="inline-signature">lurek.network.unpack(data: string) -&gt; table</pre><p>Unpacks a binary network message string into a Lua value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/network_api.rs:941</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    local raw = lurek.network.pack({ id = 1, data = &quot;hello&quot; })
+    local msg = lurek.network.unpack(raw)
+    print(&quot;id=&quot; .. msg.id)
+    print(&quot;data=&quot; .. msg.data)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNetworkHost.html">LNetworkHost</a></h3><p>Lua-side wrapper for a network host.</p></div><div class="item-row-meta"><span>29 methods</span><span>module network</span></div><div class="card-note">Example: network.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNetworkRuntime.html">LNetworkRuntime</a></h3><p>Lua-side wrapper for the background network runtime.</p></div><div class="item-row-meta"><span>15 methods</span><span>module network</span></div><div class="card-note">Example: network.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

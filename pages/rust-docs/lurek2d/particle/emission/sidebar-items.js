@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["emission_offset","emission_shape_offset"]};

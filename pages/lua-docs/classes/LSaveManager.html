@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LSaveManager - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a class="active" href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LSaveManager</h1>
+  <p>Manages persistent game state: registering data collectors/restorers, serializing to named.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/save.html">lurek.save</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    local hp = 100
+    mgr:register(&quot;player&quot;, function() return { hp = hp } end, function(data) hp = data.hp end)
+    print(&quot;collected player hp = &quot; .. mgr:collect().player.hp)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LSaveManager userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addmigration"><div class="item-row-main"><h3>addMigration</h3><pre class="inline-signature">LSaveManager:addMigration(fromVersion: integer, func: function)</pre><p>Register a migration function that transforms save data from one schema version to the next.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:282</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSchemaVersion(3)
+    mgr:addMigration(1, function(data)
+        data.player = data.player or {}
+        data.player.maxHp = data.player.maxHp or 100
+        return data
+    end)
+    mgr:addMigration(2, function(data)
+        data.player = data.player or {}
+        data.player.mana = data.player.mana or 50
+        return data
+    end)
+    local collected = { __schema_version = 1, player = {} }
+    mgr:register(&quot;player&quot;, function() return { level = 7 } end, function(_) end)
+    mgr:restore(collected)
+    print(&quot;schema version = &quot; .. mgr:getSchemaVersion())
+end</code></pre></details></article><article class="item-row api-row" id="method-collect"><div class="item-row-main"><h3>collect</h3><pre class="inline-signature">LSaveManager:collect() -&gt; table</pre><p>Invoke all registered collectors and return the assembled save-data table without writing to disk.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    local hp = 100
+    mgr:register(&quot;player&quot;, function() return { hp = hp } end, function(data) hp = data.hp end)
+    print(&quot;collected player hp = &quot; .. mgr:collect().player.hp)
+end</code></pre></details></article><article class="item-row api-row" id="method-delete"><div class="item-row-main"><h3>delete</h3><pre class="inline-signature">LSaveManager:delete(slot: string) -&gt; nil</pre><p>Permanently delete a save slot file from disk. This action cannot be undone.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:434</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;score&quot;, function() return { value = 9999 } end, function(_) end)
+    local slot = &quot;example_delete_slot&quot;
+    mgr:save(slot)
+    mgr:delete(slot)
+    print(&quot;after delete exists = &quot; .. tostring(mgr:exists(slot)))
+end</code></pre></details></article><article class="item-row api-row" id="method-disableautosave"><div class="item-row-main"><h3>disableAutoSave</h3><pre class="inline-signature">LSaveManager:disableAutoSave()</pre><p>Disable the periodic auto-save timer. Manual saves via save() still work.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:328</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;counter&quot;, function() return { value = 1 } end, function(_) end)
+    mgr:enableAutoSave(5.0, &quot;autosave&quot;)
+    mgr:disableAutoSave()
+    mgr:markDirty()
+    print(&quot;after disable triggered = &quot; .. tostring(mgr:update(6.0)))
+end</code></pre></details></article><article class="item-row api-row" id="method-enableautosave"><div class="item-row-main"><h3>enableAutoSave</h3><pre class="inline-signature">LSaveManager:enableAutoSave(interval: number, slot: string)</pre><p>Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;counter&quot;, function() return { value = 1 } end, function(_) end)
+    local slot = &quot;example_autosave_slot&quot;
+    mgr:enableAutoSave(5.0, &quot;autosave&quot;)
+    mgr:markDirty()
+    print(&quot;auto-save triggered = &quot; .. tostring(mgr:update(6.0)))
+    print(&quot;autosave exists = &quot; .. tostring(mgr:exists(&quot;autosave&quot;)))
+    pcall(function() mgr:delete(&quot;autosave&quot;) end)
+end</code></pre></details></article><article class="item-row api-row" id="method-exists"><div class="item-row-main"><h3>exists</h3><pre class="inline-signature">LSaveManager:exists(slot: string) -&gt; boolean</pre><p>Check whether a save slot file exists on disk without reading its contents.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:439</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;score&quot;, function() return { value = 9999 } end, function(_) end)
+    local slot = &quot;example_exists_slot&quot;
+    mgr:save(slot)
+    print(&quot;exists = &quot; .. tostring(mgr:exists(slot)))
+    mgr:delete(slot)
+end</code></pre></details></article><article class="item-row api-row" id="method-getschemaversion"><div class="item-row-main"><h3>getSchemaVersion</h3><pre class="inline-signature">LSaveManager:getSchemaVersion() -&gt; integer</pre><p>Return the current schema version number set for this save manager.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:274</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSchemaVersion(3)
+    mgr:addMigration(1, function(data)
+        data.player = data.player or {}
+        data.player.maxHp = data.player.maxHp or 100
+        return data
+    end)
+    mgr:addMigration(2, function(data)
+        data.player = data.player or {}
+        data.player.mana = data.player.mana or 50
+        return data
+    end)
+    print(&quot;schema version = &quot; .. mgr:getSchemaVersion())
+end</code></pre></details></article><article class="item-row api-row" id="method-getslotinfo"><div class="item-row-main"><h3>getSlotInfo</h3><pre class="inline-signature">LSaveManager:getSlotInfo(slot: string) -&gt; table</pre><p>Read metadata for a single save slot without loading its full game state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:460</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;data&quot;, function() return { level = 5 } end, function(_) end)
+    local slot = &quot;example_slot_info&quot;
+    mgr:setSummary(&quot;Level 5 - Forest&quot;)
+    mgr:save(slot)
+    local info = mgr:getSlotInfo(slot)
+    print(&quot;slot info = &quot; .. tostring(info and info.slot))
+    print(&quot;summary = &quot; .. tostring(info and info.summary))
+    mgr:delete(slot)
+end</code></pre></details></article><article class="item-row api-row" id="method-getslots"><div class="item-row-main"><h3>getSlots</h3><pre class="inline-signature">LSaveManager:getSlots() -&gt; table</pre><p>List all save slots found on disk with their metadata (version, timestamp, summary).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:450</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;data&quot;, function() return { level = 5 } end, function(_) end)
+    local slot = &quot;example_slots_slot&quot;
+    mgr:setSummary(&quot;Level 5 - Forest&quot;)
+    mgr:save(slot)
+    local slots = mgr:getSlots()
+    print(&quot;slot count = &quot; .. #slots)
+    print(&quot;first slot = &quot; .. tostring(slots[1] and slots[1].slot))
+    mgr:delete(slot)
+end</code></pre></details></article><article class="item-row api-row" id="method-getsummary"><div class="item-row-main"><h3>getSummary</h3><pre class="inline-signature">LSaveManager:getSummary() -&gt; string</pre><p>Get the current summary string that will be embedded in the next save.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:349</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSummary(&quot;Chapter 3 — The Dark Forest&quot;)
+    print(&quot;summary = &quot; .. mgr:getSummary())
+end</code></pre></details></article><article class="item-row api-row" id="method-iscompressed"><div class="item-row-main"><h3>isCompressed</h3><pre class="inline-signature">LSaveManager:isCompressed() -&gt; boolean</pre><p>Check whether save compression is currently enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:386</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setCompress(true)
+    print(&quot;after enable = &quot; .. tostring(mgr:isCompressed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isdirty"><div class="item-row-main"><h3>isDirty</h3><pre class="inline-signature">LSaveManager:isDirty() -&gt; boolean</pre><p>Check whether unsaved changes exist since the last save or load.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:314</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;counter&quot;, function() return { value = 1 } end, function(_) end)
+    print(&quot;dirty = &quot; .. tostring(mgr:isDirty()))
+    mgr:markDirty()
+    print(&quot;after markDirty = &quot; .. tostring(mgr:isDirty()))
+end</code></pre></details></article><article class="item-row api-row" id="method-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">LSaveManager:load(slot: string) -&gt; boolean</pre><p>Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    local score = 9999
+    mgr:register(&quot;score&quot;, function() return { value = score } end, function(data) score = data.value end)
+    local slot = &quot;example_load_slot&quot;
+    mgr:save(slot)
+    score = 0
+    local ok, err = mgr:load(slot)
+    print(&quot;load ok = &quot; .. tostring(ok))
+    print(&quot;load err = &quot; .. tostring(err))
+    print(&quot;score = &quot; .. score)
+    mgr:delete(slot)
+end</code></pre></details></article><article class="item-row api-row" id="method-markdirty"><div class="item-row-main"><h3>markDirty</h3><pre class="inline-signature">LSaveManager:markDirty()</pre><p>Mark the save state as dirty, indicating unsaved changes exist.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:307</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;counter&quot;, function() return { value = 1 } end, function(_) end)
+    print(&quot;dirty = &quot; .. tostring(mgr:isDirty()))
+    mgr:markDirty()
+    print(&quot;after markDirty = &quot; .. tostring(mgr:isDirty()))
+end</code></pre></details></article><article class="item-row api-row" id="method-onafterload"><div class="item-row-main"><h3>onAfterLoad</h3><pre class="inline-signature">LSaveManager:onAfterLoad(func: function?)</pre><p>Set a hook function called immediately after a save file is successfully loaded and all restorers have run.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:406</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;state&quot;, function() return { x = 10, y = 20 } end, function(_) end)
+    mgr:onAfterLoad(function(slot) print(&quot;after:&quot; .. slot) end)
+    mgr:save(&quot;hook_test&quot;)
+    mgr:load(&quot;hook_test&quot;)
+    mgr:onAfterLoad(nil)
+    mgr:delete(&quot;hook_test&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-onbeforesave"><div class="item-row-main"><h3>onBeforeSave</h3><pre class="inline-signature">LSaveManager:onBeforeSave(func: function?)</pre><p>Set a hook function called immediately before each save operation begins.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:392</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;state&quot;, function() return { x = 10, y = 20 } end, function(_) end)
+    mgr:onBeforeSave(function(slot) print(&quot;before:&quot; .. slot) end)
+    mgr:save(&quot;hook_test&quot;)
+    mgr:onBeforeSave(nil)
+    mgr:delete(&quot;hook_test&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-register"><div class="item-row-main"><h3>register</h3><pre class="inline-signature">LSaveManager:register(name: string, collectFn: function, restoreFn: function)</pre><p>Register a named data section with a collector and restorer function pair.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:241</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    local hp = 100
+    mgr:register(&quot;player&quot;, function() return { hp = hp } end, function(data) hp = data.hp end)
+    print(&quot;collected player hp = &quot; .. mgr:collect().player.hp)
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LSaveManager:reset()</pre><p>Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:355</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;section_a&quot;, function() return {} end, function(_) end)
+    mgr:register(&quot;section_b&quot;, function() return {} end, function(_) end)
+    mgr:setSummary(&quot;temporary summary&quot;)
+    mgr:setCompress(true)
+    mgr:reset()
+    print(&quot;summary after reset = &quot; .. tostring(mgr:getSummary()))
+    print(&quot;compressed after reset = &quot; .. tostring(mgr:isCompressed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-restore"><div class="item-row-main"><h3>restore</h3><pre class="inline-signature">LSaveManager:restore(data: table)</pre><p>Apply a previously collected save-data table back into game state by invoking all registered restorers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:301</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    local hp = 100
+    mgr:register(&quot;player&quot;, function() return { hp = hp } end, function(data) hp = data.hp end)
+    hp = 50
+    mgr:restore({ player = { hp = 100 } })
+    print(&quot;restored hp = &quot; .. hp)
+end</code></pre></details></article><article class="item-row api-row" id="method-save"><div class="item-row-main"><h3>save</h3><pre class="inline-signature">LSaveManager:save(slot: string)</pre><p>Persist all registered data sections to the named slot file on disk.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:419</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;score&quot;, function() return { value = 9999 } end, function(_) end)
+    local slot = &quot;example_save_slot&quot;
+    mgr:save(slot)
+    print(&quot;saved to &quot; .. slot)
+    print(&quot;exists after save = &quot; .. tostring(mgr:exists(slot)))
+    mgr:delete(slot)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcompress"><div class="item-row-main"><h3>setCompress</h3><pre class="inline-signature">LSaveManager:setCompress(enabled: boolean)</pre><p>Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:379</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setCompress(true)
+    print(&quot;after enable = &quot; .. tostring(mgr:isCompressed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setschemaversion"><div class="item-row-main"><h3>setSchemaVersion</h3><pre class="inline-signature">LSaveManager:setSchemaVersion(version: integer)</pre><p>Set the current schema version number for saves produced by this game build.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:267</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSchemaVersion(3)
+    mgr:addMigration(1, function(data)
+        data.player = data.player or {}
+        data.player.maxHp = data.player.maxHp or 100
+        return data
+    end)
+    mgr:addMigration(2, function(data)
+        data.player = data.player or {}
+        data.player.mana = data.player.mana or 50
+        return data
+    end)
+    print(&quot;schema version = &quot; .. mgr:getSchemaVersion())
+end</code></pre></details></article><article class="item-row api-row" id="method-setsummary"><div class="item-row-main"><h3>setSummary</h3><pre class="inline-signature">LSaveManager:setSummary(summary: string)</pre><p>Set a human-readable summary string stored alongside save metadata (e.g. &quot;Level 5 – Forest&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:342</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:setSummary(&quot;Chapter 3 — The Dark Forest&quot;)
+    print(&quot;summary = &quot; .. mgr:getSummary())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LSaveManager:type() -&gt; string</pre><p>Return the type name string for this userdata object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:469</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    ---@type LSaveManager
+    local sm = lurek.save.newSaveManager()
+    print(&quot;type = &quot; .. sm:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LSaveManager:typeOf(name: string) -&gt; boolean</pre><p>Check whether this object matches a given type name. Supports &quot;LSaveManager&quot; and &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:474</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    ---@type LSaveManager
+    local sm = lurek.save.newSaveManager()
+    print(&quot;is save manager = &quot; .. tostring(sm:typeOf(&quot;LSaveManager&quot;)))
+    print(&quot;is object = &quot; .. tostring(sm:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-unregister"><div class="item-row-main"><h3>unregister</h3><pre class="inline-signature">LSaveManager:unregister(name: string)</pre><p>Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:257</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;section_a&quot;, function() return {} end, function(_) end)
+    mgr:register(&quot;section_b&quot;, function() return {} end, function(_) end)
+    mgr:unregister(&quot;section_a&quot;)
+    local data = mgr:collect()
+    print(&quot;has section_a = &quot; .. tostring(data.section_a ~= nil))
+    print(&quot;has section_b = &quot; .. tostring(data.section_b ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LSaveManager:update(dt: number) -&gt; boolean</pre><p>Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/save_api.rs:337</span></div><details class="example-block"><summary>Example · Exact example · save.lua</summary><pre><code>do
+    local mgr = lurek.save.newSaveManager()
+    mgr:register(&quot;counter&quot;, function() return { value = 1 } end, function(_) end)
+    local slot = &quot;example_update_slot&quot;
+    mgr:enableAutoSave(5.0, slot)
+    mgr:markDirty()
+    print(&quot;auto-save triggered = &quot; .. tostring(mgr:update(6.0)))
+    print(&quot;slot exists = &quot; .. tostring(mgr:exists(slot)))
+    mgr:delete(slot)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

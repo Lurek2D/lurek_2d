@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["parse_css_color_rgba"]};

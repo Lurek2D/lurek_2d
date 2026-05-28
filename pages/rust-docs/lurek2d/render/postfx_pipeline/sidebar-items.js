@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["params_to_uniform"],"struct":["PostFxPipeline","PostFxTexture"]};

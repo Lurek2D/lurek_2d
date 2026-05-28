@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SaveValue"],"fn":["compress_save_content","decompress_save_content","serialize_table","serialize_value"],"struct":["SaveManager","SlotMeta"]};

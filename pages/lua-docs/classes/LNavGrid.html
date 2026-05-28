@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LNavGrid - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a class="active" href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LNavGrid</h1>
+  <p>Lua-side wrapper for a navigation grid and optional abstract graph cache.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/pathfind.html">lurek.pathfind</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · pathfind.lua</summary><pre><code>do
+    local ng = lurek.pathfind.newNavGrid(20, 15)
+    local w, h = ng:getDimensions()
+
+    print(&quot;dims = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;width = &quot; .. w)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LNavGrid userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-cleardirty"><div class="item-row-main"><h3>clearDirty</h3><pre class="inline-signature">LNavGrid:clearDirty()</pre><p>Clears all dirty region markers from the grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:259</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(50, 50)
+
+    nav:setChunkSize(10)
+    nav:setDirty(20, 20, 10, 10)
+    nav:clearDirty()
+    nav:rebuildAbstract()
+
+    print(&quot;chunk = &quot; .. nav:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-fill"><div class="item-row-main"><h3>fill</h3><pre class="inline-signature">LNavGrid:fill(cost: integer)</pre><p>Fills the entire grid with a uniform movement cost.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:146</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(3)
+
+    print(&quot;cost_1_1 = &quot; .. nav:getCost(1, 1))
+    print(&quot;cost_20_20 = &quot; .. nav:getCost(20, 20))
+end</code></pre></details></article><article class="item-row api-row" id="method-fillrect"><div class="item-row-main"><h3>fillRect</h3><pre class="inline-signature">LNavGrid:fillRect(x: integer, y: integer, w: integer, h: integer, cost: integer)</pre><p>Fills a one-based rectangular area with a movement cost.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fillRect(5, 5, 5, 5, 0)
+
+    print(&quot;blocked_5_5 = &quot; .. tostring(nav:isBlocked(5, 5)))
+    print(&quot;blocked_10_10 = &quot; .. tostring(nav:isBlocked(10, 10)))
+    print(&quot;blocked_11_11 = &quot; .. tostring(nav:isBlocked(11, 11)))
+end</code></pre></details></article><article class="item-row api-row" id="method-findhpapath"><div class="item-row-main"><h3>findHpaPath</h3><pre class="inline-signature">LNavGrid:findHpaPath(sx: integer, sy: integer, gx: integer, gy: integer, unit_size: integer?) -&gt; table</pre><p>Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(16, 16)
+    nav:setChunkSize(4)
+    nav:rebuildAbstract()
+    local path = nav:findHpaPath(1, 1, 16, 16, 1)
+    print(&quot;hpa path exists = &quot; .. tostring(path ~= nil))
+    print(&quot;hpa path len = &quot; .. tostring(path and #path or 0))
+end</code></pre></details></article><article class="item-row api-row" id="method-getchunksize"><div class="item-row-main"><h3>getChunkSize</h3><pre class="inline-signature">LNavGrid:getChunkSize() -&gt; integer</pre><p>Returns the hierarchical chunk size in cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:189</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(100, 100)
+
+    nav:setChunkSize(12)
+
+    print(&quot;chunk = &quot; .. nav:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcost"><div class="item-row-main"><h3>getCost</h3><pre class="inline-signature">LNavGrid:getCost(x: integer, y: integer) -&gt; integer</pre><p>Returns movement cost at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:105</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:setCost(7, 8, 4)
+
+    print(&quot;cost_7_8 = &quot; .. nav:getCost(7, 8))
+    print(&quot;cost_1_1 = &quot; .. nav:getCost(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdiagonalmode"><div class="item-row-main"><h3>getDiagonalMode</h3><pre class="inline-signature">LNavGrid:getDiagonalMode() -&gt; string</pre><p>Returns the current diagonal movement mode name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:279</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(10, 10)
+
+    nav:setDiagonalMode(&quot;nocornercut&quot;)
+
+    print(&quot;mode = &quot; .. nav:getDiagonalMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">LNavGrid:getDimensions() -&gt; integer</pre><p>Returns grid width and height as two integers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:88</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local ng = lurek.pathfind.newNavGrid(20, 15)
+    local w, h = ng:getDimensions()
+
+    print(&quot;dims = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;width = &quot; .. ng:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LNavGrid:getHeight() -&gt; integer</pre><p>Returns grid height from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:81</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local ng = lurek.pathfind.newNavGrid(20, 15)
+    local w, h = ng:getDimensions()
+
+    print(&quot;dims = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;height = &quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LNavGrid:getWidth() -&gt; integer</pre><p>Returns grid width from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:75</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local ng = lurek.pathfind.newNavGrid(20, 15)
+    local w, h = ng:getDimensions()
+
+    print(&quot;dims = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;width = &quot; .. w)
+end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LNavGrid:isBlocked(x: integer, y: integer) -&gt; boolean</pre><p>Returns whether a one-based grid cell is blocked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:125</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:setBlocked(12, 12, true)
+
+    print(&quot;blocked_12_12 = &quot; .. tostring(nav:isBlocked(12, 12)))
+    print(&quot;blocked_12_13 = &quot; .. tostring(nav:isBlocked(12, 13)))
+end</code></pre></details></article><article class="item-row api-row" id="method-iswalkable"><div class="item-row-main"><h3>isWalkable</h3><pre class="inline-signature">LNavGrid:isWalkable(x: integer, y: integer, unit_size: integer?) -&gt; boolean</pre><p>Returns whether a one-based grid cell is walkable for a unit size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:134</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+
+    nav:fill(1)
+    nav:setBlocked(6, 6, true)
+
+    print(&quot;walkable_1x1 = &quot; .. tostring(nav:isWalkable(5, 5)))
+    print(&quot;walkable_blocked = &quot; .. tostring(nav:isWalkable(6, 6)))
+    print(&quot;walkable_2x2 = &quot; .. tostring(nav:isWalkable(5, 5, 2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-loadfromstring"><div class="item-row-main"><h3>loadFromString</h3><pre class="inline-signature">LNavGrid:loadFromString(data: string)</pre><p>Loads grid data from a serialized binary string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:167</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(10, 10)
+
+    nav:setBlocked(5, 5, true)
+    nav:setCost(3, 3, 9)
+
+    local data = nav:saveToString()
+    local nav2 = lurek.pathfind.newNavGrid(10, 10)
+    nav2:loadFromString(data)
+
+    print(&quot;blocked_5_5 = &quot; .. tostring(nav2:isBlocked(5, 5)))
+    print(&quot;cost_3_3 = &quot; .. nav2:getCost(3, 3))
+end</code></pre></details></article><article class="item-row api-row" id="method-rebuildabstract"><div class="item-row-main"><h3>rebuildAbstract</h3><pre class="inline-signature">LNavGrid:rebuildAbstract()</pre><p>Rebuilds the cached abstract graph for this grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:194</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(64, 64)
+
+    nav:setChunkSize(8)
+    nav:rebuildAbstract()
+
+    print(&quot;chunk = &quot; .. nav:getChunkSize())
+    print(&quot;blocked_1_1 = &quot; .. tostring(nav:isBlocked(1, 1)))
+end</code></pre></details></article><article class="item-row api-row" id="method-savetostring"><div class="item-row-main"><h3>saveToString</h3><pre class="inline-signature">LNavGrid:saveToString() -&gt; string</pre><p>Saves grid data to a serialized binary string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:176</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(10, 10)
+
+    nav:setBlocked(5, 5, true)
+    nav:setCost(3, 3, 9)
+
+    local data = nav:saveToString()
+
+    print(&quot;bytes = &quot; .. #data)
+    print(&quot;blocked_5_5 = &quot; .. tostring(nav:isBlocked(5, 5)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setblocked"><div class="item-row-main"><h3>setBlocked</h3><pre class="inline-signature">LNavGrid:setBlocked(x: integer, y: integer, blocked: boolean)</pre><p>Sets blocked state at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:113</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:setBlocked(10, 10, true)
+
+    print(&quot;blocked_10_10 = &quot; .. tostring(nav:isBlocked(10, 10)))
+    print(&quot;cost_10_10 = &quot; .. nav:getCost(10, 10))
+end</code></pre></details></article><article class="item-row api-row" id="method-setchunksize"><div class="item-row-main"><h3>setChunkSize</h3><pre class="inline-signature">LNavGrid:setChunkSize(size: integer)</pre><p>Sets hierarchical chunk size for abstract graph partitioning.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:182</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(100, 100)
+
+    nav:setChunkSize(16)
+    nav:rebuildAbstract()
+
+    print(&quot;chunk = &quot; .. nav:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LNavGrid:setCost(x: integer, y: integer, cost: integer)</pre><p>Sets movement cost at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:96</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(30, 30)
+
+    nav:setCost(5, 5, 200)
+
+    print(&quot;cost_5_5 = &quot; .. nav:getCost(5, 5))
+    print(&quot;blocked_5_5 = &quot; .. tostring(nav:isBlocked(5, 5)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setdiagonalmode"><div class="item-row-main"><h3>setDiagonalMode</h3><pre class="inline-signature">LNavGrid:setDiagonalMode(mode: string)</pre><p>Sets diagonal movement mode for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:266</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(10, 10)
+
+    nav:setDiagonalMode(&quot;always&quot;)
+
+    print(&quot;mode = &quot; .. nav:getDiagonalMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-setdirty"><div class="item-row-main"><h3>setDirty</h3><pre class="inline-signature">LNavGrid:setDirty(x: integer, y: integer, w: integer, h: integer)</pre><p>Marks a one-based rectangular region dirty for incremental rebuild.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:253</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(50, 50)
+
+    nav:setChunkSize(10)
+    nav:rebuildAbstract()
+    nav:setBlocked(25, 25, true)
+    nav:setDirty(20, 20, 10, 10)
+    nav:rebuildAbstract()
+
+    print(&quot;blocked_25_25 = &quot; .. tostring(nav:isBlocked(25, 25)))
+    print(&quot;chunk = &quot; .. nav:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNavGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this navigation grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:290</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(5, 5)
+
+    print(&quot;type = &quot; .. nav:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNavGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this navigation grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:295</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local nav = lurek.pathfind.newNavGrid(5, 5)
+
+    print(&quot;is_nav_grid = &quot; .. tostring(nav:typeOf(&quot;LNavGrid&quot;)))
+    print(&quot;is_object = &quot; .. tostring(nav:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

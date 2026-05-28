@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LArray - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a class="active" href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LArray</h1>
+  <p>Lua-side multidimensional numeric array handle.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/compute.html">lurek.compute</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({3, 4})
+    local shape = a:getShape()
+    print(&quot;shape = &quot; .. shape[1] .. &quot;x&quot; .. shape[2])
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LArray userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-abs"><div class="item-row-main"><h3>abs</h3><pre class="inline-signature">LArray:abs() -&gt; LArray</pre><p>Returns element-wise absolute values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:286</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({-3, -1, 2}, {3})
+    local b = a:abs()
+    print(&quot;abs → [1] = &quot; .. b:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-add"><div class="item-row-main"><h3>add</h3><pre class="inline-signature">LArray:add(value: any) -&gt; LArray</pre><p>Returns element-wise addition with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local b = a:add(10)
+    print(&quot;a + 10 → [1] = &quot; .. b:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-addinplace"><div class="item-row-main"><h3>addInplace</h3><pre class="inline-signature">LArray:addInplace(other: LArray)</pre><p>Adds another array into this array in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:199</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({3, 3})
+    local b = lurek.compute.ones({3, 3})
+    a:addInplace(b)
+    print(&quot;after addInplace[1,1] = &quot; .. a:get(1, 1))
+    print(&quot;after addInplace[3,3] = &quot; .. a:get(3, 3))
+end</code></pre></details></article><article class="item-row api-row" id="method-all"><div class="item-row-main"><h3>all</h3><pre class="inline-signature">LArray:all() -&gt; boolean</pre><p>Returns whether all elements are non-zero.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:398</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    print(&quot;all nonzero = &quot; .. tostring(a:all()))
+end</code></pre></details></article><article class="item-row api-row" id="method-any"><div class="item-row-main"><h3>any</h3><pre class="inline-signature">LArray:any() -&gt; boolean</pre><p>Returns whether any element is non-zero.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:394</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0, 0, 1}, {3})
+    print(&quot;any = &quot; .. tostring(a:any()))
+    print(&quot;all = &quot; .. tostring(a:all()))
+end</code></pre></details></article><article class="item-row api-row" id="method-argmax"><div class="item-row-main"><h3>argmax</h3><pre class="inline-signature">LArray:argmax() -&gt; integer</pre><p>Returns the one-based flat index of the maximum value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:390</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
+    print(&quot;argmax = &quot; .. a:argmax())
+end</code></pre></details></article><article class="item-row api-row" id="method-argmin"><div class="item-row-main"><h3>argmin</h3><pre class="inline-signature">LArray:argmin() -&gt; integer</pre><p>Returns the one-based flat index of the minimum value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:386</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({5, 1, 8, 3}, {4})
+    print(&quot;argmin = &quot; .. a:argmin())
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwiseand"><div class="item-row-main"><h3>bitwiseAnd</h3><pre class="inline-signature">LArray:bitwiseAnd(other: LArray) -&gt; LArray</pre><p>Returns element-wise bitwise AND with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:481</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, &quot;int32&quot;)
+    local b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, &quot;int32&quot;)
+    local c = a:bitwiseAnd(b)
+    print(&quot;AND[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwiselshift"><div class="item-row-main"><h3>bitwiseLShift</h3><pre class="inline-signature">LArray:bitwiseLShift(amount: integer) -&gt; LArray</pre><p>Returns element-wise left shift by a bit count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:518</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 4}, {3}, &quot;int32&quot;)
+    local c = a:bitwiseLShift(2)
+    print(&quot;lshift(2)[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwisenot"><div class="item-row-main"><h3>bitwiseNot</h3><pre class="inline-signature">LArray:bitwiseNot() -&gt; LArray</pre><p>Returns element-wise bitwise NOT.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:510</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0, 255}, {2}, &quot;int32&quot;)
+    local c = a:bitwiseNot()
+    print(&quot;NOT[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwiseor"><div class="item-row-main"><h3>bitwiseOr</h3><pre class="inline-signature">LArray:bitwiseOr(other: LArray) -&gt; LArray</pre><p>Returns element-wise bitwise OR with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:491</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, &quot;int32&quot;)
+    local b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, &quot;int32&quot;)
+    local c = a:bitwiseOr(b)
+    print(&quot;OR[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwisershift"><div class="item-row-main"><h3>bitwiseRShift</h3><pre class="inline-signature">LArray:bitwiseRShift(amount: integer) -&gt; LArray</pre><p>Returns element-wise right shift by a bit count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:527</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({8, 16, 32}, {3}, &quot;int32&quot;)
+    local c = a:bitwiseRShift(2)
+    print(&quot;rshift(2)[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-bitwisexor"><div class="item-row-main"><h3>bitwiseXor</h3><pre class="inline-signature">LArray:bitwiseXor(other: LArray) -&gt; LArray</pre><p>Returns element-wise bitwise XOR with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:501</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0xFF, 0x00}, {2}, &quot;int32&quot;)
+    local b = lurek.compute.fromTable({0x0F, 0x0F}, {2}, &quot;int32&quot;)
+    local c = a:bitwiseXor(b)
+    print(&quot;XOR[1] = &quot; .. c:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-clamp"><div class="item-row-main"><h3>clamp</h3><pre class="inline-signature">LArray:clamp(min: number, max: number) -&gt; LArray</pre><p>Returns values clamped between minimum and maximum bounds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({-5, 0, 3, 10, 15}, {5})
+    local b = a:clamp(0, 10)
+    print(&quot;clamp(0,10) → [1]=&quot; .. b:get(1) .. &quot; [5]=&quot; .. b:get(5))
+end</code></pre></details></article><article class="item-row api-row" id="method-clone"><div class="item-row-main"><h3>clone</h3><pre class="inline-signature">LArray:clone() -&gt; LArray</pre><p>Returns an independent deep copy of this array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:177</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({3, 3})
+    local b = a:clone()
+    b:set(1, 1, 5)
+    print(&quot;original[1,1] = &quot; .. a:get(1, 1) .. &quot; clone[1,1] = &quot; .. b:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-convolve1d"><div class="item-row-main"><h3>convolve1d</h3><pre class="inline-signature">LArray:convolve1d(kernel: LArray) -&gt; LArray</pre><p>Returns one-dimensional convolution with a kernel array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:692</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local signal = lurek.compute.fromTable({0, 1, 2, 3, 4}, {5})
+    local kernel = lurek.compute.fromTable({1, 0, -1}, {3})
+    local c = signal:convolve1d(kernel)
+    print(&quot;conv1d size = &quot; .. c:getSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-convolve2d"><div class="item-row-main"><h3>convolve2D</h3><pre class="inline-signature">LArray:convolve2D(kernel: LArray) -&gt; LArray</pre><p>Returns two-dimensional convolution with a kernel array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:536</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local img = lurek.compute.zeros({5, 5})
+    img:set(3, 3, 1)
+    local kernel = lurek.compute.gaussianKernel(3, 1.0)
+    local result = img:convolve2D(kernel)
+    print(&quot;conv center = &quot; .. result:get(3, 3))
+    print(&quot;conv neighbor = &quot; .. result:get(3, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-correlate1d"><div class="item-row-main"><h3>correlate1d</h3><pre class="inline-signature">LArray:correlate1d(template: LArray) -&gt; LArray</pre><p>Returns one-dimensional correlation with a template array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local signal = lurek.compute.fromTable({0, 0, 1, 0, 0}, {5})
+    local templ = lurek.compute.fromTable({1}, {1})
+    local c = signal:correlate1d(templ)
+    print(&quot;corr peak at [3] = &quot; .. c:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-countnonzero"><div class="item-row-main"><h3>countNonZero</h3><pre class="inline-signature">LArray:countNonZero() -&gt; integer</pre><p>Counts the number of non-zero elements in this array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0, 1, 0, 2, 3}, {5})
+    print(&quot;nonzero count = &quot; .. a:countNonZero())
+end</code></pre></details></article><article class="item-row api-row" id="method-covariance"><div class="item-row-main"><h3>covariance</h3><pre class="inline-signature">LArray:covariance(other: LArray) -&gt; number</pre><p>Returns covariance with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:659</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
+    local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
+    print(&quot;covariance = &quot; .. a:covariance(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-cross2d"><div class="item-row-main"><h3>cross2d</h3><pre class="inline-signature">LArray:cross2d(other: LArray) -&gt; number</pre><p>Returns two-dimensional cross product with another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:728</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 0}, {2})
+    local b = lurek.compute.fromTable({0, 1}, {2})
+    print(&quot;cross2d = &quot; .. a:cross2d(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-cumsum"><div class="item-row-main"><h3>cumsum</h3><pre class="inline-signature">LArray:cumsum() -&gt; LArray</pre><p>Returns cumulative sum over the flattened array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:607</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local cs = a:cumsum()
+    print(&quot;cumsum[4] = &quot; .. cs:get(4))
+end</code></pre></details></article><article class="item-row api-row" id="method-diff"><div class="item-row-main"><h3>diff</h3><pre class="inline-signature">LArray:diff(order: integer?) -&gt; LArray</pre><p>Returns finite differences over the flattened array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:615</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 3, 6, 10}, {4})
+    local d = a:diff()
+    print(&quot;diff[1] = &quot; .. d:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-dilate"><div class="item-row-main"><h3>dilate</h3><pre class="inline-signature">LArray:dilate(radius: integer) -&gt; LArray</pre><p>Returns morphological dilation with a radius.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:546</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.zeros({5, 5})
+    a:set(3, 3, 1)
+    local d = a:dilate(1)
+    print(&quot;dilated[2,3] = &quot; .. d:get(2, 3))
+end</code></pre></details></article><article class="item-row api-row" id="method-div"><div class="item-row-main"><h3>div</h3><pre class="inline-signature">LArray:div(value: any) -&gt; LArray</pre><p>Returns element-wise division with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:261</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({10, 20, 30}, {3})
+    local b = a:div(10)
+    print(&quot;a / 10 → [1] = &quot; .. b:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-divinplace"><div class="item-row-main"><h3>divInplace</h3><pre class="inline-signature">LArray:divInplace(other: LArray)</pre><p>Divides this array by another array in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:220</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
+    local b = lurek.compute.fromTable({2, 4, 5, 8}, {2, 2})
+    a:divInplace(b)
+    print(&quot;after divInplace[1,1] = &quot; .. a:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-dot"><div class="item-row-main"><h3>dot</h3><pre class="inline-signature">LArray:dot(other: LArray) -&gt; number</pre><p>Returns dot product with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:473</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local b = lurek.compute.fromTable({4, 5, 6}, {3})
+    print(&quot;dot = &quot; .. a:dot(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-eigenpower"><div class="item-row-main"><h3>eigenPower</h3><pre class="inline-signature">LArray:eigenPower(max_iter: integer?, tol: number?) -&gt; table</pre><p>Estimates dominant eigenvalue and eigenvector using power iteration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:801</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 1, 1, 2}, {2, 2})
+    local result = a:eigenPower(100, 1e-6)
+    print(&quot;eigenvalue = &quot; .. result.value)
+    print(&quot;eigenvector[1] = &quot; .. tostring(result.vector[1]))
+end</code></pre></details></article><article class="item-row api-row" id="method-eq"><div class="item-row-main"><h3>eq</h3><pre class="inline-signature">LArray:eq(value: any) -&gt; LArray</pre><p>Returns element-wise equality comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:310</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 2, 1}, {5})
+    local mask = a:eq(2)
+    print(&quot;eq(2) → [2] = &quot; .. mask:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-erode"><div class="item-row-main"><h3>erode</h3><pre class="inline-signature">LArray:erode(radius: integer) -&gt; LArray</pre><p>Returns morphological erosion with a radius.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:554</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({5, 5})
+    a:set(1, 1, 0)
+    local e = a:erode(1)
+    print(&quot;eroded[2,2] = &quot; .. e:get(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-eval"><div class="item-row-main"><h3>eval</h3><pre class="inline-signature">LArray:eval(expr: string) -&gt; LArray</pre><p>Maps each element through a Lua expression compiled as `function(x) return expression end`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:842</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local b = a:eval(&quot;x * x + 1&quot;)
+    print(&quot;eval[2] = &quot; .. b:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-fill"><div class="item-row-main"><h3>fill</h3><pre class="inline-signature">LArray:fill(val: number)</pre><p>Fills this array in place with one value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:192</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({3, 3})
+    a:fill(7)
+    print(&quot;filled[2,2] = &quot; .. a:get(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-floodfill"><div class="item-row-main"><h3>floodFill</h3><pre class="inline-signature">LArray:floodFill(row: integer, col: integer, val: number) -&gt; LArray</pre><p>Returns a flood-filled copy starting at a one-based row and column.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:564</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.zeros({5, 5})
+    a:set(1, 1, 1)
+    a:set(1, 2, 1)
+    local filled = a:floodFill(1, 1, 9)
+    print(&quot;flood[1,2] = &quot; .. filled:get(1, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LArray:get(...: integer) -&gt; number</pre><p>Reads an array element using one-based indices.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:124</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({10, 20, 30, 40}, {2, 2})
+    print(&quot;a[1,2] = &quot; .. a:get(1, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdatatype"><div class="item-row-main"><h3>getDataType</h3><pre class="inline-signature">LArray:getDataType() -&gt; string</pre><p>Returns the element data type name as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:113</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({2, 2}, &quot;float32&quot;)
+    print(&quot;dtype = &quot; .. a:getDataType())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">LArray:getDimensions() -&gt; integer</pre><p>Returns the number of array dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:105</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({2, 3, 4})
+    print(&quot;dims = &quot; .. a:getDimensions())
+    print(&quot;size = &quot; .. a:getSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-getregion"><div class="item-row-main"><h3>getRegion</h3><pre class="inline-signature">LArray:getRegion(row: integer, col: integer, rows: integer, cols: integer) -&gt; LArray</pre><p>Returns a rectangular region from this array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:579</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.range(1, 17, 1)
+    local m = a:reshape({4, 4})
+    local region = m:getRegion(2, 2, 2, 2)
+    print(&quot;region[1,1] = &quot; .. region:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-getshape"><div class="item-row-main"><h3>getShape</h3><pre class="inline-signature">LArray:getShape() -&gt; integer[]</pre><p>Returns the array shape as one-based dimension table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:95</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({3, 4})
+    local shape = a:getShape()
+    print(&quot;shape = &quot; .. shape[1] .. &quot;x&quot; .. shape[2])
+end</code></pre></details></article><article class="item-row api-row" id="method-getsize"><div class="item-row-main"><h3>getSize</h3><pre class="inline-signature">LArray:getSize() -&gt; integer</pre><p>Returns the total number of array elements.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:109</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.newArray({5, 5})
+    print(&quot;size = &quot; .. a:getSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-gt"><div class="item-row-main"><h3>gt</h3><pre class="inline-signature">LArray:gt(value: any) -&gt; LArray</pre><p>Returns element-wise greater-than comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:326</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 5, 10}, {3})
+    local mask = a:gt(4)
+    print(&quot;gt(4) → [2] = &quot; .. mask:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-gte"><div class="item-row-main"><h3>gte</h3><pre class="inline-signature">LArray:gte(value: any) -&gt; LArray</pre><p>Returns element-wise greater-or-equal comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:336</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 5, 10}, {3})
+    local mask = a:gte(5)
+    print(&quot;gte(5) → [2] = &quot; .. mask:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-histogram"><div class="item-row-main"><h3>histogram</h3><pre class="inline-signature">LArray:histogram(bins: integer, lo: number?, hi: number?) -&gt; table</pre><p>Returns histogram bins for the array values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:629</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6, 7, 8}, {8})
+    local bins = a:histogram(4)
+    print(&quot;bin count = &quot; .. #bins)
+    print(&quot;first bin count = &quot; .. tostring(bins[1].count))
+end</code></pre></details></article><article class="item-row api-row" id="method-isongpu"><div class="item-row-main"><h3>isOnGPU</h3><pre class="inline-signature">LArray:isOnGPU() -&gt; boolean</pre><p>Returns whether this array is currently stored on the GPU.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:119</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({4, 4})
+    print(&quot;on GPU = &quot; .. tostring(a:isOnGPU()))
+end</code></pre></details></article><article class="item-row api-row" id="method-linsolve"><div class="item-row-main"><h3>linsolve</h3><pre class="inline-signature">LArray:linsolve(b: LArray) -&gt; LArray</pre><p>Solves a linear system using this matrix and a right-hand side array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:760</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 1, 5, 7}, {2, 2})
+    local b = lurek.compute.fromTable({11, 13}, {2})
+    local x = a:linsolve(b)
+    print(&quot;x[1] = &quot; .. x:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-lt"><div class="item-row-main"><h3>lt</h3><pre class="inline-signature">LArray:lt(value: any) -&gt; LArray</pre><p>Returns element-wise less-than comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:331</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 5, 10}, {3})
+    local mask = a:lt(6)
+    print(&quot;lt(6) → [3] = &quot; .. mask:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-lte"><div class="item-row-main"><h3>lte</h3><pre class="inline-signature">LArray:lte(value: any) -&gt; LArray</pre><p>Returns element-wise less-or-equal comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:347</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 5, 10}, {3})
+    local mask = a:lte(5)
+    print(&quot;lte(5) → [2] = &quot; .. mask:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-ludecompose"><div class="item-row-main"><h3>luDecompose</h3><pre class="inline-signature">LArray:luDecompose() -&gt; table</pre><p>Decomposes this matrix into LU data and permutation metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:772</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({4, 3, 6, 3}, {2, 2})
+    local lu = a:luDecompose()
+    print(&quot;n = &quot; .. lu.n .. &quot; det_sign = &quot; .. lu.det_sign)
+    print(&quot;perm[1] = &quot; .. tostring(lu.perm[1]))
+end</code></pre></details></article><article class="item-row api-row" id="method-map"><div class="item-row-main"><h3>map</h3><pre class="inline-signature">LArray:map(func: function) -&gt; LArray</pre><p>Maps each element through a Lua function and returns a new array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:826</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 4, 9}, {3})
+    local b = a:map(function(x) return x * 2 end)
+    print(&quot;mapped[2] = &quot; .. b:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-matmul"><div class="item-row-main"><h3>matmul</h3><pre class="inline-signature">LArray:matmul(other: LArray) -&gt; LArray</pre><p>Returns matrix multiplication of this array and another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:463</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
+    local b = lurek.compute.fromTable({5, 6, 7, 8}, {2, 2})
+    local c = a:matmul(b)
+    print(&quot;matmul[1,1] = &quot; .. c:get(1, 1))
+    print(&quot;matmul[2,2] = &quot; .. c:get(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-max"><div class="item-row-main"><h3>max</h3><pre class="inline-signature">LArray:max(axis: integer?) -&gt; number</pre><p>Returns total maximum or a maximum array along a one-based axis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:449</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
+    print(&quot;max = &quot; .. a:max())
+end</code></pre></details></article><article class="item-row api-row" id="method-mean"><div class="item-row-main"><h3>mean</h3><pre class="inline-signature">LArray:mean(axis: integer?) -&gt; number</pre><p>Returns total mean or a mean array along a one-based axis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:419</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 4, 6, 8}, {4})
+    print(&quot;mean = &quot; .. a:mean())
+end</code></pre></details></article><article class="item-row api-row" id="method-min"><div class="item-row-main"><h3>min</h3><pre class="inline-signature">LArray:min(axis: integer?) -&gt; number</pre><p>Returns total minimum or a minimum array along a one-based axis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:434</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({7, 2, 9, 1}, {4})
+    print(&quot;min = &quot; .. a:min())
+end</code></pre></details></article><article class="item-row api-row" id="method-mul"><div class="item-row-main"><h3>mul</h3><pre class="inline-signature">LArray:mul(value: any) -&gt; LArray</pre><p>Returns element-wise multiplication with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 3, 4}, {3})
+    local b = a:mul(3)
+    print(&quot;a * 3 → [3] = &quot; .. b:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-mulinplace"><div class="item-row-main"><h3>mulInplace</h3><pre class="inline-signature">LArray:mulInplace(other: LArray)</pre><p>Multiplies this array by another array in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:213</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 3, 4, 5}, {2, 2})
+    local b = lurek.compute.fromTable({10, 10, 10, 10}, {2, 2})
+    a:mulInplace(b)
+    print(&quot;after mulInplace[1,1] = &quot; .. a:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-neg"><div class="item-row-main"><h3>neg</h3><pre class="inline-signature">LArray:neg() -&gt; LArray</pre><p>Returns element-wise negated values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:293</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({5, -3, 0}, {3})
+    local b = a:neg()
+    print(&quot;neg → [1] = &quot; .. b:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-neq"><div class="item-row-main"><h3>neq</h3><pre class="inline-signature">LArray:neq(value: any) -&gt; LArray</pre><p>Returns element-wise inequality comparison with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:315</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local mask = a:neq(2)
+    print(&quot;neq(2) → [1] = &quot; .. mask:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-normalizerange"><div class="item-row-main"><h3>normalizeRange</h3><pre class="inline-signature">LArray:normalizeRange(lo: number, hi: number) -&gt; LArray</pre><p>Returns array values normalized into a target range.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:676</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0, 50, 100}, {3})
+    local n = a:normalizeRange(0, 1)
+    print(&quot;normalized[2] = &quot; .. n:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-normalizevec"><div class="item-row-main"><h3>normalizeVec</h3><pre class="inline-signature">LArray:normalizeVec() -&gt; LArray</pre><p>Returns this vector normalized to unit length.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local v = lurek.compute.fromTable({3, 4}, {2})
+    local n = v:normalizeVec()
+    print(&quot;normalized[1] = &quot; .. n:get(1))
+    print(&quot;normalized[2] = &quot; .. n:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-outer"><div class="item-row-main"><h3>outer</h3><pre class="inline-signature">LArray:outer(other: LArray) -&gt; LArray</pre><p>Returns outer product with another vector array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:719</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local b = lurek.compute.fromTable({4, 5}, {2})
+    local o = a:outer(b)
+    print(&quot;outer[1,2] = &quot; .. o:get(1, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-pearsoncorr"><div class="item-row-main"><h3>pearsonCorr</h3><pre class="inline-signature">LArray:pearsonCorr(other: LArray) -&gt; number</pre><p>Returns Pearson correlation with another array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5}, {5})
+    local b = lurek.compute.fromTable({2, 4, 6, 8, 10}, {5})
+    print(&quot;pearson = &quot; .. a:pearsonCorr(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-percentile"><div class="item-row-main"><h3>percentile</h3><pre class="inline-signature">LArray:percentile(p: number) -&gt; number</pre><p>Returns a percentile value from the array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:652</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.range(1, 100, 1)
+    local p50 = a:percentile(50)
+    print(&quot;p50 = &quot; .. p50)
+end</code></pre></details></article><article class="item-row api-row" id="method-pow"><div class="item-row-main"><h3>pow</h3><pre class="inline-signature">LArray:pow(exp: number) -&gt; LArray</pre><p>Returns this array raised element-wise to a scalar exponent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:272</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 3, 4}, {3})
+    local b = a:pow(2)
+    print(&quot;a^2 → [2] = &quot; .. b:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-reduce"><div class="item-row-main"><h3>reduce</h3><pre class="inline-signature">LArray:reduce(func: function, init: number) -&gt; number</pre><p>Reduces array values with a Lua accumulator function.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:862</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local total = a:reduce(function(acc, v) return acc + v end, 0)
+    print(&quot;reduce sum = &quot; .. total)
+end</code></pre></details></article><article class="item-row api-row" id="method-reshape"><div class="item-row-main"><h3>reshape</h3><pre class="inline-signature">LArray:reshape(shape: table) -&gt; LArray</pre><p>Returns a reshaped copy of this array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:169</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
+    local b = a:reshape({2, 3})
+    print(&quot;reshaped dims = &quot; .. b:getDimensions())
+    print(&quot;reshaped[2,3] = &quot; .. b:get(2, 3))
+end</code></pre></details></article><article class="item-row api-row" id="method-scan"><div class="item-row-main"><h3>scan</h3><pre class="inline-signature">LArray:scan(func: function, init: number) -&gt; LArray</pre><p>Produces prefix accumulator values with a Lua function.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:877</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    local s = a:scan(function(acc, v) return acc + v end, 0)
+    print(&quot;scan[4] = &quot; .. s:get(4))
+    print(&quot;scan[2] = &quot; .. s:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-set"><div class="item-row-main"><h3>set</h3><pre class="inline-signature">LArray:set(...: number)</pre><p>Writes an array element using one-based indices followed by the value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.zeros({3, 3})
+    a:set(2, 2, 99)
+    print(&quot;a[2,2] = &quot; .. a:get(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-setregion"><div class="item-row-main"><h3>setRegion</h3><pre class="inline-signature">LArray:setRegion(row: integer, col: integer, source: LArray)</pre><p>Writes a source array into this array at a one-based row and column.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:592</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.zeros({4, 4})
+    local patch = lurek.compute.ones({2, 2})
+    a:setRegion(2, 2, patch)
+    print(&quot;after setRegion[2,2] = &quot; .. a:get(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-sobel"><div class="item-row-main"><h3>sobel</h3><pre class="inline-signature">LArray:sobel() -&gt; table</pre><p>Computes Sobel gradients for this array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:747</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local img = lurek.compute.zeros({5, 5})
+    img:set(3, 3, 1)
+    local grad = img:sobel()
+    print(&quot;gx size = &quot; .. grad.gx:getSize())
+    print(&quot;gy size = &quot; .. grad.gy:getSize())
+end</code></pre></details></article><article class="item-row api-row" id="method-sqrt"><div class="item-row-main"><h3>sqrt</h3><pre class="inline-signature">LArray:sqrt() -&gt; LArray</pre><p>Returns element-wise square roots.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:279</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({4, 9, 16}, {3})
+    local b = a:sqrt()
+    print(&quot;sqrt → [1] = &quot; .. b:get(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-sub"><div class="item-row-main"><h3>sub</h3><pre class="inline-signature">LArray:sub(value: any) -&gt; LArray</pre><p>Returns element-wise subtraction with an array or scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:239</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({10, 20, 30}, {3})
+    local b = a:sub(5)
+    print(&quot;a - 5 → [2] = &quot; .. b:get(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-subinplace"><div class="item-row-main"><h3>subInplace</h3><pre class="inline-signature">LArray:subInplace(other: LArray)</pre><p>Subtracts another array from this array in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:206</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({5, 5, 5, 5}, {2, 2})
+    local b = lurek.compute.ones({2, 2})
+    a:subInplace(b)
+    print(&quot;after subInplace[1,1] = &quot; .. a:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-sum"><div class="item-row-main"><h3>sum</h3><pre class="inline-signature">LArray:sum(axis: integer?) -&gt; number</pre><p>Returns total sum or a summed array along a one-based axis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:404</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4}, {4})
+    print(&quot;sum = &quot; .. a:sum())
+    print(&quot;mean = &quot; .. a:mean())
+end</code></pre></details></article><article class="item-row api-row" id="method-threshold"><div class="item-row-main"><h3>threshold</h3><pre class="inline-signature">LArray:threshold(val: number) -&gt; LArray</pre><p>Returns a mask array where values above a threshold are selected.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:358</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({0.1, 0.5, 0.9}, {3})
+    local mask = a:threshold(0.4)
+    print(&quot;threshold(0.4) → [1]=&quot; .. mask:get(1) .. &quot; [3]=&quot; .. mask:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-totable"><div class="item-row-main"><h3>toTable</h3><pre class="inline-signature">LArray:toTable() -&gt; number[]</pre><p>Returns array values flattened into a Lua table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3}, {3})
+    local t = a:toTable()
+    print(&quot;table = &quot; .. t[1] .. &quot;,&quot; .. t[2] .. &quot;,&quot; .. t[3])
+end</code></pre></details></article><article class="item-row api-row" id="method-transformpoints"><div class="item-row-main"><h3>transformPoints</h3><pre class="inline-signature">LArray:transformPoints(pts: LArray) -&gt; LArray</pre><p>Transforms a point array by this transform matrix.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:736</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local m = lurek.compute.affine2d(10, 20, 0, 1, 1)
+    local pts = lurek.compute.fromTable({0, 0, 5, 5}, {2, 2})
+    local result = m:transformPoints(pts)
+    print(&quot;transformed[1,1] = &quot; .. result:get(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-transpose"><div class="item-row-main"><h3>transpose</h3><pre class="inline-signature">LArray:transpose() -&gt; LArray</pre><p>Returns a transposed copy of a two-dimensional array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:185</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
+    local t = a:transpose()
+    local shape = t:getShape()
+    print(&quot;transposed shape = &quot; .. shape[1] .. &quot;x&quot; .. shape[2])
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LArray:type() -&gt; string</pre><p>Returns the Lua-visible type name for this array handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:893</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({2, 2})
+    print(&quot;type = &quot; .. a:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LArray:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this array handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:898</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.ones({2, 2})
+    print(&quot;is LArray = &quot; .. tostring(a:typeOf(&quot;LArray&quot;)))
+    print(&quot;is Object = &quot; .. tostring(a:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-where"><div class="item-row-main"><h3>where</h3><pre class="inline-signature">LArray:where(mask: LArray, other: LArray) -&gt; LArray</pre><p>Selects values from this array or another array using a mask array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:367</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({10, 20, 30}, {3})
+    local b = lurek.compute.fromTable({-1, -2, -3}, {3})
+    local mask = a:gt(15)
+    local result = a:where(mask, b)
+    print(&quot;where → [1]=&quot; .. result:get(1) .. &quot; [2]=&quot; .. result:get(2))
+    print(&quot;where → [3]=&quot; .. result:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-zscore"><div class="item-row-main"><h3>zscore</h3><pre class="inline-signature">LArray:zscore() -&gt; LArray</pre><p>Returns z-score normalized array values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/compute_api.rs:684</span></div><details class="example-block"><summary>Example · Exact example · compute.lua</summary><pre><code>do
+    local a = lurek.compute.fromTable({2, 4, 4, 4, 5, 5, 7, 9}, {8})
+    local z = a:zscore()
+    print(&quot;zscore[1] = &quot; .. z:get(1))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

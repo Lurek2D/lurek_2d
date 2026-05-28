@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.time - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a class="active" href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.time</h1>
+  <p>`lurek.timer` - Provides time management with delta time, fixed timestep, cooldowns, delays, intervals, and frame counting.</p>
+  <div class="api-meta api-meta-header"><span>21 functions</span><span>1 classes</span><span>src/lua_api/timer_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 49</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.time.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-afterreal"><div class="item-row-main"><h3>afterReal</h3><pre class="inline-signature">lurek.time.afterReal(delay: number, func: function)</pre><p>Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:487</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    lurek.timer.afterReal(1.0, function() end)
+    local fired = lurek.timer.tickRealTimers()
+    print(&quot;real timers fired = &quot; .. fired)
+end</code></pre></details></article><article class="item-row api-row" id="fn-chain"><div class="item-row-main"><h3>chain</h3><pre class="inline-signature">lurek.time.chain(steps: table) -&gt; LScheduler</pre><p>Creates a scheduler pre-loaded with a sequence of delayed callbacks. Each step is a table with an optional `delay` (seconds) and optional `func` (callback). Delays accumulate so each step fires after the sum of all preceding delays. Returns the scheduler for manual update calls.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:460</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local count = 0
+    local sched = lurek.timer.chain({
+        { delay = 0.5, func = function() count = count + 1 end },
+        { delay = 1.0, func = function() count = count + 1 end },
+    })
+
+    sched:update(0.5)
+    sched:update(1.0)
+    print(&quot;chain steps = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getaveragedelta"><div class="item-row-main"><h3>getAverageDelta</h3><pre class="inline-signature">lurek.time.getAverageDelta() -&gt; number</pre><p>Returns the smoothed average delta time in seconds over a recent window of frames. More stable than getDelta for display or adaptive logic.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:372</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local avg = lurek.timer.getAverageDelta()
+    print(&quot;average delta = &quot; .. avg)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdelta"><div class="item-row-main"><h3>getDelta</h3><pre class="inline-signature">lurek.time.getDelta() -&gt; number</pre><p>Returns the time in seconds elapsed since the last frame. Use this to make movement and animations frame-rate independent.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:348</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local dt = lurek.timer.getDelta()
+    print(&quot;delta time = &quot; .. dt .. &quot; seconds&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfps"><div class="item-row-main"><h3>getFPS</h3><pre class="inline-signature">lurek.time.getFPS() -&gt; number</pre><p>Returns the current frames-per-second count. Useful for performance monitoring overlays and debug HUDs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:356</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local fps = lurek.timer.getFPS()
+    print(&quot;current FPS = &quot; .. fps)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getframecount"><div class="item-row-main"><h3>getFrameCount</h3><pre class="inline-signature">lurek.time.getFrameCount() -&gt; integer</pre><p>Returns the total number of frames rendered since the engine started.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local frames = lurek.timer.getFrameCount()
+    print(&quot;total frames = &quot; .. frames)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmicrotime"><div class="item-row-main"><h3>getMicroTime</h3><pre class="inline-signature">lurek.time.getMicroTime() -&gt; number</pre><p>Returns high-resolution elapsed time in seconds since engine start. Useful for precise benchmarking and profiling.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local start = lurek.timer.getMicroTime()
+    local sum = 0
+    for i = 1, 10000 do sum = sum + i end
+    local elapsed = lurek.timer.getMicroTime() - start
+    print(&quot;loop took &quot; .. elapsed .. &quot; seconds&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getphysicsdelta"><div class="item-row-main"><h3>getPhysicsDelta</h3><pre class="inline-signature">lurek.time.getPhysicsDelta() -&gt; number</pre><p>Returns the fixed timestep used for physics simulation in seconds. The default is typically 1/60.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:404</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local pdt = lurek.timer.getPhysicsDelta()
+    print(&quot;physics delta = &quot; .. pdt)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getphysicsmaxsteps"><div class="item-row-main"><h3>getPhysicsMaxSteps</h3><pre class="inline-signature">lurek.time.getPhysicsMaxSteps() -&gt; number</pre><p>Returns the maximum number of physics steps allowed per frame. Prevents the spiral of death when the game runs slowly.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:424</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local max = lurek.timer.getPhysicsMaxSteps()
+    print(&quot;max physics steps = &quot; .. max)
+    lurek.timer.setPhysicsMaxSteps(8)
+    print(&quot;set to 8: &quot; .. lurek.timer.getPhysicsMaxSteps())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsmootheddelta"><div class="item-row-main"><h3>getSmoothedDelta</h3><pre class="inline-signature">lurek.time.getSmoothedDelta() -&gt; number</pre><p>Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter. Call once per frame for consistent results. The smoothing factor is set via setSmoothingFactor.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:549</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    lurek.timer.setSmoothingFactor(0.1)
+    local sd = lurek.timer.getSmoothedDelta()
+    print(&quot;smoothed delta (alpha=0.1) = &quot; .. sd)
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettime"><div class="item-row-main"><h3>getTime</h3><pre class="inline-signature">lurek.time.getTime() -&gt; number</pre><p>Returns the total elapsed game time in seconds since the engine started. Useful for time-based animations, effects, and shader uniforms.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local t = lurek.timer.getTime()
+    print(&quot;elapsed time = &quot; .. t .. &quot; seconds&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newscheduler"><div class="item-row-main"><h3>newScheduler</h3><pre class="inline-signature">lurek.time.newScheduler() -&gt; LScheduler</pre><p>Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:452</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    print(&quot;type = &quot; .. sched:type())
+    print(&quot;is LScheduler = &quot; .. tostring(sched:typeOf(&quot;LScheduler&quot;)))
+    print(&quot;empty = &quot; .. tostring(sched:isEmpty()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setphysicsdelta"><div class="item-row-main"><h3>setPhysicsDelta</h3><pre class="inline-signature">lurek.time.setPhysicsDelta(dt: number)</pre><p>Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increase accuracy but cost more CPU.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:412</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    lurek.timer.setPhysicsDelta(1/60)
+    local pd = lurek.timer.getPhysicsDelta()
+    print(&quot;physics_delta=&quot; .. pd)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setphysicsmaxsteps"><div class="item-row-main"><h3>setPhysicsMaxSteps</h3><pre class="inline-signature">lurek.time.setPhysicsMaxSteps(n: integer)</pre><p>Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:432</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    lurek.timer.setPhysicsMaxSteps(5)
+    local pm = lurek.timer.getPhysicsMaxSteps()
+    print(&quot;physics_max_steps=&quot; .. pm)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setsmoothingfactor"><div class="item-row-main"><h3>setSmoothingFactor</h3><pre class="inline-signature">lurek.time.setSmoothingFactor(alpha: number)</pre><p>Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged) results; higher values track changes faster. Clamped to [0.01, 1.0].</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:536</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    lurek.timer.setSmoothingFactor(0.1)
+    local sd = lurek.timer.getSmoothedDelta()
+    print(&quot;smoothed_delta=&quot; .. sd)
+end</code></pre></details></article><article class="item-row api-row" id="fn-sleep"><div class="item-row-main"><h3>sleep</h3><pre class="inline-signature">lurek.time.sleep(seconds: number)</pre><p>Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:442</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    print(&quot;sleeping 0.01s...&quot;)
+    lurek.timer.sleep(0.01)
+    print(&quot;woke up&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-step"><div class="item-row-main"><h3>step</h3><pre class="inline-signature">lurek.time.step() -&gt; number</pre><p>Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the engine loop; game scripts rarely need this.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:388</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local dt = lurek.timer.step()
+    print(&quot;stepped, dt = &quot; .. dt)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tickrealtimers"><div class="item-row-main"><h3>tickRealTimers</h3><pre class="inline-signature">lurek.time.tickRealTimers() -&gt; integer</pre><p>Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that fired. Call this once per frame after afterReal scheduling.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:501</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local fired = lurek.timer.tickRealTimers()
+    print(&quot;real timers fired = &quot; .. fired)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tickwaits"><div class="item-row-main"><h3>tickWaits</h3><pre class="inline-signature">lurek.time.tickWaits() -&gt; integer</pre><p>Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries. Returns the number of coroutines that were resumed. Call once per frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:620</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local co = coroutine.create(function()
+        lurek.timer.waitFrames(1)
+        lurek.timer.waitSeconds(0)
+    end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    lurek.timer.tickWaits()
+    print(&quot;wait coroutine = &quot; .. coroutine.status(co))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waitframes"><div class="item-row-main"><h3>waitFrames</h3><pre class="inline-signature">lurek.time.waitFrames(frames: integer)</pre><p>Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:595</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local co = coroutine.create(function() lurek.timer.waitFrames(1) end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    lurek.timer.tickWaits()
+    print(&quot;wait coroutine = &quot; .. coroutine.status(co))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waitseconds"><div class="item-row-main"><h3>waitSeconds</h3><pre class="inline-signature">lurek.time.waitSeconds(seconds: number)</pre><p>Yields the current coroutine for the given number of real-time seconds. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the deadline has passed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/timer_api.rs:570</span></div><details class="example-block"><summary>Example · Exact example · timer.lua</summary><pre><code>do
+    local co = coroutine.create(function() lurek.timer.waitSeconds(0) end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    print(&quot;wait coroutine = &quot; .. coroutine.status(co))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LScheduler.html">LScheduler</a></h3><p>A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.</p></div><div class="item-row-meta"><span>28 methods</span><span>module time</span></div><div class="card-note">Example: timer.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCombo - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LCombo</h1>
+  <p>Lua-side combo detector handle tracking ordered key sequences.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/input.html">lurek.input</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;, &quot;c&quot;})
+    local result = combo:feed(&quot;a&quot;)
+    print(&quot;feed a → &quot; .. result)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LCombo userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-feed"><div class="item-row-main"><h3>feed</h3><pre class="inline-signature">LCombo:feed(key: string) -&gt; string</pre><p>Feeds one key into the combo detector and returns progress status.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:101</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;, &quot;c&quot;})
+    local result = combo:feed(&quot;a&quot;)
+    print(&quot;feed a → &quot; .. result)
+end</code></pre></details></article><article class="item-row api-row" id="method-getstep"><div class="item-row-main"><h3>getStep</h3><pre class="inline-signature">LCombo:getStep(index: integer) -&gt; table</pre><p>Returns step data by one-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;})
+    local step = combo:getStep(1)
+    print(&quot;step 1 key = &quot; .. step.key .. &quot; gap = &quot; .. step.gap_ms)
+end</code></pre></details></article><article class="item-row api-row" id="method-isinprogress"><div class="item-row-main"><h3>isInProgress</h3><pre class="inline-signature">LCombo:isInProgress() -&gt; boolean</pre><p>Returns whether the combo sequence is partially matched.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:148</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({ &quot;a&quot;, &quot;b&quot;, &quot;c&quot; })
+    combo:feed(&quot;a&quot;)
+    combo:tick(0.016)
+    print(&quot;in_progress=&quot; .. tostring(combo:isInProgress()))
+end</code></pre></details></article><article class="item-row api-row" id="method-progress"><div class="item-row-main"><h3>progress</h3><pre class="inline-signature">LCombo:progress() -&gt; integer</pre><p>Returns the current combo step index reached.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:137</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({ &quot;a&quot;, &quot;b&quot;, &quot;c&quot; })
+    combo:feed(&quot;a&quot;)
+    combo:tick(0.016)
+    print(&quot;in_progress=&quot; .. tostring(combo:isInProgress()))
+    print(&quot;progress=&quot; .. combo:progress())
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LCombo:reset()</pre><p>Resets combo progress and elapsed time.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:129</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;q&quot;, &quot;w&quot;, &quot;e&quot;})
+    combo:feed(&quot;q&quot;)
+    combo:reset()
+    print(&quot;progress after reset = &quot; .. combo:progress())
+end</code></pre></details></article><article class="item-row api-row" id="method-tick"><div class="item-row-main"><h3>tick</h3><pre class="inline-signature">LCombo:tick(dt: number) -&gt; string</pre><p>Advances combo timeout state and returns progress status.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:116</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;x&quot;, &quot;y&quot;}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print(&quot;tick → &quot; .. result)
+end</code></pre></details></article><article class="item-row api-row" id="method-totalsteps"><div class="item-row-main"><h3>totalSteps</h3><pre class="inline-signature">LCombo:totalSteps() -&gt; integer</pre><p>Returns the number of steps in this combo sequence.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:144</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({ &quot;a&quot;, &quot;b&quot;, &quot;c&quot; })
+    combo:feed(&quot;a&quot;)
+    combo:tick(0.016)
+    print(&quot;total=&quot; .. combo:totalSteps())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LCombo:type() -&gt; string</pre><p>Returns the Lua-visible type name for this combo handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:172</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;a&quot;})
+    print(&quot;type = &quot; .. combo:type())
+    print(&quot;is Combo = &quot; .. tostring(combo:typeOf(&quot;LCombo&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LCombo:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this combo handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/input_api.rs:177</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;a&quot;})
+    print(&quot;type = &quot; .. combo:type())
+    print(&quot;is Combo = &quot; .. tostring(combo:typeOf(&quot;LCombo&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

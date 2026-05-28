@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["draw","effect","effect_type","image_effect","presets","render","stack"]};

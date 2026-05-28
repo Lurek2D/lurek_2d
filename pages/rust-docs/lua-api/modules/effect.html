@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.effect - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a class="active" href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.effect</h1>
+  <p>`lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.</p>
+  <div class="api-meta api-meta-header"><span>10 functions</span><span>3 classes</span><span>src/lua_api/effect_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 72</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.effect.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-geteffecttypes"><div class="item-row-main"><h3>getEffectTypes</h3><pre class="inline-signature">lurek.effect.getEffectTypes() -&gt; string[]</pre><p>Returns all built-in post-processing effect type names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:679</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local types = lurek.effect.getEffectTypes()
+    print(&quot;available types = &quot; .. #types)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpresetnames"><div class="item-row-main"><h3>getPresetNames</h3><pre class="inline-signature">lurek.effect.getPresetNames() -&gt; string[]</pre><p>Returns all built-in post-processing preset names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:686</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local names = lurek.effect.getPresetNames()
+    print(&quot;preset count = &quot; .. #names)
+    print(&quot;first preset = &quot; .. tostring(names[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getshadererrordisplay"><div class="item-row-main"><h3>getShaderErrorDisplay</h3><pre class="inline-signature">lurek.effect.getShaderErrorDisplay() -&gt; boolean</pre><p>Returns whether renderer shader error display overlays are enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:761</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local on = lurek.effect.getShaderErrorDisplay()
+    print(&quot;shader error display = &quot; .. tostring(on))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcustomeffect"><div class="item-row-main"><h3>newCustomEffect</h3><pre class="inline-signature">lurek.effect.newCustomEffect(shader_id: integer) -&gt; LPostFxEffect</pre><p>Creates a custom post-processing effect that references an existing shader id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:598</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local fx = lurek.effect.newCustomEffect(1)
+    print(&quot;custom effect built-in = &quot; .. tostring(fx:isBuiltIn()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-neweffect"><div class="item-row-main"><h3>newEffect</h3><pre class="inline-signature">lurek.effect.newEffect(type_name: string) -&gt; LPostFxEffect</pre><p>Creates a built-in post-processing effect by type name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:585</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local fx = lurek.effect.newEffect(&quot;bloom&quot;)
+    print(&quot;effect type = &quot; .. fx:getType())
+    print(&quot;built-in = &quot; .. tostring(fx:isBuiltIn()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newimageeffect"><div class="item-row-main"><h3>newImageEffect</h3><pre class="inline-signature">lurek.effect.newImageEffect(spec: LuaValue?, params: table?) -&gt; LImageEffect</pre><p>Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:695</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local ie = lurek.effect.newImageEffect()
+    print(&quot;image effect count = &quot; .. ie:getEffectCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpass"><div class="item-row-main"><h3>newPass</h3><pre class="inline-signature">lurek.effect.newPass(shader_id: integer) -&gt; LPostFxEffect</pre><p>Creates a custom post-processing pass from an existing shader id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:668</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local fx = lurek.effect.newPass(2)
+    print(&quot;pass type = &quot; .. fx:getType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpresetstack"><div class="item-row-main"><h3>newPresetStack</h3><pre class="inline-signature">lurek.effect.newPresetStack(name: string, w: integer?, h: integer?) -&gt; LPostFxStack</pre><p>Creates a named preset post-processing stack with optional dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:637</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local stack = lurek.effect.newPresetStack(&quot;retro_tv&quot;, 320, 240)
+    print(&quot;preset stack effects = &quot; .. stack:getEffectCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstack"><div class="item-row-main"><h3>newStack</h3><pre class="inline-signature">lurek.effect.newStack(w: integer?, h: integer?) -&gt; LPostFxStack</pre><p>Creates a post-processing stack using optional dimensions or the current window size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:612</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    local stack = lurek.effect.newStack(800, 600)
+    print(&quot;stack w=&quot; .. stack:getWidth() .. &quot; h=&quot; .. stack:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setshadererrordisplay"><div class="item-row-main"><h3>setShaderErrorDisplay</h3><pre class="inline-signature">lurek.effect.setShaderErrorDisplay(enabled: boolean)</pre><p>Enables or disables renderer shader error display overlays.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/effect_api.rs:750</span></div><details class="example-block"><summary>Example · Exact example · effect.lua</summary><pre><code>do
+    lurek.effect.setShaderErrorDisplay(true)
+    print(&quot;shader errors on&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LImageEffect.html">LImageEffect</a></h3><p>Lua-side handle for an image effect chain detached from live post-effect capture.</p></div><div class="item-row-meta"><span>13 methods</span><span>module effect</span></div><div class="card-note">Example: effect.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPostFxEffect.html">LPostFxEffect</a></h3><p>Lua-side handle for a single post-processing effect instance.</p></div><div class="item-row-meta"><span>24 methods</span><span>module effect</span></div><div class="card-note">Example: effect.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPostFxStack.html">LPostFxStack</a></h3><p>Lua-side handle for an ordered post-processing stack.</p></div><div class="item-row-meta"><span>25 methods</span><span>module effect</span></div><div class="card-note">Example: effect.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

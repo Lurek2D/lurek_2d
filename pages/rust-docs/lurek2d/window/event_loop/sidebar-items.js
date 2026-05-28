@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["center_window_on_monitor","current_display_index","desktop_dimensions_for_display","display_name_for_display","get_displays","move_window_to_display","select_startup_monitor"],"struct":["DisplayInfo"]};

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LGlobe - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a class="active" href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LGlobe</h1>
+  <p>Lua-side handle for a named globe stored inside a shared registry.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/globe.html">lurek.globe</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;prov_globe&quot;)
+    local ok = g:addProvince({ id = 1, centroid = { 10.0, 20.0 }, vertices = { { 9, 19 }, { 11, 19 }, { 11, 21 }, { 9, 21 } } })
+    print(&quot;added = &quot; .. tostring(ok))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LGlobe userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addarc"><div class="item-row-main"><h3>addArc</h3><pre class="inline-signature">LGlobe:addArc(lat1: number, lon1: number, lat2: number, lon2: number, steps: integer?) -&gt; integer</pre><p>Adds a visible route arc between two latitude and longitude points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:784</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;arc_globe&quot;)
+    local id = g:addArc(0, 0, 45, 90, 12)
+    print(&quot;arc id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="method-addlabel"><div class="item-row-main"><h3>addLabel</h3><pre class="inline-signature">LGlobe:addLabel(ltype: string, lat: number, lon: number, text: string) -&gt; integer</pre><p>Adds a text label at latitude and longitude.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;lbl_globe&quot;)
+    local id = g:addLabel(&quot;region&quot;, 40, -74, &quot;New York&quot;)
+    print(&quot;label id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="method-addlayer"><div class="item-row-main"><h3>addLayer</h3><pre class="inline-signature">LGlobe:addLayer(name: string, z_order: integer?)</pre><p>Adds a render layer with optional z-order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:624</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;layer_globe&quot;)
+    g:addLayer(&quot;terrain&quot;, 0)
+    g:addLayer(&quot;borders&quot;, 1)
+    print(&quot;layers added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-addmarker"><div class="item-row-main"><h3>addMarker</h3><pre class="inline-signature">LGlobe:addMarker(mtype: string, lat: number, lon: number, label: string?) -&gt; integer</pre><p>Adds a marker at latitude and longitude with an optional label.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:493</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;mark_globe&quot;)
+    local id = g:addMarker(&quot;city&quot;, 51.5, -0.12, &quot;London&quot;)
+    print(&quot;marker id = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="method-addprovince"><div class="item-row-main"><h3>addProvince</h3><pre class="inline-signature">LGlobe:addProvince(p: table) -&gt; boolean</pre><p>Adds a province described by id, centroid, vertices, neighbors, and optional base color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:67</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;prov_globe&quot;)
+    local ok = g:addProvince({ id = 1, centroid = { 10.0, 20.0 }, vertices = { { 9, 19 }, { 11, 19 }, { 11, 21 }, { 9, 21 } } })
+    print(&quot;added = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-addregion"><div class="item-row-main"><h3>addRegion</h3><pre class="inline-signature">LGlobe:addRegion(p: table) -&gt; boolean</pre><p>Adds a region described by id, centroid, vertices, neighbors, and optional base color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:108</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;region_globe&quot;)
+    local ok = g:addRegion({
+        id = 1,
+        centroid = { 50, 15 },
+        vertices = { { 49, 14 }, { 51, 14 }, { 51, 16 }, { 49, 16 } },
+    })
+    print(&quot;added region = &quot; .. tostring(ok))
+    print(&quot;region count = &quot; .. g:regionCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-cachereachability"><div class="item-row-main"><h3>cacheReachability</h3><pre class="inline-signature">LGlobe:cacheReachability(faction: string, start_id: integer, max_cost: number)</pre><p>Caches default-cost reachability for a named faction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:750</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;cache_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:cacheReachability(&quot;faction_a&quot;, 1, 5.0)
+    print(&quot;reachability cached&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearprovincetexture"><div class="item-row-main"><h3>clearProvinceTexture</h3><pre class="inline-signature">LGlobe:clearProvinceTexture(id: integer) -&gt; boolean</pre><p>Removes texture metadata from a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;ctex_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceTexture(1, 42, 0, 0, 1, 1)
+    g:clearProvinceTexture(1)
+    print(&quot;texture cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-decodefogbase64"><div class="item-row-main"><h3>decodeFogBase64</h3><pre class="inline-signature">LGlobe:decodeFogBase64(viewer: string, payload: string) -&gt; boolean</pre><p>Loads one viewer&#x27;s fog state from a base64 string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:447</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;dec_globe&quot;)
+    local b64 = g:encodeFogBase64(&quot;p1&quot;)
+    local ok = g:decodeFogBase64(&quot;p1&quot;, b64)
+    print(&quot;decoded = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-encodefogbase64"><div class="item-row-main"><h3>encodeFogBase64</h3><pre class="inline-signature">LGlobe:encodeFogBase64(viewer: string) -&gt; string</pre><p>Serializes one viewer&#x27;s fog state to a base64 string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:439</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;enc_globe&quot;)
+    local b64 = g:encodeFogBase64(&quot;p1&quot;)
+    print(&quot;encoded fog length = &quot; .. #b64)
+end</code></pre></details></article><article class="item-row api-row" id="method-exportprovincemeshobj"><div class="item-row-main"><h3>exportProvinceMeshOBJ</h3><pre class="inline-signature">LGlobe:exportProvinceMeshOBJ() -&gt; string</pre><p>Exports province geometry as Wavefront OBJ text.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:773</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;obj_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    local obj = g:exportProvinceMeshOBJ()
+    print(&quot;OBJ length = &quot; .. #obj)
+end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LGlobe:findPath(from_id: integer, to_id: integer) -&gt; string[]</pre><p>Finds a default-cost province path between two province ids.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:716</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;path_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
+    g:addProvince({id = 2, centroid = {5, 0}, vertices = {{4, -1}, {6, -1}, {6, 1}, {4, 1}}, neighbors = {1}})
+    print(&quot;path length = &quot; .. #(g:findPath(1, 2) or {}))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcachedreachability"><div class="item-row-main"><h3>getCachedReachability</h3><pre class="inline-signature">LGlobe:getCachedReachability(faction: string) -&gt; table</pre><p>Returns cached reachability costs for a faction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:760</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;gcache_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:cacheReachability(&quot;faction_b&quot;, 1, 5.0)
+    local costs = g:getCachedReachability(&quot;faction_b&quot;)
+    print(&quot;cached costs type = &quot; .. type(costs))
+    print(&quot;cached cost to 1 = &quot; .. tostring(costs[1]))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcamera"><div class="item-row-main"><h3>getCamera</h3><pre class="inline-signature">LGlobe:getCamera() -&gt; number</pre><p>Returns camera latitude, longitude, and zoom.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:332</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;gcam_globe&quot;)
+    g:setCamera(30, 60, 1.5)
+    local lat, lon, z = g:getCamera()
+    print(&quot;camera: &quot; .. lat .. &quot;,&quot; .. lon .. &quot; z=&quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfogstate"><div class="item-row-main"><h3>getFogState</h3><pre class="inline-signature">LGlobe:getFogState(viewer: string, id: integer) -&gt; string</pre><p>Returns fog-of-war state for one viewer and province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:425</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;gfs_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setFogState(&quot;p1&quot;, 1, &quot;visible&quot;)
+    local state = g:getFogState(&quot;p1&quot;, 1)
+    print(&quot;fog = &quot; .. state)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlod"><div class="item-row-main"><h3>getLod</h3><pre class="inline-signature">LGlobe:getLod() -&gt; string</pre><p>Returns the camera-derived level-of-detail tier name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:338</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;lod_globe&quot;)
+    g:setCamera(0, 0, 0.5)
+    print(&quot;lod = &quot; .. g:getLod())
+end</code></pre></details></article><article class="item-row api-row" id="method-getmarkerattr"><div class="item-row-main"><h3>getMarkerAttr</h3><pre class="inline-signature">LGlobe:getMarkerAttr(id: integer, key: string) -&gt; string</pre><p>Reads a string attribute from a marker.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:578</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;ga_globe&quot;)
+    local id = g:addMarker(&quot;city&quot;, 48.8, 2.3, &quot;Paris&quot;)
+    g:setMarkerAttr(id, &quot;country&quot;, &quot;France&quot;)
+    local val = g:getMarkerAttr(id, &quot;country&quot;)
+    print(&quot;country = &quot; .. tostring(val))
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LGlobe:getName() -&gt; string</pre><p>Returns the registry name of this globe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:817</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;named_globe&quot;)
+    print(&quot;name = &quot; .. g:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getneighbors"><div class="item-row-main"><h3>getNeighbors</h3><pre class="inline-signature">LGlobe:getNeighbors(id: integer) -&gt; integer[]</pre><p>Returns neighboring province ids for a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:161</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;neigh_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
+    local n = g:getNeighbors(1)
+    print(&quot;neighbors of 1: &quot; .. #n)
+end</code></pre></details></article><article class="item-row api-row" id="method-getprovinceattr"><div class="item-row-main"><h3>getProvinceAttr</h3><pre class="inline-signature">LGlobe:getProvinceAttr(id: integer, key: string) -&gt; string</pre><p>Reads a string attribute from a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:197</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rattr_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceAttr(1, &quot;terrain&quot;, &quot;forest&quot;)
+    local val = g:getProvinceAttr(1, &quot;terrain&quot;)
+    print(&quot;terrain = &quot; .. tostring(val))
+end</code></pre></details></article><article class="item-row api-row" id="method-getprovincesector"><div class="item-row-main"><h3>getProvinceSector</h3><pre class="inline-signature">LGlobe:getProvinceSector(id: integer) -&gt; string</pre><p>Returns the sector name assigned to a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;gsec_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceSector(1, &quot;eastern&quot;)
+    local s = g:getProvinceSector(1)
+    print(&quot;sector = &quot; .. tostring(s))
+end</code></pre></details></article><article class="item-row api-row" id="method-getsectorprovinces"><div class="item-row-main"><h3>getSectorProvinces</h3><pre class="inline-signature">LGlobe:getSectorProvinces(sector: string) -&gt; integer[]</pre><p>Returns province ids assigned to a sector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:261</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;sp_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceSector(1, &quot;west&quot;)
+    local ids = g:getSectorProvinces(&quot;west&quot;)
+    print(&quot;west has &quot; .. #ids .. &quot; provinces&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettimeofday"><div class="item-row-main"><h3>getTimeOfDay</h3><pre class="inline-signature">LGlobe:getTimeOfDay() -&gt; number</pre><p>Returns globe time of day. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:686</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;gtod_globe&quot;)
+    g:setTimeOfDay(8.0)
+    local t = g:getTimeOfDay()
+    print(&quot;time of day = &quot; .. t)
+end</code></pre></details></article><article class="item-row api-row" id="method-hideprovince"><div class="item-row-main"><h3>hideProvince</h3><pre class="inline-signature">LGlobe:hideProvince(viewer: string, id: integer)</pre><p>Hides a province for one fog-of-war viewer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:464</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;hide_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:hideProvince(&quot;player1&quot;, 1)
+    print(&quot;province 1 hidden&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">LGlobe:isVisible(viewer: string, id: integer) -&gt; boolean</pre><p>Returns whether a province is visible for one fog-of-war viewer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:472</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;isv_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:revealProvince(&quot;p1&quot;, 1)
+    print(&quot;visible = &quot; .. tostring(g:isVisible(&quot;p1&quot;, 1)))
+end</code></pre></details></article><article class="item-row api-row" id="method-movemarker"><div class="item-row-main"><h3>moveMarker</h3><pre class="inline-signature">LGlobe:moveMarker(id: integer, lat: number, lon: number) -&gt; boolean</pre><p>Moves a marker to latitude and longitude coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:515</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;mv_globe&quot;)
+    local id = g:addMarker(&quot;pin&quot;, 0, 0)
+    g:moveMarker(id, 10, 20)
+    print(&quot;marker moved&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-pan"><div class="item-row-main"><h3>pan</h3><pre class="inline-signature">LGlobe:pan(dlat: number, dlon: number)</pre><p>Pans the globe camera by latitude and longitude deltas.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:305</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;pan_globe&quot;)
+    g:setCamera(0, 0, 1.0)
+    g:pan(10, 20)
+    local lat, lon, z = g:getCamera()
+    print(&quot;after pan: &quot; .. lat .. &quot;,&quot; .. lon)
+end</code></pre></details></article><article class="item-row api-row" id="method-pick"><div class="item-row-main"><h3>pick</h3><pre class="inline-signature">LGlobe:pick(sx: number, sy: number) -&gt; integer</pre><p>Picks a province at screen coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:353</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;pick_globe&quot;)
+    local id = g:pick(400, 300)
+    print(&quot;picked province = &quot; .. tostring(id))
+end</code></pre></details></article><article class="item-row api-row" id="method-picklatlon"><div class="item-row-main"><h3>pickLatLon</h3><pre class="inline-signature">LGlobe:pickLatLon(sx: number, sy: number) -&gt; number</pre><p>Picks at screen coordinates and returns the hit province centroid screen coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:389</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;pll_globe&quot;)
+    local cx, cy = g:pickLatLon(400, 300)
+    print(&quot;centroid = &quot; .. tostring(cx) .. &quot;,&quot; .. tostring(cy))
+end</code></pre></details></article><article class="item-row api-row" id="method-pickraycast"><div class="item-row-main"><h3>pickRaycast</h3><pre class="inline-signature">LGlobe:pickRaycast(sx: number, sy: number, steps: integer?) -&gt; integer</pre><p>Samples along a screen ray from the camera center and returns the first hit province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:362</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;pray_globe&quot;)
+    local id = g:pickRaycast(400, 300, 32)
+    print(&quot;raycast pick = &quot; .. tostring(id))
+end</code></pre></details></article><article class="item-row api-row" id="method-provincecount"><div class="item-row-main"><h3>provinceCount</h3><pre class="inline-signature">LGlobe:provinceCount() -&gt; integer</pre><p>Returns the number of regions in this globe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:148</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;count_globe&quot;)
+    print(&quot;provinces = &quot; .. g:provinceCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-reachable"><div class="item-row-main"><h3>reachable</h3><pre class="inline-signature">LGlobe:reachable(start_id: integer, max_cost: number) -&gt; table</pre><p>Returns provinces reachable from a start province within a cost budget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:734</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;reach_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}, neighbors = {2}})
+    g:addProvince({id = 2, centroid = {5, 0}, vertices = {{4, -1}, {6, -1}, {6, 1}, {4, 1}}, neighbors = {1}})
+    local costs = g:reachable(1, 10.0)
+    print(&quot;cost to 1 = &quot; .. tostring(costs[1]))
+    print(&quot;cost to 2 = &quot; .. tostring(costs[2]))
+end</code></pre></details></article><article class="item-row api-row" id="method-regioncount"><div class="item-row-main"><h3>regionCount</h3><pre class="inline-signature">LGlobe:regionCount() -&gt; integer</pre><p>Returns the number of regions in this globe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:154</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;count_region_globe&quot;)
+    g:addRegion({
+        id = 1,
+        centroid = { 35, 80 },
+        vertices = { { 34, 79 }, { 36, 79 }, { 36, 81 }, { 34, 81 } },
+    })
+    g:addRegion({
+        id = 2,
+        centroid = { -10, 20 },
+        vertices = { { -11, 19 }, { -9, 19 }, { -9, 21 }, { -11, 21 } },
+    })
+    print(&quot;region count = &quot; .. g:regionCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-removearc"><div class="item-row-main"><h3>removeArc</h3><pre class="inline-signature">LGlobe:removeArc(id: integer) -&gt; boolean</pre><p>Removes an arc by id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:811</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rarc_globe&quot;)
+    local id = g:addArc(0, 0, 30, 60)
+    local ok = g:removeArc(id)
+    print(&quot;arc removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removeheatlayer"><div class="item-row-main"><h3>removeHeatLayer</h3><pre class="inline-signature">LGlobe:removeHeatLayer(name: string) -&gt; boolean</pre><p>Removes a heat layer by name. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:298</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rheat_globe&quot;)
+    g:setHeatLayer(&quot;income&quot;, &quot;gdp&quot;, 0, 50000, 0.5)
+    local ok = g:removeHeatLayer(&quot;income&quot;)
+    print(&quot;heat removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removelabel"><div class="item-row-main"><h3>removeLabel</h3><pre class="inline-signature">LGlobe:removeLabel(id: integer) -&gt; boolean</pre><p>Removes a label by id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:617</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rlbl_globe&quot;)
+    local id = g:addLabel(&quot;tmp&quot;, 0, 0, &quot;temp&quot;)
+    local ok = g:removeLabel(id)
+    print(&quot;label removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removelayer"><div class="item-row-main"><h3>removeLayer</h3><pre class="inline-signature">LGlobe:removeLayer(name: string) -&gt; boolean</pre><p>Removes a render layer by name. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:643</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rl_globe&quot;)
+    g:addLayer(&quot;temp_layer&quot;)
+    local ok = g:removeLayer(&quot;temp_layer&quot;)
+    print(&quot;layer removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removemarker"><div class="item-row-main"><h3>removeMarker</h3><pre class="inline-signature">LGlobe:removeMarker(id: integer) -&gt; boolean</pre><p>Removes a marker by id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:506</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rm_globe&quot;)
+    local id = g:addMarker(&quot;pin&quot;, 0, 0)
+    local ok = g:removeMarker(id)
+    print(&quot;removed marker = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removeprovince"><div class="item-row-main"><h3>removeProvince</h3><pre class="inline-signature">LGlobe:removeProvince(id: integer) -&gt; boolean</pre><p>Removes a region by id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:101</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rem_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    local ok = g:removeProvince(1)
+    print(&quot;removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removeregion"><div class="item-row-main"><h3>removeRegion</h3><pre class="inline-signature">LGlobe:removeRegion(id: integer) -&gt; boolean</pre><p>Removes a region by id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:142</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;remove_region_globe&quot;)
+    g:addRegion({
+        id = 1,
+        centroid = { 40, -90 },
+        vertices = { { 39, -91 }, { 41, -91 }, { 41, -89 }, { 39, -89 } },
+    })
+    local ok = g:removeRegion(1)
+    print(&quot;removed region = &quot; .. tostring(ok))
+    print(&quot;region count = &quot; .. g:regionCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-revealall"><div class="item-row-main"><h3>revealAll</h3><pre class="inline-signature">LGlobe:revealAll(viewer: string)</pre><p>Reveals every province for one fog-of-war viewer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:478</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rall_globe&quot;)
+    g:revealAll(&quot;player1&quot;)
+    print(&quot;all revealed for player1&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-revealprovince"><div class="item-row-main"><h3>revealProvince</h3><pre class="inline-signature">LGlobe:revealProvince(viewer: string, id: integer)</pre><p>Reveals a province for one fog-of-war viewer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:457</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rev_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:revealProvince(&quot;player1&quot;, 1)
+    print(&quot;province 1 revealed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setactiveviewer"><div class="item-row-main"><h3>setActiveViewer</h3><pre class="inline-signature">LGlobe:setActiveViewer(viewer: string?)</pre><p>Sets the active fog-of-war viewer name or clears it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:401</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;fow_globe&quot;)
+    g:setActiveViewer(&quot;player1&quot;)
+    print(&quot;active viewer = player1&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setautorotationspeed"><div class="item-row-main"><h3>setAutoRotationSpeed</h3><pre class="inline-signature">LGlobe:setAutoRotationSpeed(dps: number)</pre><p>Sets automatic globe rotation speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:698</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;arot_globe&quot;)
+    g:setAutoRotationSpeed(10)
+    print(&quot;auto rotation = 10 dps&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setborders"><div class="item-row-main"><h3>setBorders</h3><pre class="inline-signature">LGlobe:setBorders(show: boolean)</pre><p>Enables or disables province border rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:708</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;bord_globe&quot;)
+    g:setBorders(true)
+    print(&quot;borders enabled&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcamera"><div class="item-row-main"><h3>setCamera</h3><pre class="inline-signature">LGlobe:setCamera(lat: number, lon: number, z: number)</pre><p>Sets camera latitude, longitude, and zoom.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;cam_globe&quot;)
+    g:setCamera(45, 90, 2.0)
+    print(&quot;camera set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogstate"><div class="item-row-main"><h3>setFogState</h3><pre class="inline-signature">LGlobe:setFogState(viewer: string, id: integer, state: string)</pre><p>Sets fog-of-war state for one viewer and province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:409</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;fs_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setFogState(&quot;p1&quot;, 1, &quot;explored&quot;)
+    print(&quot;fog state set to explored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setheatlayer"><div class="item-row-main"><h3>setHeatLayer</h3><pre class="inline-signature">LGlobe:setHeatLayer(name: string, attr_key: string, min: number, max: number, alpha: number)</pre><p>Creates or replaces a heat layer that maps province attributes into colors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:276</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;heat_globe&quot;)
+    g:setHeatLayer(&quot;population&quot;, &quot;pop&quot;, 0, 1000000, 0.7)
+    print(&quot;heat layer set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlabeltext"><div class="item-row-main"><h3>setLabelText</h3><pre class="inline-signature">LGlobe:setLabelText(id: integer, text: string) -&gt; boolean</pre><p>Changes text for an existing label.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:602</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;ltxt_globe&quot;)
+    local id = g:addLabel(&quot;city&quot;, 0, 0, &quot;old&quot;)
+    g:setLabelText(id, &quot;new&quot;)
+    print(&quot;label updated&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlabelvisible"><div class="item-row-main"><h3>setLabelVisible</h3><pre class="inline-signature">LGlobe:setLabelVisible(id: integer, vis: boolean) -&gt; boolean</pre><p>Shows or hides a label. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;lvis_globe&quot;)
+    local id = g:addLabel(&quot;info&quot;, 0, 0, &quot;text&quot;)
+    g:setLabelVisible(id, false)
+    print(&quot;label hidden&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayeralpha"><div class="item-row-main"><h3>setLayerAlpha</h3><pre class="inline-signature">LGlobe:setLayerAlpha(name: string, alpha: number) -&gt; boolean</pre><p>Sets render layer alpha. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:674</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;la_globe&quot;)
+    g:addLayer(&quot;fog_layer&quot;)
+    g:setLayerAlpha(&quot;fog_layer&quot;, 0.5)
+    print(&quot;layer alpha = 0.5&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayercolor"><div class="item-row-main"><h3>setLayerColor</h3><pre class="inline-signature">LGlobe:setLayerColor(layer: string, id: integer, r: number, g: number, b: number, a: number) -&gt; boolean</pre><p>Sets a province color override inside a render layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:655</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;lc_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:addLayer(&quot;highlight&quot;)
+    g:setLayerColor(&quot;highlight&quot;, 1, 1.0, 0.0, 0.0, 1.0)
+    print(&quot;province 1 colored red in highlight layer&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayervisible"><div class="item-row-main"><h3>setLayerVisible</h3><pre class="inline-signature">LGlobe:setLayerVisible(name: string, vis: boolean) -&gt; boolean</pre><p>Shows or hides a render layer. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:666</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;lv_globe&quot;)
+    g:addLayer(&quot;overlay&quot;)
+    g:setLayerVisible(&quot;overlay&quot;, false)
+    print(&quot;overlay hidden&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkerattr"><div class="item-row-main"><h3>setMarkerAttr</h3><pre class="inline-signature">LGlobe:setMarkerAttr(id: integer, key: string, val: string) -&gt; boolean</pre><p>Sets a string attribute on a marker.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:567</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;ma_globe&quot;)
+    local id = g:addMarker(&quot;city&quot;, 48.8, 2.3, &quot;Paris&quot;)
+    g:setMarkerAttr(id, &quot;population&quot;, &quot;2M&quot;)
+    print(&quot;marker attr set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkerpulse"><div class="item-row-main"><h3>setMarkerPulse</h3><pre class="inline-signature">LGlobe:setMarkerPulse(id: integer, hz: number, amp: number) -&gt; boolean</pre><p>Sets marker pulse frequency and amplitude.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:532</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;pulse_globe&quot;)
+    local id = g:addMarker(&quot;alert&quot;, 0, 0, &quot;!&quot;)
+    g:setMarkerPulse(id, 2.0, 0.5)
+    print(&quot;pulse set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkerrotation"><div class="item-row-main"><h3>setMarkerRotation</h3><pre class="inline-signature">LGlobe:setMarkerRotation(id: integer, dps: number) -&gt; boolean</pre><p>Sets marker rotation speed. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:551</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;rot_globe&quot;)
+    local id = g:addMarker(&quot;spin&quot;, 0, 0)
+    g:setMarkerRotation(id, 90)
+    print(&quot;rotation = 90 dps&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkervisible"><div class="item-row-main"><h3>setMarkerVisible</h3><pre class="inline-signature">LGlobe:setMarkerVisible(id: integer, vis: boolean) -&gt; boolean</pre><p>Shows or hides a marker. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:523</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;vis_globe&quot;)
+    local id = g:addMarker(&quot;pin&quot;, 0, 0)
+    g:setMarkerVisible(id, false)
+    print(&quot;marker hidden&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setprovinceattr"><div class="item-row-main"><h3>setProvinceAttr</h3><pre class="inline-signature">LGlobe:setProvinceAttr(id: integer, key: string, val: string) -&gt; boolean</pre><p>Sets a string attribute on a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:179</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;attr_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceAttr(1, &quot;owner&quot;, &quot;player1&quot;)
+    print(&quot;set attr owner&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setprovincesector"><div class="item-row-main"><h3>setProvinceSector</h3><pre class="inline-signature">LGlobe:setProvinceSector(id: integer, sector: string) -&gt; boolean</pre><p>Assigns a province to a named sector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:244</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;sec_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceSector(1, &quot;northern&quot;)
+    print(&quot;sector set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setprovincetexture"><div class="item-row-main"><h3>setProvinceTexture</h3><pre class="inline-signature">LGlobe:setProvinceTexture(id: integer, tex_raw: integer, u0: number, v0: number, u1: number, v1: number) -&gt; boolean</pre><p>Assigns a raw texture handle and UV rectangle to a province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;tex_globe&quot;)
+    g:addProvince({id = 1, centroid = {0, 0}, vertices = {{-1, -1}, {1, -1}, {1, 1}, {-1, 1}}})
+    g:setProvinceTexture(1, 42, 0.0, 0.0, 1.0, 1.0)
+    print(&quot;province texture set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrotation"><div class="item-row-main"><h3>setRotation</h3><pre class="inline-signature">LGlobe:setRotation(deg: number)</pre><p>Sets globe rotation angle. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:692</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;srot_globe&quot;)
+    g:setRotation(45)
+    print(&quot;rotation = 45 deg&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-settimeofday"><div class="item-row-main"><h3>setTimeOfDay</h3><pre class="inline-signature">LGlobe:setTimeOfDay(t: number)</pre><p>Sets globe time of day modulo 24 hours.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:680</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;tod_globe&quot;)
+    g:setTimeOfDay(14.5)
+    print(&quot;time = 14:30&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LGlobe:type() -&gt; string</pre><p>Returns the Lua-visible type name for this globe handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:824</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;type_globe&quot;)
+    print(&quot;type = &quot; .. g:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LGlobe:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this globe handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:829</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;typeof_globe&quot;)
+    print(&quot;is Globe = &quot; .. tostring(g:typeOf(&quot;LGlobe&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LGlobe:update(dt: number)</pre><p>Advances globe simulation timers and animated state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:704</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;upd_globe&quot;)
+    g:update(0.016)
+    print(&quot;globe updated&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-zoom"><div class="item-row-main"><h3>zoom</h3><pre class="inline-signature">LGlobe:zoom(factor: number)</pre><p>Multiplies the globe camera zoom by a factor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/globe_api.rs:311</span></div><details class="example-block"><summary>Example · Exact example · globe.lua</summary><pre><code>do
+    local g = lurek.globe.new(&quot;zoom_globe&quot;)
+    g:setCamera(0, 0, 1.0)
+    g:zoom(2.0)
+    local _, _, z = g:getCamera()
+    print(&quot;zoom = &quot; .. z)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

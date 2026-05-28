@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LPipelineStep - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a class="active" href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LPipelineStep</h1>
+  <p>A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/pipeline.html">lurek.pipeline</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;compile&quot;, function(ctx)
+        ctx.compiled = true
+    end)
+
+    print(&quot;step name = &quot; .. step:getName())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LPipelineStep userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-dependson"><div class="item-row-main"><h3>dependsOn</h3><pre class="inline-signature">LPipelineStep:dependsOn(dep: string|LPipelineStep) -&gt; LPipelineStep</pre><p>Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:284</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local fetch = lurek.pipeline.newStep(&quot;fetch&quot;, function(ctx)
+        ctx.data = { 1, 2, 3 }
+    end)
+    local parse = lurek.pipeline.newStep(&quot;parse&quot;, function(ctx)
+        local data = ctx.data or {}
+        ctx.total = (data[1] or 0) + (data[2] or 0) + (data[3] or 0)
+    end)
+
+    parse:dependsOn(&quot;fetch&quot;)
+
+    print(&quot;parse deps = &quot; .. parse:getDependencyCount())
+    print(&quot;first dep = &quot; .. parse:getDependencies()[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-getattempt"><div class="item-row-main"><h3>getAttempt</h3><pre class="inline-signature">LPipelineStep:getAttempt() -&gt; integer</pre><p>Returns the current attempt number (1-based). Increases with each retry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:336</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local attempts = 0
+    local step = lurek.pipeline.newStep(&quot;flaky&quot;, function()
+        attempts = attempts + 1
+        if attempts &lt; 3 then
+            error(&quot;failed attempt &quot; .. attempts)
+        end
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;retry&quot;)
+
+    step:setRetryCount(5)
+    step:setRetryDelay(0.01)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;attempt = &quot; .. step:getAttempt())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdata"><div class="item-row-main"><h3>getData</h3><pre class="inline-signature">LPipelineStep:getData(key: string) -&gt; string</pre><p>Retrieves a metadata value previously stored with setData.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;meta&quot;, function() end)
+
+    step:setData(&quot;version&quot;, &quot;1.2.0&quot;)
+    step:setData(&quot;author&quot;, &quot;engine&quot;)
+
+    print(&quot;author = &quot; .. step:getData(&quot;author&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdelay"><div class="item-row-main"><h3>getDelay</h3><pre class="inline-signature">LPipelineStep:getDelay() -&gt; number</pre><p>Returns the configured delay for this step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:165</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;delayed&quot;, function(ctx)
+        ctx.time = &quot;after delay&quot;
+    end)
+
+    step:setDelay(0.5)
+
+    print(&quot;delay = &quot; .. step:getDelay())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdependencies"><div class="item-row-main"><h3>getDependencies</h3><pre class="inline-signature">LPipelineStep:getDependencies() -&gt; string[]</pre><p>Returns a list of step names that this step depends on.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:301</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local report = lurek.pipeline.newStep(&quot;report&quot;, function(ctx)
+        ctx.reported = ctx.total
+    end)
+
+    report:dependsOn(&quot;parse&quot;)
+
+    local deps = report:getDependencies()
+
+    print(&quot;dependency count = &quot; .. #deps)
+    print(&quot;depends on = &quot; .. deps[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-getdependencycount"><div class="item-row-main"><h3>getDependencyCount</h3><pre class="inline-signature">LPipelineStep:getDependencyCount() -&gt; integer</pre><p>Returns the number of dependencies this step has.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:308</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local parse = lurek.pipeline.newStep(&quot;parse&quot;, function(ctx)
+        ctx.total = 6
+    end)
+
+    parse:dependsOn(&quot;fetch&quot;)
+
+    print(&quot;parse deps = &quot; .. parse:getDependencyCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">LPipelineStep:getDuration() -&gt; number</pre><p>Returns how long this step took to execute in seconds (measured from start to completion or failure).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:329</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;status&quot;)
+    local step = lurek.pipeline.newStep(&quot;work&quot;, function(ctx)
+        ctx.done = true
+    end)
+
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;duration = &quot; .. tostring(step:getDuration()))
+end</code></pre></details></article><article class="item-row api-row" id="method-geterror"><div class="item-row-main"><h3>getError</h3><pre class="inline-signature">LPipelineStep:getError() -&gt; string</pre><p>Returns the error message if this step failed, or nil if it has not failed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:322</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;risky&quot;, function()
+        error(&quot;something broke&quot;)
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;errors&quot;)
+
+    step:setOnError(function() end)
+    pipe:setErrorMode(&quot;continue&quot;)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;step error = &quot; .. tostring(step:getError()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LPipelineStep:getName() -&gt; string</pre><p>Returns the unique name of this pipeline step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:131</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;compile&quot;, function(ctx)
+        ctx.compiled = true
+    end)
+
+    print(&quot;step name = &quot; .. step:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getretrycount"><div class="item-row-main"><h3>getRetryCount</h3><pre class="inline-signature">LPipelineStep:getRetryCount() -&gt; integer</pre><p>Returns the configured retry count for this step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:203</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local attempts = 0
+    local step = lurek.pipeline.newStep(&quot;flaky&quot;, function()
+        attempts = attempts + 1
+        if attempts &lt; 3 then
+            error(&quot;failed attempt &quot; .. attempts)
+        end
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;retry&quot;)
+
+    step:setRetryCount(5)
+    step:setRetryDelay(0.01)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;retry count = &quot; .. step:getRetryCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getstatus"><div class="item-row-main"><h3>getStatus</h3><pre class="inline-signature">LPipelineStep:getStatus() -&gt; string</pre><p>Returns the current execution status of this step as a string (&quot;pending&quot;, &quot;waiting&quot;, &quot;running&quot;, &quot;completed&quot;, &quot;failed&quot;, &quot;skipped&quot;, &quot;cancelled&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:315</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;status&quot;)
+    local step = lurek.pipeline.newStep(&quot;work&quot;, function(ctx)
+        ctx.done = true
+    end)
+
+    pipe:addStep(step)
+
+    print(&quot;before run = &quot; .. step:getStatus())
+    pipe:run({})
+    print(&quot;after run = &quot; .. step:getStatus())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettag"><div class="item-row-main"><h3>getTag</h3><pre class="inline-signature">LPipelineStep:getTag() -&gt; string</pre><p>Returns the tag assigned to this step, or nil if none is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:279</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;load_a&quot;, function() end)
+
+    step:setTag(&quot;io&quot;)
+
+    print(&quot;tag = &quot; .. step:getTag())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettimeout"><div class="item-row-main"><h3>getTimeout</h3><pre class="inline-signature">LPipelineStep:getTimeout() -&gt; number</pre><p>Returns the configured timeout for this step, or 0 if none is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:181</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;slow&quot;, function()
+        return &quot;done&quot;
+    end)
+
+    step:setTimeout(5.0)
+
+    print(&quot;timeout = &quot; .. step:getTimeout())
+end</code></pre></details></article><article class="item-row api-row" id="method-isasync"><div class="item-row-main"><h3>isAsync</h3><pre class="inline-signature">LPipelineStep:isAsync() -&gt; boolean</pre><p>Returns whether this step is configured for asynchronous coroutine execution.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:226</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;async-step&quot;, function(ctx)
+        ctx.progress = 1
+    end)
+
+    step:setAsync(true)
+
+    print(&quot;is async = &quot; .. tostring(step:isAsync()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isoptional"><div class="item-row-main"><h3>isOptional</h3><pre class="inline-signature">LPipelineStep:isOptional() -&gt; boolean</pre><p>Returns whether this step is marked as optional.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:239</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;optional-step&quot;, function()
+        error(&quot;this is fine&quot;)
+    end)
+
+    step:setOptional(true)
+
+    print(&quot;optional = &quot; .. tostring(step:isOptional()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setasync"><div class="item-row-main"><h3>setAsync</h3><pre class="inline-signature">LPipelineStep:setAsync(enabled: boolean)</pre><p>Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:218</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;async-step&quot;, function(ctx)
+        ctx.progress = 1
+    end)
+
+    step:setAsync(true)
+
+    print(&quot;is async = &quot; .. tostring(step:isAsync()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcallback"><div class="item-row-main"><h3>setCallback</h3><pre class="inline-signature">LPipelineStep:setCallback(callback: function)</pre><p>Sets the main execution function for this step. Called when the step runs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:138</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;conditional&quot;)
+
+    step:setCallback(function(ctx)
+        ctx.ran = true
+    end)
+    step:setCondition(function(ctx)
+        return ctx.shouldRun == true
+    end)
+
+    local pipe = lurek.pipeline.newPipeline(&quot;cond-test&quot;)
+    local context = { shouldRun = true }
+
+    pipe:addStep(step)
+
+    local result = pipe:run(context)
+
+    print(&quot;completed = &quot; .. #result.completed)
+    print(&quot;ran = &quot; .. tostring(context.ran == true))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcondition"><div class="item-row-main"><h3>setCondition</h3><pre class="inline-signature">LPipelineStep:setCondition(condition: function?)</pre><p>Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:146</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;conditional&quot;)
+
+    step:setCallback(function(ctx)
+        ctx.ran = true
+    end)
+    step:setCondition(function(ctx)
+        return ctx.shouldRun == true
+    end)
+
+    local pipe = lurek.pipeline.newPipeline(&quot;cond-test&quot;)
+    local context = { shouldRun = false }
+
+    pipe:addStep(step)
+
+    local result = pipe:run(context)
+
+    print(&quot;skipped = &quot; .. #result.skipped)
+    print(&quot;ran = &quot; .. tostring(context.ran == true))
+end</code></pre></details></article><article class="item-row api-row" id="method-setdata"><div class="item-row-main"><h3>setData</h3><pre class="inline-signature">LPipelineStep:setData(key: string, value: string)</pre><p>Stores a key-value metadata pair on this step. Useful for passing configuration between steps.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:255</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;meta&quot;, function() end)
+
+    step:setData(&quot;version&quot;, &quot;1.2.0&quot;)
+    step:setData(&quot;author&quot;, &quot;engine&quot;)
+
+    print(&quot;version = &quot; .. step:getData(&quot;version&quot;))
+    print(&quot;author = &quot; .. step:getData(&quot;author&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-setdelay"><div class="item-row-main"><h3>setDelay</h3><pre class="inline-signature">LPipelineStep:setDelay(seconds: number)</pre><p>Sets a delay in seconds before this step begins execution after its dependencies are satisfied.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;delayed&quot;, function(ctx)
+        ctx.time = &quot;after delay&quot;
+    end)
+
+    step:setDelay(0.5)
+
+    print(&quot;delay = &quot; .. step:getDelay())
+end</code></pre></details></article><article class="item-row api-row" id="method-setonerror"><div class="item-row-main"><h3>setOnError</h3><pre class="inline-signature">LPipelineStep:setOnError(callback: function?)</pre><p>Sets an error handler callback invoked when this step fails after all retries are exhausted.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:243</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local errorMsg = &quot;&quot;
+    local step = lurek.pipeline.newStep(&quot;risky&quot;, function()
+        error(&quot;something broke&quot;)
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;errors&quot;)
+
+    step:setOnError(function(name, msg)
+        errorMsg = name .. &quot;:&quot; .. msg
+    end)
+    pipe:setErrorMode(&quot;continue&quot;)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;error = &quot; .. tostring(step:getError()))
+    print(&quot;callback = &quot; .. errorMsg)
+end</code></pre></details></article><article class="item-row api-row" id="method-setoptional"><div class="item-row-main"><h3>setOptional</h3><pre class="inline-signature">LPipelineStep:setOptional(optional: boolean)</pre><p>Marks this step as optional. Optional steps do not cause pipeline failure if they fail.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:231</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;optional&quot;)
+    local optionalStep = lurek.pipeline.newStep(&quot;optional-step&quot;, function()
+        error(&quot;this is fine&quot;)
+    end)
+    local required = lurek.pipeline.newStep(&quot;required&quot;, function(ctx)
+        ctx.done = true
+    end)
+
+    pipe:setErrorMode(&quot;continue&quot;)
+    optionalStep:setOptional(true)
+    required:dependsOn(&quot;optional-step&quot;)
+
+    pipe:addStep(optionalStep)
+    pipe:addStep(required)
+
+    local result = pipe:run({})
+
+    print(&quot;optional = &quot; .. tostring(optionalStep:isOptional()))
+    print(&quot;failed = &quot; .. #result.failed)
+    print(&quot;completed = &quot; .. #result.completed)
+end</code></pre></details></article><article class="item-row api-row" id="method-setretrycount"><div class="item-row-main"><h3>setRetryCount</h3><pre class="inline-signature">LPipelineStep:setRetryCount(count: integer)</pre><p>Sets how many times this step should be retried after a failure before being marked as failed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:195</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local attempts = 0
+    local step = lurek.pipeline.newStep(&quot;flaky&quot;, function()
+        attempts = attempts + 1
+        if attempts &lt; 3 then
+            error(&quot;failed attempt &quot; .. attempts)
+        end
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;retry&quot;)
+
+    step:setRetryCount(5)
+    step:setRetryDelay(0.01)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;retry count = &quot; .. step:getRetryCount())
+    print(&quot;attempt = &quot; .. step:getAttempt())
+end</code></pre></details></article><article class="item-row api-row" id="method-setretrydelay"><div class="item-row-main"><h3>setRetryDelay</h3><pre class="inline-signature">LPipelineStep:setRetryDelay(seconds: number)</pre><p>Sets the delay in seconds between retry attempts for this step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:210</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local attempts = 0
+    local step = lurek.pipeline.newStep(&quot;flaky&quot;, function()
+        attempts = attempts + 1
+        if attempts &lt; 3 then
+            error(&quot;failed attempt &quot; .. attempts)
+        end
+    end)
+    local pipe = lurek.pipeline.newPipeline(&quot;retry&quot;)
+
+    step:setRetryCount(5)
+    step:setRetryDelay(0.01)
+    pipe:addStep(step)
+    pipe:run({})
+
+    print(&quot;attempt = &quot; .. step:getAttempt())
+    print(&quot;retry count = &quot; .. step:getRetryCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-settag"><div class="item-row-main"><h3>setTag</h3><pre class="inline-signature">LPipelineStep:setTag(tag: string)</pre><p>Assigns a tag string to this step for grouping and filtering purposes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;tags&quot;)
+    local loadA = lurek.pipeline.newStep(&quot;load_a&quot;, function() end)
+    local loadB = lurek.pipeline.newStep(&quot;load_b&quot;, function() end)
+    local compute = lurek.pipeline.newStep(&quot;compute&quot;, function() end)
+
+    loadA:setTag(&quot;io&quot;)
+    loadB:setTag(&quot;io&quot;)
+    compute:setTag(&quot;cpu&quot;)
+
+    pipe:addStep(loadA)
+    pipe:addStep(loadB)
+    pipe:addStep(compute)
+
+    print(&quot;s1 tag = &quot; .. loadA:getTag())
+    print(&quot;io steps = &quot; .. #pipe:getStepsByTag(&quot;io&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-settimeout"><div class="item-row-main"><h3>setTimeout</h3><pre class="inline-signature">LPipelineStep:setTimeout(seconds: number)</pre><p>Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:170</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;slow&quot;, function()
+        return &quot;done&quot;
+    end)
+
+    step:setTimeout(5.0)
+
+    print(&quot;timeout = &quot; .. step:getTimeout())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LPipelineStep:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LPipelineStep&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:346</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;typed&quot;, function() end)
+
+    print(&quot;type = &quot; .. step:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LPipelineStep:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object is of a given type name. Accepts &quot;LPipelineStep&quot;, &quot;PipelineStep&quot;, or &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local step = lurek.pipeline.newStep(&quot;typed&quot;, function() end)
+
+    print(&quot;is LPipelineStep = &quot; .. tostring(step:typeOf(&quot;LPipelineStep&quot;)))
+    print(&quot;is Object = &quot; .. tostring(step:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

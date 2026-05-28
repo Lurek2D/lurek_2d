@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["generational_id","lua_table","relationships","types","universe"]};

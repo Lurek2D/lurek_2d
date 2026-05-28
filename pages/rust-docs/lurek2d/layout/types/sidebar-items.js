@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["LayoutConfig","LayoutEdge","LayoutNode","LayoutResult"],"type":["NodeId"]};

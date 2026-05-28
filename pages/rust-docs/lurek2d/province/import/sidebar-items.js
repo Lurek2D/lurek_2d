@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["import_metadata_from_files","sanitize_marked_png"],"struct":["MarkerSanitizeOptions","MarkerSanitizeSummary","ProvinceMetadataImportOptions","ProvinceMetadataImportSummary"]};

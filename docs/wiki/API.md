@@ -17,20 +17,20 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8019 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28677 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8481 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28996 lines)
 
 ## Coverage
 
 - 67 modules
-- 5233 functions and methods
+- 5297 functions and methods
 - 100.0% documented
 
 ## API Module Index
 
 | API | Functions | Types | Purpose |
 |---|---:|---:|---|
-| [lurek.agent](Module-agent) | 2 | 2 | lurek.agent -- Agent bindings for LLM and VM integration. |
+| [lurek.agent](Module-agent) | 4 | 4 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.audio](Module-audio) | 83 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
@@ -61,7 +61,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 80 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [lurek.layout](Module-layout) | 5 | 0 | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
-| [lurek.learning](Module-learning) | 5 | 5 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
+| [lurek.learning](Module-learning) | 6 | 6 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [lurek.mapblock](Module-mapblock) | 10 | 9 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
@@ -75,17 +75,17 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.particle](Module-particle) | 5 | 2 | Emitter-based 2D particle systems with bounded pools and Euler integration. |
 | [lurek.pathfind](Module-pathfind) | 12 | 8 | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
 | [lurek.patterns](Module-patterns) | 24 | 24 | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
-| [lurek.physics](Module-physics) | 23 | 6 | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
+| [lurek.physics](Module-physics) | 22 | 5 | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
 | [lurek.pipeline](Module-pipeline) | 3 | 2 | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
-| [lurek.procgen](Module-procgen) | 30 | 2 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only, headless. |
+| [lurek.procgen](Module-procgen) | 31 | 3 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
 | [lurek.province](Module-province) | 15 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [lurek.raycaster](Module-raycaster) | 9 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
-| [lurek.render](Module-render) | 117 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
+| [lurek.render](Module-render) | 118 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |
 | [lurek.repl](Module-repl) | 1 | 1 | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [lurek.save](Module-save) | 1 | 1 | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
 | [lurek.scene](Module-scene) | 59 | 1 | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
 | [lurek.serialize](Module-serialize) | 15 | 0 | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
-| [lurek.spine](Module-spine) | 3 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK — A-02 + licensing). |
+| [lurek.spine](Module-spine) | 3 | 2 | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [lurek.sprite](Module-sprite) | 5 | 2 | Sprite and sprite-batch rendering above the render command queue. |
 | [lurek.system](Module-system) | 28 | 0 | lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection. |
 | [lurek.terminal](Module-terminal) | 29 | 2 | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |

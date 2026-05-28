@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ZoneBoundary","ZoneEventKind","ZoneGravityMode"],"struct":["PhysicsZone","ZoneEvent","ZoneTracker"],"type":["ZoneId","ZonePriority"]};

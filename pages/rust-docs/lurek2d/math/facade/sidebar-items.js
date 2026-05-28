@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["clamp","inverse_lerp","lerp","remap","sign","smoothstep"]};

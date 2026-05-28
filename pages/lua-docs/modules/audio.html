@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.audio - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a class="active" href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.audio</h1>
+  <p>`lurek.audio` - Audio playback, mixing, spatial sound, MIDI, and DSP processing for 2D games. - Registers `lurek.audio.*` functions and types via `register()`. - `LuaSource`: userdata type exposed to Lua. - `LuaBus`: userdata type exposed to Lua. - `LuaMidiPlayer`: userdata type exposed to Lua. - `LuaSoundPool`: userdata type exposed to Lua. - `LuaDecoder`: userdata type exposed to Lua. - Bridges 205 Lua-callable methods via `mlua`. - See `docs/specs/audio.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>83 functions</span><span>6 classes</span><span>src/lua_api/audio_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 205</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.audio.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-clearfilter"><div class="item-row-main"><h3>clearFilter</h3><pre class="inline-signature">lurek.audio.clearFilter(source: LSource|integer)</pre><p>Removes all frequency filters from a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1723</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setLowpass(src, 1000)
+    print(&quot;lowpass before clear = &quot; .. tostring(lurek.audio.getLowpass(src)))
+    lurek.audio.clearFilter(src)
+    print(&quot;filters cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearmidisoundfont"><div class="item-row-main"><h3>clearMidiSoundFont</h3><pre class="inline-signature">lurek.audio.clearMidiSoundFont()</pre><p>Clears the loaded SoundFont and reverts MIDI synthesis to default.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2020</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.clearMidiSoundFont()
+    print(&quot;soundfont cleared = &quot; .. tostring(not lurek.audio.hasMidiSoundFont()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearrandompitch"><div class="item-row-main"><h3>clearRandomPitch</h3><pre class="inline-signature">lurek.audio.clearRandomPitch(src_ud: LSource)</pre><p>Clears any random pitch range previously set on the source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2228</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setRandomPitch(src, 0.8, 1.2)
+    lurek.audio.clearRandomPitch(src)
+    print(&quot;random pitch cleared&quot;)
+    print(&quot;source pitch now follows explicit setPitch calls&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clone"><div class="item-row-main"><h3>clone</h3><pre class="inline-signature">lurek.audio.clone(source: LSource|integer) -&gt; LSource</pre><p>Creates an independent copy of a source sharing the same audio data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1541</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setVolume(src, 0.6)
+    local copy = lurek.audio.clone(src)
+    print(&quot;original volume = &quot; .. tostring(lurek.audio.getVolume(src)))
+    print(&quot;clone volume = &quot; .. tostring(lurek.audio.getVolume(copy)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-create-bus"><div class="item-row-main"><h3>create_bus</h3><pre class="inline-signature">lurek.audio.create_bus(name: string, parent_name: string?)</pre><p>Creates a named audio bus, optionally parented to another bus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2145</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.create_bus(&quot;master_sfx&quot;, nil)
+    print(&quot;bus created: master_sfx&quot;)
+    print(&quot;bus peak = &quot; .. tostring(lurek.audio.getBusPeak(&quot;master_sfx&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-crossfade"><div class="item-row-main"><h3>crossfade</h3><pre class="inline-signature">lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number)</pre><p>Crossfades from one audio source to another over the given duration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2244</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local p1 = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local p2 = &quot;content/examples/assets/audio/sample_tone.wav&quot;
+    local from = lurek.audio.newSource(p1, &quot;stream&quot;)
+    local to = lurek.audio.newSource(p2, &quot;stream&quot;)
+    lurek.audio.play(from)
+    lurek.audio.crossfade(from, to, 3.0)
+    print(&quot;from path = &quot; .. p1)
+    print(&quot;to path = &quot; .. p2)
+    print(&quot;crossfading over 3s&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fadein"><div class="item-row-main"><h3>fadeIn</h3><pre class="inline-signature">lurek.audio.fadeIn(source: LSource|integer, dur: number)</pre><p>Sets the fade-in duration for a source so it ramps from silence on play.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1737</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.fadeIn(src, 2.0)
+    print(&quot;fade in requested = 2.0s&quot;)
+    print(&quot;fade in = &quot; .. tostring(lurek.audio.getFadeIn(src)) .. &quot;s&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getactivesourcecount"><div class="item-row-main"><h3>getActiveSourceCount</h3><pre class="inline-signature">lurek.audio.getActiveSourceCount() -&gt; integer</pre><p>Returns the number of sources currently playing audio.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1515</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local count = lurek.audio.getActiveSourceCount()
+    print(&quot;active sources = &quot; .. tostring(count))
+    print(&quot;active source count queried&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbuspeak"><div class="item-row-main"><h3>getBusPeak</h3><pre class="inline-signature">lurek.audio.getBusPeak(bus_name: string) -&gt; number</pre><p>Returns the peak amplitude of the named audio bus over the last processing frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2252</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.create_bus(&quot;vu_bus&quot;, nil)
+    local peak = lurek.audio.getBusPeak(&quot;vu_bus&quot;)
+    print(&quot;bus peak = &quot; .. peak)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbusrms"><div class="item-row-main"><h3>getBusRms</h3><pre class="inline-signature">lurek.audio.getBusRms(bus_name: string) -&gt; number</pre><p>Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2265</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.create_bus(&quot;rms_bus&quot;, nil)
+    local rms = lurek.audio.getBusRms(&quot;rms_bus&quot;)
+    print(&quot;bus rms = &quot; .. rms)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdistancemodel"><div class="item-row-main"><h3>getDistanceModel</h3><pre class="inline-signature">lurek.audio.getDistanceModel() -&gt; string</pre><p>Returns the current distance attenuation model name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1941</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setDistanceModel(&quot;linear&quot;)
+    local model = lurek.audio.getDistanceModel()
+    print(&quot;configured distance model = linear&quot;)
+    print(&quot;distance model = &quot; .. tostring(model))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdopplerscale"><div class="item-row-main"><h3>getDopplerScale</h3><pre class="inline-signature">lurek.audio.getDopplerScale() -&gt; number</pre><p>Returns the current global Doppler effect scale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1922</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setDopplerScale(2.0)
+    local ds = lurek.audio.getDopplerScale()
+    print(&quot;configured doppler scale = 2.0&quot;)
+    print(&quot;doppler scale = &quot; .. tostring(ds))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">lurek.audio.getDuration(source: LSource|integer) -&gt; number</pre><p>Returns the total duration of a source in seconds.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1629</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    local dur = lurek.audio.getDuration(src) or 0
+    print(&quot;path = &quot; .. path)
+    print(&quot;duration = &quot; .. tostring(dur) .. &quot;s&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfadein"><div class="item-row-main"><h3>getFadeIn</h3><pre class="inline-signature">lurek.audio.getFadeIn(source: LSource|integer) -&gt; number</pre><p>Returns the configured fade-in duration of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1751</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.fadeIn(src, 1.5)
+    local fi = lurek.audio.getFadeIn(src)
+    print(&quot;configured fade in = 1.5&quot;)
+    print(&quot;fade in duration = &quot; .. tostring(fi))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfreebuffercount"><div class="item-row-main"><h3>getFreeBufferCount</h3><pre class="inline-signature">lurek.audio.getFreeBufferCount(qsource_id: integer) -&gt; integer</pre><p>Returns the number of free (available) buffer slots on a queueable source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2091</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local free = lurek.audio.getFreeBufferCount(qid)
+    print(&quot;queueable id = &quot; .. tostring(qid))
+    print(&quot;free buffers = &quot; .. tostring(free))
+end</code></pre></details></article><article class="item-row api-row" id="fn-gethighpass"><div class="item-row-main"><h3>getHighpass</h3><pre class="inline-signature">lurek.audio.getHighpass(source: LSource|integer) -&gt; integer</pre><p>Returns the current highpass filter cutoff of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1711</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setHighpass(src, 3000)
+    local hp = lurek.audio.getHighpass(src)
+    print(&quot;configured highpass = 3000&quot;)
+    print(&quot;highpass = &quot; .. tostring(hp))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlistener"><div class="item-row-main"><h3>getListener</h3><pre class="inline-signature">lurek.audio.getListener() -&gt; number, number, number</pre><p>Returns the current 3D listener position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1801</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setListener(10, 5, 0)
+    local x, y, z = lurek.audio.getListener()
+    print(&quot;listener 3D queried&quot;)
+    print(&quot;listener = &quot; .. x .. &quot;, &quot; .. y .. &quot;, &quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlistener2d"><div class="item-row-main"><h3>getListener2D</h3><pre class="inline-signature">lurek.audio.getListener2D() -&gt; number, number</pre><p>Returns the current 2D listener position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1775</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setListener2D(100, 200)
+    local x, y = lurek.audio.getListener2D()
+    print(&quot;listener 2D queried&quot;)
+    print(&quot;listener at &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlowpass"><div class="item-row-main"><h3>getLowpass</h3><pre class="inline-signature">lurek.audio.getLowpass(source: LSource|integer) -&gt; integer</pre><p>Returns the current lowpass filter cutoff of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1698</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setLowpass(src, 500)
+    local lp = lurek.audio.getLowpass(src)
+    print(&quot;configured lowpass = 500&quot;)
+    print(&quot;lowpass = &quot; .. tostring(lp))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmastervolume"><div class="item-row-main"><h3>getMasterVolume</h3><pre class="inline-signature">lurek.audio.getMasterVolume() -&gt; number</pre><p>Returns the current global master volume level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1507</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setMasterVolume(1.0)
+    local mv = lurek.audio.getMasterVolume()
+    print(&quot;configured master volume = 1.0&quot;)
+    print(&quot;master volume = &quot; .. tostring(mv))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmaxsources"><div class="item-row-main"><h3>getMaxSources</h3><pre class="inline-signature">lurek.audio.getMaxSources() -&gt; integer</pre><p>Returns the maximum number of simultaneous audio sources supported.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1623</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local max = lurek.audio.getMaxSources()
+    print(&quot;max sources = &quot; .. tostring(max))
+    print(&quot;audio capacity queried&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmeter"><div class="item-row-main"><h3>getMeter</h3><pre class="inline-signature">lurek.audio.getMeter() -&gt; number</pre><p>Returns the current master peak level for VU-meter displays.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1960</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setMeter(0.6)
+    local lvl = lurek.audio.getMeter()
+    print(&quot;configured meter = 0.6&quot;)
+    print(&quot;meter = &quot; .. tostring(lvl))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getorientation"><div class="item-row-main"><h3>getOrientation</h3><pre class="inline-signature">lurek.audio.getOrientation(source: LSource|integer) -&gt; number, number, number, number, number, number</pre><p>Returns the orientation vectors of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1899</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
+    local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
+    print(&quot;source type = &quot; .. tostring(lurek.audio.getSourceType(src)))
+    print(&quot;forward = &quot; .. fx .. &quot;, &quot; .. fy .. &quot;, &quot; .. fz)
+    print(&quot;up = &quot; .. ux .. &quot;, &quot; .. uy .. &quot;, &quot; .. uz)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpan"><div class="item-row-main"><h3>getPan</h3><pre class="inline-signature">lurek.audio.getPan(source: LSource|integer) -&gt; number</pre><p>Returns the current stereo pan position of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1484</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setPan(src, 0.7)
+    local pan = lurek.audio.getPan(src)
+    print(&quot;configured pan = 0.7&quot;)
+    print(&quot;pan = &quot; .. tostring(pan))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpitch"><div class="item-row-main"><h3>getPitch</h3><pre class="inline-signature">lurek.audio.getPitch(source: LSource|integer) -&gt; number</pre><p>Returns the current pitch multiplier of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1377</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setPitch(src, 0.8)
+    local p = lurek.audio.getPitch(src)
+    print(&quot;configured pitch = 0.8&quot;)
+    print(&quot;pitch = &quot; .. tostring(p))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getplaybackdevice"><div class="item-row-main"><h3>getPlaybackDevice</h3><pre class="inline-signature">lurek.audio.getPlaybackDevice() -&gt; string</pre><p>Returns the name of the currently active audio playback device.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2128</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local dev = lurek.audio.getPlaybackDevice()
+    print(&quot;current device = &quot; .. tostring(dev))
+    print(&quot;device query completed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getplaybackdevices"><div class="item-row-main"><h3>getPlaybackDevices</h3><pre class="inline-signature">lurek.audio.getPlaybackDevices() -&gt; string[]</pre><p>Returns a list of available audio playback device names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2122</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local devices = lurek.audio.getPlaybackDevices()
+    print(&quot;device count = &quot; .. tostring(#devices))
+    print(&quot;first device = &quot; .. tostring(devices[1] or &quot;none&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">lurek.audio.getPosition(source: LSource|integer) -&gt; number, number, number</pre><p>Returns the 3D position of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1832</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setPosition(src, 100, 0, 30)
+    local x, y, z = lurek.audio.getPosition(src)
+    print(&quot;source position queried&quot;)
+    print(&quot;pos = &quot; .. x .. &quot;, &quot; .. y .. &quot;, &quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsourcebus"><div class="item-row-main"><h3>getSourceBus</h3><pre class="inline-signature">lurek.audio.getSourceBus(source: LSource|integer) -&gt; LBus</pre><p>Returns the bus a source is routed through.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1616</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    local bus = lurek.audio.newBus(&quot;ui&quot;)
+    lurek.audio.setSourceBus(src, bus)
+    local assigned = lurek.audio.getSourceBus(src)
+    print(&quot;source bus exists = &quot; .. tostring(assigned ~= nil))
+    print(&quot;source bus = &quot; .. assigned:getName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsourcecount"><div class="item-row-main"><h3>getSourceCount</h3><pre class="inline-signature">lurek.audio.getSourceCount() -&gt; integer</pre><p>Returns the total number of loaded audio sources (playing or idle).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1523</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local total = lurek.audio.getSourceCount()
+    print(&quot;total sources = &quot; .. tostring(total))
+    print(&quot;source registry count queried&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsourcetype"><div class="item-row-main"><h3>getSourceType</h3><pre class="inline-signature">lurek.audio.getSourceType(source: LSource|integer) -&gt; string</pre><p>Returns whether a source is static or streaming.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1532</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    local stype = lurek.audio.getSourceType(src)
+    print(&quot;path = &quot; .. path)
+    print(&quot;source type = &quot; .. tostring(stype))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstereowidth"><div class="item-row-main"><h3>getStereoWidth</h3><pre class="inline-signature">lurek.audio.getStereoWidth(src_ud: LSource) -&gt; number</pre><p>Returns the current stereo width factor of an audio source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2194</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.setStereoWidth(src, 0.8)
+    local w = lurek.audio.getStereoWidth(src)
+    print(&quot;configured stereo width = 0.8&quot;)
+    print(&quot;width = &quot; .. tostring(w))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getvelocity"><div class="item-row-main"><h3>getVelocity</h3><pre class="inline-signature">lurek.audio.getVelocity(source: LSource|integer) -&gt; number, number, number</pre><p>Returns the velocity vector of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1864</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setVelocity(src, 5, 3, 0)
+    local vx, vy, vz = lurek.audio.getVelocity(src)
+    print(&quot;source velocity queried&quot;)
+    print(&quot;vel = &quot; .. vx .. &quot;, &quot; .. vy .. &quot;, &quot; .. vz)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getvolume"><div class="item-row-main"><h3>getVolume</h3><pre class="inline-signature">lurek.audio.getVolume(source: LSource|integer) -&gt; number</pre><p>Returns the current volume of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1324</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setVolume(src, 0.8)
+    local vol = lurek.audio.getVolume(src)
+    print(&quot;configured volume = 0.8&quot;)
+    print(&quot;volume = &quot; .. tostring(vol))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasmidisoundfont"><div class="item-row-main"><h3>hasMidiSoundFont</h3><pre class="inline-signature">lurek.audio.hasMidiSoundFont() -&gt; boolean</pre><p>Returns whether a SoundFont file has been loaded for MIDI synthesis.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2014</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local has = lurek.audio.hasMidiSoundFont()
+    print(&quot;has soundfont = &quot; .. tostring(has))
+    print(&quot;soundfont ready check completed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-islooping"><div class="item-row-main"><h3>isLooping</h3><pre class="inline-signature">lurek.audio.isLooping(source: LSource|integer) -&gt; boolean</pre><p>Returns whether a source has looping enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1443</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.setLooping(src, true)
+    print(&quot;source type = &quot; .. tostring(lurek.audio.getSourceType(src)))
+    print(&quot;isLooping = &quot; .. tostring(lurek.audio.isLooping(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-ispaused"><div class="item-row-main"><h3>isPaused</h3><pre class="inline-signature">lurek.audio.isPaused(source: LSource|integer) -&gt; boolean</pre><p>Returns whether a source is currently paused.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1403</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.play(src)
+    lurek.audio.pause(src)
+    print(&quot;playing now = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    print(&quot;isPaused = &quot; .. tostring(lurek.audio.isPaused(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isplaying"><div class="item-row-main"><h3>isPlaying</h3><pre class="inline-signature">lurek.audio.isPlaying(source: LSource|integer) -&gt; boolean</pre><p>Returns whether a source is currently playing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1390</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    print(&quot;before play = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.play(src)
+    print(&quot;after play = &quot; .. tostring(lurek.audio.isPlaying(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isstopped"><div class="item-row-main"><h3>isStopped</h3><pre class="inline-signature">lurek.audio.isStopped(source: LSource|integer) -&gt; boolean</pre><p>Returns whether a source is currently stopped.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1416</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    print(&quot;initially stopped = &quot; .. tostring(lurek.audio.isStopped(src)))
+    print(&quot;initially playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-mixinto"><div class="item-row-main"><h3>mixInto</h3><pre class="inline-signature">lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData)</pre><p>Mixes the samples of `src` into `dest` in-place (both must have the same format).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2161</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local dest = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
+    local src = lurek.audio.newSineWave(880, 1.0, 44100, 0.3)
+    lurek.audio.mixInto(dest, src)
+    print(&quot;mixed 880 Hz into 440 Hz&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbus"><div class="item-row-main"><h3>newBus</h3><pre class="inline-signature">lurek.audio.newBus(name: string) -&gt; LBus</pre><p>Creates a new audio mixing bus for grouping and controlling sources.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1589</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local bus = lurek.audio.newBus(&quot;sfx&quot;)
+    print(&quot;bus created: sfx&quot;)
+    print(&quot;bus name = &quot; .. bus:getName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdecoder"><div class="item-row-main"><h3>newDecoder</h3><pre class="inline-signature">lurek.audio.newDecoder(source: string, buffersize: integer?) -&gt; LDecoder</pre><p>Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2032</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local dec = lurek.audio.newDecoder(path, 4096)
+    print(&quot;decoder created = &quot; .. tostring(dec ~= nil))
+    print(&quot;sample rate = &quot; .. tostring(dec:getSampleRate()))
+    print(&quot;channels = &quot; .. tostring(dec:getChannelCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmidiplayer"><div class="item-row-main"><h3>newMidiPlayer</h3><pre class="inline-signature">lurek.audio.newMidiPlayer(path: string?) -&gt; LMidiPlayer</pre><p>Creates a new MIDI player instance, optionally loading a file immediately.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1969</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    print(&quot;midi player created = &quot; .. tostring(player ~= nil))
+    print(&quot;player type = &quot; .. player:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpool"><div class="item-row-main"><h3>newPool</h3><pre class="inline-signature">lurek.audio.newPool(file_path: string, voice_count: integer) -&gt; LSoundPool</pre><p>Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2279</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local pool = lurek.audio.newPool(path, 8)
+    print(&quot;pool voices = &quot; .. pool:getVoiceCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newqueueablesource"><div class="item-row-main"><h3>newQueueableSource</h3><pre class="inline-signature">lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channels: integer, buffer_count: integer?) -&gt; integer</pre><p>Creates a new queueable audio source for streaming PCM data buffer by buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2053</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local free = lurek.audio.getFreeBufferCount(qid)
+    print(&quot;queueable id = &quot; .. tostring(qid))
+    print(&quot;free buffers = &quot; .. tostring(free))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsounddata"><div class="item-row-main"><h3>newSoundData</h3><pre class="inline-signature">lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, channels: integer?) -&gt; LSoundData</pre><p>Creates a new SoundData object from a file path or blank buffer for procedural audio.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1980</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    print(&quot;sound data created = &quot; .. tostring(sd ~= nil))
+    print(&quot;sample count = &quot; .. tostring(sd:getSampleCount()))
+    print(&quot;sample rate = &quot; .. tostring(sd:getSampleRate()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsource"><div class="item-row-main"><h3>newSource</h3><pre class="inline-signature">lurek.audio.newSource(path: string, sourceType: string?) -&gt; LSource</pre><p>Creates a new audio source from a file path, either fully loaded or streaming.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1278</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    local source_type = lurek.audio.getSourceType(src)
+    print(&quot;source created = &quot; .. tostring(src ~= nil))
+    print(&quot;path = &quot; .. path)
+    print(&quot;source type = &quot; .. tostring(source_type))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">lurek.audio.pause(source: LSource|integer)</pre><p>Pauses playback of a source at its current position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1336</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    print(&quot;playing before pause = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.pause(src)
+    print(&quot;paused = &quot; .. tostring(lurek.audio.isPaused(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pauseall"><div class="item-row-main"><h3>pauseAll</h3><pre class="inline-signature">lurek.audio.pauseAll()</pre><p>Pauses all currently playing audio sources.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1548</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.play(src)
+    lurek.audio.pauseAll()
+    print(&quot;all paused&quot;)
+    print(&quot;sample source paused = &quot; .. tostring(lurek.audio.isPaused(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-play"><div class="item-row-main"><h3>play</h3><pre class="inline-signature">lurek.audio.play(source: LSource|integer, options: table?) -&gt; integer</pre><p>Starts playback of a source by handle, optionally routing through a named bus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1288</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    print(&quot;play requested for = &quot; .. path)
+    print(&quot;playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-playlooping"><div class="item-row-main"><h3>playLooping</h3><pre class="inline-signature">lurek.audio.playLooping(source: LSource|integer)</pre><p>Starts playback of a source with looping enabled in one call.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1455</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.playLooping(src)
+    print(&quot;playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    print(&quot;playing+looping = &quot; .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-playqueueable"><div class="item-row-main"><h3>playQueueable</h3><pre class="inline-signature">lurek.audio.playQueueable(qsource_id: integer)</pre><p>Starts playback of a queueable audio source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2101</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local sd = lurek.audio.newSoundData(1024, 44100, 1)
+    lurek.audio.queueSource(qid, sd)
+    lurek.audio.playQueueable(qid)
+    print(&quot;queueable source started&quot;)
+    print(&quot;free buffers after play = &quot; .. tostring(lurek.audio.getFreeBufferCount(qid)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-queuesource"><div class="item-row-main"><h3>queueSource</h3><pre class="inline-signature">lurek.audio.queueSource(qsource_id: integer, sd: LSoundData)</pre><p>Queues a decoded audio chunk for playback on a queueable source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2076</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local sd = lurek.audio.newSoundData(1024, 44100, 1)
+    local before = lurek.audio.getFreeBufferCount(qid)
+    lurek.audio.queueSource(qid, sd)
+    local after = lurek.audio.getFreeBufferCount(qid)
+    print(&quot;free buffers before queue = &quot; .. tostring(before))
+    print(&quot;free buffers after queue = &quot; .. tostring(after))
+end</code></pre></details></article><article class="item-row api-row" id="fn-release"><div class="item-row-main"><h3>release</h3><pre class="inline-signature">lurek.audio.release(source: LSource|integer) -&gt; boolean</pre><p>Releases an audio source, freeing its memory and stopping playback.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1580</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    local before = lurek.audio.getSourceCount()
+    lurek.audio.release(src)
+    print(&quot;source released&quot;)
+    print(&quot;source count before release = &quot; .. tostring(before))
+end</code></pre></details></article><article class="item-row api-row" id="fn-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">lurek.audio.resume(source: LSource|integer)</pre><p>Resumes playback of a paused source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1349</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    lurek.audio.pause(src)
+    print(&quot;paused before resume = &quot; .. tostring(lurek.audio.isPaused(src)))
+    lurek.audio.resume(src)
+    print(&quot;playing after resume = &quot; .. tostring(lurek.audio.isPlaying(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-resumeall"><div class="item-row-main"><h3>resumeAll</h3><pre class="inline-signature">lurek.audio.resumeAll()</pre><p>Resumes all paused audio sources. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1568</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    lurek.audio.pauseAll()
+    lurek.audio.resumeAll()
+    print(&quot;all resumed&quot;)
+    print(&quot;sample source playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-savewav"><div class="item-row-main"><h3>saveWAV</h3><pre class="inline-signature">lurek.audio.saveWAV(sd_ud: LSoundData, filename: string)</pre><p>Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2169</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    lurek.audio.saveWAV(sd, &quot;work/output/test_tone.wav&quot;)
+    print(&quot;saved WAV file&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-seek"><div class="item-row-main"><h3>seek</h3><pre class="inline-signature">lurek.audio.seek(source: LSource|integer, pos: number)</pre><p>Seeks a source to a specific position in seconds.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1655</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    lurek.audio.seek(src, 5.0)
+    print(&quot;seek target = 5.0&quot;)
+    print(&quot;position after seek = &quot; .. tostring(lurek.audio.tell(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdistancemodel"><div class="item-row-main"><h3>setDistanceModel</h3><pre class="inline-signature">lurek.audio.setDistanceModel(model: string)</pre><p>Sets the distance attenuation model for spatial audio.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1930</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local before = lurek.audio.getDistanceModel()
+    lurek.audio.setDistanceModel(&quot;inverse&quot;)
+    print(&quot;distance model before = &quot; .. tostring(before))
+    print(&quot;distance model after = &quot; .. tostring(lurek.audio.getDistanceModel()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdopplerscale"><div class="item-row-main"><h3>setDopplerScale</h3><pre class="inline-signature">lurek.audio.setDopplerScale(scale: number)</pre><p>Sets the global Doppler effect intensity multiplier.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1911</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local before = lurek.audio.getDopplerScale()
+    lurek.audio.setDopplerScale(1.5)
+    local after = lurek.audio.getDopplerScale()
+    print(&quot;doppler scale before = &quot; .. tostring(before))
+    print(&quot;doppler scale after = &quot; .. tostring(after))
+end</code></pre></details></article><article class="item-row api-row" id="fn-sethighpass"><div class="item-row-main"><h3>setHighpass</h3><pre class="inline-signature">lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer)</pre><p>Applies a highpass filter to a source, attenuating low frequencies.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1684</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setHighpass(src, 2000)
+    print(&quot;highpass set to 2000 Hz&quot;)
+    print(&quot;highpass = &quot; .. tostring(lurek.audio.getHighpass(src)) .. &quot; Hz&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlistener"><div class="item-row-main"><h3>setListener</h3><pre class="inline-signature">lurek.audio.setListener(x: number, y: number, z: number?)</pre><p>Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1788</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setListener(0, 0, 0)
+    local x, y, z = lurek.audio.getListener()
+    print(&quot;listener 3D reset to origin&quot;)
+    print(&quot;listener 3D = &quot; .. x .. &quot;, &quot; .. y .. &quot;, &quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlistener2d"><div class="item-row-main"><h3>setListener2D</h3><pre class="inline-signature">lurek.audio.setListener2D(x: number, y: number)</pre><p>Sets the 2D listener position for spatial audio calculations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1764</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.setListener2D(400, 300)
+    local x, y = lurek.audio.getListener2D()
+    print(&quot;listener 2D set to 400, 300&quot;)
+    print(&quot;listener 2D = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlooping"><div class="item-row-main"><h3>setLooping</h3><pre class="inline-signature">lurek.audio.setLooping(source: LSource|integer, looping: boolean)</pre><p>Enables or disables looping for a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1429</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    print(&quot;looping before = &quot; .. tostring(lurek.audio.isLooping(src)))
+    lurek.audio.setLooping(src, true)
+    print(&quot;looping after = &quot; .. tostring(lurek.audio.isLooping(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlowpass"><div class="item-row-main"><h3>setLowpass</h3><pre class="inline-signature">lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer)</pre><p>Applies a lowpass filter to a source, attenuating high frequencies.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1670</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.setLowpass(src, 800)
+    print(&quot;lowpass set to 800 Hz&quot;)
+    print(&quot;lowpass = &quot; .. tostring(lurek.audio.getLowpass(src)) .. &quot; Hz&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setmastervolume"><div class="item-row-main"><h3>setMasterVolume</h3><pre class="inline-signature">lurek.audio.setMasterVolume(vol: number)</pre><p>Sets the global master volume affecting all audio output.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1496</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local before = lurek.audio.getMasterVolume()
+    lurek.audio.setMasterVolume(0.75)
+    print(&quot;master volume before = &quot; .. tostring(before))
+    print(&quot;master volume after = &quot; .. tostring(lurek.audio.getMasterVolume()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setmeter"><div class="item-row-main"><h3>setMeter</h3><pre class="inline-signature">lurek.audio.setMeter(level: number)</pre><p>Sets the master peak level for metering purposes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1949</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local before = lurek.audio.getMeter()
+    lurek.audio.setMeter(0.8)
+    print(&quot;meter before = &quot; .. tostring(before))
+    print(&quot;meter after = &quot; .. tostring(lurek.audio.getMeter()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setmidisoundfont"><div class="item-row-main"><h3>setMidiSoundFont</h3><pre class="inline-signature">lurek.audio.setMidiSoundFont(path: string)</pre><p>Sets the SoundFont file used for MIDI synthesis.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1994</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_soundfont.sf2&quot;
+    local ok = pcall(function()
+        lurek.audio.setMidiSoundFont(path)
+    end)
+    print(&quot;soundfont set = &quot; .. tostring(ok and lurek.audio.hasMidiSoundFont()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setorientation"><div class="item-row-main"><h3>setOrientation</h3><pre class="inline-signature">lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number)</pre><p>Sets the orientation of a source using forward and up vectors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1882</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
+    local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
+    print(&quot;orientation applied&quot;)
+    print(&quot;forward = &quot; .. fx .. &quot;, &quot; .. fy .. &quot;, &quot; .. fz)
+    print(&quot;up = &quot; .. ux .. &quot;, &quot; .. uy .. &quot;, &quot; .. uz)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setpan"><div class="item-row-main"><h3>setPan</h3><pre class="inline-signature">lurek.audio.setPan(source: LSource|integer, pan: number)</pre><p>Sets the stereo panning of a source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1470</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    print(&quot;pan before = &quot; .. tostring(lurek.audio.getPan(src)))
+    lurek.audio.setPan(src, -0.5)
+    print(&quot;pan after = &quot; .. tostring(lurek.audio.getPan(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setpitch"><div class="item-row-main"><h3>setPitch</h3><pre class="inline-signature">lurek.audio.setPitch(source: LSource|integer, pitch: number)</pre><p>Sets the pitch multiplier of a source, affecting playback speed and tone.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1363</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    print(&quot;pitch before = &quot; .. tostring(lurek.audio.getPitch(src)))
+    lurek.audio.setPitch(src, 1.5)
+    print(&quot;pitch after = &quot; .. tostring(lurek.audio.getPitch(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setplaybackdevice"><div class="item-row-main"><h3>setPlaybackDevice</h3><pre class="inline-signature">lurek.audio.setPlaybackDevice(name: string)</pre><p>Sets the active audio playback device by name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2134</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local devices = lurek.audio.getPlaybackDevices()
+    local name = devices[1] or lurek.audio.getPlaybackDevice()
+    lurek.audio.setPlaybackDevice(name)
+    print(&quot;requested device = &quot; .. tostring(name))
+    print(&quot;active device = &quot; .. tostring(lurek.audio.getPlaybackDevice()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">lurek.audio.setPosition(source: LSource|integer, x: number, y: number, z: number?)</pre><p>Sets the 3D position of a source for spatial audio panning and attenuation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1815</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setPosition(src, 50, 20, 0)
+    local x, y, z = lurek.audio.getPosition(src)
+    print(&quot;source positioned for spatial playback&quot;)
+    print(&quot;source pos = &quot; .. x .. &quot;, &quot; .. y .. &quot;, &quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setrandompitch"><div class="item-row-main"><h3>setRandomPitch</h3><pre class="inline-signature">lurek.audio.setRandomPitch(src_ud: LSource, min: number, max: number)</pre><p>Sets a random pitch range for a source; each play picks a random pitch between min and max.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2212</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setRandomPitch(src, 0.9, 1.1)
+    print(&quot;random pitch range = 0.9 to 1.1&quot;)
+    print(&quot;source ready for varied playback&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setsourcebus"><div class="item-row-main"><h3>setSourceBus</h3><pre class="inline-signature">lurek.audio.setSourceBus(source: LSource|integer, bus: LBus)</pre><p>Routes a source through a specific audio bus for grouped mixing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1605</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    local bus = lurek.audio.newBus(&quot;effects&quot;)
+    lurek.audio.setSourceBus(src, bus)
+    local assigned = lurek.audio.getSourceBus(src)
+    print(&quot;bus assigned = &quot; .. tostring(assigned ~= nil))
+    print(&quot;bus = &quot; .. assigned:getName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setstereowidth"><div class="item-row-main"><h3>setStereoWidth</h3><pre class="inline-signature">lurek.audio.setStereoWidth(src_ud: LSource, width: number)</pre><p>Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2177</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.setStereoWidth(src, 0.5)
+    print(&quot;configured stereo width = 0.5&quot;)
+    print(&quot;stereo width = &quot; .. tostring(lurek.audio.getStereoWidth(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setvelocity"><div class="item-row-main"><h3>setVelocity</h3><pre class="inline-signature">lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, z: number?)</pre><p>Sets the velocity of a source for Doppler effect calculations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1847</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.setVelocity(src, 10, 0, 0)
+    local vx, vy, vz = lurek.audio.getVelocity(src)
+    print(&quot;source velocity set for doppler&quot;)
+    print(&quot;velocity = &quot; .. vx .. &quot;, &quot; .. vy .. &quot;, &quot; .. vz)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setvolume"><div class="item-row-main"><h3>setVolume</h3><pre class="inline-signature">lurek.audio.setVolume(source: LSource|integer, vol: number)</pre><p>Sets the volume of a source by handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1310</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    print(&quot;volume before = &quot; .. tostring(lurek.audio.getVolume(src)))
+    lurek.audio.setVolume(src, 0.5)
+    print(&quot;volume after = &quot; .. tostring(lurek.audio.getVolume(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-set-bus-volume"><div class="item-row-main"><h3>set_bus_volume</h3><pre class="inline-signature">lurek.audio.set_bus_volume(name: string, volume: number)</pre><p>Sets the volume of a named audio bus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2154</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    lurek.audio.create_bus(&quot;music_bus&quot;, nil)
+    lurek.audio.set_bus_volume(&quot;music_bus&quot;, 0.7)
+    print(&quot;configured music_bus volume = 0.7&quot;)
+    print(&quot;music_bus peak = &quot; .. tostring(lurek.audio.getBusPeak(&quot;music_bus&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stop"><div class="item-row-main"><h3>stop</h3><pre class="inline-signature">lurek.audio.stop(source: LSource|integer)</pre><p>Stops playback of a source and resets its position to the beginning.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1296</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.play(src)
+    print(&quot;before stop playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    lurek.audio.stop(src)
+    print(&quot;stopped = &quot; .. tostring(lurek.audio.isStopped(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stopall"><div class="item-row-main"><h3>stopAll</h3><pre class="inline-signature">lurek.audio.stopAll()</pre><p>Stops all audio sources and resets their positions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1558</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;static&quot;)
+    lurek.audio.play(src)
+    lurek.audio.stopAll()
+    print(&quot;all stopped&quot;)
+    print(&quot;sample source stopped = &quot; .. tostring(lurek.audio.isStopped(src)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stopqueueable"><div class="item-row-main"><h3>stopQueueable</h3><pre class="inline-signature">lurek.audio.stopQueueable(qsource_id: integer)</pre><p>Stops playback of a queueable audio source.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:2112</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    lurek.audio.stopQueueable(qid)
+    print(&quot;queueable source stopped&quot;)
+    print(&quot;free buffers = &quot; .. tostring(lurek.audio.getFreeBufferCount(qid)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-tell"><div class="item-row-main"><h3>tell</h3><pre class="inline-signature">lurek.audio.tell(source: LSource|integer) -&gt; number</pre><p>Returns the current playback position of a source in seconds.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/audio_api.rs:1642</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local src = lurek.audio.newSource(path, &quot;stream&quot;)
+    lurek.audio.play(src)
+    local pos = lurek.audio.tell(src)
+    print(&quot;playing = &quot; .. tostring(lurek.audio.isPlaying(src)))
+    print(&quot;position = &quot; .. tostring(pos))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBus.html">LBus</a></h3><p>Lua-side wrapper around an audio mixing bus for grouped volume and effect control.</p></div><div class="item-row-meta"><span>13 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDecoder.html">LDecoder</a></h3><p>Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.</p></div><div class="item-row-meta"><span>12 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMidiPlayer.html">LMidiPlayer</a></h3><p>Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.</p></div><div class="item-row-meta"><span>50 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSoundData.html">LSoundData</a></h3><p>Represents the Lua-visible LSoundData object exposed by this module.</p></div><div class="item-row-meta"><span>10 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSoundPool.html">LSoundPool</a></h3><p>Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.</p></div><div class="item-row-meta"><span>8 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSource.html">LSource</a></h3><p>Lua-side wrapper around a loaded audio source (sound effect or music stream).</p></div><div class="item-row-meta"><span>29 methods</span><span>module audio</span></div><div class="card-note">Example: audio.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -34,6 +34,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAIDirector` ([lurek.ai](Module-ai)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
 - `LAIFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for an AI flow field over a path grid.
 - `LAILod` ([lurek.ai](Module-ai)) - Lua handle for distance-based AI level-of-detail tier selection.
+- `LAISystem` ([lurek.agent](Module-agent)) - Lua-side handle for an AISystem multi-agent orchestrator.
 - `LAIWorld` ([lurek.ai](Module-ai)) - Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
 - `LAnimatedCursor` ([lurek.cursor](Module-cursor)) - Lua userdata representing an animated cursor that cycles through image frames.
 - `LAnimation` ([lurek.animation](Module-animation)) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
@@ -64,7 +65,7 @@ The glossary collects terms that appear across module and API pages.
 - `LCameraRig` ([lurek.camera](Module-camera)) - Lua-side camera rig that manages named cameras and viewport layouts.
 - `LCanvas` ([lurek.render](Module-render)) - Off-screen render target that can be drawn to and then composited onto the screen.
 - `LCatmullRom` ([lurek.math](Module-math)) - Lua-side wrapper for a Catmull-Rom spline.
-- `LCellular` ([lurek.physics](Module-physics)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
+- `LCellular` ([lurek.procgen](Module-procgen)) - A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.
 - `LChannel` ([lurek.thread](Module-thread)) - Creates a new unbounded channel for sending typed values between threads.
 - `LCheckbox` ([lurek.ui](Module-ui)) - Adds checkbox-specific methods to a checkbox widget table.
 - `LChunkMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LLevelDetector` ([lurek.dsp](Module-dsp)) - Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
 - `LLight` ([lurek.light](Module-light)) - Lua-side handle for a light stored in the shared light world.
 - `LLineChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a connected line series chart.
-- `LLineChart` ([lurek.ui](Module-ui)) - Lua-exposed line chart for data visualization.

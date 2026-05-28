@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["pop_scissor","push_scissor"],"struct":["TextLine"]};

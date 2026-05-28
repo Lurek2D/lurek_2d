@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LGraph - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LGraph</h1>
+  <p>Lua-side graph handle storing graph state and registered event callbacks.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/flownet.html">lurek.flownet</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode(&quot;warehouse&quot;, 100)
+    print(&quot;node type = &quot; .. n:type())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LGraph userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addedge"><div class="item-row-main"><h3>addEdge</h3><pre class="inline-signature">LGraph:addEdge(from_ud: LGraphNode, to_ud: LGraphNode, edge_type: string?) -&gt; LGraphEdge</pre><p>Creates an edge between two nodes with an optional edge type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1022</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode(&quot;src&quot;)
+    local b = g:addNode(&quot;dst&quot;)
+    local e = g:addEdge(a, b, &quot;road&quot;)
+    print(&quot;edge type = &quot; .. e:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-addedgeunchecked"><div class="item-row-main"><h3>addEdgeUnchecked</h3><pre class="inline-signature">LGraph:addEdgeUnchecked(from_ud: LGraphNode, to_ud: LGraphNode, edge_type: string?) -&gt; LGraphEdge</pre><p>Adds an edge without validating endpoint nodes exist. Faster for batch construction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1042</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode(&quot;hub&quot;)
+    local b = g:addNode(&quot;sink&quot;)
+    local edge = g:addEdgeUnchecked(a, b, &quot;belt&quot;)
+    print(&quot;edge type = &quot; .. edge:getType())
+    print(&quot;edge count = &quot; .. g:getEdgeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-additem"><div class="item-row-main"><h3>addItem</h3><pre class="inline-signature">LGraph:addItem(item_ud: LGraphItem, node_ud: LGraphNode)</pre><p>Places an item onto a destination node.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1136</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode(&quot;storage&quot;)
+    local item = g:createItem(&quot;wood&quot;)
+    g:addItem(item, n)
+    print(&quot;item placed on node&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-addnode"><div class="item-row-main"><h3>addNode</h3><pre class="inline-signature">LGraph:addNode(node_type: string?, capacity: integer?) -&gt; LGraphNode</pre><p>Creates a node with optional type and capacity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:958</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode(&quot;warehouse&quot;, 100)
+    print(&quot;node type = &quot; .. n:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-astar"><div class="item-row-main"><h3>astar</h3><pre class="inline-signature">LGraph:astar(from_node: LGraphNode, to_node: LGraphNode) -&gt; LGraphNode[]</pre><p>Runs A* pathfinding between two nodes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local path = g:astar(a, b)
+    print(&quot;astar path = &quot; .. tostring(path ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-batchaddedges"><div class="item-row-main"><h3>batchAddEdges</h3><pre class="inline-signature">LGraph:batchAddEdges(edges: table) -&gt; integer[]</pre><p>Creates multiple edges from a table of {from_id, to_id} or {from_id, to_id, edge_type} entries.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1537</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local ids = g:batchAddNodes(3, { node_type = &quot;router&quot; })
+    local edge_ids = g:batchAddEdges({
+        { ids[1], ids[2], &quot;lane&quot; },
+        { ids[2], ids[3], &quot;lane&quot; },
+    })
+    print(&quot;created edges = &quot; .. #edge_ids)
+    print(&quot;edge count = &quot; .. g:getEdgeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-batchaddnodes"><div class="item-row-main"><h3>batchAddNodes</h3><pre class="inline-signature">LGraph:batchAddNodes(count: integer, config: table?) -&gt; integer[]</pre><p>Creates multiple nodes at once, returning their IDs as a table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1513</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local ids = g:batchAddNodes(3, { node_type = &quot;router&quot;, capacity = 4 })
+    local nodes = g:getNodes()
+    print(&quot;created ids = &quot; .. #ids)
+    print(&quot;node count = &quot; .. g:getNodeCount())
+    print(&quot;first node type = &quot; .. nodes[1]:getType())
+end</code></pre></details></article><article class="item-row api-row" id="method-batchstep"><div class="item-row-main"><h3>batchStep</h3><pre class="inline-signature">LGraph:batchStep(dt: number, iterations: integer)</pre><p>Runs multiple simulation steps in sequence. More efficient than calling step() in a loop from Lua.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1558</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local ids = g:batchAddNodes(2, { node_type = &quot;router&quot; })
+    g:batchAddEdges({
+        { ids[1], ids[2], &quot;lane&quot; },
+    })
+    g:batchStep(0.25, 4)
+    print(&quot;node count = &quot; .. g:getNodeCount())
+    print(&quot;edge count = &quot; .. g:getEdgeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-colorgraph"><div class="item-row-main"><h3>colorGraph</h3><pre class="inline-signature">LGraph:colorGraph() -&gt; table</pre><p>Computes graph coloring and returns color indices by node id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1401</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local colors = g:colorGraph()
+    print(&quot;coloring type = &quot; .. type(colors))
+end</code></pre></details></article><article class="item-row api-row" id="method-createitem"><div class="item-row-main"><h3>createItem</h3><pre class="inline-signature">LGraph:createItem(item_type: string?, decay_time: number?) -&gt; LGraphItem</pre><p>Creates an unplaced graph item with optional type and decay time.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1120</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local item = g:createItem(&quot;ore&quot;, 10.0)
+    print(&quot;item type = &quot; .. item:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LGraph:findPath(from_ud: LGraphNode, to_ud: LGraphNode) -&gt; table</pre><p>Finds a path between two graph nodes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1233</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    g:addEdge(b, c)
+    local result = g:findPath(a, c)
+    print(&quot;path found = &quot; .. tostring(result ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-findpathforitem"><div class="item-row-main"><h3>findPathForItem</h3><pre class="inline-signature">LGraph:findPathForItem(item_ud: LGraphItem, from_ud: LGraphNode, to_ud: LGraphNode) -&gt; table</pre><p>Finds a path for a specific item between two nodes while respecting item constraints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1254</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local item = g:createItem(&quot;cargo&quot;)
+    local result = g:findPathForItem(item, a, b)
+    print(&quot;item path found = &quot; .. tostring(result ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcomponents"><div class="item-row-main"><h3>getComponents</h3><pre class="inline-signature">LGraph:getComponents() -&gt; LGraphNode[]</pre><p>Returns connected components as arrays of node handles.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1323</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:addNode()
+    g:addNode()
+    local comps = g:getComponents()
+    print(&quot;components = &quot; .. #comps)
+end</code></pre></details></article><article class="item-row api-row" id="method-getdistance"><div class="item-row-main"><h3>getDistance</h3><pre class="inline-signature">LGraph:getDistance(from_ud: LGraphNode, to_ud: LGraphNode) -&gt; number</pre><p>Returns graph distance between two nodes when reachable.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1270</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local d = g:getDistance(a, b)
+    print(&quot;distance = &quot; .. tostring(d))
+end</code></pre></details></article><article class="item-row api-row" id="method-getedgebetween"><div class="item-row-main"><h3>getEdgeBetween</h3><pre class="inline-signature">LGraph:getEdgeBetween(from_ud: LGraphNode, to_ud: LGraphNode) -&gt; LGraphEdge</pre><p>Returns the edge connecting two nodes when one exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1100</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b, &quot;pipe&quot;)
+    local e = g:getEdgeBetween(a, b)
+    print(&quot;edge between a-b exists = &quot; .. tostring(e ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getedgecount"><div class="item-row-main"><h3>getEdgeCount</h3><pre class="inline-signature">LGraph:getEdgeCount() -&gt; integer</pre><p>Returns the number of edges in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1092</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    g:addEdge(a, b)
+    print(&quot;edges = &quot; .. g:getEdgeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getedges"><div class="item-row-main"><h3>getEdges</h3><pre class="inline-signature">LGraph:getEdges() -&gt; LGraphEdge[]</pre><p>Returns all edges in this logistics graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1074</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local edges = g:getEdges()
+    print(&quot;edge list = &quot; .. #edges)
+end</code></pre></details></article><article class="item-row api-row" id="method-getitemcount"><div class="item-row-main"><h3>getItemCount</h3><pre class="inline-signature">LGraph:getItemCount() -&gt; integer</pre><p>Returns the number of items in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1184</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:createItem(&quot;a&quot;)
+    g:createItem(&quot;b&quot;)
+    print(&quot;items = &quot; .. g:getItemCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getitems"><div class="item-row-main"><h3>getItems</h3><pre class="inline-signature">LGraph:getItems() -&gt; LGraphItem[]</pre><p>Returns all items in this logistics graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1166</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:createItem(&quot;iron&quot;)
+    local items = g:getItems()
+    print(&quot;item list = &quot; .. #items)
+end</code></pre></details></article><article class="item-row api-row" id="method-getneighbors"><div class="item-row-main"><h3>getNeighbors</h3><pre class="inline-signature">LGraph:getNeighbors(node_ud: LGraphNode) -&gt; LGraphNode[]</pre><p>Returns neighbor nodes connected to a node.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1305</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    g:addEdge(a, c)
+    local neighbors = g:getNeighbors(a)
+    print(&quot;neighbors of a = &quot; .. #neighbors)
+end</code></pre></details></article><article class="item-row api-row" id="method-getnodecount"><div class="item-row-main"><h3>getNodeCount</h3><pre class="inline-signature">LGraph:getNodeCount() -&gt; integer</pre><p>Returns the number of nodes in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1013</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:addNode()
+    g:addNode()
+    print(&quot;nodes = &quot; .. g:getNodeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getnodes"><div class="item-row-main"><h3>getNodes</h3><pre class="inline-signature">LGraph:getNodes() -&gt; LGraphNode[]</pre><p>Returns all nodes in this logistics graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:995</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:addNode(&quot;x&quot;)
+    g:addNode(&quot;y&quot;)
+    local nodes = g:getNodes()
+    print(&quot;node list = &quot; .. #nodes)
+end</code></pre></details></article><article class="item-row api-row" id="method-getreachable"><div class="item-row-main"><h3>getReachable</h3><pre class="inline-signature">LGraph:getReachable(from_ud: LGraphNode, max_dist: number?) -&gt; LGraphNode[]</pre><p>Returns nodes reachable from a start node within an optional maximum distance.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1283</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    local reachable = g:getReachable(a, 5.0)
+    print(&quot;reachable = &quot; .. #reachable)
+end</code></pre></details></article><article class="item-row api-row" id="method-getstats"><div class="item-row-main"><h3>getStats</h3><pre class="inline-signature">LGraph:getStats() -&gt; table</pre><p>Returns graph counts and aggregate supply-demand statistics.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1464</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:addNode()
+    g:addNode()
+    local stats = g:getStats()
+    print(&quot;nodes=&quot; .. stats.nodes .. &quot; edges=&quot; .. stats.edges .. &quot; items=&quot; .. stats.items)
+end</code></pre></details></article><article class="item-row api-row" id="method-hascycle"><div class="item-row-main"><h3>hasCycle</h3><pre class="inline-signature">LGraph:hasCycle() -&gt; boolean</pre><p>Returns whether this graph contains a cycle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1362</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    g:addEdge(b, a)
+    print(&quot;has cycle = &quot; .. tostring(g:hasCycle()))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasedge"><div class="item-row-main"><h3>hasEdge</h3><pre class="inline-signature">LGraph:hasEdge(edge_ud: LGraphEdge) -&gt; boolean</pre><p>Returns whether an edge handle still exists in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1067</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    local e = g:addEdge(a, b)
+    print(&quot;has edge = &quot; .. tostring(g:hasEdge(e)))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasitem"><div class="item-row-main"><h3>hasItem</h3><pre class="inline-signature">LGraph:hasItem(item_ud: LGraphItem) -&gt; boolean</pre><p>Returns whether an item handle still exists in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1159</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local item = g:createItem()
+    print(&quot;has item = &quot; .. tostring(g:hasItem(item)))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasnode"><div class="item-row-main"><h3>hasNode</h3><pre class="inline-signature">LGraph:hasNode(node_ud: LGraphNode) -&gt; boolean</pre><p>Returns whether a node handle still exists in this graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:988</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode()
+    print(&quot;has node = &quot; .. tostring(g:hasNode(n)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isbipartite"><div class="item-row-main"><h3>isBipartite</h3><pre class="inline-signature">LGraph:isBipartite() -&gt; boolean</pre><p>Returns whether this graph is bipartite.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1412</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a = g:addNode()
+    local b = g:addNode()
+    g:addEdge(a, b)
+    print(&quot;bipartite = &quot; .. tostring(g:isBipartite()))
+end</code></pre></details></article><article class="item-row api-row" id="method-mst"><div class="item-row-main"><h3>mst</h3><pre class="inline-signature">LGraph:mst() -&gt; integer[]</pre><p>Computes a minimum spanning tree using Kruskal and returns edge ids.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1390</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    g:addEdge(b, c)
+    g:addEdge(a, c)
+    local tree = g:mst()
+    print(&quot;MST edges = &quot; .. #tree)
+end</code></pre></details></article><article class="item-row api-row" id="method-on"><div class="item-row-main"><h3>on</h3><pre class="inline-signature">LGraph:on(event_name: string, func: function)</pre><p>Registers a callback for a named graph event generated during simulation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1493</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:on(&quot;itemEnter&quot;, function(item, node)
+        print(&quot;item arrived at node&quot;)
+    end)
+    print(&quot;callback registered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-processdemand"><div class="item-row-main"><h3>processDemand</h3><pre class="inline-signature">LGraph:processDemand()</pre><p>Processes graph supply and demand once and dispatches generated callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1446</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:processDemand()
+    print(&quot;demand processed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeedge"><div class="item-row-main"><h3>removeEdge</h3><pre class="inline-signature">LGraph:removeEdge(edge_ud: LGraphEdge) -&gt; boolean</pre><p>Removes an edge by handle on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1059</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    local e = g:addEdge(a, b)
+    local ok = g:removeEdge(e)
+    print(&quot;removed edge = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removeitem"><div class="item-row-main"><h3>removeItem</h3><pre class="inline-signature">LGraph:removeItem(item_ud: LGraphItem) -&gt; boolean</pre><p>Removes an item from this logistics graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1151</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local item = g:createItem(&quot;scrap&quot;)
+    local ok = g:removeItem(item)
+    print(&quot;removed item = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-removenode"><div class="item-row-main"><h3>removeNode</h3><pre class="inline-signature">LGraph:removeNode(node_ud: LGraphNode) -&gt; boolean</pre><p>Removes a node and graph links associated with it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:974</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local n = g:addNode()
+    local ok = g:removeNode(n)
+    print(&quot;removed node = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-senditem"><div class="item-row-main"><h3>sendItem</h3><pre class="inline-signature">LGraph:sendItem(item_ud: LGraphItem, edge_ud: LGraphEdge)</pre><p>Starts moving an item along an edge.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1191</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    local e, item = g:addEdge(a, b), g:createItem(&quot;package&quot;)
+    g:addItem(item, a)
+    g:sendItem(item, e)
+    print(&quot;item sent along edge&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-step"><div class="item-row-main"><h3>step</h3><pre class="inline-signature">LGraph:step()</pre><p>Runs one discrete graph simulation step and dispatches generated callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1212</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:step()
+    print(&quot;stepped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-subgraph"><div class="item-row-main"><h3>subgraph</h3><pre class="inline-signature">LGraph:subgraph(nodes: table) -&gt; LGraph</pre><p>Creates a new graph containing a subset of nodes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1346</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b = g:addNode(), g:addNode()
+    g:addNode()
+    local sub = g:subgraph({a, b})
+    print(&quot;subgraph nodes = &quot; .. sub:getNodeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-tickparallel"><div class="item-row-main"><h3>tickParallel</h3><pre class="inline-signature">LGraph:tickParallel(dt: number)</pre><p>Advances graph simulation through the parallel update path and dispatches generated callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1220</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:tickParallel(0.016)
+    print(&quot;tick parallel done&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-topologicalsort"><div class="item-row-main"><h3>topologicalSort</h3><pre class="inline-signature">LGraph:topologicalSort() -&gt; LGraphNode[]</pre><p>Returns nodes in topological order when the graph is acyclic.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1368</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    local a, b, c = g:addNode(), g:addNode(), g:addNode()
+    g:addEdge(a, b)
+    g:addEdge(b, c)
+    local sorted = g:topologicalSort()
+    print(&quot;topo sort = &quot; .. tostring(sorted ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LGraph:type() -&gt; string</pre><p>Returns the Lua-visible type name for this graph handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1573</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    print(&quot;type = &quot; .. g:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LGraph:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this graph handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1578</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    print(&quot;is Graph = &quot; .. tostring(g:typeOf(&quot;LGraph&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LGraph:update(dt: number)</pre><p>Advances graph simulation by delta time and dispatches generated callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/flownet_api.rs:1205</span></div><details class="example-block"><summary>Example · Exact example · flownet.lua</summary><pre><code>do
+    local g = lurek.graph.newGraph()
+    g:update(0.016)
+    print(&quot;updated&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

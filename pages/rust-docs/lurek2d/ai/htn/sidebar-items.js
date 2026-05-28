@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HTNTask"],"struct":["HTNDomain","HTNMethod","HTNPlanner"],"type":["WorldState"]};

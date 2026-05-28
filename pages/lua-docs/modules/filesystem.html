@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.filesystem - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a class="active" href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.filesystem</h1>
+  <p>`lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua. - Registers `lurek.filesystem.*` functions and types via `register()`. - `LuaFileData`: userdata type exposed to Lua. - `LuaFileHandle`: userdata type exposed to Lua. - `LuaZipMount`: userdata type exposed to Lua. - Bridges 68 Lua-callable methods via `mlua`. - See `docs/specs/filesystem.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>44 functions</span><span>3 classes</span><span>src/lua_api/filesystem_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 67</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.filesystem.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-append"><div class="item-row-main"><h3>append</h3><pre class="inline-signature">lurek.filesystem.append(path: string, data: string)</pre><p>Appends UTF-8 text to a GameFS file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/test_write.txt&quot;
+    lurek.filesystem.append(path, &quot;\nline 2&quot;)
+    print(&quot;appended to &quot; .. path)
+end</code></pre></details></article><article class="item-row api-row" id="fn-copy"><div class="item-row-main"><h3>copy</h3><pre class="inline-signature">lurek.filesystem.copy(src: string, dst: string)</pre><p>Copies one GameFS file to another path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:672</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_write.txt&quot;, &quot;copy source&quot;)
+    local ok = lurek.filesystem.copy(&quot;save/test_write.txt&quot;, &quot;save/test_copy.txt&quot;)
+    print(&quot;copy ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-createdirectory"><div class="item-row-main"><h3>createDirectory</h3><pre class="inline-signature">lurek.filesystem.createDirectory(path: string)</pre><p>Creates a GameFS directory and any missing parents.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:438</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ok = lurek.filesystem.createDirectory(&quot;save/new_dir&quot;)
+    print(&quot;mkdir ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-createtempfile"><div class="item-row-main"><h3>createTempFile</h3><pre class="inline-signature">lurek.filesystem.createTempFile(prefix: string?) -&gt; string</pre><p>Creates a temporary file through GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:768</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local tmp = lurek.filesystem.createTempFile(&quot;test_&quot;)
+    print(&quot;temp file = &quot; .. tmp)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exists"><div class="item-row-main"><h3>exists</h3><pre class="inline-signature">lurek.filesystem.exists(path: string) -&gt; boolean</pre><p>Returns whether a path exists in GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/options_exists.json&quot;
+    lurek.filesystem.write(path, &quot;{\&quot;ok\&quot;:true}&quot;)
+    local found = lurek.filesystem.exists(path)
+    print(path .. &quot; exists = &quot; .. tostring(found))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdirectoryitems"><div class="item-row-main"><h3>getDirectoryItems</h3><pre class="inline-signature">lurek.filesystem.getDirectoryItems(path: string) -&gt; string[]</pre><p>Lists immediate entries in a GameFS directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:407</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local items = lurek.filesystem.getDirectoryItems(&quot;save&quot;)
+    print(&quot;save/ has &quot; .. #items .. &quot; items&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getidentity"><div class="item-row-main"><h3>getIdentity</h3><pre class="inline-signature">lurek.filesystem.getIdentity() -&gt; string</pre><p>Returns the current filesystem identity string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:528</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local id = lurek.filesystem.getIdentity()
+    print(&quot;identity = &quot; .. id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getinfo"><div class="item-row-main"><h3>getInfo</h3><pre class="inline-signature">lurek.filesystem.getInfo(path: string) -&gt; table</pre><p>Returns file metadata for a GameFS path when available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:466</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/info.txt&quot;
+    lurek.filesystem.write(path, &quot;info sample&quot;)
+    local info = lurek.filesystem.getInfo(path)
+    if info then
+        print(&quot;type=&quot; .. info.type .. &quot; size=&quot; .. info.size)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsavedirectory"><div class="item-row-main"><h3>getSaveDirectory</h3><pre class="inline-signature">lurek.filesystem.getSaveDirectory() -&gt; string</pre><p>Returns the save directory path used by GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:498</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local save = lurek.filesystem.getSaveDirectory()
+    print(&quot;save dir = &quot; .. save)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsource"><div class="item-row-main"><h3>getSource</h3><pre class="inline-signature">lurek.filesystem.getSource() -&gt; string</pre><p>Returns the GameFS source root string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:490</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local src = lurek.filesystem.getSource()
+    print(&quot;source = &quot; .. src)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getuserdirectory"><div class="item-row-main"><h3>getUserDirectory</h3><pre class="inline-signature">lurek.filesystem.getUserDirectory() -&gt; string</pre><p>Returns the current user&#x27;s directory path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local home = lurek.filesystem.getUserDirectory()
+    print(&quot;home = &quot; .. home)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getworkingdirectory"><div class="item-row-main"><h3>getWorkingDirectory</h3><pre class="inline-signature">lurek.filesystem.getWorkingDirectory() -&gt; string</pre><p>Returns the process working directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:511</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local cwd = lurek.filesystem.getWorkingDirectory()
+    print(&quot;cwd = &quot; .. cwd)
+end</code></pre></details></article><article class="item-row api-row" id="fn-glob"><div class="item-row-main"><h3>glob</h3><pre class="inline-signature">lurek.filesystem.glob(pattern: string) -&gt; string[]</pre><p>Returns GameFS paths matching a glob pattern.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:710</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/glob_a.txt&quot;, &quot;A&quot;)
+    lurek.filesystem.write(&quot;save/glob_b.txt&quot;, &quot;B&quot;)
+    local matches = lurek.filesystem.glob(&quot;save/*.txt&quot;)
+    print(&quot;glob matches: &quot; .. #matches)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isdirectory"><div class="item-row-main"><h3>isDirectory</h3><pre class="inline-signature">lurek.filesystem.isDirectory(path: string) -&gt; boolean</pre><p>Returns whether a GameFS path is a directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:430</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save&quot;
+    print(&quot;is dir = &quot; .. tostring(lurek.filesystem.isDirectory(path)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isfile"><div class="item-row-main"><h3>isFile</h3><pre class="inline-signature">lurek.filesystem.isFile(path: string) -&gt; boolean</pre><p>Returns whether a GameFS path is a regular file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:421</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/is_file.txt&quot;
+    lurek.filesystem.write(path, &quot;hello&quot;)
+    print(&quot;is file = &quot; .. tostring(lurek.filesystem.isFile(path)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lines"><div class="item-row-main"><h3>lines</h3><pre class="inline-signature">lurek.filesystem.lines(path: string) -&gt; function</pre><p>Creates an iterator function over lines in a text file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:548</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/test_write.txt&quot;
+    lurek.filesystem.write(path, &quot;line1\nline2\nline3&quot;)
+    local count = 0
+    for _ in lurek.filesystem.lines(path) do count = count + 1 end
+    print(&quot;lines: &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-listrecursive"><div class="item-row-main"><h3>listRecursive</h3><pre class="inline-signature">lurek.filesystem.listRecursive(path: string) -&gt; string[]</pre><p>Lists all paths under a GameFS directory recursively.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:726</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local files = lurek.filesystem.listRecursive(&quot;save&quot;)
+    print(&quot;recursive: &quot; .. #files .. &quot; files&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">lurek.filesystem.load(path: string) -&gt; function</pre><p>Loads a Lua chunk from GameFS and returns it as a Lua function.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:637</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/hello.lua&quot;
+    lurek.filesystem.write(path, &quot;return &#x27;hello from save&#x27;\n&quot;)
+    local chunk = lurek.filesystem.load(path)
+    print(&quot;loaded chunk type = &quot; .. type(chunk))
+end</code></pre></details></article><article class="item-row api-row" id="fn-mkdir"><div class="item-row-main"><h3>mkdir</h3><pre class="inline-signature">lurek.filesystem.mkdir(path: string)</pre><p>Creates a directory under the GameFS base directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:782</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ok = lurek.filesystem.mkdir(&quot;save/another_dir&quot;)
+    print(&quot;mkdir ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-mount"><div class="item-row-main"><h3>mount</h3><pre class="inline-signature">lurek.filesystem.mount(src: string, mp: string) -&gt; boolean</pre><p>Mounts an external source path at a GameFS mount point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:613</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ok = lurek.filesystem.mount(&quot;assets&quot;, &quot;game_assets&quot;)
+    print(&quot;mount ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-mountzip"><div class="item-row-main"><h3>mountZip</h3><pre class="inline-signature">lurek.filesystem.mountZip(archive_path: string, prefix: string) -&gt; LZipMount</pre><p>Opens a ZIP archive and exposes it through a virtual prefix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:216</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local zip = lurek.filesystem.mountZip(&quot;content/examples/assets/data/sample_data.zip&quot;, &quot;data&quot;)
+    print(&quot;zip prefix = &quot; .. zip:prefix())
+end</code></pre></details></article><article class="item-row api-row" id="fn-move"><div class="item-row-main"><h3>move</h3><pre class="inline-signature">lurek.filesystem.move(src: string, dst: string)</pre><p>Moves or renames one GameFS file to another path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:686</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_copy.txt&quot;, &quot;move source&quot;)
+    local ok = lurek.filesystem.move(&quot;save/test_copy.txt&quot;, &quot;save/test_moved.txt&quot;)
+    print(&quot;move ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfiledata"><div class="item-row-main"><h3>newFileData</h3><pre class="inline-signature">lurek.filesystem.newFileData(path: string) -&gt; LFileData</pre><p>Loads a file into an immutable file data handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:654</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_handle.txt&quot;, &quot;hello from handle&quot;)
+    local fd = lurek.filesystem.newFileData(&quot;save/test_handle.txt&quot;)
+    print(&quot;filedata size = &quot; .. fd:getSize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-openfile"><div class="item-row-main"><h3>openFile</h3><pre class="inline-signature">lurek.filesystem.openFile(path: string, mode: string) -&gt; LFileHandle</pre><p>Opens a GameFS file handle in a requested mode.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:389</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local fh = lurek.filesystem.openFile(&quot;save/test_handle.txt&quot;, &quot;w&quot;)
+    fh:write(&quot;hello from handle&quot;)
+    fh:close()
+    print(&quot;file handle write done&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pollasync"><div class="item-row-main"><h3>pollAsync</h3><pre class="inline-signature">lurek.filesystem.pollAsync(handle_id: integer) -&gt; string</pre><p>Polls an asynchronous file load request.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:579</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_handle.txt&quot;, &quot;hello from handle&quot;)
+    local ticket = lurek.filesystem.readAsync(&quot;save/test_handle.txt&quot;)
+    local result = lurek.filesystem.pollAsync(ticket)
+    print(&quot;poll result = &quot; .. tostring(result))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pollasyncwrite"><div class="item-row-main"><h3>pollAsyncWrite</h3><pre class="inline-signature">lurek.filesystem.pollAsyncWrite(handle_id: integer) -&gt; string</pre><p>Polls an asynchronous file write request.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:603</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ticket = lurek.filesystem.writeAsync(&quot;save/async_out.txt&quot;, &quot;data&quot;)
+    local result = lurek.filesystem.pollAsyncWrite(ticket)
+    print(&quot;write poll = &quot; .. tostring(result))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pollwatchers"><div class="item-row-main"><h3>pollWatchers</h3><pre class="inline-signature">lurek.filesystem.pollWatchers() -&gt; string[]</pre><p>Polls watched paths and returns paths that changed since the previous poll.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.watchPath(&quot;save&quot;)
+    local changed = lurek.filesystem.pollWatchers()
+    print(&quot;changed paths: &quot; .. #changed)
+    lurek.filesystem.unwatchPath(&quot;save&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-read"><div class="item-row-main"><h3>read</h3><pre class="inline-signature">lurek.filesystem.read(path: string) -&gt; string</pre><p>Reads a UTF-8 text file from GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:266</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/read_sample.txt&quot;
+    lurek.filesystem.write(path, &quot;read me&quot;)
+    local contents = lurek.filesystem.read(path)
+    print(&quot;read &quot; .. #contents .. &quot; bytes&quot;)
+    print(&quot;contents = &quot; .. contents)
+end</code></pre></details></article><article class="item-row api-row" id="fn-readasync"><div class="item-row-main"><h3>readAsync</h3><pre class="inline-signature">lurek.filesystem.readAsync(path: string) -&gt; integer</pre><p>Starts an asynchronous file load request.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:566</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_handle.txt&quot;, &quot;hello from handle&quot;)
+    local ticket = lurek.filesystem.readAsync(&quot;save/test_handle.txt&quot;)
+    print(&quot;async read ticket = &quot; .. ticket)
+end</code></pre></details></article><article class="item-row api-row" id="fn-readbytes"><div class="item-row-main"><h3>readBytes</h3><pre class="inline-signature">lurek.filesystem.readBytes(path: string) -&gt; string</pre><p>Reads a binary file from GameFS and returns the bytes as a Lua string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:333</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_handle.txt&quot;, &quot;hello from handle&quot;)
+    local bytes = lurek.filesystem.readBytes(&quot;save/test_handle.txt&quot;)
+    print(&quot;binary read &quot; .. #bytes .. &quot; bytes&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-readjson"><div class="item-row-main"><h3>readJson</h3><pre class="inline-signature">lurek.filesystem.readJson(path: string) -&gt; string</pre><p>Reads a JSON document as text from GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:292</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/options.json&quot;
+    lurek.filesystem.writeJson(path, &#x27;{&quot;name&quot;:&quot;test&quot;,&quot;value&quot;:42}&#x27;)
+    local data = lurek.filesystem.readJson(path)
+    print(&quot;readJson type = &quot; .. type(data))
+    print(&quot;json bytes = &quot; .. #data)
+end</code></pre></details></article><article class="item-row api-row" id="fn-readorwritejson"><div class="item-row-main"><h3>readOrWriteJson</h3><pre class="inline-signature">lurek.filesystem.readOrWriteJson(path: string, default_json: string) -&gt; string</pre><p>Reads a JSON file or writes and returns default JSON when the file is absent.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/settings.json&quot;
+    local data = lurek.filesystem.readOrWriteJson(path, &#x27;{&quot;volume&quot;:80,&quot;fullscreen&quot;:false}&#x27;)
+    print(&quot;settings json = &quot; .. data)
+    print(&quot;settings exists = &quot; .. tostring(lurek.filesystem.exists(path)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">lurek.filesystem.remove(path: string)</pre><p>Removes a GameFS file or supported path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:451</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/test_moved.txt&quot;, &quot;remove source&quot;)
+    local ok = lurek.filesystem.remove(&quot;save/test_moved.txt&quot;)
+    print(&quot;remove ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-removedir"><div class="item-row-main"><h3>removeDir</h3><pre class="inline-signature">lurek.filesystem.removeDir(path: string)</pre><p>Removes a GameFS directory by its path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:699</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.mkdir(&quot;save/another_dir&quot;)
+    local ok = lurek.filesystem.removeDir(&quot;save/another_dir&quot;)
+    print(&quot;removeDir ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setidentity"><div class="item-row-main"><h3>setIdentity</h3><pre class="inline-signature">lurek.filesystem.setIdentity(name: string)</pre><p>Sets the filesystem identity string used by save paths.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:536</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.setIdentity(&quot;my_game&quot;)
+    print(&quot;identity set to &#x27;my_game&#x27;&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-stat"><div class="item-row-main"><h3>stat</h3><pre class="inline-signature">lurek.filesystem.stat(path: string) -&gt; table</pre><p>Returns size and file/directory flags for a GameFS path.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:749</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/stat.txt&quot;
+    lurek.filesystem.write(path, &quot;stat sample&quot;)
+    local st = lurek.filesystem.stat(path)
+    if st then
+        print(&quot;stat size=&quot; .. st.size .. &quot; isFile=&quot; .. tostring(st.isFile))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-toabsolutepath"><div class="item-row-main"><h3>toAbsolutePath</h3><pre class="inline-signature">lurek.filesystem.toAbsolutePath(path: string) -&gt; string</pre><p>Resolves a GameFS-relative path against the filesystem base directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:795</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local abs = lurek.filesystem.toAbsolutePath(&quot;content/examples/assets/data/sample_config.toml&quot;)
+    print(&quot;absolute = &quot; .. abs)
+end</code></pre></details></article><article class="item-row api-row" id="fn-unmount"><div class="item-row-main"><h3>unmount</h3><pre class="inline-signature">lurek.filesystem.unmount(mp: string) -&gt; boolean</pre><p>Removes a GameFS mount point by its name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:628</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ok = lurek.filesystem.unmount(&quot;game_assets&quot;)
+    print(&quot;unmount ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-unwatchpath"><div class="item-row-main"><h3>unwatchPath</h3><pre class="inline-signature">lurek.filesystem.unwatchPath(path: string)</pre><p>Removes a path from the module-local file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:239</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.unwatchPath(&quot;save&quot;)
+    print(&quot;unwatched save/&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-watchpath"><div class="item-row-main"><h3>watchPath</h3><pre class="inline-signature">lurek.filesystem.watchPath(path: string)</pre><p>Adds a path to the module-local file watcher.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.watchPath(&quot;save&quot;)
+    print(&quot;watching save/&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-write"><div class="item-row-main"><h3>write</h3><pre class="inline-signature">lurek.filesystem.write(path: string, data: string)</pre><p>Writes a UTF-8 text file through GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:277</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/test_write.txt&quot;
+    lurek.filesystem.write(path, &quot;hello world&quot;)
+    print(&quot;wrote to &quot; .. path)
+end</code></pre></details></article><article class="item-row api-row" id="fn-writeasync"><div class="item-row-main"><h3>writeAsync</h3><pre class="inline-signature">lurek.filesystem.writeAsync(path: string, data: string) -&gt; integer</pre><p>Starts an asynchronous file write request.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:589</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local ticket = lurek.filesystem.writeAsync(&quot;save/async_out.txt&quot;, &quot;async data&quot;)
+    print(&quot;async write ticket = &quot; .. ticket)
+end</code></pre></details></article><article class="item-row api-row" id="fn-writebytes"><div class="item-row-main"><h3>writeBytes</h3><pre class="inline-signature">lurek.filesystem.writeBytes(path: string, data: string)</pre><p>Writes binary data through GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:349</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    lurek.filesystem.writeBytes(&quot;save/binary.bin&quot;, &quot;\x00\x01\x02\x03&quot;)
+    print(&quot;wrote 4 binary bytes&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-writejson"><div class="item-row-main"><h3>writeJson</h3><pre class="inline-signature">lurek.filesystem.writeJson(path: string, json: string)</pre><p>Writes JSON text through the GameFS layer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/filesystem_api.rs:303</span></div><details class="example-block"><summary>Example · Exact example · filesystem.lua</summary><pre><code>do
+    local path = &quot;save/test_json.json&quot;
+    lurek.filesystem.writeJson(path, &#x27;{&quot;name&quot;:&quot;test&quot;,&quot;value&quot;:42}&#x27;)
+    print(&quot;wrote JSON to &quot; .. path)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFileData.html">LFileData</a></h3><p>Lua-side handle for immutable file bytes and their source path.</p></div><div class="item-row-meta"><span>5 methods</span><span>module filesystem</span></div><div class="card-note">Example: filesystem.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFileHandle.html">LFileHandle</a></h3><p>Lua-side handle for a mutable file stream opened through GameFS.</p></div><div class="item-row-meta"><span>12 methods</span><span>module filesystem</span></div><div class="card-note">Example: filesystem.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LZipMount.html">LZipMount</a></h3><p>Lua-side handle for a mounted ZIP archive view.</p></div><div class="item-row-meta"><span>6 methods</span><span>module filesystem</span></div><div class="card-note">Example: filesystem.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

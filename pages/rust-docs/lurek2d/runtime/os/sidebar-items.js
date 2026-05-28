@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PowerState"],"fn":["get_memory_size","get_os_name","get_power_info","get_preferred_locales","get_processor_count","open_url"]};

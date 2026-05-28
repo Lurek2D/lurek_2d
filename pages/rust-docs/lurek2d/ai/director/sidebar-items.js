@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DirectorPhase"],"struct":["AIDirector","DirectorConfig"]};

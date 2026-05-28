@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CompressFormat"],"fn":["compress","compress_chunks","compress_stream","decompress","decompress_chunks","decompress_stream"]};

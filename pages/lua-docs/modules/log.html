@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.log - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.log</h1>
+  <p>`lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch. - Registers `lurek.log.*` functions and types via `register()`. - Bridges 18 Lua-callable methods via `mlua`. - See `docs/specs/log.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>18 functions</span><span>0 classes</span><span>src/lua_api/log_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 18</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.log.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-addsink"><div class="item-row-main"><h3>addSink</h3><pre class="inline-signature">lurek.log.addSink(config: table) -&gt; integer</pre><p>Adds a memory, file, rotating, or callback sink from a config table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:274</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local id = lurek.log.addSink({type = &quot;memory&quot;, level = &quot;debug&quot;, capacity = 10})
+    print(&quot;memory sink id = &quot; .. id)
+    print(&quot;sink count = &quot; .. #lurek.log.listSinks())
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearsinks"><div class="item-row-main"><h3>clearSinks</h3><pre class="inline-signature">lurek.log.clearSinks()</pre><p>Removes all sinks and releases callback registry keys.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:358</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.addSink({type = &quot;memory&quot;, level = &quot;info&quot;, capacity = 8})
+    lurek.log.addSink({type = &quot;memory&quot;, level = &quot;warn&quot;, capacity = 8})
+    lurek.log.clearSinks()
+    local sinks = lurek.log.listSinks()
+    print(&quot;sinks after clear = &quot; .. #sinks)
+end</code></pre></details></article><article class="item-row api-row" id="fn-debug"><div class="item-row-main"><h3>debug</h3><pre class="inline-signature">lurek.log.debug(message: string, tag: string?)</pre><p>Logs a debug message with an optional tag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:154</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.debug(&quot;tick completed&quot;)
+    print(&quot;debug logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-debug-fields"><div class="item-row-main"><h3>debug_fields</h3><pre class="inline-signature">lurek.log.debug_fields(message: string, fields_tbl: table)</pre><p>Logs a debug message with structured fields.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:493</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.debug_fields(&quot;frame stats&quot;, {fps = 60, dt = 0.016})
+    print(&quot;debug_fields logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-error"><div class="item-row-main"><h3>error</h3><pre class="inline-signature">lurek.log.error(message: string, tag: string?)</pre><p>Logs an error message with an optional tag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:199</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.error(&quot;failed to save&quot;)
+    lurek.log.error(&quot;shader compile failed&quot;, &quot;gpu&quot;)
+    print(&quot;error logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-error-fields"><div class="item-row-main"><h3>error_fields</h3><pre class="inline-signature">lurek.log.error_fields(message: string, fields_tbl: table)</pre><p>Logs an error message with structured fields.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:565</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.error_fields(&quot;save failed&quot;, {path = &quot;slot1.sav&quot;, reason = &quot;disk full&quot;})
+    print(&quot;error_fields logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-flushfile"><div class="item-row-main"><h3>flushFile</h3><pre class="inline-signature">lurek.log.flushFile(id: integer)</pre><p>Flushes a file-backed sink by id when it exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:451</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local id = lurek.log.addSink({type = &quot;file&quot;, level = &quot;info&quot;, path = &quot;logs/flush_test.log&quot;})
+    lurek.log.info(&quot;flush me&quot;)
+    lurek.log.flushFile(id)
+    print(&quot;file sink id = &quot; .. id)
+    print(&quot;file flushed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlevel"><div class="item-row-main"><h3>getLevel</h3><pre class="inline-signature">lurek.log.getLevel() -&gt; string</pre><p>Returns the global log level string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local prev = lurek.log.getLevel()
+    lurek.log.setLevel(&quot;warn&quot;)
+    print(&quot;level was &quot; .. prev .. &quot; now &quot; .. lurek.log.getLevel())
+    lurek.log.setLevel(prev)
+end</code></pre></details></article><article class="item-row api-row" id="fn-info"><div class="item-row-main"><h3>info</h3><pre class="inline-signature">lurek.log.info(message: string, tag: string?)</pre><p>Logs an info message with an optional tag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:169</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.info(&quot;game started&quot;)
+    lurek.log.info(&quot;asset loaded&quot;, &quot;assets&quot;)
+    print(&quot;info logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-info-fields"><div class="item-row-main"><h3>info_fields</h3><pre class="inline-signature">lurek.log.info_fields(message: string, fields_tbl: table)</pre><p>Logs an info message with structured fields.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:517</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.info_fields(&quot;player join&quot;, {name = &quot;Alice&quot;, id = 42})
+    print(&quot;info_fields logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-listsinks"><div class="item-row-main"><h3>listSinks</h3><pre class="inline-signature">lurek.log.listSinks() -&gt; table</pre><p>Returns metadata for all registered sinks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:376</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.clearSinks()
+    lurek.log.addSink({type = &quot;memory&quot;, level = &quot;info&quot;, capacity = 8})
+    lurek.log.addSink({type = &quot;memory&quot;, level = &quot;warn&quot;, capacity = 8})
+    local sinks = lurek.log.listSinks()
+    print(&quot;sink count = &quot; .. #sinks)
+    print(&quot;first sink type = &quot; .. sinks[1].type)
+end</code></pre></details></article><article class="item-row api-row" id="fn-print"><div class="item-row-main"><h3>print</h3><pre class="inline-signature">lurek.log.print(level: string, message: string, tag: string?)</pre><p>Logs a message at a runtime-selected level with an optional tag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:215</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.print(&quot;info&quot;, &quot;general purpose log&quot;)
+    lurek.log.print(&quot;warn&quot;, &quot;something suspicious&quot;, &quot;system&quot;)
+    print(&quot;print logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-readmemory"><div class="item-row-main"><h3>readMemory</h3><pre class="inline-signature">lurek.log.readMemory(id: integer, drain: boolean?) -&gt; table</pre><p>Reads entries from a memory sink and optionally drains them.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:407</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local id = lurek.log.addSink({type = &quot;memory&quot;, level = &quot;debug&quot;, capacity = 50})
+    lurek.log.info(&quot;test message&quot;)
+    local entries = lurek.log.readMemory(id, false)
+    print(&quot;memory entries = &quot; .. #entries)
+    print(&quot;first entry message = &quot; .. entries[1].message)
+end</code></pre></details></article><article class="item-row api-row" id="fn-removesink"><div class="item-row-main"><h3>removeSink</h3><pre class="inline-signature">lurek.log.removeSink(id: integer) -&gt; boolean</pre><p>Removes a sink by id and releases any callback registry key.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:342</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local id = lurek.log.addSink({type = &quot;memory&quot;, level = &quot;debug&quot;, capacity = 10})
+    local ok = lurek.log.removeSink(id)
+    print(&quot;removed = &quot; .. tostring(ok))
+    print(&quot;sink count = &quot; .. #lurek.log.listSinks())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlevel"><div class="item-row-main"><h3>setLevel</h3><pre class="inline-signature">lurek.log.setLevel(level: string)</pre><p>Sets the global log level. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    local previous = lurek.log.getLevel()
+    lurek.log.setLevel(&quot;debug&quot;)
+    print(&quot;level set to &quot; .. lurek.log.getLevel())
+    lurek.log.setLevel(previous)
+end</code></pre></details></article><article class="item-row api-row" id="fn-struct"><div class="item-row-main"><h3>struct</h3><pre class="inline-signature">lurek.log.struct(level_str: string, message: string, fields_tbl: table)</pre><p>Logs a structured message at a runtime-selected level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:467</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.struct(&quot;info&quot;, &quot;combat hit&quot;, {attacker = &quot;goblin&quot;, target = &quot;player&quot;, damage = 15})
+    print(&quot;struct logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-warn"><div class="item-row-main"><h3>warn</h3><pre class="inline-signature">lurek.log.warn(message: string, tag: string?)</pre><p>Logs a warning message with an optional tag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:184</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.warn(&quot;low memory&quot;)
+    lurek.log.warn(&quot;texture missing&quot;, &quot;render&quot;)
+    print(&quot;warn logged&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-warn-fields"><div class="item-row-main"><h3>warn_fields</h3><pre class="inline-signature">lurek.log.warn_fields(message: string, fields_tbl: table)</pre><p>Logs a warning message with structured fields.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/log_api.rs:541</span></div><details class="example-block"><summary>Example · Exact example · log.lua</summary><pre><code>do
+    lurek.log.warn_fields(&quot;memory usage&quot;, {used_mb = 512, limit_mb = 1024})
+    print(&quot;warn_fields logged&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

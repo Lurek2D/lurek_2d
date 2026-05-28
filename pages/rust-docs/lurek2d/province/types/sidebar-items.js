@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BorderPairFlags","BorderPairStyle","BorderTypeConfig","ProvinceId","ProvinceSnapshot","ProvinceStyle"],"type":["BorderType"]};

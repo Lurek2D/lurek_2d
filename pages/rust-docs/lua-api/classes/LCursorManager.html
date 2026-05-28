@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCursorManager - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LCursorManager</h1>
+  <p>Lua userdata that controls cursor appearance and system cursor selection.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/cursor.html">lurek.cursor</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setSystem(&quot;arrow&quot;)
+    print(&quot;LCursorManager:setSystem ok&quot;)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LCursorManager userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addrule"><div class="item-row-main"><h3>addRule</h3><pre class="inline-signature">LCursorManager:addRule(ctx: string, cursor_name: string)</pre><p>Add a context rule that maps a context to a system cursor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:62</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:addRule(&quot;gameplay&quot;, &quot;crosshair&quot;)
+    cm:setContext(&quot;gameplay&quot;)
+    print(&quot;LCursorManager:addRule ok&quot;)
+    print(&quot;context = &quot; .. cm:getContext())
+end</code></pre></details></article><article class="item-row api-row" id="method-disabletrail"><div class="item-row-main"><h3>disableTrail</h3><pre class="inline-signature">LCursorManager:disableTrail()</pre><p>Disable cursor trail for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:170</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:enableTrail(1.0, 1.0, 1.0, 0.5)
+    cm:disableTrail()
+    print(&quot;LCursorManager:disableTrail ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-disablezoom"><div class="item-row-main"><h3>disableZoom</h3><pre class="inline-signature">LCursorManager:disableZoom()</pre><p>Disable cursor zoom for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:186</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:enableZoom(1.5, 60)
+    cm:disableZoom()
+    print(&quot;LCursorManager:disableZoom ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-enablelinetrail"><div class="item-row-main"><h3>enableLineTrail</h3><pre class="inline-signature">LCursorManager:enableLineTrail(r: number, g: number, b: number, width: number)</pre><p>Enable cursor trail with line mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:158</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:enableLineTrail(0.0, 1.0, 1.0, 2.0)
+    print(&quot;LCursorManager:enableLineTrail ok&quot;)
+    print(&quot;locked = &quot; .. tostring(cm:isLocked()))
+end</code></pre></details></article><article class="item-row api-row" id="method-enabletrail"><div class="item-row-main"><h3>enableTrail</h3><pre class="inline-signature">LCursorManager:enableTrail(r: number, g: number, b: number, lifetime: number)</pre><p>Enable cursor trail with fade points mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:143</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:enableTrail(1.0, 0.5, 0.0, 0.8)
+    print(&quot;LCursorManager:enableTrail ok&quot;)
+    print(&quot;visible = &quot; .. tostring(cm:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-enablezoom"><div class="item-row-main"><h3>enableZoom</h3><pre class="inline-signature">LCursorManager:enableZoom(magnification: number, radius: number)</pre><p>Enable zoom/magnifier at cursor position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:179</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:enableZoom(2.0, 80)
+    print(&quot;LCursorManager:enableZoom ok&quot;)
+    print(&quot;context = &quot; .. cm:getContext())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcontext"><div class="item-row-main"><h3>getContext</h3><pre class="inline-signature">LCursorManager:getContext() -&gt; string</pre><p>Get current context name for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setContext(&quot;menu&quot;)
+    print(&quot;LCursorManager:getContext=&quot; .. cm:getContext())
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LCursorManager:getPosition() -&gt; number</pre><p>Get cursor position for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:125</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    local x, y = cm:getPosition()
+    print(&quot;LCursorManager:getPosition x=&quot; .. x .. &quot; y=&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-islocked"><div class="item-row-main"><h3>isLocked</h3><pre class="inline-signature">LCursorManager:isLocked() -&gt; boolean</pre><p>Get cursor lock state for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:117</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setLocked(false)
+    print(&quot;LCursorManager:isLocked=&quot; .. tostring(cm:isLocked()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">LCursorManager:isVisible() -&gt; boolean</pre><p>Get cursor visibility for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:102</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setVisible(false)
+    print(&quot;LCursorManager:isVisible=&quot; .. tostring(cm:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-removerule"><div class="item-row-main"><h3>removeRule</h3><pre class="inline-signature">LCursorManager:removeRule(ctx: string)</pre><p>Remove a context rule for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:76</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:addRule(&quot;ui&quot;, &quot;hand&quot;)
+    cm:removeRule(&quot;ui&quot;)
+    print(&quot;LCursorManager:removeRule ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setanimated"><div class="item-row-main"><h3>setAnimated</h3><pre class="inline-signature">LCursorManager:setAnimated(cursor: LuaAnimatedCursor)</pre><p>Set the active cursor to an animated cursor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:44</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    local c = lurek.cursor.newAnimated(true)
+    cm:setAnimated(c)
+    print(&quot;LCursorManager:setAnimated ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcontext"><div class="item-row-main"><h3>setContext</h3><pre class="inline-signature">LCursorManager:setContext(ctx: string)</pre><p>Set the current context for context-sensitive switching.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:53</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setContext(&quot;gameplay&quot;)
+    print(&quot;LCursorManager:setContext=&quot; .. cm:getContext())
+end</code></pre></details></article><article class="item-row api-row" id="method-setcustom"><div class="item-row-main"><h3>setCustom</h3><pre class="inline-signature">LCursorManager:setCustom(cursor: LuaCustomCursor)</pre><p>Set the active cursor to a custom image cursor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:35</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    local c = lurek.cursor.newCustom(16, 16, 0, 0)
+    cm:setCustom(c)
+    print(&quot;LCursorManager:setCustom ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlocked"><div class="item-row-main"><h3>setLocked</h3><pre class="inline-signature">LCursorManager:setLocked(locked: boolean)</pre><p>Lock the cursor position using the system grab mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:109</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setLocked(true)
+    print(&quot;LCursorManager:setLocked=&quot; .. tostring(cm:isLocked()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setsystem"><div class="item-row-main"><h3>setSystem</h3><pre class="inline-signature">LCursorManager:setSystem(name: string)</pre><p>Set the active cursor to a system cursor by name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:25</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setSystem(&quot;arrow&quot;)
+    print(&quot;LCursorManager:setSystem ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setvisible"><div class="item-row-main"><h3>setVisible</h3><pre class="inline-signature">LCursorManager:setVisible(visible: boolean)</pre><p>Set cursor visibility for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:94</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:setVisible(true)
+    print(&quot;LCursorManager:setVisible=&quot; .. tostring(cm:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LCursorManager:update(x: number, y: number, dt: number)</pre><p>Update cursor state (call each frame).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/cursor_api.rs:86</span></div><details class="example-block"><summary>Example · Exact example · cursor.lua</summary><pre><code>do
+    local cm = lurek.cursor.newManager()
+    cm:update(320, 180, 0.016)
+    local x, y = cm:getPosition()
+    print(&quot;LCursorManager:update ok&quot;)
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

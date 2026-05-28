@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["quality_grade","quality_score"],"struct":["QualityReport","ValidationReport"]};

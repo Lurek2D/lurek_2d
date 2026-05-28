@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BiomeType"],"fn":["biome_map_to_rgba"],"struct":["BiomeClassifier","BiomeRules"]};

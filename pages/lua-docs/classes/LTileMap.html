@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTileMap - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a class="active" href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LTileMap</h1>
+  <p>Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/tilemap.html">lurek.tilemap</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
+    local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
+
+    map:addTileSet(terrain)
+    map:addTileSet(objects)
+    print(&quot;tileset count = &quot; .. map:getTileSetCount())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LTileMap userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addlayer"><div class="item-row-main"><h3>addLayer</h3><pre class="inline-signature">LTileMap:addLayer(name: string, w: integer, h: integer) -&gt; integer</pre><p>Creates a new tile layer with the given name and dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:339</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local ground = map:addLayer(&quot;ground&quot;, 50, 50)
+    print(&quot;ground layer idx = &quot; .. ground)
+end</code></pre></details></article><article class="item-row api-row" id="method-addtileset"><div class="item-row-main"><h3>addTileSet</h3><pre class="inline-signature">LTileMap:addTileSet(tileSet: LTileSet)</pre><p>Attaches a tileset to this map for tile rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
+    local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
+
+    map:addTileSet(terrain)
+    map:addTileSet(objects)
+    print(&quot;tileset count = &quot; .. map:getTileSetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-applyautotile"><div class="item-row-main"><h3>applyAutoTile</h3><pre class="inline-signature">LTileMap:applyAutoTile(layer: integer, typeName: string)</pre><p>Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:626</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+
+    sheet:applyToTileSet(ts, &quot;grass&quot;)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;terrain&quot;, 10, 10)
+    map:fill(layer, 1)
+    map:applyAutoTile(layer, &quot;grass&quot;)
+
+    local gid = map:getTile(layer, 5, 5)
+    print(&quot;4-bit auto-tile applied&quot;)
+    print(&quot;center tile after auto = &quot; .. gid)
+end</code></pre></details></article><article class="item-row api-row" id="method-applyautotile8"><div class="item-row-main"><h3>applyAutoTile8</h3><pre class="inline-signature">LTileMap:applyAutoTile8(layer: integer, typeName: string)</pre><p>Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:654</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
+
+    for i = 0, 255 do
+        ts:setAutoTileRule8(&quot;wall&quot;, i, i + 1)
+    end
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;walls&quot;, 8, 8)
+    map:setTile(layer, 3, 3, 1)
+    map:setTile(layer, 4, 3, 1)
+    map:setTile(layer, 3, 4, 1)
+    map:applyAutoTile8(layer, &quot;wall&quot;)
+
+    print(&quot;8-bit auto-tile applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-applyautotile8at"><div class="item-row-main"><h3>applyAutoTile8At</h3><pre class="inline-signature">LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string)</pre><p>Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:669</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+
+    sheet:applyToTileSet(ts, &quot;dirt&quot;)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;ground&quot;, 10, 10)
+    map:fill(layer, 1)
+    map:applyAutoTile8At(layer, 3, 3, &quot;dirt&quot;)
+    print(&quot;single cell 8-bit auto-tiled at 3,3&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-applyautotileat"><div class="item-row-main"><h3>applyAutoTileAt</h3><pre class="inline-signature">LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)</pre><p>Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:641</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+
+    sheet:applyToTileSet(ts, &quot;dirt&quot;)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;ground&quot;, 10, 10)
+    map:fill(layer, 1)
+    map:applyAutoTileAt(layer, 5, 5, &quot;dirt&quot;)
+    print(&quot;single cell auto-tiled at 5,5&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-checkentities"><div class="item-row-main"><h3>checkEntities</h3><pre class="inline-signature">LTileMap:checkEntities(layer: integer, entities: table)</pre><p>Checks a list of entities against registered tile-enter callbacks on a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:836</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;events&quot;, 10, 10)
+    map:setTile(layer, 2, 2, 3)
+    map:onTileEnter(3, function(entity, tx, ty) print(&quot;entered at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    local entities = {
+        { x = 64, y = 64 },
+        { x = 128, y = 128 },
+    }
+
+    map:checkEntities(layer, entities)
+    print(&quot;entities checked against tile events&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-cleartile"><div class="item-row-main"><h3>clearTile</h3><pre class="inline-signature">LTileMap:clearTile(layer: integer, x: integer, y: integer)</pre><p>Removes the tile at a specific grid position, setting it to empty (GID 0).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:474</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;main&quot;, 10, 10)
+    map:setTile(layer, 3, 4, 5)
+    map:clearTile(layer, 3, 4)
+    local gid = map:getTile(layer, 3, 4)
+    print(&quot;after clear = &quot; .. gid)
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LTileMap:drawToImage(tileSize: integer) -&gt; LImage</pre><p>Rasterizes the map into an image using the given tile size, returning an image handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:792</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(16, 16)
+    local layer = map:addLayer(&quot;simple&quot;, 8, 8)
+    map:fill(layer, 1)
+    local img = map:drawToImage(16)
+    print(&quot;image type = &quot; .. img:type())
+    print(&quot;drawn to image at tile size 16&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-fill"><div class="item-row-main"><h3>fill</h3><pre class="inline-signature">LTileMap:fill(layer: integer, gid: integer)</pre><p>Fills every cell of a layer with the given GID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:482</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;ground&quot;, 20, 20)
+    map:fill(layer, 3)
+    print(&quot;fill complete, sample = &quot; .. map:getTile(layer, 10, 10))
+    print(&quot;corner = &quot; .. map:getTile(layer, 1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-findtilesbygid"><div class="item-row-main"><h3>findTilesByGid</h3><pre class="inline-signature">LTileMap:findTilesByGid(layer: integer, gid: integer) -&gt; table</pre><p>Returns all positions on a layer that contain a specific GID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:519</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;main&quot;, 10, 10)
+
+    map:setTile(layer, 2, 3, 7)
+    map:setTile(layer, 5, 1, 7)
+    map:setTile(layer, 8, 9, 7)
+    map:setTile(layer, 4, 4, 2)
+
+    local positions = map:findTilesByGid(layer, 7)
+    print(&quot;found gid=7 count = &quot; .. #positions)
+    for _, pos in ipairs(positions) do
+        print(&quot;  x=&quot; .. pos.x .. &quot; y=&quot; .. pos.y)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-firetileexit"><div class="item-row-main"><h3>fireTileExit</h3><pre class="inline-signature">LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer)</pre><p>Manually fires the tile-exit callback for a specific GID and entity at a tile position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:907</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;events&quot;, 10, 10)
+    map:setTile(layer, 2, 2, 3)
+    map:onTileEnter(3, function(entity, tx, ty) print(&quot;entered at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    local entities = {
+        { x = 64, y = 64 },
+        { x = 128, y = 128 },
+    }
+
+    map:fireTileExit(3, entities[1], 2, 2)
+    print(&quot;tile exit fired&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-firetilestep"><div class="item-row-main"><h3>fireTileStep</h3><pre class="inline-signature">LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer)</pre><p>Manually fires the tile-step callback for a specific GID and entity at a tile position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:891</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;events&quot;, 10, 10)
+    map:setTile(layer, 2, 2, 3)
+    map:onTileEnter(3, function(entity, tx, ty) print(&quot;entered at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    local entities = {
+        { x = 64, y = 64 },
+        { x = 128, y = 128 },
+    }
+
+    map:fireTileStep(3, entities[1], 2, 2)
+    print(&quot;tile step fired&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getchunksize"><div class="item-row-main"><h3>getChunkSize</h3><pre class="inline-signature">LTileMap:getChunkSize() -&gt; integer</pre><p>Returns the chunk size used for internal tile storage.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    local cs = tm:getChunkSize()
+    print(&quot;chunk_size=&quot; .. cs)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayercolor"><div class="item-row-main"><h3>getLayerColor</h3><pre class="inline-signature">LTileMap:getLayerColor(idx: integer) -&gt; number</pre><p>Returns the tint color of a layer as four RGBA components.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:399</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;tinted&quot;, 10, 10)
+    map:setLayerColor(1, 0.8, 0.5, 0.5, 0.9)
+    local r, g, b, a = map:getLayerColor(1)
+    print(&quot;layer color = &quot; .. r .. &quot;, &quot; .. g .. &quot;, &quot; .. b .. &quot;, &quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayercount"><div class="item-row-main"><h3>getLayerCount</h3><pre class="inline-signature">LTileMap:getLayerCount() -&gt; integer</pre><p>Returns the total number of layers in this map.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:346</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;terrain&quot;, 40, 30)
+    print(&quot;layer count = &quot; .. map:getLayerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayername"><div class="item-row-main"><h3>getLayerName</h3><pre class="inline-signature">LTileMap:getLayerName(idx: integer) -&gt; string</pre><p>Returns the name of a layer by index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:353</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;terrain&quot;, 40, 30)
+    print(&quot;layer 1 = &quot; .. map:getLayerName(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayeroffset"><div class="item-row-main"><h3>getLayerOffset</h3><pre class="inline-signature">LTileMap:getLayerOffset(idx: integer) -&gt; number</pre><p>Returns the pixel offset of a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:420</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;shifted&quot;, 10, 10)
+    map:setLayerOffset(1, 16, 8)
+    local ox, oy = map:getLayerOffset(1)
+    print(&quot;offset = &quot; .. ox .. &quot;, &quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayerparallax"><div class="item-row-main"><h3>getLayerParallax</h3><pre class="inline-signature">LTileMap:getLayerParallax(idx: integer) -&gt; number</pre><p>Returns the parallax scroll factor of a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:441</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;background&quot;, 40, 30)
+    map:setLayerParallax(1, 0.5, 0.5)
+    local px, py = map:getLayerParallax(1)
+    print(&quot;bg parallax = &quot; .. px .. &quot;, &quot; .. py)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayervisible"><div class="item-row-main"><h3>getLayerVisible</h3><pre class="inline-signature">LTileMap:getLayerVisible(idx: integer) -&gt; boolean</pre><p>Returns whether a layer is currently visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:375</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;background&quot;, 20, 20)
+    print(&quot;layer 1 visible = &quot; .. tostring(map:getLayerVisible(1)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getorientation"><div class="item-row-main"><h3>getOrientation</h3><pre class="inline-signature">LTileMap:getOrientation() -&gt; string</pre><p>Returns the current map orientation as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:731</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;main&quot;, 10, 10)
+    print(&quot;default orientation = &quot; .. map:getOrientation())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettile"><div class="item-row-main"><h3>getTile</h3><pre class="inline-signature">LTileMap:getTile(layer: integer, x: integer, y: integer) -&gt; integer</pre><p>Returns the tile GID at a specific grid position on a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:466</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;main&quot;, 10, 10)
+    map:setTile(layer, 3, 4, 5)
+    local gid = map:getTile(layer, 3, 4)
+    print(&quot;tile at 3,4 = &quot; .. gid)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettiledimensions"><div class="item-row-main"><h3>getTileDimensions</h3><pre class="inline-signature">LTileMap:getTileDimensions() -&gt; integer</pre><p>Returns both tile width and height in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:603</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    local tw, th = tm:getTileDimensions()
+    print(&quot;tile_w=&quot; .. tw .. &quot; tile_h=&quot; .. th)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettileheight"><div class="item-row-main"><h3>getTileHeight</h3><pre class="inline-signature">LTileMap:getTileHeight() -&gt; integer</pre><p>Returns the height of a single tile in pixels for this map.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:596</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    local th2 = tm:getTileHeight()
+    print(&quot;tile_height=&quot; .. th2)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettileset"><div class="item-row-main"><h3>getTileSet</h3><pre class="inline-signature">LTileMap:getTileSet(idx: integer) -&gt; LTileSet</pre><p>Returns the tileset at the given index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
+    local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
+
+    map:addTileSet(terrain)
+    map:addTileSet(objects)
+    local ts1 = map:getTileSet(1)
+    print(&quot;tileset 1 first gid = &quot; .. ts1:getFirstGid())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettilesetcount"><div class="item-row-main"><h3>getTileSetCount</h3><pre class="inline-signature">LTileMap:getTileSetCount() -&gt; integer</pre><p>Returns how many tilesets are attached to this map.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:312</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local terrain = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
+    local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
+
+    map:addTileSet(terrain)
+    map:addTileSet(objects)
+    print(&quot;tileset count = &quot; .. map:getTileSetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettilewidth"><div class="item-row-main"><h3>getTileWidth</h3><pre class="inline-signature">LTileMap:getTileWidth() -&gt; integer</pre><p>Returns the width of a single tile in pixels for this map.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:590</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    local tw2 = tm:getTileWidth()
+    print(&quot;tile_width=&quot; .. tw2)
+end</code></pre></details></article><article class="item-row api-row" id="method-getviewport"><div class="item-row-main"><h3>getViewport</h3><pre class="inline-signature">LTileMap:getViewport() -&gt; number</pre><p>Returns the current viewport rectangle, or nils if none is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:554</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;ground&quot;, 100, 100)
+    map:setViewport(0, 0, 800, 600)
+    local vx, vy, vw, vh = map:getViewport()
+    print(&quot;viewport = &quot; .. vx .. &quot;,&quot; .. vy .. &quot; &quot; .. vw .. &quot;x&quot; .. vh)
+end</code></pre></details></article><article class="item-row api-row" id="method-issolid"><div class="item-row-main"><h3>isSolid</h3><pre class="inline-signature">LTileMap:isSolid(layer: integer, x: integer, y: integer) -&gt; boolean</pre><p>Checks whether the tile at a given position on a layer is solid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:619</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
+    ts:setSolid(1, true)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;collision&quot;, 10, 10)
+    map:setTile(layer, 3, 3, 1)
+    map:setTile(layer, 4, 3, 1)
+
+    print(&quot;3,3 solid = &quot; .. tostring(map:isSolid(layer, 3, 3)))
+    print(&quot;5,5 solid = &quot; .. tostring(map:isSolid(layer, 5, 5)))
+end</code></pre></details></article><article class="item-row api-row" id="method-ontileenter"><div class="item-row-main"><h3>onTileEnter</h3><pre class="inline-signature">LTileMap:onTileEnter(gid: integer, func: function)</pre><p>Registers a callback invoked when an entity enters a tile with the given GID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:824</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;triggers&quot;, 10, 10)
+    map:setTile(layer, 3, 3, 5)
+    map:onTileEnter(5, function(entity, tx, ty) print(&quot;entity entered trigger tile at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    print(&quot;enter callback registered for gid=5&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-ontileexit"><div class="item-row-main"><h3>onTileExit</h3><pre class="inline-signature">LTileMap:onTileExit(gid: integer, func: function)</pre><p>Registers a callback invoked when an entity leaves a tile with the given GID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:877</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;triggers&quot;, 10, 10)
+    map:setTile(layer, 3, 3, 5)
+    map:onTileExit(5, function(entity, tx, ty) print(&quot;entity left trigger tile at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    print(&quot;exit callback registered for gid=5&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-ontilestep"><div class="item-row-main"><h3>onTileStep</h3><pre class="inline-signature">LTileMap:onTileStep(gid: integer, func: function)</pre><p>Registers a callback invoked each frame an entity remains on a tile with the given GID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:865</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;triggers&quot;, 10, 10)
+    map:setTile(layer, 3, 3, 5)
+    map:onTileStep(5, function(entity, tx, ty) print(&quot;entity stepping on trigger at &quot; .. tx .. &quot;,&quot; .. ty) end)
+    print(&quot;step callback registered for gid=5&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-rectoverlapssolid"><div class="item-row-main"><h3>rectOverlapsSolid</h3><pre class="inline-signature">LTileMap:rectOverlapsSolid(layer: integer, x: number, y: number, w: number, h: number) -&gt; boolean</pre><p>Tests whether a world-space rectangle overlaps any solid tile on a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:686</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
+    ts:setSolid(1, true)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;collision&quot;, 10, 10)
+    map:setTile(layer, 3, 3, 1)
+    map:setTile(layer, 4, 3, 1)
+
+    local overlap = map:rectOverlapsSolid(layer, 80, 80, 40, 40)
+    print(&quot;rect overlaps solid = &quot; .. tostring(overlap))
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LTileMap:render(ox: number?, oy: number?)</pre><p>Submits render commands for all visible tiles, optionally offset by a scroll position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:781</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;ground&quot;, 100, 100)
+    map:setViewport(0, 0, 800, 600)
+
+    map:render()
+    print(&quot;rendered at origin&quot;)
+    map:render(10, 10)
+    print(&quot;rendered with offset&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayercolor"><div class="item-row-main"><h3>setLayerColor</h3><pre class="inline-signature">LTileMap:setLayerColor(idx: integer, r: number, g: number, b: number, a: number)</pre><p>Sets the tint color for an entire layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:385</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;tinted&quot;, 10, 10)
+    map:setLayerColor(1, 0.8, 0.5, 0.5, 0.9)
+    local r, g, b, a = map:getLayerColor(1)
+    print(&quot;layer color = &quot; .. r .. &quot;, &quot; .. g .. &quot;, &quot; .. b .. &quot;, &quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayeroffset"><div class="item-row-main"><h3>setLayerOffset</h3><pre class="inline-signature">LTileMap:setLayerOffset(idx: integer, ox: number, oy: number)</pre><p>Sets the pixel offset for a layer, shifting all tiles during rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:408</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;shifted&quot;, 10, 10)
+    map:setLayerOffset(1, 16, 8)
+    local ox, oy = map:getLayerOffset(1)
+    print(&quot;offset = &quot; .. ox .. &quot;, &quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayerparallax"><div class="item-row-main"><h3>setLayerParallax</h3><pre class="inline-signature">LTileMap:setLayerParallax(idx: integer, px: number, py: number)</pre><p>Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:429</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;background&quot;, 40, 30)
+    map:setLayerParallax(1, 0.5, 0.5)
+    local px, py = map:getLayerParallax(1)
+    print(&quot;bg parallax = &quot; .. px .. &quot;, &quot; .. py)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayervisible"><div class="item-row-main"><h3>setLayerVisible</h3><pre class="inline-signature">LTileMap:setLayerVisible(idx: integer, visible: boolean)</pre><p>Sets whether a layer is drawn during rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;background&quot;, 20, 20)
+    map:setLayerVisible(1, false)
+    print(&quot;after hide = &quot; .. tostring(map:getLayerVisible(1)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setorientation"><div class="item-row-main"><h3>setOrientation</h3><pre class="inline-signature">LTileMap:setOrientation(orientation: string)</pre><p>Sets the map orientation, affecting coordinate transforms and rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:743</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;main&quot;, 10, 10)
+    map:setOrientation(&quot;isometric&quot;)
+    print(&quot;set to &quot; .. map:getOrientation())
+end</code></pre></details></article><article class="item-row api-row" id="method-settile"><div class="item-row-main"><h3>setTile</h3><pre class="inline-signature">LTileMap:setTile(layer: integer, x: integer, y: integer, gid: integer)</pre><p>Sets the tile GID at a specific grid position on a layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:451</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;main&quot;, 10, 10)
+    map:setTile(layer, 3, 4, 5)
+    local gid = map:getTile(layer, 3, 4)
+    print(&quot;tile at 3,4 = &quot; .. gid)
+end</code></pre></details></article><article class="item-row api-row" id="method-settiletint"><div class="item-row-main"><h3>setTileTint</h3><pre class="inline-signature">LTileMap:setTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number)</pre><p>Overrides the color tint for a single tile at a given position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:768</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;tinted&quot;, 10, 10)
+
+    map:setTile(layer, 1, 1, 1)
+    map:setTile(layer, 2, 1, 1)
+    map:setTile(layer, 3, 1, 1)
+    map:setTileTint(layer, 1, 1, 1.0, 0.0, 0.0, 1.0)
+    map:setTileTint(layer, 2, 1, 0.0, 1.0, 0.0, 1.0)
+    map:setTileTint(layer, 3, 1, 0.0, 0.0, 1.0, 1.0)
+    print(&quot;RGB tints applied to 3 tiles&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setviewport"><div class="item-row-main"><h3>setViewport</h3><pre class="inline-signature">LTileMap:setViewport(x: number, y: number, w: number, h: number)</pre><p>Sets the visible area of the map for culling during rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:541</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;ground&quot;, 100, 100)
+    map:setViewport(0, 0, 800, 600)
+    local vx, vy, vw, vh = map:getViewport()
+    print(&quot;viewport = &quot; .. vx .. &quot;,&quot; .. vy .. &quot; &quot; .. vw .. &quot;x&quot; .. vh)
+end</code></pre></details></article><article class="item-row api-row" id="method-sweeprect"><div class="item-row-main"><h3>sweepRect</h3><pre class="inline-signature">LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, dx: number, dy: number) -&gt; number</pre><p>Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:710</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
+    ts:setSolid(1, true)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;collision&quot;, 20, 20)
+    map:setTile(layer, 5, 5, 1)
+    map:setTile(layer, 6, 5, 1)
+
+    local cx, cy, nx, ny, tx, ty = map:sweepRect(layer, 64, 64, 16, 16, 200, 0)
+    print(&quot;contact pos = &quot; .. cx .. &quot;, &quot; .. cy)
+    print(&quot;normal = &quot; .. nx .. &quot;, &quot; .. ny)
+    print(&quot;tile hit = &quot; .. tx .. &quot;, &quot; .. ty)
+end</code></pre></details></article><article class="item-row api-row" id="method-tiletoworld"><div class="item-row-main"><h3>tileToWorld</h3><pre class="inline-signature">LTileMap:tileToWorld(tx: integer, ty: integer) -&gt; number</pre><p>Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:583</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;main&quot;, 20, 20)
+    local wx, wy = map:tileToWorld(5, 3)
+    print(&quot;tile(5,3) -&gt; world(&quot; .. wx .. &quot;,&quot; .. wy .. &quot;)&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-tiletypeindex"><div class="item-row-main"><h3>tileTypeIndex</h3><pre class="inline-signature">LTileMap:tileTypeIndex(layer: integer) -&gt; table</pre><p>Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:492</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local layer = map:addLayer(&quot;terrain&quot;, 5, 5)
+
+    map:setTile(layer, 1, 1, 1)
+    map:setTile(layer, 2, 1, 1)
+    map:setTile(layer, 3, 1, 2)
+    map:setTile(layer, 4, 1, 3)
+
+    local index = map:tileTypeIndex(layer)
+    print(&quot;tile type index built&quot;)
+    for gid, positions in pairs(index) do
+        print(&quot;  gid &quot; .. gid .. &quot; has &quot; .. #positions .. &quot; tiles&quot;)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-tonavgrid"><div class="item-row-main"><h3>toNavGrid</h3><pre class="inline-signature">LTileMap:toNavGrid(layer: integer, gids: table) -&gt; boolean[]</pre><p>Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:801</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    local ts = lurek.tilemap.newTileSet(1, 8, 4, 32, 32)
+    ts:setSolid(1, true)
+    ts:setSolid(2, true)
+    map:addTileSet(ts)
+
+    local layer = map:addLayer(&quot;nav&quot;, 5, 5)
+    map:setTile(layer, 2, 2, 1)
+    map:setTile(layer, 3, 2, 2)
+
+    local grid = map:toNavGrid(layer, { 1, 2 })
+    print(&quot;nav grid rows = &quot; .. #grid)
+    print(&quot;cell 1,1 walkable = &quot; .. tostring(grid[1] and grid[1][1]))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTileMap:type() -&gt; string</pre><p>Returns the type name of this userdata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:920</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    print(&quot;type=&quot; .. tm:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTileMap:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:925</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tm = lurek.tilemap.newTileMap(16, 16, 8)
+    print(&quot;typeOf=&quot; .. tostring(tm:typeOf(&quot;LTileMap&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LTileMap:update(dt: number)</pre><p>Advances tile animations by the given delta time.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:563</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;animated&quot;, 10, 10)
+
+    local dt = 1 / 60
+    map:update(dt)
+    map:update(dt)
+    map:update(dt)
+    print(&quot;updated 3 frames at 60fps&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-worldtotile"><div class="item-row-main"><h3>worldToTile</h3><pre class="inline-signature">LTileMap:worldToTile(wx: number, wy: number) -&gt; integer</pre><p>Converts world-space pixel coordinates to tile-grid coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tilemap_api.rs:573</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    map:addLayer(&quot;main&quot;, 20, 20)
+    local tx, ty = map:worldToTile(100, 80)
+    print(&quot;world(100,80) -&gt; tile(&quot; .. tx .. &quot;,&quot; .. ty .. &quot;)&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

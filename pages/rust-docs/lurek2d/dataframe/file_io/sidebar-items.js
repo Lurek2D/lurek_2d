@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DataFrameFileError"],"fn":["load_json_database","read_binary_dataframe","read_csv_dataframe","read_json_dataframe","save_json_database","write_binary_dataframe","write_csv_dataframe","write_json_dataframe"],"trait":["DataFrameFileStore"],"type":["DataFrameFileResult"]};

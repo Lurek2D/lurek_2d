@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EncodedValue","SerialFormat"],"fn":["decode_bytes","decode_text","detect_format","encode"],"struct":["DecodeOptions","EncodeOptions"]};

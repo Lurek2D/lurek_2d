@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["gilrs_axis_to_string","gilrs_button_to_string","virtual_dpad"],"struct":["GamepadMappings","GamepadState","GamepadVibrationRequest"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["generate_voronoi_provinces","load_from_png_file","load_from_toml_file","load_from_toml_str"]};

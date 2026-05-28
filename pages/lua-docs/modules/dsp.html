@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.dsp - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a class="active" href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.dsp</h1>
+  <p>`lurek.dsp` - Digital signal processing: effects, offline batch processing, and audio visualization. - Registers `lurek.dsp.*` functions and types via `register()`. - Userdata types: `LuaLevelDetector`, `LuaSpectrumAnalyzer`, `LuaWaveform`. - Userdata types: `LuaAdsrEnvelope`, `LuaSynthesizer`, `LuaDspNode`. - Userdata type: `LuaDspGraph`. - Bridges 55 Lua-callable methods via `mlua`. - See `docs/specs/dsp.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>29 functions</span><span>7 classes</span><span>src/lua_api/dsp_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 56</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.dsp.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-addeffecttobus"><div class="item-row-main"><h3>addEffectToBus</h3><pre class="inline-signature">lurek.dsp.addEffectToBus(bus_name: string, effect_type_str: string, params: table?) -&gt; integer</pre><p>Adds an effect to a named audio bus and returns its effect ID.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:718</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    lurek.audio.newBus(&quot;dsp_bus_fx&quot;)
+    local id = lurek.dsp.addEffectToBus(&quot;dsp_bus_fx&quot;, &quot;lowpass&quot;, {value=2000.0})
+    print(&quot;lurek.dsp.addEffectToBus id=&quot; .. tostring(id))
+end</code></pre></details></article><article class="item-row api-row" id="fn-analyzefft"><div class="item-row-main"><h3>analyzeFft</h3><pre class="inline-signature">lurek.dsp.analyzeFft(sd: LSoundData, size: integer) -&gt; table</pre><p>Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:708</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    local result = lurek.dsp.analyzeFft(sd, 64)
+    print(&quot;lurek.dsp.analyzeFft bins=&quot; .. tostring(#result))
+end</code></pre></details></article><article class="item-row api-row" id="fn-analyzefft"><div class="item-row-main"><h3>analyzeFft</h3><pre class="inline-signature">lurek.dsp.analyzeFft(sd: LSoundData, size: integer) -&gt; table</pre><p>Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:708</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    local result = lurek.dsp.analyzeFft(sd, 64)
+    print(&quot;lurek.dsp.analyzeFft bins=&quot; .. tostring(#result))
+end</code></pre></details></article><article class="item-row api-row" id="fn-analyzepeak"><div class="item-row-main"><h3>analyzePeak</h3><pre class="inline-signature">lurek.dsp.analyzePeak(sd: LSoundData) -&gt; number</pre><p>Analyzes the Peak volume of a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:698</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    local peak = lurek.dsp.analyzePeak(sd)
+    print(&quot;lurek.dsp.analyzePeak peak=&quot; .. tostring(peak))
+end</code></pre></details></article><article class="item-row api-row" id="fn-analyzerms"><div class="item-row-main"><h3>analyzeRms</h3><pre class="inline-signature">lurek.dsp.analyzeRms(sd: LSoundData) -&gt; number</pre><p>Analyzes the RMS volume of a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:691</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    local rms = lurek.dsp.analyzeRms(sd)
+    print(&quot;lurek.dsp.analyzeRms rms=&quot; .. tostring(rms))
+end</code></pre></details></article><article class="item-row api-row" id="fn-applybandpass"><div class="item-row-main"><h3>applyBandpass</h3><pre class="inline-signature">lurek.dsp.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number)</pre><p>Applies a bandpass filter in-place to the sound data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:677</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    lurek.dsp.applyBandpass(sd, 500.0, 2000.0)
+    print(&quot;lurek.dsp.applyBandpass sampleCount=&quot; .. tostring(sd:getSampleCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-applygain"><div class="item-row-main"><h3>applyGain</h3><pre class="inline-signature">lurek.dsp.applyGain(sd_ud: LSoundData, gain: number)</pre><p>Applies a gain multiplier in-place to the sound data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:684</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    lurek.dsp.applyGain(sd, 0.5)
+    print(&quot;lurek.dsp.applyGain sampleCount=&quot; .. tostring(sd:getSampleCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-applyhighpass"><div class="item-row-main"><h3>applyHighpass</h3><pre class="inline-signature">lurek.dsp.applyHighpass(sd_ud: LSoundData, cutoff_hz: number)</pre><p>Applies a highpass filter in-place to the sound data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:669</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    lurek.dsp.applyHighpass(sd, 2000.0)
+    print(&quot;lurek.dsp.applyHighpass sampleCount=&quot; .. tostring(sd:getSampleCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-applylowpass"><div class="item-row-main"><h3>applyLowpass</h3><pre class="inline-signature">lurek.dsp.applyLowpass(sd_ud: LSoundData, cutoff_hz: number)</pre><p>Applies a lowpass filter in-place to the sound data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:662</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.1, 44100, 0.8)
+    lurek.dsp.applyLowpass(sd, 1000.0)
+    print(&quot;lurek.dsp.applyLowpass sampleCount=&quot; .. tostring(sd:getSampleCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newadsrenvelope"><div class="item-row-main"><h3>newAdsrEnvelope</h3><pre class="inline-signature">lurek.dsp.newAdsrEnvelope(attack: number, decay: number, sustain: number, release: number) -&gt; LAdsrEnvelope</pre><p>Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:863</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.05)
+    env:trigger_on()
+    local s = env:next_sample()
+    print(&quot;lurek.dsp.newAdsrEnvelope sample=&quot; .. tostring(s))
+    print(&quot;LAdsrEnvelope:is_idle idle=&quot; .. tostring(env:is_idle()))
+    env:trigger_off()
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    env:apply(sd)
+    print(&quot;LAdsrEnvelope:apply ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-neweffectparams"><div class="item-row-main"><h3>newEffectParams</h3><pre class="inline-signature">lurek.dsp.newEffectParams(effectType: string, p1: number, p2: number, p3: number) -&gt; table</pre><p>Creates an effect parameter descriptor table for use with offline processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local params = lurek.dsp.newEffectParams(&quot;reverb&quot;, 0.7, 0.4, 0.2)
+    print(&quot;lurek.dsp.newEffectParams type=&quot; .. type(params))
+    print(&quot;effect=&quot; .. tostring(params.type))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newgraph"><div class="item-row-main"><h3>newGraph</h3><pre class="inline-signature">lurek.dsp.newGraph() -&gt; LDspGraph</pre><p>Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:896</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local g = lurek.dsp.newGraph()
+    local n1 = lurek.dsp.newNode(&quot;lowpass&quot;)
+    local n2 = lurek.dsp.newNode(&quot;gain&quot;)
+    local id1 = g:addNode(n1)
+    local id2 = g:addNode(n2)
+    local ok = g:connect(id1, id2)
+    print(&quot;lurek.dsp.newGraph connect ok=&quot; .. tostring(ok))
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local out = g:process(sd)
+    print(&quot;LDspGraph:process type=&quot; .. type(out))
+    local ok2 = g:disconnect(id1, id2)
+    print(&quot;LDspGraph:disconnect ok=&quot; .. tostring(ok2))
+    g:clear()
+    print(&quot;LDspGraph:clear ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newleveldetector"><div class="item-row-main"><h3>newLevelDetector</h3><pre class="inline-signature">lurek.dsp.newLevelDetector(options: table?) -&gt; LLevelDetector</pre><p>Creates a level detector object that tracks RMS, peak, and clipping state over samples.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:819</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local det = lurek.dsp.newLevelDetector({ clipThreshold = 0.99 })
+    det:process_sample(0.5)
+    det:process_sample(-0.5)
+    print(&quot;lurek.dsp.newLevelDetector rms=&quot; .. tostring(det:get_rms()))
+    print(&quot;LLevelDetector:get_peak peak=&quot; .. tostring(det:get_peak()))
+    print(&quot;LLevelDetector:to_db db=&quot; .. tostring(det:to_db(1.0)))
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local result = det:process(sd)
+    print(&quot;LLevelDetector:process rms=&quot; .. tostring(result.rms))
+    det:reset()
+    print(&quot;LLevelDetector:reset rms=&quot; .. tostring(det:get_rms()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnode"><div class="item-row-main"><h3>newNode</h3><pre class="inline-signature">lurek.dsp.newNode(kind: string, options: table?) -&gt; LDspNode</pre><p>Creates a DSP graph node object with a node kind and optional initial options.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:886</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local node = lurek.dsp.newNode(&quot;lowpass&quot;)
+    print(&quot;lurek.dsp.newNode type=&quot; .. node:type())
+    node:setParam(&quot;cutoff&quot;, 1000.0)
+    local val = node:getParam(&quot;cutoff&quot;)
+    print(&quot;LDspNode:getParam cutoff=&quot; .. tostring(val))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsawtoothwave"><div class="item-row-main"><h3>newSawtoothWave</h3><pre class="inline-signature">lurek.dsp.newSawtoothWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -&gt; LSoundData</pre><p>Generates a sawtooth wave as a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:773</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSawtoothWave(440, 0.01, 44100, 0.5)
+    print(&quot;lurek.dsp.newSawtoothWave type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsinewave"><div class="item-row-main"><h3>newSineWave</h3><pre class="inline-signature">lurek.dsp.newSineWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -&gt; LSoundData</pre><p>Generates a sine wave as a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:749</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSineWave(440, 0.01, 44100, 0.5)
+    print(&quot;lurek.dsp.newSineWave type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newspectrumanalyzer"><div class="item-row-main"><h3>newSpectrumAnalyzer</h3><pre class="inline-signature">lurek.dsp.newSpectrumAnalyzer(options: table?) -&gt; LSpectrumAnalyzer</pre><p>Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:834</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sa = lurek.dsp.newSpectrumAnalyzer({ size = 64 })
+    sa:setSize(32)
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local bins = sa:analyze(sd)
+    print(&quot;lurek.dsp.newSpectrumAnalyzer bins=&quot; .. tostring(#bins))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsquarewave"><div class="item-row-main"><h3>newSquareWave</h3><pre class="inline-signature">lurek.dsp.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -&gt; LSoundData</pre><p>Generates a square wave as a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:761</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSquareWave(440, 0.01, 44100, 0.5)
+    print(&quot;lurek.dsp.newSquareWave type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsynthwave"><div class="item-row-main"><h3>newSynthWave</h3><pre class="inline-signature">lurek.dsp.newSynthWave(waveform: string, freq: number, duration: number, sample_rate: integer, amplitude: number, adsr: table?) -&gt; LSoundData</pre><p>Generates a synthesized waveform with optional ADSR.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:811</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newSynthWave(&quot;sine&quot;, 440, 0.01, 44100, 0.5, nil)
+    print(&quot;lurek.dsp.newSynthWave type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsynthesizer"><div class="item-row-main"><h3>newSynthesizer</h3><pre class="inline-signature">lurek.dsp.newSynthesizer(options: table?) -&gt; LSynthesizer</pre><p>Creates a synthesizer object that combines waveform selection and optional ADSR shaping.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:874</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local synth = lurek.dsp.newSynthesizer()
+    synth:setWaveform(&quot;triangle&quot;)
+    local env = lurek.dsp.newAdsrEnvelope(0.01, 0.01, 0.8, 0.02)
+    synth:setEnvelope(env)
+    local sd = synth:render(440, 0.01, 44100, 0.5)
+    print(&quot;lurek.dsp.newSynthesizer render type=&quot; .. type(sd))
+    local sd2 = synth:generate(440, 0.01, 44100, 0.5)
+    print(&quot;LSynthesizer:generate type=&quot; .. type(sd2))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtrianglewave"><div class="item-row-main"><h3>newTriangleWave</h3><pre class="inline-signature">lurek.dsp.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -&gt; LSoundData</pre><p>Generates a triangle wave as a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:785</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newTriangleWave(440, 0.01, 44100, 0.5)
+    print(&quot;lurek.dsp.newTriangleWave type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newwaveform"><div class="item-row-main"><h3>newWaveform</h3><pre class="inline-signature">lurek.dsp.newWaveform(kind: string, options: table?) -&gt; LWaveform</pre><p>Creates a waveform descriptor object that can render repeated procedural tones.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:850</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local wf = lurek.dsp.newWaveform(&quot;sawtooth&quot;)
+    print(&quot;lurek.dsp.newWaveform type=&quot; .. wf:type())
+    local sd = wf:render(220, 0.01, 44100, 0.5)
+    print(&quot;LWaveform:render type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newwhitenoise"><div class="item-row-main"><h3>newWhiteNoise</h3><pre class="inline-signature">lurek.dsp.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -&gt; LSoundData</pre><p>Generates deterministic white noise as a `SoundData` buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:797</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local sd = lurek.dsp.newWhiteNoise(0.01, 44100, 0.5, 42)
+    print(&quot;lurek.dsp.newWhiteNoise type=&quot; .. type(sd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-normalize"><div class="item-row-main"><h3>normalize</h3><pre class="inline-signature">lurek.dsp.normalize(input: string, output: string, target: number) -&gt; boolean</pre><p>Normalizes an audio file to a target peak amplitude and saves the result.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:630</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local input = &quot;content/examples/assets/audio/sample_tone.wav&quot;
+    local output = &quot;save/_fs_tests/dsp_normalized.wav&quot;
+    local ok = lurek.dsp.normalize(input, output, 0.9)
+    print(&quot;lurek.dsp.normalize ok=&quot; .. tostring(ok))
+    print(&quot;normalized exists=&quot; .. tostring(lurek.filesystem.exists(output)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-processoffline"><div class="item-row-main"><h3>processOffline</h3><pre class="inline-signature">lurek.dsp.processOffline(input: string, output: string, effects: table) -&gt; boolean</pre><p>Processes an audio file offline through a chain of effects and writes the result to an output file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:620</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local input = &quot;content/examples/assets/audio/sample_click.wav&quot;
+    local output = &quot;save/_fs_tests/dsp_processed.wav&quot;
+    local effects = {
+        lurek.dsp.newEffectParams(&quot;reverb&quot;, 0.7, 0.4, 0.2),
+        lurek.dsp.newEffectParams(&quot;compressor&quot;, 0.8, 2.5, 0.1),
+    }
+    local ok = lurek.dsp.processOffline(input, output, effects)
+    print(&quot;lurek.dsp.processOffline ok=&quot; .. tostring(ok))
+    print(&quot;output exists=&quot; .. tostring(lurek.filesystem.exists(output)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-removeeffectfrombus"><div class="item-row-main"><h3>removeEffectFromBus</h3><pre class="inline-signature">lurek.dsp.removeEffectFromBus(bus_name: string, effect_id: integer) -&gt; boolean</pre><p>Removes an effect from a named audio bus by effect ID.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:727</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    lurek.audio.newBus(&quot;dsp_bus_rm&quot;)
+    local id = lurek.dsp.addEffectToBus(&quot;dsp_bus_rm&quot;, &quot;lowpass&quot;, {value=2000.0})
+    local ok = lurek.dsp.removeEffectFromBus(&quot;dsp_bus_rm&quot;, id)
+    print(&quot;lurek.dsp.removeEffectFromBus ok=&quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-seteffectparam"><div class="item-row-main"><h3>setEffectParam</h3><pre class="inline-signature">lurek.dsp.setEffectParam(bus_name: string, effect_id: integer, param_name: string, value: number) -&gt; boolean</pre><p>Sets a parameter value on an effect attached to a named audio bus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:738</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    lurek.audio.newBus(&quot;dsp_bus_param&quot;)
+    local id = lurek.dsp.addEffectToBus(&quot;dsp_bus_param&quot;, &quot;lowpass&quot;, {value=2000.0})
+    lurek.dsp.setEffectParam(&quot;dsp_bus_param&quot;, id, &quot;cutoff&quot;, 1000.0)
+    print(&quot;lurek.dsp.setEffectParam ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-spectrogramtopng"><div class="item-row-main"><h3>spectrogramToPng</h3><pre class="inline-signature">lurek.dsp.spectrogramToPng(input: string, output: string, width: integer, height: integer) -&gt; boolean</pre><p>Renders a spectrogram visualization of an audio file and saves it as a PNG image.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:652</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local input = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local output = &quot;save/_fs_tests/dsp_spectrogram.png&quot;
+    local ok = lurek.dsp.spectrogramToPng(input, output, 256, 128)
+    print(&quot;lurek.dsp.spectrogramToPng ok=&quot; .. tostring(ok))
+    print(&quot;png exists=&quot; .. tostring(lurek.filesystem.exists(output)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waveformtopng"><div class="item-row-main"><h3>waveformToPng</h3><pre class="inline-signature">lurek.dsp.waveformToPng(input: string, output: string, width: integer, height: integer) -&gt; boolean</pre><p>Renders a waveform visualization of an audio file and saves it as a PNG image.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/dsp_api.rs:641</span></div><details class="example-block"><summary>Example · Exact example · dsp.lua</summary><pre><code>do
+    local input = &quot;content/examples/assets/audio/sample_loop.wav&quot;
+    local output = &quot;save/_fs_tests/dsp_waveform.png&quot;
+    local ok = lurek.dsp.waveformToPng(input, output, 256, 64)
+    print(&quot;lurek.dsp.waveformToPng ok=&quot; .. tostring(ok))
+    print(&quot;png exists=&quot; .. tostring(lurek.filesystem.exists(output)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAdsrEnvelope.html">LAdsrEnvelope</a></h3><p>Lua-visible ADSR envelope object for sample stepping and buffer shaping.</p></div><div class="item-row-meta"><span>5 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDspGraph.html">LDspGraph</a></h3><p>Lua-visible DSP graph that stores nodes, edges, and offline processing order.</p></div><div class="item-row-meta"><span>5 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDspNode.html">LDspNode</a></h3><p>Lua-visible DSP graph node carrying type and simple numeric parameters.</p></div><div class="item-row-meta"><span>3 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLevelDetector.html">LLevelDetector</a></h3><p>Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.</p></div><div class="item-row-meta"><span>6 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSpectrumAnalyzer.html">LSpectrumAnalyzer</a></h3><p>Lua-visible spectral analyzer that computes bounded frequency bins from sound buffers.</p></div><div class="item-row-meta"><span>2 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSynthesizer.html">LSynthesizer</a></h3><p>Lua-visible synthesizer that combines waveform selection and optional ADSR shaping.</p></div><div class="item-row-meta"><span>4 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LWaveform.html">LWaveform</a></h3><p>Lua-visible procedural waveform descriptor used for repeated SoundData rendering.</p></div><div class="item-row-meta"><span>2 methods</span><span>module dsp</span></div><div class="card-note">Example: dsp.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

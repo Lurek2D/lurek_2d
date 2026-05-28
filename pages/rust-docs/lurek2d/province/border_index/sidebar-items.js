@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["build_border_index","build_border_index_from_registry","dilate_border_index_with_styles"],"struct":["ProvinceBorderIndex"]};

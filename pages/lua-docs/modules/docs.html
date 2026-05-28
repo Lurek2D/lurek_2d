@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.docs - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.docs</h1>
+  <p>`lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata. - Registers `lurek.docs.*` functions and types via `register()`. - `LuaSchema`: userdata type exposed to Lua. - `DocEntry`: userdata type exposed to Lua. - `ApiCatalog`: userdata type exposed to Lua. - `ValidationReport`: userdata type exposed to Lua. - `QualityReport`: userdata type exposed to Lua.</p>
+  <div class="api-meta api-meta-header"><span>26 functions</span><span>5 classes</span><span>src/lua_api/docs_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 86</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.docs.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-checkstaleness"><div class="item-row-main"><h3>checkStaleness</h3><pre class="inline-signature">lurek.docs.checkStaleness(catalog_ud: LApiCatalog, source_dir: string) -&gt; table</pre><p>Lists source files in a directory for simple documentation staleness checks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1163</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local result = lurek.docs.checkStaleness(cat, &quot;src/math/&quot;)
+    print(&quot;stale = &quot; .. #result.stale .. &quot; current = &quot; .. #result.current)
+end</code></pre></details></article><article class="item-row api-row" id="fn-coverage"><div class="item-row-main"><h3>coverage</h3><pre class="inline-signature">lurek.docs.coverage(catalog_ud: LApiCatalog?) -&gt; integer</pre><p>Returns documented and live API counts for the full `lurek` table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1237</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local documented, live = lurek.docs.coverage(cat)
+    print(&quot;documented=&quot; .. documented .. &quot; live=&quot; .. live)
+end</code></pre></details></article><article class="item-row api-row" id="fn-coveragemodule"><div class="item-row-main"><h3>coverageModule</h3><pre class="inline-signature">lurek.docs.coverageModule(module_name: string, catalog_ud: LApiCatalog) -&gt; integer</pre><p>Returns documented and live API counts for one module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1259</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local documented, live = lurek.docs.coverageModule(&quot;math&quot;, cat)
+    print(&quot;math documented=&quot; .. documented .. &quot; live=&quot; .. live)
+end</code></pre></details></article><article class="item-row api-row" id="fn-describe"><div class="item-row-main"><h3>describe</h3><pre class="inline-signature">lurek.docs.describe(qualified_name: string, description: string)</pre><p>Adds or updates the description for one editable catalog entry.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:950</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    lurek.docs.describe(&quot;lurek.math.lerp&quot;, &quot;Linearly interpolates between a and b.&quot;)
+    print(&quot;description set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exportall"><div class="item-row-main"><h3>exportAll</h3><pre class="inline-signature">lurek.docs.exportAll(catalog_ud: LApiCatalog, output_dir: string)</pre><p>Exports all editor documentation artifacts for a catalog into a directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1324</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportAll(cat, &quot;build/docs/&quot;)
+    print(&quot;all docs exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exportcheatsheet"><div class="item-row-main"><h3>exportCheatsheet</h3><pre class="inline-signature">lurek.docs.exportCheatsheet(catalog_ud: LApiCatalog, path: string)</pre><p>Writes a compact text cheatsheet from catalog entries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1384</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportCheatsheet(cat, &quot;build/cheatsheet.txt&quot;)
+    print(&quot;cheatsheet exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exportcompletions"><div class="item-row-main"><h3>exportCompletions</h3><pre class="inline-signature">lurek.docs.exportCompletions(catalog_ud: LApiCatalog, path: string)</pre><p>Exports catalog completion metadata to a file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1288</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportCompletions(cat, &quot;build/completions.json&quot;)
+    print(&quot;completions exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exporthover"><div class="item-row-main"><h3>exportHover</h3><pre class="inline-signature">lurek.docs.exportHover(catalog_ud: LApiCatalog, path: string)</pre><p>Exports catalog hover metadata to a file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1300</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportHover(cat, &quot;build/hover.json&quot;)
+    print(&quot;hover exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exportmarkdown"><div class="item-row-main"><h3>exportMarkdown</h3><pre class="inline-signature">lurek.docs.exportMarkdown(catalog_ud: LApiCatalog, path: string)</pre><p>Writes a Markdown API reference from catalog entries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1336</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportMarkdown(cat, &quot;build/api.md&quot;)
+    print(&quot;markdown exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exportsignatures"><div class="item-row-main"><h3>exportSignatures</h3><pre class="inline-signature">lurek.docs.exportSignatures(catalog_ud: LApiCatalog, path: string)</pre><p>Exports catalog signature metadata to a file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1312</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    lurek.docs.exportSignatures(cat, &quot;build/signatures.json&quot;)
+    print(&quot;signatures exported&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcatalog"><div class="item-row-main"><h3>getCatalog</h3><pre class="inline-signature">lurek.docs.getCatalog() -&gt; LApiCatalog</pre><p>Returns the editable in-memory documentation catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1042</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.getCatalog()
+    print(&quot;catalog entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadall"><div class="item-row-main"><h3>loadAll</h3><pre class="inline-signature">lurek.docs.loadAll(directory: string) -&gt; LApiCatalog</pre><p>Loads all TOML documentation catalog files from a directory and combines their entries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:903</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    lurek.filesystem.write(&quot;save/_fs_tests/docs_load_all_a.toml&quot;, &#x27;[[entries]]\nname = &quot;one&quot;\nqualifiedName = &quot;lurek.test.one&quot;\nmodule = &quot;test&quot;\nkind = &quot;function&quot;\ndescription = &quot;First entry&quot;&#x27;)
+    lurek.filesystem.write(&quot;save/_fs_tests/docs_load_all_b.toml&quot;, &#x27;[[entries]]\nname = &quot;two&quot;\nqualifiedName = &quot;lurek.test.two&quot;\nmodule = &quot;test&quot;\nkind = &quot;function&quot;\ndescription = &quot;Second entry&quot;&#x27;)
+    local cat = lurek.docs.loadAll(&quot;save/_fs_tests/&quot;)
+    print(&quot;all entries = &quot; .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.describe
+do
+    lurek.docs.describe(&quot;lurek.math.lerp&quot;, &quot;Linearly interpolates between a and b.&quot;)
+    print(&quot;description set&quot;)
+end
+
+--@api-stub: lurek.docs.setParamInfo
+do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setParamInfo(&quot;lurek.test.blend&quot;, {
+        { name = &quot;t&quot;, type = &quot;number&quot;, description = &quot;Interpolation factor&quot;, optional = false },
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;params set = &quot; .. #entry:getParameters())
+end
+
+--@api-stub: lurek.docs.setReturnInfo
+do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setReturnInfo(&quot;lurek.test.blend&quot;, {
+        {type = &quot;number&quot;, description = &quot;Interpolated value&quot;},
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;returns set = &quot; .. #entry:getReturns())
+end
+
+--@api-stub: lurek.docs.getCatalog
+do
+    local cat = lurek.docs.getCatalog()
+    print(&quot;catalog entries = &quot; .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.resetCatalog
+do
+    lurek.docs.describe(&quot;lurek.test.temp&quot;, &quot;Temporary entry&quot;)
+    lurek.docs.resetCatalog()
+    local cat = lurek.docs.getCatalog()
+    print(&quot;after reset entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadtoml"><div class="item-row-main"><h3>loadToml</h3><pre class="inline-signature">lurek.docs.loadToml(path: string) -&gt; LApiCatalog</pre><p>Loads a TOML documentation catalog file and converts its entries into an API catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:869</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local path = &quot;save/_fs_tests/docs_load_toml_example.toml&quot;
+    lurek.filesystem.write(path, &#x27;[[entries]]\nname = &quot;play&quot;\nqualifiedName = &quot;lurek.audio.play&quot;\nmodule = &quot;audio&quot;\nkind = &quot;function&quot;\ndescription = &quot;Plays a sound&quot;&#x27;)
+    local cat = lurek.docs.loadToml(path)
+    print(&quot;loaded entries = &quot; .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.loadAll
+do
+    lurek.filesystem.write(&quot;save/_fs_tests/docs_load_all_a.toml&quot;, &#x27;[[entries]]\nname = &quot;one&quot;\nqualifiedName = &quot;lurek.test.one&quot;\nmodule = &quot;test&quot;\nkind = &quot;function&quot;\ndescription = &quot;First entry&quot;&#x27;)
+    lurek.filesystem.write(&quot;save/_fs_tests/docs_load_all_b.toml&quot;, &#x27;[[entries]]\nname = &quot;two&quot;\nqualifiedName = &quot;lurek.test.two&quot;\nmodule = &quot;test&quot;\nkind = &quot;function&quot;\ndescription = &quot;Second entry&quot;&#x27;)
+    local cat = lurek.docs.loadAll(&quot;save/_fs_tests/&quot;)
+    print(&quot;all entries = &quot; .. cat:entryCount())
+end
+
+--@api-stub: lurek.docs.describe
+do
+    lurek.docs.describe(&quot;lurek.math.lerp&quot;, &quot;Linearly interpolates between a and b.&quot;)
+    print(&quot;description set&quot;)
+end
+
+--@api-stub: lurek.docs.setParamInfo
+do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setParamInfo(&quot;lurek.test.blend&quot;, {
+        { name = &quot;t&quot;, type = &quot;number&quot;, description = &quot;Interpolation factor&quot;, optional = false },
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;params set = &quot; .. #entry:getParameters())
+end
+
+--@api-stub: lurek.docs.setReturnInfo
+do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setReturnInfo(&quot;lurek.test.blend&quot;, {
+        {type = &quot;number&quot;, description = &quot;Interpolated value&quot;},
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;returns set = &quot; .. #entry:getReturns())
+end
+
+--@api-stub: lurek.docs.getCatalog
+do
+    local cat = lurek.docs.getCatalog()
+    print(&quot;catalog entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-quality"><div class="item-row-main"><h3>quality</h3><pre class="inline-signature">lurek.docs.quality(catalog_ud: LApiCatalog?) -&gt; LQualityReport</pre><p>Computes documentation quality for a supplied catalog or the editable in-memory catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1198</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local qr = lurek.docs.quality(cat)
+    print(&quot;quality score = &quot; .. qr:getOverallScore())
+end</code></pre></details></article><article class="item-row api-row" id="fn-qualitymodule"><div class="item-row-main"><h3>qualityModule</h3><pre class="inline-signature">lurek.docs.qualityModule(module_name: string, catalog_ud: LApiCatalog) -&gt; LQualityReport</pre><p>Computes documentation quality for entries belonging to one module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1215</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local qr = lurek.docs.qualityModule(&quot;math&quot;, cat)
+    print(&quot;math quality = &quot; .. qr:getOverallScore())
+end</code></pre></details></article><article class="item-row api-row" id="fn-reflectlive"><div class="item-row-main"><h3>reflectLive</h3><pre class="inline-signature">lurek.docs.reflectLive(ns: string?) -&gt; table</pre><p>Reflects live `lurek` module tables into plain name and type rows.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1473</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local data = lurek.docs.reflectLive(&quot;math&quot;)
+    print(&quot;reflect math type = &quot; .. type(data))
+end</code></pre></details></article><article class="item-row api-row" id="fn-reflecttable"><div class="item-row-main"><h3>reflectTable</h3><pre class="inline-signature">lurek.docs.reflectTable(tbl: table, name: string) -&gt; table</pre><p>Reflects an arbitrary Lua table into name, qualifiedName, and type rows.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1533</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local t = {foo = 1, bar = &quot;hello&quot;}
+    local rows = lurek.docs.reflectTable(t, &quot;mymod&quot;)
+    print(&quot;reflected rows = &quot; .. #rows)
+end</code></pre></details></article><article class="item-row api-row" id="fn-resetcatalog"><div class="item-row-main"><h3>resetCatalog</h3><pre class="inline-signature">lurek.docs.resetCatalog()</pre><p>Clears the editable in-memory documentation catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1050</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    lurek.docs.describe(&quot;lurek.test.temp&quot;, &quot;Temporary entry&quot;)
+    lurek.docs.resetCatalog()
+    local cat = lurek.docs.getCatalog()
+    print(&quot;after reset entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-scan"><div class="item-row-main"><h3>scan</h3><pre class="inline-signature">lurek.docs.scan(opts: table?) -&gt; LApiCatalog</pre><p>Reflects the live `lurek` table and builds a catalog of callable APIs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:837</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    print(&quot;scanned entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-scanmodule"><div class="item-row-main"><h3>scanModule</h3><pre class="inline-signature">lurek.docs.scanModule(module_name: string) -&gt; LApiCatalog</pre><p>Reflects one live `lurek.&lt;module&gt;` table and builds a catalog for that module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:852</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scanModule(&quot;math&quot;)
+    print(&quot;math entries = &quot; .. cat:entryCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-schema"><div class="item-row-main"><h3>schema</h3><pre class="inline-signature">lurek.docs.schema(rules: table, name: string) -&gt; LSchema</pre><p>Builds a schema validator from Lua table rules.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local s = lurek.docs.schema({ name = { type = &quot;string&quot;, required = true }, age = { type = &quot;number&quot; } }, &quot;PlayerSchema&quot;)
+    print(&quot;schema name = &quot; .. s:getName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-schemafromtoml"><div class="item-row-main"><h3>schemaFromToml</h3><pre class="inline-signature">lurek.docs.schemaFromToml(toml_text: string) -&gt; LSchema</pre><p>Builds a schema validator from TOML schema text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1461</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local toml = [[
+name = &quot;PlayerSchema&quot;
+strict = true
+
+[rules.name]
+type = &quot;string&quot;
+required = true
+]]
+    local s = lurek.docs.schemaFromToml(toml)
+    print(&quot;schema from toml, name = &quot; .. s:getName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setparaminfo"><div class="item-row-main"><h3>setParamInfo</h3><pre class="inline-signature">lurek.docs.setParamInfo(qualified_name: string, params: table)</pre><p>Replaces parameter metadata for one editable catalog entry.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:986</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setParamInfo(&quot;lurek.test.blend&quot;, {
+        { name = &quot;t&quot;, type = &quot;number&quot;, description = &quot;Interpolation factor&quot;, optional = false },
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;params set = &quot; .. #entry:getParameters())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setreturninfo"><div class="item-row-main"><h3>setReturnInfo</h3><pre class="inline-signature">lurek.docs.setReturnInfo(qualified_name: string, returns: table)</pre><p>Replaces return-value metadata for one editable catalog entry.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1016</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    lurek.docs.resetCatalog()
+    lurek.docs.describe(&quot;lurek.test.blend&quot;, &quot;Blend two values.&quot;)
+    lurek.docs.setReturnInfo(&quot;lurek.test.blend&quot;, {
+        {type = &quot;number&quot;, description = &quot;Interpolated value&quot;},
+    })
+    local entry = lurek.docs.getCatalog():getEntry(&quot;lurek.test.blend&quot;)
+    print(&quot;returns set = &quot; .. #entry:getReturns())
+end</code></pre></details></article><article class="item-row api-row" id="fn-validate"><div class="item-row-main"><h3>validate</h3><pre class="inline-signature">lurek.docs.validate(catalog_ud: LApiCatalog?) -&gt; LValidationReport</pre><p>Compares a documentation catalog with the live reflected `lurek` API table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1062</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local report = lurek.docs.validate(cat)
+    print(&quot;valid = &quot; .. tostring(report:isValid()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-validatemodule"><div class="item-row-main"><h3>validateModule</h3><pre class="inline-signature">lurek.docs.validateModule(module_name: string, catalog_ud: LApiCatalog) -&gt; LValidationReport</pre><p>Compares one module&#x27;s documentation catalog entries with the live reflected module table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/docs_api.rs:1107</span></div><details class="example-block"><summary>Example · Exact example · docs.lua</summary><pre><code>do
+    local cat = lurek.docs.scan()
+    local report = lurek.docs.validateModule(&quot;math&quot;, cat)
+    print(&quot;math missing = &quot; .. report:missingCount())
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LApiCatalog.html">LApiCatalog</a></h3><p>Provides Lua methods for querying, merging, filtering, and exporting catalog data.</p></div><div class="item-row-meta"><span>13 methods</span><span>module docs</span></div><div class="card-note">Example: docs.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDocEntry.html">LDocEntry</a></h3><p>Provides Lua accessors for documentation entry metadata.</p></div><div class="item-row-meta"><span>17 methods</span><span>module docs</span></div><div class="card-note">Example: docs.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LQualityReport.html">LQualityReport</a></h3><p>Provides Lua accessors for documentation quality scoring results.</p></div><div class="item-row-meta"><span>11 methods</span><span>module docs</span></div><div class="card-note">Example: docs.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSchema.html">LSchema</a></h3><p>Lua-side schema validator built from docs field rules.</p></div><div class="item-row-meta"><span>7 methods</span><span>module docs</span></div><div class="card-note">Example: docs.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LValidationReport.html">LValidationReport</a></h3><p>Provides Lua accessors for documentation validation results.</p></div><div class="item-row-meta"><span>12 methods</span><span>module docs</span></div><div class="card-note">Example: docs.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

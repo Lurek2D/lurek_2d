@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.terminal - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a class="active" href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.terminal</h1>
+  <p>`lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.</p>
+  <div class="api-meta api-meta-header"><span>29 functions</span><span>2 classes</span><span>src/lua_api/terminal_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 88</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.terminal.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-addcompletion"><div class="item-row-main"><h3>addCompletion</h3><pre class="inline-signature">lurek.terminal.addCompletion(candidate: string)</pre><p>Registers a candidate string for tab-completion in the shared completion engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1651</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.clearCompletions()
+    lurek.terminal.addCompletion(&quot;help&quot;)
+    lurek.terminal.addCompletion(&quot;health&quot;)
+    lurek.terminal.addCompletion(&quot;heal&quot;)
+    lurek.terminal.addCompletion(&quot;inventory&quot;)
+    lurek.terminal.addCompletion(&quot;inspect&quot;)
+    local matches = lurek.terminal.getCompletions(&quot;he&quot;)
+    print(&quot;matches for &#x27;he&#x27;: &quot; .. table.concat(matches, &quot;, &quot;))
+    local inv = lurek.terminal.getCompletions(&quot;in&quot;)
+    print(&quot;matches for &#x27;in&#x27; = &quot; .. #inv)
+end</code></pre></details></article><article class="item-row api-row" id="fn-applytheme"><div class="item-row-main"><h3>applyTheme</h3><pre class="inline-signature">lurek.terminal.applyTheme(terminal: LTerminal, theme: string)</pre><p>Applies a named color theme to the terminal, setting default foreground and background colors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1465</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.applyTheme(term, &quot;solarized_dark&quot;)
+    print(&quot;applied solarized_dark&quot;)
+    lurek.terminal.applyTheme(term, &quot;monokai&quot;)
+    print(&quot;applied monokai&quot;)
+    lurek.terminal.applyTheme(term, &quot;dracula&quot;)
+    print(&quot;applied dracula&quot;)
+    lurek.terminal.applyTheme(term, &quot;nord&quot;)
+    print(&quot;applied nord&quot;)
+    lurek.terminal.applyTheme(term, &quot;solarized_light&quot;)
+    print(&quot;applied solarized_light&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearcmdhistory"><div class="item-row-main"><h3>clearCmdHistory</h3><pre class="inline-signature">lurek.terminal.clearCmdHistory(terminal: LTerminal)</pre><p>Removes all entries from the terminal command history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1453</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    lurek.terminal.clearCmdHistory(term)
+    local prev = lurek.terminal.prevCmd(term)
+    print(&quot;prev_cmd=&quot; .. tostring(prev))
+    local next_cmd = lurek.terminal.nextCmd(term)
+    print(&quot;next_cmd=&quot; .. tostring(next_cmd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearcompletions"><div class="item-row-main"><h3>clearCompletions</h3><pre class="inline-signature">lurek.terminal.clearCompletions()</pre><p>Removes all registered completion candidates from the shared completion engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1672</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.addCompletion(&quot;help&quot;)
+    lurek.terminal.addCompletion(&quot;heal&quot;)
+    lurek.terminal.clearCompletions()
+    local completions = lurek.terminal.getCompletions(&quot;he&quot;)
+    print(&quot;completion count = &quot; .. #completions)
+end</code></pre></details></article><article class="item-row api-row" id="fn-cmdhistorylen"><div class="item-row-main"><h3>cmdHistoryLen</h3><pre class="inline-signature">lurek.terminal.cmdHistoryLen(terminal: LTerminal) -&gt; integer</pre><p>Returns the number of commands currently stored in the terminal command history.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1442</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.pushCmdHistory(term, &quot;look&quot;)
+    lurek.terminal.pushCmdHistory(term, &quot;go north&quot;)
+    lurek.terminal.pushCmdHistory(term, &quot;take sword&quot;)
+    print(&quot;history len = &quot; .. lurek.terminal.cmdHistoryLen(term))
+    lurek.terminal.clearCmdHistory(term)
+    print(&quot;after clear len = &quot; .. lurek.terminal.cmdHistoryLen(term))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcompletions"><div class="item-row-main"><h3>getCompletions</h3><pre class="inline-signature">lurek.terminal.getCompletions(prefix: string) -&gt; string[]</pre><p>Returns all completion candidates matching the given prefix string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1684</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.clearCompletions()
+    lurek.terminal.addCompletion(&quot;help&quot;)
+    lurek.terminal.addCompletion(&quot;heal&quot;)
+    lurek.terminal.addCompletion(&quot;hex&quot;)
+    local completions = lurek.terminal.getCompletions(&quot;he&quot;)
+    print(&quot;matches = &quot; .. #completions)
+    print(&quot;first match = &quot; .. tostring(completions[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmaxcols"><div class="item-row-main"><h3>getMaxCols</h3><pre class="inline-signature">lurek.terminal.getMaxCols() -&gt; integer</pre><p>Returns the engine-defined maximum number of columns a terminal grid can have.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1719</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local maxCols = lurek.terminal.getMaxCols()
+    print(&quot;max cols = &quot; .. maxCols)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmaxrows"><div class="item-row-main"><h3>getMaxRows</h3><pre class="inline-signature">lurek.terminal.getMaxRows() -&gt; integer</pre><p>Returns the engine-defined maximum number of rows a terminal grid can have.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1726</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local maxRows = lurek.terminal.getMaxRows()
+    local maxCols = lurek.terminal.getMaxCols()
+    print(&quot;max rows = &quot; .. maxRows)
+    print(&quot;max cols = &quot; .. maxCols)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscrollback"><div class="item-row-main"><h3>getScrollback</h3><pre class="inline-signature">lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -&gt; string[]</pre><p>Retrieves a range of lines from the terminal scrollback buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1354</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    lurek.terminal.pushScrollback(term, &quot;line one&quot;)
+    lurek.terminal.pushScrollback(term, &quot;line two&quot;)
+    lurek.terminal.pushScrollback(term, &quot;line three&quot;)
+    local sb = lurek.terminal.getScrollback(term, 0, 5)
+    print(&quot;scrollback count=&quot; .. #sb)
+    print(&quot;first line=&quot; .. tostring(sb[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newborder"><div class="item-row-main"><h3>newBorder</h3><pre class="inline-signature">lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -&gt; LWidget</pre><p>Creates a new decorative border widget drawn using box-drawing characters.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1297</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local border = lurek.terminal.newBorder(1, 1, 30, 10)
+    print(&quot;border style = &quot; .. border:getStyle())
+    border:setStyle(&quot;double&quot;)
+    print(&quot;new style = &quot; .. border:getStyle())
+    border:setTitle(&quot;Inventory&quot;)
+    print(&quot;title = &quot; .. border:getTitle())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbutton"><div class="item-row-main"><h3>newButton</h3><pre class="inline-signature">lurek.terminal.newButton(col: integer, row: integer, width: integer, height: integer?, text: string?) -&gt; LWidget</pre><p>Creates a new clickable button widget with the given position, size, and label text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1235</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local clickCount = 0
+    local btn = lurek.terminal.newButton(10, 5, 12, 1, &quot;Click Me&quot;)
+    print(&quot;button text = &quot; .. btn:getText())
+    local w, h = btn:getSize()
+    print(&quot;button size = &quot; .. w .. &quot;x&quot; .. h)
+    btn:setOnClick(function()
+        clickCount = clickCount + 1
+        print(&quot;clicked! count = &quot; .. clickCount)
+    end)
+    print(&quot;click handler set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlabel"><div class="item-row-main"><h3>newLabel</h3><pre class="inline-signature">lurek.terminal.newLabel(col: integer, row: integer, text: string?) -&gt; LWidget</pre><p>Creates a new label widget that displays static text at the given cell position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1214</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local label = lurek.terminal.newLabel(5, 3, &quot;Score: 0&quot;)
+    local col, row = label:getPosition()
+    print(&quot;label type = &quot; .. label:type() .. &quot; is LWidget = &quot; .. tostring(label:typeOf(&quot;LWidget&quot;)))
+    print(&quot;text = &quot; .. label:getText() .. &quot; position = &quot; .. col .. &quot;, &quot; .. row)
+    label:setText(&quot;Score: 1500&quot;)
+    print(&quot;updated text = &quot; .. label:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlist"><div class="item-row-main"><h3>newList</h3><pre class="inline-signature">lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -&gt; LWidget</pre><p>Creates a new scrollable list widget for displaying and selecting items.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1279</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local list = lurek.terminal.newList(2, 3, 20, 8)
+    list:addItem(&quot;Sword&quot;)
+    list:addItem(&quot;Shield&quot;)
+    list:addItem(&quot;Potion&quot;)
+    list:addItem(&quot;Scroll&quot;)
+    list:addItem(&quot;Bow&quot;)
+    print(&quot;item count = &quot; .. list:getItemCount() .. &quot; item 1 = &quot; .. list:getItem(1) .. &quot; item 3 = &quot; .. list:getItem(3))
+    list:setSelected(2)
+    print(&quot;selected = &quot; .. list:getSelected())
+    list:setOnSelect(function() print(&quot;selection changed to &quot; .. list:getSelected()) end)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpanel"><div class="item-row-main"><h3>newPanel</h3><pre class="inline-signature">lurek.terminal.newPanel(col: integer, row: integer, width: integer?, height: integer?) -&gt; LWidget</pre><p>Creates a new panel widget that can contain child widgets for grouped layout.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1315</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local panel = lurek.terminal.newPanel(1, 1, 40, 20)
+    panel:addChild(lurek.terminal.newLabel(2, 2, &quot;Name:&quot;))
+    panel:addChild(lurek.terminal.newLabel(2, 3, &quot;Class:&quot;))
+    print(&quot;panel children = &quot; .. panel:getChildCount())
+    local child1 = panel:getChild(1)
+    print(&quot;child 1 text = &quot; .. child1:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newterminal"><div class="item-row-main"><h3>newTerminal</h3><pre class="inline-signature">lurek.terminal.newTerminal(cols: integer?, rows: integer?) -&gt; LTerminal</pre><p>Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1193</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 40)
+    print(&quot;type = &quot; .. term:type())
+    local cols, rows = term:getDimensions()
+    print(&quot;dimensions = &quot; .. cols .. &quot;x&quot; .. rows)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtextbox"><div class="item-row-main"><h3>newTextBox</h3><pre class="inline-signature">lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -&gt; LWidget</pre><p>Creates a new single-line text input widget at the given position with a fixed width.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1263</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local input = lurek.terminal.newTextBox(5, 8, 20)
+    print(&quot;input text = &#x27;&quot; .. input:getText() .. &quot;&#x27;&quot;)
+    input:setText(&quot;Hello&quot;)
+    print(&quot;set text = &quot; .. input:getText())
+    input:setMaxLength(30)
+    print(&quot;max length = &quot; .. input:getMaxLength())
+    input:setOnChange(function() print(&quot;text changed to: &quot; .. input:getText()) end)
+end</code></pre></details></article><article class="item-row api-row" id="fn-nextcmd"><div class="item-row-main"><h3>nextCmd</h3><pre class="inline-signature">lurek.terminal.nextCmd(terminal: LTerminal) -&gt; string</pre><p>Navigates forward in the terminal command history, returning the next command or nil if at the end.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1430</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    lurek.terminal.pushCmdHistory(term, &quot;north&quot;)
+    lurek.terminal.pushCmdHistory(term, &quot;east&quot;)
+    print(&quot;prev_cmd=&quot; .. tostring(lurek.terminal.prevCmd(term)))
+    local next_cmd = lurek.terminal.nextCmd(term)
+    print(&quot;next_cmd=&quot; .. tostring(next_cmd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-nextcompletion"><div class="item-row-main"><h3>nextCompletion</h3><pre class="inline-signature">lurek.terminal.nextCompletion(prefix: string) -&gt; string</pre><p>Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1700</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.clearCompletions()
+    lurek.terminal.addCompletion(&quot;attack&quot;)
+    lurek.terminal.addCompletion(&quot;attune&quot;)
+    lurek.terminal.addCompletion(&quot;attract&quot;)
+    lurek.terminal.resetCompletion()
+    local c1 = lurek.terminal.nextCompletion(&quot;att&quot;)
+    print(&quot;cycle 1 = &quot; .. tostring(c1))
+    local c2 = lurek.terminal.nextCompletion(&quot;att&quot;)
+    print(&quot;cycle 2 = &quot; .. tostring(c2))
+    local c3 = lurek.terminal.nextCompletion(&quot;att&quot;)
+    print(&quot;cycle 3 = &quot; .. tostring(c3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-parseansi"><div class="item-row-main"><h3>parseAnsi</h3><pre class="inline-signature">lurek.terminal.parseAnsi(text: string) -&gt; table</pre><p>Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1557</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local ansiText = &quot;\27[1;31mError:\27[0m File not found&quot;
+    local spans = lurek.terminal.parseAnsi(ansiText)
+    print(&quot;span count = &quot; .. #spans)
+    if spans[1] then print(&quot;span 1: text=&#x27;&quot; .. spans[1].text .. &quot;&#x27; bold=&quot; .. tostring(spans[1].bold)) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-prevcmd"><div class="item-row-main"><h3>prevCmd</h3><pre class="inline-signature">lurek.terminal.prevCmd(terminal: LTerminal) -&gt; string</pre><p>Navigates backward in the terminal command history, returning the previous command or nil if at the start.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1418</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    lurek.terminal.pushCmdHistory(term, &quot;look&quot;)
+    lurek.terminal.pushCmdHistory(term, &quot;take key&quot;)
+    lurek.terminal.clearCmdHistory(term)
+    local prev = lurek.terminal.prevCmd(term)
+    print(&quot;prev_cmd=&quot; .. tostring(prev))
+end</code></pre></details></article><article class="item-row api-row" id="fn-printansi"><div class="item-row-main"><h3>printAnsi</h3><pre class="inline-signature">lurek.terminal.printAnsi(terminal: LTerminal, col: integer, row: integer, text: string)</pre><p>Renders ANSI-colored text directly onto the terminal grid at the given cell position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1601</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.printAnsi(term, 1, 1, &quot;\27[1;33mWarning:\27[0m Low health&quot;)
+    lurek.terminal.printAnsi(term, 1, 2, &quot;\27[34mInfo:\27[0m Checkpoint saved&quot;)
+    lurek.terminal.printAnsi(term, 1, 3, &quot;\27[1;31mCritical:\27[0m System failure&quot;)
+    print(&quot;ANSI text rendered to grid&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printhighlighted"><div class="item-row-main"><h3>printHighlighted</h3><pre class="inline-signature">lurek.terminal.printHighlighted(terminal: LTerminal, col: integer, row: integer, text: string, rules: table)</pre><p>Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1492</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    local rules = { { pattern = &quot;local%s+%w+&quot;, fg = { r = 100, g = 150, b = 255 } }, { pattern = &#x27;\&quot;[^\&quot;]*\&quot;&#x27;, fg = { r = 200, g = 200, b = 100 } }, { pattern = &quot;%-%-%s.*$&quot;, fg = { r = 100, g = 100, b = 100 } }, { pattern = &quot;%d+&quot;, fg = { r = 255, g = 150, b = 50 } } }
+    local code = &#x27;local name = &quot;hero&quot; -- player name&#x27;
+    lurek.terminal.printHighlighted(term, 1, 1, code, rules)
+    print(&quot;highlighted code rendered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushcmdhistory"><div class="item-row-main"><h3>pushCmdHistory</h3><pre class="inline-signature">lurek.terminal.pushCmdHistory(terminal: LTerminal, cmd: string)</pre><p>Appends a command string to the terminal command history for up/down arrow recall.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1402</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.pushCmdHistory(term, &quot;status&quot;)
+    lurek.terminal.pushCmdHistory(term, &quot;inventory&quot;)
+    local prev = lurek.terminal.prevCmd(term)
+    print(&quot;prev 1 = &quot; .. tostring(prev))
+    prev = lurek.terminal.prevCmd(term)
+    print(&quot;prev 2 = &quot; .. tostring(prev))
+    local next_cmd = lurek.terminal.nextCmd(term)
+    print(&quot;next = &quot; .. tostring(next_cmd))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushscrollback"><div class="item-row-main"><h3>pushScrollback</h3><pre class="inline-signature">lurek.terminal.pushScrollback(terminal: LTerminal, line: string)</pre><p>Appends a line of text to the terminal scrollback buffer for later retrieval.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1334</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.pushScrollback(term, &quot;You see a dark corridor.&quot;)
+    lurek.terminal.pushScrollback(term, &quot;A torch flickers on the wall.&quot;)
+    lurek.terminal.pushScrollback(term, &quot;You hear footsteps.&quot;)
+    lurek.terminal.pushScrollback(term, &quot;An enemy appears!&quot;)
+    print(&quot;scrollback len = &quot; .. lurek.terminal.scrollbackLen(term))
+    local lines = lurek.terminal.getScrollback(term, 0, 3)
+    print(&quot;recent 3 lines: &quot; .. table.concat(lines, &quot; | &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-removecompletion"><div class="item-row-main"><h3>removeCompletion</h3><pre class="inline-signature">lurek.terminal.removeCompletion(candidate: string)</pre><p>Removes a previously registered completion candidate from the shared completion engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1662</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.clearCompletions()
+    lurek.terminal.addCompletion(&quot;test_completion&quot;)
+    lurek.terminal.addCompletion(&quot;test_other&quot;)
+    lurek.terminal.removeCompletion(&quot;test_completion&quot;)
+    local completions = lurek.terminal.getCompletions(&quot;test&quot;)
+    print(&quot;remaining completions = &quot; .. #completions)
+    print(&quot;first completion = &quot; .. tostring(completions[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-resetcompletion"><div class="item-row-main"><h3>resetCompletion</h3><pre class="inline-signature">lurek.terminal.resetCompletion()</pre><p>Resets the completion cycling state so the next call to nextCompletion starts from the first match.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1709</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    lurek.terminal.clearCompletions()
+    lurek.terminal.addCompletion(&quot;test_completion&quot;)
+    lurek.terminal.addCompletion(&quot;test_case&quot;)
+    print(&quot;first = &quot; .. tostring(lurek.terminal.nextCompletion(&quot;test&quot;)))
+    lurek.terminal.resetCompletion()
+    print(&quot;after reset = &quot; .. tostring(lurek.terminal.nextCompletion(&quot;test&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-scrollbacklen"><div class="item-row-main"><h3>scrollbackLen</h3><pre class="inline-signature">lurek.terminal.scrollbackLen(terminal: LTerminal) -&gt; integer</pre><p>Returns the number of lines currently stored in the terminal scrollback buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1374</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    lurek.terminal.pushScrollback(term, &quot;alpha&quot;)
+    lurek.terminal.pushScrollback(term, &quot;beta&quot;)
+    local sb_len = lurek.terminal.scrollbackLen(term)
+    print(&quot;scrollback_len=&quot; .. sb_len)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setscrollbackcap"><div class="item-row-main"><h3>setScrollbackCap</h3><pre class="inline-signature">lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer)</pre><p>Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1386</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    lurek.terminal.setScrollbackCap(term, 2)
+    lurek.terminal.pushScrollback(term, &quot;Line 1&quot;)
+    lurek.terminal.pushScrollback(term, &quot;Line 2&quot;)
+    lurek.terminal.pushScrollback(term, &quot;Line 3&quot;)
+    print(&quot;scrollback after overflow = &quot; .. lurek.terminal.scrollbackLen(term))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stripansi"><div class="item-row-main"><h3>stripAnsi</h3><pre class="inline-signature">lurek.terminal.stripAnsi(text: string) -&gt; string</pre><p>Removes all ANSI escape sequences from a string, returning plain text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/terminal_api.rs:1544</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local colored = &quot;\27[32mSuccess\27[0m: Operation complete&quot;
+    local plain = lurek.terminal.stripAnsi(colored)
+    print(&quot;stripped = &quot; .. plain)
+    print(&quot;length original = &quot; .. #colored)
+    print(&quot;length stripped = &quot; .. #plain)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTerminal.html">LTerminal</a></h3><p>Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.</p></div><div class="item-row-meta"><span>22 methods</span><span>module terminal</span></div><div class="card-note">Example: terminal.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LWidget.html">LWidget</a></h3><p>Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).</p></div><div class="item-row-meta"><span>37 methods</span><span>module terminal</span></div><div class="card-note">Example: terminal.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

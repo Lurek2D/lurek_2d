@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.input - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.input</h1>
+  <p>`lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.</p>
+  <div class="api-meta api-meta-header"><span>80 functions</span><span>3 classes</span><span>src/lua_api/input_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 98</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.input.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-advanceplayback"><div class="item-row-main"><h3>advancePlayback</h3><pre class="inline-signature">lurek.input.advancePlayback() -&gt; table</pre><p>Advances playback by one frame and returns events for that frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1401</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        lurek.input.loadRecording(rec:toJson())
+        lurek.input.startPlayback()
+    end
+    local events = lurek.input.advancePlayback()
+    print(&quot;events = &quot; .. #events)
+    lurek.input.stopPlayback()
+end</code></pre></details></article><article class="item-row api-row" id="fn-bind"><div class="item-row-main"><h3>bind</h3><pre class="inline-signature">lurek.input.bind(action: string, keys: any)</pre><p>Adds one or more keyboard/gamepad bindings to an action.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1017</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;jump&quot;, &quot;space&quot;)
+    lurek.input.bind(&quot;move_left&quot;, {&quot;a&quot;, &quot;left&quot;})
+    print(&quot;actions bound&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearbindings"><div class="item-row-main"><h3>clearBindings</h3><pre class="inline-signature">lurek.input.clearBindings()</pre><p>Removes all action bindings from the map.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1158</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;a1&quot;, &quot;q&quot;)
+    lurek.input.bind(&quot;a2&quot;, &quot;e&quot;)
+    lurek.input.clearBindings()
+    print(&quot;all bindings cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getaxis"><div class="item-row-main"><h3>getAxis</h3><pre class="inline-signature">lurek.input.getAxis(id: integer, axis: integer) -&gt; number</pre><p>Returns a gamepad axis value by index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:644</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local val = lurek.input.gamepad.getAxis(0, 0)
+    print(&quot;axis 0 = &quot; .. val)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getaxiscount"><div class="item-row-main"><h3>getAxisCount</h3><pre class="inline-signature">lurek.input.getAxisCount(id: integer) -&gt; integer</pre><p>Returns the axis count for a gamepad.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:614</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.gamepad.getAxisCount(0)
+    print(&quot;axes = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbackgroundevents"><div class="item-row-main"><h3>getBackgroundEvents</h3><pre class="inline-signature">lurek.input.getBackgroundEvents() -&gt; boolean</pre><p>Returns whether background gamepad event processing is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:866</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local was = lurek.input.gamepad.getBackgroundEvents()
+    lurek.input.gamepad.setBackgroundEvents(true)
+    print(&quot;bg events was=&quot; .. tostring(was) .. &quot; now=true&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbindings"><div class="item-row-main"><h3>getBindings</h3><pre class="inline-signature">lurek.input.getBindings() -&gt; string[]</pre><p>Returns all registered action bindings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1169</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;shoot&quot;, &quot;x&quot;)
+    local bindings = lurek.input.getBindings()
+    local shoot = rawget(bindings, &quot;shoot&quot;) or {}
+    print(&quot;has shoot = &quot; .. tostring(rawget(bindings, &quot;shoot&quot;) ~= nil))
+    print(&quot;shoot bindings = &quot; .. #shoot)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbuttoncount"><div class="item-row-main"><h3>getButtonCount</h3><pre class="inline-signature">lurek.input.getButtonCount(id: integer) -&gt; integer</pre><p>Returns the button count for a gamepad.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:600</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.gamepad.getButtonCount(0)
+    print(&quot;buttons = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcount"><div class="item-row-main"><h3>getCount</h3><pre class="inline-signature">lurek.input.getCount() -&gt; integer</pre><p>Returns the number of gamepad slots tracked by the runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:529</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.gamepad.getCount()
+    print(&quot;gamepad slots = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcursor"><div class="item-row-main"><h3>getCursor</h3><pre class="inline-signature">lurek.input.getCursor() -&gt; string</pre><p>Returns the current system cursor name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:509</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local name = lurek.input.mouse.getCursor()
+    print(&quot;cursor name = &quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getguid"><div class="item-row-main"><h3>getGUID</h3><pre class="inline-signature">lurek.input.getGUID(id: integer) -&gt; string</pre><p>Returns the GUID string for a gamepad.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:734</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local guid = lurek.input.gamepad.getGUID(0)
+    print(&quot;guid = &quot; .. guid)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgamepadmappingstring"><div class="item-row-main"><h3>getGamepadMappingString</h3><pre class="inline-signature">lurek.input.getGamepadMappingString(guid: string) -&gt; string</pre><p>Returns a stored mapping string for a gamepad GUID.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:887</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local guid = &quot;030000005e0400008e02000014010000&quot;
+    lurek.input.gamepad.setGamepadMapping(guid, guid .. &quot;,XInput,a:b0&quot;)
+    local mapping = lurek.input.gamepad.getGamepadMappingString(guid)
+    print(&quot;mapping = &quot; .. tostring(mapping))
+end</code></pre></details></article><article class="item-row api-row" id="fn-gethat"><div class="item-row-main"><h3>getHat</h3><pre class="inline-signature">lurek.input.getHat(id: integer, hat: integer) -&gt; string</pre><p>Returns hat direction for a gamepad hat index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:750</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local hat = lurek.input.gamepad.getHat(0, 0)
+    print(&quot;hat 0 = &quot; .. hat)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getjoystickcount"><div class="item-row-main"><h3>getJoystickCount</h3><pre class="inline-signature">lurek.input.getJoystickCount() -&gt; integer</pre><p>Returns the number of joystick slots tracked by the runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:537</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.gamepad.getJoystickCount()
+    local sticks = lurek.input.gamepad.getJoysticks()
+    print(&quot;joystick count = &quot; .. count .. &quot;, list = &quot; .. #sticks)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getjoysticks"><div class="item-row-main"><h3>getJoysticks</h3><pre class="inline-signature">lurek.input.getJoysticks() -&gt; integer[]</pre><p>Returns ids for currently connected gamepads.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:545</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.gamepad.getJoystickCount()
+    local sticks = lurek.input.gamepad.getJoysticks()
+    print(&quot;joystick count = &quot; .. count .. &quot;, list = &quot; .. #sticks)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getkeyfromscancode"><div class="item-row-main"><h3>getKeyFromScancode</h3><pre class="inline-signature">lurek.input.getKeyFromScancode(scancode: string) -&gt; string</pre><p>Converts a scancode name to its key name when known.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local key = lurek.input.keyboard.getKeyFromScancode(&quot;a&quot;)
+    print(&quot;scancode &#x27;a&#x27; → key &#x27;&quot; .. key .. &quot;&#x27;&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">lurek.input.getName(id: integer) -&gt; string</pre><p>Returns a gamepad display name by its id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:574</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local name = lurek.input.gamepad.getName(0)
+    print(&quot;gamepad name = &quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getplaybackframe"><div class="item-row-main"><h3>getPlaybackFrame</h3><pre class="inline-signature">lurek.input.getPlaybackFrame() -&gt; integer</pre><p>Returns the current playback frame index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1391</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local frame = lurek.input.getPlaybackFrame()
+    print(&quot;playback frame = &quot; .. frame)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">lurek.input.getPosition() -&gt; number</pre><p>Returns the current mouse position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:320</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local x, y = lurek.input.mouse.getPosition()
+    print(&quot;mouse at &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">lurek.input.getPosition(id: integer) -&gt; number</pre><p>Returns the position of a touch point by id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:961</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local touches = lurek.input.touch.getTouches()
+    local id = touches[1] and touches[1].id or 1
+    local x, y = lurek.input.touch.getPosition(id)
+    print(&quot;touch id = &quot; .. tostring(id))
+    print(&quot;touch at &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpressure"><div class="item-row-main"><h3>getPressure</h3><pre class="inline-signature">lurek.input.getPressure(id: integer) -&gt; number</pre><p>Returns pressure for a touch point by its id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:974</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local touches = lurek.input.touch.getTouches()
+    local id = touches[1] and touches[1].id or 1
+    local p = lurek.input.touch.getPressure(id)
+    print(&quot;touch id = &quot; .. tostring(id))
+    print(&quot;pressure = &quot; .. p)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getrelativemode"><div class="item-row-main"><h3>getRelativeMode</h3><pre class="inline-signature">lurek.input.getRelativeMode() -&gt; boolean</pre><p>Returns whether relative mouse mode is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:407</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.mouse.getRelativeMode()
+    print(&quot;relative mode = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscancodefromkey"><div class="item-row-main"><h3>getScancodeFromKey</h3><pre class="inline-signature">lurek.input.getScancodeFromKey(key: string) -&gt; string</pre><p>Converts a key name to its scancode name when known.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:289</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local sc = lurek.input.keyboard.getScancodeFromKey(&quot;space&quot;)
+    print(&quot;key &#x27;space&#x27; → scancode &#x27;&quot; .. sc .. &quot;&#x27;&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsystemcursor"><div class="item-row-main"><h3>getSystemCursor</h3><pre class="inline-signature">lurek.input.getSystemCursor(name: string) -&gt; LCursor</pre><p>Creates a system cursor handle from a cursor name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:490</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local cursor = lurek.input.mouse.getSystemCursor(&quot;arrow&quot;)
+    print(&quot;got system cursor = &quot; .. tostring(cursor ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettouchcount"><div class="item-row-main"><h3>getTouchCount</h3><pre class="inline-signature">lurek.input.getTouchCount() -&gt; integer</pre><p>Returns the current active touch count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:984</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local count = lurek.input.touch.getTouchCount()
+    print(&quot;touches = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettouches"><div class="item-row-main"><h3>getTouches</h3><pre class="inline-signature">lurek.input.getTouches() -&gt; table</pre><p>Returns active touch points with id, position, and pressure.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:934</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local touches = lurek.input.touch.getTouches()
+    print(&quot;touch ids = &quot; .. #touches)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwheeldelta"><div class="item-row-main"><h3>getWheelDelta</h3><pre class="inline-signature">lurek.input.getWheelDelta() -&gt; number</pre><p>Returns the current mouse wheel delta.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:518</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local dx, dy = lurek.input.mouse.getWheelDelta()
+    print(&quot;wheel dx = &quot; .. dx)
+    print(&quot;wheel dy = &quot; .. dy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getx"><div class="item-row-main"><h3>getX</h3><pre class="inline-signature">lurek.input.getX() -&gt; number</pre><p>Returns the current mouse x coordinate.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:331</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local x = lurek.input.mouse.getX()
+    print(&quot;mouse x=&quot; .. x)
+end</code></pre></details></article><article class="item-row api-row" id="fn-gety"><div class="item-row-main"><h3>getY</h3><pre class="inline-signature">lurek.input.getY() -&gt; number</pre><p>Returns the current mouse y coordinate.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:339</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local y = lurek.input.mouse.getY()
+    print(&quot;mouse y=&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-haskeyrepeat"><div class="item-row-main"><h3>hasKeyRepeat</h3><pre class="inline-signature">lurek.input.hasKeyRepeat() -&gt; boolean</pre><p>Returns whether key repeat tracking is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:262</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.keyboard.hasKeyRepeat()
+    print(&quot;key repeat = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.keyboard.setKeyRepeat
+do
+    lurek.input.keyboard.setKeyRepeat(true)
+    print(&quot;key repeat enabled&quot;)
+end
+
+--@api-stub: lurek.input.keyboard.hasTextInput
+do
+    local v = lurek.input.keyboard.hasTextInput()
+    print(&quot;text input = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.keyboard.setTextInput
+do
+    lurek.input.keyboard.setTextInput(true)
+    print(&quot;text input enabled&quot;)
+end
+
+--@api-stub: lurek.input.mouse.getPosition
+do
+    local x, y = lurek.input.mouse.getPosition()
+    print(&quot;mouse at &quot; .. x .. &quot;,&quot; .. y)
+end
+
+--@api-stub: lurek.input.mouse.getX
+do
+    local x = lurek.input.mouse.getX()
+    print(&quot;mouse x=&quot; .. x)
+end
+
+--@api-stub: lurek.input.mouse.getY
+do
+    local y = lurek.input.mouse.getY()
+    print(&quot;mouse y=&quot; .. y)
+end
+
+--@api-stub: lurek.input.mouse.isDown
+do
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print(&quot;left=&quot; .. tostring(left) .. &quot; right=&quot; .. tostring(right))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hastextinput"><div class="item-row-main"><h3>hasTextInput</h3><pre class="inline-signature">lurek.input.hasTextInput() -&gt; boolean</pre><p>Returns whether text input tracking is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:281</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.keyboard.hasTextInput()
+    print(&quot;text input = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isactiondown"><div class="item-row-main"><h3>isActionDown</h3><pre class="inline-signature">lurek.input.isActionDown(action: string) -&gt; boolean</pre><p>Returns whether any binding for an action is currently down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1190</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;fire&quot;, &quot;space&quot;)
+    local down = lurek.input.isActionDown(&quot;fire&quot;)
+    print(&quot;fire down = &quot; .. tostring(down))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isconnected"><div class="item-row-main"><h3>isConnected</h3><pre class="inline-signature">lurek.input.isConnected(id: integer) -&gt; boolean</pre><p>Returns whether a gamepad id is currently connected.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:563</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local connected = lurek.input.gamepad.isConnected(0)
+    print(&quot;gamepad 0 connected = &quot; .. tostring(connected))
+end</code></pre></details></article><article class="item-row api-row" id="fn-iscursorsupported"><div class="item-row-main"><h3>isCursorSupported</h3><pre class="inline-signature">lurek.input.isCursorSupported() -&gt; boolean</pre><p>Returns whether the current platform supports cursor changes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:501</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.mouse.isCursorSupported()
+    print(&quot;cursor supported = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isdown"><div class="item-row-main"><h3>isDown</h3><pre class="inline-signature">lurek.input.isDown(...: string) -&gt; boolean</pre><p>Returns whether any of the supplied key names are currently held down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local down = lurek.input.keyboard.isDown(&quot;space&quot;, &quot;w&quot;, &quot;up&quot;)
+    print(&quot;any key down = &quot; .. tostring(down))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isdown"><div class="item-row-main"><h3>isDown</h3><pre class="inline-signature">lurek.input.isDown(button: integer) -&gt; boolean</pre><p>Returns whether a one-based mouse button index is down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:348</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print(&quot;left=&quot; .. tostring(left) .. &quot; right=&quot; .. tostring(right))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isdown"><div class="item-row-main"><h3>isDown</h3><pre class="inline-signature">lurek.input.isDown(id: integer, button: integer) -&gt; boolean</pre><p>Returns whether a gamepad button is currently down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:629</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local pressed = lurek.input.gamepad.isDown(0, 0)
+    print(&quot;button 0 = &quot; .. tostring(pressed))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isdown"><div class="item-row-main"><h3>isDown</h3><pre class="inline-signature">lurek.input.isDown() -&gt; boolean</pre><p>Returns whether any bound key for this mapping is currently down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1098</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    -- isDown() returns true while any key is held; check inside an input event callback
+    local v = lurek.input.keyboard.isDown(&quot;a&quot;)
+    print(&quot;isDown available = &quot; .. tostring(type(lurek.input.keyboard.isDown) == &quot;function&quot;))
+    print(&quot;result type = &quot; .. type(v))
+end
+
+--@api-stub: lurek.input.wasPressed
+do
+    -- wasPressed() is true on the first frame the key goes down; call inside event callback
+    local v = lurek.input.wasPressed()
+    print(&quot;wasPressed available = &quot; .. tostring(type(lurek.input.wasPressed) == &quot;function&quot;))
+    print(&quot;result type = &quot; .. type(v))
+end
+
+--@api-stub: lurek.input.wasReleased
+do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased(&quot;space&quot;)
+    print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
+    print(&quot;space released = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.newMapping
+do
+    local mapping = lurek.input.newMapping(&quot;attack&quot;, {&quot;z&quot;, &quot;button1&quot;})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print(&quot;held=&quot; .. tostring(held) .. &quot; just=&quot; .. tostring(just) .. &quot; done=&quot; .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+do
+    local combo = lurek.input.newCombo({&quot;down&quot;, &quot;right&quot;, &quot;z&quot;}, {total_gap = 500})
+    print(&quot;combo steps = &quot; .. combo:totalSteps())
+    print(&quot;in progress = &quot; .. tostring(combo:isInProgress()))
+    print(&quot;progress = &quot; .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;, &quot;c&quot;})
+    local result = combo:feed(&quot;a&quot;)
+    print(&quot;feed a → &quot; .. result)
+end
+
+--@api-stub: LCombo:tick</code></pre></details></article><article class="item-row api-row" id="fn-isgamepad"><div class="item-row-main"><h3>isGamepad</h3><pre class="inline-signature">lurek.input.isGamepad(id: integer) -&gt; boolean</pre><p>Returns whether a connected gamepad exists at an id.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:589</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local is_gp = lurek.input.gamepad.isGamepad(0)
+    print(&quot;is gamepad = &quot; .. tostring(is_gp))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isgrabbed"><div class="item-row-main"><h3>isGrabbed</h3><pre class="inline-signature">lurek.input.isGrabbed() -&gt; boolean</pre><p>Returns whether the mouse is grabbed by the window.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:388</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.mouse.isGrabbed()
+    print(&quot;grabbed = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-ismodifieractive"><div class="item-row-main"><h3>isModifierActive</h3><pre class="inline-signature">lurek.input.isModifierActive(modifier: string) -&gt; boolean</pre><p>Returns whether a named keyboard modifier is active.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local shift = lurek.input.keyboard.isModifierActive(&quot;shift&quot;)
+    local ctrl = lurek.input.keyboard.isModifierActive(&quot;ctrl&quot;)
+    print(&quot;shift=&quot; .. tostring(shift) .. &quot; ctrl=&quot; .. tostring(ctrl))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isplayingback"><div class="item-row-main"><h3>isPlayingBack</h3><pre class="inline-signature">lurek.input.isPlayingBack() -&gt; boolean</pre><p>Returns whether the module recorder is currently playing back.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1383</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        lurek.input.loadRecording(rec:toJson())
+        lurek.input.startPlayback()
+    end
+    print(&quot;is_playing=&quot; .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.stopPlayback()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isrecording"><div class="item-row-main"><h3>isRecording</h3><pre class="inline-signature">lurek.input.isRecording() -&gt; boolean</pre><p>Returns whether the module recorder is currently recording.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1375</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    print(&quot;recording = &quot; .. tostring(lurek.input.isRecording()))
+    print(&quot;playing = &quot; .. tostring(lurek.input.isPlayingBack()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isscancodedown"><div class="item-row-main"><h3>isScancodeDown</h3><pre class="inline-signature">lurek.input.isScancodeDown(scancode: string) -&gt; boolean</pre><p>Returns whether a scancode is currently down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:241</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local down = lurek.input.keyboard.isScancodeDown(&quot;a&quot;)
+    print(&quot;scancode a down = &quot; .. tostring(down))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isvibrationsupported"><div class="item-row-main"><h3>isVibrationSupported</h3><pre class="inline-signature">lurek.input.isVibrationSupported(id: integer) -&gt; boolean</pre><p>Returns whether a gamepad supports vibration requests.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:687</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local sup = lurek.input.gamepad.isVibrationSupported(0)
+    print(&quot;vibration supported = &quot; .. tostring(sup))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">lurek.input.isVisible() -&gt; boolean</pre><p>Returns whether the mouse cursor is visible.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:369</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local v = lurek.input.mouse.isVisible()
+    print(&quot;cursor visible = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadgamepadmappings"><div class="item-row-main"><h3>loadGamepadMappings</h3><pre class="inline-signature">lurek.input.loadGamepadMappings(path: string)</pre><p>Loads gamepad mapping strings from a file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:900</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local mappingPath = &quot;save/gamecontrollerdb.txt&quot;
+    lurek.filesystem.write(mappingPath, &quot;030000005e0400008e02000014010000,XInput,a:b0\n&quot;)
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
+    lurek.input.gamepad.saveGamepadMappings(&quot;save/mappings_out.txt&quot;)
+    print(&quot;mappings loaded and saved&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadrecording"><div class="item-row-main"><h3>loadRecording</h3><pre class="inline-signature">lurek.input.loadRecording(json: string)</pre><p>Loads recording JSON into the module recorder.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1342</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then lurek.input.loadRecording(rec:toJson()) end
+    print(&quot;recording loaded = &quot; .. tostring(rec ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcombo"><div class="item-row-main"><h3>newCombo</h3><pre class="inline-signature">lurek.input.newCombo(steps: table, opts: table?) -&gt; LCombo</pre><p>Creates a combo detector from string steps or step tables with optional timing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1263</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local combo = lurek.input.newCombo({&quot;down&quot;, &quot;right&quot;, &quot;z&quot;}, {total_gap = 500})
+    print(&quot;combo steps = &quot; .. combo:totalSteps())
+    print(&quot;in progress = &quot; .. tostring(combo:isInProgress()))
+    print(&quot;progress = &quot; .. combo:progress())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcursor"><div class="item-row-main"><h3>newCursor</h3><pre class="inline-signature">lurek.input.newCursor(pixels: table, width: integer, height: integer, hotx: integer?, hoty: integer?) -&gt; LCursor</pre><p>Creates a custom cursor handle from RGBA pixels and hotspot coordinates.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:463</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local pixels = {}
+    for i = 1, 16 * 16 * 4 do
+        pixels[i] = 255
+    end
+    local cursor = lurek.input.mouse.newCursor(pixels, 16, 16, 0, 0)
+    print(&quot;custom cursor type = &quot; .. cursor:getType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmapping"><div class="item-row-main"><h3>newMapping</h3><pre class="inline-signature">lurek.input.newMapping(name: string, keys: any) -&gt; table</pre><p>Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1059</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local mapping = lurek.input.newMapping(&quot;attack&quot;, {&quot;z&quot;, &quot;button1&quot;})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print(&quot;held=&quot; .. tostring(held) .. &quot; just=&quot; .. tostring(just) .. &quot; done=&quot; .. tostring(done))
+end</code></pre></details></article><article class="item-row api-row" id="fn-savegamepadmappings"><div class="item-row-main"><h3>saveGamepadMappings</h3><pre class="inline-signature">lurek.input.saveGamepadMappings(path: string)</pre><p>Saves gamepad mapping strings to a file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:913</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local mappingPath = &quot;save/gamecontrollerdb.txt&quot;
+    lurek.filesystem.write(mappingPath, &quot;030000005e0400008e02000014010000,XInput,a:b0\n&quot;)
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
+    lurek.input.gamepad.saveGamepadMappings(&quot;save/mappings_out.txt&quot;)
+    print(&quot;mappings loaded and saved&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbackgroundevents"><div class="item-row-main"><h3>setBackgroundEvents</h3><pre class="inline-signature">lurek.input.setBackgroundEvents(enable: boolean)</pre><p>Enables or disables background gamepad event processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:855</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local was = lurek.input.gamepad.getBackgroundEvents()
+    lurek.input.gamepad.setBackgroundEvents(true)
+    print(&quot;bg events was=&quot; .. tostring(was) .. &quot; now=true&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcursor"><div class="item-row-main"><h3>setCursor</h3><pre class="inline-signature">lurek.input.setCursor(cursor: any)</pre><p>Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local cursor = lurek.input.mouse.getSystemCursor(&quot;arrow&quot;)
+    lurek.input.mouse.setCursor(cursor)
+    print(&quot;cursor set to arrow&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgamepadmapping"><div class="item-row-main"><h3>setGamepadMapping</h3><pre class="inline-signature">lurek.input.setGamepadMapping(guid: string, mapping: string)</pre><p>Stores a controller mapping string for a gamepad GUID.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:875</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local guid = lurek.input.gamepad.getGUID(1)
+    lurek.input.gamepad.setGamepadMapping(guid, &quot;custom_mapping_string&quot;)
+    print(&quot;custom mapping set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgrabbed"><div class="item-row-main"><h3>setGrabbed</h3><pre class="inline-signature">lurek.input.setGrabbed(grabbed: boolean)</pre><p>Sets whether the mouse is grabbed by the window.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:377</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.mouse.setGrabbed(false)
+    print(&quot;mouse released&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setkeyrepeat"><div class="item-row-main"><h3>setKeyRepeat</h3><pre class="inline-signature">lurek.input.setKeyRepeat(enabled: boolean)</pre><p>Enables or disables key repeat tracking.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:251</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.keyboard.setKeyRepeat(true)
+    print(&quot;key repeat enabled&quot;)
+end
+
+--@api-stub: lurek.input.keyboard.hasTextInput
+do
+    local v = lurek.input.keyboard.hasTextInput()
+    print(&quot;text input = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.keyboard.setTextInput
+do
+    lurek.input.keyboard.setTextInput(true)
+    print(&quot;text input enabled&quot;)
+end
+
+--@api-stub: lurek.input.mouse.getPosition
+do
+    local x, y = lurek.input.mouse.getPosition()
+    print(&quot;mouse at &quot; .. x .. &quot;,&quot; .. y)
+end
+
+--@api-stub: lurek.input.mouse.getX
+do
+    local x = lurek.input.mouse.getX()
+    print(&quot;mouse x=&quot; .. x)
+end
+
+--@api-stub: lurek.input.mouse.getY
+do
+    local y = lurek.input.mouse.getY()
+    print(&quot;mouse y=&quot; .. y)
+end
+
+--@api-stub: lurek.input.mouse.isDown
+do
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print(&quot;left=&quot; .. tostring(left) .. &quot; right=&quot; .. tostring(right))
+end
+
+--@api-stub: lurek.input.mouse.getWheelDelta
+do
+    local dx, dy = lurek.input.mouse.getWheelDelta()
+    print(&quot;wheel dx = &quot; .. dx)
+    print(&quot;wheel dy = &quot; .. dy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">lurek.input.setPosition(x: number, y: number)</pre><p>Requests a mouse cursor position change.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:416</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.mouse.setPosition(400, 300)
+    print(&quot;mouse warped to 400,300&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setrelativemode"><div class="item-row-main"><h3>setRelativeMode</h3><pre class="inline-signature">lurek.input.setRelativeMode(relative: boolean)</pre><p>Sets the relative mouse input mode state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.mouse.setRelativeMode(false)
+    print(&quot;relative mode off&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-settextinput"><div class="item-row-main"><h3>setTextInput</h3><pre class="inline-signature">lurek.input.setTextInput(enabled: boolean)</pre><p>Enables or disables text input tracking.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:270</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.keyboard.setTextInput(true)
+    print(&quot;text input enabled&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setvibration"><div class="item-row-main"><h3>setVibration</h3><pre class="inline-signature">lurek.input.setVibration(id: integer, low_freq: number, high_freq: number, duration_ms: number) -&gt; boolean</pre><p>Requests gamepad vibration with low and high frequency motor strengths.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:768</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.gamepad.setVibration(1, 0.3, 0.7, 100)
+    print(&quot;vibration set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setvisible"><div class="item-row-main"><h3>setVisible</h3><pre class="inline-signature">lurek.input.setVisible(visible: boolean)</pre><p>Sets the mouse cursor visibility state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:358</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.mouse.setVisible(true)
+    print(&quot;cursor shown&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-startplayback"><div class="item-row-main"><h3>startPlayback</h3><pre class="inline-signature">lurek.input.startPlayback()</pre><p>Starts playback of the loaded recording.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1354</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        lurek.input.loadRecording(rec:toJson())
+        lurek.input.startPlayback()
+    end
+    print(&quot;playing = &quot; .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.stopPlayback()
+end</code></pre></details></article><article class="item-row api-row" id="fn-startrecording"><div class="item-row-main"><h3>startRecording</h3><pre class="inline-signature">lurek.input.startRecording()</pre><p>Starts recording input events into the module recorder.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1318</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local recording = lurek.input.stopRecording()
+    print(&quot;captured = &quot; .. tostring(recording ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stopplayback"><div class="item-row-main"><h3>stopPlayback</h3><pre class="inline-signature">lurek.input.stopPlayback()</pre><p>Stops playback of the loaded recording.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1364</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then lurek.input.loadRecording(rec:toJson()); lurek.input.startPlayback() end
+    lurek.input.stopPlayback()
+    print(&quot;is_playing=&quot; .. tostring(lurek.input.isPlayingBack()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stoprecording"><div class="item-row-main"><h3>stopRecording</h3><pre class="inline-signature">lurek.input.stopRecording() -&gt; LInputRecording</pre><p>Stops input recording and returns the captured recording when one is active.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1329</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print(&quot;stopped recording=&quot; .. tostring(rec ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-unbind"><div class="item-row-main"><h3>unbind</h3><pre class="inline-signature">lurek.input.unbind(action: string) -&gt; boolean</pre><p>Removes all bindings for an action.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1149</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;temp&quot;, &quot;t&quot;)
+    local had = lurek.input.unbind(&quot;temp&quot;)
+    print(&quot;unbind had bindings = &quot; .. tostring(had))
+end</code></pre></details></article><article class="item-row api-row" id="fn-vibrate"><div class="item-row-main"><h3>vibrate</h3><pre class="inline-signature">lurek.input.vibrate(id: integer, low_freq: number, high_freq: number, duration_ms: number) -&gt; boolean</pre><p>Requests gamepad vibration with low and high frequency motor strengths.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:704</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local ok = lurek.input.gamepad.vibrate(0, 0.5, 0.5, 200)
+    print(&quot;vibrate ok = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-virtualdpad"><div class="item-row-main"><h3>virtualDpad</h3><pre class="inline-signature">lurek.input.virtualDpad(x: number, y: number, deadzone: number?) -&gt; table</pre><p>Converts analog x and y values into virtual d-pad booleans and direction.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:664</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local dpad = lurek.input.gamepad.virtualDpad(0.8, 0.0, 0.3)
+    print(&quot;direction = &quot; .. dpad.direction)
+    print(&quot;right = &quot; .. tostring(dpad.right))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasactionpressed"><div class="item-row-main"><h3>wasActionPressed</h3><pre class="inline-signature">lurek.input.wasActionPressed(action: string) -&gt; boolean</pre><p>Returns whether any binding for an action was pressed this frame and records the frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1208</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;jump&quot;, &quot;space&quot;)
+    local pressed = lurek.input.wasActionPressed(&quot;jump&quot;)
+    print(&quot;jump pressed = &quot; .. tostring(pressed))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasactionpressedwithin"><div class="item-row-main"><h3>wasActionPressedWithin</h3><pre class="inline-signature">lurek.input.wasActionPressedWithin(action: string, frames: integer) -&gt; boolean</pre><p>Returns whether an action was pressed within a recent frame window.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1248</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;dodge&quot;, &quot;shift&quot;)
+    local recent = lurek.input.wasActionPressedWithin(&quot;dodge&quot;, 10)
+    print(&quot;dodge recent = &quot; .. tostring(recent))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasactionreleased"><div class="item-row-main"><h3>wasActionReleased</h3><pre class="inline-signature">lurek.input.wasActionReleased(action: string) -&gt; boolean</pre><p>Returns whether any binding for an action was released this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1230</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    lurek.input.bind(&quot;run&quot;, &quot;shift&quot;)
+    local released = lurek.input.wasActionReleased(&quot;run&quot;)
+    print(&quot;run released = &quot; .. tostring(released))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasconnected"><div class="item-row-main"><h3>wasConnected</h3><pre class="inline-signature">lurek.input.wasConnected(id: integer) -&gt; boolean</pre><p>Returns whether a gamepad connected this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:828</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local c = lurek.input.gamepad.wasConnected(0)
+    print(&quot;connected=&quot; .. tostring(c))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasdisconnected"><div class="item-row-main"><h3>wasDisconnected</h3><pre class="inline-signature">lurek.input.wasDisconnected(id: integer) -&gt; boolean</pre><p>Returns whether a gamepad disconnected this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:842</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local d = lurek.input.gamepad.wasDisconnected(0)
+    print(&quot;disconnected=&quot; .. tostring(d))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waspressed"><div class="item-row-main"><h3>wasPressed</h3><pre class="inline-signature">lurek.input.wasPressed(id: integer, button: integer) -&gt; boolean</pre><p>Returns whether a gamepad button was pressed this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:799</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local pressed = lurek.input.gamepad.wasPressed(0, 0)
+    print(&quot;pressed=&quot; .. tostring(pressed))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waspressed"><div class="item-row-main"><h3>wasPressed</h3><pre class="inline-signature">lurek.input.wasPressed(id: integer) -&gt; boolean</pre><p>Returns whether a touch id began this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:993</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local touches = lurek.input.touch.getTouches()
+    local id = touches[1] and touches[1].id or 1
+    local pressed = lurek.input.touch.wasPressed(id)
+    local released = lurek.input.touch.wasReleased(id)
+    print(&quot;touch id = &quot; .. tostring(id))
+    print(&quot;pressed=&quot; .. tostring(pressed) .. &quot; released=&quot; .. tostring(released))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waspressed"><div class="item-row-main"><h3>wasPressed</h3><pre class="inline-signature">lurek.input.wasPressed() -&gt; boolean</pre><p>Returns whether any bound key for this mapping was pressed this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1114</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    -- wasPressed() is true on the first frame the key goes down; call inside event callback
+    local v = lurek.input.wasPressed()
+    print(&quot;wasPressed available = &quot; .. tostring(type(lurek.input.wasPressed) == &quot;function&quot;))
+    print(&quot;result type = &quot; .. type(v))
+end
+
+--@api-stub: lurek.input.wasReleased
+do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased(&quot;space&quot;)
+    print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
+    print(&quot;space released = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.newMapping
+do
+    local mapping = lurek.input.newMapping(&quot;attack&quot;, {&quot;z&quot;, &quot;button1&quot;})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print(&quot;held=&quot; .. tostring(held) .. &quot; just=&quot; .. tostring(just) .. &quot; done=&quot; .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+do
+    local combo = lurek.input.newCombo({&quot;down&quot;, &quot;right&quot;, &quot;z&quot;}, {total_gap = 500})
+    print(&quot;combo steps = &quot; .. combo:totalSteps())
+    print(&quot;in progress = &quot; .. tostring(combo:isInProgress()))
+    print(&quot;progress = &quot; .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;, &quot;c&quot;})
+    local result = combo:feed(&quot;a&quot;)
+    print(&quot;feed a → &quot; .. result)
+end
+
+--@api-stub: LCombo:tick
+do
+    local combo = lurek.input.newCombo({&quot;x&quot;, &quot;y&quot;}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print(&quot;tick → &quot; .. result)
+end
+
+--@api-stub: LCombo:getStep
+do</code></pre></details></article><article class="item-row api-row" id="fn-wasreleased"><div class="item-row-main"><h3>wasReleased</h3><pre class="inline-signature">lurek.input.wasReleased(id: integer, button: integer) -&gt; boolean</pre><p>Returns whether a gamepad button was released this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:814</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local released = lurek.input.gamepad.wasReleased(0, 0)
+    print(&quot;released=&quot; .. tostring(released))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasreleased"><div class="item-row-main"><h3>wasReleased</h3><pre class="inline-signature">lurek.input.wasReleased(id: integer) -&gt; boolean</pre><p>Returns whether a touch id ended this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1002</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    local touches = lurek.input.touch.getTouches()
+    local id = touches[1] and touches[1].id or 1
+    local pressed = lurek.input.touch.wasPressed(id)
+    local released = lurek.input.touch.wasReleased(id)
+    print(&quot;touch id = &quot; .. tostring(id))
+    print(&quot;pressed=&quot; .. tostring(pressed) .. &quot; released=&quot; .. tostring(released))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wasreleased"><div class="item-row-main"><h3>wasReleased</h3><pre class="inline-signature">lurek.input.wasReleased() -&gt; boolean</pre><p>Returns whether any bound key for this mapping was released this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1130</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
+    -- wasReleased(key) is true on the first frame the key goes up
+    local v = lurek.input.wasReleased(&quot;space&quot;)
+    print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
+    print(&quot;space released = &quot; .. tostring(v))
+end
+
+--@api-stub: lurek.input.newMapping
+do
+    local mapping = lurek.input.newMapping(&quot;attack&quot;, {&quot;z&quot;, &quot;button1&quot;})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print(&quot;held=&quot; .. tostring(held) .. &quot; just=&quot; .. tostring(just) .. &quot; done=&quot; .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+do
+    local combo = lurek.input.newCombo({&quot;down&quot;, &quot;right&quot;, &quot;z&quot;}, {total_gap = 500})
+    print(&quot;combo steps = &quot; .. combo:totalSteps())
+    print(&quot;in progress = &quot; .. tostring(combo:isInProgress()))
+    print(&quot;progress = &quot; .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;, &quot;c&quot;})
+    local result = combo:feed(&quot;a&quot;)
+    print(&quot;feed a → &quot; .. result)
+end
+
+--@api-stub: LCombo:tick
+do
+    local combo = lurek.input.newCombo({&quot;x&quot;, &quot;y&quot;}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print(&quot;tick → &quot; .. result)
+end
+
+--@api-stub: LCombo:getStep
+do
+    local combo = lurek.input.newCombo({&quot;a&quot;, &quot;b&quot;})
+    local step = combo:getStep(1)
+    print(&quot;step 1 key = &quot; .. step.key .. &quot; gap = &quot; .. step.gap_ms)
+end
+
+--@api-stub: LCombo:reset
+do
+    local combo = lurek.input.newCombo({&quot;q&quot;, &quot;w&quot;, &quot;e&quot;})</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCombo.html">LCombo</a></h3><p>Lua-side combo detector handle tracking ordered key sequences.</p></div><div class="item-row-meta"><span>9 methods</span><span>module input</span></div><div class="card-note">Example: input.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCursor.html">LCursor</a></h3><p>Lua-side cursor handle for system and custom cursor requests.</p></div><div class="item-row-meta"><span>4 methods</span><span>module input</span></div><div class="card-note">Example: input.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LInputRecording.html">LInputRecording</a></h3><p>Lua-side handle for serialized input recording data.</p></div><div class="item-row-meta"><span>5 methods</span><span>module input</span></div><div class="card-note">Example: input.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

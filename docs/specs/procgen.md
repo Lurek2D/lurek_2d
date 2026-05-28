@@ -2,11 +2,11 @@
 
 ## TL;DR
 
-- The `procgen` module is a versatile Foundations tier library dedicated to procedural content generation in Lurek2D.
+- The `procgen` module is a versatile Feature Systems tier library dedicated to procedural content generation in Lurek2D.
 
 ## General Info
 
-- Module group: `Foundations`
+- Module group: `Feature Systems`
 - Source path: `src/procgen/`
 - Lua API path(s): `src/lua_api/procgen_api.rs`
 - Primary Lua namespace: `lurek.procgen`

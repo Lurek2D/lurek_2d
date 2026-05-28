@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["css_named","retro"],"struct":["Palette"]};

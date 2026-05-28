@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["blend","color_core","palette"]};

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LDataWriter - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LDataWriter</h1>
+  <p>Lua-side binary writer for sequential byte construction.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/binary.html">lurek.binary</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU8(255)
+    print(&quot;after writeU8 len = &quot; .. w:len())
+    print(&quot;first byte = &quot; .. string.byte(w:toBytes(), 1))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LDataWriter userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-len"><div class="item-row-main"><h3>len</h3><pre class="inline-signature">LDataWriter:len() -&gt; integer</pre><p>Returns the current length of the writer buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:841</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU16LE(100)
+    w:writeU16LE(200)
+    print(&quot;writer len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-seek"><div class="item-row-main"><h3>seek</h3><pre class="inline-signature">LDataWriter:seek(pos: integer)</pre><p>Moves the writer cursor to a specific byte position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:830</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU32LE(0)
+    w:seek(0)
+    w:writeU32LE(42)
+    print(&quot;seek then overwrite, len = &quot; .. w:len())
+    print(&quot;cursor = &quot; .. w:tell())
+end
+
+--@api-stub: LDataWriter:tell
+do
+    local w = lurek.binary.newWriter()
+    w:writeU8(1)
+    w:writeU8(2)
+    print(&quot;cursor at = &quot; .. w:tell())
+end
+
+--@api-stub: LDataWriter:len
+do
+    local w = lurek.binary.newWriter()
+    w:writeU16LE(100)
+    w:writeU16LE(200)
+    print(&quot;writer len = &quot; .. w:len())
+end
+
+--@api-stub: LDataWriter:toBytes
+do
+    local w = lurek.binary.newWriter()
+    w:writeU8(65)
+    w:writeU8(66)
+    local bytes = w:toBytes()
+    print(&quot;bytes len = &quot; .. #bytes)
+    print(&quot;bytes text = &quot; .. bytes)
+end
+
+--@api-stub: LDataWriter:type
+do
+    local w = lurek.binary.newWriter()
+    print(&quot;type = &quot; .. w:type())
+end
+
+--@api-stub: LDataWriter:typeOf
+do
+    local w = lurek.binary.newWriter()
+    print(&quot;is LDataWriter = &quot; .. tostring(w:typeOf(&quot;LDataWriter&quot;)))
+end
+
+--@api-stub: LByteData:getSize</code></pre></details></article><article class="item-row api-row" id="method-tell"><div class="item-row-main"><h3>tell</h3><pre class="inline-signature">LDataWriter:tell() -&gt; integer</pre><p>Returns the writer cursor position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:837</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU8(1)
+    w:writeU8(2)
+    print(&quot;cursor at = &quot; .. w:tell())
+end</code></pre></details></article><article class="item-row api-row" id="method-tobytes"><div class="item-row-main"><h3>toBytes</h3><pre class="inline-signature">LDataWriter:toBytes() -&gt; string</pre><p>Returns the writer buffer as a binary string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:845</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU8(65)
+    w:writeU8(66)
+    local bytes = w:toBytes()
+    print(&quot;bytes len = &quot; .. #bytes)
+    print(&quot;bytes text = &quot; .. bytes)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LDataWriter:type() -&gt; string</pre><p>Returns the Lua-visible type name for this data writer handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:851</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    print(&quot;type = &quot; .. w:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LDataWriter:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this data writer handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:856</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    print(&quot;is LDataWriter = &quot; .. tostring(w:typeOf(&quot;LDataWriter&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-writebytes"><div class="item-row-main"><h3>writeBytes</h3><pre class="inline-signature">LDataWriter:writeBytes(s: string)</pre><p>Appends raw bytes from a Lua string to the writer buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:823</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeBytes(&quot;\x00\x01\x02\x03&quot;)
+    print(&quot;after writeBytes len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writef32le"><div class="item-row-main"><h3>writeF32LE</h3><pre class="inline-signature">LDataWriter:writeF32LE(v: number)</pre><p>Appends a 32-bit float value in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:802</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeF32LE(3.14)
+    print(&quot;after writeF32LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writef64le"><div class="item-row-main"><h3>writeF64LE</h3><pre class="inline-signature">LDataWriter:writeF64LE(v: number)</pre><p>Appends a 64-bit float value in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:809</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeF64LE(2.718281828)
+    print(&quot;after writeF64LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writei16le"><div class="item-row-main"><h3>writeI16LE</h3><pre class="inline-signature">LDataWriter:writeI16LE(v: integer)</pre><p>Appends a signed 16-bit integer in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:781</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeI16LE(-500)
+    print(&quot;after writeI16LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writei32le"><div class="item-row-main"><h3>writeI32LE</h3><pre class="inline-signature">LDataWriter:writeI32LE(v: integer)</pre><p>Appends a signed 32-bit integer in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:795</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeI32LE(-99999)
+    print(&quot;after writeI32LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writei8"><div class="item-row-main"><h3>writeI8</h3><pre class="inline-signature">LDataWriter:writeI8(v: integer)</pre><p>Appends a signed 8-bit integer to the writer buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:760</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeI8(-128)
+    print(&quot;after writeI8 len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writestring"><div class="item-row-main"><h3>writeString</h3><pre class="inline-signature">LDataWriter:writeString(s: string)</pre><p>Appends a UTF-8 encoded string to the writer buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:816</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeString(&quot;Hello!&quot;)
+    print(&quot;after writeString len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writeu16be"><div class="item-row-main"><h3>writeU16BE</h3><pre class="inline-signature">LDataWriter:writeU16BE(v: integer)</pre><p>Appends an unsigned 16-bit integer in big-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:774</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU16BE(1000)
+    print(&quot;after writeU16BE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writeu16le"><div class="item-row-main"><h3>writeU16LE</h3><pre class="inline-signature">LDataWriter:writeU16LE(v: integer)</pre><p>Appends an unsigned 16-bit integer in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:767</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU16LE(1000)
+    print(&quot;after writeU16LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writeu32le"><div class="item-row-main"><h3>writeU32LE</h3><pre class="inline-signature">LDataWriter:writeU32LE(v: integer)</pre><p>Appends an unsigned 32-bit integer in little-endian byte order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:788</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU32LE(123456)
+    print(&quot;after writeU32LE len = &quot; .. w:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-writeu8"><div class="item-row-main"><h3>writeU8</h3><pre class="inline-signature">LDataWriter:writeU8(v: integer)</pre><p>Appends an unsigned 8-bit integer to the writer buffer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/binary_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · binary.lua</summary><pre><code>do
+    local w = lurek.binary.newWriter()
+    w:writeU8(255)
+    print(&quot;after writeU8 len = &quot; .. w:len())
+    print(&quot;first byte = &quot; .. string.byte(w:toBytes(), 1))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

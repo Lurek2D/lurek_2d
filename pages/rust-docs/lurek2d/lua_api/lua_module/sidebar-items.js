@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ModuleEntry"],"trait":["LuaModule"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["color256","parse_ansi_spans","strip_ansi_codes"],"struct":["AnsiColor","AnsiSpan"]};

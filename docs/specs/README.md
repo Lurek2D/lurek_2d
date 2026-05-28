@@ -1,4 +1,4 @@
-# `docs/specs/` — Lurek2D Module Reference Index
+﻿# `docs/specs/` â€” Lurek2D Module Reference Index
 
 ## TL;DR
 
@@ -8,7 +8,7 @@
 
 ## Table of Contents
 
-- [`docs/specs/` — Lurek2D Module Reference Index](#docsspecs--lurek2d-module-reference-index)
+- [`docs/specs/` â€” Lurek2D Module Reference Index](#docsspecs--lurek2d-module-reference-index)
 	- [Table of Contents](#table-of-contents)
 	- [How specs are produced](#how-specs-are-produced)
 	- [Module index](#module-index)
@@ -34,10 +34,10 @@ Each spec follows [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md). Sections split into two 
 
 Regen workflow:
 
-- `python tools/gen_all_docs.py` — full sweep: regenerates every spec's auto sections plus `docs/api/lurek.md`, `docs/api/rust.md`, `docs/api/lureksome.md`, `docs/api/lurek.lua`, `docs/api/lureksome.lua`, and coverage reports under `logs/reports/`.
-- `python tools/docs/gen_module_specs.py` — specs only.
-- `python tools/validate/validate_module_coverage.py` — ensures every top-level `src/` module still has a matching spec file.
-- `python tools/audit/doc_coverage.py` — flags missing / undersized manual prose.
+- `python tools/gen_all_docs.py` â€” full sweep: regenerates every spec's auto sections plus `docs/api/lurek.md`, `docs/api/rust.md`, `docs/api/lureksome.md`, `docs/api/lurek.lua`, `docs/api/lureksome.lua`, and coverage reports under `logs/reports/`.
+- `python tools/docs/gen_module_specs.py` â€” specs only.
+- `python tools/validate/validate_module_coverage.py` â€” ensures every top-level `src/` module still has a matching spec file.
+- `python tools/audit/doc_coverage.py` â€” flags missing / undersized manual prose.
 
 > **Do not hand-edit the auto sections.** Edits there are silently overwritten on the next regen. If an auto section is wrong, fix the source annotations and rerun the generator.
 
@@ -45,49 +45,46 @@ Regen workflow:
 
 ## Module index
 
-56 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md § Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
+56 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md Â§ Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
 
-**Plugin tier** column reflects the P1 evaluation matrix in `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` § 5. Values:
+**Plugin tier** column reflects the P1 evaluation matrix in `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` Â§ 5. Values:
 
-- `CORE-KEEP` — stays in the default core binary.
-- `TIER-1-PLUGIN` — first-wave plugin candidate (largest savings, lowest in-core coupling).
-- `TIER-2-PLUGIN` — second-wave plugin candidate (smaller savings or partial split).
-- `—` — not yet evaluated, or not a plugin candidate by structural role (Foundations / Core Runtime / Edge integration).
+- `CORE-KEEP` â€” stays in the default core binary.
+- `TIER-1-PLUGIN` â€” first-wave plugin candidate (largest savings, lowest in-core coupling).
+- `TIER-2-PLUGIN` â€” second-wave plugin candidate (smaller savings or partial split).
+- `â€”` â€” not yet evaluated, or not a plugin candidate by structural role (Foundations / Core Runtime / Edge integration).
 
 Plugin tier definitions live in [docs/architecture/plugins.md](../architecture/plugins.md).
 
 ### Foundations
 
-Pure algorithms, data structures, math, serialisation. Leaf modules — no engine dependencies.
+Pure algorithms, data structures, math, serialisation. Leaf modules â€” no engine dependencies.
 
 | Module      | Spec                         | Purpose                                                                                             | Plugin tier     |
 | ----------- | ---------------------------- | --------------------------------------------------------------------------------------------------- | --------------- |
-| `color`     | [color.md](color.md)         | RGBA color primitives with color-space conversions, blending modes, and predefined palettes.         | —               |
+| `color`     | [color.md](color.md)         | RGBA color primitives with color-space conversions, blending modes, and predefined palettes.         | â€”               |
 | `compute`   | [compute.md](compute.md)     | Dense N-D numerical array library exposed as `lurek.compute.*`; CPU-only matrix / signal workloads. | `TIER-2-PLUGIN` |
-| `binary`    | [binary.md](binary.md)       | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.        | —               |
+| `binary`    | [binary.md](binary.md)       | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.        | â€”               |
 | `dataframe` | [dataframe.md](dataframe.md) | In-memory column-major tabular data with lightweight SQL-style queries (`lurek.dataframe.*`).       | `TIER-1-PLUGIN` |
-| `flownet`  | [flownet.md](flownet.md)     | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.           | —               |
-| `globe`     | [globe.md](globe.md)         | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.       | —               |
-| `layout`    | [layout.md](layout.md)       | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.                         | —               |
-| `log`       | [log.md](log.md)             | Lua-accessible logging facade over the Rust `log` crate, controlled via `RUST_LOG`.                 | —               |
-| `math`      | [math.md](math.md)           | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.               | —               |
-| `patterns`  | [patterns.md](patterns.md)   | Twelve classic game-programming design patterns exposed as `lurek.patterns.*`.                      | —               |
-| `procgen`   | [procgen.md](procgen.md)     | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only, headless.         | `TIER-2-PLUGIN` |
+| `flownet`  | [flownet.md](flownet.md)     | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.           | â€”               |
+| `globe`     | [globe.md](globe.md)         | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.       | â€”               |
+| `layout`    | [layout.md](layout.md)       | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.                         | â€”               |
+| `log`       | [log.md](log.md)             | Lua-accessible logging facade over the Rust `log` crate, controlled via `RUST_LOG`.                 | â€”               |
+| `math`      | [math.md](math.md)           | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.               | â€”               |
+| `patterns`  | [patterns.md](patterns.md)   | Twelve classic game-programming design patterns exposed as `lurek.patterns.*`.                      | â€”               |
 | `serialize` | [serialize.md](serialize.md) | Format-agnostic text serialisation centred on the recursive `SerialValue` enum.                     | `CORE-KEEP`     |
-
-### Core Runtime
 
 Engine lifecycle, resource registry, I/O, timing, events, concurrency. Imports Foundations only.
 
 | Module       | Spec                           | Purpose                                                                                                    | Plugin tier     |
 | ------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------- | --------------- |
-| `event`      | [event.md](event.md)           | Centralised event queue: OS input, window state, custom Lua events, automation injections.                 | —               |
-| `filesystem` | [filesystem.md](filesystem.md) | Sandboxed virtual filesystem (`GameFS`); blocks path-traversal escape from the game directory.             | —               |
+| `event`      | [event.md](event.md)           | Centralised event queue: OS input, window state, custom Lua events, automation injections.                 | â€”               |
+| `filesystem` | [filesystem.md](filesystem.md) | Sandboxed virtual filesystem (`GameFS`); blocks path-traversal escape from the game directory.             | â€”               |
 | `network`    | [network.md](network.md)       | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.                                 | `TIER-1-PLUGIN` |
-| `repl`       | [repl.md](repl.md)             | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. | —               |
-| `runtime`    | [runtime.md](runtime.md)       | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. | —               |
-| `thread`     | [thread.md](thread.md)         | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).                        | —               |
-| `timer`      | [timer.md](timer.md)           | Frame-timing (`Clock`) and deferred / repeating callback scheduling (`Scheduler`).                         | —               |
+| `repl`       | [repl.md](repl.md)             | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. | â€”               |
+| `runtime`    | [runtime.md](runtime.md)       | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. | â€”               |
+| `thread`     | [thread.md](thread.md)         | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).                        | â€”               |
+| `timer`      | [timer.md](timer.md)           | Frame-timing (`Clock`) and deferred / repeating callback scheduling (`Scheduler`).                         | â€”               |
 
 ### Platform Services
 
@@ -95,19 +92,19 @@ OS-facing backends behind pure-Rust contracts. Imports Foundations + Core Runtim
 
 | Module    | Spec                     | Purpose                                                                                                | Plugin tier     |
 | --------- | ------------------------ | ------------------------------------------------------------------------------------------------------ | --------------- |
-| `audio`   | [audio.md](audio.md)     | Sound loading and playback wrapping `rodio`; `Mixer` / `Bus` instances live in `SharedState`.          | —               |
-| `camera`  | [camera.md](camera.md)   | 2D camera and viewport types. Pure data; no GPU resources.                                             | —               |
-| `dsp`     | [dsp.md](dsp.md)         | Digital signal processing: real-time effects chains, offline batch processing, audio visualization.    | —               |
+| `audio`   | [audio.md](audio.md)     | Sound loading and playback wrapping `rodio`; `Mixer` / `Bus` instances live in `SharedState`.          | â€”               |
+| `camera`  | [camera.md](camera.md)   | 2D camera and viewport types. Pure data; no GPU resources.                                             | â€”               |
+| `dsp`     | [dsp.md](dsp.md)         | Digital signal processing: real-time effects chains, offline batch processing, audio visualization.    | â€”               |
 | `effect`  | [effect.md](effect.md)   | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.                  | `CORE-KEEP`     |
-| `font`    | [font.md](font.md)       | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts.                  | —               |
-| `image`   | [image.md](image.md)     | CPU-side `ImageData` (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.                 | —               |
-| `input`   | [input.md](input.md)     | Per-frame keyboard / mouse / gamepad / touch state translated from winit events.                       | —               |
+| `font`    | [font.md](font.md)       | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts.                  | â€”               |
+| `image`   | [image.md](image.md)     | CPU-side `ImageData` (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.                 | â€”               |
+| `input`   | [input.md](input.md)     | Per-frame keyboard / mouse / gamepad / touch state translated from winit events.                       | â€”               |
 | `light`   | [light.md](light.md)     | 2D point-light data model. Pure container; renderer owns all GPU work.                                 | `CORE-KEEP`     |
-| `midi`    | [midi.md](midi.md)       | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls.    | —               |
+| `midi`    | [midi.md](midi.md)       | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls.    | â€”               |
 | `physics` | [physics.md](physics.md) | Rigid-body 2D physics on top of `rapier2d`. Heavy dependency tree.                                     | `TIER-2-PLUGIN` |
-| `render`  | [render.md](render.md)   | wgpu 22 renderer with deferred `RenderCommand` queue; nothing executes during Lua callbacks.           | —               |
+| `render`  | [render.md](render.md)   | wgpu 22 renderer with deferred `RenderCommand` queue; nothing executes during Lua callbacks.           | â€”               |
 | `visibility` | [visibility.md](visibility.md) | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. | `CORE-KEEP` |
-| `window`  | [window.md](window.md)   | Window control via deferred `WindowState` writes; winit ops applied at frame start on the main thread. | —               |
+| `window`  | [window.md](window.md)   | Window control via deferred `WindowState` writes; winit ops applied at frame start on the main thread. | â€”               |
 
 ### Feature Systems
 
@@ -116,48 +113,49 @@ Game-domain services. Imports Foundations + Core Runtime + Platform Services.
 | Module       | Spec                           | Purpose                                                                                                | Plugin tier     |
 | ------------ | ------------------------------ | ------------------------------------------------------------------------------------------------------ | --------------- |
 | `ai`         | [ai.md](ai.md)                 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.             | `TIER-1-PLUGIN` |
-| `dialog`     | [dialog.md](dialog.md)         | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry.          | —               |
+| `dialog`     | [dialog.md](dialog.md)         | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry.          | â€”               |
 | `learning`   | [learning.md](learning.md)     | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits.   | `TIER-1-PLUGIN` |
-| `animation`  | [animation.md](animation.md)   | Sprite animation: source-rect changes over time. Imports only `math`; headless-testable.               | —               |
-| `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | —            |
-| `automation` | [automation.md](automation.md) | Automated input simulation for headless tests, QA replay, recorded sessions.                           | —               |
+| `animation`  | [animation.md](animation.md)   | Sprite animation: source-rect changes over time. Imports only `math`; headless-testable.               | â€”               |
+| `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | â€”            |
+| `automation` | [automation.md](automation.md) | Automated input simulation for headless tests, QA replay, recorded sessions.                           | â€”               |
 | `charts`     | [charts.md](charts.md)         | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.            | `TIER-2-PLUGIN` |
-| `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | —               |
-| `ecs`        | [ecs.md](ecs.md)               | Entity-Component-System: identity / data / behaviour separation for runtime composition.               | —               |
-| `grep`       | [grep.md](grep.md)             | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search.                | —               |
-| `i18n`       | [i18n.md](i18n.md)             | Internationalisation and localisation; user-facing text in locale data files (`lurek.i18n.*`). | —               |
-| `mapblock`   | [mapblock.md](mapblock.md)     | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines.     | —               |
+| `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | â€”               |
+| `ecs`        | [ecs.md](ecs.md)               | Entity-Component-System: identity / data / behaviour separation for runtime composition.               | â€”               |
+| `grep`       | [grep.md](grep.md)             | Text search engine for game content: literal, regex, glob, fuzzy, parallel file search.                | â€”               |
+| `i18n`       | [i18n.md](i18n.md)             | Internationalisation and localisation; user-facing text in locale data files (`lurek.i18n.*`). | â€”               |
+| `mapblock`   | [mapblock.md](mapblock.md)     | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines.     | â€”               |
 | `minimap`    | [minimap.md](minimap.md)       | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.                   | `TIER-2-PLUGIN` |
 | `mods`       | [mods.md](mods.md)             | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.                           | `TIER-2-PLUGIN` |
 | `overlay`    | [overlay.md](overlay.md)       | Screen overlay system: weather, atmosphere, screen effects, and transitions.                           | `CORE-KEEP`     |
 | `parallax`   | [parallax.md](parallax.md)     | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes.                 | `TIER-2-PLUGIN` |
 | `particle`   | [particle.md](particle.md)     | Emitter-based 2D particle systems with bounded pools and Euler integration.                            | `CORE-KEEP`     |
-| `pathfind`   | [pathfind.md](pathfind.md)     | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to `ai`.         | —               |
-| `pipeline`   | [pipeline.md](pipeline.md)     | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing.                   | —               |
+| `pathfind`   | [pathfind.md](pathfind.md)     | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to `ai`.         | â€”               |
+| `pipeline`   | [pipeline.md](pipeline.md)     | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing.                   | â€”               |
 | `province`   | [province.md](province.md)     | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge.  | `CORE-KEEP`     |
 | `raycaster`  | [raycaster.md](raycaster.md)   | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting.               | `TIER-1-PLUGIN` |
-| `save`       | [save.md](save.md)             | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to `serial`.             | —               |
-| `scene`      | [scene.md](scene.md)           | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes.         | —               |
-| `spine`      | [spine.md](spine.md)           | Hierarchical skeletal animation (own implementation; not the official Spine SDK — A-02 + licensing).   | `TIER-1-PLUGIN` |
+| `save`       | [save.md](save.md)             | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to `serial`.             | â€”               |
+| `scene`      | [scene.md](scene.md)           | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes.         | â€”               |
+| `spine`      | [spine.md](spine.md)           | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing).   | `TIER-1-PLUGIN` |
 | `sprite`     | [sprite.md](sprite.md)         | Sprite and sprite-batch rendering above the `render` command queue.                                    | `CORE-KEEP`     |
 | `terminal`   | [terminal.md](terminal.md)     | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering.                     | `TIER-1-PLUGIN` |
 | `tilemap`    | [tilemap.md](tilemap.md)       | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort.             | `CORE-KEEP`     |
-| `tween`      | [tween.md](tween.md)           | Property animation: interpolated transitions on Lua table fields without per-frame lerp code.          | —               |
+| `tween`      | [tween.md](tween.md)           | Property animation: interpolated transitions on Lua table fields without per-frame lerp code.          | â€”               |
 | `ui`         | [ui.md](ui.md)                 | Retained-mode widget system; rendering deferred through `RenderCommand`.                               | `TIER-1-PLUGIN` |
-| `validator`  | [validator.md](validator.md)   | Content validation engine: asset checks, import resolution, API compliance, custom rules.              | —               |
+| `validator`  | [validator.md](validator.md)   | Content validation engine: asset checks, import resolution, API compliance, custom rules.              | â€”               |
+| `procgen`   | [procgen.md](procgen.md)     | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds.            | `TIER-2-PLUGIN` |
 
 ### Edge / Integration
 
-Composition root, scripting bridge, devtools, build outputs. Top of the DAG — no module imports from these.
+Composition root, scripting bridge, devtools, build outputs. Top of the DAG â€” no module imports from these.
 
 | Module        | Spec                             | Purpose                                                                                         | Plugin tier |
 | ------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
-| `app`         | [app.md](app.md)                 | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.         | —           |
-| `debugbridge` | [debugbridge.md](debugbridge.md) | TCP debug bridge (`127.0.0.1`, JSON-over-TCP) for the VS Code extension and MCP server.         | —           |
-| `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | —           |
-| `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | —           |
+| `app`         | [app.md](app.md)                 | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.         | â€”           |
+| `debugbridge` | [debugbridge.md](debugbridge.md) | TCP debug bridge (`127.0.0.1`, JSON-over-TCP) for the VS Code extension and MCP server.         | â€”           |
+| `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | â€”           |
+| `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | â€”           |
 
-> Total module specs: **56** — one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
+> Total module specs: **56** â€” one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
 
 ---
 
@@ -165,37 +163,37 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG — 
 
 1. **Create the source module** at `src/<module>/` following the [Module Internal File Structure Standard](../architecture/engine-architecture.md#module-internal-file-structure-standard) in `engine-architecture.md`.
 2. **Scaffold the spec** with `python tools/docs/gen_module_specs.py` (or run the full sweep `python tools/gen_all_docs.py`). The generator creates `docs/specs/<module>.md` with the auto sections populated.
-3. **Hand-write the manual sections** — `Summary`, `General Info`, `Notes`, `References` — using [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md) as the structural reference.
-4. **Add a row to this index** under the appropriate tier (Foundations / Core Runtime / Platform Services / Feature Systems / Edge / Integration). Set the Plugin tier column based on the latest plugin evaluation (or `—` if not yet assessed).
+3. **Hand-write the manual sections** â€” `Summary`, `General Info`, `Notes`, `References` â€” using [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md) as the structural reference.
+4. **Add a row to this index** under the appropriate tier (Foundations / Core Runtime / Platform Services / Feature Systems / Edge / Integration). Set the Plugin tier column based on the latest plugin evaluation (or `â€”` if not yet assessed).
 5. **Update CAG metadata** if the module exposes a new `lurek.*` namespace: extend the Cross-Artifact Sync table in [.github/copilot-instructions.md](../../.github/copilot-instructions.md#cross-artifact-sync) and the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) block if the module sits in a new tier.
 
 Then run the quality gate before committing:
 
-- `python tools/validate/validate_module_coverage.py` — exit 0.
-- `python tools/audit/doc_coverage.py` — exit 0.
-- `python tools/validate/cag_validate.py` — exit 0 if `.github/` was touched in step 5.
+- `python tools/validate/validate_module_coverage.py` â€” exit 0.
+- `python tools/audit/doc_coverage.py` â€” exit 0.
+- `python tools/validate/cag_validate.py` â€” exit 0 if `.github/` was touched in step 5.
 - Add an entry to `docs/CHANGELOG.md` under the current version.
 
 ---
 
 ## Cross-references
 
-- [docs/architecture/README.md](../architecture/README.md) — index of architecture narratives; the entry point that maps each spec back to the doc it lives inside.
-- [docs/architecture/engine-architecture.md](../architecture/engine-architecture.md) — module group dependency model, full module inventory by tier, frame loop, boot sequence.
-- [docs/architecture/render-command-architecture.md](../architecture/render-command-architecture.md) — three-layer render pipeline (Lua → `RenderCommand` queue → wgpu); cross-cuts every Platform Services + Feature Systems spec that pushes draw calls.
-- [docs/architecture/philosophy.md](../architecture/philosophy.md) — binding constraints (A-01..A-05, B-01..B-05, T-01..T-08, C-01..C-05, Q-01..Q-05) and Zen Rules. Cited from every spec's `General Info` block.
-- [docs/architecture/plugins.md](../architecture/plugins.md) — defines `CORE-KEEP` / `TIER-1-PLUGIN` / `TIER-2-PLUGIN` semantics, manifest format, load mechanism, and the phased migration plan.
-- [docs/handbook.md](../handbook.md) — contributor onboarding: where to look, how to ship a change, and how to run the quality gates.
-- [docs/api/lurek.md](../api/lurek.md) — generated reference for the `lurek.*` Lua surface; companion to every spec's `Lua API Reference` section.
-- [.github/copilot-instructions.md](../../.github/copilot-instructions.md#cross-artifact-sync) — Cross-Artifact Sync table that tells you which other files to update when a spec changes.
+- [docs/architecture/README.md](../architecture/README.md) â€” index of architecture narratives; the entry point that maps each spec back to the doc it lives inside.
+- [docs/architecture/engine-architecture.md](../architecture/engine-architecture.md) â€” module group dependency model, full module inventory by tier, frame loop, boot sequence.
+- [docs/architecture/render-command-architecture.md](../architecture/render-command-architecture.md) â€” three-layer render pipeline (Lua â†’ `RenderCommand` queue â†’ wgpu); cross-cuts every Platform Services + Feature Systems spec that pushes draw calls.
+- [docs/architecture/philosophy.md](../architecture/philosophy.md) â€” binding constraints (A-01..A-05, B-01..B-05, T-01..T-08, C-01..C-05, Q-01..Q-05) and Zen Rules. Cited from every spec's `General Info` block.
+- [docs/architecture/plugins.md](../architecture/plugins.md) â€” defines `CORE-KEEP` / `TIER-1-PLUGIN` / `TIER-2-PLUGIN` semantics, manifest format, load mechanism, and the phased migration plan.
+- [docs/handbook.md](../handbook.md) â€” contributor onboarding: where to look, how to ship a change, and how to run the quality gates.
+- [docs/api/lurek.md](../api/lurek.md) â€” generated reference for the `lurek.*` Lua surface; companion to every spec's `Lua API Reference` section.
+- [.github/copilot-instructions.md](../../.github/copilot-instructions.md#cross-artifact-sync) â€” Cross-Artifact Sync table that tells you which other files to update when a spec changes.
 
 ---
 
 ## References
 
-- [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md) — canonical section list and authoring guide for a single spec.
-- [tools/docs/gen_module_specs.py](../../tools/docs/gen_module_specs.py) — generator for the auto sections.
-- [tools/gen_all_docs.py](../../tools/gen_all_docs.py) — full doc-regeneration sweep.
-- [tools/validate/validate_module_coverage.py](../../tools/validate/validate_module_coverage.py) — spec coverage validator for top-level modules.
-- [tools/audit/doc_coverage.py](../../tools/audit/doc_coverage.py) — manual-prose coverage report.
-- `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` § 5 — plugin candidate evaluation matrix (source of the Plugin tier column).
+- [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md) â€” canonical section list and authoring guide for a single spec.
+- [tools/docs/gen_module_specs.py](../../tools/docs/gen_module_specs.py) â€” generator for the auto sections.
+- [tools/gen_all_docs.py](../../tools/gen_all_docs.py) â€” full doc-regeneration sweep.
+- [tools/validate/validate_module_coverage.py](../../tools/validate/validate_module_coverage.py) â€” spec coverage validator for top-level modules.
+- [tools/audit/doc_coverage.py](../../tools/audit/doc_coverage.py) â€” manual-prose coverage report.
+- `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` Â§ 5 â€” plugin candidate evaluation matrix (source of the Plugin tier column).

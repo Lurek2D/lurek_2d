@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ColorMode","FogLevel","MarkerAnimation","OverlayShape"],"struct":["LayerData","MinimapMarker","MinimapObject","MinimapObjectType","MinimapPing","OverlayPath"]};

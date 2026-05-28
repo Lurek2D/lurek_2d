@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LVecFrame - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a class="active" href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LVecFrame</h1>
+  <p>Lua-side vectorized dataframe handle for numeric column operations.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/dataframe.html">lurek.dataframe</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Adds a scalar value to every cell in a numeric column (in-place)
+  -- colAdd adds a scalar to every cell in a column (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;score\n10\n20\n30\n&quot;))
+  vf:colAdd(&quot;score&quot;, 5)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;score[1] after +5: &quot; .. tostring(df:getValue(1, &quot;score&quot;)))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LVecFrame userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-applymask"><div class="item-row-main"><h3>applyMask</h3><pre class="inline-signature">LVecFrame:applyMask(mask_tbl: table) -&gt; LVecFrame</pre><p>Returns a vectorized frame filtered by a boolean mask table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1829</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns a new VecFrame containing only rows where mask is true
+  -- applyMask returns a new VecFrame with only the rows where mask is true.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp\n10\n50\n90\n&quot;))
+  local mask = vf:filterMask(&quot;hp&quot;, &quot;&gt;=&quot;, 50)
+  local alive = vf:applyMask(mask)
+  lurek.log.info(&quot;alive rows: &quot; .. alive:nrows())
+end</code></pre></details></article><article class="item-row api-row" id="method-colabs"><div class="item-row-main"><h3>colAbs</h3><pre class="inline-signature">LVecFrame:colAbs(col: string)</pre><p>Applies absolute value to a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1719</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies absolute value to every cell in a numeric column (in-place)
+  -- colAbs converts negative cells to their absolute value (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;vel\n-3\n4\n-1\n&quot;))
+  vf:colAbs(&quot;vel&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;speed[1]: &quot; .. tostring(df:getValue(1, &quot;vel&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-coladd"><div class="item-row-main"><h3>colAdd</h3><pre class="inline-signature">LVecFrame:colAdd(col: string, val: number)</pre><p>Adds a scalar to a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1680</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Adds a scalar value to every cell in a numeric column (in-place)
+  -- colAdd adds a scalar to every cell in a column (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;score\n10\n20\n30\n&quot;))
+  vf:colAdd(&quot;score&quot;, 5)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;score[1] after +5: &quot; .. tostring(df:getValue(1, &quot;score&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colcast"><div class="item-row-main"><h3>colCast</h3><pre class="inline-signature">LVecFrame:colCast(col: string, dtype: string)</pre><p>Casts a vectorized column to another data type in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1854</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Casts a column to a different data type (e.g., &quot;float64&quot;, &quot;int64&quot;)
+  -- colCast changes the internal storage type of a column.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;level\n1\n2\n3\n&quot;))
+  vf:colCast(&quot;level&quot;, &quot;float64&quot;)
+  lurek.log.info(&quot;level dtype after cast: &quot; .. vf:colType(&quot;level&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-colceil"><div class="item-row-main"><h3>colCeil</h3><pre class="inline-signature">LVecFrame:colCeil(col: string)</pre><p>Applies ceil to a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1746</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies ceil (round up) to every cell in a numeric column (in-place)
+  -- colCeil rounds every cell up to the nearest integer (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;y\n1.1\n2.5\n3.0\n&quot;))
+  vf:colCeil(&quot;y&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;ceiled y[1]: &quot; .. tostring(df:getValue(1, &quot;y&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colclamp"><div class="item-row-main"><h3>colClamp</h3><pre class="inline-signature">LVecFrame:colClamp(col: string, min_val: number, max_val: number)</pre><p>Clamps a numeric column in place. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1766</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Clamps every cell in a numeric column to [min, max] range (in-place)
+  -- colClamp enforces a [min, max] range on every cell (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp\n-5\n50\n150\n&quot;))
+  vf:colClamp(&quot;hp&quot;, 0, 100)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;clamped hp[1]: &quot; .. tostring(df:getValue(1, &quot;hp&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-coldiv"><div class="item-row-main"><h3>colDiv</h3><pre class="inline-signature">LVecFrame:colDiv(col: string, val: number)</pre><p>Divides a numeric column by a scalar in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1710</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Divides every cell in a numeric column by a scalar (in-place)
+  -- colDiv divides every cell by a scalar (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;score\n100\n200\n&quot;))
+  vf:colDiv(&quot;score&quot;, 200)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;normalised[1]: &quot; .. tostring(df:getValue(1, &quot;score&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colfloor"><div class="item-row-main"><h3>colFloor</h3><pre class="inline-signature">LVecFrame:colFloor(col: string)</pre><p>Applies floor to a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1737</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies floor (round down) to every cell in a numeric column (in-place)
+  -- colFloor rounds every cell down to the nearest integer (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;x\n1.9\n2.1\n3.7\n&quot;))
+  vf:colFloor(&quot;x&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;floored x[1]: &quot; .. tostring(df:getValue(1, &quot;x&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colmul"><div class="item-row-main"><h3>colMul</h3><pre class="inline-signature">LVecFrame:colMul(col: string, val: number)</pre><p>Multiplies a numeric column by a scalar in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1700</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Multiplies every cell in a numeric column by a scalar (in-place)
+  -- colMul multiplies every cell in a column by a scalar (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;dmg\n10\n20\n&quot;))
+  vf:colMul(&quot;dmg&quot;, 2.0)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;dmg[1] doubled: &quot; .. tostring(df:getValue(1, &quot;dmg&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colneg"><div class="item-row-main"><h3>colNeg</h3><pre class="inline-signature">LVecFrame:colNeg(col: string)</pre><p>Negates a numeric column in place. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1755</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Negates every cell in a numeric column (in-place)
+  -- colNeg negates every cell (in-place), flipping the sign.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;vy\n3\n-2\n0\n&quot;))
+  vf:colNeg(&quot;vy&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;bounced vy[1]: &quot; .. tostring(df:getValue(1, &quot;vy&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colop"><div class="item-row-main"><h3>colOp</h3><pre class="inline-signature">LVecFrame:colOp(out_col: string, left_col: string, op: string, right_col: string)</pre><p>Applies a binary column operation into an output column.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1781</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies a binary operation between two columns, storing result in a new column
+  -- colOp computes (col_a op col_b) per row into a new output column.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;atk,def\n30,10\n40,15\n&quot;))
+  vf:colOp(&quot;net&quot;, &quot;atk&quot;, &quot;sub&quot;, &quot;def&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;net[1]: &quot; .. tostring(df:getValue(1, &quot;net&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colsqrt"><div class="item-row-main"><h3>colSqrt</h3><pre class="inline-signature">LVecFrame:colSqrt(col: string)</pre><p>Applies square root to a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1728</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies square root to every cell in a numeric column (in-place)
+  -- colSqrt applies square root to every cell (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;d2\n9\n16\n25\n&quot;))
+  vf:colSqrt(&quot;d2&quot;)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;dist[1]: &quot; .. tostring(df:getValue(1, &quot;d2&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-colsub"><div class="item-row-main"><h3>colSub</h3><pre class="inline-signature">LVecFrame:colSub(col: string, val: number)</pre><p>Subtracts a scalar from a numeric column in place.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1690</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Subtracts a scalar from every cell in a numeric column (in-place)
+  -- colSub subtracts a scalar from every cell (in-place).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;stamina\n100\n80\n&quot;))
+  vf:colSub(&quot;stamina&quot;, 10)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;stamina[1] after drain: &quot; .. tostring(df:getValue(1, &quot;stamina&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-coltype"><div class="item-row-main"><h3>colType</h3><pre class="inline-signature">LVecFrame:colType(col: string) -&gt; string</pre><p>Returns the data type name for a vectorized column.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1847</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns the data type name of a vectorized column (&quot;float64&quot;, &quot;int64&quot;, &quot;text&quot;, &quot;bool&quot;)
+  -- colType returns the internal data type of a column (&quot;float64&quot;, &quot;int64&quot;, etc.).
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp\n10\n20\n&quot;))
+  lurek.log.info(&quot;hp dtype: &quot; .. vf:colType(&quot;hp&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-columns"><div class="item-row-main"><h3>columns</h3><pre class="inline-signature">LVecFrame:columns() -&gt; string[]</pre><p>Returns all vectorized column names in order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1871</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns an array table of column names in order
+  -- columns() on a VecFrame returns the column name array.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp,mp\n10,5\n&quot;))
+  local cols = vf:columns()
+  lurek.log.info(&quot;VecFrame columns: &quot; .. cols[1] .. &quot;, &quot; .. cols[2])
+end</code></pre></details></article><article class="item-row api-row" id="method-filtermask"><div class="item-row-main"><h3>filterMask</h3><pre class="inline-signature">LVecFrame:filterMask(col: string, cmp_op: string, val: number) -&gt; number[]</pre><p>Builds a boolean mask for a numeric column comparison.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1809</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Builds a boolean mask array from a column comparison
+  -- filterMask builds a boolean mask array from a column comparison.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp\n10\n50\n90\n&quot;))
+  local mask = vf:filterMask(&quot;hp&quot;, &quot;&gt;=&quot;, 50)
+  lurek.log.info(&quot;row 2 passes: &quot; .. tostring(mask[2]))
+end</code></pre></details></article><article class="item-row api-row" id="method-ncols"><div class="item-row-main"><h3>ncols</h3><pre class="inline-signature">LVecFrame:ncols() -&gt; integer</pre><p>Returns the number of columns in this vectorized frame.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1867</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns the number of columns in this dataframe
+  -- ncols on a VecFrame returns the column count.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;x,y\n1,2\n&quot;))
+  lurek.log.info(&quot;VecFrame cols: &quot; .. vf:ncols())
+end</code></pre></details></article><article class="item-row api-row" id="method-nrows"><div class="item-row-main"><h3>nrows</h3><pre class="inline-signature">LVecFrame:nrows() -&gt; integer</pre><p>Returns the number of rows in this vectorized frame.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1863</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns the number of rows in this dataframe
+  -- nrows on a VecFrame returns the row count, same as on DataFrame.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;v\n1\n2\n3\n&quot;))
+  lurek.log.info(&quot;VecFrame rows: &quot; .. vf:nrows())
+end</code></pre></details></article><article class="item-row api-row" id="method-parreduce"><div class="item-row-main"><h3>parReduce</h3><pre class="inline-signature">LVecFrame:parReduce(cols_tbl: table, op: string) -&gt; table</pre><p>Reduces multiple numeric columns in parallel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1883</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Reduces multiple columns in parallel using a named operation
+  -- parReduce reduces multiple columns in parallel using a named operation.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;hp,mp\n10,5\n20,10\n30,15\n&quot;))
+  local sums = vf:parReduce({&quot;hp&quot;, &quot;mp&quot;}, &quot;sum&quot;)
+  lurek.log.info(&quot;hp sum: &quot; .. tostring(sums[&quot;hp&quot;]))
+end</code></pre></details></article><article class="item-row api-row" id="method-parscalarop"><div class="item-row-main"><h3>parScalarOp</h3><pre class="inline-signature">LVecFrame:parScalarOp(cols_tbl: table, op: string, val: number)</pre><p>Applies a scalar operation to multiple numeric columns in parallel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1911</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Applies a scalar operation to multiple columns in parallel
+  -- parScalarOp applies a scalar operation to multiple columns in parallel.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;x,y\n1,2\n3,4\n&quot;))
+  vf:parScalarOp({&quot;x&quot;, &quot;y&quot;}, &quot;mul&quot;, 2.0)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;x[1] doubled: &quot; .. tostring(df:getValue(1, &quot;x&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-reduce"><div class="item-row-main"><h3>reduce</h3><pre class="inline-signature">LVecFrame:reduce(col: string, op: string) -&gt; number</pre><p>Reduces a numeric column with a named operation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1796</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Reduces a numeric column to a single value using a named operation
+  -- reduce aggregates a column to one value using a named operation.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;score\n10\n20\n30\n&quot;))
+  local total = vf:reduce(&quot;score&quot;, &quot;sum&quot;)
+  lurek.log.info(&quot;total score: &quot; .. total)
+end</code></pre></details></article><article class="item-row api-row" id="method-todataframe"><div class="item-row-main"><h3>toDataFrame</h3><pre class="inline-signature">LVecFrame:toDataFrame() -&gt; LDataFrame</pre><p>Converts this vectorized frame to a dataframe.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1932</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Converts this VecFrame back to a regular DataFrame
+  -- toDataFrame converts this VecFrame back to a regular DataFrame.
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;v\n1\n2\n3\n&quot;))
+  vf:colAdd(&quot;v&quot;, 10)
+  local df = vf:toDataFrame()
+  lurek.log.info(&quot;v[1] after +10: &quot; .. tostring(df:getValue(1, &quot;v&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LVecFrame:type() -&gt; string</pre><p>Returns the Lua-visible type name for this vectorized frame handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1941</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns the type name string &quot;DataFrame&quot; for this handle
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;v\n1\n&quot;))
+  print(&quot;vec type&quot;, vf:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LVecFrame:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this vectorized frame handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/dataframe_api.rs:1946</span></div><details class="example-block"><summary>Example · Exact example · dataframe.lua</summary><pre><code>do
+-- Returns true if this handle matches the given type name
+  local vf = lurek.dataframe.toVec(lurek.dataframe.fromCSV(&quot;v\n1\n&quot;))
+  print(&quot;is vec frame&quot;, vf:typeOf(&quot;LVecFrame&quot;))
+  print(&quot;is object&quot;, vf:typeOf(&quot;LObject&quot;))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

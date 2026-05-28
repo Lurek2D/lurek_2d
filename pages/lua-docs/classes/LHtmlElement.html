@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LHtmlElement - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a class="active" href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LHtmlElement</h1>
+  <p>Lua-side DOM element handle with stale-generation detection.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/html.html">lurek.html</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;p&gt;owned&lt;/p&gt;&quot;)
+    local el = doc:query(&quot;p&quot;)
+    if el then
+        print(&quot;owner type = &quot; .. el:getDocument():type())
+    end
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LHtmlElement userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addclass"><div class="item-row-main"><h3>addClass</h3><pre class="inline-signature">LHtmlElement:addClass(name: string)</pre><p>Adds a CSS class to this element&#x27;s class list.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:511</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;box&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then el:addClass(&quot;highlight&quot;) end
+    print(&quot;class added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-appendhtml"><div class="item-row-main"><h3>appendHtml</h3><pre class="inline-signature">LHtmlElement:appendHtml(html: string)</pre><p>Appends HTML source to this element&#x27;s inner HTML.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:446</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;ul&gt;&lt;li&gt;first&lt;/li&gt;&lt;/ul&gt;&quot;)
+    local el = doc:query(&quot;ul&quot;)
+    if el then el:appendHtml(&quot;&lt;li&gt;second&lt;/li&gt;&quot;) end
+    print(&quot;html appended&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-blur"><div class="item-row-main"><h3>blur</h3><pre class="inline-signature">LHtmlElement:blur()</pre><p>Removes keyboard focus from this element when it is focused.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:591</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;input id=&#x27;field2&#x27;/&gt;&quot;)
+    local el = doc:getElementById(&quot;field2&quot;)
+    if el then
+        el:focus()
+        el:blur()
+    end
+    print(&quot;blurred&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-focus"><div class="item-row-main"><h3>focus</h3><pre class="inline-signature">LHtmlElement:focus()</pre><p>Gives keyboard focus to this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:584</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;input id=&#x27;field&#x27;/&gt;&quot;)
+    local el = doc:getElementById(&quot;field&quot;)
+    if el then el:focus() end
+    print(&quot;focused&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getattribute"><div class="item-row-main"><h3>getAttribute</h3><pre class="inline-signature">LHtmlElement:getAttribute(name: string) -&gt; LuaValue</pre><p>Returns an attribute value from this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:464</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;a href=&#x27;#top&#x27;&gt;link&lt;/a&gt;&quot;)
+    local el = doc:query(&quot;a&quot;)
+    print(&quot;href = &quot; .. tostring(el and el:getAttribute(&quot;href&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdocument"><div class="item-row-main"><h3>getDocument</h3><pre class="inline-signature">LHtmlElement:getDocument() -&gt; LHtmlDocument</pre><p>Returns the document handle that owns this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:363</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;p&gt;owned&lt;/p&gt;&quot;)
+    local el = doc:query(&quot;p&quot;)
+    if el then
+        print(&quot;owner type = &quot; .. el:getDocument():type())
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-gethtml"><div class="item-row-main"><h3>getHtml</h3><pre class="inline-signature">LHtmlElement:getHtml() -&gt; string</pre><p>Returns this element&#x27;s inner HTML.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:425</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;&lt;span&gt;inner&lt;/span&gt;&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then
+        print(&quot;html = &quot; .. el:getHtml())
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LHtmlElement:getId() -&gt; LuaValue</pre><p>Returns this element&#x27;s id attribute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:385</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div id=&#x27;main&#x27;&gt;content&lt;/div&gt;&quot;)
+    local el = doc:getElementById(&quot;main&quot;)
+    if el then
+        print(&quot;id = &quot; .. tostring(el:getId()))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-getrect"><div class="item-row-main"><h3>getRect</h3><pre class="inline-signature">LHtmlElement:getRect() -&gt; number</pre><p>Returns this element&#x27;s layout rectangle after relayout if needed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:570</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div style=&#x27;width:100px;height:50px&#x27;&gt;box&lt;/div&gt;&quot;)
+    doc:setViewport(800, 600)
+    doc:relayout()
+    local el = doc:query(&quot;div&quot;)
+    if el then
+        local x, y, w, h = el:getRect()
+        print(&quot;rect = &quot; .. x .. &quot;,&quot; .. y .. &quot; &quot; .. w .. &quot;x&quot; .. h)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-getstyle"><div class="item-row-main"><h3>getStyle</h3><pre class="inline-signature">LHtmlElement:getStyle(name: string) -&gt; LuaValue</pre><p>Returns an inline or computed style value for this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:546</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div style=&#x27;color:red&#x27;&gt;R&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    print(&quot;color = &quot; .. tostring(el and el:getStyle(&quot;color&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-gettagname"><div class="item-row-main"><h3>getTagName</h3><pre class="inline-signature">LHtmlElement:getTagName() -&gt; string</pre><p>Returns this element&#x27;s HTML tag name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;section&gt;stuff&lt;/section&gt;&quot;)
+    local root = doc:getRoot()
+    print(&quot;tag = &quot; .. root:getTagName())
+end</code></pre></details></article><article class="item-row api-row" id="method-gettext"><div class="item-row-main"><h3>getText</h3><pre class="inline-signature">LHtmlElement:getText() -&gt; string</pre><p>Returns this element&#x27;s text content.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:406</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;p&gt;Hello World&lt;/p&gt;&quot;)
+    local el = doc:query(&quot;p&quot;)
+    if el then
+        print(&quot;text = &quot; .. el:getText())
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-hasclass"><div class="item-row-main"><h3>hasClass</h3><pre class="inline-signature">LHtmlElement:hasClass(name: string) -&gt; boolean</pre><p>Returns whether this element has a CSS class.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:500</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div class=&#x27;visible&#x27;&gt;Y&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then
+        print(&quot;has visible = &quot; .. tostring(el:hasClass(&quot;visible&quot;)))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-off"><div class="item-row-main"><h3>off</h3><pre class="inline-signature">LHtmlElement:off(handle: integer)</pre><p>Removes an element-level event listener by handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:655</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div id=&#x27;d&#x27;&gt;X&lt;/div&gt;&quot;)
+    local el = doc:getElementById(&quot;d&quot;)
+    if el then
+        local h = el:on(&quot;hover&quot;, function()
+        end)
+        el:off(h)
+    end
+    print(&quot;handler removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-on"><div class="item-row-main"><h3>on</h3><pre class="inline-signature">LHtmlElement:on(event: string, func: function) -&gt; integer</pre><p>Registers an element-level event listener.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:639</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;button id=&#x27;btn&#x27;&gt;Go&lt;/button&gt;&quot;)
+    local el = doc:getElementById(&quot;btn&quot;)
+    if el then
+        local handle = el:on(&quot;click&quot;, function()
+            print(&quot;button clicked&quot;)
+        end)
+        print(&quot;element handle = &quot; .. handle)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-query"><div class="item-row-main"><h3>query</h3><pre class="inline-signature">LHtmlElement:query(selector: string) -&gt; LuaValue</pre><p>Looks up the first descendant element matching a selector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:600</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;&lt;span class=&#x27;x&#x27;&gt;found&lt;/span&gt;&lt;/div&gt;&quot;)
+    local div = doc:query(&quot;div&quot;)
+    local span = div and div:query(&quot;.x&quot;)
+    print(&quot;child query = &quot; .. tostring(span and span:getText()))
+end</code></pre></details></article><article class="item-row api-row" id="method-queryall"><div class="item-row-main"><h3>queryAll</h3><pre class="inline-signature">LHtmlElement:queryAll(selector: string) -&gt; LHtmlElement[]</pre><p>Returns all descendant elements matching a selector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:619</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;ul&gt;&lt;li&gt;A&lt;/li&gt;&lt;li&gt;B&lt;/li&gt;&lt;/ul&gt;&quot;)
+    local ul = doc:query(&quot;ul&quot;)
+    print(&quot;child items = &quot; .. #(ul and ul:queryAll(&quot;li&quot;) or {}))
+end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LHtmlElement:remove()</pre><p>Removes this element from the document.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:455</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;&lt;p id=&#x27;del&#x27;&gt;gone&lt;/p&gt;&lt;/div&gt;&quot;)
+    local el = doc:getElementById(&quot;del&quot;)
+    if el then el:remove() end
+    print(&quot;element removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeattribute"><div class="item-row-main"><h3>removeAttribute</h3><pre class="inline-signature">LHtmlElement:removeAttribute(name: string)</pre><p>Removes an attribute from this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:489</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div data-x=&#x27;1&#x27;&gt;X&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then el:removeAttribute(&quot;data-x&quot;) end
+    print(&quot;data-x removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeclass"><div class="item-row-main"><h3>removeClass</h3><pre class="inline-signature">LHtmlElement:removeClass(name: string)</pre><p>Removes a CSS class from this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:519</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div class=&#x27;active old&#x27;&gt;X&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then el:removeClass(&quot;old&quot;) end
+    print(&quot;class removed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setattribute"><div class="item-row-main"><h3>setAttribute</h3><pre class="inline-signature">LHtmlElement:setAttribute(name: string, value: string?)</pre><p>Sets or clears an attribute on this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:476</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;img/&gt;&quot;)
+    local el = doc:query(&quot;img&quot;)
+    if el then el:setAttribute(&quot;src&quot;, &quot;content/examples/assets/images/sample_icon.png&quot;) end
+    print(&quot;src set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-sethtml"><div class="item-row-main"><h3>setHtml</h3><pre class="inline-signature">LHtmlElement:setHtml(html: string)</pre><p>Replaces this element&#x27;s inner HTML and may invalidate descendant element handles.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:436</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;old&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    if el then el:setHtml(&quot;&lt;b&gt;new&lt;/b&gt;&quot;) end
+    print(&quot;html updated&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setid"><div class="item-row-main"><h3>setId</h3><pre class="inline-signature">LHtmlElement:setId(id: string?)</pre><p>Sets or clears this element&#x27;s id attribute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;content&lt;/div&gt;&quot;)
+    local root = doc:getRoot()
+    root:setId(&quot;container&quot;)
+    print(&quot;id set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setstyle"><div class="item-row-main"><h3>setStyle</h3><pre class="inline-signature">LHtmlElement:setStyle(name: string, value: string?)</pre><p>Sets or clears a style property on this element.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:554</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;p&gt;text&lt;/p&gt;&quot;)
+    local el = doc:query(&quot;p&quot;)
+    if el then el:setStyle(&quot;font-size&quot;, &quot;20px&quot;) end
+    print(&quot;style set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-settext"><div class="item-row-main"><h3>setText</h3><pre class="inline-signature">LHtmlElement:setText(text: string)</pre><p>Replaces this element&#x27;s text content.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:417</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;span&gt;old&lt;/span&gt;&quot;)
+    local el = doc:query(&quot;span&quot;)
+    if el then el:setText(&quot;new text&quot;) end
+    print(&quot;text set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-toggleclass"><div class="item-row-main"><h3>toggleClass</h3><pre class="inline-signature">LHtmlElement:toggleClass(name: string, force: boolean?) -&gt; boolean</pre><p>Toggles a CSS class on this element, optionally forcing the final state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:531</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div class=&#x27;on&#x27;&gt;Z&lt;/div&gt;&quot;)
+    local el = doc:query(&quot;div&quot;)
+    print(&quot;toggle result = &quot; .. tostring(el and el:toggleClass(&quot;on&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LHtmlElement:type() -&gt; string</pre><p>Returns the Lua-visible type name for this HTML element handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:671</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;X&lt;/div&gt;&quot;)
+    local el = doc:getRoot()
+    print(&quot;type = &quot; .. el:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LHtmlElement:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this element handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/html_api.rs:676</span></div><details class="example-block"><summary>Example · Exact example · html.lua</summary><pre><code>do
+    local doc = lurek.html.newDocument(&quot;&lt;div&gt;X&lt;/div&gt;&quot;)
+    local el = doc:getRoot()
+    print(&quot;is HtmlElement = &quot; .. tostring(el:typeOf(&quot;LHtmlElement&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EventArg","EventPriority","EventTableKey"],"fn":["event_arg_to_lua_value","event_to_lua_multi"],"struct":["Event","EventQueue"]};

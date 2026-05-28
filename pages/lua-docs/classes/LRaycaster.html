@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LRaycaster - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a class="active" href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LRaycaster</h1>
+  <p>Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/raycaster.html">lurek.raycaster</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    print(&quot;cell(0,0) = &quot; .. map:getCell(0, 0))
+    print(&quot;blocked = &quot; .. tostring(map:isBlocked(0, 0)))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LRaycaster userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-buildminimapwindow"><div class="item-row-main"><h3>buildMinimapWindow</h3><pre class="inline-signature">LRaycaster:buildMinimapWindow(centerX: number, centerY: number, radius: integer, ambient: number, lights: table?) -&gt; table</pre><p>Generates a grid of minimap tile samples around a center point with lighting info.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:807</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    map:setCell(5, 8, 1)
+    local lights = {
+        { x = 8, y = 8, r = 1.0, g = 1.0, b = 0.8, radius = 5.0, intensity = 1.0 },
+    }
+    local cells = map:buildMinimapWindow(8, 8, 5, 0.2, lights)
+
+    print(&quot;sample count = &quot; .. #cells)
+    if cells[1] then
+        print(&quot;first cell = &quot; .. cells[1].x .. &quot;,&quot; .. cells[1].y)
+        print(&quot;first luma = &quot; .. string.format(&quot;%.2f&quot;, cells[1].luma))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-buildscene"><div class="item-row-main"><h3>buildScene</h3><pre class="inline-signature">LRaycaster:buildScene(params: table, lights: table?, sprites: table?, wallTextures: table?) -&gt; integer</pre><p>Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1088</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    local wall_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local sprite_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local params = {
+        px = 8,
+        py = 8,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 64,
+        max_dist = 16,
+        screen_w = 320,
+        screen_h = 200,
+    }
+    local lights = {
+        { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.8, radius = 4.0, intensity = 1.5 },
+    }
+    local sprites = {
+        { x = 10.5, y = 8.0, texture = sprite_tex, size = 1.0 },
+    }
+    local wall_textures = {
+        [1] = wall_tex,
+    }
+    local quad_count = map:buildScene(params, lights, sprites, wall_textures)
+
+    print(&quot;quad count = &quot; .. quad_count)
+end</code></pre></details></article><article class="item-row api-row" id="method-buildscenewithmodels"><div class="item-row-main"><h3>buildSceneWithModels</h3><pre class="inline-signature">LRaycaster:buildSceneWithModels(params: table, lights: table?, sprites: table?, wallTextures: table?, models: table?) -&gt; integer</pre><p>Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1238</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local rc = lurek.raycaster.new(80, 60)
+    local params = {
+        px = 8,
+        py = 8,
+        angle = 0,
+        fov = math.pi / 3,
+        rays = 40,
+        max_dist = 20,
+        screen_w = 160,
+        screen_h = 90,
+    }
+    local count = rc:buildSceneWithModels(params, nil, nil, nil, nil)
+
+    print(&quot;quad count = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-castfloorrow"><div class="item-row-main"><h3>castFloorRow</h3><pre class="inline-signature">LRaycaster:castFloorRow(camX: number, camY: number, dirX: number, dirY: number, planeX: number, planeY: number, row: integer) -&gt; table</pre><p>Computes floor/ceiling texture UV coordinates for a single scanline row.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:924</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    local uvs = map:castFloorRow(8, 8, 1, 0, 0, 0.66, 150)
+
+    print(&quot;uv count = &quot; .. #uvs)
+    if uvs[1] then
+        print(&quot;first uv = &quot; .. string.format(&quot;%.2f&quot;, uvs[1].u) .. &quot;,&quot; .. string.format(&quot;%.2f&quot;, uvs[1].v))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-castray"><div class="item-row-main"><h3>castRay</h3><pre class="inline-signature">LRaycaster:castRay(ox: number, oy: number, angle: number, maxDist: number) -&gt; table</pre><p>Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:653</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local hit = map:castRay(8, 8, 0, 20)
+
+    if hit then
+        print(&quot;distance = &quot; .. string.format(&quot;%.2f&quot;, hit.distance))
+        print(&quot;cell = &quot; .. hit.cell_value .. &quot; side = &quot; .. hit.side)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-castraymulti"><div class="item-row-main"><h3>castRayMulti</h3><pre class="inline-signature">LRaycaster:castRayMulti(ox: number, oy: number, angle: number, maxDist: number, maxHits: integer?) -&gt; table</pre><p>Casts a single ray that passes through transparent walls, returning multiple hits.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:899</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    map:setCell(5, 8, 2)
+    map:setCell(10, 8, 1)
+    map:setWallAlpha(2, 0.5)
+
+    local hits = map:castRayMulti(2, 8.5, 0, 20, 4)
+
+    print(&quot;hit count = &quot; .. #hits)
+    if hits[1] then
+        print(&quot;first distance = &quot; .. string.format(&quot;%.2f&quot;, hits[1].distance))
+        print(&quot;first cell = &quot; .. hits[1].cell_value)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-castrays"><div class="item-row-main"><h3>castRays</h3><pre class="inline-signature">LRaycaster:castRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -&gt; table</pre><p>Casts multiple rays across a field of view and returns an array of hit tables.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:681</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local hits = map:castRays(8, 8, 0, math.pi / 3, 10, 20)
+
+    print(&quot;ray count = &quot; .. #hits)
+    if hits[1] then
+        print(&quot;first distance = &quot; .. string.format(&quot;%.2f&quot;, hits[1].distance))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-castraysflat"><div class="item-row-main"><h3>castRaysFlat</h3><pre class="inline-signature">LRaycaster:castRaysFlat(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -&gt; number[]</pre><p>Casts multiple rays and returns only the corrected distances as a flat array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local flat = map:castRaysFlat(8, 8, 0, math.pi / 3, 6, 20)
+
+    print(&quot;flat value count = &quot; .. #flat)
+    print(&quot;first ray distance = &quot; .. string.format(&quot;%.2f&quot;, flat[1] or 0))
+    print(&quot;first ray cell = &quot; .. tostring(flat[2]))
+end</code></pre></details></article><article class="item-row api-row" id="method-computetilelight"><div class="item-row-main"><h3>computeTileLight</h3><pre class="inline-signature">LRaycaster:computeTileLight(x: integer, y: integer, ambient: number, lights: table?) -&gt; number</pre><p>Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:781</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    local lights = {
+        { x = 8, y = 8, r = 1.0, g = 0.9, b = 0.7, radius = 5.0, intensity = 2.0 },
+        { x = 3, y = 3, r = 0.2, g = 0.5, b = 1.0, radius = 3.0, intensity = 1.0 },
+    }
+    local r, g, b, luma = map:computeTileLight(7, 8, 0.1, lights)
+
+    print(&quot;r = &quot; .. string.format(&quot;%.2f&quot;, r))
+    print(&quot;g = &quot; .. string.format(&quot;%.2f&quot;, g))
+    print(&quot;luma = &quot; .. string.format(&quot;%.2f&quot;, luma))
+end</code></pre></details></article><article class="item-row api-row" id="method-drawcamerasweep"><div class="item-row-main"><h3>drawCameraSweep</h3><pre class="inline-signature">LRaycaster:drawCameraSweep(x: number, y: number, fov: number, maxDist: number, numFrames: integer, fw: integer, fh: integer) -&gt; LImageData</pre><p>Renders multiple frames of a rotating camera sweep as a single combined image.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1075</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+
+    local strip = map:drawCameraSweep(4, 4, math.pi / 3, 8, 8, 160, 100)
+
+    print(&quot;width = &quot; .. strip:getWidth())
+    print(&quot;height = &quot; .. strip:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawdepthmap"><div class="item-row-main"><h3>drawDepthMap</h3><pre class="inline-signature">LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numRays: integer, w: integer, h: integer, maxDist: number) -&gt; LImageData</pre><p>Renders a grayscale depth map showing distance-to-wall for each column.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1028</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local depth = map:drawDepthMap(8, 8, 0, math.pi / 3, 160, 160, 100, 16)
+
+    print(&quot;width = &quot; .. depth:getWidth())
+    print(&quot;height = &quot; .. depth:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawlineofsight"><div class="item-row-main"><h3>drawLineOfSight</h3><pre class="inline-signature">LRaycaster:drawLineOfSight(ax: number, ay: number, bx: number, by: number, scale: integer) -&gt; LImageData</pre><p>Renders a debug image showing the line-of-sight ray between two world points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1056</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(4, 4, 1)
+
+    local img = map:drawLineOfSight(1, 1, 7, 7, 16)
+
+    print(&quot;width = &quot; .. img:getWidth())
+    print(&quot;height = &quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtopdown"><div class="item-row-main"><h3>drawTopDown</h3><pre class="inline-signature">LRaycaster:drawTopDown(px: number, py: number, angle: number, scale: integer) -&gt; LImageData</pre><p>Renders a top-down debug view of the map with the player&#x27;s position and direction.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:991</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+
+    map:setCell(3, 3, 1)
+
+    local img = map:drawTopDown(4.5, 4.5, 0, 16)
+
+    print(&quot;width = &quot; .. img:getWidth())
+    print(&quot;height = &quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawview"><div class="item-row-main"><h3>drawView</h3><pre class="inline-signature">LRaycaster:drawView(px: number, py: number, angle: number, fov: number, w: integer, h: integer, maxDist: number) -&gt; LImageData</pre><p>Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1008</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    local img = map:drawView(8, 8, 0, math.pi / 3, 320, 200, 16)
+
+    print(&quot;width = &quot; .. img:getWidth())
+    print(&quot;height = &quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-extractminimap"><div class="item-row-main"><h3>extractMinimap</h3><pre class="inline-signature">LRaycaster:extractMinimap(playerX: number, playerY: number, playerAngle: number, viewRadius: integer, cellSize: integer) -&gt; LImageData</pre><p>Extracts a pixel minimap image centered on the player from this raycaster map.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:848</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    map:setCell(1, 0, 1)
+    map:setCell(0, 1, 1)
+    local image = map:extractMinimap(4.0, 4.0, 0.0, 3, 4)
+    print(&quot;minimap type = &quot; .. image:type())
+    print(&quot;minimap width = &quot; .. image:getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getceilingtexturecell"><div class="item-row-main"><h3>getCeilingTextureCell</h3><pre class="inline-signature">LRaycaster:getCeilingTextureCell(x: integer, y: integer) -&gt; integer</pre><p>Returns the raw texture id assigned to this ceiling cell, or nil if none.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:464</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local ceil_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setCeilingTextureCell(2, 2, ceil_tex)
+
+    print(&quot;ceiling(2,2) = &quot; .. tostring(map:getCeilingTextureCell(2, 2)))
+    print(&quot;ceiling(0,0) = &quot; .. tostring(map:getCeilingTextureCell(0, 0)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getcell"><div class="item-row-main"><h3>getCell</h3><pre class="inline-signature">LRaycaster:getCell(x: integer, y: integer) -&gt; integer</pre><p>Returns the wall type value at a grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:384</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    local value = map:getCell(0, 0)
+    local empty = map:getCell(7, 7)
+
+    print(&quot;cell(0,0) = &quot; .. value)
+    print(&quot;cell(7,7) = &quot; .. empty)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfloortexturecell"><div class="item-row-main"><h3>getFloorTextureCell</h3><pre class="inline-signature">LRaycaster:getFloorTextureCell(x: integer, y: integer) -&gt; integer</pre><p>Returns the raw texture id assigned to this floor cell, or nil if none.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:437</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local floor_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setFloorTextureCell(3, 3, floor_tex)
+
+    print(&quot;floor(3,3) = &quot; .. tostring(map:getFloorTextureCell(3, 3)))
+    print(&quot;floor(0,0) = &quot; .. tostring(map:getFloorTextureCell(0, 0)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getloweredfloorcell"><div class="item-row-main"><h3>getLoweredFloorCell</h3><pre class="inline-signature">LRaycaster:getLoweredFloorCell(x: integer, y: integer) -&gt; table</pre><p>Returns the lowered floor configuration at a cell, or nil if the cell is normal.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:540</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local pit_texture = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setLoweredFloorCell(4, 4, {
+        texture = pit_texture,
+        depth = 0.3,
+        r = 0.1,
+        g = 0.4,
+        b = 0.8,
+        blocked = false,
+    })
+
+    local cell = map:getLoweredFloorCell(4, 4)
+
+    if cell then
+        print(&quot;texture = &quot; .. tostring(cell.texture))
+        print(&quot;depth = &quot; .. cell.depth)
+        print(&quot;blocked = &quot; .. tostring(cell.blocked))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-getwallalpha"><div class="item-row-main"><h3>getWallAlpha</h3><pre class="inline-signature">LRaycaster:getWallAlpha(tileType: integer) -&gt; number</pre><p>Returns the current transparency value for a wall tile type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:879</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setWallAlpha(2, 0.5)
+
+    print(&quot;alpha(2) = &quot; .. map:getWallAlpha(2))
+    print(&quot;alpha(9) = &quot; .. map:getWallAlpha(9))
+end</code></pre></details></article><article class="item-row api-row" id="method-gridmove"><div class="item-row-main"><h3>gridMove</h3><pre class="inline-signature">LRaycaster:gridMove(px: number, py: number, dir: integer, action: string, step: number) -&gt; number</pre><p>Performs a discrete grid-step movement in one of 4 cardinal directions with collision.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:609</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+
+    local nx, ny, moved = map:gridMove(4.5, 4.5, 2, &quot;forward&quot;, 1.0)
+    local sx, sy, strafe = map:gridMove(nx, ny, 2, &quot;left&quot;, 1.0)
+
+    print(&quot;forward = &quot; .. tostring(moved) .. &quot; -&gt; &quot; .. nx .. &quot;,&quot; .. ny)
+    print(&quot;left = &quot; .. tostring(strafe) .. &quot; -&gt; &quot; .. sx .. &quot;,&quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-height"><div class="item-row-main"><h3>height</h3><pre class="inline-signature">LRaycaster:height() -&gt; integer</pre><p>Returns the map height in grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:412</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local rc = lurek.raycaster.new(160, 120)
+
+    print(&quot;height = &quot; .. rc:height())
+    print(&quot;width = &quot; .. rc:width())
+end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LRaycaster:isBlocked(x: integer, y: integer) -&gt; boolean</pre><p>Returns true if the grid cell is a solid wall (non-zero value).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:402</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+
+    print(&quot;cell(3,3) blocked = &quot; .. tostring(map:isBlocked(3, 3)))
+    print(&quot;cell(2,2) blocked = &quot; .. tostring(map:isBlocked(2, 2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-iswalkblocked"><div class="item-row-main"><h3>isWalkBlocked</h3><pre class="inline-signature">LRaycaster:isWalkBlocked(x: integer, y: integer) -&gt; boolean</pre><p>Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:565</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local pit_texture = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setLoweredFloorCell(3, 3, {
+        texture = pit_texture,
+        depth = 0.3,
+        blocked = true,
+    })
+
+    print(&quot;cell(3,3) walk blocked = &quot; .. tostring(map:isWalkBlocked(3, 3)))
+    print(&quot;cell(2,2) walk blocked = &quot; .. tostring(map:isWalkBlocked(2, 2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-lineofsight"><div class="item-row-main"><h3>lineOfSight</h3><pre class="inline-signature">LRaycaster:lineOfSight(x1: number, y1: number, x2: number, y2: number) -&gt; boolean</pre><p>Tests whether there is a clear line of sight between two world points (no walls in between).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:718</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    map:setCell(8, 8, 1)
+
+    local clear = map:lineOfSight(4, 4, 12, 4)
+    local blocked = map:lineOfSight(4, 8, 12, 8)
+
+    print(&quot;clear = &quot; .. tostring(clear))
+    print(&quot;blocked = &quot; .. tostring(blocked))
+end</code></pre></details></article><article class="item-row api-row" id="method-projectsprite"><div class="item-row-main"><h3>projectSprite</h3><pre class="inline-signature">LRaycaster:projectSprite(sx: number, sy: number, px: number, py: number, pa: number, fov: number, screenW: number) -&gt; table</pre><p>Projects a world-space sprite to screen coordinates for billboard rendering.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:966</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    local proj = map:projectSprite(10, 8, 8, 8, 0, math.pi / 3, 320)
+
+    print(&quot;screen_x = &quot; .. proj.screen_x)
+    print(&quot;scale = &quot; .. string.format(&quot;%.2f&quot;, proj.scale))
+    print(&quot;visible = &quot; .. tostring(proj.visible))
+end</code></pre></details></article><article class="item-row api-row" id="method-revealcellsfromrays"><div class="item-row-main"><h3>revealCellsFromRays</h3><pre class="inline-signature">LRaycaster:revealCellsFromRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number, step: number?) -&gt; table</pre><p>Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:736</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(16, 16)
+    for i = 0, 15 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 15, 1)
+        map:setCell(0, i, 1)
+        map:setCell(15, i, 1)
+    end
+
+    map:setCell(6, 8, 1)
+    local revealed = map:revealCellsFromRays(8, 8, 0, math.pi * 2, 64, 10)
+
+    print(&quot;revealed count = &quot; .. #revealed)
+    if revealed[1] then
+        print(&quot;first cell = &quot; .. revealed[1].x .. &quot;,&quot; .. revealed[1].y)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-setceilingtexturecell"><div class="item-row-main"><h3>setCeilingTextureCell</h3><pre class="inline-signature">LRaycaster:setCeilingTextureCell(x: integer, y: integer, texture: LImage?)</pre><p>Assigns a per-cell ceiling texture override. Pass nil to remove the override.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:445</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local ceil_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setCeilingTextureCell(2, 2, ceil_tex)
+
+    print(&quot;raw id = &quot; .. tostring(map:getCeilingTextureCell(2, 2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcell"><div class="item-row-main"><h3>setCell</h3><pre class="inline-signature">LRaycaster:setCell(x: integer, y: integer, val: integer)</pre><p>Sets the wall type value at a grid cell. Non-zero values are solid walls.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:375</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    print(&quot;cell(0,0) = &quot; .. map:getCell(0, 0))
+    print(&quot;blocked = &quot; .. tostring(map:isBlocked(0, 0)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcells"><div class="item-row-main"><h3>setCells</h3><pre class="inline-signature">LRaycaster:setCells(cells: table)</pre><p>Replaces the entire map grid with a flat array of cell values (row-major order).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:390</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local cells = {}
+
+    for i = 1, 64 do
+        cells[i] = 0
+    end
+
+    for i = 1, 8 do
+        cells[i] = 1
+    end
+
+    map:setCells(cells)
+    print(&quot;cell(0,0) = &quot; .. map:getCell(0, 0))
+    print(&quot;cell(0,1) = &quot; .. map:getCell(0, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfloortexturecell"><div class="item-row-main"><h3>setFloorTextureCell</h3><pre class="inline-signature">LRaycaster:setFloorTextureCell(x: integer, y: integer, texture: LImage?)</pre><p>Assigns a per-cell floor texture override. Pass nil to remove the override.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:418</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local floor_tex = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setFloorTextureCell(3, 3, floor_tex)
+
+    print(&quot;raw id = &quot; .. tostring(map:getFloorTextureCell(3, 3)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setloweredfloorcell"><div class="item-row-main"><h3>setLoweredFloorCell</h3><pre class="inline-signature">LRaycaster:setLoweredFloorCell(x: integer, y: integer, opts: table?)</pre><p>Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:473</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    local pit_texture = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+
+    map:setLoweredFloorCell(4, 4, {
+        texture = pit_texture,
+        depth = 0.3,
+        r = 0.1,
+        g = 0.4,
+        b = 0.8,
+        blocked = false,
+    })
+
+    local cell = map:getLoweredFloorCell(4, 4)
+
+    print(&quot;depth = &quot; .. cell.depth)
+    print(&quot;blocked = &quot; .. tostring(cell.blocked))
+end</code></pre></details></article><article class="item-row api-row" id="method-setwallalpha"><div class="item-row-main"><h3>setWallAlpha</h3><pre class="inline-signature">LRaycaster:setWallAlpha(tileType: integer, alpha: number)</pre><p>Sets the transparency for a specific wall tile type, enabling see-through walls.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:871</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    map:setWallAlpha(2, 0.5)
+
+    print(&quot;alpha(2) = &quot; .. map:getWallAlpha(2))
+end</code></pre></details></article><article class="item-row api-row" id="method-trymove"><div class="item-row-main"><h3>tryMove</h3><pre class="inline-signature">LRaycaster:tryMove(px: number, py: number, dx: number, dy: number) -&gt; number</pre><p>Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:582</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    for i = 0, 7 do
+        map:setCell(i, 0, 1)
+        map:setCell(i, 7, 1)
+        map:setCell(0, i, 1)
+        map:setCell(7, i, 1)
+    end
+
+    local nx, ny, moved = map:tryMove(4.5, 4.5, 0.25, 0)
+    local wx, wy, blocked = map:tryMove(0.5, 0.5, -1, 0)
+
+    print(&quot;free move = &quot; .. tostring(moved) .. &quot; -&gt; &quot; .. nx .. &quot;,&quot; .. ny)
+    print(&quot;wall move = &quot; .. tostring(blocked) .. &quot; -&gt; &quot; .. wx .. &quot;,&quot; .. wy)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LRaycaster:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LRaycaster&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1438</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    print(&quot;type = &quot; .. map:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LRaycaster:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:1443</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local map = lurek.raycaster.new(8, 8)
+    print(&quot;LRaycaster = &quot; .. tostring(map:typeOf(&quot;LRaycaster&quot;)))
+    print(&quot;LObject = &quot; .. tostring(map:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-width"><div class="item-row-main"><h3>width</h3><pre class="inline-signature">LRaycaster:width() -&gt; integer</pre><p>Returns the map width in grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/raycaster_api.rs:408</span></div><details class="example-block"><summary>Example · Exact example · raycaster.lua</summary><pre><code>do
+    local rc = lurek.raycaster.new(160, 120)
+
+    print(&quot;width = &quot; .. rc:width())
+    print(&quot;height = &quot; .. rc:height())
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

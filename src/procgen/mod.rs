@@ -1,7 +1,8 @@
-//! Procedural generation toolkit: noise, dungeons, heightmaps, and world graphs.
+//! Procedural generation toolkit: noise, dungeons, heightmaps, cellular worlds, and world graphs.
 //!
 //! - Algorithms: Perlin/Simplex/Worley noise, BSP & room-scatter dungeons, cellular automata caves.
 //! - Utilities: Poisson disk sampling, L-systems, Markov name generation, Voronoi, WFC.
+//! - Simulation: Falling-sand cellular automaton world (sand, water, fire, gas, rock).
 //! - All generators are deterministic given a seed via the internal LCG.
 
 /// Biome classification types and rules-based classifier.
@@ -10,6 +11,8 @@ pub mod biome;
 pub mod bsp;
 /// Cellular automata cave map generator.
 pub mod cellular;
+/// Falling-sand cellular automaton world simulation (sand, water, fire, gas, rock).
+pub mod cellular_world;
 /// Scalar-to-colour RGBA conversion helpers.
 pub mod color;
 /// 4-connected flood fill mask generator.
@@ -43,6 +46,7 @@ pub use bsp::{
     PlacedBspPrefab,
 };
 pub use cellular::{cellular_automata, CellularOpts};
+pub use cellular_world::{default_palette, CellType, CellularWorld};
 pub use color::scalar_map_to_rgba_bytes;
 pub use flood_fill::flood_fill;
 pub use heightmap::{Heightmap, HeightmapOpts};

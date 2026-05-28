@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.font - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a class="active" href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.font</h1>
+  <p>`lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping. - Registers `lurek.font.*` functions and types via `register()`. - `LuaFont`: userdata type exposed to Lua. - Helper function: `register_font_api`. - Bridges 19 Lua-callable methods via `mlua`.</p>
+  <div class="api-meta api-meta-header"><span>11 functions</span><span>1 classes</span><span>src/lua_api/font_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 19</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.font.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-availablesizes"><div class="item-row-main"><h3>availableSizes</h3><pre class="inline-signature">lurek.font.availableSizes() -&gt; table</pre><p>Returns the array of built-in bitmap font point sizes available in the engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:400</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local sizes = lurek.font.availableSizes()
+    print(&quot;available sizes = &quot; .. #sizes)
+    print(&quot;first size = &quot; .. tostring(sizes[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-charadvance"><div class="item-row-main"><h3>charAdvance</h3><pre class="inline-signature">lurek.font.charAdvance(font: LFont, char: string, scale: number) -&gt; number</pre><p>Returns the horizontal advance width in pixels of a single character using the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:656</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local adv = lurek.font.charAdvance(font, &quot;W&quot;, 1.0)
+    print(&quot;charAdvance W = &quot; .. adv)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdefault"><div class="item-row-main"><h3>getDefault</h3><pre class="inline-signature">lurek.font.getDefault() -&gt; LFont</pre><p>Returns the default engine font as an LFont userdata handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:202</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    print(&quot;default font = &quot; .. tostring(font ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lineheight"><div class="item-row-main"><h3>lineHeight</h3><pre class="inline-signature">lurek.font.lineHeight(font: LFont) -&gt; number</pre><p>Returns the line height of the given font in pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:688</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local lh = lurek.font.lineHeight(font)
+    print(&quot;lineHeight = &quot; .. lh)
+end</code></pre></details></article><article class="item-row api-row" id="fn-list"><div class="item-row-main"><h3>list</h3><pre class="inline-signature">lurek.font.list() -&gt; table</pre><p>Lists all registered fonts with their name, size, and style metadata.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:362</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local fonts = lurek.font.list()
+    print(&quot;registered fonts = &quot; .. #fonts)
+end</code></pre></details></article><article class="item-row api-row" id="fn-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">lurek.font.load(path: string, size: number) -&gt; LFont</pre><p>Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local ok, font = pcall(lurek.font.load, &quot;assets/fonts/default.ttf&quot;, 16)
+    if ok then
+        print(&quot;loaded font = &quot; .. font:getName())
+    else
+        print(&quot;load error (expected if file missing): &quot; .. tostring(font))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadbitmap"><div class="item-row-main"><h3>loadBitmap</h3><pre class="inline-signature">lurek.font.loadBitmap(path: string, cellWidth: integer, cellHeight: integer) -&gt; LFont</pre><p>Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:304</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local ok, font = pcall(lurek.font.loadBitmap, &quot;assets/fonts/bitmap8x8.png&quot;, 8, 8)
+    if ok then
+        print(&quot;bitmap font = &quot; .. tostring(font ~= nil))
+    else
+        print(&quot;bitmap load error (expected if file missing): &quot; .. tostring(font))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-measure"><div class="item-row-main"><h3>measure</h3><pre class="inline-signature">lurek.font.measure(font: LFont, text: string, scale: number) -&gt; number</pre><p>Measures the pixel dimensions of a text string using the given font handle and scale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local w, h = lurek.font.measure(font, &quot;Hello, Lurek!&quot;, 1.0)
+    print(&quot;measure w=&quot; .. w .. &quot; h=&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-measureline"><div class="item-row-main"><h3>measureLine</h3><pre class="inline-signature">lurek.font.measureLine(font: LFont, text: string, scale: number) -&gt; number</pre><p>Measures the pixel width and height of a single line of text with the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:462</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local w, h = lurek.font.measureLine(font, &quot;Single line text&quot;, 1.0)
+    print(&quot;measureLine w=&quot; .. w .. &quot; h=&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-shapetext"><div class="item-row-main"><h3>shapeText</h3><pre class="inline-signature">lurek.font.shapeText(font: LFont, text: string, maxWidth: number, scale: number, align: string, wrap: string) -&gt; table</pre><p>Shapes and aligns text into wrapped lines with x-offset data for rendering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:559</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local shaped = lurek.font.shapeText(
+        font,
+        &quot;Centered text for layout&quot;,
+        200,
+        1.0,
+        lurek.font.ALIGN_CENTER,
+        lurek.font.WRAP_WORD
+    )
+    print(&quot;shaped lines = &quot; .. #shaped)
+    if #shaped &gt; 0 then
+        print(&quot;first line width = &quot; .. shaped[1].width)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-wraptext"><div class="item-row-main"><h3>wrapText</h3><pre class="inline-signature">lurek.font.wrapText(font: LFont, text: string, maxWidth: number, scale: number, mode: string) -&gt; table</pre><p>Wraps a text string into lines that fit within the given maximum pixel width.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/font_api.rs:502</span></div><details class="example-block"><summary>Example · Exact example · font.lua</summary><pre><code>do
+    local font = lurek.font.getDefault()
+    local lines = lurek.font.wrapText(
+        font,
+        &quot;This is a long text that should wrap at a reasonable width for display.&quot;,
+        100,
+        1.0,
+        lurek.font.WRAP_WORD
+    )
+    print(&quot;wrapped lines = &quot; .. #lines)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFont.html">LFont</a></h3><p>Lua-visible font handle storing the slot key and cached metadata.</p></div><div class="item-row-meta"><span>8 methods</span><span>module font</span></div><div class="card-note">Example: font.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

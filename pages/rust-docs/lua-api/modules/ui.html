@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.ui - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a class="active" href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.ui</h1>
+  <p>`lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.</p>
+  <div class="api-meta api-meta-header"><span>91 functions</span><span>41 classes</span><span>src/lua_api/ui_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 429</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.ui.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-addtoast"><div class="item-row-main"><h3>addToast</h3><pre class="inline-signature">lurek.ui.addToast(toast_table: table)</pre><p>Adds a toast notification to the queue.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6508</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.addToast({ message = &quot;File saved successfully&quot;, duration = 3.0, type = &quot;info&quot; })
+    print(&quot;toast added&quot;)
+    local layout = lurek.ui.loadLayout({ type = &quot;panel&quot;, children = {} })
+    print(&quot;layout=&quot; .. tostring(layout ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-animatecolor"><div class="item-row-main"><h3>animateColor</h3><pre class="inline-signature">lurek.ui.animateColor(idx: integer, from: table, to: table, duration: number, easing: string?) -&gt; nil</pre><p>Animate widget color tint from one RGBA value to another.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6456</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local lbl = lurek.ui.newLabel(&quot;Hello&quot;)
+    lurek.ui.animateColor(lbl._idx, {r=1,g=1,b=1,a=1}, {r=1,g=0.5,b=0,a=1}, 0.5)
+    print(&quot;lurek.ui.animateColor ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-animaterotation"><div class="item-row-main"><h3>animateRotation</h3><pre class="inline-signature">lurek.ui.animateRotation(idx: integer, from: number, to: number, duration: number, easing: string?) -&gt; nil</pre><p>Animate widget rotation from one angle to another (in radians).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6434</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local img = lurek.ui.newPanel()
+    lurek.ui.animateRotation(img._idx, 0, 360, 1.0)
+    print(&quot;lurek.ui.animateRotation ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-animatescale"><div class="item-row-main"><h3>animateScale</h3><pre class="inline-signature">lurek.ui.animateScale(idx: integer, from_sx: number, from_sy: number, to_sx: number, to_sy: number, duration: number, easing: string?) -&gt; nil</pre><p>Animate widget scale from one value to another.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6410</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Scale&quot;)
+    lurek.ui.animateScale(btn._idx, 1.0, 1.0, 1.2, 1.2, 0.3)
+    print(&quot;lurek.ui.animateScale ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-begindrag"><div class="item-row-main"><h3>beginDrag</h3><pre class="inline-signature">lurek.ui.beginDrag(widget: table|number) -&gt; boolean</pre><p>Begins a drag operation on a widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6949</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local source = lurek.ui.newPanel()
+    local target = lurek.ui.newPanel()
+    lurek.ui.beginDrag(source)
+    print(&quot;active drag:&quot;, lurek.ui.getActiveDrag())
+    lurek.ui.dropOn(target)
+    print(&quot;after drop, active drag:&quot;, lurek.ui.getActiveDrag())
+end</code></pre></details></article><article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.ui.clear() -&gt; integer</pre><p>Clears all retained UI widgets and transient UI state while keeping the active theme.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6488</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local root = lurek.ui.getRoot()
+    if root then
+        lurek.ui.clear()
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearfocus"><div class="item-row-main"><h3>clearFocus</h3><pre class="inline-signature">lurek.ui.clearFocus()</pre><p>Clears keyboard focus from all widgets.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6496</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    lurek.ui.setFocus(btn1)
+    print(&quot;focused widget:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusNext()
+    print(&quot;after focusNext:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusPrev()
+    print(&quot;after focusPrev:&quot;, lurek.ui.getFocus())
+    lurek.ui.clearFocus()
+    print(&quot;after clear:&quot;, lurek.ui.getFocus())
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearfont"><div class="item-row-main"><h3>clearFont</h3><pre class="inline-signature">lurek.ui.clearFont()</pre><p>Clears the global UI font override so the UI falls back to the active render font again.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6238</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for clearFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using clearFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked clearFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-draw"><div class="item-row-main"><h3>draw</h3><pre class="inline-signature">lurek.ui.draw()</pre><p>Invokes custom draw callbacks for all widgets that have one registered.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6646</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    lurek.ui.beginDrag(w)
+    lurek.ui.endDrag()
+    lurek.ui.clearFocus()
+    lurek.ui.draw()
+    print(&quot;beginDrag/endDrag/clearFocus/draw ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">lurek.ui.drawToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Renders the entire UI to an image buffer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6740</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local img = lurek.ui.drawToImage(320, 240)
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    lurek.ui.beginDrag(w)
+    lurek.ui.dropOn(w)
+    lurek.ui.endDrag()
+    print(&quot;drawToImage ok; dropOn/endDrag ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-dropon"><div class="item-row-main"><h3>dropOn</h3><pre class="inline-signature">lurek.ui.dropOn(target: table|number) -&gt; boolean</pre><p>Drops the currently dragged widget onto a target widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6977</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local source = lurek.ui.newPanel()
+    local target = lurek.ui.newPanel()
+    lurek.ui.beginDrag(source)
+    print(&quot;active drag:&quot;, lurek.ui.getActiveDrag())
+    lurek.ui.dropOn(target)
+    print(&quot;after drop, active drag:&quot;, lurek.ui.getActiveDrag())
+end</code></pre></details></article><article class="item-row api-row" id="fn-enddrag"><div class="item-row-main"><h3>endDrag</h3><pre class="inline-signature">lurek.ui.endDrag() -&gt; integer</pre><p>Ends the current drag operation without dropping.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6996</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local img = lurek.ui.drawToImage(320, 240)
+    local w = lurek.ui.newCustomWidget({width=80, height=40})
+    lurek.ui.beginDrag(w)
+    lurek.ui.dropOn(w)
+    lurek.ui.endDrag()
+    print(&quot;drawToImage ok; dropOn/endDrag ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-flushcache"><div class="item-row-main"><h3>flushCache</h3><pre class="inline-signature">lurek.ui.flushCache() -&gt; boolean</pre><p>Flushes internal UI layout and render caches.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6940</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.flushCache()
+    lurek.ui.focusPrev()
+    local drag = lurek.ui.getActiveDrag()
+    local focus = lurek.ui.getFocus()
+    lurek.ui.clearFocus()
+    print(&quot;flushCache/focusPrev ok; activeDrag:&quot;, drag, &quot;focus:&quot;, focus)
+end</code></pre></details></article><article class="item-row api-row" id="fn-focusdirection"><div class="item-row-main"><h3>focusDirection</h3><pre class="inline-signature">lurek.ui.focusDirection(dx: number, dy: number) -&gt; boolean</pre><p>Move focus in a spatial direction. Uses geometry to find nearest focusable widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6335</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.focusDirection(1.0, 0.0)
+    print(&quot;lurek.ui.focusDirection ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-focusneighbor"><div class="item-row-main"><h3>focusNeighbor</h3><pre class="inline-signature">lurek.ui.focusNeighbor(direction: string) -&gt; boolean</pre><p>Moves keyboard focus using an explicit directional focus link.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6322</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local a = lurek.ui.newButton(&quot;A&quot;)
+    local b = lurek.ui.newButton(&quot;B&quot;)
+    a:setFocusNeighbor(&quot;right&quot;, b._idx)
+    lurek.ui.setFocus(a)
+    local moved = lurek.ui.focusNeighbor(&quot;right&quot;)
+    print(&quot;focus moved=&quot; .. tostring(moved))
+end</code></pre></details></article><article class="item-row api-row" id="fn-focusnext"><div class="item-row-main"><h3>focusNext</h3><pre class="inline-signature">lurek.ui.focusNext()</pre><p>Moves keyboard focus to the next focusable widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6298</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local a = lurek.ui.newTextInput()
+    local b = lurek.ui.newTextInput()
+    local c = lurek.ui.newTextInput()
+    lurek.ui.setFocus(a)
+    lurek.ui.focusNext()
+    print(&quot;moved focus forward&quot;)
+    lurek.ui.focusPrev()
+    print(&quot;moved focus back&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-focusprev"><div class="item-row-main"><h3>focusPrev</h3><pre class="inline-signature">lurek.ui.focusPrev()</pre><p>Moves keyboard focus to the previous focusable widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6309</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    lurek.ui.setFocus(btn1)
+    print(&quot;focused widget:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusNext()
+    print(&quot;after focusNext:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusPrev()
+    print(&quot;after focusPrev:&quot;, lurek.ui.getFocus())
+    lurek.ui.clearFocus()
+    print(&quot;after clear:&quot;, lurek.ui.getFocus())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getactivedrag"><div class="item-row-main"><h3>getActiveDrag</h3><pre class="inline-signature">lurek.ui.getActiveDrag() -&gt; integer</pre><p>Returns the widget index currently being dragged, or nil.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6968</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local source = lurek.ui.newPanel()
+    local target = lurek.ui.newPanel()
+    lurek.ui.beginDrag(source)
+    print(&quot;active drag:&quot;, lurek.ui.getActiveDrag())
+    lurek.ui.dropOn(target)
+    print(&quot;after drop, active drag:&quot;, lurek.ui.getActiveDrag())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfocus"><div class="item-row-main"><h3>getFocus</h3><pre class="inline-signature">lurek.ui.getFocus() -&gt; integer</pre><p>Returns the index of the currently focused widget, or nil.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6290</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn1 = lurek.ui.newButton(&quot;First&quot;)
+    local btn2 = lurek.ui.newButton(&quot;Second&quot;)
+    lurek.ui.setFocus(btn1)
+    print(&quot;focused widget:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusNext()
+    print(&quot;after focusNext:&quot;, lurek.ui.getFocus())
+    lurek.ui.focusPrev()
+    print(&quot;after focusPrev:&quot;, lurek.ui.getFocus())
+    lurek.ui.clearFocus()
+    print(&quot;after clear:&quot;, lurek.ui.getFocus())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfont"><div class="item-row-main"><h3>getFont</h3><pre class="inline-signature">lurek.ui.getFont() -&gt; LFont</pre><p>Returns the global UI font assigned to the root widget, or nil when UI uses the render fallback font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6225</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for getFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using getFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked getFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-getroot"><div class="item-row-main"><h3>getRoot</h3><pre class="inline-signature">lurek.ui.getRoot() -&gt; LPanel</pre><p>Returns the root panel widget of the UI tree.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6190</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local root = lurek.ui.getRoot()
+    print(&quot;root = &quot; .. tostring(root))
+    print(&quot;widget count = &quot; .. lurek.ui.getWidgetCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscalefactor"><div class="item-row-main"><h3>getScaleFactor</h3><pre class="inline-signature">lurek.ui.getScaleFactor() -&gt; number</pre><p>Get the current UI scale factor (current_height / base_height).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6375</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local sf = lurek.ui.getScaleFactor()
+    print(&quot;lurek.ui.getScaleFactor=&quot; .. sf)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstyletoken"><div class="item-row-main"><h3>getStyleToken</h3><pre class="inline-signature">lurek.ui.getStyleToken(name: string) -&gt; number</pre><p>Returns the value of a named semantic style token from the active theme.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7100</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local spacing = lurek.ui.getStyleToken(&quot;spacing_md&quot;)
+    local color = lurek.ui.getStyleToken(&quot;color_primary&quot;)
+    print(&quot;spacing_md=&quot; .. tostring(spacing))
+    if type(color) == &quot;table&quot; then
+        print(&quot;color_primary a=&quot; .. tostring(color.a))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettheme"><div class="item-row-main"><h3>getTheme</h3><pre class="inline-signature">lurek.ui.getTheme() -&gt; boolean</pre><p>Returns whether a theme is currently set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6181</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local theme = lurek.ui.newTheme()
+    theme:setStyle(&quot;button&quot;, &quot;normal&quot;, { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle(&quot;button&quot;, &quot;hovered&quot;, { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
+    lurek.ui.setTheme(theme)
+    print(&quot;theme active:&quot;, lurek.ui.getTheme())
+    print(&quot;theme type:&quot;, theme:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettoastcount"><div class="item-row-main"><h3>getToastCount</h3><pre class="inline-signature">lurek.ui.getToastCount() -&gt; integer</pre><p>Returns the number of active toast notifications.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6527</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.clearFocus()
+    local foc = lurek.ui.getFocus()
+    local theme = lurek.ui.getTheme()
+    local toasts = lurek.ui.getToastCount()
+    local widgets = lurek.ui.getWidgetCount()
+    print(&quot;focus:&quot;, foc, &quot;theme:&quot;, theme, &quot;toastCount:&quot;, toasts, &quot;widgetCount:&quot;, widgets)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwidgetcount"><div class="item-row-main"><h3>getWidgetCount</h3><pre class="inline-signature">lurek.ui.getWidgetCount() -&gt; integer</pre><p>Returns the total number of widgets in the UI context.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6730</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed(&quot;escape&quot;)
+    local layout = lurek.ui.loadLayoutFile(&quot;content/examples/assets/layouts/sample_main_menu.toml&quot;)
+    lurek.ui.textinput(&quot;a&quot;)
+    print(&quot;widgetCount:&quot;, cnt, &quot;loadLayoutFile ok; textinput ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwidgetfont"><div class="item-row-main"><h3>getWidgetFont</h3><pre class="inline-signature">lurek.ui.getWidgetFont(widget: LUiWidget) -&gt; LFont</pre><p>Returns the font override assigned to a widget, or nil when the widget inherits its font from a parent.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6253</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for getWidgetFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using getWidgetFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked getWidgetFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-keypressed"><div class="item-row-main"><h3>keypressed</h3><pre class="inline-signature">lurek.ui.keypressed(key: string) -&gt; boolean</pre><p>Delivers a key press event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6576</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed(&quot;escape&quot;)
+    local layout = lurek.ui.loadLayoutFile(&quot;content/examples/assets/layouts/sample_main_menu.toml&quot;)
+    lurek.ui.textinput(&quot;a&quot;)
+    print(&quot;widgetCount:&quot;, cnt, &quot;loadLayoutFile ok; textinput ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadlayout"><div class="item-row-main"><h3>loadLayout</h3><pre class="inline-signature">lurek.ui.loadLayout(def: table) -&gt; integer</pre><p>Loads a UI layout from a Lua table definition.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7029</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.addToast({ message = &quot;File saved successfully&quot;, duration = 3.0, type = &quot;info&quot; })
+    print(&quot;toast added&quot;)
+    local layout = lurek.ui.loadLayout({ type = &quot;panel&quot;, children = {} })
+    print(&quot;layout=&quot; .. tostring(layout ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadlayoutfile"><div class="item-row-main"><h3>loadLayoutFile</h3><pre class="inline-signature">lurek.ui.loadLayoutFile(path: string) -&gt; integer</pre><p>Loads a UI layout from a TOML layout file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7045</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed(&quot;escape&quot;)
+    local layout = lurek.ui.loadLayoutFile(&quot;content/examples/assets/layouts/sample_main_menu.toml&quot;)
+    lurek.ui.textinput(&quot;a&quot;)
+    print(&quot;widgetCount:&quot;, cnt, &quot;loadLayoutFile ok; textinput ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadlayoutgamefile"><div class="item-row-main"><h3>loadLayoutGameFile</h3><pre class="inline-signature">lurek.ui.loadLayoutGameFile(path: string) -&gt; integer</pre><p>Loads a UI layout from a TOML file resolved through GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7064</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local ok, result = pcall(function()
+        return lurek.ui.loadLayoutGameFile(&quot;assets/layouts/sample_main_menu.toml&quot;)
+    end)
+    print(&quot;loadLayoutGameFile ok:&quot;, ok, &quot;result:&quot;, tostring(result))
+end</code></pre></details></article><article class="item-row api-row" id="fn-mousemoved"><div class="item-row-main"><h3>mousemoved</h3><pre class="inline-signature">lurek.ui.mousemoved(x: number, y: number) -&gt; boolean</pre><p>Delivers a mouse move event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6566</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local slider = lurek.ui.newSlider(0, 100)
+    slider:setPosition(20, 520)
+    slider:setSize(200, 20)
+    slider:setZOrder(2200)
+    lurek.ui.mousepressed(40, 530, 1)
+    lurek.ui.mousemoved(180, 530)
+    lurek.ui.mousereleased(180, 530, 1)
+    lurek.ui.update(0)
+    print(&quot;slider value after drag:&quot;, slider:getValue())
+end</code></pre></details></article><article class="item-row api-row" id="fn-mousepressed"><div class="item-row-main"><h3>mousepressed</h3><pre class="inline-signature">lurek.ui.mousepressed(x: number, y: number, btn: integer?) -&gt; boolean</pre><p>Delivers a mouse press event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6539</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local tabs = lurek.ui.newTabBar()
+    tabs:setPosition(20, 560)
+    tabs:setSize(240, 28)
+    tabs:setZOrder(2300)
+    tabs:addTab(&quot;Home&quot;)
+    tabs:addTab(&quot;Reports&quot;)
+    tabs:addTab(&quot;Settings&quot;)
+    lurek.ui.mousepressed(120, 574, 1)
+    lurek.ui.mousereleased(120, 574, 1)
+    lurek.ui.update(0)
+    print(&quot;active tab after click:&quot;, tabs:getActiveTab())
+end</code></pre></details></article><article class="item-row api-row" id="fn-mousereleased"><div class="item-row-main"><h3>mousereleased</h3><pre class="inline-signature">lurek.ui.mousereleased(x: number, y: number, btn: integer?) -&gt; boolean</pre><p>Delivers a mouse release event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6553</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local combo = lurek.ui.newComboBox()
+    combo:setPosition(20, 600)
+    combo:setSize(160, 28)
+    combo:setZOrder(2400)
+    combo:addItem(&quot;All&quot;)
+    combo:addItem(&quot;Food&quot;)
+    combo:addItem(&quot;Rent&quot;)
+    lurek.ui.mousepressed(30, 614, 1)
+    lurek.ui.mousereleased(30, 614, 1)
+    lurek.ui.mousepressed(30, 670, 1)
+    lurek.ui.mousereleased(30, 670, 1)
+    lurek.ui.update(0)
+    print(&quot;combo selected:&quot;, combo:getSelectedItem())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newaccordion"><div class="item-row-main"><h3>newAccordion</h3><pre class="inline-signature">lurek.ui.newAccordion() -&gt; LAccordion</pre><p>Creates a new accordion widget with collapsible sections.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6075</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LAccordion
+    local acc = lurek.ui.newAccordion()
+    print(&quot;type = &quot; .. acc:type())
+    print(&quot;sections = &quot; .. acc:getSectionCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newareachart"><div class="item-row-main"><h3>newAreaChart</h3><pre class="inline-signature">lurek.ui.newAreaChart(opts: table) -&gt; LAreaChart</pre><p>Creates a new area chart for data visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6835</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = &quot;CPU Usage&quot; })
+    chart:addLayer(&quot;user&quot;, { 10, 25, 30, 45, 50, 40, 35 }, 0.2, 0.6, 1.0)
+    chart:addLayer(&quot;system&quot;, { 5, 10, 15, 20, 15, 10, 8 }, 1.0, 0.4, 0.2)
+    chart:setYMax(100)
+    print(&quot;area chart type:&quot;, chart:type())
+    print(&quot;is area chart:&quot;, chart:typeOf(&quot;LAreaChart&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbadge"><div class="item-row-main"><h3>newBadge</h3><pre class="inline-signature">lurek.ui.newBadge(count: integer?) -&gt; LBadge</pre><p>Creates a new badge widget for displaying counts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6903</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local badge = lurek.ui.newBadge(5)
+    print(&quot;count:&quot;, badge:getCount())
+    print(&quot;display:&quot;, badge:getDisplayText())
+    badge:setCount(120)
+    print(&quot;large count display:&quot;, badge:getDisplayText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbarchart"><div class="item-row-main"><h3>newBarChart</h3><pre class="inline-signature">lurek.ui.newBarChart(opts: table) -&gt; LBarChart</pre><p>Creates a new bar chart for data visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6772</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = &quot;Sales&quot; })
+    chart:addSeries(&quot;Q1&quot;, 0.2, 0.8, 0.4)
+    chart:addSeries(&quot;Q2&quot;, 0.8, 0.2, 0.4)
+    chart:addCategory(&quot;Widgets&quot;, { 150, 200 })
+    chart:addCategory(&quot;Gadgets&quot;, { 90, 120 })
+    chart:addCategory(&quot;Tools&quot;, { 60, 80 })
+    print(&quot;bar chart type:&quot;, chart:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbutton"><div class="item-row-main"><h3>newButton</h3><pre class="inline-signature">lurek.ui.newButton(text: string?) -&gt; LButton</pre><p>Creates a new button widget with optional label text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5614</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LButton
+    local btn = lurek.ui.newButton(&quot;Click Me&quot;)
+    print(&quot;type = &quot; .. btn:type())
+    print(&quot;text = &quot; .. btn:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcheckbox"><div class="item-row-main"><h3>newCheckbox</h3><pre class="inline-signature">lurek.ui.newCheckbox(text: string?) -&gt; LCheckbox</pre><p>Creates a new checkbox widget with optional label.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5664</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LCheckbox
+    local cb = lurek.ui.newCheckbox(&quot;Enable Sound&quot;)
+    print(&quot;type = &quot; .. cb:type())
+    print(&quot;text = &quot; .. cb:getText())
+    print(&quot;checked = &quot; .. tostring(cb:isChecked()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcolorpicker"><div class="item-row-main"><h3>newColorPicker</h3><pre class="inline-signature">lurek.ui.newColorPicker() -&gt; LColorPicker</pre><p>Creates a new color picker widget for color selection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6108</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local cp = lurek.ui.newColorPicker()
+    cp:setColor(0.8, 0.2, 0.5, 1.0)
+    local r, g, b, a = cp:getColor()
+    print(&quot;color:&quot;, r, g, b, a)
+    cp:setColorMode(&quot;hsv&quot;)
+    print(&quot;mode:&quot;, cp:getColorMode())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcombobox"><div class="item-row-main"><h3>newComboBox</h3><pre class="inline-signature">lurek.ui.newComboBox() -&gt; LComboBox</pre><p>Creates a new combo box (drop-down) widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5716</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LComboBox
+    local combo = lurek.ui.newComboBox()
+    print(&quot;type = &quot; .. combo:type())
+    print(&quot;items = &quot; .. combo:getItemCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcustomwidget"><div class="item-row-main"><h3>newCustomWidget</h3><pre class="inline-signature">lurek.ui.newCustomWidget(config: table?) -&gt; LUiWidget</pre><p>Creates a new custom widget with optional initial configuration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6690</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    local child = lurek.ui.newLabel(&quot;label&quot;)
+    w:addChild(child)
+    w:animateAlpha(0.5, 0.3, false)
+    w:animatePosition(10, 20, 0.5)
+    local cnt = w:getChildCount()
+    print(&quot;addChild/animateAlpha/animatePosition ok; childCount:&quot;, cnt)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdialog"><div class="item-row-main"><h3>newDialog</h3><pre class="inline-signature">lurek.ui.newDialog(title: string?) -&gt; LDialog</pre><p>Creates a new dialog widget with an optional title.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6043</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local dlg = lurek.ui.newDialog(&quot;Confirm Action&quot;)
+    local content = lurek.ui.newPanel()
+    content:setSize(300, 200)
+    dlg:setModal(true)
+    dlg:setContent(content._idx)
+    dlg:addButton(&quot;OK&quot;)
+    dlg:addButton(&quot;Cancel&quot;)
+    dlg:setOnClose(function(idx)
+        print(&quot;dialog closed, widget index:&quot;, idx)
+    end)
+    dlg:open()
+    print(&quot;dialog title:&quot;, dlg:getTitle())
+    print(&quot;is modal:&quot;, dlg:isModal())
+    print(&quot;is open:&quot;, dlg:isOpen())
+    dlg:setTitle(&quot;Advanced Settings&quot;)
+    print(&quot;dialog content index:&quot;, dlg:getContent())
+    print(&quot;new title:&quot;, dlg:getTitle())
+    dlg:close()
+    print(&quot;after close, is open:&quot;, dlg:isOpen())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdockpanel"><div class="item-row-main"><h3>newDockPanel</h3><pre class="inline-signature">lurek.ui.newDockPanel() -&gt; LDockPanel</pre><p>Creates a new dock panel widget for docking child widgets to sides.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5976</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local dock = lurek.ui.newDockPanel()
+    local header = lurek.ui.newPanel()
+    local sidebar = lurek.ui.newPanel()
+    print(&quot;type = &quot; .. dock:type())
+    header:setSize(0, 60)
+    sidebar:setSize(200, 0)
+    dock:addChild(header)
+    dock:addChild(sidebar)
+    dock:dock(header._idx, &quot;top&quot;)
+    dock:dock(sidebar._idx, &quot;left&quot;)
+    dock:setSplitSize(&quot;left&quot;, 200)
+    dock:setSplitSize(&quot;top&quot;, 60)
+    print(&quot;docked count = &quot; .. dock:getDockedCount())
+    print(&quot;left size = &quot; .. dock:getSplitSize(&quot;left&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newimagewidget"><div class="item-row-main"><h3>newImageWidget</h3><pre class="inline-signature">lurek.ui.newImageWidget() -&gt; LImageWidget</pre><p>Creates a new image display widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6140</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local img = lurek.ui.newImageWidget()
+    img:setScaleMode(&quot;fit&quot;)
+    print(&quot;scale mode:&quot;, img:getScaleMode())
+    img:setTint(1.0, 0.8, 0.6, 0.9)
+    local r, g, b, a = img:getTint()
+    print(&quot;tint:&quot;, r, g, b, a)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlabel"><div class="item-row-main"><h3>newLabel</h3><pre class="inline-signature">lurek.ui.newLabel(text: string?) -&gt; LLabel</pre><p>Creates a new label widget for displaying text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5631</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local lbl = lurek.ui.newLabel(&quot;Hello, World!&quot;)
+    print(&quot;type = &quot; .. lbl:type())
+    print(&quot;text = &quot; .. lbl:getText())
+    lbl:setText(&quot;Score: 100&quot;)
+    print(&quot;updated text = &quot; .. lbl:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlayout"><div class="item-row-main"><h3>newLayout</h3><pre class="inline-signature">lurek.ui.newLayout(direction: string?) -&gt; LLayout</pre><p>Creates a new layout container widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5765</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local row = lurek.ui.newLayout(&quot;horizontal&quot;)
+    print(&quot;type = &quot; .. row:type())
+    print(&quot;direction = &quot; .. row:getDirection())
+    print(&quot;spacing = &quot; .. row:getSpacing())
+
+    local col = lurek.ui.newLayout(&quot;vertical&quot;)
+    col:setSpacing(10)
+    print(&quot;direction = &quot; .. col:getDirection())
+    print(&quot;spacing = &quot; .. col:getSpacing())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlinechart"><div class="item-row-main"><h3>newLineChart</h3><pre class="inline-signature">lurek.ui.newLineChart(opts: table) -&gt; LLineChart</pre><p>Creates a new line chart for data visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6751</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = &quot;Temperature&quot; })
+    chart:addSeries(&quot;indoor&quot;, { { x = 0, y = 20 }, { x = 6, y = 19 }, { x = 12, y = 22 }, { x = 18, y = 21 }, { x = 24, y = 20 } }, 1.0, 0.3, 0.3)
+    chart:addSeries(&quot;outdoor&quot;, { { x = 0, y = 5 }, { x = 6, y = 3 }, { x = 12, y = 15 }, { x = 18, y = 10 }, { x = 24, y = 6 } }, 0.3, 0.3, 1.0)
+    chart:setXMax(24)
+    chart:setYMax(30)
+    print(&quot;line chart type:&quot;, chart:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlist"><div class="item-row-main"><h3>newList</h3><pre class="inline-signature">lurek.ui.newList() -&gt; LListBox</pre><p>Creates a new list box widget for item selection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5732</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LListBox
+    local list = lurek.ui.newList()
+    print(&quot;type = &quot; .. list:type())
+    print(&quot;items = &quot; .. list:getItemCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmenubar"><div class="item-row-main"><h3>newMenuBar</h3><pre class="inline-signature">lurek.ui.newMenuBar() -&gt; LMenuBar</pre><p>Creates a new menu bar widget for top-level menus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6009</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LMenuBar
+    local bar = lurek.ui.newMenuBar()
+    print(&quot;type = &quot; .. bar:type())
+    print(&quot;menu count = &quot; .. bar:getMenuCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmenuitem"><div class="item-row-main"><h3>newMenuItem</h3><pre class="inline-signature">lurek.ui.newMenuItem(text: string?) -&gt; LMenuItem</pre><p>Creates a new menu item widget with optional text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6026</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local item = lurek.ui.newMenuItem(&quot;File&quot;)
+    print(&quot;type = &quot; .. item:type())
+    print(&quot;text = &quot; .. item:getText())
+    item:setShortcut(&quot;Ctrl+F&quot;)
+    print(&quot;shortcut = &quot; .. item:getShortcut())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newninepatch"><div class="item-row-main"><h3>newNinePatch</h3><pre class="inline-signature">lurek.ui.newNinePatch() -&gt; LNinePatch</pre><p>Creates a new nine-patch widget for scalable bordered images.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5801</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local np = lurek.ui.newNinePatch()
+    np:setImageDimensions(128, 128)
+    np:setInsets(16, 16, 16, 16)
+    local w, h = np:getImageDimensions()
+    print(&quot;image size:&quot;, w, h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpanel"><div class="item-row-main"><h3>newPanel</h3><pre class="inline-signature">lurek.ui.newPanel() -&gt; LPanel</pre><p>Creates a new panel widget (container).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5748</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    print(&quot;type = &quot; .. panel:type())
+    print(&quot;child count = &quot; .. panel:getChildCount())
+    print(&quot;visible = &quot; .. tostring(panel:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpiechart"><div class="item-row-main"><h3>newPieChart</h3><pre class="inline-signature">lurek.ui.newPieChart(opts: table) -&gt; LPieChart</pre><p>Creates a new pie chart for data visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6814</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = &quot;Market Share&quot; })
+    chart:addSegment(&quot;Product A&quot;, 45, 0.2, 0.6, 1.0)
+    chart:addSegment(&quot;Product B&quot;, 30, 1.0, 0.4, 0.2)
+    chart:addSegment(&quot;Product C&quot;, 15, 0.3, 0.9, 0.3)
+    chart:addSegment(&quot;Other&quot;, 10, 0.7, 0.7, 0.7)
+    print(&quot;pie chart type:&quot;, chart:type())
+    print(&quot;is pie chart:&quot;, chart:typeOf(&quot;LPieChart&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newprogressbar"><div class="item-row-main"><h3>newProgressBar</h3><pre class="inline-signature">lurek.ui.newProgressBar(min: number?, max: number?) -&gt; LProgressBar</pre><p>Creates a new progress bar widget with min and max.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5700</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local bar = lurek.ui.newProgressBar(0, 100)
+    bar:setValue(35)
+    print(&quot;value:&quot;, bar:getValue())
+    print(&quot;progress (normalized):&quot;, bar:getProgress())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newradiobutton"><div class="item-row-main"><h3>newRadioButton</h3><pre class="inline-signature">lurek.ui.newRadioButton(text: string?, group: string?) -&gt; LRadioButton</pre><p>Creates a new radio button widget in a named group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5907</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local rb1 = lurek.ui.newRadioButton(&quot;Small&quot;, &quot;size_group&quot;)
+    local rb2 = lurek.ui.newRadioButton(&quot;Medium&quot;, &quot;size_group&quot;)
+    local rb3 = lurek.ui.newRadioButton(&quot;Large&quot;, &quot;size_group&quot;)
+    rb2:setSelected(true)
+    print(&quot;rb1 selected:&quot;, rb1:isSelected())
+    print(&quot;rb2 selected:&quot;, rb2:isSelected())
+    print(&quot;rb2 group:&quot;, rb2:getGroup())
+    print(&quot;rb2 text:&quot;, rb2:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newscatterplot"><div class="item-row-main"><h3>newScatterPlot</h3><pre class="inline-signature">lurek.ui.newScatterPlot(opts: table) -&gt; LScatterPlot</pre><p>Creates a new scatter plot for data visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6793</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = &quot;Height vs Weight&quot; })
+    chart:addSeries(&quot;male&quot;, { { x = 170, y = 70 }, { x = 180, y = 80 }, { x = 175, y = 75 }, { x = 185, y = 90 } }, 0.2, 0.5, 1.0)
+    chart:addSeries(&quot;female&quot;, { { x = 160, y = 55 }, { x = 165, y = 60 }, { x = 170, y = 65 }, { x = 155, y = 50 } }, 1.0, 0.3, 0.6)
+    chart:setXRange(150, 200)
+    chart:setYRange(40, 100)
+    print(&quot;scatter plot type:&quot;, chart:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newscrollbar"><div class="item-row-main"><h3>newScrollBar</h3><pre class="inline-signature">lurek.ui.newScrollBar(vertical: boolean?) -&gt; LScrollBar</pre><p>Creates a new scroll bar widget for content scrolling.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5926</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local w = lurek.ui.newCustomWidget({width=100, height=50})
+    local layout = lurek.ui.newLayout(&quot;row&quot;)
+    local sb = lurek.ui.newScrollBar(true)
+    print(&quot;newCustomWidget:&quot;, w, &quot;newLayout:&quot;, layout, &quot;newScrollBar:&quot;, sb)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newscrollpanel"><div class="item-row-main"><h3>newScrollPanel</h3><pre class="inline-signature">lurek.ui.newScrollPanel() -&gt; LScrollPanel</pre><p>Creates a new scrollable panel widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5785</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local scroll = lurek.ui.newScrollPanel()
+    print(&quot;type = &quot; .. scroll:type())
+    scroll:setContentSize(1200, 2000)
+    local cw, ch = scroll:getContentSize()
+    print(&quot;content size = &quot; .. cw .. &quot;x&quot; .. ch)
+    scroll:setScrollPosition(0, 100)
+    local sx, sy = scroll:getScrollPosition()
+    print(&quot;scroll pos = &quot; .. sx .. &quot;, &quot; .. sy)
+    local mx, my = scroll:getMaxScroll()
+    print(&quot;max scroll = &quot; .. mx .. &quot;, &quot; .. my)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newseparator"><div class="item-row-main"><h3>newSeparator</h3><pre class="inline-signature">lurek.ui.newSeparator(vertical: boolean?) -&gt; LSeparator</pre><p>Creates a new separator widget for visual division.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5834</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local sep = lurek.ui.newSeparator(false)
+    print(&quot;is vertical:&quot;, sep:isVertical())
+    sep:setThickness(2)
+    print(&quot;new thickness:&quot;, sep:getThickness())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newslider"><div class="item-row-main"><h3>newSlider</h3><pre class="inline-signature">lurek.ui.newSlider(min: number?, max: number?) -&gt; LSlider</pre><p>Creates a new slider widget with adjustable range.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5682</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local slider = lurek.ui.newSlider(0, 100)
+    print(&quot;type = &quot; .. slider:type())
+    print(&quot;min = &quot; .. slider:getMin())
+    print(&quot;max = &quot; .. slider:getMax())
+    print(&quot;value = &quot; .. slider:getValue())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newspacer"><div class="item-row-main"><h3>newSpacer</h3><pre class="inline-signature">lurek.ui.newSpacer(w: number?, h: number?) -&gt; LSpacer</pre><p>Creates a new spacer widget for spacing between other widgets.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5852</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local sp = lurek.ui.newSpacer(20, 10)
+    sp:setSize(40, 20)
+    local w, h = sp:getSize()
+    print(&quot;spacer size:&quot;, w, h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newspinbox"><div class="item-row-main"><h3>newSpinBox</h3><pre class="inline-signature">lurek.ui.newSpinBox(min: number?, max: number?) -&gt; LSpinBox</pre><p>Creates a new spin box (numeric stepper) widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6869</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local spin = lurek.ui.newSpinBox(1, 99)
+    print(&quot;type = &quot; .. spin:type())
+    print(&quot;value = &quot; .. spin:getValue())
+    spin:setValue(50)
+    print(&quot;set to 50 = &quot; .. spin:getValue())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsplitpanel"><div class="item-row-main"><h3>newSplitPanel</h3><pre class="inline-signature">lurek.ui.newSplitPanel(orientation: string?) -&gt; LSplitPanel</pre><p>Creates a new split panel widget with two resizable sub-panels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5960</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local split = lurek.ui.newSplitPanel(&quot;horizontal&quot;)
+    local left = lurek.ui.newPanel()
+    local right = lurek.ui.newPanel()
+    print(&quot;type = &quot; .. split:type())
+    print(&quot;orientation = &quot; .. split:getOrientation())
+    split:setFirstChild(left._idx)
+    split:setSecondChild(right._idx)
+    split:setSplitPosition(0.3)
+    split:setMinPanelSize(100)
+    print(&quot;split at &quot; .. split:getSplitPosition())
+    print(&quot;min panel = &quot; .. split:getMinPanelSize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstatusbar"><div class="item-row-main"><h3>newStatusBar</h3><pre class="inline-signature">lurek.ui.newStatusBar() -&gt; LStatusBar</pre><p>Creates a new status bar widget for app-level info.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6059</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local sb = lurek.ui.newStatusBar()
+    sb:addSection(&quot;Ready&quot;, 150)
+    print(&quot;section count:&quot;, sb:getSectionCount())
+    print(&quot;section 1:&quot;, sb:getSectionText(1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newswitch"><div class="item-row-main"><h3>newSwitch</h3><pre class="inline-signature">lurek.ui.newSwitch(on: boolean?) -&gt; LSwitch</pre><p>Creates a new toggle switch widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6886</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LSwitch
+    local sw = lurek.ui.newSwitch(false)
+    print(&quot;type = &quot; .. sw:type())
+    print(&quot;on = &quot; .. tostring(sw:isOn()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtabbar"><div class="item-row-main"><h3>newTabBar</h3><pre class="inline-signature">lurek.ui.newTabBar() -&gt; LTabBar</pre><p>Creates a new tab bar widget for tabbed navigation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5817</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    ---@type LTabBar
+    local tabs = lurek.ui.newTabBar()
+    print(&quot;type = &quot; .. tabs:type())
+    print(&quot;tab count = &quot; .. tabs:getTabCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtable"><div class="item-row-main"><h3>newTable</h3><pre class="inline-signature">lurek.ui.newTable() -&gt; LGuiTable</pre><p>Creates a new table widget for tabular data display.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6124</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local tbl = lurek.ui.newTable()
+    print(&quot;type=&quot; .. tbl:type())
+    tbl:addColumn(&quot;Name&quot;)
+    tbl:addColumn(&quot;Score&quot;)
+    print(&quot;cols=&quot; .. tbl:getColumnCount())
+    tbl:addRow({ &quot;Alice&quot;, &quot;100&quot; })
+    tbl:addRow({ &quot;Bob&quot;, &quot;80&quot; })
+    print(&quot;rows=&quot; .. tbl:getRowCount())
+    local cell = tbl:getCell(0, 0)
+    print(&quot;cell00=&quot; .. tostring(cell))
+    tbl:setCell(0, 1, &quot;999&quot;)
+    tbl:setSelectedRow(1)
+    print(&quot;selected=&quot; .. tbl:getSelectedRow())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtextinput"><div class="item-row-main"><h3>newTextInput</h3><pre class="inline-signature">lurek.ui.newTextInput() -&gt; LTextInput</pre><p>Creates a new text input widget for user entry.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5647</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local input = lurek.ui.newTextInput()
+    print(&quot;type = &quot; .. input:type())
+    print(&quot;text = &#x27;&quot; .. input:getText() .. &quot;&#x27;&quot;)
+    input:setText(&quot;Hello&quot;)
+    print(&quot;set text = &quot; .. input:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtheme"><div class="item-row-main"><h3>newTheme</h3><pre class="inline-signature">lurek.ui.newTheme() -&gt; LTheme</pre><p>Creates a new UI theme for styling widgets.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6154</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local theme = lurek.ui.newTheme()
+    theme:setStyle(&quot;button&quot;, &quot;normal&quot;, { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle(&quot;button&quot;, &quot;hovered&quot;, { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
+    lurek.ui.setTheme(theme)
+    print(&quot;theme active:&quot;, lurek.ui.getTheme())
+    print(&quot;theme type:&quot;, theme:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtoast"><div class="item-row-main"><h3>newToast</h3><pre class="inline-signature">lurek.ui.newToast(message: string?, duration: number?) -&gt; LToast</pre><p>Creates a new toast notification widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5869</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local toast = lurek.ui.newToast(&quot;File saved!&quot;, 2.5)
+    print(&quot;message:&quot;, toast:getMessage())
+    print(&quot;duration:&quot;, toast:getDuration())
+    toast:setMessage(&quot;Upload complete&quot;)
+    toast:setDuration(4.0)
+    print(&quot;updated message:&quot;, toast:getMessage())
+    print(&quot;expired:&quot;, toast:isExpired())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtoolbar"><div class="item-row-main"><h3>newToolbar</h3><pre class="inline-signature">lurek.ui.newToolbar(orientation: string?) -&gt; LToolbar</pre><p>Creates a new toolbar widget for action buttons.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5993</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local tb = lurek.ui.newToolbar(&quot;horizontal&quot;)
+    tb:addButton(&quot;save&quot;, &quot;Save file&quot;)
+    print(&quot;orientation:&quot;, tb:getOrientation())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtooltippanel"><div class="item-row-main"><h3>newTooltipPanel</h3><pre class="inline-signature">lurek.ui.newTooltipPanel(text: string?) -&gt; LTooltipPanel</pre><p>Creates a new tooltip panel widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6092</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local btn = lurek.ui.newButton(&quot;Hover me&quot;)
+    local tip = lurek.ui.newTooltipPanel(&quot;Click to submit form&quot;)
+    tip:setDelay(0.5)
+    tip:setTarget(btn._idx)
+    print(&quot;tooltip text:&quot;, tip:getText())
+    print(&quot;delay:&quot;, tip:getDelay())
+    print(&quot;target:&quot;, tip:getTarget())
+    tip:setText(&quot;Updated tooltip text&quot;)
+    print(&quot;new text:&quot;, tip:getText())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtreeview"><div class="item-row-main"><h3>newTreeView</h3><pre class="inline-signature">lurek.ui.newTreeView() -&gt; LTreeView</pre><p>Creates a new tree view widget for hierarchical data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5889</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local tree = lurek.ui.newTreeView()
+    local root = tree:addNode(&quot;Project&quot;)
+    tree:addNode(&quot;main.lua&quot;, root)
+    print(&quot;total nodes:&quot;, tree:getNodeCount())
+    print(&quot;root text:&quot;, tree:getNodeText(root))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newwindow"><div class="item-row-main"><h3>newWindow</h3><pre class="inline-signature">lurek.ui.newWindow(title: string?) -&gt; LGuiWindow</pre><p>Creates a new GUI window widget with an optional title.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:5943</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local win = lurek.ui.newWindow(&quot;Editor&quot;)
+    win:setDraggable(true)
+    win:setResizable(true)
+    win:setCloseable(true)
+    win:setOnClose(function(idx)
+        print(&quot;window closed, widget index:&quot;, idx)
+    end)
+    print(&quot;window title:&quot;, win:getTitle())
+    print(&quot;is draggable:&quot;, win:isDraggable())
+    print(&quot;is resizable:&quot;, win:isResizable())
+    print(&quot;is closeable:&quot;, win:isCloseable())
+
+    win:setTitle(&quot;Object Inspector&quot;)
+    print(&quot;title:&quot;, win:getTitle())
+    win:setDraggable(false)
+    print(&quot;draggable after disable:&quot;, win:isDraggable())
+    win:setResizable(false)
+    print(&quot;resizable after disable:&quot;, win:isResizable())
+    win:setCloseable(false)
+    print(&quot;closeable after disable:&quot;, win:isCloseable())
+end</code></pre></details></article><article class="item-row api-row" id="fn-parsewidgetstate"><div class="item-row-main"><h3>parseWidgetState</h3><pre class="inline-signature">lurek.ui.parseWidgetState(state: string) -&gt; string</pre><p>Validates and normalizes a widget state string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6856</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local th = lurek.ui.newTheme()
+    local state = lurek.ui.parseWidgetState(&quot;normal&quot;)
+    local result = lurek.ui.renderToImage(320, 240, &quot;save/ui_render.png&quot;)
+    print(&quot;newTheme ok; parseWidgetState:&quot;, state, &quot;renderToImage:&quot;, result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-rendertoimage"><div class="item-row-main"><h3>renderToImage</h3><pre class="inline-signature">lurek.ui.renderToImage(pathOrWidth: any, widthOrHeight: integer, heightOrPath: any)</pre><p>Renders the entire UI to a PNG image file.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7084</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local th = lurek.ui.newTheme()
+    local state = lurek.ui.parseWidgetState(&quot;normal&quot;)
+    local result = lurek.ui.renderToImage(320, 240, &quot;save/ui_render.png&quot;)
+    print(&quot;newTheme ok; parseWidgetState:&quot;, state, &quot;renderToImage:&quot;, result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbaseresolution"><div class="item-row-main"><h3>setBaseResolution</h3><pre class="inline-signature">lurek.ui.setBaseResolution(width: number, height: number)</pre><p>Set the logical base resolution the UI was designed for.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6360</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.setBaseResolution(1280, 720)
+    print(&quot;lurek.ui.setBaseResolution scaleFactor=&quot; .. lurek.ui.getScaleFactor())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdefaulttheme"><div class="item-row-main"><h3>setDefaultTheme</h3><pre class="inline-signature">lurek.ui.setDefaultTheme()</pre><p>Applies the built-in default theme to the UI context.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6917</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local th = lurek.ui.newTheme()
+    lurek.ui.setTheme(th)
+    lurek.ui.setDefaultTheme()
+    lurek.ui.setViewport(1280, 720)
+    local cnt = lurek.ui.getWidgetCount()
+    print(&quot;setTheme/setDefaultTheme/setViewport ok; widgets:&quot;, cnt)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfocus"><div class="item-row-main"><h3>setFocus</h3><pre class="inline-signature">lurek.ui.setFocus(widget: table?)</pre><p>Sets keyboard focus to a widget, or clears focus if nil.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6274</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local input = lurek.ui.newTextInput()
+    lurek.ui.setFocus(input)
+    local focused = lurek.ui.getFocus()
+    print(&quot;focus set, has focus = &quot; .. tostring(focused ~= nil))
+    lurek.ui.clearFocus()
+    focused = lurek.ui.getFocus()
+    print(&quot;after clear = &quot; .. tostring(focused))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfont"><div class="item-row-main"><h3>setFont</h3><pre class="inline-signature">lurek.ui.setFont(font: LFont)</pre><p>Sets the global UI font by applying it to the root widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6202</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for setFont
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using setFont&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked setFont on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-settheme"><div class="item-row-main"><h3>setTheme</h3><pre class="inline-signature">lurek.ui.setTheme(theme_ud: LTheme)</pre><p>Applies a theme to the entire UI context.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6167</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local theme = lurek.ui.newTheme()
+    theme:setStyle(&quot;button&quot;, &quot;normal&quot;, { bg_r = 0.2, bg_g = 0.2, bg_b = 0.3, bg_a = 1.0, fg_r = 1.0, fg_g = 1.0, fg_b = 1.0, fg_a = 1.0, })
+    theme:setStyle(&quot;button&quot;, &quot;hovered&quot;, { bg_r = 0.3, bg_g = 0.3, bg_b = 0.5, bg_a = 1.0, })
+    lurek.ui.setTheme(theme)
+    print(&quot;theme active:&quot;, lurek.ui.getTheme())
+    print(&quot;theme type:&quot;, theme:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setviewport"><div class="item-row-main"><h3>setViewport</h3><pre class="inline-signature">lurek.ui.setViewport(w: number, h: number)</pre><p>Sets the viewport size for the UI context.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6929</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local th = lurek.ui.newTheme()
+    lurek.ui.setTheme(th)
+    lurek.ui.setDefaultTheme()
+    lurek.ui.setViewport(1280, 720)
+    local cnt = lurek.ui.getWidgetCount()
+    print(&quot;setTheme/setDefaultTheme/setViewport ok; widgets:&quot;, cnt)
+end</code></pre></details></article><article class="item-row api-row" id="fn-textinput"><div class="item-row-main"><h3>textinput</h3><pre class="inline-signature">lurek.ui.textinput(text: string) -&gt; boolean</pre><p>Delivers a text input event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6586</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.textinput(&quot;hello&quot;)
+    lurek.ui.textinput(&quot; world&quot;)
+    lurek.ui.update_bindings({dt=0.016})
+    lurek.ui.wheelmoved(0, 1)
+    lurek.ui.wheelmoved(1, 0)
+    print(&quot;textinput/update_bindings/wheelmoved ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">lurek.ui.update(dt: number)</pre><p>Updates the UI context and dispatches pending events to callbacks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6606</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.update(1 / 60)
+    lurek.ui.draw()
+    print(&quot;UI frame processed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-updatebindings"><div class="item-row-main"><h3>updateBindings</h3><pre class="inline-signature">lurek.ui.updateBindings(data: table) -&gt; integer</pre><p>Updates data bindings for widgets that reference binding keys.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7017</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    -- Example for updateBindings
+    local widget = lurek.ui.newButton(&quot;Test Widget&quot;)
+    widget:setText(&quot;Using updateBindings&quot;)
+    local w, h = widget:getSize()
+    lurek.log.info(&quot;Invoked updateBindings on widget size &quot; .. w .. &quot;x&quot; .. h)
+    if w &gt; 0 then widget:setVisible(true) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-updateresolution"><div class="item-row-main"><h3>updateResolution</h3><pre class="inline-signature">lurek.ui.updateResolution(width: number, height: number)</pre><p>Update the current viewport resolution and recompute UI scale factor.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6347</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.updateResolution(1920, 1080)
+    print(&quot;lurek.ui.updateResolution ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-update-bindings"><div class="item-row-main"><h3>update_bindings</h3><pre class="inline-signature">lurek.ui.update_bindings(data: table) -&gt; integer</pre><p>Updates data bindings for widgets that reference binding keys.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:7005</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    lurek.ui.textinput(&quot;hello&quot;)
+    lurek.ui.textinput(&quot; world&quot;)
+    lurek.ui.update_bindings({dt=0.016})
+    lurek.ui.wheelmoved(0, 1)
+    lurek.ui.wheelmoved(1, 0)
+    print(&quot;textinput/update_bindings/wheelmoved ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-visiblerange"><div class="item-row-main"><h3>visibleRange</h3><pre class="inline-signature">lurek.ui.visibleRange(widget: table, item_count: integer, item_height: number) -&gt; integer</pre><p>Calculate the visible item range for a scrollable list widget.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6390</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local list = lurek.ui.newList()
+    local x, y = lurek.ui.visibleRange(list, 50, 20.0)
+    print(&quot;lurek.ui.visibleRange x=&quot; .. x .. &quot; y=&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-wheelmoved"><div class="item-row-main"><h3>wheelmoved</h3><pre class="inline-signature">lurek.ui.wheelmoved(x: number, y: number) -&gt; boolean</pre><p>Delivers a mouse wheel event to the UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ui_api.rs:6597</span></div><details class="example-block"><summary>Example · Exact example · ui.lua</summary><pre><code>do
+    local panel = lurek.ui.newScrollPanel()
+    panel:setPosition(300, 520)
+    panel:setSize(120, 70)
+    panel:setZOrder(2500)
+    panel:setContentSize(120, 300)
+    lurek.ui.mousemoved(310, 530)
+    lurek.ui.wheelmoved(0, -3)
+    local _, sy = panel:getScrollPosition()
+    print(&quot;hover scroll y:&quot;, sy)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAccordion.html">LAccordion</a></h3><p>Adds accordion-specific methods to an accordion widget table.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAreaChart.html">LAreaChart</a></h3><p>Lua-exposed area chart for data visualization.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBadge.html">LBadge</a></h3><p>Adds badge-specific methods to a notification badge widget table.</p></div><div class="item-row-meta"><span>3 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBarChart.html">LBarChart</a></h3><p>Lua-exposed bar chart for data visualization.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: charts.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LButton.html">LButton</a></h3><p>Adds button-specific methods (setText, getText) to a button widget table.</p></div><div class="item-row-meta"><span>2 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCheckbox.html">LCheckbox</a></h3><p>Adds checkbox-specific methods to a checkbox widget table.</p></div><div class="item-row-meta"><span>4 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LColorPicker.html">LColorPicker</a></h3><p>Adds color-picker-specific methods to a color picker widget table.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LComboBox.html">LComboBox</a></h3><p>Adds combo-box-specific methods to a combo box widget table.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDialog.html">LDialog</a></h3><p>Adds dialog-specific methods to a dialog widget table.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDockPanel.html">LDockPanel</a></h3><p>Adds dock-panel-specific methods to a dock panel widget table.</p></div><div class="item-row-meta"><span>5 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LGuiTable.html">LGuiTable</a></h3><p>Adds GUI-table-specific methods to a table widget.</p></div><div class="item-row-meta"><span>14 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LGuiWindow.html">LGuiWindow</a></h3><p>Adds GUI-window-specific methods to a window widget table.</p></div><div class="item-row-meta"><span>9 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LImageWidget.html">LImageWidget</a></h3><p>Adds image-widget-specific methods to an image widget table.</p></div><div class="item-row-meta"><span>4 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLabel.html">LLabel</a></h3><p>Adds label-specific methods (setText, getText) to a label widget table.</p></div><div class="item-row-meta"><span>2 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLayout.html">LLayout</a></h3><p>Adds layout-specific methods to a layout container widget table.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLineChart.html">LLineChart</a></h3><p>Lua-exposed line chart for data visualization.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: charts.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LListBox.html">LListBox</a></h3><p>Adds list-box-specific methods to a list box widget table.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMenuBar.html">LMenuBar</a></h3><p>Adds menu-bar-specific methods to a menu bar widget table.</p></div><div class="item-row-meta"><span>4 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMenuItem.html">LMenuItem</a></h3><p>Adds menu-item-specific methods to a menu item widget table.</p></div><div class="item-row-meta"><span>9 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNinePatch.html">LNinePatch</a></h3><p>Adds nine-patch-specific methods to a nine-patch widget table.</p></div><div class="item-row-meta"><span>5 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPanel.html">LPanel</a></h3><p>Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.</p></div><div class="item-row-meta"><span>3 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPieChart.html">LPieChart</a></h3><p>Lua-exposed pie chart for data visualization.</p></div><div class="item-row-meta"><span>5 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LProgressBar.html">LProgressBar</a></h3><p>Adds progress-bar-specific methods to a progress bar widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRadioButton.html">LRadioButton</a></h3><p>Adds radio-button-specific methods to a radio button widget table.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LScatterPlot.html">LScatterPlot</a></h3><p>Lua-exposed scatter plot for data visualization.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: charts.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LScrollBar.html">LScrollBar</a></h3><p>Adds scroll-bar-specific methods to a scroll bar widget table.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LScrollPanel.html">LScrollPanel</a></h3><p>Adds scroll-panel-specific methods to a scroll panel widget table.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSeparator.html">LSeparator</a></h3><p>Adds separator-specific methods to a separator widget table.</p></div><div class="item-row-meta"><span>4 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSlider.html">LSlider</a></h3><p>Adds slider-specific methods to a slider widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSpinBox.html">LSpinBox</a></h3><p>Adds spin-box-specific methods to a spin box widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSplitPanel.html">LSplitPanel</a></h3><p>Adds split-panel-specific methods to a split panel widget table.</p></div><div class="item-row-meta"><span>10 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStatusBar.html">LStatusBar</a></h3><p>Adds status-bar-specific methods to a status bar widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSwitch.html">LSwitch</a></h3><p>Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.</p></div><div class="item-row-meta"><span>3 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTabBar.html">LTabBar</a></h3><p>Adds tab-bar-specific methods to a tab bar widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTextInput.html">LTextInput</a></h3><p>Adds text-input-specific methods to a text input widget table.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTheme.html">LTheme</a></h3><p>Lua-exposed wrapper around a GUI theme for styling widgets.</p></div><div class="item-row-meta"><span>3 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LToast.html">LToast</a></h3><p>Adds toast-specific methods to a toast notification widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LToolbar.html">LToolbar</a></h3><p>Adds toolbar-specific methods to a toolbar widget table.</p></div><div class="item-row-meta"><span>9 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTooltipPanel.html">LTooltipPanel</a></h3><p>Adds tooltip-panel-specific methods to a tooltip panel widget table.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTreeView.html">LTreeView</a></h3><p>Registers tree-view-specific Lua methods on a widget method table.</p></div><div class="item-row-meta"><span>19 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LUiWidget.html">LUiWidget</a></h3><p>Creates a Lua table representing a widget with all shared base methods common to every widget type.</p></div><div class="item-row-meta"><span>72 methods</span><span>module ui</span></div><div class="card-note">Example: ui.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_PROVINCES","MAX_REGIONS"],"enum":["FogState","GlobeError","LodTier","MarkerShape"],"struct":["Arc","GlobeSpec","HeatLayer","Label","LabelStyle","Layer","Marker","MarkerStyle","ProjectedRegion","Region","RegionId"],"type":["ProjectedProvince","Province","ProvinceId"]};

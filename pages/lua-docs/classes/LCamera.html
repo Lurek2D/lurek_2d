@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCamera - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a class="active" href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LCamera</h1>
+  <p>Lua-side 2D camera handle with transforms, effects, bounds, and render command access.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/camera.html">lurek.camera</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(200, 150)
+    local x, y = cam:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LCamera userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-apply"><div class="item-row-main"><h3>apply</h3><pre class="inline-signature">LCamera:apply()</pre><p>Appends render commands that apply this camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:458</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(400, 300)
+    cam:apply()
+    local x, y = cam:getPosition()
+    print(&quot;camera applied&quot;)
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-attach"><div class="item-row-main"><h3>attach</h3><pre class="inline-signature">LCamera:attach()</pre><p>Appends render commands that attach this camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:476</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:attach()
+    print(&quot;camera attached&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearparallaxfactors"><div class="item-row-main"><h3>clearParallaxFactors</h3><pre class="inline-signature">LCamera:clearParallaxFactors()</pre><p>Clears all layer parallax factor overrides.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:452</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setParallaxFactor(&quot;fg&quot;, 1.2)
+    cam:clearParallaxFactors()
+    print(&quot;parallax cleared&quot;)
+    print(&quot;fg parallax = &quot; .. tostring(cam:getParallaxFactor(&quot;fg&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-cleartarget"><div class="item-row-main"><h3>clearTarget</h3><pre class="inline-signature">LCamera:clearTarget()</pre><p>Clears the follow target. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:187</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setTarget(100, 100)
+    cam:clearTarget()
+    local ok = cam:getTarget()
+    print(&quot;target cleared&quot;)
+    print(&quot;has target = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-detach"><div class="item-row-main"><h3>detach</h3><pre class="inline-signature">LCamera:detach()</pre><p>Appends a render command that detaches the active camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:485</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:attach()
+    cam:detach()
+    print(&quot;camera detached&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-followpath"><div class="item-row-main"><h3>followPath</h3><pre class="inline-signature">LCamera:followPath(points: table, duration: number)</pre><p>Starts camera movement along an array of waypoint tables.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:347</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local points = { { 0, 0 }, { 400, 200 }, { 800, 0 } }
+    cam:followPath(points, 3.0)
+    print(&quot;following path over 3s&quot;)
+    print(&quot;path progress = &quot; .. tostring(cam:pathProgress()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getbounds"><div class="item-row-main"><h3>getBounds</h3><pre class="inline-signature">LCamera:getBounds() -&gt; boolean, number, number, number, number</pre><p>Returns camera bounds with a leading availability flag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setBounds(0, 0, 2000, 1500)
+    local ok, bx, by, bw, bh = cam:getBounds()
+    print(&quot;bounds = &quot; .. tostring(ok) .. &quot;,&quot; .. tostring(bx) .. &quot;,&quot; .. tostring(by) .. &quot;,&quot; .. tostring(bw) .. &quot;,&quot; .. tostring(bh))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdeadzone"><div class="item-row-main"><h3>getDeadZone</h3><pre class="inline-signature">LCamera:getDeadZone() -&gt; boolean, number, number</pre><p>Returns follow dead-zone dimensions with a leading availability flag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:235</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setDeadZone(40, 20)
+    local ok, w, h = cam:getDeadZone()
+    print(&quot;dead zone = &quot; .. tostring(ok) .. &quot;,&quot; .. tostring(w) .. &quot;x&quot; .. tostring(h))
+end</code></pre></details></article><article class="item-row api-row" id="method-geteffectoffset"><div class="item-row-main"><h3>getEffectOffset</h3><pre class="inline-signature">LCamera:getEffectOffset() -&gt; number, number</pre><p>Returns combined camera effect offset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:564</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local ox, oy = cam:getEffectOffset()
+    print(&quot;effect offset = &quot; .. ox .. &quot;, &quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-geteffectivezoom"><div class="item-row-main"><h3>getEffectiveZoom</h3><pre class="inline-signature">LCamera:getEffectiveZoom() -&gt; number</pre><p>Returns zoom after camera effects are applied.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:558</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoom(2.0)
+    local ez = cam:getEffectiveZoom()
+    print(&quot;effective zoom = &quot; .. ez)
+    print(&quot;base zoom = &quot; .. tostring(cam:getZoom()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getfolloweasing"><div class="item-row-main"><h3>getFollowEasing</h3><pre class="inline-signature">LCamera:getFollowEasing() -&gt; string</pre><p>Returns target follow easing mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:216</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setFollowEasing(&quot;linear&quot;)
+    local e = cam:getFollowEasing()
+    print(&quot;easing = &quot; .. e)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfollowsmooth"><div class="item-row-main"><h3>getFollowSmooth</h3><pre class="inline-signature">LCamera:getFollowSmooth() -&gt; number</pre><p>Returns follow smoothing speed. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:201</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setFollowSmooth(3.0)
+    local s = cam:getFollowSmooth()
+    print(&quot;follow smooth = &quot; .. s)
+end</code></pre></details></article><article class="item-row api-row" id="method-getlookahead"><div class="item-row-main"><h3>getLookAhead</h3><pre class="inline-signature">LCamera:getLookAhead() -&gt; number</pre><p>Returns follow look-ahead multiplier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:253</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setLookAhead(2.0)
+    local la = cam:getLookAhead()
+    print(&quot;look ahead = &quot; .. la)
+end</code></pre></details></article><article class="item-row api-row" id="method-getparallaxfactor"><div class="item-row-main"><h3>getParallaxFactor</h3><pre class="inline-signature">LCamera:getParallaxFactor(layer: string) -&gt; number</pre><p>Returns a parallax factor for a named layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:447</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setParallaxFactor(&quot;clouds&quot;, 0.3)
+    local f = cam:getParallaxFactor(&quot;clouds&quot;)
+    print(&quot;clouds parallax = &quot; .. f)
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LCamera:getPosition() -&gt; number, number</pre><p>Returns the camera world position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:84</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(100, 50)
+    local x, y = cam:getPosition()
+    print(&quot;x=&quot; .. x .. &quot; y=&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrenderoffset"><div class="item-row-main"><h3>getRenderOffset</h3><pre class="inline-signature">LCamera:getRenderOffset() -&gt; number, number</pre><p>Returns current render offset after camera effects.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:576</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local rx, ry = cam:getRenderOffset()
+    print(&quot;render offset = &quot; .. rx .. &quot;, &quot; .. ry)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrotation"><div class="item-row-main"><h3>getRotation</h3><pre class="inline-signature">LCamera:getRotation() -&gt; number</pre><p>Returns the camera rotation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:108</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotation(1.5)
+    local r = cam:getRotation()
+    print(&quot;rotation = &quot; .. r)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrotationconstraints"><div class="item-row-main"><h3>getRotationConstraints</h3><pre class="inline-signature">LCamera:getRotationConstraints() -&gt; boolean, number, boolean, number</pre><p>Returns rotation constraints with availability flags.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:633</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotationConstraints(-1.0, 1.0)
+    local mn, mx = cam:getRotationConstraints()
+    print(&quot;rotation range = &quot; .. mn .. &quot; to &quot; .. mx)
+end</code></pre></details></article><article class="item-row api-row" id="method-getrotationdamping"><div class="item-row-main"><h3>getRotationDamping</h3><pre class="inline-signature">LCamera:getRotationDamping() -&gt; number</pre><p>Returns rotation damping. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:652</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotationDamping(0.7)
+    local d = cam:getRotationDamping()
+    print(&quot;rot damping = &quot; .. d)
+end</code></pre></details></article><article class="item-row api-row" id="method-getshakeoffset"><div class="item-row-main"><h3>getShakeOffset</h3><pre class="inline-signature">LCamera:getShakeOffset() -&gt; number, number</pre><p>Returns current camera shake offset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:570</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:shake(5.0, 0.5)
+    cam:update(0.01)
+    local sx, sy = cam:getShakeOffset()
+    print(&quot;shake = &quot; .. sx .. &quot;, &quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettarget"><div class="item-row-main"><h3>getTarget</h3><pre class="inline-signature">LCamera:getTarget() -&gt; boolean, number, number</pre><p>Returns the follow target with a leading availability flag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:177</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setTarget(250, 125)
+    local ok, tx, ty = cam:getTarget()
+    print(&quot;target = &quot; .. tostring(ok) .. &quot;, &quot; .. tostring(tx) .. &quot;, &quot; .. tostring(ty))
+end</code></pre></details></article><article class="item-row api-row" id="method-getviewport"><div class="item-row-main"><h3>getViewport</h3><pre class="inline-signature">LCamera:getViewport() -&gt; number, number, number, number</pre><p>Returns the camera viewport rectangle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:127</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setViewport(10, 10, 780, 580)
+    local x, y, w, h = cam:getViewport()
+    print(&quot;viewport = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getvisiblearea"><div class="item-row-main"><h3>getVisibleArea</h3><pre class="inline-signature">LCamera:getVisibleArea() -&gt; number, number, number, number</pre><p>Returns the world-space area visible through this camera.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:324</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(400, 300)
+    local x, y, w, h = cam:getVisibleArea()
+    print(&quot;visible = &quot; .. x .. &quot;,&quot; .. y .. &quot; &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getzoom"><div class="item-row-main"><h3>getZoom</h3><pre class="inline-signature">LCamera:getZoom() -&gt; number</pre><p>Returns the camera zoom factor. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:97</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoom(0.5)
+    local z = cam:getZoom()
+    print(&quot;zoom = &quot; .. z)
+end</code></pre></details></article><article class="item-row api-row" id="method-getzoomconstraints"><div class="item-row-main"><h3>getZoomConstraints</h3><pre class="inline-signature">LCamera:getZoomConstraints() -&gt; boolean, number, boolean, number</pre><p>Returns zoom constraints with availability flags.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:595</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoomConstraints(0.25, 3.0)
+    local _, mn, _, mx = cam:getZoomConstraints()
+    print(&quot;zoom range = &quot; .. mn .. &quot; to &quot; .. mx)
+end</code></pre></details></article><article class="item-row api-row" id="method-getzoomdamping"><div class="item-row-main"><h3>getZoomDamping</h3><pre class="inline-signature">LCamera:getZoomDamping() -&gt; number</pre><p>Returns zoom damping. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:614</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoomDamping(0.8)
+    local d = cam:getZoomDamping()
+    print(&quot;damping = &quot; .. d)
+end</code></pre></details></article><article class="item-row api-row" id="method-hasbounds"><div class="item-row-main"><h3>hasBounds</h3><pre class="inline-signature">LCamera:hasBounds() -&gt; boolean</pre><p>Returns whether camera bounds are active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:144</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setBounds(0, 0, 1000, 1000)
+    print(&quot;has bounds = &quot; .. tostring(cam:hasBounds()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isbreathing"><div class="item-row-main"><h3>isBreathing</h3><pre class="inline-signature">LCamera:isBreathing() -&gt; boolean</pre><p>Returns whether breathing zoom animation is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:552</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startBreathing(0.02, 0.5)
+    print(&quot;breathing = &quot; .. tostring(cam:isBreathing()))
+end</code></pre></details></article><article class="item-row api-row" id="method-issway"><div class="item-row-main"><h3>isSway</h3><pre class="inline-signature">LCamera:isSway() -&gt; boolean</pre><p>Returns whether camera sway is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:527</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startSway(1.0, 1.0, 1.0, 0.5)
+    print(&quot;is sway = &quot; .. tostring(cam:isSway()))
+end</code></pre></details></article><article class="item-row api-row" id="method-lookat"><div class="item-row-main"><h3>lookAt</h3><pre class="inline-signature">LCamera:lookAt(x: number, y: number)</pre><p>Centers the camera on a world position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:331</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:lookAt(500, 250)
+    local x, y = cam:getPosition()
+    print(&quot;looking at &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-move"><div class="item-row-main"><h3>move</h3><pre class="inline-signature">LCamera:move(dx: number, dy: number)</pre><p>Moves the camera by a delta. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:339</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(100, 100)
+    cam:move(50, -25)
+    local x, y = cam:getPosition()
+    print(&quot;moved to &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-onwindowresize"><div class="item-row-main"><h3>onWindowResize</h3><pre class="inline-signature">LCamera:onWindowResize(window_w: number, window_h: number)</pre><p>Updates camera viewport state after a window resize.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:260</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:onWindowResize(1920, 1080)
+    local _, _, w, h = cam:getViewport()
+    print(&quot;resized to 1920x1080&quot;)
+    print(&quot;viewport size = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-onwindowresizescaled"><div class="item-row-main"><h3>onWindowResizeScaled</h3><pre class="inline-signature">LCamera:onWindowResizeScaled(game_w: number, game_h: number, window_w: number, window_h: number, mode: string)</pre><p>Updates camera viewport state using a virtual game size and scale mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:274</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:onWindowResizeScaled(800, 600, 1920, 1080, &quot;letterbox&quot;)
+    local x, y, w, h = cam:getViewport()
+    print(&quot;scaled resize applied&quot;)
+    print(&quot;viewport = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-pathprogress"><div class="item-row-main"><h3>pathProgress</h3><pre class="inline-signature">LCamera:pathProgress() -&gt; number</pre><p>Returns active path progress. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:383</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local points = { { 0, 0 }, { 100, 100 } }
+    cam:followPath(points, 1.0)
+    cam:updatePath(0.5)
+    local p = cam:pathProgress()
+    print(&quot;progress = &quot; .. p)
+    print(&quot;progress halfway = &quot; .. tostring(p &gt; 0 and p &lt; 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-presetaggressivefollow"><div class="item-row-main"><h3>presetAggressiveFollow</h3><pre class="inline-signature">LCamera:presetAggressiveFollow()</pre><p>Applies the aggressive follow camera preset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:675</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:presetAggressiveFollow()
+    print(&quot;aggressive follow preset applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-presetbalancedfollow"><div class="item-row-main"><h3>presetBalancedFollow</h3><pre class="inline-signature">LCamera:presetBalancedFollow()</pre><p>Applies the balanced follow camera preset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:669</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:presetBalancedFollow()
+    print(&quot;balanced follow preset applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-presetcinematicfollow"><div class="item-row-main"><h3>presetCinematicFollow</h3><pre class="inline-signature">LCamera:presetCinematicFollow()</pre><p>Applies the cinematic follow camera preset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:663</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:presetCinematicFollow()
+    print(&quot;cinematic follow preset applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-presettightfollow"><div class="item-row-main"><h3>presetTightFollow</h3><pre class="inline-signature">LCamera:presetTightFollow()</pre><p>Applies the tight follow camera preset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:657</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:presetTightFollow()
+    print(&quot;tight follow preset applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-removebounds"><div class="item-row-main"><h3>removeBounds</h3><pre class="inline-signature">LCamera:removeBounds()</pre><p>Removes active camera bounds. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:162</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setBounds(0, 0, 1000, 1000)
+    cam:removeBounds()
+    print(&quot;bounds removed = &quot; .. tostring(not cam:hasBounds()))
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LCamera:reset()</pre><p>Appends a render command that removes the active camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:467</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(500, 500)
+    cam:setZoom(3.0)
+    cam:reset()
+    print(&quot;camera reset command queued&quot;)
+    print(&quot;zoom still readable = &quot; .. tostring(cam:getZoom()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setbounds"><div class="item-row-main"><h3>setBounds</h3><pre class="inline-signature">LCamera:setBounds(x: number, y: number, w: number, h: number)</pre><p>Sets camera world bounds. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:153</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setBounds(0, 0, 3200, 2400)
+    print(&quot;has bounds = &quot; .. tostring(cam:hasBounds()))
+    print(&quot;bounds set to 3200x2400&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setdeadzone"><div class="item-row-main"><h3>setDeadZone</h3><pre class="inline-signature">LCamera:setDeadZone(w: number, h: number)</pre><p>Sets follow dead-zone dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setDeadZone(50, 30)
+    local ok, w, h = cam:getDeadZone()
+    print(&quot;dead zone active = &quot; .. tostring(ok))
+    print(&quot;dead zone = &quot; .. tostring(w) .. &quot;x&quot; .. tostring(h))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfolloweasing"><div class="item-row-main"><h3>setFollowEasing</h3><pre class="inline-signature">LCamera:setFollowEasing(easing: string)</pre><p>Sets target follow easing mode. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:207</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setFollowEasing(&quot;quadOut&quot;)
+    print(&quot;easing = &quot; .. cam:getFollowEasing())
+end</code></pre></details></article><article class="item-row api-row" id="method-setfollowsmooth"><div class="item-row-main"><h3>setFollowSmooth</h3><pre class="inline-signature">LCamera:setFollowSmooth(speed: number)</pre><p>Sets follow smoothing speed. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:194</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setFollowSmooth(5.0)
+    print(&quot;smooth = &quot; .. cam:getFollowSmooth())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlookahead"><div class="item-row-main"><h3>setLookAhead</h3><pre class="inline-signature">LCamera:setLookAhead(mul: number)</pre><p>Sets follow look-ahead multiplier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:246</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setLookAhead(1.5)
+    print(&quot;look ahead = &quot; .. cam:getLookAhead())
+end</code></pre></details></article><article class="item-row api-row" id="method-setparallaxfactor"><div class="item-row-main"><h3>setParallaxFactor</h3><pre class="inline-signature">LCamera:setParallaxFactor(layer: string, factor: number)</pre><p>Sets a parallax factor for a named layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:436</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setParallaxFactor(&quot;background&quot;, 0.5)
+    print(&quot;parallax bg = &quot; .. cam:getParallaxFactor(&quot;background&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LCamera:setPosition(x: number, y: number)</pre><p>Sets the camera world position. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:77</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(200, 150)
+    local x, y = cam:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrotation"><div class="item-row-main"><h3>setRotation</h3><pre class="inline-signature">LCamera:setRotation(r: number)</pre><p>Sets the camera rotation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:101</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotation(math.pi / 4)
+    print(&quot;rotation = &quot; .. cam:getRotation())
+end</code></pre></details></article><article class="item-row api-row" id="method-setrotationconstraints"><div class="item-row-main"><h3>setRotationConstraints</h3><pre class="inline-signature">LCamera:setRotationConstraints(min_rot: number?, max_rot: number?)</pre><p>Sets optional minimum and maximum rotation constraints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:621</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotationConstraints(-0.5, 0.5)
+    local has_min, min_r, has_max, max_r = cam:getRotationConstraints()
+    print(&quot;has min/max = &quot; .. tostring(has_min) .. &quot;/&quot; .. tostring(has_max))
+    print(&quot;rotation constrained to [&quot; .. min_r .. &quot;, &quot; .. max_r .. &quot;]&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setrotationdamping"><div class="item-row-main"><h3>setRotationDamping</h3><pre class="inline-signature">LCamera:setRotationDamping(damping: number)</pre><p>Sets rotation damping. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:645</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setRotationDamping(0.85)
+    print(&quot;rotation damping = &quot; .. cam:getRotationDamping())
+end</code></pre></details></article><article class="item-row api-row" id="method-settarget"><div class="item-row-main"><h3>setTarget</h3><pre class="inline-signature">LCamera:setTarget(x: number, y: number)</pre><p>Sets a world-space follow target. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:170</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setTarget(500, 300)
+    local ok, tx, ty = cam:getTarget()
+    print(&quot;target = &quot; .. tostring(ok) .. &quot;, &quot; .. tostring(tx) .. &quot;, &quot; .. tostring(ty))
+end</code></pre></details></article><article class="item-row api-row" id="method-setviewport"><div class="item-row-main"><h3>setViewport</h3><pre class="inline-signature">LCamera:setViewport(x: number, y: number, w: number, h: number)</pre><p>Sets the camera viewport rectangle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:117</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setViewport(0, 0, 400, 300)
+    local x, y, w, h = cam:getViewport()
+    print(&quot;viewport x,y = &quot; .. x .. &quot;, &quot; .. y)
+    print(&quot;viewport size = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-setzoom"><div class="item-row-main"><h3>setZoom</h3><pre class="inline-signature">LCamera:setZoom(zoom: number)</pre><p>Sets the camera zoom factor. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:90</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoom(2.0)
+    print(&quot;zoom = &quot; .. cam:getZoom())
+end</code></pre></details></article><article class="item-row api-row" id="method-setzoomconstraints"><div class="item-row-main"><h3>setZoomConstraints</h3><pre class="inline-signature">LCamera:setZoomConstraints(min_zoom: number?, max_zoom: number?)</pre><p>Sets optional minimum and maximum zoom constraints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:583</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoomConstraints(0.5, 4.0)
+    local has_min, min_z, has_max, max_z = cam:getZoomConstraints()
+    print(&quot;has min/max = &quot; .. tostring(has_min) .. &quot;/&quot; .. tostring(has_max))
+    print(&quot;zoom constrained to [&quot; .. min_z .. &quot;, &quot; .. max_z .. &quot;]&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setzoomdamping"><div class="item-row-main"><h3>setZoomDamping</h3><pre class="inline-signature">LCamera:setZoomDamping(damping: number)</pre><p>Sets zoom damping. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:607</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setZoomDamping(0.9)
+    print(&quot;zoom damping = &quot; .. cam:getZoomDamping())
+end</code></pre></details></article><article class="item-row api-row" id="method-shake"><div class="item-row-main"><h3>shake</h3><pre class="inline-signature">LCamera:shake(intensity: number, duration: number)</pre><p>Starts a camera shake effect. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:294</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:shake(10.0, 0.5)
+    print(&quot;shaking for 0.5s at intensity 10&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-startbreathing"><div class="item-row-main"><h3>startBreathing</h3><pre class="inline-signature">LCamera:startBreathing(amplitude: number?, rate: number?)</pre><p>Starts subtle breathing zoom animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:534</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startBreathing(0.02, 0.5)
+    print(&quot;breathing started&quot;)
+    print(&quot;is breathing = &quot; .. tostring(cam:isBreathing()))
+end</code></pre></details></article><article class="item-row api-row" id="method-startsway"><div class="item-row-main"><h3>startSway</h3><pre class="inline-signature">LCamera:startSway(amplitude_x: number, amplitude_y: number, frequency: number, decay: number?)</pre><p>Starts camera sway offset animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:509</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startSway(3.0, 2.0, 1.5, 0.5)
+    print(&quot;sway started&quot;)
+    print(&quot;is sway = &quot; .. tostring(cam:isSway()))
+end</code></pre></details></article><article class="item-row api-row" id="method-stopbreathing"><div class="item-row-main"><h3>stopBreathing</h3><pre class="inline-signature">LCamera:stopBreathing()</pre><p>Stops breathing zoom animation. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:545</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startBreathing(0.01, 0.3)
+    cam:stopBreathing()
+    print(&quot;breathing stopped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-stoppath"><div class="item-row-main"><h3>stopPath</h3><pre class="inline-signature">LCamera:stopPath()</pre><p>Stops the active camera path. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:363</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local points = { { 0, 0 }, { 100, 100 } }
+    cam:followPath(points, 2.0)
+    cam:stopPath()
+    print(&quot;path stopped&quot;)
+    print(&quot;path progress = &quot; .. tostring(cam:pathProgress()))
+end</code></pre></details></article><article class="item-row api-row" id="method-stopsway"><div class="item-row-main"><h3>stopSway</h3><pre class="inline-signature">LCamera:stopSway()</pre><p>Stops camera sway offset animation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:startSway(2.0, 1.0, 1.0, 0.3)
+    cam:stopSway()
+    print(&quot;sway stopped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-stopzoom"><div class="item-row-main"><h3>stopZoom</h3><pre class="inline-signature">LCamera:stopZoom()</pre><p>Stops the active zoom tween. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:411</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:zoomTo(3.0, 2.0, &quot;linear&quot;)
+    cam:stopZoom()
+    print(&quot;zoom stopped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-toscreen"><div class="item-row-main"><h3>toScreen</h3><pre class="inline-signature">LCamera:toScreen(wx: number, wy: number) -&gt; number, number</pre><p>Converts world coordinates to screen coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:318</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(100, 100)
+    local sx, sy = cam:toScreen(500, 400)
+    print(&quot;screen = &quot; .. sx .. &quot;, &quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-toworld"><div class="item-row-main"><h3>toWorld</h3><pre class="inline-signature">LCamera:toWorld(sx: number, sy: number) -&gt; number, number</pre><p>Converts screen coordinates to world coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:310</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setPosition(100, 100)
+    local wx, wy = cam:toWorld(400, 300)
+    print(&quot;world = &quot; .. wx .. &quot;, &quot; .. wy)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LCamera:type() -&gt; string</pre><p>Returns the Lua-visible type name for this camera handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:682</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    print(&quot;type = &quot; .. cam:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LCamera:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this camera handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:687</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    print(&quot;is LCamera = &quot; .. tostring(cam:typeOf(&quot;LCamera&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LCamera:update(dt: number)</pre><p>Advances camera follow, shake, and effect state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:301</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:setTarget(200, 100)
+    cam:setFollowSmooth(4.0)
+    cam:update(0.016)
+    local x, y = cam:getPosition()
+    print(&quot;camera updated&quot;)
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-updatepath"><div class="item-row-main"><h3>updatePath</h3><pre class="inline-signature">LCamera:updatePath(dt: number) -&gt; boolean</pre><p>Advances the active camera path and applies its position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:371</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    local points = { { 0, 0 }, { 200, 200 } }
+    cam:followPath(points, 2.0)
+    cam:updatePath(0.5)
+    local x, y = cam:getPosition()
+    print(&quot;path progress = &quot; .. cam:pathProgress())
+    print(&quot;position = &quot; .. x .. &quot;, &quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-updatezoom"><div class="item-row-main"><h3>updateZoom</h3><pre class="inline-signature">LCamera:updateZoom(dt: number) -&gt; boolean</pre><p>Advances the active zoom tween and applies its zoom value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:419</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:zoomTo(2.0, 1.0, &quot;linear&quot;)
+    cam:updateZoom(0.5)
+    print(&quot;zoom after 0.5s = &quot; .. cam:getZoom())
+end</code></pre></details></article><article class="item-row api-row" id="method-zoompulse"><div class="item-row-main"><h3>zoomPulse</h3><pre class="inline-signature">LCamera:zoomPulse(amplitude: number, duration: number)</pre><p>Triggers a temporary zoom pulse effect.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:zoomPulse(0.2, 0.3)
+    print(&quot;zoom pulse: amplitude=0.2, dur=0.3s&quot;)
+    print(&quot;effective zoom = &quot; .. tostring(cam:getEffectiveZoom()))
+end</code></pre></details></article><article class="item-row api-row" id="method-zoomto"><div class="item-row-main"><h3>zoomTo</h3><pre class="inline-signature">LCamera:zoomTo(target_zoom: number, duration: number, easing: string?)</pre><p>Starts a zoom tween toward a target zoom factor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local cam = lurek.camera.new(800, 600)
+    cam:zoomTo(2.0, 1.0, &quot;quadOut&quot;)
+    print(&quot;zooming to 2x over 1s&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.render - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a class="active" href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.render</h1>
+  <p>`lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management. - Registers `lurek.render.*` functions and types via `register()`. - Userdata types: `LuaImageData`, `LuaNineSlice`, `LuaImage`. - Userdata types: `LuaFont`, `LuaCanvas`, `LuaSpriteBatch`. - Userdata types: `LuaMesh`, `LuaShader`, `LuaQuad`. - Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`. - Bridges 217 Lua-callable methods via `mlua`. - See `docs/specs/render.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>130 functions</span><span>12 classes</span><span>src/lua_api/render_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 217</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.render.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-applytransform"><div class="item-row-main"><h3>applyTransform</h3><pre class="inline-signature">lurek.render.applyTransform(mat: table)</pre><p>Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3157</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local matrix = { 1, 0, 0, 0, 1, 0, 60, 120, 1 }
+    lurek.render.push()
+    lurek.render.applyTransform(matrix)
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 36, 36)
+    lurek.render.pop()
+    print(&quot;applyTransform matrix entries = &quot; .. #matrix)
+    print(&quot;flat 3x3 matrix applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-arc"><div class="item-row-main"><h3>arc</h3><pre class="inline-signature">lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, segments: number?)</pre><p>Draws a filled or outlined circular arc segment.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1549</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0.8, 0.1, 1)
+    lurek.render.arc(&quot;fill&quot;, 360, 250, 36, 0, math.pi)
+    lurek.render.setColor(0.2, 0.9, 0.4, 1)
+    lurek.render.arc(&quot;line&quot;, 450, 250, 36, math.pi, math.pi * 1.75, 20)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;arc segments = 20 on line arc&quot;)
+    print(&quot;arc examples drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-beginsortgroup"><div class="item-row-main"><h3>beginSortGroup</h3><pre class="inline-signature">lurek.render.beginSortGroup(id: integer)</pre><p>Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4135</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(1)
+    lurek.render.pushSortKey(10)
+    lurek.render.rectangle(&quot;fill&quot;, 400, 140, 30, 30)
+    lurek.render.pushSortKey(5)
+    lurek.render.rectangle(&quot;fill&quot;, 410, 150, 30, 30)
+    lurek.render.flushSortGroup(1)
+    print(&quot;sort group id = 1&quot;)
+    print(&quot;sort keys 10 and 5 queued&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-beginsortgroup"><div class="item-row-main"><h3>beginSortGroup</h3><pre class="inline-signature">lurek.render.beginSortGroup(id: integer)</pre><p>Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4674</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(1)
+    lurek.render.pushSortKey(10)
+    lurek.render.rectangle(&quot;fill&quot;, 400, 140, 30, 30)
+    lurek.render.pushSortKey(5)
+    lurek.render.rectangle(&quot;fill&quot;, 410, 150, 30, 30)
+    lurek.render.flushSortGroup(1)
+    print(&quot;sort group id = 1&quot;)
+    print(&quot;sort keys 10 and 5 queued&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-capturescreenshot"><div class="item-row-main"><h3>captureScreenshot</h3><pre class="inline-signature">lurek.render.captureScreenshot(callback: function)</pre><p>Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3623</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.captureScreenshot(function(data)
+        print(&quot;captureScreenshot size = &quot; .. data:getWidth() .. &quot;x&quot; .. data:getHeight())
+    end)
+    lurek.render.saveScreenshot(&quot;save/render_capture.png&quot;)
+    print(&quot;captureScreenshot callback invoked&quot;)
+    print(&quot;saveScreenshot requested&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-circle"><div class="item-row-main"><h3>circle</h3><pre class="inline-signature">lurek.render.circle(mode: string, x: number, y: number, radius: number)</pre><p>Draws a filled or outlined circle at the given position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1410</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0.6, 0.1, 1)
+    lurek.render.circle(&quot;fill&quot;, 340, 180, 30)
+    lurek.render.setColor(0.2, 0.9, 1, 1)
+    lurek.render.circle(&quot;line&quot;, 410, 180, 30)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;circle radius = 30&quot;)
+    print(&quot;circle fill and line drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.render.clear(r: number?, g: number?, b: number?)</pre><p>Clears all queued render commands for the current frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2186</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 10, 10)
+    lurek.render.clear()
+    print(&quot;render command queue cleared&quot;)
+    print(&quot;clear called after a draw&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearstencil"><div class="item-row-main"><h3>clearStencil</h3><pre class="inline-signature">lurek.render.clearStencil()</pre><p>Resets the stencil state to defaults (no stencil operations).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3444</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setStencilMode(&quot;replace&quot;, &quot;always&quot;, 2)
+    lurek.render.clearStencil()
+    local action, compare, value = lurek.render.getStencilMode()
+    print(&quot;stencil mode after clear = &quot; .. action .. &quot;,&quot; .. compare .. &quot;,&quot; .. value)
+end</code></pre></details></article><article class="item-row api-row" id="fn-currentlayer"><div class="item-row-main"><h3>currentLayer</h3><pre class="inline-signature">lurek.render.currentLayer() -&gt; string</pre><p>Returns the name of the currently active rendering layer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4858</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;current_layer_stub&quot;, 12)
+    lurek.render.setLayer(&quot;current_layer_stub&quot;)
+    print(&quot;current layer = &quot; .. lurek.render.currentLayer())
+    lurek.render.setLayer(&quot;default&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-draw"><div class="item-row-main"><h3>draw</h3><pre class="inline-signature">lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, x: number?, y: number?, r: number?, sx: number?, sy: number?, ox: number?, oy: number?) -&gt; nil</pre><p>Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1626</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 96, 96)
+    lurek.render.setCanvas(nil)
+    lurek.render.draw(canvas, 280, 430, 0, 0.75, 0.75)
+    print(&quot;draw used a canvas handle&quot;)
+    print(&quot;draw scale = 0.75&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawbatch"><div class="item-row-main"><h3>drawBatch</h3><pre class="inline-signature">lurek.render.drawBatch(batch: LSpriteBatch) -&gt; nil</pre><p>Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1742</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local batch = lurek.render.newSpriteBatch(image, 8)
+    batch:add(120, 220, 0, 0.5, 0.5, 0, 0)
+    lurek.render.drawBatch(batch)
+    print(&quot;drawBatch sprite count = &quot; .. batch:getCount())
+    print(&quot;drawBatch issued&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawbevelrect"><div class="item-row-main"><h3>drawBevelRect</h3><pre class="inline-signature">lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, bevelW: number?, style: string?, opts: table?)</pre><p>Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4180</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawBevelRect(10, 560, 90, 32, 3, &quot;raised&quot;)
+    lurek.render.drawBevelRect(120, 560, 90, 32, 3, &quot;sunken&quot;)
+    lurek.render.drawBevelRect(230, 560, 90, 32, 2, &quot;flat&quot;, {
+        fillColor = { 0.2, 0.3, 0.8, 1 },
+        highlight = { 1, 1, 1, 1 },
+        shadow = { 0.2, 0.2, 0.3, 1 },
+    })
+    print(&quot;bevel styles = raised, sunken, flat&quot;)
+    print(&quot;bevel rectangles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawbevelrect"><div class="item-row-main"><h3>drawBevelRect</h3><pre class="inline-signature">lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, bevelW: number?, style: string?, opts: table?)</pre><p>Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4720</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawBevelRect(10, 560, 90, 32, 3, &quot;raised&quot;)
+    lurek.render.drawBevelRect(120, 560, 90, 32, 3, &quot;sunken&quot;)
+    lurek.render.drawBevelRect(230, 560, 90, 32, 2, &quot;flat&quot;, {
+        fillColor = { 0.2, 0.3, 0.8, 1 },
+        highlight = { 1, 1, 1, 1 },
+        shadow = { 0.2, 0.2, 0.3, 1 },
+    })
+    print(&quot;bevel styles = raised, sunken, flat&quot;)
+    print(&quot;bevel rectangles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawcoloredpolygon"><div class="item-row-main"><h3>drawColoredPolygon</h3><pre class="inline-signature">lurek.render.drawColoredPolygon(vertices: table, colors: table, mode: string?)</pre><p>Draws a polygon with per-vertex colors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3937</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local vertices = { 320, 500, 380, 500, 400, 540, 300, 540 }
+    local colors = {
+        { 1, 0, 0, 1 },
+        { 0, 1, 0, 1 },
+        { 0, 0, 1, 1 },
+        { 1, 1, 0, 1 },
+    }
+    lurek.render.drawColoredPolygon(vertices, colors, &quot;fill&quot;)
+    print(&quot;colored polygon vertices = 4&quot;)
+    print(&quot;colored polygon drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawcoloredpolygon"><div class="item-row-main"><h3>drawColoredPolygon</h3><pre class="inline-signature">lurek.render.drawColoredPolygon(vertices: table, colors: table, mode: string?)</pre><p>Draws a polygon with per-vertex colors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4492</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local vertices = { 320, 500, 380, 500, 400, 540, 300, 540 }
+    local colors = {
+        { 1, 0, 0, 1 },
+        { 0, 1, 0, 1 },
+        { 0, 0, 1, 1 },
+        { 1, 1, 0, 1 },
+    }
+    lurek.render.drawColoredPolygon(vertices, colors, &quot;fill&quot;)
+    print(&quot;colored polygon vertices = 4&quot;)
+    print(&quot;colored polygon drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawcubicbezier"><div class="item-row-main"><h3>drawCubicBezier</h3><pre class="inline-signature">lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, segs: number?)</pre><p>Draws a cubic Bezier curve through start, two control points, and end.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3770</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0.5, 0.1, 1)
+    lurek.render.drawCubicBezier(20, 440, 60, 390, 120, 490, 160, 440, 24)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;cubic bezier segments = 24&quot;)
+    print(&quot;cubic bezier drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawcubicbezier"><div class="item-row-main"><h3>drawCubicBezier</h3><pre class="inline-signature">lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, segments: number?)</pre><p>Draws a cubic Bezier curve through start, two control points, and end.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4334</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0.5, 0.1, 1)
+    lurek.render.drawCubicBezier(20, 440, 60, 390, 120, 490, 160, 440, 24)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;cubic bezier segments = 24&quot;)
+    print(&quot;cubic bezier drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawgradientrect"><div class="item-row-main"><h3>drawGradientRect</h3><pre class="inline-signature">lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, dir: string?)</pre><p>Draws a rectangle with a two-color gradient fill.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3874</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawGradientRect(10, 500, 120, 36, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, &quot;horizontal&quot;)
+    lurek.render.drawGradientRect(150, 500, 120, 36, { 0, 1, 0, 1 }, { 1, 1, 0, 1 }, &quot;vertical&quot;)
+    print(&quot;gradient directions = horizontal, vertical&quot;)
+    print(&quot;gradient rectangles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawgradientrect"><div class="item-row-main"><h3>drawGradientRect</h3><pre class="inline-signature">lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, dir: string?)</pre><p>Draws a rectangle with a two-color gradient fill.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4429</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawGradientRect(10, 500, 120, 36, { 1, 0, 0, 1 }, { 0, 0, 1, 1 }, &quot;horizontal&quot;)
+    lurek.render.drawGradientRect(150, 500, 120, 36, { 0, 1, 0, 1 }, { 1, 1, 0, 1 }, &quot;vertical&quot;)
+    print(&quot;gradient directions = horizontal, vertical&quot;)
+    print(&quot;gradient rectangles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawhextile"><div class="item-row-main"><h3>drawHexTile</h3><pre class="inline-signature">lurek.render.drawHexTile(cx: number, cy: number, size: number, orientation: string?, mode: string?)</pre><p>Draws a regular hexagonal tile at the given center position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4084</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.1, 0.7, 0.5, 1)
+    lurek.render.drawHexTile(480, 520, 24, &quot;pointyTop&quot;, &quot;fill&quot;)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.drawHexTile(550, 520, 24, &quot;flatTop&quot;, &quot;line&quot;)
+    print(&quot;hex tile orientations = pointyTop, flatTop&quot;)
+    print(&quot;hex tiles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawhextile"><div class="item-row-main"><h3>drawHexTile</h3><pre class="inline-signature">lurek.render.drawHexTile(cx: number, cy: number, size: number, orientation: string?, mode: string?)</pre><p>Draws a regular hexagonal tile at the given center position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4631</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.1, 0.7, 0.5, 1)
+    lurek.render.drawHexTile(480, 520, 24, &quot;pointyTop&quot;, &quot;fill&quot;)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.drawHexTile(550, 520, 24, &quot;flatTop&quot;, &quot;line&quot;)
+    print(&quot;hex tile orientations = pointyTop, flatTop&quot;)
+    print(&quot;hex tiles drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawisocubetile"><div class="item-row-main"><h3>drawIsoCubeTile</h3><pre class="inline-signature">lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, opts: table?)</pre><p>Draws an isometric cube tile with configurable face colors and optional textures.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3991</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawIsoCubeTile(300, 330, 28, 14, {
+        depth = 18,
+        topColor = { 0.8, 0.8, 0.9, 1 },
+        leftColor = { 0.5, 0.5, 0.6, 1 },
+        rightColor = { 0.3, 0.3, 0.4, 1 },
+    })
+    print(&quot;iso cube tile depth = 18&quot;)
+    print(&quot;iso cube tile drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawisocubetile"><div class="item-row-main"><h3>drawIsoCubeTile</h3><pre class="inline-signature">lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, opts: table?)</pre><p>Draws an isometric cube tile with configurable face colors and optional textures.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4538</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.drawIsoCubeTile(300, 330, 28, 14, {
+        depth = 18,
+        topColor = { 0.8, 0.8, 0.9, 1 },
+        leftColor = { 0.5, 0.5, 0.6, 1 },
+        rightColor = { 0.3, 0.3, 0.4, 1 },
+    })
+    print(&quot;iso cube tile depth = 18&quot;)
+    print(&quot;iso cube tile drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawmany"><div class="item-row-main"><h3>drawMany</h3><pre class="inline-signature">lurek.render.drawMany(list: table)</pre><p>Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1825</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local list = {
+        { image, 10, 270, 0, 0.3, 0.3, 0, 0 },
+        { image, 40, 270, math.pi / 8, 0.3, 0.3, 0, 0 },
+        { image, 70, 270, math.pi / 4, 0.3, 0.3, 0, 0 },
+    }
+    lurek.render.drawMany(list)
+    print(&quot;drawMany entries = &quot; .. #list)
+    print(&quot;drawMany issued&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawnineslice"><div class="item-row-main"><h3>drawNineSlice</h3><pre class="inline-signature">lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h: number)</pre><p>Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3676</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    lurek.render.drawNineSlice(slice, 100, 100, 80, 60)
+    print(&quot;drawNineSlice target size = 80x60&quot;)
+    image:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawpath"><div class="item-row-main"><h3>drawPath</h3><pre class="inline-signature">lurek.render.drawPath(path: table, mode: string?, close: boolean?)</pre><p>Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3805</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local path = {
+        { type = &quot;moveTo&quot;, x = 380, y = 430 },
+        { type = &quot;lineTo&quot;, x = 430, y = 410 },
+        { type = &quot;quadTo&quot;, cx = 470, cy = 390, x = 500, y = 430 },
+        { type = &quot;cubicTo&quot;, cx1 = 500, cy1 = 470, cx2 = 420, cy2 = 470, x = 380, y = 450 },
+    }
+    lurek.render.setColor(0.6, 0.2, 1, 1)
+    lurek.render.drawPath(path, &quot;line&quot;, true)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;path segments = &quot; .. #path)
+    print(&quot;path closed = true&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawpath"><div class="item-row-main"><h3>drawPath</h3><pre class="inline-signature">lurek.render.drawPath(path: table, mode: string?, close: boolean?)</pre><p>Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4368</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local path = {
+        { type = &quot;moveTo&quot;, x = 380, y = 430 },
+        { type = &quot;lineTo&quot;, x = 430, y = 410 },
+        { type = &quot;quadTo&quot;, cx = 470, cy = 390, x = 500, y = 430 },
+        { type = &quot;cubicTo&quot;, cx1 = 500, cy1 = 470, cx2 = 420, cy2 = 470, x = 380, y = 450 },
+    }
+    lurek.render.setColor(0.6, 0.2, 1, 1)
+    lurek.render.drawPath(path, &quot;line&quot;, true)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;path segments = &quot; .. #path)
+    print(&quot;path closed = true&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawquadbezier"><div class="item-row-main"><h3>drawQuadBezier</h3><pre class="inline-signature">lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, segs: integer?)</pre><p>Draws a quadratic Bezier curve through start, control, and end points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3742</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.1, 1, 0.5, 1)
+    lurek.render.drawQuadBezier(210, 440, 270, 390, 330, 440, 18)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;quad bezier segments = 18&quot;)
+    print(&quot;quad bezier drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawquadbezier"><div class="item-row-main"><h3>drawQuadBezier</h3><pre class="inline-signature">lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, segments: number?)</pre><p>Draws a quadratic Bezier curve through start, control, and end points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4297</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.1, 1, 0.5, 1)
+    lurek.render.drawQuadBezier(210, 440, 270, 390, 330, 440, 18)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;quad bezier segments = 18&quot;)
+    print(&quot;quad bezier drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawq"><div class="item-row-main"><h3>drawq</h3><pre class="inline-signature">lurek.render.drawq(image: LImage, quad: LQuad, x: number?, y: number?, r: number?, sx: number?, sy: number?, ox: number?, oy: number?)</pre><p>Draws a sub-region of an image defined by a Quad, with optional transform.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1765</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local quad = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
+    lurek.render.draw(image, 10, 10, 0, 1, 1)
+    lurek.render.drawq(image, quad, 50, 50, 0, 1, 1)
+    print(&quot;drawq used a 16x16 quad&quot;)
+    image:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-ellipse"><div class="item-row-main"><h3>ellipse</h3><pre class="inline-signature">lurek.render.ellipse(mode: string, x: number, y: number, rx: number, ry: number)</pre><p>Draws a filled or outlined ellipse at the given position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1430</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.2, 0.6, 0.9, 1)
+    lurek.render.ellipse(&quot;fill&quot;, 110, 250, 60, 30)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.ellipse(&quot;line&quot;, 240, 250, 40, 60)
+    print(&quot;ellipse examples drawn&quot;)
+    print(&quot;ellipse radii = 60x30 and 40x60&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-flushsortgroup"><div class="item-row-main"><h3>flushSortGroup</h3><pre class="inline-signature">lurek.render.flushSortGroup(id: integer)</pre><p>Ends a sort group and emits all accumulated draw calls in sorted order.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4161</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(7)
+    lurek.render.pushSortKey(5)
+    lurek.render.circle(&quot;fill&quot;, 100, 100, 10)
+    lurek.render.flushSortGroup(7)
+    print(&quot;flushSortGroup id = 7&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-flushsortgroup"><div class="item-row-main"><h3>flushSortGroup</h3><pre class="inline-signature">lurek.render.flushSortGroup(id: integer)</pre><p>Ends a sort group and emits all accumulated draw calls in sorted order.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4700</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(7)
+    lurek.render.pushSortKey(5)
+    lurek.render.circle(&quot;fill&quot;, 100, 100, 10)
+    lurek.render.flushSortGroup(7)
+    print(&quot;flushSortGroup id = 7&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbackgroundcolor"><div class="item-row-main"><h3>getBackgroundColor</h3><pre class="inline-signature">lurek.render.getBackgroundColor() -&gt; number, number, number, number</pre><p>Returns the current background clear color.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1336</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setBackgroundColor(0.2, 0.2, 0.3)
+    local r, g, b, a = lurek.render.getBackgroundColor()
+    print(&quot;background = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+    lurek.render.setBackgroundColor(0, 0, 0)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getblendmode"><div class="item-row-main"><h3>getBlendMode</h3><pre class="inline-signature">lurek.render.getBlendMode() -&gt; string</pre><p>Returns the current blend mode name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2261</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setBlendMode(&quot;alpha&quot;)
+    print(&quot;blend mode = &quot; .. lurek.render.getBlendMode())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbuiltinfontnames"><div class="item-row-main"><h3>getBuiltInFontNames</h3><pre class="inline-signature">lurek.render.getBuiltInFontNames() -&gt; string[]</pre><p>Returns all stable built-in font names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2405</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local names = lurek.render.getBuiltInFontNames()
+    print(&quot;built-in font name count = &quot; .. #names)
+    print(&quot;first built-in font = &quot; .. tostring(names[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcanvas"><div class="item-row-main"><h3>getCanvas</h3><pre class="inline-signature">lurek.render.getCanvas() -&gt; LCanvas</pre><p>Returns the currently active canvas, or nil if drawing to the screen.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2871</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(120, 80)
+    lurek.render.setCanvas(canvas)
+    local active = lurek.render.getCanvas()
+    local w, h = lurek.render.getCanvasSize(canvas)
+    lurek.render.setCanvas(nil)
+    lurek.render.resetCanvas(canvas)
+    print(&quot;active canvas exists = &quot; .. tostring(active ~= nil))
+    print(&quot;canvas size = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcanvassize"><div class="item-row-main"><h3>getCanvasSize</h3><pre class="inline-signature">lurek.render.getCanvasSize(canvas: LCanvas) -&gt; number, number</pre><p>Returns the pixel dimensions of a canvas.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2886</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(200, 100)
+    local w, h = lurek.render.getCanvasSize(canvas)
+    print(&quot;canvas size = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;color mask red enabled = &quot; .. tostring(select(1, lurek.render.getColorMask())))
+    canvas:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcolor"><div class="item-row-main"><h3>getColor</h3><pre class="inline-signature">lurek.render.getColor() -&gt; number, number, number, number</pre><p>Returns the current drawing color.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1312</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0, 0, 1)
+    local r, g, b, a = lurek.render.getColor()
+    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+    lurek.render.setColor(1, 1, 1, 1)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcolormask"><div class="item-row-main"><h3>getColorMask</h3><pre class="inline-signature">lurek.render.getColorMask() -&gt; boolean, boolean, boolean, boolean</pre><p>Returns the current color write mask.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3277</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColorMask(true, false, true, true)
+    local r, g, b, a = lurek.render.getColorMask()
+    print(&quot;color mask = &quot; .. tostring(r) .. &quot;,&quot; .. tostring(g) .. &quot;,&quot; .. tostring(b) .. &quot;,&quot; .. tostring(a))
+    lurek.render.setColorMask()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdefaultfilter"><div class="item-row-main"><h3>getDefaultFilter</h3><pre class="inline-signature">lurek.render.getDefaultFilter() -&gt; string, string, number</pre><p>Returns the current default texture filtering settings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3546</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local min_filter, mag_filter, aniso = lurek.render.getDefaultFilter()
+    print(&quot;default filter = &quot; .. min_filter .. &quot;,&quot; .. mag_filter .. &quot;,&quot; .. aniso)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdefaultfont"><div class="item-row-main"><h3>getDefaultFont</h3><pre class="inline-signature">lurek.render.getDefaultFont(pointSize: integer?, bold: boolean?) -&gt; LFont</pre><p>Returns a built-in default font at the nearest available bundled point size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2421</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(24)
+    lurek.render.setFont(font)
+    lurek.render.print(&quot;Default font size 24&quot;, 10, 455)
+    print(&quot;default font height = &quot; .. font:getHeight())
+    print(&quot;default font fetched by point size&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdepthmode"><div class="item-row-main"><h3>getDepthMode</h3><pre class="inline-signature">lurek.render.getDepthMode() -&gt; string, boolean</pre><p>Returns the current depth comparison mode and write-enable flag.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3482</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local mode, write = lurek.render.getDepthMode()
+    print(&quot;depth mode = &quot; .. mode)
+    print(&quot;depth write = &quot; .. tostring(write))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">lurek.render.getDimensions() -&gt; number, number</pre><p>Returns the current window width and height.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3520</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local w, h = lurek.render.getDimensions()
+    print(&quot;dimensions = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;width = &quot; .. lurek.render.getWidth() .. &quot;, height = &quot; .. lurek.render.getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfont"><div class="item-row-main"><h3>getFont</h3><pre class="inline-signature">lurek.render.getFont() -&gt; LFont</pre><p>Returns the currently active font, or nil if none is set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2373</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.newFont(&quot;content/examples/assets/fonts/sample_font.ttf&quot;, 14)
+    lurek.render.setFont(font)
+    print(&quot;active font exists = &quot; .. tostring(lurek.render.getFont() ~= nil))
+    print(&quot;active font width of test = &quot; .. font:getWidth(&quot;test&quot;))
+    font:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontascent"><div class="item-row-main"><h3>getFontAscent</h3><pre class="inline-signature">lurek.render.getFontAscent(font: LFont) -&gt; number</pre><p>Returns the ascent (pixels above baseline) of the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2635</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.newFont(&quot;content/examples/assets/fonts/sample_font.ttf&quot;, 16)
+    print(&quot;module ascent = &quot; .. lurek.render.getFontAscent(font))
+    print(&quot;module descent = &quot; .. lurek.render.getFontDescent(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontcellwidth"><div class="item-row-main"><h3>getFontCellWidth</h3><pre class="inline-signature">lurek.render.getFontCellWidth(font: LFont) -&gt; number</pre><p>Returns the fixed cell width of a bitmap font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2531</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(14)
+    print(&quot;font cell width = &quot; .. lurek.render.getFontCellWidth(font))
+    print(&quot;font descent = &quot; .. lurek.render.getFontDescent(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontdescent"><div class="item-row-main"><h3>getFontDescent</h3><pre class="inline-signature">lurek.render.getFontDescent(font: LFont) -&gt; number</pre><p>Returns the descent (pixels below baseline) of the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2655</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(14)
+    print(&quot;font descent = &quot; .. lurek.render.getFontDescent(font))
+    print(&quot;font ascent = &quot; .. lurek.render.getFontAscent(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontheight"><div class="item-row-main"><h3>getFontHeight</h3><pre class="inline-signature">lurek.render.getFontHeight(font: LFont) -&gt; number</pre><p>Returns the line height of the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2572</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(14)
+    print(&quot;font height = &quot; .. lurek.render.getFontHeight(font))
+    print(&quot;font line height = &quot; .. lurek.render.getFontLineHeight(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontlineheight"><div class="item-row-main"><h3>getFontLineHeight</h3><pre class="inline-signature">lurek.render.getFontLineHeight(font: LFont) -&gt; number</pre><p>Returns the line spacing of the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2592</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(14)
+    print(&quot;font line height = &quot; .. lurek.render.getFontLineHeight(font))
+    print(&quot;line width = &quot; .. lurek.render.getLineWidth())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontsizes"><div class="item-row-main"><h3>getFontSizes</h3><pre class="inline-signature">lurek.render.getFontSizes() -&gt; number[]</pre><p>Returns all available built-in point sizes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2389</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local sizes = lurek.render.getFontSizes()
+    print(&quot;font sizes count = &quot; .. #sizes)
+    print(&quot;first bundled size = &quot; .. tostring(sizes[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontwidth"><div class="item-row-main"><h3>getFontWidth</h3><pre class="inline-signature">lurek.render.getFontWidth(font: LFont, text: string) -&gt; number</pre><p>Measures the pixel width of text using the given font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2552</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.newFont(&quot;content/examples/assets/fonts/sample_font.ttf&quot;, 14)
+    print(&quot;module getFontWidth = &quot; .. lurek.render.getFontWidth(font, &quot;Measure&quot;))
+    print(&quot;module getFontHeight = &quot; .. lurek.render.getFontHeight(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfontwrap"><div class="item-row-main"><h3>getFontWrap</h3><pre class="inline-signature">lurek.render.getFontWrap(text: string, limit: number) -&gt; LuaValue, number</pre><p>Word-wraps text using the active font and returns the resulting lines and widest line width.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2676</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(12)
+    lurek.render.setFont(font)
+    local lines, width = lurek.render.getFontWrap(&quot;A long sentence for wrap testing at 200 px limit.&quot;, 200)
+    print(&quot;module wrapped lines = &quot; .. #lines)
+    print(&quot;module wrap width = &quot; .. width)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">lurek.render.getHeight() -&gt; number</pre><p>Returns the current window height in pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3512</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local w, h = lurek.render.getDimensions()
+    print(&quot;dimensions = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;height = &quot; .. lurek.render.getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlayerzorder"><div class="item-row-main"><h3>getLayerZOrder</h3><pre class="inline-signature">lurek.render.getLayerZOrder(name: string) -&gt; number</pre><p>Returns the z-order value of a named rendering layer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4888</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;midground&quot;, 5)
+    print(&quot;midground z before = &quot; .. lurek.render.getLayerZOrder(&quot;midground&quot;))
+    lurek.render.setLayerZOrder(&quot;midground&quot;, 15)
+    print(&quot;midground z after = &quot; .. lurek.render.getLayerZOrder(&quot;midground&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlinewidth"><div class="item-row-main"><h3>getLineWidth</h3><pre class="inline-signature">lurek.render.getLineWidth() -&gt; number</pre><p>Returns the current line width used for line-mode drawing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2212</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setLineWidth(3)
+    local width = lurek.render.getLineWidth()
+    print(&quot;line width = &quot; .. tostring(width))
+    lurek.render.setLineWidth(1)
+    print(&quot;line width restored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpointsize"><div class="item-row-main"><h3>getPointSize</h3><pre class="inline-signature">lurek.render.getPointSize() -&gt; number</pre><p>Returns the current point diameter used for point drawing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2233</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setPointSize(7)
+    local size = lurek.render.getPointSize()
+    print(&quot;point size = &quot; .. tostring(size))
+    lurek.render.setPointSize(1)
+    print(&quot;point size restored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscissor"><div class="item-row-main"><h3>getScissor</h3><pre class="inline-signature">lurek.render.getScissor() -&gt; number, number, number, number</pre><p>Returns the current scissor rectangle, or nothing if no scissor is set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3207</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setScissor(10, 10, 200, 100)
+    local x, y, w, h = lurek.render.getScissor()
+    print(&quot;scissor = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+    lurek.render.setScissor()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getshader"><div class="item-row-main"><h3>getShader</h3><pre class="inline-signature">lurek.render.getShader() -&gt; LShader</pre><p>Returns the currently active shader, or nil if using the default.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3032</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local code = &quot;@fragment fn fs() -&gt; @location(0) vec4&lt;f32&gt; { return vec4&lt;f32&gt;(1.0); }&quot;
+    local shader = lurek.render.newShader(code)
+    lurek.render.setShader(shader)
+    print(&quot;getShader returned handle = &quot; .. tostring(lurek.render.getShader() ~= nil))
+    lurek.render.setShader(nil)
+    shader:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstats"><div class="item-row-main"><h3>getStats</h3><pre class="inline-signature">lurek.render.getStats() -&gt; table</pre><p>Returns a table of rendering statistics for the current frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3572</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local stats = lurek.render.getStats()
+    print(&quot;drawcalls = &quot; .. tostring(stats.drawcalls))
+    print(&quot;textures = &quot; .. tostring(stats.textures) .. &quot;, canvases = &quot; .. tostring(stats.canvases))
+    print(&quot;gpu_draw_calls = &quot; .. tostring(stats.gpu_draw_calls))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstencilmode"><div class="item-row-main"><h3>getStencilMode</h3><pre class="inline-signature">lurek.render.getStencilMode() -&gt; string, string, number</pre><p>Returns the current stencil action, compare mode, and reference value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3413</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setStencilMode(&quot;replace&quot;, &quot;always&quot;, 4)
+    local action, compare, value = lurek.render.getStencilMode()
+    print(&quot;stencil mode = &quot; .. action .. &quot;,&quot; .. compare .. &quot;,&quot; .. value)
+    lurek.render.clearStencil()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">lurek.render.getWidth() -&gt; number</pre><p>Returns the current window width in pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3504</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local w, h = lurek.render.getDimensions()
+    print(&quot;dimensions = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;width = &quot; .. lurek.render.getWidth())
+end</code></pre></details></article><article class="item-row api-row" id="fn-intersectscissor"><div class="item-row-main"><h3>intersectScissor</h3><pre class="inline-signature">lurek.render.intersectScissor(x: number, y: number, w: number, h: number)</pre><p>Intersects the given rectangle with the current scissor, narrowing the drawable region.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3229</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setScissor(0, 0, 800, 600)
+    lurek.render.intersectScissor(100, 100, 400, 300)
+    local x, y, w, h = lurek.render.getScissor()
+    print(&quot;intersected scissor = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+    lurek.render.setScissor()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isbold"><div class="item-row-main"><h3>isBold</h3><pre class="inline-signature">lurek.render.isBold() -&gt; boolean</pre><p>Returns true if the current default font selection uses the bold variant.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2519</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local v = lurek.render.isBold()
+    print(&quot;isBold = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-islayervisible"><div class="item-row-main"><h3>isLayerVisible</h3><pre class="inline-signature">lurek.render.isLayerVisible(name: string) -&gt; boolean</pre><p>Returns whether a named rendering layer is currently visible.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4879</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;visibility_stub&quot;, 2)
+    lurek.render.setLayerVisible(&quot;visibility_stub&quot;, true)
+    print(&quot;layer visible = &quot; .. tostring(lurek.render.isLayerVisible(&quot;visibility_stub&quot;)))
+    lurek.render.setLayerVisible(&quot;visibility_stub&quot;, false)
+    print(&quot;layer visible after hide = &quot; .. tostring(lurek.render.isLayerVisible(&quot;visibility_stub&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-iswireframe"><div class="item-row-main"><h3>isWireframe</h3><pre class="inline-signature">lurek.render.isWireframe() -&gt; boolean</pre><p>Returns whether wireframe rendering is currently active.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3299</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setWireframe(true)
+    print(&quot;wireframe enabled = &quot; .. tostring(lurek.render.isWireframe()))
+    lurek.render.setWireframe(false)
+    print(&quot;wireframe enabled after reset = &quot; .. tostring(lurek.render.isWireframe()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-line"><div class="item-row-main"><h3>line</h3><pre class="inline-signature">lurek.render.line(...: number)</pre><p>Draws a line between two points, or a polyline through multiple points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1479</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 1, 0.2, 1)
+    lurek.render.line(10, 320, 160, 320)
+    lurek.render.setColor(0.1, 0.9, 1, 1)
+    lurek.render.line(10, 340, 40, 360, 70, 340, 100, 360, 130, 340, 160, 360)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;line and polyline drawn&quot;)
+    print(&quot;polyline points = 6&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadmodel"><div class="item-row-main"><h3>loadModel</h3><pre class="inline-signature">lurek.render.loadModel(path: string) -&gt; LObjModel</pre><p>Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4934</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local model = lurek.render.loadModel(&quot;content/examples/assets/models/sample_tank.obj&quot;)
+    print(&quot;loadModel face count = &quot; .. model:getFaceCount())
+    print(&quot;loadModel normal count = &quot; .. model:getNormalCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadobj"><div class="item-row-main"><h3>loadObj</h3><pre class="inline-signature">lurek.render.loadObj(path: string) -&gt; LObjModel</pre><p>Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4911</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local model = lurek.render.loadObj(&quot;content/examples/assets/models/sample_tank.obj&quot;)
+    print(&quot;obj faces = &quot; .. model:getFaceCount())
+    print(&quot;obj vertices = &quot; .. model:getVertexCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcanvas"><div class="item-row-main"><h3>newCanvas</h3><pre class="inline-signature">lurek.render.newCanvas(width: integer, height: integer) -&gt; LCanvas</pre><p>Creates a new off-screen render target with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2796</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(96, 96)
+    local w, h = canvas:getDimensions()
+    lurek.render.setCanvas(canvas)
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 96, 96)
+    lurek.render.circle(&quot;line&quot;, 48, 48, 24)
+    lurek.render.setCanvas(nil)
+    lurek.render.draw(canvas, 10, 70)
+    print(&quot;canvas size = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;canvas rendered and drawn back&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdepthsorter"><div class="item-row-main"><h3>newDepthSorter</h3><pre class="inline-signature">lurek.render.newDepthSorter() -&gt; LDepthSorter</pre><p>Performs the &#x27;render&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4954</span></div></article><article class="item-row api-row" id="fn-newdrawlayer"><div class="item-row-main"><h3>newDrawLayer</h3><pre class="inline-signature">lurek.render.newDrawLayer() -&gt; LDrawLayer</pre><p>Creates a new z-ordered draw layer for sorting draw callbacks by depth.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3724</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local layer = lurek.render.newDrawLayer()
+    layer:queue(10, function()
+        lurek.render.rectangle(&quot;fill&quot;, 180, 310, 20, 20)
+    end)
+    layer:queue(5, function()
+        lurek.render.rectangle(&quot;fill&quot;, 190, 320, 20, 20)
+    end)
+    print(&quot;queued callbacks = &quot; .. layer:getCount())
+    layer:flush()
+    print(&quot;queued callbacks after flush = &quot; .. layer:getCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfont"><div class="item-row-main"><h3>newFont</h3><pre class="inline-signature">lurek.render.newFont(pathOrSize: any, size: number?) -&gt; LFont</pre><p>Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2281</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.newFont(16)
+    lurek.render.setFont(font)
+    lurek.render.print(&quot;newFont built-in size 16&quot;, 10, 430)
+    print(&quot;newFont type = &quot; .. font:type())
+    print(&quot;newFont built from bundled size selector&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newimage"><div class="item-row-main"><h3>newImage</h3><pre class="inline-signature">lurek.render.newImage(pathOrData: string|LImageData, colorSpace: string?) -&gt; LImage</pre><p>Loads a texture from a file path or creates one from an ImageData object.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2706</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local w, h = image:getDimensions()
+    lurek.render.draw(image, 10, 10)
+    lurek.render.draw(image, 90, 10, math.pi / 8, 0.5, 0.5)
+    print(&quot;image size = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;newImage handle ready&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlayer"><div class="item-row-main"><h3>newLayer</h3><pre class="inline-signature">lurek.render.newLayer(name: string, zOrder: integer?)</pre><p>Creates a named rendering layer with an optional z-order for draw call organization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4831</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;background&quot;, 0)
+    lurek.render.newLayer(&quot;foreground&quot;, 10)
+    lurek.render.setLayer(&quot;foreground&quot;)
+    print(&quot;current layer = &quot; .. lurek.render.currentLayer())
+    print(&quot;foreground z = &quot; .. lurek.render.getLayerZOrder(&quot;foreground&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmesh"><div class="item-row-main"><h3>newMesh</h3><pre class="inline-signature">lurek.render.newMesh(verts: table, mode: string?) -&gt; LMesh</pre><p>Creates a custom vertex mesh from an array of vertex data tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2934</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local verts = {
+        { 0, 0, 0, 0, 1, 0, 0, 1 },
+        { 60, 0, 1, 0, 0, 1, 0, 1 },
+        { 30, 50, 0.5, 1, 0, 0, 1, 1 },
+    }
+    local mesh = lurek.render.newMesh(verts, &quot;triangles&quot;)
+    lurek.render.draw(mesh, 70, 380)
+    print(&quot;mesh vertex count = &quot; .. mesh:getVertexCount())
+    print(&quot;newMesh created triangles mesh&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnineslice"><div class="item-row-main"><h3>newNineSlice</h3><pre class="inline-signature">lurek.render.newNineSlice(image: LImage, top: number, right: number, bottom: number, left: number) -&gt; LNineSlice</pre><p>Creates a 9-slice definition from an image and four border insets for scalable UI rendering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3640</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local slice = lurek.render.newNineSlice(image, 4, 4, 4, 4)
+    local top, right, bottom, left = slice:getInsets()
+    lurek.render.drawNineSlice(slice, 10, 310, 140, 48)
+    print(&quot;nine-slice insets = &quot; .. top .. &quot;,&quot; .. right .. &quot;,&quot; .. bottom .. &quot;,&quot; .. left)
+    print(&quot;nine-slice drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newquad"><div class="item-row-main"><h3>newQuad</h3><pre class="inline-signature">lurek.render.newQuad(x: number, y: number, w: number, h: number, sw: number, sh: number) -&gt; LQuad</pre><p>Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3055</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local sw, sh = image:getDimensions()
+    local quad = lurek.render.newQuad(0, 0, 16, 16, sw, sh)
+    local x, y, w, h = quad:getViewport()
+    lurek.render.drawq(image, quad, 10, 170)
+    print(&quot;quad viewport = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+    print(&quot;quad texture dims = &quot; .. sw .. &quot;x&quot; .. sh)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newshader"><div class="item-row-main"><h3>newShader</h3><pre class="inline-signature">lurek.render.newShader(code: string) -&gt; LShader</pre><p>Compiles a WGSL shader program from source code and returns a handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2977</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local code = &quot;@fragment fn fs() -&gt; @location(0) vec4&lt;f32&gt; { return vec4&lt;f32&gt;(1.0); }&quot;
+    local shader = lurek.render.newShader(code)
+    print(&quot;shader type = &quot; .. shader:type())
+    print(&quot;newShader compiled minimal fragment shader&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newshape"><div class="item-row-main"><h3>newShape</h3><pre class="inline-signature">lurek.render.newShape() -&gt; LShape</pre><p>Creates a new retained compound shape for accumulating draw commands.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3711</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(1, 0, 0, 1)
+    shape:rectangle(&quot;fill&quot;, 0, 0, 40, 24)
+    shape:setColor(0, 1, 0, 1)
+    shape:circle(&quot;line&quot;, 60, 12, 12)
+    shape:draw(170, 380)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;newShape drew retained commands&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newspritebatch"><div class="item-row-main"><h3>newSpriteBatch</h3><pre class="inline-signature">lurek.render.newSpriteBatch(image: LImage, max: integer?) -&gt; LSpriteBatch</pre><p>Creates a batched sprite renderer for efficiently drawing many copies of the same texture.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2907</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local batch = lurek.render.newSpriteBatch(image, 16)
+    local last = batch:add(60, 220, 0, 0.5, 0.5, 0, 0)
+    batch:add(90, 220, math.pi / 8, 0.5, 0.5, 0, 0)
+    lurek.render.draw(batch, 0, 0)
+    print(&quot;sprite batch count = &quot; .. batch:getCount())
+    print(&quot;last sprite index = &quot; .. tostring(last))
+end</code></pre></details></article><article class="item-row api-row" id="fn-origin"><div class="item-row-main"><h3>origin</h3><pre class="inline-signature">lurek.render.origin()</pre><p>Resets the current transformation matrix to the identity (no transform).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3146</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.push()
+    lurek.render.translate(999, 999)
+    lurek.render.origin()
+    lurek.render.rectangle(&quot;line&quot;, 0, 0, 12, 12)
+    lurek.render.pop()
+    print(&quot;origin reset applied&quot;)
+    print(&quot;origin rectangle drawn at screen origin&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-points"><div class="item-row-main"><h3>points</h3><pre class="inline-signature">lurek.render.points(...: table|number)</pre><p>Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1579</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setPointSize(5)
+    lurek.render.setColor(1, 0.1, 0.1, 1)
+    lurek.render.points(20, 390, 40, 390, 60, 390, 80, 390)
+    lurek.render.setColor(0.1, 0.1, 1, 1)
+    lurek.render.points({ { 120, 390 }, { 140, 390 }, { 160, 390 } })
+    lurek.render.setPointSize(1)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;point size reset to 1&quot;)
+    print(&quot;points drawn with flat and table inputs&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygon"><div class="item-row-main"><h3>polygon</h3><pre class="inline-signature">lurek.render.polygon(mode: string, ...: number)</pre><p>Draws a polygon from a flat list of x,y vertex coordinates.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1510</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.8, 0.1, 0.5, 1)
+    lurek.render.polygon(&quot;fill&quot;, 210, 300, 260, 280, 310, 300, 290, 350, 230, 350)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.polygon(&quot;line&quot;, 210, 300, 260, 280, 310, 300, 290, 350, 230, 350)
+    print(&quot;polygon vertices = 5&quot;)
+    print(&quot;polygon fill and line drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pop"><div class="item-row-main"><h3>pop</h3><pre class="inline-signature">lurek.render.pop()</pre><p>Pops the top transformation matrix from the transform stack, restoring the previous one.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3078</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.rotate(math.pi / 4)
+    lurek.render.scale(2, 2)
+    lurek.render.shear(0.1, 0.0)
+    lurek.render.draw(image, 0, 0)
+    lurek.render.pop()
+    print(&quot;transform stack pop completed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-poplayer"><div class="item-row-main"><h3>popLayer</h3><pre class="inline-signature">lurek.render.popLayer(id: integer)</pre><p>Ends a compositing layer and composites it with the previous content.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4278</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.pushLayer(99, 1.0, &quot;alpha&quot;)
+    lurek.render.circle(&quot;fill&quot;, 140, 100, 10)
+    lurek.render.popLayer(99)
+    print(&quot;popLayer id = 99&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-poplayer"><div class="item-row-main"><h3>popLayer</h3><pre class="inline-signature">lurek.render.popLayer(id: integer)</pre><p>Ends a compositing layer and composites it with the previous content.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4811</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.pushLayer(99, 1.0, &quot;alpha&quot;)
+    lurek.render.circle(&quot;fill&quot;, 140, 100, 10)
+    lurek.render.popLayer(99)
+    print(&quot;popLayer id = 99&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-print"><div class="item-row-main"><h3>print</h3><pre class="inline-signature">lurek.render.print(text: string, x: number?, y: number?, scale: number?)</pre><p>Draws text using the active font at the given position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1988</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.print(&quot;Hello from lurek.render.print&quot;, 10, 10)
+    print(&quot;print font type = &quot; .. font:type())
+    print(&quot;printed plain text&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printrich"><div class="item-row-main"><h3>printRich</h3><pre class="inline-signature">lurek.render.printRich(spans: table, x: number, y: number)</pre><p>Draws rich text composed of individually styled spans at the given position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2133</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    local spans = {
+        { text = &quot;Red &quot;, r = 255, g = 80, b = 80, a = 255, scale = 1.0 },
+        { text = &quot;Green &quot;, r = 80, g = 220, b = 120, a = 255, scale = 1.0 },
+        { text = &quot;Blue&quot;, r = 80, g = 120, b = 255, a = 255, scale = 1.2 },
+    }
+    lurek.render.setFont(font)
+    lurek.render.printRich(spans, 10, 120)
+    print(&quot;rich spans = &quot; .. #spans)
+    print(&quot;rich text uses u8 colors&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printrichwithfont"><div class="item-row-main"><h3>printRichWithFont</h3><pre class="inline-signature">lurek.render.printRichWithFont(font: LFont, spans: table, x: number, y: number)</pre><p>Draws rich text using a specific font without changing the global active font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2162</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    local spans = {
+        { text = &quot;Red&quot;, r = 255, g = 0, b = 0, a = 255, scale = 1 },
+        { text = &quot; and &quot;, r = 255, g = 255, b = 255, a = 255, scale = 1 },
+        { text = &quot;Green&quot;, r = 0, g = 255, b = 0, a = 255, scale = 1 },
+    }
+    lurek.render.printRichWithFont(font, spans, 10, 250)
+    print(&quot;printRichWithFont spans = &quot; .. #spans)
+    print(&quot;printRichWithFont uses byte colors&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printrotated"><div class="item-row-main"><h3>printRotated</h3><pre class="inline-signature">lurek.render.printRotated(text: string, x: number, y: number, angle: number, scale: number?)</pre><p>Draws text centered and rotated around its midpoint.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1907</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.printRotated(&quot;Rotated text&quot;, 180, 90, math.pi / 6, 1.0)
+    print(&quot;printRotated angle = &quot; .. tostring(math.pi / 6))
+    print(&quot;rotated text drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printrotatedwithfont"><div class="item-row-main"><h3>printRotatedWithFont</h3><pre class="inline-signature">lurek.render.printRotatedWithFont(font: LFont, text: string, x: number, y: number, angle: number, scale: number?)</pre><p>Draws text centered and rotated around its midpoint using a specific font without changing the global active font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1950</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.printRotatedWithFont(font, &quot;Rotated text&quot;, 100, 100, math.pi / 4, 1.0)
+    print(&quot;printRotatedWithFont angle = &quot; .. tostring(math.pi / 4))
+end</code></pre></details></article><article class="item-row api-row" id="fn-printwithfont"><div class="item-row-main"><h3>printWithFont</h3><pre class="inline-signature">lurek.render.printWithFont(font: LFont, text: string, x: number?, y: number?, scale: number?)</pre><p>Draws text using a specific font without changing the global active font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2022</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.printWithFont(font, &quot;Standard text override&quot;, 10, 150)
+    print(&quot;printWithFont used default font size 16&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printf"><div class="item-row-main"><h3>printf</h3><pre class="inline-signature">lurek.render.printf(text: string, x: number, y: number, limit: number, align: string?)</pre><p>Draws word-wrapped and aligned text within a pixel-width limit.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2053</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.setFont(font)
+    lurek.render.printf(&quot;Centered text inside a 220 px box.&quot;, 10, 40, 220, &quot;center&quot;)
+    print(&quot;printf limit = 220&quot;)
+    print(&quot;printf align = center&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-printfwithfont"><div class="item-row-main"><h3>printfWithFont</h3><pre class="inline-signature">lurek.render.printfWithFont(font: LFont, text: string, x: number, y: number, limit: number, align: string?)</pre><p>Draws word-wrapped and aligned text with a specific font without changing the global active font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2093</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(16)
+    lurek.render.printfWithFont(font, &quot;Formatted text inside a 160 px box.&quot;, 10, 200, 160, &quot;left&quot;)
+    print(&quot;printfWithFont limit = 160&quot;)
+    print(&quot;printfWithFont align = left&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-push"><div class="item-row-main"><h3>push</h3><pre class="inline-signature">lurek.render.push()</pre><p>Pushes the current transformation matrix onto the transform stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3066</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.push()
+    lurek.render.translate(80, 80)
+    lurek.render.rotate(math.pi / 8)
+    lurek.render.scale(1.2, 0.8)
+    lurek.render.rectangle(&quot;line&quot;, -20, -20, 40, 40)
+    lurek.render.pop()
+    print(&quot;transform stack push/pop used&quot;)
+    print(&quot;translated, rotated, and scaled rectangle&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushlayer"><div class="item-row-main"><h3>pushLayer</h3><pre class="inline-signature">lurek.render.pushLayer(id: integer, alpha: number?, blendMode: string?)</pre><p>Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4250</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.pushLayer(1, 0.65, &quot;alpha&quot;)
+    lurek.render.rectangle(&quot;fill&quot;, 320, 140, 60, 40)
+    lurek.render.popLayer(1)
+    print(&quot;pushLayer id = 1&quot;)
+    print(&quot;popLayer matched id = 1&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushlayer"><div class="item-row-main"><h3>pushLayer</h3><pre class="inline-signature">lurek.render.pushLayer(id: integer, alpha: number?, blendMode: string?)</pre><p>Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4790</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.pushLayer(1, 0.65, &quot;alpha&quot;)
+    lurek.render.rectangle(&quot;fill&quot;, 320, 140, 60, 40)
+    lurek.render.popLayer(1)
+    print(&quot;pushLayer id = 1&quot;)
+    print(&quot;popLayer matched id = 1&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushsortkey"><div class="item-row-main"><h3>pushSortKey</h3><pre class="inline-signature">lurek.render.pushSortKey(depth: number)</pre><p>Sets the depth sort key for subsequent draw calls within the current sort group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4148</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(8)
+    lurek.render.pushSortKey(3)
+    lurek.render.circle(&quot;fill&quot;, 120, 100, 10)
+    lurek.render.flushSortGroup(8)
+    print(&quot;pushSortKey depth = 3&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushsortkey"><div class="item-row-main"><h3>pushSortKey</h3><pre class="inline-signature">lurek.render.pushSortKey(depth: number)</pre><p>Sets the depth sort key for subsequent draw calls within the current sort group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4687</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.beginSortGroup(8)
+    lurek.render.pushSortKey(3)
+    lurek.render.circle(&quot;fill&quot;, 120, 100, 10)
+    lurek.render.flushSortGroup(8)
+    print(&quot;pushSortKey depth = 3&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-rectangle"><div class="item-row-main"><h3>rectangle</h3><pre class="inline-signature">lurek.render.rectangle(mode: string, x: number, y: number, w: number, h: number, rx: number?, ry: number?)</pre><p>Draws a rectangle. If rx is provided, draws a rounded rectangle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1358</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0.2, 0.2, 1)
+    lurek.render.rectangle(&quot;fill&quot;, 40, 150, 100, 60)
+    lurek.render.rectangle(&quot;line&quot;, 160, 150, 100, 60, 8)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;rectangle fill and rounded line drawn&quot;)
+    print(&quot;rectangle width = 100&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-resetcanvas"><div class="item-row-main"><h3>resetCanvas</h3><pre class="inline-signature">lurek.render.resetCanvas(canvas: LCanvas) -&gt; nil</pre><p>Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2822</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(64, 64)
+    lurek.render.resetCanvas(canvas)
+    print(&quot;resetCanvas called on 64x64 canvas&quot;)
+    canvas:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-rotate"><div class="item-row-main"><h3>rotate</h3><pre class="inline-signature">lurek.render.rotate(angle: number)</pre><p>Applies a rotation to the current transformation matrix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3105</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.rotate(math.pi / 4)
+    lurek.render.draw(image, 0, 0)
+    lurek.render.pop()
+    print(&quot;rotation angle = &quot; .. tostring(math.pi / 4))
+end</code></pre></details></article><article class="item-row api-row" id="fn-savescreenshot"><div class="item-row-main"><h3>saveScreenshot</h3><pre class="inline-signature">lurek.render.saveScreenshot(path: string)</pre><p>Saves a screenshot of the current frame to a file under the save/ directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3607</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.saveScreenshot(&quot;save/test_screenshot.png&quot;)
+    print(&quot;saveScreenshot requested for save/test_screenshot.png&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-scale"><div class="item-row-main"><h3>scale</h3><pre class="inline-signature">lurek.render.scale(sx: number, sy: number?)</pre><p>Applies scaling to the current transformation matrix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3119</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.scale(2, 2)
+    lurek.render.draw(image, 0, 0)
+    lurek.render.pop()
+    print(&quot;scale = 2x2&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbackgroundcolor"><div class="item-row-main"><h3>setBackgroundColor</h3><pre class="inline-signature">lurek.render.setBackgroundColor(r: number, g: number, b: number)</pre><p>Sets the background clear color used at the start of each frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1325</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setBackgroundColor(0.1, 0.1, 0.2)
+    local r, g, b, a = lurek.render.getBackgroundColor()
+    print(&quot;background = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+    lurek.render.setBackgroundColor(0, 0, 0)
+    print(&quot;background restored to black&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setblendmode"><div class="item-row-main"><h3>setBlendMode</h3><pre class="inline-signature">lurek.render.setBlendMode(mode: string)</pre><p>Sets the blend mode for subsequent draw operations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2241</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local before = lurek.render.getBlendMode()
+    lurek.render.setBlendMode(&quot;add&quot;)
+    lurek.render.rectangle(&quot;fill&quot;, 180, 140, 40, 40)
+    lurek.render.setBlendMode(&quot;multiply&quot;)
+    lurek.render.rectangle(&quot;fill&quot;, 200, 160, 40, 40)
+    lurek.render.setBlendMode(&quot;alpha&quot;)
+    print(&quot;blend before = &quot; .. before)
+    print(&quot;blend restored to alpha&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbold"><div class="item-row-main"><h3>setBold</h3><pre class="inline-signature">lurek.render.setBold(bold: boolean)</pre><p>Sets whether subsequent font size lookups use the bold Courier New variant.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2474</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local previous = lurek.render.isBold()
+    lurek.render.setBold(true)
+    lurek.render.print(&quot;Bold text&quot;, 10, 10)
+    print(&quot;bold after set = &quot; .. tostring(lurek.render.isBold()))
+    lurek.render.setBold(previous)
+    print(&quot;bold restored = &quot; .. tostring(lurek.render.isBold()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcanvas"><div class="item-row-main"><h3>setCanvas</h3><pre class="inline-signature">lurek.render.setCanvas(canvas: LCanvas?)</pre><p>Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2842</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local canvas = lurek.render.newCanvas(96, 96)
+    lurek.render.setCanvas(canvas)
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 96, 96)
+    lurek.render.circle(&quot;line&quot;, 48, 48, 20)
+    lurek.render.setCanvas(nil)
+    print(&quot;setCanvas switched to off-screen target&quot;)
+    print(&quot;setCanvas restored to screen&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcolor"><div class="item-row-main"><h3>setColor</h3><pre class="inline-signature">lurek.render.setColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the active drawing color for all subsequent draw operations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1298</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(1, 0, 0, 1)
+    local r, g, b, a = lurek.render.getColor()
+    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+    lurek.render.rectangle(&quot;fill&quot;, 340, 10, 40, 20)
+    lurek.render.setColor(1, 1, 1, 1)
+    print(&quot;color restored to white&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcolormask"><div class="item-row-main"><h3>setColorMask</h3><pre class="inline-signature">lurek.render.setColorMask(r: boolean?, g: boolean?, b: boolean?, a: boolean?)</pre><p>Sets which color channels are written during draw calls. Call with no args to enable all.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3252</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColorMask(true, true, false, true)
+    local r, g, b, a = lurek.render.getColorMask()
+    print(&quot;mask = &quot; .. tostring(r) .. &quot;,&quot; .. tostring(g) .. &quot;,&quot; .. tostring(b) .. &quot;,&quot; .. tostring(a))
+    lurek.render.setColorMask()
+    print(&quot;color mask restored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdefaultfilter"><div class="item-row-main"><h3>setDefaultFilter</h3><pre class="inline-signature">lurek.render.setDefaultFilter(min: string, mag: string, anisotropy: integer?)</pre><p>Sets the default texture filtering mode for newly created images.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3533</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local min_before, mag_before, aniso_before = lurek.render.getDefaultFilter()
+    lurek.render.setDefaultFilter(&quot;nearest&quot;, &quot;nearest&quot;, 1)
+    local min_after, mag_after, aniso_after = lurek.render.getDefaultFilter()
+    print(&quot;filter before = &quot; .. min_before .. &quot;,&quot; .. mag_before .. &quot;,&quot; .. aniso_before)
+    print(&quot;filter after = &quot; .. min_after .. &quot;,&quot; .. mag_after .. &quot;,&quot; .. aniso_after)
+    lurek.render.setDefaultFilter(&quot;linear&quot;, &quot;linear&quot;, 1)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdefaultfont"><div class="item-row-main"><h3>setDefaultFont</h3><pre class="inline-signature">lurek.render.setDefaultFont(pointSize: integer?, bold: boolean?) -&gt; LFont</pre><p>Selects a built-in default font by bundled point size and makes it the active render font.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2451</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local regular = lurek.render.setDefaultFont(10, false)
+    local bold = lurek.render.setDefaultFont(10, true)
+    lurek.render.setFont(regular)
+    print(&quot;regular height = &quot; .. regular:getHeight())
+    print(&quot;bold height = &quot; .. bold:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdepthmode"><div class="item-row-main"><h3>setDepthMode</h3><pre class="inline-signature">lurek.render.setDepthMode(mode: string, write: boolean?)</pre><p>Sets the depth comparison mode and whether depth writes are enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3456</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local mode_before, write_before = lurek.render.getDepthMode()
+    lurek.render.setDepthMode(&quot;lequal&quot;, true)
+    local mode_after, write_after = lurek.render.getDepthMode()
+    print(&quot;depth before = &quot; .. mode_before .. &quot;,&quot; .. tostring(write_before))
+    print(&quot;depth after = &quot; .. mode_after .. &quot;,&quot; .. tostring(write_after))
+    lurek.render.setDepthMode(&quot;always&quot;, false)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfont"><div class="item-row-main"><h3>setFont</h3><pre class="inline-signature">lurek.render.setFont(font: LFont)</pre><p>Sets the active font used by print, printf, and other text rendering calls.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2355</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.newFont(16)
+    lurek.render.setFont(font)
+    lurek.render.print(&quot;setFont switched active font&quot;, 10, 500)
+    print(&quot;active font exists = &quot; .. tostring(lurek.render.getFont() ~= nil))
+    print(&quot;setFont tested with built-in font&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfontlineheight"><div class="item-row-main"><h3>setFontLineHeight</h3><pre class="inline-signature">lurek.render.setFontLineHeight(font: LFont, lh: number)</pre><p>Sets the line height override for a font (currently a no-op stub).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2612</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local font = lurek.render.getDefaultFont(14)
+    lurek.render.setFontLineHeight(font, 1.2)
+    print(&quot;setFontLineHeight called with 1.2&quot;)
+    print(&quot;font line height now = &quot; .. lurek.render.getFontLineHeight(font))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlayer"><div class="item-row-main"><h3>setLayer</h3><pre class="inline-signature">lurek.render.setLayer(name: string)</pre><p>Sets the active rendering layer by name. Creates the layer if it does not exist.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4845</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;set_layer_stub&quot;, 1)
+    lurek.render.setLayer(&quot;set_layer_stub&quot;)
+    print(&quot;current layer = &quot; .. lurek.render.currentLayer())
+    lurek.render.setLayer(&quot;default&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlayervisible"><div class="item-row-main"><h3>setLayerVisible</h3><pre class="inline-signature">lurek.render.setLayerVisible(name: string, visible: boolean)</pre><p>Sets whether a named rendering layer is visible.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4867</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;visible_layer_stub&quot;, 1)
+    lurek.render.setLayerVisible(&quot;visible_layer_stub&quot;, false)
+    print(&quot;layer visible = &quot; .. tostring(lurek.render.isLayerVisible(&quot;visible_layer_stub&quot;)))
+    lurek.render.setLayerVisible(&quot;visible_layer_stub&quot;, true)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlayerzorder"><div class="item-row-main"><h3>setLayerZOrder</h3><pre class="inline-signature">lurek.render.setLayerZOrder(name: string, z: integer)</pre><p>Sets the z-order value of a named rendering layer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4897</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.newLayer(&quot;zorder_layer_stub&quot;, 1)
+    lurek.render.setLayerZOrder(&quot;zorder_layer_stub&quot;, 9)
+    print(&quot;layer z order = &quot; .. lurek.render.getLayerZOrder(&quot;zorder_layer_stub&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlinewidth"><div class="item-row-main"><h3>setLineWidth</h3><pre class="inline-signature">lurek.render.setLineWidth(w: number)</pre><p>Sets the line width for subsequent line-mode draw calls.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2199</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setLineWidth(4)
+    lurek.render.line(200, 390, 280, 390)
+    print(&quot;line width set to 4&quot;)
+    lurek.render.setLineWidth(1)
+    print(&quot;line width restored to 1&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setpointsize"><div class="item-row-main"><h3>setPointSize</h3><pre class="inline-signature">lurek.render.setPointSize(size: number)</pre><p>Sets the point size for subsequent point draw calls.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:2220</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setPointSize(6)
+    lurek.render.points(320, 390, 340, 390, 360, 390)
+    print(&quot;point size set to 6&quot;)
+    lurek.render.setPointSize(1)
+    print(&quot;point size restored&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setscissor"><div class="item-row-main"><h3>setScissor</h3><pre class="inline-signature">lurek.render.setScissor(x: number?, y: number?, w: number?, h: number?)</pre><p>Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3179</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setScissor(20, 140, 120, 60)
+    local x, y, w, h = lurek.render.getScissor()
+    lurek.render.rectangle(&quot;fill&quot;, 0, 120, 180, 90)
+    lurek.render.intersectScissor(50, 150, 70, 30)
+    lurek.render.rectangle(&quot;line&quot;, 0, 120, 180, 90)
+    lurek.render.setScissor()
+    print(&quot;scissor = &quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+    print(&quot;scissor cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setshader"><div class="item-row-main"><h3>setShader</h3><pre class="inline-signature">lurek.render.setShader(shader: LShader?)</pre><p>Activates a shader for subsequent draw calls. Pass nil to restore the default shader.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3003</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local code = &quot;@fragment fn fs() -&gt; @location(0) vec4&lt;f32&gt; { return vec4&lt;f32&gt;(1.0); }&quot;
+    local shader = lurek.render.newShader(code)
+    lurek.render.setShader(shader)
+    lurek.render.rectangle(&quot;fill&quot;, 10, 540, 24, 16)
+    print(&quot;setShader activated custom shader&quot;)
+    lurek.render.setShader(nil)
+    print(&quot;shader restored to default&quot;)
+    shader:release()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setstencilmode"><div class="item-row-main"><h3>setStencilMode</h3><pre class="inline-signature">lurek.render.setStencilMode(action: string, compare: string?, value: number?)</pre><p>Sets the stencil write action, compare function, and reference value at once.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3370</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setStencilMode(&quot;replace&quot;, &quot;always&quot;, 2)
+    local action, compare, value = lurek.render.getStencilMode()
+    print(&quot;stencil mode = &quot; .. action .. &quot;,&quot; .. compare .. &quot;,&quot; .. value)
+    lurek.render.clearStencil()
+    print(&quot;stencil state cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setstenciltest"><div class="item-row-main"><h3>setStencilTest</h3><pre class="inline-signature">lurek.render.setStencilTest(compare: string?, value: number?)</pre><p>Configures the stencil comparison test for subsequent draws. Pass nil to disable.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3335</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setStencilTest(&quot;always&quot;, 0)
+    lurek.render.circle(&quot;fill&quot;, 100, 100, 30)
+    lurek.render.setStencilTest()
+    print(&quot;setStencilTest enabled and cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setwireframe"><div class="item-row-main"><h3>setWireframe</h3><pre class="inline-signature">lurek.render.setWireframe(enabled: boolean)</pre><p>Enables or disables wireframe rendering mode.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3285</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    print(&quot;wireframe before = &quot; .. tostring(lurek.render.isWireframe()))
+    lurek.render.setWireframe(true)
+    lurek.render.rectangle(&quot;fill&quot;, 260, 140, 50, 50)
+    lurek.render.setWireframe(false)
+    print(&quot;wireframe restored = &quot; .. tostring(lurek.render.isWireframe()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-shear"><div class="item-row-main"><h3>shear</h3><pre class="inline-signature">lurek.render.shear(kx: number, ky: number)</pre><p>Applies a shear (skew) to the current transformation matrix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3134</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.push()
+    lurek.render.translate(180, 80)
+    lurek.render.shear(0.3, 0.0)
+    lurek.render.rectangle(&quot;fill&quot;, 0, 0, 70, 30)
+    lurek.render.pop()
+    print(&quot;shear kx = 0.3&quot;)
+    print(&quot;sheared rectangle drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-stencil"><div class="item-row-main"><h3>stencil</h3><pre class="inline-signature">lurek.render.stencil(action: string?, value: number?)</pre><p>Begins a stencil write pass with the given action and reference value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3308</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.stencil(&quot;replace&quot;, 1)
+    lurek.render.circle(&quot;fill&quot;, 220, 470, 24)
+    lurek.render.setStencilTest(&quot;equal&quot;, 1)
+    lurek.render.rectangle(&quot;fill&quot;, 190, 445, 60, 60)
+    lurek.render.setStencilTest()
+    print(&quot;stencil write value = 1&quot;)
+    print(&quot;stencil test cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-translate"><div class="item-row-main"><h3>translate</h3><pre class="inline-signature">lurek.render.translate(x: number, y: number)</pre><p>Applies a translation to the current transformation matrix.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3092</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.draw(image, 0, 0)
+    lurek.render.pop()
+    print(&quot;translation = 50,50&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-triangle"><div class="item-row-main"><h3>triangle</h3><pre class="inline-signature">lurek.render.triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)</pre><p>Draws a triangle from three vertex positions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:1456</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    lurek.render.setColor(0.1, 0.7, 0.3, 1)
+    lurek.render.triangle(&quot;fill&quot;, 360, 350, 410, 280, 460, 350)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.triangle(&quot;line&quot;, 480, 350, 530, 280, 580, 350)
+    print(&quot;triangle fill and line drawn&quot;)
+    print(&quot;triangle count = 2&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCanvas.html">LCanvas</a></h3><p>Off-screen render target that can be drawn to and then composited onto the screen.</p></div><div class="item-row-meta"><span>6 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDrawLayer.html">LDrawLayer</a></h3><p>Z-ordered draw callback layer for sorting draw calls by depth before flushing.</p></div><div class="item-row-meta"><span>6 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFont.html">LFont</a></h3><p>Bitmap font handle for measuring and rendering text.</p></div><div class="item-row-meta"><span>10 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LImage.html">LImage</a></h3><p>GPU-backed texture handle used for drawing images to screen.</p></div><div class="item-row-meta"><span>7 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LImageData.html">LImageData</a></h3><p>Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.</p></div><div class="item-row-meta"><span>9 methods</span><span>module render</span></div><div class="card-note">Example: image.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMesh.html">LMesh</a></h3><p>Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.</p></div><div class="item-row-meta"><span>7 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNineSlice.html">LNineSlice</a></h3><p>Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).</p></div><div class="item-row-meta"><span>4 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LObjModel.html">LObjModel</a></h3><p>Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.</p></div><div class="item-row-meta"><span>6 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LQuad.html">LQuad</a></h3><p>Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.</p></div><div class="item-row-meta"><span>5 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LShader.html">LShader</a></h3><p>GPU shader program for custom rendering effects (post-processing, distortion, etc.).</p></div><div class="item-row-meta"><span>5 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LShape.html">LShape</a></h3><p>Retained compound shape that accumulates drawing commands and can be rendered in one call.</p></div><div class="item-row-meta"><span>16 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSpriteBatch.html">LSpriteBatch</a></h3><p>Batched sprite renderer for efficiently drawing many copies of the same texture.</p></div><div class="item-row-meta"><span>7 methods</span><span>module render</span></div><div class="card-note">Example: render.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

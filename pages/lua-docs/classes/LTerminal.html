@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTerminal - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a class="active" href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LTerminal</h1>
+  <p>Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/terminal.html">lurek.terminal</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:set(1, 1, &quot;H&quot;, 1, 1, 1, 1, 0, 0, 0, 0)
+    local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
+    print(&quot;cell(1,1) ch=&quot; .. ch .. &quot; fg=(&quot; .. fr .. &quot;,&quot; .. fg .. &quot;,&quot; .. fb .. &quot;)&quot;)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LTerminal userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addwidget"><div class="item-row-main"><h3>addWidget</h3><pre class="inline-signature">LTerminal:addWidget(widget: LWidget)</pre><p>Attaches a widget to this terminal so it is rendered and receives input events.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:493</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:addWidget(lurek.terminal.newLabel(1, 1, &quot;Status&quot;))
+    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, &quot;OK&quot;))
+    print(&quot;widget count = &quot; .. term:getWidgetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-autoresize"><div class="item-row-main"><h3>autoResize</h3><pre class="inline-signature">LTerminal:autoResize()</pre><p>Requests the window to resize so it exactly fits the terminal grid at the current cell size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:671</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:autoResize()
+    print(&quot;auto-resized window to fit grid&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LTerminal:clear()</pre><p>Clears all cells in the terminal grid, resetting characters and colors to defaults.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:468</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(40, 10)
+    term:print(1, 1, &quot;This will be erased&quot;)
+    term:print(1, 2, &quot;And this too&quot;)
+    term:clear()
+    local ch = term:get(1, 1)
+    print(&quot;after clear ch = &quot; .. ch)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearwidgets"><div class="item-row-main"><h3>clearWidgets</h3><pre class="inline-signature">LTerminal:clearWidgets()</pre><p>Removes all attached widgets from this terminal at once.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:508</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:addWidget(lurek.terminal.newLabel(1, 1, &quot;Status&quot;))
+    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, &quot;OK&quot;))
+    print(&quot;widget count = &quot; .. term:getWidgetCount())
+    term:clearWidgets()
+    print(&quot;after clear = &quot; .. term:getWidgetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LTerminal:get(col: integer, row: integer) -&gt; integer, number, number, number, number, number, number, number, number</pre><p>Reads the character and colors at a specific cell in the terminal grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:459</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:set(1, 1, &quot;H&quot;, 1, 1, 1, 1, 0, 0, 0, 0)
+    local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
+    print(&quot;cell(1,1) ch=&quot; .. ch .. &quot; fg=(&quot; .. fr .. &quot;,&quot; .. fg .. &quot;,&quot; .. fb .. &quot;)&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcellsize"><div class="item-row-main"><h3>getCellSize</h3><pre class="inline-signature">LTerminal:getCellSize() -&gt; number, number</pre><p>Returns the active terminal cell width and height in pixels, using custom override or font metrics.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:664</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:setCellSize(12, 20)
+    local w, h = term:getCellSize()
+    print(&quot;custom cell = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">LTerminal:getDimensions() -&gt; integer, integer</pre><p>Returns the number of columns and rows in the terminal grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:487</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 24)
+    local cols, rows = term:getDimensions()
+    print(&quot;cols=&quot; .. cols .. &quot; rows=&quot; .. rows)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfocused"><div class="item-row-main"><h3>getFocused</h3><pre class="inline-signature">LTerminal:getFocused() -&gt; LWidget</pre><p>Returns the widget that currently has keyboard focus, or nil if no widget is focused.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:538</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:addWidget(lurek.terminal.newTextBox(1, 1, 15))
+    local input2 = lurek.terminal.newTextBox(1, 3, 15)
+    term:addWidget(input2)
+    term:setFocus(input2)
+    local focused = term:getFocused()
+    print(&quot;focused = &quot; .. tostring(focused == input2))
+    term:setFocus(nil)
+    focused = term:getFocused()
+    print(&quot;no focus = &quot; .. tostring(focused == nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidgetcount"><div class="item-row-main"><h3>getWidgetCount</h3><pre class="inline-signature">LTerminal:getWidgetCount() -&gt; integer</pre><p>Returns the number of widgets currently attached to this terminal.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:515</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:addWidget(lurek.terminal.newLabel(1, 1, &quot;Status&quot;))
+    term:addWidget(lurek.terminal.newButton(1, 3, 10, 1, &quot;OK&quot;))
+    print(&quot;widget count = &quot; .. term:getWidgetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-keypressed"><div class="item-row-main"><h3>keypressed</h3><pre class="inline-signature">LTerminal:keypressed(key: string) -&gt; boolean</pre><p>Forwards a key press event to the terminal for widget input processing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:551</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    local input = lurek.terminal.newTextBox(1, 1, 20)
+    term:addWidget(input)
+    term:setFocus(input)
+    local consumed = term:textinput(&quot;A&quot;)
+    print(&quot;textinput consumed = &quot; .. tostring(consumed))
+    consumed = term:keypressed(&quot;backspace&quot;)
+    print(&quot;keypressed consumed = &quot; .. tostring(consumed))
+    term:mousepressed(50, 10, 1)
+    print(&quot;mousepressed sent&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-mousepressed"><div class="item-row-main"><h3>mousepressed</h3><pre class="inline-signature">LTerminal:mousepressed(px: number, py: number, button: integer?)</pre><p>Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:578</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    local input = lurek.terminal.newTextBox(1, 1, 20)
+    term:addWidget(input)
+    term:setFocus(input)
+    term:mousepressed(50, 10, 1)
+    print(&quot;mousepressed sent&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-print"><div class="item-row-main"><h3>print</h3><pre class="inline-signature">LTerminal:print(col: integer, row: integer, text: string)</pre><p>Writes text to the terminal grid starting at a specific cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:477</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:print(1, 1, &quot;Hello, Terminal!&quot;)
+    term:print(1, 2, &quot;Line two here&quot;)
+    term:print(5, 5, &quot;Centered text at col 5, row 5&quot;)
+    term:print(1, 20, &quot;Bottom row&quot;)
+    local ch = term:get(1, 1)
+    print(&quot;printed first cell = &quot; .. tostring(ch))
+end</code></pre></details></article><article class="item-row api-row" id="method-removewidget"><div class="item-row-main"><h3>removeWidget</h3><pre class="inline-signature">LTerminal:removeWidget(widget: LWidget)</pre><p>Detaches a widget from this terminal, removing it from rendering and input handling.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:501</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    local btn = lurek.terminal.newButton(1, 3, 10, 1, &quot;OK&quot;)
+    term:addWidget(lurek.terminal.newLabel(1, 1, &quot;Status&quot;))
+    term:addWidget(btn)
+    print(&quot;widget count = &quot; .. term:getWidgetCount())
+    term:removeWidget(btn)
+    print(&quot;after remove = &quot; .. term:getWidgetCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LTerminal:render(x: number?, y: number?)</pre><p>Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:601</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(60, 20)
+    term:print(1, 1, &quot;Rendering test&quot;)
+    term:render()
+    print(&quot;rendered at default pos&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-resetcellsize"><div class="item-row-main"><h3>resetCellSize</h3><pre class="inline-signature">LTerminal:resetCellSize()</pre><p>Removes any custom cell size override, reverting to the active font metrics and refitting the window.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:656</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:setCellSize(12, 20)
+    term:resetCellSize()
+    local w, h = term:getCellSize()
+    print(&quot;reset cell = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-set"><div class="item-row-main"><h3>set</h3><pre class="inline-signature">LTerminal:set(col: integer, row: integer, ch: string|number, fr: number?, fg: number?, fb: number?, fa: number?, br: number?, bg: number?, bb: number?, ba: number?)</pre><p>Writes a character with foreground and background color to a specific cell in the terminal grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:set(1, 1, &quot;H&quot;, 1, 1, 1, 1, 0, 0, 0, 0)
+    local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
+    print(&quot;cell(1,1) ch=&quot; .. ch .. &quot; fg=(&quot; .. fr .. &quot;,&quot; .. fg .. &quot;,&quot; .. fb .. &quot;)&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcellsize"><div class="item-row-main"><h3>setCellSize</h3><pre class="inline-signature">LTerminal:setCellSize(w: number, h: number)</pre><p>Overrides the cell width and height used for rendering this terminal grid and refits the window.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:649</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    ---@type LTerminal
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:setCellSize(12, 20)
+    print(&quot;cell size set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfocus"><div class="item-row-main"><h3>setFocus</h3><pre class="inline-signature">LTerminal:setFocus(widget: LWidget?)</pre><p>Sets which widget currently has keyboard focus, or clears focus when nil is passed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:521</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    local input1 = lurek.terminal.newTextBox(1, 1, 15)
+    term:addWidget(input1)
+    term:addWidget(lurek.terminal.newTextBox(1, 3, 15))
+    term:setFocus(input1)
+    local focused = term:getFocused()
+    print(&quot;focused = &quot; .. tostring(focused == input1))
+    term:setFocus(nil)
+    focused = term:getFocused()
+    print(&quot;no focus = &quot; .. tostring(focused == nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfont"><div class="item-row-main"><h3>setFont</h3><pre class="inline-signature">LTerminal:setFont(height: integer)</pre><p>Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:626</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 25)
+    term:setFont(16)
+    local w, h = term:getCellSize()
+    print(&quot;font 16: cell = &quot; .. w .. &quot;x&quot; .. h)
+    term:setFont(12)
+    w, h = term:getCellSize()
+    print(&quot;font 12: cell = &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-textinput"><div class="item-row-main"><h3>textinput</h3><pre class="inline-signature">LTerminal:textinput(text: string) -&gt; boolean</pre><p>Forwards a text input event to the terminal for character entry into focused widgets.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:564</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(60, 20)
+    local input = lurek.terminal.newTextBox(1, 1, 20)
+    term:addWidget(input)
+    term:setFocus(input)
+    local consumed = term:textinput(&quot;A&quot;)
+    print(&quot;textinput consumed = &quot; .. tostring(consumed))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTerminal:type() -&gt; string</pre><p>Returns the type name string &quot;LTerminal&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:678</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 24)
+    print(&quot;type=&quot; .. term:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTerminal:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches a given type name. Accepts &quot;LTerminal&quot; or &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/terminal_api.rs:683</span></div><details class="example-block"><summary>Example · Exact example · terminal.lua</summary><pre><code>do
+    local term = lurek.terminal.newTerminal(80, 24)
+    print(&quot;typeOf=&quot; .. tostring(term:typeOf(&quot;LTerminal&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

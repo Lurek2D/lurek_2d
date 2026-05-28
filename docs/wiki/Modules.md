@@ -9,7 +9,6 @@
 ## Table of Contents
 
 - [Foundations](#foundations)
-- [Core Runtime](#core-runtime)
 - [Platform Services](#platform-services)
 - [Feature Systems](#feature-systems)
 - [Edge / Integration](#edge-integration)
@@ -25,24 +24,18 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [color](Module-color) | `lurek.color` | RGBA color primitives with color-space conversions, blending modes, and predefined palettes. |
 | [compute](Module-compute) | `lurek.compute` | Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads. |
 | [dataframe](Module-dataframe) | `lurek.dataframe` | In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*). |
+| [event](Module-event) | `lurek.event` | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
+| [filesystem](Module-filesystem) | `lurek.filesystem` | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [flownet](Module-flownet) | `lurek.graph` | Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react. |
 | [globe](Module-globe) | `lurek.globe` | XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night. |
 | [layout](Module-layout) | `lurek.layout` | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
 | [log](Module-log) | `lurek.log` | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [math](Module-math) | `lurek.math` | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
-| [patterns](Module-patterns) | `lurek.patterns` | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
-| [procgen](Module-procgen) | `lurek.procgen` | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen. CPU-only, headless. |
-| [serialize](Module-serialize) | `lurek.serial` | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
-
-## Core Runtime
-
-| Module | Namespace | Purpose |
-|---|---|---|
-| [event](Module-event) | `lurek.event` | Centralised event queue: OS input, window state, custom Lua events, automation injections. |
-| [filesystem](Module-filesystem) | `lurek.filesystem` | Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory. |
 | [network](Module-network) | `lurek.network` | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
+| [patterns](Module-patterns) | `lurek.patterns` | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
 | [repl](Module-repl) | `lurek.repl` | Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper. |
 | [runtime](Module-runtime) | `lurek.runtime` | Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree. |
+| [serialize](Module-serialize) | `lurek.serial` | Format-agnostic text serialisation centred on the recursive SerialValue enum. |
 | [thread](Module-thread) | `lurek.thread` | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [timer](Module-timer) | `lurek.timer` | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
 
@@ -68,6 +61,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
+| [agent](Module-agent) | `lurek.agent` | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
 | [ai](Module-ai) | `lurek.ai` | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [animation](Module-animation) | `lurek.animation` | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [automation](Module-automation) | `lurek.automation` | Automated input simulation for headless tests, QA replay, recorded sessions. |
@@ -86,11 +80,12 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [particle](Module-particle) | `lurek.particle` | Emitter-based 2D particle systems with bounded pools and Euler integration. |
 | [pathfind](Module-pathfind) | `lurek.pathfind` | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
 | [pipeline](Module-pipeline) | `lurek.pipeline` | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
+| [procgen](Module-procgen) | `lurek.procgen` | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
 | [province](Module-province) | `lurek.province` | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [raycaster](Module-raycaster) | `lurek.raycaster` | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
 | [save](Module-save) | `lurek.save` | Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial. |
 | [scene](Module-scene) | `lurek.scene` | Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes. |
-| [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK — A-02 + licensing). |
+| [spine](Module-spine) | `lurek.spine` | Hierarchical skeletal animation (own implementation; not the official Spine SDK â€” A-02 + licensing). |
 | [sprite](Module-sprite) | `lurek.sprite` | Sprite and sprite-batch rendering above the render command queue. |
 | [terminal](Module-terminal) | `lurek.terminal` | Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering. |
 | [tilemap](Module-tilemap) | `lurek.tilemap` | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
@@ -111,6 +106,5 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
-| [agent](Module-agent) | `lurek.agent` | lurek.agent -- Agent bindings for LLM and VM integration. |
 | [engine](Module-engine) | `lurek.engine` | lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts. |
 | [system](Module-system) | `lurek.system` | lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection. |

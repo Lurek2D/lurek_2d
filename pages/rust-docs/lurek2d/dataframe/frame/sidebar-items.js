@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AggFn","CellValue","ColRef"],"struct":["DataFrame","DataFrameRowIter","Database"]};

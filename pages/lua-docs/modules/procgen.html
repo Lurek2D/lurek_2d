@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.procgen - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a class="active" href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.procgen</h1>
+  <p>`lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, world graphs, and cellular world simulation. - Registers `lurek.procgen.*` functions and types via `register()`. - `LuaBiomeClassifier`: userdata type exposed to Lua. - `LuaNoiseGenerator`: userdata type exposed to Lua. - `LuaCellular`: userdata type exposed to Lua. - Bridges 67 Lua-callable methods via `mlua`. - See `docs/specs/procgen.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>31 functions</span><span>3 classes</span><span>src/lua_api/procgen_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 67</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.procgen.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-biomecolor"><div class="item-row-main"><h3>biomeColor</h3><pre class="inline-signature">lurek.procgen.biomeColor(name: string) -&gt; number</pre><p>Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1765</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local r, g, b, a = lurek.procgen.biomeColor(&quot;ocean&quot;)
+
+    print(&quot;biomeColor ocean=&quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="fn-bspdungeon"><div class="item-row-main"><h3>bspDungeon</h3><pre class="inline-signature">lurek.procgen.bspDungeon(opts: table?) -&gt; table</pre><p>Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:791</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local dungeon = lurek.procgen.bspDungeon({
+        width = 80,
+        height = 60,
+        min_size = 8,
+        max_depth = 5,
+        seed = 42,
+        padding = 1,
+    })
+
+    print(&quot;bspDungeon rooms=&quot; .. #dungeon.rooms)
+    print(&quot;bspDungeon corridors=&quot; .. #dungeon.corridors)
+end</code></pre></details></article><article class="item-row api-row" id="fn-bspdungeonwithprefabs"><div class="item-row-main"><h3>bspDungeonWithPrefabs</h3><pre class="inline-signature">lurek.procgen.bspDungeonWithPrefabs(opts: table?, prefabs: table) -&gt; table</pre><p>Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:861</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local prefabs = {
+        { name = &quot;boss_room&quot;, width = 10, height = 10 },
+    }
+    local dungeon, placed = lurek.procgen.bspDungeonWithPrefabs({
+        width = 80,
+        height = 60,
+        min_size = 10,
+        max_depth = 4,
+        seed = 55,
+    }, prefabs)
+
+    print(&quot;bspDungeonWithPrefabs rooms=&quot; .. #dungeon.rooms)
+    print(&quot;bspDungeonWithPrefabs placed=&quot; .. #placed)
+end</code></pre></details></article><article class="item-row api-row" id="fn-cellularautomata"><div class="item-row-main"><h3>cellularAutomata</h3><pre class="inline-signature">lurek.procgen.cellularAutomata(width: integer, height: integer, opts: table?) -&gt; integer[]</pre><p>Generate a cave or organic map using cellular automata rules.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:645</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local cave = lurek.procgen.cellularAutomata(80, 60, {
+        fill = 0.45,
+        iterations = 5,
+        birth = 5,
+        survive = 4,
+        seed = 777,
+    })
+
+    print(&quot;cellularAutomata cells=&quot; .. #cave)
+    print(&quot;cellularAutomata first=&quot; .. tostring(cave[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-fbm"><div class="item-row-main"><h3>fbm</h3><pre class="inline-signature">lurek.procgen.fbm(x: number, y: number, seed: integer?, octaves: integer?, lac: number?, gain: number?) -&gt; number</pre><p>Samples stateless fractal Brownian motion noise.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1705</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.fbm(0.5, 0.5, 7, 4, 2.0, 0.5)
+    local other = lurek.procgen.fbm(0.75, 0.25, 7, 4, 2.0, 0.5)
+
+    print(string.format(&quot;lurek.procgen.fbm=%.4f&quot;, value))
+    print(string.format(&quot;lurek.procgen.fbm other=%.4f&quot;, other))
+end</code></pre></details></article><article class="item-row api-row" id="fn-floodfill"><div class="item-row-main"><h3>floodFill</h3><pre class="inline-signature">lurek.procgen.floodFill(data: table, width: number, height: number, startX: number, startY: number, threshold: number?, above: boolean?) -&gt; integer[]</pre><p>Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:670</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local cells = {
+        200, 200, 0, 0,
+        200, 200, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+    }
+    local filled = lurek.procgen.floodFill(cells, 4, 4, 0, 0, 128, true)
+
+    print(&quot;floodFill cells=&quot; .. #filled)
+    print(&quot;floodFill first=&quot; .. tostring(filled[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-generatename"><div class="item-row-main"><h3>generateName</h3><pre class="inline-signature">lurek.procgen.generateName(samples: table, minLen: number?, maxLen: number?, seed: number?) -&gt; string</pre><p>Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1379</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local samples = { &quot;Aldric&quot;, &quot;Baldric&quot;, &quot;Cedric&quot;, &quot;Eldric&quot;, &quot;Godric&quot;, &quot;Fredric&quot; }
+    local name = lurek.procgen.generateName(samples, 4, 8, 1)
+
+    print(&quot;generateName result=&quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-generatenames"><div class="item-row-main"><h3>generateNames</h3><pre class="inline-signature">lurek.procgen.generateNames(samples: table, count: number, minLen: number?, maxLen: number?, seed: number?) -&gt; string[]</pre><p>Generate multiple random names in one call using Markov chains trained from sample data.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1407</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local samples = { &quot;Alon&quot;, &quot;Beren&quot;, &quot;Caran&quot;, &quot;Doran&quot;, &quot;Elan&quot; }
+    local names = lurek.procgen.generateNames(samples, 5, 3, 8, 42)
+
+    print(&quot;generateNames count=&quot; .. #names)
+    print(&quot;generateNames first=&quot; .. names[1])
+end</code></pre></details></article><article class="item-row api-row" id="fn-heightmap"><div class="item-row-main"><h3>heightmap</h3><pre class="inline-signature">lurek.procgen.heightmap(opts: table?) -&gt; table</pre><p>Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1150</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local hm = lurek.procgen.heightmap({
+        width = 128,
+        height = 128,
+        scale = 0.01,
+        octaves = 6,
+        lacunarity = 2.0,
+        persistence = 0.5,
+        seed = 99,
+        erosion_passes = 3,
+    })
+
+    print(&quot;heightmap size=&quot; .. hm.width .. &quot;x&quot; .. hm.height)
+    print(&quot;heightmap cells=&quot; .. #hm.cells)
+end</code></pre></details></article><article class="item-row api-row" id="fn-heightmapfromcellular"><div class="item-row-main"><h3>heightmapFromCellular</h3><pre class="inline-signature">lurek.procgen.heightmapFromCellular(width: integer, height: integer, cells: table, floorValue: number?) -&gt; table</pre><p>Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1205</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local cells = lurek.procgen.cellularAutomata(64, 64, {
+        fill = 0.4,
+        iterations = 4,
+        seed = 100,
+    })
+    local hm = lurek.procgen.heightmapFromCellular(64, 64, cells, 0)
+
+    print(&quot;heightmapFromCellular size=&quot; .. hm.width .. &quot;x&quot; .. hm.height)
+    print(string.format(&quot;heightmapFromCellular first=%.4f&quot;, hm.cells[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lsystem"><div class="item-row-main"><h3>lsystem</h3><pre class="inline-signature">lurek.procgen.lsystem(opts: table) -&gt; string</pre><p>Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1296</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local result = lurek.procgen.lsystem({
+        axiom = &quot;F&quot;,
+        iterations = 3,
+        rules = { F = &quot;F[+F]F[-F]F&quot; },
+    })
+
+    print(&quot;lsystem length=&quot; .. #result)
+    print(&quot;lsystem preview=&quot; .. result:sub(1, 40))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lsystemsegments"><div class="item-row-main"><h3>lsystemSegments</h3><pre class="inline-signature">lurek.procgen.lsystemSegments(opts: table, angle: number?, step: number?) -&gt; table</pre><p>Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1332</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local segments = lurek.procgen.lsystemSegments({
+        axiom = &quot;F&quot;,
+        iterations = 4,
+        rules = { F = &quot;FF+[+F-F-F]-[-F+F+F]&quot; },
+    }, 25, 5.0)
+
+    print(&quot;lsystemSegments count=&quot; .. #segments)
+    print(&quot;lsystemSegments firstExists=&quot; .. tostring(segments[1] ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbiomeclassifier"><div class="item-row-main"><h3>newBiomeClassifier</h3><pre class="inline-signature">lurek.procgen.newBiomeClassifier(opts: table?) -&gt; LBiomeClassifier</pre><p>Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1748</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local classifier = lurek.procgen.newBiomeClassifier({
+        ocean_threshold = 0.3,
+        coast_threshold = 0.35,
+        mountain_threshold = 0.8,
+    })
+    local biome = classifier:classify(0.5, 0.6, 0.5)
+
+    print(&quot;newBiomeClassifier biome=&quot; .. biome)
+    print(&quot;newBiomeClassifier type=&quot; .. classifier:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcellular"><div class="item-row-main"><h3>newCellular</h3><pre class="inline-signature">lurek.procgen.newCellular(width: integer, height: integer) -&gt; LCellular</pre><p>Performs the &#x27;procgen&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1779</span></div></article><article class="item-row api-row" id="fn-newnoisegenerator"><div class="item-row-main"><h3>newNoiseGenerator</h3><pre class="inline-signature">lurek.procgen.newNoiseGenerator(seed: integer?) -&gt; LNoiseGenerator</pre><p>Creates a procedural noise generator with an optional seed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1649</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local generator = lurek.procgen.newNoiseGenerator(777)
+
+    print(&quot;lurek.procgen.newNoiseGenerator type=&quot; .. generator:type())
+    print(&quot;lurek.procgen.newNoiseGenerator seed=&quot; .. generator:getSeed())
+end</code></pre></details></article><article class="item-row api-row" id="fn-noisemap"><div class="item-row-main"><h3>noiseMap</h3><pre class="inline-signature">lurek.procgen.noiseMap(width: integer, height: integer, opts: table?) -&gt; number[]</pre><p>Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1494</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local map = lurek.procgen.noiseMap(64, 64, {
+        scale_x = 0.05,
+        scale_y = 0.05,
+        octaves = 4,
+        lacunarity = 2.0,
+        persistence = 0.5,
+        seed = 42,
+    })
+
+    print(&quot;noiseMap cells=&quot; .. #map)
+    print(string.format(&quot;noiseMap first=%.4f&quot;, map[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-noisemapparallel"><div class="item-row-main"><h3>noiseMapParallel</h3><pre class="inline-signature">lurek.procgen.noiseMapParallel(width: integer, height: integer, opts: table?) -&gt; number[]</pre><p>Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1545</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local map = lurek.procgen.noiseMapParallel(128, 128, {
+        scale_x = 0.02,
+        scale_y = 0.02,
+        octaves = 6,
+        lacunarity = 2.0,
+        persistence = 0.5,
+    })
+
+    print(&quot;noiseMapParallel cells=&quot; .. #map)
+    print(string.format(&quot;noiseMapParallel midpoint=%.4f&quot;, map[4096]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-noisemapparallelseeded"><div class="item-row-main"><h3>noiseMapParallelSeeded</h3><pre class="inline-signature">lurek.procgen.noiseMapParallelSeeded(width: integer, height: integer, opts: table?) -&gt; number[]</pre><p>Generate a 2D noise map using multiple threads with a specific seed for reproducible results.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1586</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local map = lurek.procgen.noiseMapParallelSeeded(16, 16, {
+        scale_x = 0.1,
+        scale_y = 0.1,
+        octaves = 4,
+        seed = 12345,
+    })
+
+    print(&quot;noiseMapParallelSeeded cells=&quot; .. #map)
+    print(string.format(&quot;noiseMapParallelSeeded first=%.4f&quot;, map[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-perlin2d"><div class="item-row-main"><h3>perlin2d</h3><pre class="inline-signature">lurek.procgen.perlin2d(x: number, y: number, seed: integer?) -&gt; number</pre><p>Samples stateless 2D Perlin noise.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1663</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.perlin2d(0.2, 0.6)
+    local seeded = lurek.procgen.perlin2d(0.2, 0.6, 9)
+
+    print(string.format(&quot;lurek.procgen.perlin2d=%.4f&quot;, value))
+    print(string.format(&quot;lurek.procgen.perlin2d seeded=%.4f&quot;, seeded))
+end</code></pre></details></article><article class="item-row api-row" id="fn-perlin3d"><div class="item-row-main"><h3>perlin3d</h3><pre class="inline-signature">lurek.procgen.perlin3d(x: number, y: number, z: number, seed: integer?) -&gt; number</pre><p>Samples stateless 3D Perlin noise.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1676</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.perlin3d(0.1, 0.3, 0.7)
+    local seeded = lurek.procgen.perlin3d(0.1, 0.3, 0.7, 11)
+
+    print(string.format(&quot;lurek.procgen.perlin3d=%.4f&quot;, value))
+    print(string.format(&quot;lurek.procgen.perlin3d seeded=%.4f&quot;, seeded))
+end</code></pre></details></article><article class="item-row api-row" id="fn-perlin4d"><div class="item-row-main"><h3>perlin4d</h3><pre class="inline-signature">lurek.procgen.perlin4d(x: number, y: number, z: number, w: number, seed: integer?) -&gt; number</pre><p>Samples stateless 4D Perlin noise.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1690</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4)
+    local seeded = lurek.procgen.perlin4d(0.1, 0.2, 0.3, 0.4, 17)
+
+    print(string.format(&quot;perlin4d=%.4f&quot;, value))
+    print(string.format(&quot;perlin4d seeded=%.4f&quot;, seeded))
+end</code></pre></details></article><article class="item-row api-row" id="fn-perlinnoise"><div class="item-row-main"><h3>perlinNoise</h3><pre class="inline-signature">lurek.procgen.perlinNoise(x: number, y: number, periodX: number, periodY: number) -&gt; number</pre><p>Sample periodic 2D Perlin noise at a given coordinate.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local first = lurek.procgen.perlinNoise(0.5, 0.5, 4.0, 4.0)
+    local tiled = lurek.procgen.perlinNoise(4.5, 0.5, 4.0, 4.0)
+
+    print(string.format(&quot;perlinNoise first=%.4f&quot;, first))
+    print(string.format(&quot;perlinNoise tiled=%.4f&quot;, tiled))
+end</code></pre></details></article><article class="item-row api-row" id="fn-poissondisk"><div class="item-row-main"><h3>poissonDisk</h3><pre class="inline-signature">lurek.procgen.poissonDisk(width: number, height: number, minDist: number, maxAttempts: integer?, seed: integer?) -&gt; table</pre><p>Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:727</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local points = lurek.procgen.poissonDisk(200, 200, 15, 30, 42)
+    local first = points[1]
+
+    print(&quot;poissonDisk points=&quot; .. #points)
+    print(string.format(&quot;poissonDisk first=(%.2f, %.2f)&quot;, first.x, first.y))
+end</code></pre></details></article><article class="item-row api-row" id="fn-roomsdungeon"><div class="item-row-main"><h3>roomsDungeon</h3><pre class="inline-signature">lurek.procgen.roomsDungeon(opts: table?) -&gt; table</pre><p>Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:956</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local dungeon = lurek.procgen.roomsDungeon({
+        width = 60,
+        height = 40,
+        max_rooms = 10,
+        min_room_size = 5,
+        max_room_size = 12,
+        seed = 123,
+    })
+
+    print(&quot;roomsDungeon rooms=&quot; .. #dungeon.rooms)
+    print(&quot;roomsDungeon grid=&quot; .. #dungeon.grid)
+end</code></pre></details></article><article class="item-row api-row" id="fn-roomsdungeonwithprefabs"><div class="item-row-main"><h3>roomsDungeonWithPrefabs</h3><pre class="inline-signature">lurek.procgen.roomsDungeonWithPrefabs(opts: table?, prefabs: table, stampValue: number?) -&gt; table</pre><p>Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1037</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local prefabs = {
+        { name = &quot;shop&quot;, width = 5, height = 5 },
+    }
+    local dungeon, placed = lurek.procgen.roomsDungeonWithPrefabs({
+        width = 50,
+        height = 40,
+        max_rooms = 8,
+        seed = 200,
+    }, prefabs, 3)
+
+    print(&quot;roomsDungeonWithPrefabs size=&quot; .. dungeon.width .. &quot;x&quot; .. dungeon.height)
+    print(&quot;roomsDungeonWithPrefabs placed=&quot; .. #placed)
+end</code></pre></details></article><article class="item-row api-row" id="fn-simplex2d"><div class="item-row-main"><h3>simplex2d</h3><pre class="inline-signature">lurek.procgen.simplex2d(x: number, y: number) -&gt; number</pre><p>Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1631</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.simplex2d(1.5, 2.3)
+    local mirrored = lurek.procgen.simplex2d(2.3, 1.5)
+
+    print(string.format(&quot;simplex2d=%.4f&quot;, value))
+    print(string.format(&quot;simplex2d mirrored=%.4f&quot;, mirrored))
+end</code></pre></details></article><article class="item-row api-row" id="fn-simplex3d"><div class="item-row-main"><h3>simplex3d</h3><pre class="inline-signature">lurek.procgen.simplex3d(x: number, y: number, z: number) -&gt; number</pre><p>Sample 3D simplex noise at a point. The third axis can be used for animation or layering.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1641</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value = lurek.procgen.simplex3d(0.1, 0.5, 0.9)
+    local shifted = lurek.procgen.simplex3d(0.1, 0.5, 1.1)
+
+    print(string.format(&quot;simplex3d=%.4f&quot;, value))
+    print(string.format(&quot;simplex3d shifted=%.4f&quot;, shifted))
+end</code></pre></details></article><article class="item-row api-row" id="fn-simplexnoise"><div class="item-row-main"><h3>simplexNoise</h3><pre class="inline-signature">lurek.procgen.simplexNoise(x: number, y: number, z: number?) -&gt; number</pre><p>Sample a 2D or 3D simplex noise value at a given point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1734</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local value2d = lurek.procgen.simplexNoise(0.4, 0.9)
+    local value3d = lurek.procgen.simplexNoise(0.4, 0.9, 1.2)
+
+    print(string.format(&quot;lurek.procgen.simplexNoise2d=%.4f&quot;, value2d))
+    print(string.format(&quot;lurek.procgen.simplexNoise3d=%.4f&quot;, value3d))
+end</code></pre></details></article><article class="item-row api-row" id="fn-voronoi"><div class="item-row-main"><h3>voronoi</h3><pre class="inline-signature">lurek.procgen.voronoi(width: integer, height: integer, points: table, opts: table?) -&gt; integer[]</pre><p>Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:752</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local regions, dist1, dist2 = lurek.procgen.voronoi(100, 100, {
+        { x = 20, y = 20 },
+        { x = 80, y = 80 },
+        { x = 50, y = 30 },
+    })
+
+    print(&quot;voronoi regions=&quot; .. #regions)
+    print(string.format(&quot;voronoi first distances=%.2f / %.2f&quot;, dist1[1], dist2[1]))
+    print(&quot;voronoi first region=&quot; .. tostring(regions[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-wfcgenerate"><div class="item-row-main"><h3>wfcGenerate</h3><pre class="inline-signature">lurek.procgen.wfcGenerate(opts: table) -&gt; table</pre><p>Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1236</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local result = lurek.procgen.wfcGenerate({
+        width = 4,
+        height = 4,
+        seed = 42,
+        max_attempts = 100,
+        tiles = {
+            { id = 1, weight = 1.0 },
+            { id = 2, weight = 1.0 },
+        },
+        adjacencies = {
+            [1] = { 1, 2 },
+            [2] = { 1, 2 },
+        },
+    })
+
+    print(&quot;wfcGenerate size=&quot; .. result.width .. &quot;x&quot; .. result.height)
+    print(&quot;wfcGenerate cells=&quot; .. #result.cells)
+end</code></pre></details></article><article class="item-row api-row" id="fn-worldgraph"><div class="item-row-main"><h3>worldGraph</h3><pre class="inline-signature">lurek.procgen.worldGraph(width: number, height: number, regionCount: integer, seed: integer?) -&gt; table</pre><p>Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1442</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local world = lurek.procgen.worldGraph(500, 500, 12, 42)
+
+    print(&quot;worldGraph regions=&quot; .. #world.regions)
+    print(&quot;worldGraph edges=&quot; .. #world.edges)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBiomeClassifier.html">LBiomeClassifier</a></h3><p>Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.</p></div><div class="item-row-meta"><span>4 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCellular.html">LCellular</a></h3><p>A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.</p></div><div class="item-row-meta"><span>14 methods</span><span>module procgen</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNoiseGenerator.html">LNoiseGenerator</a></h3><p>Lua-side wrapper for a procedural noise generator.</p></div><div class="item-row-meta"><span>19 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["angle_between","bresenham","circle_contains_point","circle_intersects_circle","circle_intersects_line","circle_intersects_segment","closest_point_on_segment","convex_hull","delaunay_triangulate","line_intersect","point_in_polygon","polygon_area","polygon_centroid","segment_intersects_segment"]};

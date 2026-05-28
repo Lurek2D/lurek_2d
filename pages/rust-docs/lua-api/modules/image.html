@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.image - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a class="active" href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.image</h1>
+  <p>`lurek.image` -- Image bindings for pixel buffers, encoded image load/save, layered image stacks, DDS compressed metadata, palette lookup tables, province color grids, polygon extraction, shape rendering, and screen capture handoff.</p>
+  <div class="api-meta api-meta-header"><span>12 functions</span><span>5 classes</span><span>src/lua_api/image_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 102</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.image.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-fromscreen"><div class="item-row-main"><h3>fromScreen</h3><pre class="inline-signature">lurek.image.fromScreen() -&gt; LImageData|nil</pre><p>Returns a completed screen capture image or requests one for a future call.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:773</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local capture = lurek.image.fromScreen()
+    local status = capture and (capture:getWidth() .. &quot;x&quot; .. capture:getHeight()) or &quot;not ready yet&quot;
+    print(&quot;screen capture &quot; .. status)
+end</code></pre></details></article><article class="item-row api-row" id="fn-iscompressed"><div class="item-row-main"><h3>isCompressed</h3><pre class="inline-signature">lurek.image.isCompressed(filename: string) -&gt; boolean</pre><p>Returns whether a GameFS image file begins with DDS compressed image magic bytes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:642</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local dds = lurek.image.isCompressed(&quot;content/examples/assets/images/sample_normal.dds&quot;)
+    print(&quot;is compressed = &quot; .. tostring(dds))
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadimage"><div class="item-row-main"><h3>loadImage</h3><pre class="inline-signature">lurek.image.loadImage(filename: string) -&gt; LImageData</pre><p>Loads and decodes image data from GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:707</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local src = lurek.image.newImageData(8, 8)
+    src:fill(255, 0, 0, 255)
+    lurek.image.saveImage(src, &quot;save/sample_image.limg&quot;)
+    local img = lurek.image.loadImage(&quot;save/sample_image.limg&quot;)
+    print(&quot;loaded image &quot; .. img:getWidth() .. &quot;x&quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadlayered"><div class="item-row-main"><h3>loadLayered</h3><pre class="inline-signature">lurek.image.loadLayered(filename: string) -&gt; LLayeredImage</pre><p>Loads a serialized layered image stack from GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:725</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local layered = lurek.image.newLayeredImage(8, 8)
+    layered:addLayer(&quot;base&quot;)
+    layered:save(&quot;save/sample_layered.limg&quot;)
+    local loaded = lurek.image.loadLayered(&quot;save/sample_layered.limg&quot;)
+    print(&quot;loaded layered = &quot; .. tostring(loaded ~= nil))
+    print(&quot;loaded layers = &quot; .. loaded:layerCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcompresseddata"><div class="item-row-main"><h3>newCompressedData</h3><pre class="inline-signature">lurek.image.newCompressedData(filename: string) -&gt; LCompressedImageData</pre><p>Loads DDS compressed image data from GameFS.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:625</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local cdata = lurek.image.newCompressedData(&quot;content/examples/assets/images/sample_normal.dds&quot;)
+    print(&quot;compressed &quot; .. cdata:getWidth() .. &quot;x&quot; .. cdata:getHeight())
+    print(&quot;format = &quot; .. cdata:getFormat())
+    print(&quot;mipmaps = &quot; .. cdata:getMipmapCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newimagedata"><div class="item-row-main"><h3>newImageData</h3><pre class="inline-signature">lurek.image.newImageData(width_or_filename: integer|string, height: integer?) -&gt; LImageData</pre><p>Creates empty image data from dimensions or decodes image data from a GameFS filename.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:573</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local img = lurek.image.newImageData(128, 64)
+    print(&quot;image &quot; .. img:getWidth() .. &quot;x&quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newimagedatafrombytes"><div class="item-row-main"><h3>newImageDataFromBytes</h3><pre class="inline-signature">lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -&gt; LImageData</pre><p>Creates image data from raw RGBA bytes and explicit dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:612</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local bytes = string.rep(&quot;\255\0\0\255&quot;, 4)
+    local img = lurek.image.newImageDataFromBytes(2, 2, bytes)
+    print(&quot;from bytes &quot; .. img:getWidth() .. &quot;x&quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlayeredimage"><div class="item-row-main"><h3>newLayeredImage</h3><pre class="inline-signature">lurek.image.newLayeredImage(width: integer, height: integer) -&gt; LLayeredImage</pre><p>Creates a layered image stack with one or more blank layers.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:657</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local li = lurek.image.newLayeredImage(256, 256)
+    print(&quot;layered &quot; .. li:getWidth() .. &quot;x&quot; .. li:getHeight())
+    print(&quot;layers = &quot; .. li:layerCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpalettelut"><div class="item-row-main"><h3>newPaletteLut</h3><pre class="inline-signature">lurek.image.newPaletteLut() -&gt; LPaletteLUT</pre><p>Creates an empty palette lookup table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:741</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local lut = lurek.image.newPaletteLut()
+    print(&quot;palette LUT colors = &quot; .. lut:getColorCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newprovincegrid"><div class="item-row-main"><h3>newProvinceGrid</h3><pre class="inline-signature">lurek.image.newProvinceGrid(filename: string) -&gt; LProvinceGrid</pre><p>Loads a province id grid from an image file under the current game directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:754</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local grid = lurek.image.newProvinceGrid(&quot;assets/textures/province_map.png&quot;)
+    print(&quot;grid &quot; .. grid:getWidth() .. &quot;x&quot; .. grid:getHeight())
+    print(&quot;provinces = &quot; .. grid:provinceCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-saveimage"><div class="item-row-main"><h3>saveImage</h3><pre class="inline-signature">lurek.image.saveImage(img_ud: LImageData, filename: string)</pre><p>Saves an image data object to a path under the current game directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:670</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local img = lurek.image.newImageData(32, 32)
+    img:fill(255, 0, 0, 255)
+    lurek.image.saveImage(img, &quot;save/red_square.limg&quot;)
+    print(&quot;saved image&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-savepng"><div class="item-row-main"><h3>savePNG</h3><pre class="inline-signature">lurek.image.savePNG(img_ud: LImageData, filename: string)</pre><p>Encodes image data as PNG and writes it under the current game directory.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/image_api.rs:688</span></div><details class="example-block"><summary>Example · Exact example · image.lua</summary><pre><code>do
+    local img = lurek.image.newImageData(16, 16)
+    img:fill(0, 255, 0, 255)
+    lurek.image.savePNG(img, &quot;save/green_square.png&quot;)
+    print(&quot;saved PNG&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCompressedImageData.html">LCompressedImageData</a></h3><p>Lua-side handle for compressed DDS image metadata and mipmap data.</p></div><div class="item-row-meta"><span>7 methods</span><span>module image</span></div><div class="card-note">Example: image.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LImageData.html">LImageData</a></h3><p>Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.</p></div><div class="item-row-meta"><span>44 methods</span><span>module image</span></div><div class="card-note">Example: image.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLayeredImage.html">LLayeredImage</a></h3><p>Lua-side handle for multiple image layers with visibility, opacity, and ordering.</p></div><div class="item-row-meta"><span>19 methods</span><span>module image</span></div><div class="card-note">Example: image.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPaletteLUT.html">LPaletteLUT</a></h3><p>Lua-side handle for palette color remapping.</p></div><div class="item-row-meta"><span>6 methods</span><span>module image</span></div><div class="card-note">Example: image.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LProvinceGrid.html">LProvinceGrid</a></h3><p>Lua-side handle for a province id grid decoded from an image.</p></div><div class="item-row-meta"><span>14 methods</span><span>module image</span></div><div class="card-note">Example: image.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

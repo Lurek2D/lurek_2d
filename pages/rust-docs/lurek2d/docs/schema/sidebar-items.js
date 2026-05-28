@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FieldType"],"struct":["FieldRule","Schema","ValidationError","ValidationResult"],"type":["SchemaError","SchemaResult"]};

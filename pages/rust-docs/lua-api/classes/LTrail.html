@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LTrail - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a class="active" href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LTrail</h1>
+  <p>Lua-side wrapper for a trail effect.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/particle.html">lurek.particle</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(3.0, 5)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5)
+    trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LTrail userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LTrail:clear()</pre><p>Clears all trail points on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1415</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(3.0, 5)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5)
+    trail:pushPoint(20, 10)
+
+    print(&quot;before clear = &quot; .. trail:getPointCount())
+    trail:clear()
+    print(&quot;after clear = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LTrail:drawToImage(w: integer, h: integer) -&gt; LImageData</pre><p>Draws the trail to image data. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1424</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(50, 25)
+
+    local image = trail:drawToImage(64, 64)
+    print(&quot;trail image type = &quot; .. image:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlifetime"><div class="item-row-main"><h3>getLifetime</h3><pre class="inline-signature">LTrail:getLifetime() -&gt; number</pre><p>Returns trail point lifetime. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1371</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+    trail:setLifetime(5.0)
+
+    print(&quot;lifetime = &quot; .. trail:getLifetime())
+end</code></pre></details></article><article class="item-row api-row" id="method-getpointcount"><div class="item-row-main"><h3>getPointCount</h3><pre class="inline-signature">LTrail:getPointCount() -&gt; integer</pre><p>Returns trail point count. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1410</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(3.0, 5)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5)
+    trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LTrail:getWidth() -&gt; number</pre><p>Returns trail width settings from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1360</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+    trail:setWidth(10, 2)
+
+    local start_width, end_width = trail:getWidth()
+    print(&quot;width = &quot; .. start_width .. &quot; -&gt; &quot; .. end_width)
+end</code></pre></details></article><article class="item-row api-row" id="method-pushpoint"><div class="item-row-main"><h3>pushPoint</h3><pre class="inline-signature">LTrail:pushPoint(x: number, y: number)</pre><p>Adds a point to the trail. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1337</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(3.0, 5)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5)
+    trail:pushPoint(20, 10)
+    trail:pushPoint(30, 8)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setheadcolor"><div class="item-row-main"><h3>setHeadColor</h3><pre class="inline-signature">LTrail:setHeadColor(r: number, g: number, b: number, a: number)</pre><p>Sets the color of the leading edge of the trail.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1385</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(2.0, 6)
+    trail:setHeadColor(1, 1, 0, 1)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(5, 0)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlifetime"><div class="item-row-main"><h3>setLifetime</h3><pre class="inline-signature">LTrail:setLifetime(lifetime: number)</pre><p>Sets trail point lifetime. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1364</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+    trail:setLifetime(5.0)
+
+    print(&quot;lifetime = &quot; .. trail:getLifetime())
+end</code></pre></details></article><article class="item-row api-row" id="method-setmindistance"><div class="item-row-main"><h3>setMinDistance</h3><pre class="inline-signature">LTrail:setMinDistance(distance: number)</pre><p>Sets minimum distance between trail points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1375</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(2.0, 6)
+    trail:setMinDistance(3)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(5, 0)
+    trail:pushPoint(10, 0)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-settailcolor"><div class="item-row-main"><h3>setTailColor</h3><pre class="inline-signature">LTrail:setTailColor(r: number, g: number, b: number, a: number)</pre><p>Sets the color of the trailing edge of the trail.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1399</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(2.0, 6)
+    trail:setTailColor(1, 0, 0, 0)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(5, 0)
+
+    print(&quot;points = &quot; .. trail:getPointCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setwidth"><div class="item-row-main"><h3>setWidth</h3><pre class="inline-signature">LTrail:setWidth(start: number, end: number?)</pre><p>Sets trail start and optional end width.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1352</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+    trail:setWidth(10, 2)
+
+    local start_width, end_width = trail:getWidth()
+    print(&quot;width = &quot; .. start_width .. &quot; -&gt; &quot; .. end_width)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTrail:type() -&gt; string</pre><p>Returns the Lua-visible type name for this trail handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1431</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.5, 8.0)
+
+    print(&quot;type = &quot; .. trail:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTrail:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this trail handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1436</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(1.0, 4)
+
+    print(&quot;is trail = &quot; .. tostring(trail:typeOf(&quot;LTrail&quot;)))
+    print(&quot;is object = &quot; .. tostring(trail:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LTrail:update(dt: number)</pre><p>Updates trail point lifetimes. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/particle_api.rs:1344</span></div><details class="example-block"><summary>Example · Exact example · particle.lua</summary><pre><code>do
+    local trail = lurek.particle.newTrail(3.0, 5)
+    trail:pushPoint(0, 0)
+    trail:pushPoint(10, 5)
+    trail:pushPoint(20, 10)
+    trail:update(0.5)
+
+    print(&quot;after update = &quot; .. trail:getPointCount())
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

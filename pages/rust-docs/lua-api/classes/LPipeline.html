@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LPipeline - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a class="active" href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LPipeline</h1>
+  <p>A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/pipeline.html">lurek.pipeline</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;hello&quot;)
+    local greet = lurek.pipeline.newStep(&quot;greet&quot;, function(ctx)
+        ctx.message = &quot;hello world&quot;
+    end)
+    local show = lurek.pipeline.newStep(&quot;show&quot;, function(ctx)
+        ctx.displayed = ctx.message
+    end)
+
+    show:dependsOn(&quot;greet&quot;)
+    pipe:addStep(greet)
+    pipe:addStep(show)
+
+    local result = pipe:run({})
+
+    print(&quot;success = &quot; .. tostring(result.success))
+    print(&quot;completed = &quot; .. #result.completed)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LPipeline userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addbranch"><div class="item-row-main"><h3>addBranch</h3><pre class="inline-signature">LPipeline:addBranch(name: string, deps: table, when: function, thenFn: function, elseFn: function?) -&gt; LPipeline</pre><p>Adds a branching construct: evaluates a predicate, then runs either the &quot;then&quot; or &quot;else&quot; callback based on the result.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1292</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;branch&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;load&quot;, function(ctx)
+        ctx.format = &quot;json&quot;
+    end))
+    pipe:addBranch(
+        &quot;route&quot;,
+        { &quot;load&quot; },
+        function(ctx)
+            return ctx.format == &quot;json&quot;
+        end,
+        function(ctx)
+            ctx.parser = &quot;json_parser&quot;
+        end,
+        function(ctx)
+            ctx.parser = &quot;xml_parser&quot;
+        end
+    )
+
+    local context = {}
+
+    pipe:run(context)
+
+    print(&quot;parser = &quot; .. tostring(context.parser))
+end</code></pre></details></article><article class="item-row api-row" id="method-addconditional"><div class="item-row-main"><h3>addConditional</h3><pre class="inline-signature">LPipeline:addConditional(name: string, deps: table, callback: function, condition: function) -&gt; LPipeline</pre><p>Convenience method to create and add a step with dependencies and a condition in one call.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1262</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;conditional&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;check&quot;, function(ctx)
+        ctx.needsUpgrade = true
+    end))
+    pipe:addConditional(
+        &quot;upgrade&quot;,
+        { &quot;check&quot; },
+        function(ctx)
+            ctx.upgraded = true
+        end,
+        function(ctx)
+            return ctx.needsUpgrade == true
+        end
+    )
+
+    local context = {}
+
+    pipe:run(context)
+
+    print(&quot;upgraded = &quot; .. tostring(context.upgraded == true))
+end</code></pre></details></article><article class="item-row api-row" id="method-addstep"><div class="item-row-main"><h3>addStep</h3><pre class="inline-signature">LPipeline:addStep(step: LPipelineStep) -&gt; LPipeline</pre><p>Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:677</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;hello&quot;)
+    local greet = lurek.pipeline.newStep(&quot;greet&quot;, function(ctx)
+        ctx.message = &quot;hello world&quot;
+    end)
+    local show = lurek.pipeline.newStep(&quot;show&quot;, function(ctx)
+        ctx.displayed = ctx.message
+    end)
+
+    show:dependsOn(&quot;greet&quot;)
+    pipe:addStep(greet)
+    pipe:addStep(show)
+
+    local result = pipe:run({})
+
+    print(&quot;success = &quot; .. tostring(result.success))
+    print(&quot;completed = &quot; .. #result.completed)
+end</code></pre></details></article><article class="item-row api-row" id="method-addsubpipeline"><div class="item-row-main"><h3>addSubPipeline</h3><pre class="inline-signature">LPipeline:addSubPipeline(subPipeline: LPipeline, alias: string, deps: table?)</pre><p>Embeds another pipeline&#x27;s steps into this pipeline under an alias prefix, with optional outer dependencies.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1429</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local sub = lurek.pipeline.newPipeline(&quot;sub&quot;)
+
+    sub:addStep(lurek.pipeline.newStep(&quot;fetch&quot;, function(ctx)
+        ctx.fetched = true
+    end))
+    sub:addStep(lurek.pipeline.newStep(&quot;parse&quot;, function(ctx)
+        ctx.parsed = true
+    end))
+
+    local main = lurek.pipeline.newPipeline(&quot;main&quot;)
+
+    main:addStep(lurek.pipeline.newStep(&quot;init&quot;, function(ctx)
+        ctx.started = true
+    end))
+    main:addSubPipeline(sub, &quot;data&quot;, { &quot;init&quot; })
+
+    local order, err = main:getExecutionOrder()
+
+    print(&quot;steps = &quot; .. main:getStepCount())
+    print(order and (&quot;order = &quot; .. table.concat(order, &quot; -&gt; &quot;)) or (&quot;error = &quot; .. tostring(err)))
+end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LPipeline:cancel()</pre><p>Cancels all pending and waiting steps. Steps already running or completed are unaffected.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1035</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;cancel&quot;)
+    local hold = lurek.pipeline.newStep(&quot;hold&quot;, function()
+        coroutine.yield()
+    end)
+    local later = lurek.pipeline.newStep(&quot;later&quot;, function() end)
+
+    hold:setAsync(true)
+    later:dependsOn(&quot;hold&quot;)
+
+    pipe:addStep(hold)
+    pipe:addStep(later)
+
+    pipe:runAsync({})
+    pipe:update(1 / 60)
+    pipe:cancel()
+
+    local result = pipe:getResult()
+
+    print(&quot;cancelled = &quot; .. #result.cancelled)
+    print(&quot;hold status = &quot; .. hold:getStatus())
+end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LPipeline:clear()</pre><p>Removes all steps from the pipeline, resetting it to an empty state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:742</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;remove&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;a&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;b&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;c&quot;, function() end))
+
+    pipe:clear()
+
+    print(&quot;after clear = &quot; .. pipe:getStepCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcontext"><div class="item-row-main"><h3>getContext</h3><pre class="inline-signature">LPipeline:getContext() -&gt; table</pre><p>Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1133</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pl = lurek.pipeline.newPipeline(&quot;my_pipeline&quot;)
+    local context = { debug = false }
+
+    pl:addStep(lurek.pipeline.newStep(&quot;load&quot;, function(ctx)
+        ctx.loaded = true
+    end))
+    pl:addStep(lurek.pipeline.newStep(&quot;process&quot;, function(ctx)
+        ctx.result = 42
+    end))
+
+    pl:runAsync(context)
+    pl:update(1 / 60)
+    pl:update(1 / 60)
+
+    local stored = pl:getContext()
+
+    print(&quot;loaded = &quot; .. tostring(stored.loaded == true))
+    print(&quot;result = &quot; .. tostring(stored.result))
+end</code></pre></details></article><article class="item-row api-row" id="method-geterrormode"><div class="item-row-main"><h3>getErrorMode</h3><pre class="inline-signature">LPipeline:getErrorMode() -&gt; string</pre><p>Returns the current error mode of the pipeline as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1097</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;error-mode&quot;)
+
+    pipe:setErrorMode(&quot;continue&quot;)
+
+    print(&quot;mode = &quot; .. pipe:getErrorMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getexecutionorder"><div class="item-row-main"><h3>getExecutionOrder</h3><pre class="inline-signature">LPipeline:getExecutionOrder() -&gt; string[]</pre><p>Computes the topologically sorted execution order of all steps, respecting dependencies.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:765</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;order&quot;)
+    local load = lurek.pipeline.newStep(&quot;load&quot;, function() end)
+    local transform = lurek.pipeline.newStep(&quot;transform&quot;, function() end)
+    local save = lurek.pipeline.newStep(&quot;save&quot;, function() end)
+
+    transform:dependsOn(&quot;load&quot;)
+    save:dependsOn(&quot;transform&quot;)
+
+    pipe:addStep(load)
+    pipe:addStep(transform)
+    pipe:addStep(save)
+
+    local order, err = pipe:getExecutionOrder()
+
+    print(order and (&quot;order = &quot; .. table.concat(order, &quot; -&gt; &quot;)) or (&quot;error = &quot; .. tostring(err)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LPipeline:getName() -&gt; string</pre><p>Returns the name of this pipeline. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1180</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;build&quot;)
+
+    pipe:setName(&quot;deploy&quot;)
+
+    print(&quot;name = &quot; .. pipe:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getparallelgroups"><div class="item-row-main"><h3>getParallelGroups</h3><pre class="inline-signature">LPipeline:getParallelGroups() -&gt; string[]</pre><p>Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:782</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;parallel&quot;)
+    local fetchUsers = lurek.pipeline.newStep(&quot;fetch_users&quot;, function() end)
+    local fetchItems = lurek.pipeline.newStep(&quot;fetch_items&quot;, function() end)
+    local merge = lurek.pipeline.newStep(&quot;merge&quot;, function() end)
+
+    merge:dependsOn(&quot;fetch_users&quot;)
+    merge:dependsOn(&quot;fetch_items&quot;)
+
+    pipe:addStep(fetchUsers)
+    pipe:addStep(fetchItems)
+    pipe:addStep(merge)
+
+    local groups, err = pipe:getParallelGroups()
+    local firstGroupSize = groups and groups[1] and #groups[1] or 0
+
+    print(err and (&quot;error = &quot; .. err) or (&quot;tiers = &quot; .. #groups))
+    print(&quot;first tier size = &quot; .. firstGroupSize)
+end</code></pre></details></article><article class="item-row api-row" id="method-getresult"><div class="item-row-main"><h3>getResult</h3><pre class="inline-signature">LPipeline:getResult() -&gt; table</pre><p>Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1111</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;results&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;a&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;b&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;c&quot;, function() end))
+
+    pipe:run({})
+
+    local result = pipe:getResult()
+
+    print(&quot;success = &quot; .. tostring(result.success))
+    print(&quot;completed = &quot; .. table.concat(result.completed, &quot;, &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-getstep"><div class="item-row-main"><h3>getStep</h3><pre class="inline-signature">LPipeline:getStep(name: string) -&gt; LPipelineStep</pre><p>Retrieves a step object by name, or nil if no step with that name exists in this pipeline.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;query&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;alpha&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;beta&quot;, function() end))
+
+    local found = pipe:getStep(&quot;beta&quot;)
+
+    print(&quot;found = &quot; .. (found and found:getName() or &quot;nil&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-getstepcount"><div class="item-row-main"><h3>getStepCount</h3><pre class="inline-signature">LPipeline:getStepCount() -&gt; integer</pre><p>Returns the total number of steps in this pipeline.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:720</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;query&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;alpha&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;beta&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;gamma&quot;, function() end))
+
+    print(&quot;step count = &quot; .. pipe:getStepCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getsteps"><div class="item-row-main"><h3>getSteps</h3><pre class="inline-signature">LPipeline:getSteps() -&gt; LPipelineStep[]</pre><p>Returns a table containing all step objects currently in this pipeline.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:709</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;query&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;alpha&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;beta&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;gamma&quot;, function() end))
+
+    local steps = pipe:getSteps()
+    local seen = {}
+
+    for i = 1, #steps do
+        seen[steps[i]:getName()] = true
+    end
+
+    print(&quot;step count = &quot; .. #steps)
+    print(&quot;has alpha = &quot; .. tostring(seen.alpha == true))
+    print(&quot;has beta = &quot; .. tostring(seen.beta == true))
+end</code></pre></details></article><article class="item-row api-row" id="method-getstepsbytag"><div class="item-row-main"><h3>getStepsByTag</h3><pre class="inline-signature">LPipeline:getStepsByTag(tag: string) -&gt; LPipelineStep[]</pre><p>Returns all steps that have the specified tag assigned.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:728</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;tags&quot;)
+    local loadA = lurek.pipeline.newStep(&quot;load_a&quot;, function() end)
+    local loadB = lurek.pipeline.newStep(&quot;load_b&quot;, function() end)
+    local compute = lurek.pipeline.newStep(&quot;compute&quot;, function() end)
+
+    loadA:setTag(&quot;io&quot;)
+    loadB:setTag(&quot;io&quot;)
+    compute:setTag(&quot;cpu&quot;)
+
+    pipe:addStep(loadA)
+    pipe:addStep(loadB)
+    pipe:addStep(compute)
+
+    print(&quot;io steps = &quot; .. #pipe:getStepsByTag(&quot;io&quot;))
+    print(&quot;cpu steps = &quot; .. #pipe:getStepsByTag(&quot;cpu&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-iscomplete"><div class="item-row-main"><h3>isComplete</h3><pre class="inline-signature">LPipeline:isComplete() -&gt; boolean</pre><p>Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1071</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;async-pipe&quot;)
+    local step = lurek.pipeline.newStep(&quot;phase1&quot;, function(ctx)
+        ctx.done = true
+    end)
+
+    step:setAsync(true)
+    pipe:addStep(step)
+
+    pipe:runAsync({})
+    pipe:update(1 / 60)
+
+    print(&quot;complete = &quot; .. tostring(pipe:isComplete()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isrunning"><div class="item-row-main"><h3>isRunning</h3><pre class="inline-signature">LPipeline:isRunning() -&gt; boolean</pre><p>Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1066</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;async-pipe&quot;)
+    local step = lurek.pipeline.newStep(&quot;phase1&quot;, function()
+        coroutine.yield()
+    end)
+
+    step:setAsync(true)
+    pipe:addStep(step)
+
+    pipe:runAsync({})
+
+    print(&quot;running = &quot; .. tostring(pipe:isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="method-onevent"><div class="item-row-main"><h3>onEvent</h3><pre class="inline-signature">LPipeline:onEvent(callback: function)</pre><p>Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1412</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;callbacks&quot;)
+    local eventCount = 0
+    local lastEvent = &quot;&quot;
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;a&quot;, function() end))
+    pipe:onEvent(function(eventName, stepName, status)
+        eventCount = eventCount + 1
+        lastEvent = eventName .. &quot;:&quot; .. stepName .. &quot;:&quot; .. status
+    end)
+    pipe:run({})
+
+    print(&quot;event count = &quot; .. eventCount)
+    print(&quot;last event = &quot; .. lastEvent)
+end</code></pre></details></article><article class="item-row api-row" id="method-onprogress"><div class="item-row-main"><h3>onProgress</h3><pre class="inline-signature">LPipeline:onProgress(callback: function)</pre><p>Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1404</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;callbacks&quot;)
+    local progressLog = {}
+    local first = lurek.pipeline.newStep(&quot;a&quot;, function() end)
+    local second = lurek.pipeline.newStep(&quot;b&quot;, function() end)
+
+    second:dependsOn(&quot;a&quot;)
+
+    pipe:addStep(first)
+    pipe:addStep(second)
+    pipe:onProgress(function(stepName, status)
+        progressLog[#progressLog + 1] = stepName .. &quot;=&quot; .. status
+    end)
+    pipe:run({})
+
+    print(&quot;progress count = &quot; .. #progressLog)
+    print(&quot;progress = &quot; .. table.concat(progressLog, &quot;, &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-removestep"><div class="item-row-main"><h3>removeStep</h3><pre class="inline-signature">LPipeline:removeStep(name: string)</pre><p>Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:692</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;remove&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;a&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;b&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;c&quot;, function() end))
+
+    pipe:removeStep(&quot;b&quot;)
+
+    print(&quot;after remove = &quot; .. pipe:getStepCount())
+    print(&quot;has b = &quot; .. tostring(pipe:getStep(&quot;b&quot;) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LPipeline:reset()</pre><p>Resets the pipeline and all steps back to their initial pending state, clearing context and async state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1050</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;rerun&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;count&quot;, function(ctx)
+        ctx.n = (ctx.n or 0) + 1
+    end))
+
+    local firstContext = {}
+    local secondContext = {}
+
+    pipe:run(firstContext)
+    pipe:reset()
+    pipe:run(secondContext)
+
+    print(&quot;first = &quot; .. tostring(firstContext.n))
+    print(&quot;second = &quot; .. tostring(secondContext.n))
+end</code></pre></details></article><article class="item-row api-row" id="method-run"><div class="item-row-main"><h3>run</h3><pre class="inline-signature">LPipeline:run(context: table?) -&gt; table</pre><p>Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:810</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pl = lurek.pipeline.newPipeline(&quot;my_pipeline&quot;)
+    local context = { debug = false }
+
+    pl:addStep(lurek.pipeline.newStep(&quot;load&quot;, function(ctx)
+        ctx.loaded = true
+    end))
+    pl:addStep(lurek.pipeline.newStep(&quot;process&quot;, function(ctx)
+        ctx.result = 42
+    end))
+
+    local result = pl:run(context)
+
+    print(&quot;success = &quot; .. tostring(result.success))
+    print(&quot;result = &quot; .. tostring(context.result))
+end</code></pre></details></article><article class="item-row api-row" id="method-runasync"><div class="item-row-main"><h3>runAsync</h3><pre class="inline-signature">LPipeline:runAsync(context: table?)</pre><p>Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:875</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;async-pipe&quot;)
+    local phase1 = lurek.pipeline.newStep(&quot;phase1&quot;, function(ctx)
+        ctx.phase = 1
+    end)
+    local phase2 = lurek.pipeline.newStep(&quot;phase2&quot;, function(ctx)
+        ctx.phase = 2
+    end)
+    local context = {}
+
+    phase1:setAsync(true)
+    phase2:setAsync(true)
+    phase2:dependsOn(&quot;phase1&quot;)
+
+    pipe:addStep(phase1)
+    pipe:addStep(phase2)
+
+    pipe:runAsync(context)
+    pipe:update(1 / 60)
+    pipe:update(1 / 60)
+
+    local stored = pipe:getContext()
+
+    print(&quot;phase = &quot; .. tostring(stored.phase))
+    print(&quot;complete = &quot; .. tostring(pipe:isComplete()))
+end</code></pre></details></article><article class="item-row api-row" id="method-seterrormode"><div class="item-row-main"><h3>setErrorMode</h3><pre class="inline-signature">LPipeline:setErrorMode(mode: string)</pre><p>Sets how the pipeline handles step failures. &quot;abort&quot; stops on first failure; &quot;continue&quot; runs remaining steps.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1088</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;error-mode&quot;)
+
+    pipe:setErrorMode(&quot;continue&quot;)
+    pipe:addStep(lurek.pipeline.newStep(&quot;fail&quot;, function()
+        error(&quot;oops&quot;)
+    end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;after&quot;, function(ctx)
+        ctx.reached = true
+    end))
+
+    local result = pipe:run({})
+
+    print(&quot;mode = &quot; .. pipe:getErrorMode())
+    print(&quot;failed = &quot; .. #result.failed)
+    print(&quot;completed = &quot; .. #result.completed)
+end</code></pre></details></article><article class="item-row api-row" id="method-setname"><div class="item-row-main"><h3>setName</h3><pre class="inline-signature">LPipeline:setName(name: string)</pre><p>Changes the name of this pipeline. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1187</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;build&quot;)
+
+    pipe:setName(&quot;deploy&quot;)
+
+    print(&quot;renamed = &quot; .. pipe:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-setoncomplete"><div class="item-row-main"><h3>setOnComplete</h3><pre class="inline-signature">LPipeline:setOnComplete(callback: function?)</pre><p>Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1147</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;lifecycle&quot;)
+    local summary = &quot;&quot;
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;ok&quot;, function() end))
+    pipe:setOnComplete(function(result)
+        summary = tostring(result.success)
+    end)
+    pipe:run({})
+
+    print(&quot;complete = &quot; .. summary)
+end</code></pre></details></article><article class="item-row api-row" id="method-setonstepcomplete"><div class="item-row-main"><h3>setOnStepComplete</h3><pre class="inline-signature">LPipeline:setOnStepComplete(callback: function?)</pre><p>Registers a callback invoked each time any step completes successfully. Receives (stepName, context).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1158</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;lifecycle&quot;)
+    local completedSteps = {}
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;ok&quot;, function() end))
+    pipe:setOnStepComplete(function(stepName)
+        completedSteps[#completedSteps + 1] = stepName
+    end)
+    pipe:run({})
+
+    print(&quot;completed count = &quot; .. #completedSteps)
+    print(&quot;completed = &quot; .. table.concat(completedSteps, &quot;, &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-setonsteperror"><div class="item-row-main"><h3>setOnStepError</h3><pre class="inline-signature">LPipeline:setOnStepError(callback: function?)</pre><p>Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1169</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;lifecycle&quot;)
+    local failedSteps = {}
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;fail&quot;, function()
+        error(&quot;bad&quot;)
+    end))
+    pipe:setErrorMode(&quot;continue&quot;)
+    pipe:setOnStepError(function(stepName)
+        failedSteps[#failedSteps + 1] = stepName
+    end)
+    pipe:run({})
+
+    print(&quot;failed count = &quot; .. #failedSteps)
+    print(&quot;failed = &quot; .. table.concat(failedSteps, &quot;, &quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-toascii"><div class="item-row-main"><h3>toAscii</h3><pre class="inline-signature">LPipeline:toAscii() -&gt; string</pre><p>Returns an ASCII art diagram of the pipeline&#x27;s dependency graph for debugging and visualization.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;graph&quot;)
+    local init = lurek.pipeline.newStep(&quot;init&quot;, function() end)
+    local process = lurek.pipeline.newStep(&quot;process&quot;, function() end)
+    local finish = lurek.pipeline.newStep(&quot;finish&quot;, function() end)
+
+    process:dependsOn(&quot;init&quot;)
+    finish:dependsOn(&quot;process&quot;)
+
+    pipe:addStep(init)
+    pipe:addStep(process)
+    pipe:addStep(finish)
+
+    print(pipe:toAscii())
+end</code></pre></details></article><article class="item-row api-row" id="method-totable"><div class="item-row-main"><h3>toTable</h3><pre class="inline-signature">LPipeline:toTable() -&gt; table</pre><p>Serializes the pipeline configuration into a plain Lua table for inspection or persistence.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1198</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;serialize&quot;)
+
+    pipe:addStep(lurek.pipeline.newStep(&quot;alpha&quot;, function() end))
+    pipe:addStep(lurek.pipeline.newStep(&quot;beta&quot;, function() end))
+
+    local tbl = pipe:toTable()
+
+    print(&quot;table name = &quot; .. tbl.name)
+    print(&quot;error mode = &quot; .. tbl.errorMode)
+    print(&quot;step count = &quot; .. #tbl.steps)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LPipeline:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LPipeline&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1253</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;typed&quot;)
+
+    print(&quot;type = &quot; .. pipe:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LPipeline:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object is of a given type name. Accepts &quot;LPipeline&quot;, &quot;Pipeline&quot;, or &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:1451</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;typed&quot;)
+
+    print(&quot;is LPipeline = &quot; .. tostring(pipe:typeOf(&quot;LPipeline&quot;)))
+    print(&quot;is Object = &quot; .. tostring(pipe:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LPipeline:update(dt: number) -&gt; boolean</pre><p>Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:913</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;async-pipe&quot;)
+    local step = lurek.pipeline.newStep(&quot;phase1&quot;, function()
+        coroutine.yield()
+    end)
+
+    step:setAsync(true)
+    pipe:addStep(step)
+
+    pipe:runAsync({})
+    pipe:update(1 / 60)
+
+    print(&quot;running = &quot; .. tostring(pipe:isRunning()))
+    print(&quot;status = &quot; .. step:getStatus())
+end</code></pre></details></article><article class="item-row api-row" id="method-validate"><div class="item-row-main"><h3>validate</h3><pre class="inline-signature">LPipeline:validate() -&gt; boolean</pre><p>Validates the pipeline structure, checking for missing dependencies and circular references.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pipeline_api.rs:752</span></div><details class="example-block"><summary>Example · Exact example · pipeline.lua</summary><pre><code>do
+    local pipe = lurek.pipeline.newPipeline(&quot;validate&quot;)
+    local a = lurek.pipeline.newStep(&quot;a&quot;, function() end)
+    local b = lurek.pipeline.newStep(&quot;b&quot;, function() end)
+
+    b:dependsOn(&quot;missing_step&quot;)
+
+    pipe:addStep(a)
+    pipe:addStep(b)
+
+    local valid, errors = pipe:validate()
+
+    print(&quot;valid = &quot; .. tostring(valid))
+    print(&quot;error count = &quot; .. #errors)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

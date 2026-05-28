@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LAISystem - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a class="active" href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LAISystem</h1>
+  <p>Lua-side handle for an AISystem multi-agent orchestrator.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/agent.html">lurek.agent</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({ system_prompt = &quot;You are a game design AI.&quot; })
+
+    local npc = lurek.agent.new({ url = &quot;http://localhost:11434/api/generate&quot;, model = &quot;llama3&quot;, format = &quot;json&quot; })
+    npc:setDescription(&quot;Writes NPC dialogue with emotional depth and regional accents.&quot;)
+
+    system:addAgent(&quot;npc_writer&quot;, npc)
+    print(&quot;Agent &#x27;npc_writer&#x27; added to system.&quot;)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LAISystem userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addagent"><div class="item-row-main"><h3>addAgent</h3><pre class="inline-signature">LAISystem:addAgent(name: string, agent: LAgent) -&gt; nil</pre><p>Registers a named agent in the system.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:301</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({ system_prompt = &quot;You are a game design AI.&quot; })
+
+    local npc = lurek.agent.new({ url = &quot;http://localhost:11434/api/generate&quot;, model = &quot;llama3&quot;, format = &quot;json&quot; })
+    npc:setDescription(&quot;Writes NPC dialogue with emotional depth and regional accents.&quot;)
+
+    system:addAgent(&quot;npc_writer&quot;, npc)
+    print(&quot;Agent &#x27;npc_writer&#x27; added to system.&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-addinstruction"><div class="item-row-main"><h3>addInstruction</h3><pre class="inline-signature">LAISystem:addInstruction(key: string, text: string) -&gt; nil</pre><p>Adds a named instruction block the user can explicitly include per prompt.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:347</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction(&quot;art_style&quot;, &quot;Use a 16-bit pixel art visual style. Palettes are limited to 16 colours per sprite.&quot;)
+    system:addInstruction(&quot;tone&quot;,      &quot;Keep all responses concise and in present tense.&quot;)
+    print(&quot;Instructions added to system.&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-addskill"><div class="item-row-main"><h3>addSkill</h3><pre class="inline-signature">LAISystem:addSkill(name: string, keywords: table, prompt: string) -&gt; nil</pre><p>Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    -- Lurek auto-injects this skill when the user prompt contains any listed keyword.
+    system:addSkill(
+        &quot;pixel_art_rules&quot;,
+        { &quot;pixel art&quot;, &quot;sprite&quot;, &quot;texture&quot;, &quot;tileset&quot;, &quot;palette&quot; },
+        &quot;Pixel art must use orthographic projection and a maximum of 16 colours per tile.&quot;
+    )
+    system:addSkill(
+        &quot;combat_rules&quot;,
+        { &quot;combat&quot;, &quot;attack&quot;, &quot;damage&quot;, &quot;enemy&quot;, &quot;boss&quot; },
+        &quot;Combat uses turn-based resolution with action points (AP) per entity.&quot;
+    )
+    print(&quot;System skills added.&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-agentcount"><div class="item-row-main"><h3>agentCount</h3><pre class="inline-signature">LAISystem:agentCount() -&gt; integer</pre><p>Returns the number of registered agents.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:338</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent(&quot;a1&quot;, agent)
+    system:addAgent(&quot;a2&quot;, agent)
+    print(&quot;Agent count:&quot;, system:agentCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-buildcontext"><div class="item-row-main"><h3>buildContext</h3><pre class="inline-signature">LAISystem:buildContext(instruction: string, opts: table) -&gt; string</pre><p>Builds and returns the full context string that would be sent for a given prompt.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:434</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({ system_prompt = &quot;You are a game AI.&quot; })
+    system:addInstruction(&quot;art_style&quot;, &quot;Use pixel art, 16 colours max.&quot;)
+    system:addSkill(&quot;combat_rules&quot;, { &quot;combat&quot;, &quot;attack&quot; }, &quot;Turn-based combat with AP.&quot;)
+
+    local npc = lurek.agent.new({})
+    npc:setDescription(&quot;NPC dialogue specialist.&quot;)
+    system:addAgent(&quot;npc_writer&quot;, npc)
+
+    -- Preview the full context that would be sent for this instruction.
+    local ctx = system:buildContext(
+        &quot;Design an attack animation for the boss.&quot;,
+        { agent = &quot;npc_writer&quot;, instructions = { &quot;art_style&quot; } }
+    )
+    print(&quot;Context preview:\n&quot;, ctx)
+end</code></pre></details></article><article class="item-row api-row" id="method-hasagent"><div class="item-row-main"><h3>hasAgent</h3><pre class="inline-signature">LAISystem:hasAgent(name: string) -&gt; boolean</pre><p>Returns `true` if an agent with `name` is registered.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:331</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent(&quot;planner&quot;, agent)
+    print(&quot;Has &#x27;planner&#x27;:&quot;, system:hasAgent(&quot;planner&quot;))
+    print(&quot;Has &#x27;ghost&#x27;:&quot;,   system:hasAgent(&quot;ghost&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasinstruction"><div class="item-row-main"><h3>hasInstruction</h3><pre class="inline-signature">LAISystem:hasInstruction(key: string) -&gt; boolean</pre><p>Returns `true` if an instruction with `key` is registered.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction(&quot;tone&quot;, &quot;Be concise.&quot;)
+    print(&quot;Has &#x27;tone&#x27;:&quot;,    system:hasInstruction(&quot;tone&quot;))
+    print(&quot;Has &#x27;missing&#x27;:&quot;, system:hasInstruction(&quot;missing&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-hasskill"><div class="item-row-main"><h3>hasSkill</h3><pre class="inline-signature">LAISystem:hasSkill(name: string) -&gt; boolean</pre><p>Returns `true` if a system skill with `name` is registered.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:418</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addSkill(&quot;combat_rules&quot;, { &quot;combat&quot;, &quot;attack&quot; }, &quot;Turn-based combat.&quot;)
+    print(&quot;Has &#x27;combat_rules&#x27;:&quot;,  system:hasSkill(&quot;combat_rules&quot;))
+    print(&quot;Has &#x27;no_such_skill&#x27;:&quot;, system:hasSkill(&quot;no_such_skill&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="method-instructioncount"><div class="item-row-main"><h3>instructionCount</h3><pre class="inline-signature">LAISystem:instructionCount() -&gt; integer</pre><p>Returns the number of registered instruction blocks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:371</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction(&quot;tone&quot;,      &quot;Be concise.&quot;)
+    system:addInstruction(&quot;art_style&quot;, &quot;Use pixel art.&quot;)
+    print(&quot;Instruction count:&quot;, system:instructionCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-listagents"><div class="item-row-main"><h3>listAgents</h3><pre class="inline-signature">LAISystem:listAgents() -&gt; table</pre><p>Returns a sorted list of all registered agent names.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:318</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    local a = lurek.agent.new({})
+    system:addAgent(&quot;writer&quot;,   a)
+    system:addAgent(&quot;designer&quot;, a)
+    local names = system:listAgents()
+    for _, name in ipairs(names) do
+        print(&quot;Registered agent:&quot;, name)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-listinstructions"><div class="item-row-main"><h3>listInstructions</h3><pre class="inline-signature">LAISystem:listInstructions() -&gt; table</pre><p>Returns a list of registered instruction keys in insertion order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:378</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction(&quot;tone&quot;,      &quot;Be concise.&quot;)
+    system:addInstruction(&quot;art_style&quot;, &quot;Use pixel art.&quot;)
+    local keys = system:listInstructions()
+    for _, key in ipairs(keys) do
+        print(&quot;Instruction key:&quot;, key)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="method-prompt"><div class="item-row-main"><h3>prompt</h3><pre class="inline-signature">LAISystem:prompt(agent_name: string, instruction: string, callback: function, opts: table) -&gt; integer</pre><p>Sends a prompt to a named agent through the system, auto-injecting matching context.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:458</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({ system_prompt = &quot;You are a game design AI.&quot; })
+    system:addInstruction(&quot;art_style&quot;, &quot;Use 16-bit pixel art.&quot;)
+    system:addSkill(&quot;pixel_art_rules&quot;, { &quot;sprite&quot;, &quot;texture&quot; }, &quot;Max 16 colours per tile.&quot;)
+
+    local designer = lurek.agent.new({
+        url    = &quot;http://localhost:11434/api/generate&quot;,
+        model  = &quot;llama3&quot;,
+        format = &quot;json&quot;,
+    })
+    designer:setDescription(&quot;Visual design specialist focusing on sprites and environments.&quot;)
+    system:addAgent(&quot;designer&quot;, designer)
+
+    -- Keyword &quot;sprite&quot; triggers auto-injection of &quot;pixel_art_rules&quot;.
+    -- &quot;art_style&quot; is explicitly included via opts.instructions.
+    local id = system:prompt(
+        &quot;designer&quot;,
+        &quot;Design a player sprite for the main character.&quot;,
+        function(success, data, err_info)
+            if success then
+                print(&quot;Design:&quot;, data.description)
+            else
+                print(&quot;Error:&quot;, err_info.message)
+            end
+        end,
+        { instructions = { &quot;art_style&quot; } }
+    )
+    print(&quot;System prompt dispatched, id =&quot;, id)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeagent"><div class="item-row-main"><h3>removeAgent</h3><pre class="inline-signature">LAISystem:removeAgent(name: string) -&gt; boolean</pre><p>Removes a registered agent by name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:311</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent(&quot;temp_agent&quot;, agent)
+    local removed = system:removeAgent(&quot;temp_agent&quot;)
+    print(&quot;Agent removed:&quot;, removed)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeinstruction"><div class="item-row-main"><h3>removeInstruction</h3><pre class="inline-signature">LAISystem:removeInstruction(key: string) -&gt; boolean</pre><p>Removes an instruction block by key.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:356</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction(&quot;debug_hint&quot;, &quot;Temporary debug context.&quot;)
+    local removed = system:removeInstruction(&quot;debug_hint&quot;)
+    print(&quot;Instruction removed:&quot;, removed)
+end</code></pre></details></article><article class="item-row api-row" id="method-removeskill"><div class="item-row-main"><h3>removeSkill</h3><pre class="inline-signature">LAISystem:removeSkill(name: string) -&gt; boolean</pre><p>Removes a system skill by name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:410</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addSkill(&quot;temp_skill&quot;, { &quot;test&quot; }, &quot;Temporary.&quot;)
+    local removed = system:removeSkill(&quot;temp_skill&quot;)
+    print(&quot;Skill removed:&quot;, removed)
+end</code></pre></details></article><article class="item-row api-row" id="method-runall"><div class="item-row-main"><h3>runAll</h3><pre class="inline-signature">LAISystem:runAll(tasks: table, callback: function) -&gt; integer</pre><p>Dispatches multiple named-agent tasks in parallel through the system.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:486</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({ system_prompt = &quot;You are a game AI team.&quot; })
+    system:addInstruction(&quot;art_style&quot;, &quot;16-bit pixel art.&quot;)
+
+    local writer   = lurek.agent.new({ url = &quot;http://localhost:11434/api/generate&quot;, model = &quot;llama3&quot;, format = &quot;json&quot; })
+    local designer = lurek.agent.new({ url = &quot;http://localhost:11434/api/generate&quot;, model = &quot;llama3&quot;, format = &quot;json&quot; })
+    writer:setDescription(&quot;Writes story and NPC dialogue.&quot;)
+    designer:setDescription(&quot;Designs levels and visual assets.&quot;)
+
+    system:addAgent(&quot;writer&quot;,   writer)
+    system:addAgent(&quot;designer&quot;, designer)
+
+    -- Each task specifies which agent to route to and which instructions to include.
+    local id = system:runAll({
+        { agent = &quot;writer&quot;,   instruction = &quot;Write boss intro text.&quot;, instructions = {} },
+        { agent = &quot;designer&quot;, instruction = &quot;Design the boss arena.&quot;, instructions = { &quot;art_style&quot; } },
+    }, function(results)
+        for i, res in ipairs(results) do
+            print(&quot;Task &quot; .. i, res.success and tostring(res.data) or res.error.message)
+        end
+    end)
+    print(&quot;System runAll dispatched, id =&quot;, id)
+end</code></pre></details></article><article class="item-row api-row" id="method-skillcount"><div class="item-row-main"><h3>skillCount</h3><pre class="inline-signature">LAISystem:skillCount() -&gt; integer</pre><p>Returns the number of registered system skills.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:425</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    system:addSkill(&quot;combat_rules&quot;,   { &quot;combat&quot; },        &quot;Turn-based combat.&quot;)
+    system:addSkill(&quot;pixel_art_rules&quot;, { &quot;sprite&quot;, &quot;tile&quot; }, &quot;16 colours max.&quot;)
+    print(&quot;Skill count:&quot;, system:skillCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LAISystem:update() -&gt; nil</pre><p>Polls the system&#x27;s background client for completed requests and dispatches callbacks.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:515</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local system = lurek.agent.newSystem({})
+    -- Called every frame in the game loop.
+    system:update()
+    print(&quot;AISystem polled for responses.&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

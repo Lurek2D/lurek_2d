@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PackValue"],"fn":["get_packed_size","pack","unpack"]};

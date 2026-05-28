@@ -58,6 +58,20 @@ pub struct LuaDepthSorter {
     inner: Rc<RefCell<DepthSorter>>,
     callbacks: Rc<RefCell<Vec<LuaRegistryKey>>>,
 }
+impl LuaDepthSorter {
+    /// Creates a fresh depth sorter with no queued entries.
+    pub fn new() -> Self {
+        LuaDepthSorter {
+            inner: Rc::new(RefCell::new(DepthSorter::new())),
+            callbacks: Rc::new(RefCell::new(Vec::new())),
+        }
+    }
+}
+impl Default for LuaDepthSorter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl LuaUserData for LuaDepthSorter {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- add --
@@ -861,16 +875,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- newDepthSorter --
-    /// Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
+    /// Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order.
+    /// @deprecated Use `lurek.render.newDepthSorter` instead. This alias is kept for backwards compatibility.
     /// @return | LDepthSorter | A fresh depth sorter with no queued entries.
     tbl.set(
         "newDepthSorter",
-        lua.create_function(|_, ()| {
-            Ok(LuaDepthSorter {
-                inner: Rc::new(RefCell::new(DepthSorter::new())),
-                callbacks: Rc::new(RefCell::new(Vec::new())),
-            })
-        })?,
+        lua.create_function(|_, ()| Ok(LuaDepthSorter::new()))?,
     )?;
     // -- new --
     /// Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.

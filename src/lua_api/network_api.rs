@@ -3,7 +3,7 @@
 //! - Registers `lurek.network.*` functions and types via `register()`.
 //! - `LuaNetworkHost`: userdata type exposed to Lua.
 //! - `LuaNetworkRuntime`: userdata type exposed to Lua.
-//! - Bridges 61 Lua-callable methods via `mlua`.
+//! - Bridges 64 Lua-callable methods via `mlua`.
 //! - See `docs/specs/network.md` for the full API specification.
 
 use super::SharedState;
@@ -565,6 +565,59 @@ impl LuaUserData for LuaNetworkRuntime {
                     .inner
                     .borrow_mut()
                     .http_request("POST", &url, h.as_deref(), Some(&body), None)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+        // -- httpJson --
+        /// Starts an HTTP POST request with a JSON-encoded body and Content-Type application/json.
+        /// The response body is expected to be JSON and will be decoded automatically when polled.
+        /// @param | url | string | Request URL.
+        /// @param | body | string | JSON string to send as the request body.
+        /// @param | headers | table? | Optional additional headers table.
+        /// @return | integer | Request id.
+        methods.add_method(
+            "httpJson",
+            |_, this, (url, body, headers): (String, String, Option<LuaTable>)| {
+                let mut h: Vec<(String, String)> = headers
+                    .map(|t| {
+                        t.pairs::<String, String>()
+                            .collect::<Result<Vec<_>, _>>()
+                            .unwrap_or_default()
+                    })
+                    .unwrap_or_default();
+                h.push(("Content-Type".into(), "application/json".into()));
+                h.push(("Accept".into(), "application/json".into()));
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .http_request("POST", &url, Some(&h), Some(&body), None)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+        // -- httpStream --
+        /// Starts an HTTP GET request intended for Server-Sent Events or streaming responses.
+        /// Uses an optional timeout override. Poll responses via the standard poll/onResponse path.
+        /// @param | url | string | Request URL.
+        /// @param | headers | table? | Optional headers table.
+        /// @param | timeout_secs | integer? | Optional timeout override in seconds.
+        /// @return | integer | Request id.
+        methods.add_method(
+            "httpStream",
+            |_, this, (url, headers, timeout_secs): (String, Option<LuaTable>, Option<u64>)| {
+                let mut h: Vec<(String, String)> = headers
+                    .map(|t| {
+                        t.pairs::<String, String>()
+                            .collect::<Result<Vec<_>, _>>()
+                            .unwrap_or_default()
+                    })
+                    .unwrap_or_default();
+                h.push(("Accept".into(), "text/event-stream".into()));
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .http_request("GET", &url, Some(&h), None, timeout_secs)
                     .map_err(LuaError::external)?;
                 Ok(id)
             },

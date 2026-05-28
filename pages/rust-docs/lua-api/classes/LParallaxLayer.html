@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LParallaxLayer - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a class="active" href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LParallaxLayer</h1>
+  <p>Lua-side wrapper for a parallax layer and shared render state.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/parallax.html">lurek.parallax</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · parallax.lua</summary><pre><code>do
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = img,
+        scroll_factor_x = 0.5,
+        scroll_factor_y = 0.2,
+        z = -1,
+    })
+    print(layer:type())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LParallaxLayer userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addeffectpass"><div class="item-row-main"><h3>addEffectPass</h3><pre class="inline-signature">LParallaxLayer:addEffectPass(effect_name: string, params: table?)</pre><p>Adds a shader effect pass to this layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:334</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:addEffectPass(&quot;blur&quot;, { radius = 1.5 })
+    layer:addEffectPass(&quot;tint&quot;, { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
+    print(&quot;effects = &quot; .. layer:effectCount())
+    layer:clearEffects()
+    print(&quot;after clear = &quot; .. layer:effectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearclamp"><div class="item-row-main"><h3>clearClamp</h3><pre class="inline-signature">LParallaxLayer:clearClamp()</pre><p>Clears layer clamp bounds on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:290</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setClamp(-100, -50, 100, 50)
+    print(&quot;clamped&quot;)
+    layer:clearClamp()
+    print(&quot;clamp cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-cleareffects"><div class="item-row-main"><h3>clearEffects</h3><pre class="inline-signature">LParallaxLayer:clearEffects()</pre><p>Clears shader effect passes from this layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:354</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:addEffectPass(&quot;blur&quot;, { radius = 1.5 })
+    layer:addEffectPass(&quot;tint&quot;, { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
+    print(&quot;effects = &quot; .. layer:effectCount())
+    layer:clearEffects()
+    print(&quot;after clear = &quot; .. layer:effectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-effectcount"><div class="item-row-main"><h3>effectCount</h3><pre class="inline-signature">LParallaxLayer:effectCount() -&gt; integer</pre><p>Returns the shader effect pass count for this layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:361</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:addEffectPass(&quot;blur&quot;, { radius = 1.5 })
+    layer:addEffectPass(&quot;tint&quot;, { r = 1.0, g = 0.8, b = 0.6, a = 1.0 })
+    print(&quot;effects = &quot; .. layer:effectCount())
+    layer:clearEffects()
+    print(&quot;after clear = &quot; .. layer:effectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getautoscroll"><div class="item-row-main"><h3>getAutoscroll</h3><pre class="inline-signature">LParallaxLayer:getAutoscroll() -&gt; number</pre><p>Returns layer autoscroll velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:184</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        autoscroll_x = 12,
+        autoscroll_y = -4,
+    })
+    local vx, vy = layer:getAutoscroll()
+    print(&quot;autoscroll = &quot; .. vx .. &quot;,&quot; .. vy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getblendmode"><div class="item-row-main"><h3>getBlendMode</h3><pre class="inline-signature">LParallaxLayer:getBlendMode() -&gt; string</pre><p>Returns the current layer blend mode name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:259</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        blend_mode = &quot;screen&quot;,
+    })
+    print(&quot;blend = &quot; .. layer:getBlendMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdepth"><div class="item-row-main"><h3>getDepth</h3><pre class="inline-signature">LParallaxLayer:getDepth() -&gt; number</pre><p>Returns parallax depth from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:327</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        depth = 0.8,
+    })
+    print(&quot;depth = &quot; .. layer:getDepth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getmotionstretch"><div class="item-row-main"><h3>getMotionStretch</h3><pre class="inline-signature">LParallaxLayer:getMotionStretch() -&gt; boolean</pre><p>Returns the current motion stretch settings.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:383</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        motion_stretch = true,
+        motion_stretch_strength = 0.5,
+        motion_stretch_max = 2.0,
+    })
+    local enabled, strength, max_scale = layer:getMotionStretch()
+    print(&quot;stretch enabled=&quot; .. tostring(enabled) .. &quot; strength=&quot; .. strength .. &quot; max=&quot; .. max_scale)
+end</code></pre></details></article><article class="item-row api-row" id="method-getoffset"><div class="item-row-main"><h3>getOffset</h3><pre class="inline-signature">LParallaxLayer:getOffset() -&gt; number</pre><p>Returns layer offset for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:167</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        offset_x = 24,
+        offset_y = -8,
+    })
+    local ox, oy = layer:getOffset()
+    print(&quot;offset = &quot; .. ox .. &quot;,&quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getopacity"><div class="item-row-main"><h3>getOpacity</h3><pre class="inline-signature">LParallaxLayer:getOpacity() -&gt; number</pre><p>Returns layer opacity from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        opacity = 0.35,
+    })
+    print(&quot;opacity = &quot; .. layer:getOpacity())
+end</code></pre></details></article><article class="item-row api-row" id="method-getscrollfactor"><div class="item-row-main"><h3>getScrollFactor</h3><pre class="inline-signature">LParallaxLayer:getScrollFactor() -&gt; number</pre><p>Returns layer scroll factor from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:150</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        scroll_factor_x = 0.75,
+        scroll_factor_y = 0.15,
+    })
+    local sx, sy = layer:getScrollFactor()
+    print(&quot;scroll = &quot; .. sx .. &quot;,&quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettiling"><div class="item-row-main"><h3>getTiling</h3><pre class="inline-signature">LParallaxLayer:getTiling() -&gt; boolean</pre><p>Returns whether layer tiling is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        tiling = true,
+    })
+    print(&quot;tiling = &quot; .. tostring(layer:getTiling()))
+end</code></pre></details></article><article class="item-row api-row" id="method-gettint"><div class="item-row-main"><h3>getTint</h3><pre class="inline-signature">LParallaxLayer:getTint() -&gt; number</pre><p>Returns layer tint color from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:245</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        tint_r = 0.6,
+        tint_g = 0.8,
+        tint_b = 1.0,
+        tint_a = 0.75,
+    })
+    local r, g, b, a = layer:getTint()
+    print(&quot;tint = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getz"><div class="item-row-main"><h3>getZ</h3><pre class="inline-signature">LParallaxLayer:getZ() -&gt; integer</pre><p>Returns layer z order from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:217</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        z = -5,
+    })
+    print(&quot;z = &quot; .. layer:getZ())
+end</code></pre></details></article><article class="item-row api-row" id="method-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">LParallaxLayer:isVisible() -&gt; boolean</pre><p>Returns layer visibility and returns a boolean.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:272</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        visible = false,
+    })
+    print(&quot;visible = &quot; .. tostring(layer:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LParallaxLayer:render(cam_x: number, cam_y: number)</pre><p>Enqueues render commands using explicit camera coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:110</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print(&quot;rendered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-renderauto"><div class="item-row-main"><h3>renderAuto</h3><pre class="inline-signature">LParallaxLayer:renderAuto()</pre><p>Enqueues render commands using the runtime camera.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:118</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print(&quot;rendered&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-resetautoscroll"><div class="item-row-main"><h3>resetAutoscroll</h3><pre class="inline-signature">LParallaxLayer:resetAutoscroll()</pre><p>Resets the layer autoscroll offset to zero.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setAutoscroll(20, 0)
+    layer:update(1.0)
+    layer:resetAutoscroll()
+    local vx, vy = layer:getAutoscroll()
+    print(&quot;velocity still = &quot; .. vx .. &quot;,&quot; .. vy)
+    print(&quot;autoscroll reset&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setautoscroll"><div class="item-row-main"><h3>setAutoscroll</h3><pre class="inline-signature">LParallaxLayer:setAutoscroll(vx: number, vy: number)</pre><p>Sets the layer autoscroll velocity values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:175</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setAutoscroll(20, 0)
+    local vx, vy = layer:getAutoscroll()
+    print(&quot;autoscroll = &quot; .. vx .. &quot;,&quot; .. vy)
+    layer:update(1.0)
+    layer:resetAutoscroll()
+    print(&quot;autoscroll reset&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setblendmode"><div class="item-row-main"><h3>setBlendMode</h3><pre class="inline-signature">LParallaxLayer:setBlendMode(mode: string)</pre><p>Sets the layer blend mode by string name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:252</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setBlendMode(&quot;add&quot;)
+    print(&quot;blend = &quot; .. layer:getBlendMode())
+    layer:setBlendMode(&quot;alpha&quot;)
+    print(&quot;blend = &quot; .. layer:getBlendMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-setclamp"><div class="item-row-main"><h3>setClamp</h3><pre class="inline-signature">LParallaxLayer:setClamp(min_x: number, min_y: number, max_x: number, max_y: number)</pre><p>Sets clamp bounds for layer movement.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:279</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setClamp(-100, -50, 100, 50)
+    print(&quot;clamped&quot;)
+    layer:clearClamp()
+    print(&quot;clamp cleared&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setdepth"><div class="item-row-main"><h3>setDepth</h3><pre class="inline-signature">LParallaxLayer:setDepth(z: number)</pre><p>Sets parallax depth for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:320</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setDepth(0.5)
+    print(&quot;depth = &quot; .. layer:getDepth())
+end</code></pre></details></article><article class="item-row api-row" id="method-setmotionstretch"><div class="item-row-main"><h3>setMotionStretch</h3><pre class="inline-signature">LParallaxLayer:setMotionStretch(enabled: boolean, strength: number, max_scale: number)</pre><p>Sets the motion stretch settings for this layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:369</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setMotionStretch(true, 0.5, 2.0)
+    local enabled, strength, max_scale = layer:getMotionStretch()
+    print(&quot;stretch enabled=&quot; .. tostring(enabled) .. &quot; strength=&quot; .. strength .. &quot; max=&quot; .. max_scale)
+end</code></pre></details></article><article class="item-row api-row" id="method-setoffset"><div class="item-row-main"><h3>setOffset</h3><pre class="inline-signature">LParallaxLayer:setOffset(x: number, y: number)</pre><p>Sets the layer pixel offset for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:158</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setOffset(10, -5)
+    local ox, oy = layer:getOffset()
+    print(&quot;offset = &quot; .. ox .. &quot;,&quot; .. oy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setopacity"><div class="item-row-main"><h3>setOpacity</h3><pre class="inline-signature">LParallaxLayer:setOpacity(a: number)</pre><p>Sets layer opacity, clamped to 0..1.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:221</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setOpacity(0.7)
+    print(&quot;opacity = &quot; .. layer:getOpacity())
+end</code></pre></details></article><article class="item-row api-row" id="method-setrepeat"><div class="item-row-main"><h3>setRepeat</h3><pre class="inline-signature">LParallaxLayer:setRepeat(rx: boolean, ry: boolean)</pre><p>Sets horizontal and vertical repeat flags.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:192</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setRepeat(true, false)
+    layer:render(32, 16)
+    print(&quot;repeat set: horizontal only&quot;)
+    print(&quot;z = &quot; .. layer:getZ())
+end
+
+--@api-stub: LParallaxLayer:setScale
+do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setScale(2.0, 2.0)
+    layer:render(0, 0)
+    print(&quot;scaled 2x&quot;)
+    print(&quot;type = &quot; .. layer:type())
+end
+
+--@api-stub: LParallaxLayer:setTint
+do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print(&quot;tint = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end
+
+--@api-stub: LParallaxLayer:getTint
+do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        tint_r = 0.6,
+        tint_g = 0.8,
+        tint_b = 1.0,
+        tint_a = 0.75,
+    })
+    local r, g, b, a = layer:getTint()
+    print(&quot;tint = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end
+
+--@api-stub: LParallaxLayer:setBlendMode
+do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setBlendMode(&quot;add&quot;)
+    print(&quot;blend = &quot; .. layer:getBlendMode())</code></pre></details></article><article class="item-row api-row" id="method-setscale"><div class="item-row-main"><h3>setScale</h3><pre class="inline-signature">LParallaxLayer:setScale(sx: number, sy: number)</pre><p>Sets the layer scale factor for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:202</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setScale(2.0, 2.0)
+    layer:render(0, 0)
+    print(&quot;scaled 2x&quot;)
+    print(&quot;type = &quot; .. layer:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-setscrollfactor"><div class="item-row-main"><h3>setScrollFactor</h3><pre class="inline-signature">LParallaxLayer:setScrollFactor(x: number, y: number)</pre><p>Sets layer scroll factor for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:141</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setScrollFactor(0.5, 0.2)
+    local sx, sy = layer:getScrollFactor()
+    print(&quot;scroll = &quot; .. sx .. &quot;,&quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-settilesize"><div class="item-row-main"><h3>setTileSize</h3><pre class="inline-signature">LParallaxLayer:setTileSize(w: number, h: number)</pre><p>Sets tile size for tiling for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:313</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = image,
+        tiling = true,
+    })
+    layer:setTileSize(64, 64)
+    layer:render(0, 0)
+    print(&quot;tile size set to 64x64&quot;)
+    print(&quot;rendered tiled layer&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-settiling"><div class="item-row-main"><h3>setTiling</h3><pre class="inline-signature">LParallaxLayer:setTiling(enabled: boolean)</pre><p>Enables or disables the layer tiling mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:299</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setTiling(true)
+    print(&quot;tiling = &quot; .. tostring(layer:getTiling()))
+end</code></pre></details></article><article class="item-row api-row" id="method-settint"><div class="item-row-main"><h3>setTint</h3><pre class="inline-signature">LParallaxLayer:setTint(r: number, g: number, b: number, a: number)</pre><p>Sets layer tint color for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:235</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print(&quot;tint = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setvisible"><div class="item-row-main"><h3>setVisible</h3><pre class="inline-signature">LParallaxLayer:setVisible(v: boolean)</pre><p>Sets layer visibility for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:265</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setVisible(false)
+    print(&quot;visible = &quot; .. tostring(layer:isVisible()))
+    layer:setVisible(true)
+    print(&quot;visible = &quot; .. tostring(layer:isVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setz"><div class="item-row-main"><h3>setZ</h3><pre class="inline-signature">LParallaxLayer:setZ(z: integer)</pre><p>Sets the layer z order for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:210</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setZ(-5)
+    print(&quot;z = &quot; .. layer:getZ())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LParallaxLayer:type() -&gt; string</pre><p>Returns the Lua-visible type name for this parallax layer handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:98</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({
+        texture = img,
+        scroll_factor_x = 0.5,
+        scroll_factor_y = 0.2,
+        z = -1,
+    })
+    print(layer:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LParallaxLayer:update(dt: number)</pre><p>Advances parallax layer autoscroll by delta time.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/parallax_api.rs:102</span></div><details class="example-block"><summary>Example · Exact example · parallax.lua</summary><pre><code>do
+    local image = lurek.render.newImage(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    local layer = lurek.parallax.newLayer({ texture = image })
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print(&quot;rendered&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

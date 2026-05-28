@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["find_province_path","province_reachable"],"struct":["ProvinceCostFn","ProvincePath"]};

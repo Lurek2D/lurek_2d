@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FieldType"],"struct":["AssetRequirement","FieldDef","MethodDef"]};

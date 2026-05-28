@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCameraRig - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a class="active" href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LCameraRig</h1>
+  <p>Lua-side camera rig that manages named cameras and viewport layouts.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/camera.html">lurek.camera</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;player1&quot;, 100, 100)
+    rig:setPosition(&quot;player2&quot;, 500, 300)
+    rig:splitScreen(1280, 720)
+    print(&quot;split screen layout applied&quot;)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LCameraRig userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-apply"><div class="item-row-main"><h3>apply</h3><pre class="inline-signature">LCameraRig:apply(name: string) -&gt; boolean</pre><p>Appends render commands for a named camera in this rig.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:797</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;main&quot;, 400, 300)
+    local ok = rig:apply(&quot;main&quot;)
+    print(&quot;applied main = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-getviewport"><div class="item-row-main"><h3>getViewport</h3><pre class="inline-signature">LCameraRig:getViewport(name: string) -&gt; boolean, number, number, number, number</pre><p>Returns a named rig camera viewport with a leading availability flag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:810</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;left&quot;, 0, 0)
+    rig:splitScreen(800, 600)
+    local has, x, y, w, h = rig:getViewport(&quot;left&quot;)
+    print(&quot;has=&quot; .. tostring(has) .. &quot; vp=&quot; .. x .. &quot;,&quot; .. y .. &quot;,&quot; .. w .. &quot;,&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="method-has"><div class="item-row-main"><h3>has</h3><pre class="inline-signature">LCameraRig:has(name: string) -&gt; boolean</pre><p>Returns whether this rig contains a named camera.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:840</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;x&quot;, 0, 0)
+    print(&quot;has x = &quot; .. tostring(rig:has(&quot;x&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-minimap"><div class="item-row-main"><h3>minimap</h3><pre class="inline-signature">LCameraRig:minimap(window_w: number, window_h: number, ratio: number?)</pre><p>Applies a minimap layout using the current window size and optional ratio.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:719</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;main&quot;, 400, 300)
+    rig:minimap(1280, 720, 0.25)
+    print(&quot;minimap layout applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-names"><div class="item-row-main"><h3>names</h3><pre class="inline-signature">LCameraRig:names() -&gt; string[]</pre><p>Returns all camera names in this rig.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:821</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;p1&quot;, 0, 0)
+    local list = rig:names()
+    print(&quot;cameras = &quot; .. #list)
+    print(&quot;first name = &quot; .. tostring(list[1]))
+end</code></pre></details></article><article class="item-row api-row" id="method-pictureinpicture"><div class="item-row-main"><h3>pictureInPicture</h3><pre class="inline-signature">LCameraRig:pictureInPicture(window_w: number, window_h: number, pip_w: number?, pip_h: number?)</pre><p>Applies a picture-in-picture layout using optional inset size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:736</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;main&quot;, 200, 200)
+    rig:pictureInPicture(1280, 720, 320, 180)
+    print(&quot;PiP layout applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LCameraRig:remove(name: string) -&gt; boolean</pre><p>Removes a named camera from this rig.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:833</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;temp&quot;, 0, 0)
+    local ok = rig:remove(&quot;temp&quot;)
+    print(&quot;removed = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LCameraRig:setPosition(name: string, x: number, y: number)</pre><p>Sets the position of a named rig camera, creating it if needed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;left&quot;, 100, 200)
+    print(&quot;camera positioned: left&quot;)
+    print(&quot;rig has left = &quot; .. tostring(rig:has(&quot;left&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-settarget"><div class="item-row-main"><h3>setTarget</h3><pre class="inline-signature">LCameraRig:setTarget(name: string, x: number, y: number)</pre><p>Sets the follow target of a named rig camera, creating it if needed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:779</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;cam1&quot;, 0, 0)
+    rig:setTarget(&quot;cam1&quot;, 400, 300)
+    print(&quot;target set on cam1&quot;)
+    print(&quot;rig has cam1 = &quot; .. tostring(rig:has(&quot;cam1&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setzoom"><div class="item-row-main"><h3>setZoom</h3><pre class="inline-signature">LCameraRig:setZoom(name: string, zoom: number)</pre><p>Sets the zoom of a named rig camera, creating it if needed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:767</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;a&quot;, 0, 0)
+    rig:setZoom(&quot;a&quot;, 1.5)
+    local list = rig:names()
+    print(&quot;zoom set on camera a&quot;)
+    print(&quot;camera count = &quot; .. tostring(#list))
+end</code></pre></details></article><article class="item-row api-row" id="method-splitscreen"><div class="item-row-main"><h3>splitScreen</h3><pre class="inline-signature">LCameraRig:splitScreen(window_w: number, window_h: number)</pre><p>Applies a split-screen layout using the current window size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:705</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;player1&quot;, 100, 100)
+    rig:setPosition(&quot;player2&quot;, 500, 300)
+    rig:splitScreen(1280, 720)
+    print(&quot;split screen layout applied&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LCameraRig:type() -&gt; string</pre><p>Returns the Lua-visible type name for this camera rig handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:846</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    print(&quot;type = &quot; .. rig:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LCameraRig:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this camera rig handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:851</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    print(&quot;is LCameraRig = &quot; .. tostring(rig:typeOf(&quot;LCameraRig&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-updateall"><div class="item-row-main"><h3>updateAll</h3><pre class="inline-signature">LCameraRig:updateAll(dt: number)</pre><p>Advances every camera in this rig. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/camera_api.rs:789</span></div><details class="example-block"><summary>Example · Exact example · camera.lua</summary><pre><code>do
+    local rig = lurek.camera.newRig()
+    rig:setPosition(&quot;a&quot;, 0, 0)
+    rig:setTarget(&quot;a&quot;, 200, 200)
+    rig:updateAll(0.016)
+    print(&quot;all cameras updated&quot;)
+    print(&quot;camera count = &quot; .. tostring(#rig:names()))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.system - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a class="active" href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.system</h1>
+  <p>`lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection. - Registers `lurek.system.*` functions and types via `register()`. - Bridges 28 Lua-callable methods via `mlua`. - See `docs/specs/system.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>28 functions</span><span>0 classes</span><span>src/lua_api/system_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 28</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.system.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-errorsnapshot"><div class="item-row-main"><h3>errorSnapshot</h3><pre class="inline-signature">lurek.system.errorSnapshot(msg: string) -&gt; string</pre><p>Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:375</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local snapshot = lurek.runtime.errorSnapshot(&quot;Something went wrong in level 3&quot;)
+    print(&quot;snapshot type = &quot; .. type(snapshot))
+    print(&quot;snapshot length = &quot; .. #snapshot)
+    print(&quot;contains message field = &quot; .. tostring(snapshot:find(&#x27;&quot;message&quot;&#x27;) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getarch"><div class="item-row-main"><h3>getArch</h3><pre class="inline-signature">lurek.system.getArch() -&gt; string</pre><p>Returns the CPU architecture of the host system.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:387</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local arch = lurek.runtime.getArch()
+    print(&quot;arch = &quot; .. arch)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getargs"><div class="item-row-main"><h3>getArgs</h3><pre class="inline-signature">lurek.system.getArgs() -&gt; string[]</pre><p>Returns the command-line arguments passed to the engine as a 1-indexed table of strings.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:407</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local args = lurek.runtime.getArgs()
+    print(&quot;raw args count = &quot; .. #args)
+    print(&quot;first arg = &quot; .. tostring(args[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbatchresults"><div class="item-row-main"><h3>getBatchResults</h3><pre class="inline-signature">lurek.system.getBatchResults(results: table) -&gt; number</pre><p>Summarizes batch results by counting passed, failed, and skipped tasks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:542</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local results = {
+        ok = { status = &quot;passed&quot; },
+        bad = { status = &quot;failed&quot; },
+        later = { status = &quot;skipped&quot; },
+    }
+    local passed, failed, skipped = lurek.runtime.getBatchResults(results)
+    print(&quot;batch_results = &quot; .. passed .. &quot;/&quot; .. failed .. &quot;/&quot; .. skipped)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getclipboardtext"><div class="item-row-main"><h3>getClipboardText</h3><pre class="inline-signature">lurek.system.getClipboardText() -&gt; string</pre><p>Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:168</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    lurek.runtime.setClipboardText(&quot;Hello from Lurek2D!&quot;)
+    local text = lurek.runtime.getClipboardText()
+    print(&quot;clipboard = &quot; .. text)
+    print(&quot;clipboard len = &quot; .. #text)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getconfig"><div class="item-row-main"><h3>getConfig</h3><pre class="inline-signature">lurek.system.getConfig() -&gt; table</pre><p>Returns a table containing the current engine runtime configuration values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:212</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local config = lurek.runtime.getConfig()
+    print(&quot;runtime mode = &quot; .. config.runtime_mode)
+    print(&quot;physics tick rate = &quot; .. config.physics_tick_rate)
+    print(&quot;config revision = &quot; .. config.config_reload_revision)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdebugoverlay"><div class="item-row-main"><h3>getDebugOverlay</h3><pre class="inline-signature">lurek.system.getDebugOverlay() -&gt; boolean</pre><p>Returns whether the on-screen debug overlay is currently enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:286</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local overlay = lurek.runtime.getDebugOverlay()
+    print(&quot;overlay enabled = &quot; .. tostring(overlay))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getenv"><div class="item-row-main"><h3>getEnv</h3><pre class="inline-signature">lurek.system.getEnv(name: string) -&gt; string</pre><p>Reads an environment variable by name. Returns `nil` if the variable is not set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local path = lurek.runtime.getEnv(&quot;PATH&quot;)
+    print(&quot;PATH set = &quot; .. tostring(path ~= nil))
+    print(&quot;missing var = &quot; .. tostring(lurek.runtime.getEnv(&quot;LUREK_NONEXISTENT_VAR&quot;) == nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getinfo"><div class="item-row-main"><h3>getInfo</h3><pre class="inline-signature">lurek.system.getInfo() -&gt; table</pre><p>Returns a table with comprehensive engine and host information.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:98</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local info = lurek.runtime.getInfo()
+    print(&quot;engine = &quot; .. info.engine .. &quot; version = &quot; .. info.version)
+    print(&quot;os = &quot; .. info.os .. &quot; lua = &quot; .. info.lua_version)
+    print(&quot;processors = &quot; .. info.processors .. &quot; memory = &quot; .. info.memory)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlasterror"><div class="item-row-main"><h3>getLastError</h3><pre class="inline-signature">lurek.system.getLastError() -&gt; table</pre><p>Returns the last error for Lua scripts in this module.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:347</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local err = lurek.runtime.getLastError()
+    print(&quot;last error = &quot; .. tostring(err and err.message))
+    print(&quot;category = &quot; .. tostring(err and err.category))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getloglevel"><div class="item-row-main"><h3>getLogLevel</h3><pre class="inline-signature">lurek.system.getLogLevel() -&gt; string</pre><p>Returns the current engine log verbosity level as a string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:307</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local lvl = lurek.runtime.getLogLevel()
+    print(&quot;log_level = &quot; .. lvl)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmemorysize"><div class="item-row-main"><h3>getMemorySize</h3><pre class="inline-signature">lurek.system.getMemorySize() -&gt; number</pre><p>Returns the total physical memory of the host system in megabytes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:53</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local memory = lurek.runtime.getMemorySize()
+    print(&quot;mem_mb = &quot; .. memory)
+    print(&quot;memory ok = &quot; .. tostring(memory &gt;= 0))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmessage"><div class="item-row-main"><h3>getMessage</h3><pre class="inline-signature">lurek.system.getMessage(id: string) -&gt; string</pre><p>Resolves a message string by its identifier from the engine message catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:123</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local key = &quot;engine.welcome&quot;
+    print(&quot;has engine.welcome = &quot; .. tostring(lurek.runtime.hasMessage(key)))
+    print(&quot;message = &quot; .. tostring(lurek.runtime.getMessage(key)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmessagecount"><div class="item-row-main"><h3>getMessageCount</h3><pre class="inline-signature">lurek.system.getMessageCount() -&gt; number</pre><p>Returns the total number of messages registered in the engine message catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:140</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local n = lurek.runtime.getMessageCount()
+    print(&quot;msg_count = &quot; .. n)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getos"><div class="item-row-main"><h3>getOS</h3><pre class="inline-signature">lurek.system.getOS() -&gt; string</pre><p>Returns the name of the host operating system as a string.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:27</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local os = lurek.runtime.getOS()
+    print(&quot;os = &quot; .. os)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpowerinfo"><div class="item-row-main"><h3>getPowerInfo</h3><pre class="inline-signature">lurek.system.getPowerInfo() -&gt; string</pre><p>Returns the current power supply state, battery percentage, and estimated time remaining.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:80</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local state, percent, seconds = lurek.runtime.getPowerInfo()
+    print(&quot;power state = &quot; .. state)
+    print(&quot;battery = &quot; .. tostring(percent))
+    print(&quot;seconds = &quot; .. tostring(seconds))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpreferredlocales"><div class="item-row-main"><h3>getPreferredLocales</h3><pre class="inline-signature">lurek.system.getPreferredLocales() -&gt; string[]</pre><p>Returns a list of the user&#x27;s preferred locale identifiers from the operating system.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:70</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local locales = lurek.runtime.getPreferredLocales()
+    print(&quot;locale count = &quot; .. #locales)
+    print(&quot;first locale = &quot; .. tostring(locales[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getprocessorcount"><div class="item-row-main"><h3>getProcessorCount</h3><pre class="inline-signature">lurek.system.getProcessorCount() -&gt; number</pre><p>Returns the number of logical processors available on the host machine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:45</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local cpus = lurek.runtime.getProcessorCount()
+    print(&quot;logical processors = &quot; .. cpus)
+    print(&quot;has cpu info = &quot; .. tostring(cpus &gt;= 1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getversion"><div class="item-row-main"><h3>getVersion</h3><pre class="inline-signature">lurek.system.getVersion() -&gt; string</pre><p>Returns the semantic version string of the Lurek2D engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:37</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local version = lurek.runtime.getVersion()
+    print(&quot;engine version = &quot; .. version)
+    print(&quot;major tag = &quot; .. tostring(version:match(&quot;^[^.]+&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasmessage"><div class="item-row-main"><h3>hasMessage</h3><pre class="inline-signature">lurek.system.hasMessage(id: string) -&gt; boolean</pre><p>Checks whether a message identifier exists in the engine message catalog.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:132</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local v = lurek.runtime.hasMessage(&quot;engine.welcome&quot;)
+    print(&quot;has_msg = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-log"><div class="item-row-main"><h3>log</h3><pre class="inline-signature">lurek.system.log(level: string, message: string)</pre><p>Writes a message to the engine log at the specified severity level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:317</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    lurek.runtime.log(&quot;info&quot;, &quot;Game starting up&quot;)
+    lurek.runtime.log(&quot;debug&quot;, &quot;Loading runtime example block&quot;)
+    print(&quot;logged runtime messages&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-openurl"><div class="item-row-main"><h3>openURL</h3><pre class="inline-signature">lurek.system.openURL(url: string) -&gt; boolean</pre><p>Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:62</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local ok = lurek.runtime.openURL(&quot;https://lurek2d.dev&quot;)
+    print(&quot;open https = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="fn-parseargs"><div class="item-row-main"><h3>parseArgs</h3><pre class="inline-signature">lurek.system.parseArgs(args: table?) -&gt; table</pre><p>Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local parsed = lurek.runtime.parseArgs({&quot;--debug&quot;, &quot;--level=5&quot;, &quot;demo.lua&quot;, &quot;--&quot;, &quot;tail.txt&quot;})
+    print(&quot;debug flag = &quot; .. tostring(parsed.flags.debug))
+    print(&quot;level option = &quot; .. tostring(parsed.options.level))
+    print(&quot;positional count = &quot; .. #parsed.positional)
+end</code></pre></details></article><article class="item-row api-row" id="fn-reloadconfig"><div class="item-row-main"><h3>reloadConfig</h3><pre class="inline-signature">lurek.system.reloadConfig()</pre><p>Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:189</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local before = lurek.runtime.getConfig().config_reload_revision
+    lurek.runtime.reloadConfig()
+    local after = lurek.runtime.getConfig().config_reload_revision
+    print(&quot;reload requested = true&quot;)
+    print(&quot;revision now = &quot; .. after .. &quot; (before &quot; .. before .. &quot;)&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-runbatch"><div class="item-row-main"><h3>runBatch</h3><pre class="inline-signature">lurek.system.runBatch(tasks: table, opts: table?) -&gt; table</pre><p>Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:493</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local results = lurek.runtime.runBatch({
+        ping = function()
+            return true
+        end,
+        fail = function()
+            error(&quot;boom&quot;)
+        end,
+    })
+    local passed, failed, skipped = lurek.runtime.getBatchResults(results)
+    print(&quot;passed = &quot; .. passed .. &quot; failed = &quot; .. failed .. &quot; skipped = &quot; .. skipped)
+    print(&quot;fail status = &quot; .. results.fail.status)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setclipboardtext"><div class="item-row-main"><h3>setClipboardText</h3><pre class="inline-signature">lurek.system.setClipboardText(text: string)</pre><p>Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:148</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    lurek.runtime.setClipboardText(&quot;lurek_test&quot;)
+    print(&quot;clipboard = &quot; .. tostring(lurek.runtime.getClipboardText()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdebugoverlay"><div class="item-row-main"><h3>setDebugOverlay</h3><pre class="inline-signature">lurek.system.setDebugOverlay(enabled: boolean)</pre><p>Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:273</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local before = lurek.runtime.getDebugOverlay()
+    print(&quot;debug overlay before = &quot; .. tostring(before))
+    lurek.runtime.setDebugOverlay(true)
+    print(&quot;after enable = &quot; .. tostring(lurek.runtime.getDebugOverlay()))
+    lurek.runtime.setDebugOverlay(false)
+    print(&quot;after disable = &quot; .. tostring(lurek.runtime.getDebugOverlay()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setloglevel"><div class="item-row-main"><h3>setLogLevel</h3><pre class="inline-signature">lurek.system.setLogLevel(level: string)</pre><p>Sets the engine-wide log verbosity level at runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/system_api.rs:295</span></div><details class="example-block"><summary>Example · Exact example · runtime.lua</summary><pre><code>do
+    local before = lurek.runtime.getLogLevel()
+    lurek.runtime.setLogLevel(&quot;info&quot;)
+    print(&quot;before = &quot; .. before)
+    print(&quot;after = &quot; .. lurek.runtime.getLogLevel())
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

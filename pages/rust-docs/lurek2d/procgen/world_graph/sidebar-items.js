@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["generate_world_graph"],"struct":["WorldEdge","WorldGraph","WorldRegion"]};

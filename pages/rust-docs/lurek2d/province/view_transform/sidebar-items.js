@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["fit_camera_to_screen","map_to_cell","screen_to_map","zoom_camera_at"]};

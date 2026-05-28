@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["NineSlice"],"type":["Patch"]};

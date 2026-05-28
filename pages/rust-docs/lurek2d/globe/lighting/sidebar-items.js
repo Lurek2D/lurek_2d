@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["compute_intensities","province_intensity","sun_direction","terminator_alpha"]};

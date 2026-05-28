@@ -2,7 +2,16 @@
 
 ## Unreleased
 
- - docs(pipeline): redirect Lua API HTML output from `build/doc/lua-api` to `pages/lua-docs`; add `pages/rust-docs` copy step (from `build/doc/lurek2d`) in `gen_all_docs.py`; add `--skip-module-pages` flag to `gen_wiki.py`; add `pages/index.html` landing page for GitHub Pages.
+ - feat(procgen): move `LCellular`/`newCellular`/`CELL_*` binding from `lurek.physics` to `lurek.procgen`; `CellularWorld` canonical home is now `src/procgen/cellular_world.rs`; `src/physics/cellular.rs` removed.
+ - fix(procgen): correct module tier in `docs/specs/procgen.md` and `docs/specs/README.md` from `Foundations` to `Feature Systems`.
+ - docs(serialize): document `lurek.serialize` as a supported alias for `lurek.serial` in `docs/specs/serialize.md`.
+ - feat(render): add `lurek.render.newDepthSorter()` — canonical constructor for `LDepthSorter`; `lurek.scene.newDepthSorter` kept as deprecated alias.
+ - feat(network): add `LNetworkRuntime:httpJson(url, body, headers?)` — POST with automatic `Content-Type: application/json` / `Accept: application/json` headers.
+ - feat(network): add `LNetworkRuntime:httpStream(url, headers?, timeout_secs?)` — GET with `Accept: text/event-stream` for SSE/streaming responses.
+ - feat(learning): add `predict()` alias method on `LQLearner` (→ `chooseAction`), `LNeuralNet` (→ `forward`), and `LBandit` (→ `select`).
+ - feat(learning): add `lurek.learning.wrap(model)` → `LModel` uniform wrapper exposing a single `predict(input)` method for any supported model type.
+
+ - docs(pipeline): redirect Lua API HTML output from `build/doc/lua-api` to `pages/lua-docs`; add `gen_rust_html_docs.py` publishing Rust HTML docs to `pages/rust-docs/`; `gen_all_docs.py` step 18 calls it with `--skip-cargo`; add `--skip-module-pages` flag to `gen_wiki.py`; `gen_all_docs.py` now always passes `--skip-module-pages` to wiki — 69 `Module-*.md` files removed from `docs/wiki/`; add `pages/index.html` landing page for GitHub Pages.
  - feat(agent): add `LAgent:setModel()`, `LAgent:setUrl()`, `LAgent:setTimeout()`, `LAgent:getName()`, `LAgent:getDescription()`, `LAgent:getModel()`, `LAgent:getUrl()`, `LAgent:getFormat()`, `LAgent:hasSkill()`, `LAgent:skillCount()`, `LAgent:listSkills()` — full getter/setter coverage for per-agent configuration and skill introspection.
  - feat(agent): add `LAISystem:hasAgent()`, `LAISystem:agentCount()`, `LAISystem:hasInstruction()`, `LAISystem:instructionCount()`, `LAISystem:listInstructions()`, `LAISystem:hasSkill()`, `LAISystem:skillCount()` — introspection helpers for multi-agent orchestration state.
  - feat(agent): add `LOllamaManager:baseUrl()`, `LOllamaManager:modelNames()` — inspect the configured base URL and list available model names without building the full model-info table.

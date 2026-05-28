@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.ai - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a class="active" href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.ai</h1>
+  <p>`lurek.ai` - Lua bindings for AI worlds, agents, blackboards, behavior trees, steering, planning, learning, and simulation helpers. - Registers `lurek.ai.*` functions and types via `register()`. - Userdata types: `LuaAIWorld`, `LuaAgent`, `LuaAIBlackboard`. - Userdata types: `LuaStateMachine`, `LuaBehaviorTree`, `LuaBTNode`. - Userdata types: `LuaSteeringManager`, `LuaUtilityAI`, `LuaGOAPPlanner`. - Userdata types: `LuaInfluenceMap`, `LuaSquad`, `LuaCommandQueue`. - Userdata types: `LuaTraitProfile`, `LuaStimulusWorld`, `LuaContextSteering`. - Userdata types: `LuaNeedSystem`, `LuaAIDirector`, `LuaHTNDomain`. - Userdata types: `LuaMCTSEngine`, `LuaEmotionModel`, `LuaORCASolver`.</p>
+  <div class="api-meta api-meta-header"><span>36 functions</span><span>23 classes</span><span>src/lua_api/ai_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 273</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.ai.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-newaidirector"><div class="item-row-main"><h3>newAIDirector</h3><pre class="inline-signature">lurek.ai.newAIDirector() -&gt; LAIDirector</pre><p>Creates an AI director for tension, phase, and pacing factor calculations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2997</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.6)
+  dir:update(1.0)
+  print(&quot;lurek.ai.newAIDirector: ok=&quot; .. tostring(dir ~= nil))
+  print(&quot;lurek.ai.newAIDirector: phase=&quot; .. dir:phase())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newailod"><div class="item-row-main"><h3>newAILod</h3><pre class="inline-signature">lurek.ai.newAILod() -&gt; LAILod</pre><p>Creates a default AI level-of-detail tier selector.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3157</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local lod = lurek.ai.newAILod()
+  print(&quot;lurek.ai.newAILod: ok=&quot; .. tostring(lod ~= nil))
+  print(&quot;lurek.ai.newAILod: tiers=&quot; .. tostring(lod:tierCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newaction"><div class="item-row-main"><h3>newAction</h3><pre class="inline-signature">lurek.ai.newAction(callback: function) -&gt; LBTNode</pre><p>Creates a behavior tree action leaf backed by a Lua callback.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2803</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local act = lurek.ai.newAction(function() return &quot;success&quot; end)
+  act:reset()
+  print(&quot;lurek.ai.newAction: type=&quot; .. act:getNodeType())
+  print(&quot;lurek.ai.newAction: child_count=&quot; .. tostring(act:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbandit"><div class="item-row-main"><h3>newBandit</h3><pre class="inline-signature">lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -&gt; LBandit</pre><p>Creates a multi-armed bandit with a named selection strategy.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3094</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local bandit = lurek.ai.newBandit(3, &quot;ucb1&quot;, 0.15, 55)
+  local arm = bandit:select()
+  bandit:update(arm, 0.8)
+  print(&quot;lurek.ai.newBandit: ok=&quot; .. tostring(bandit ~= nil))
+  print(&quot;lurek.ai.newBandit: arms=&quot; .. tostring(bandit:armCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbehaviortree"><div class="item-row-main"><h3>newBehaviorTree</h3><pre class="inline-signature">lurek.ai.newBehaviorTree() -&gt; LBehaviorTree</pre><p>Creates an empty behavior tree that can receive a root node.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2691</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local bt = lurek.ai.newBehaviorTree()
+  bt:setRoot(lurek.ai.newAction(function() return &quot;success&quot; end))
+  local info = bt:getDebugState()
+  print(&quot;lurek.ai.newBehaviorTree: status=&quot; .. tostring(bt:getLastStatus()))
+  print(&quot;lurek.ai.newBehaviorTree: node_count=&quot; .. tostring(info.node_count))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newblackboard"><div class="item-row-main"><h3>newBlackboard</h3><pre class="inline-signature">lurek.ai.newBlackboard() -&gt; LAIBlackboard</pre><p>Creates an empty AI blackboard for typed local facts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2669</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local bb = lurek.ai.newBlackboard()
+  bb:setString(&quot;state&quot;, &quot;idle&quot;)
+  print(&quot;lurek.ai.newBlackboard: state=&quot; .. bb:getString(&quot;state&quot;, &quot;none&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcommandqueue"><div class="item-row-main"><h3>newCommandQueue</h3><pre class="inline-signature">lurek.ai.newCommandQueue() -&gt; LCommandQueue</pre><p>Creates an empty command queue for callback-backed AI commands.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2940</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue(&quot;move&quot;, function() print(&quot;moving&quot;) end, { targetX = 32, targetY = 64 })
+  print(&quot;lurek.ai.newCommandQueue: empty=&quot; .. tostring(cq:isEmpty()))
+  print(&quot;lurek.ai.newCommandQueue: count=&quot; .. tostring(cq:getCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcondition"><div class="item-row-main"><h3>newCondition</h3><pre class="inline-signature">lurek.ai.newCondition(callback: function) -&gt; LBTNode</pre><p>Creates a behavior tree condition leaf backed by a Lua callback.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2816</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local cond = lurek.ai.newCondition(function() return true end)
+  cond:reset()
+  print(&quot;lurek.ai.newCondition: type=&quot; .. cond:getNodeType())
+  print(&quot;lurek.ai.newCondition: child_count=&quot; .. tostring(cond:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcontextsteering"><div class="item-row-main"><h3>newContextSteering</h3><pre class="inline-signature">lurek.ai.newContextSteering(slots: integer) -&gt; LContextSteering</pre><p>Creates a context steering model with the requested directional slot count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2974</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local cs = lurek.ai.newContextSteering(8)
+  cs:addSeekTarget(256, 128, 1.0)
+  local dx, dy = cs:evaluate(0, 0, 1, 0)
+  print(&quot;lurek.ai.newContextSteering: ok=&quot; .. tostring(cs ~= nil))
+  print(&quot;lurek.ai.newContextSteering: dir=&quot; .. tostring(dx) .. &quot;,&quot; .. tostring(dy))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdialogueai"><div class="item-row-main"><h3>newDialogueAI</h3><pre class="inline-signature">lurek.ai.newDialogueAI() -&gt; LDialogueAI</pre><p>Creates an empty dialogue selector for weighted topics and branches.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2892</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local dlg = lurek.ai.newDialogueAI()
+  dlg:addTopic(&quot;greeting&quot;, 0.5, nil, nil, &quot;greet_score&quot;)
+  dlg:setUtilityScore(&quot;greet_score&quot;, 0.8)
+  print(&quot;lurek.ai.newDialogueAI: ok=&quot; .. tostring(dlg ~= nil))
+  print(&quot;lurek.ai.newDialogueAI: topics=&quot; .. tostring(dlg:getTopicCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newemotionmodel"><div class="item-row-main"><h3>newEmotionModel</h3><pre class="inline-signature">lurek.ai.newEmotionModel() -&gt; LEmotionModel</pre><p>Creates an empty emotion model for named decaying emotion values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3040</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local emo = lurek.ai.newEmotionModel()
+  emo:add(&quot;fear&quot;, 0.1, 0.2, 0.3)
+  emo:trigger(&quot;fear&quot;, 0.5)
+  print(&quot;lurek.ai.newEmotionModel: ok=&quot; .. tostring(emo ~= nil))
+  print(&quot;lurek.ai.newEmotionModel: dominant=&quot; .. tostring(emo:dominant()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newgoapplanner"><div class="item-row-main"><h3>newGOAPPlanner</h3><pre class="inline-signature">lurek.ai.newGOAPPlanner() -&gt; LGOAPPlanner</pre><p>Creates an empty GOAP planner for boolean world-state planning.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2903</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local goap = lurek.ai.newGOAPPlanner()
+  goap:addGoal(&quot;stay_alive&quot;, 5)
+  goap:setGoalState(&quot;stay_alive&quot;, &quot;alive&quot;, true)
+  print(&quot;lurek.ai.newGOAPPlanner: ok=&quot; .. tostring(goap ~= nil))
+  print(&quot;lurek.ai.newGOAPPlanner: goals=&quot; .. tostring(goap:getGoalCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newgeneticalgorithm"><div class="item-row-main"><h3>newGeneticAlgorithm</h3><pre class="inline-signature">lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -&gt; LGeneticAlgorithm</pre><p>Creates a genetic algorithm population with fixed chromosome length.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3077</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local ga = lurek.ai.newGeneticAlgorithm(8, 5, 7)
+  print(&quot;lurek.ai.newGeneticAlgorithm: ok=&quot; .. tostring(ga ~= nil))
+  print(&quot;lurek.ai.newGeneticAlgorithm: pop=&quot; .. tostring(ga:popSize()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newguard"><div class="item-row-main"><h3>newGuard</h3><pre class="inline-signature">lurek.ai.newGuard(predicate: function, child: LBTNode) -&gt; LBTNode</pre><p>Creates a guard decorator that runs a predicate before ticking its child.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2830</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local child_action = lurek.ai.newAction(function() return &quot;success&quot; end)
+  local guard = lurek.ai.newGuard(function() return true end, child_action)
+  print(&quot;lurek.ai.newGuard: node=&quot; .. guard:getNodeType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newhtndomain"><div class="item-row-main"><h3>newHTNDomain</h3><pre class="inline-signature">lurek.ai.newHTNDomain() -&gt; LHTNDomain</pre><p>Creates an empty hierarchical task network domain.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3008</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local htn = lurek.ai.newHTNDomain()
+  print(&quot;lurek.ai.newHTNDomain: ok=&quot; .. tostring(htn ~= nil))
+  print(&quot;lurek.ai.newHTNDomain: tasks=&quot; .. tostring(htn:taskCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newinfluencemap"><div class="item-row-main"><h3>newInfluenceMap</h3><pre class="inline-signature">lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -&gt; LInfluenceMap</pre><p>Creates a grid influence map with the supplied cell dimensions and world cell size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2917</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local imap = lurek.ai.newInfluenceMap(32, 32, 16)
+  imap:addLayer(&quot;danger&quot;)
+  imap:setInfluence(&quot;danger&quot;, 4, 5, 0.9)
+  print(&quot;lurek.ai.newInfluenceMap: ok=&quot; .. tostring(imap ~= nil))
+  print(&quot;lurek.ai.newInfluenceMap: width=&quot; .. tostring(imap:getWidth()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newinverter"><div class="item-row-main"><h3>newInverter</h3><pre class="inline-signature">lurek.ai.newInverter() -&gt; LBTNode</pre><p>Creates a behavior tree inverter decorator with an empty sequence child.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2751</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local inv = lurek.ai.newInverter()
+  inv:setChild(lurek.ai.newCondition(function() return false end))
+  print(&quot;lurek.ai.newInverter: type=&quot; .. inv:getNodeType())
+  print(&quot;lurek.ai.newInverter: child_count=&quot; .. tostring(inv:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmctsengine"><div class="item-row-main"><h3>newMCTSEngine</h3><pre class="inline-signature">lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -&gt; LMCTSEngine</pre><p>Creates a Monte Carlo tree search engine with deterministic configuration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3023</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 20, 42)
+  local get_actions = function(state)
+    return { 1, 2, 3 }
+  end
+  local apply = function(state, action) return state + action end
+  local evaluate = function(state) return state % 5 end
+  local best_action = mcts:search(0, get_actions, apply, evaluate)
+  print(&quot;lurek.ai.newMCTSEngine: action=&quot; .. tostring(best_action))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newneedsystem"><div class="item-row-main"><h3>newNeedSystem</h3><pre class="inline-signature">lurek.ai.newNeedSystem() -&gt; LNeedSystem</pre><p>Creates an empty need system for decaying named needs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2986</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed(&quot;hunger&quot;, 0.1, 0.7, 2.0)
+  needs:update(2.0)
+  print(&quot;lurek.ai.newNeedSystem: ok=&quot; .. tostring(needs ~= nil))
+  print(&quot;lurek.ai.newNeedSystem: urgent=&quot; .. tostring(needs:mostUrgent()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newneuralnet"><div class="item-row-main"><h3>newNeuralNet</h3><pre class="inline-signature">lurek.ai.newNeuralNet() -&gt; LNeuralNet</pre><p>Creates an empty feed-forward neural network.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3063</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local nn = lurek.ai.newNeuralNet()
+  nn:addLayer(2, 3, &quot;relu&quot;)
+  nn:addLayer(3, 1, &quot;linear&quot;)
+  print(&quot;lurek.ai.newNeuralNet: ok=&quot; .. tostring(nn ~= nil))
+  print(&quot;lurek.ai.newNeuralNet: layers=&quot; .. tostring(nn:layerCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newneuroevolution"><div class="item-row-main"><h3>newNeuroevolution</h3><pre class="inline-signature">lurek.ai.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -&gt; LNeuroevolution</pre><p>Creates a neuroevolution population from a layer specification table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3117</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local layers = {
+    { inputs = 3, outputs = 6, activation = &quot;relu&quot; },
+    { inputs = 6, outputs = 2, activation = &quot;softmax&quot; },
+  }
+  local ne = lurek.ai.newNeuroevolution(layers, 8, 1)
+  print(&quot;lurek.ai.newNeuroevolution: ok=&quot; .. tostring(ne ~= nil))
+  print(&quot;lurek.ai.newNeuroevolution: pop=&quot; .. tostring(ne:popSize()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-neworcasolver"><div class="item-row-main"><h3>newORCASolver</h3><pre class="inline-signature">lurek.ai.newORCASolver(time_horizon: number) -&gt; LORCASolver</pre><p>Creates an ORCA avoidance solver with the supplied prediction horizon.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3052</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local orca = lurek.ai.newORCASolver(1.5)
+  orca:addAgent(0, 0, 0.5, 3.0)
+  print(&quot;lurek.ai.newORCASolver: ok=&quot; .. tostring(orca ~= nil))
+  print(&quot;lurek.ai.newORCASolver: agents=&quot; .. tostring(orca:agentCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newparallel"><div class="item-row-main"><h3>newParallel</h3><pre class="inline-signature">lurek.ai.newParallel(sp: string?, fp: string?) -&gt; LBTNode</pre><p>Creates a behavior tree parallel node with optional success and failure policies.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2732</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local par = lurek.ai.newParallel(&quot;requireAll&quot;, &quot;requireOne&quot;)
+  par:addChild(lurek.ai.newAction(function() return &quot;running&quot; end))
+  par:addChild(lurek.ai.newAction(function() return &quot;success&quot; end))
+  print(&quot;lurek.ai.newParallel: type=&quot; .. par:getNodeType())
+  print(&quot;lurek.ai.newParallel: children=&quot; .. tostring(par:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newqlearner"><div class="item-row-main"><h3>newQLearner</h3><pre class="inline-signature">lurek.ai.newQLearner(sc: integer, ac: integer) -&gt; LQLearner</pre><p>Creates a Q-learner with fixed state and action counts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2869</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local ql = lurek.ai.newQLearner(10, 4)
+  ql:setQValue(1, 2, 0.75)
+  print(&quot;lurek.ai.newQLearner: ok=&quot; .. tostring(ql ~= nil))
+  print(&quot;lurek.ai.newQLearner: best_action=&quot; .. tostring(ql:bestAction(1)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrepeater"><div class="item-row-main"><h3>newRepeater</h3><pre class="inline-signature">lurek.ai.newRepeater(count: integer?) -&gt; LBTNode</pre><p>Creates a behavior tree repeater decorator with an optional repeat count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2768</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local rep = lurek.ai.newRepeater(5)
+  rep:setChild(lurek.ai.newAction(function() return &quot;success&quot; end))
+  print(&quot;lurek.ai.newRepeater: count=&quot; .. tostring(rep:getCount()))
+  print(&quot;lurek.ai.newRepeater: type=&quot; .. rep:getNodeType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newselector"><div class="item-row-main"><h3>newSelector</h3><pre class="inline-signature">lurek.ai.newSelector() -&gt; LBTNode</pre><p>Creates a behavior tree selector node with no children.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2702</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local sel = lurek.ai.newSelector()
+  sel:addChild(lurek.ai.newAction(function() return &quot;failure&quot; end))
+  sel:addChild(lurek.ai.newAction(function() return &quot;success&quot; end))
+  print(&quot;lurek.ai.newSelector: type=&quot; .. sel:getNodeType())
+  print(&quot;lurek.ai.newSelector: children=&quot; .. tostring(sel:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsequence"><div class="item-row-main"><h3>newSequence</h3><pre class="inline-signature">lurek.ai.newSequence() -&gt; LBTNode</pre><p>Creates a behavior tree sequence node with no children.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2716</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local seq = lurek.ai.newSequence()
+  seq:addChild(lurek.ai.newCondition(function() return true end))
+  seq:addChild(lurek.ai.newAction(function() return &quot;success&quot; end))
+  print(&quot;lurek.ai.newSequence: type=&quot; .. seq:getNodeType())
+  print(&quot;lurek.ai.newSequence: children=&quot; .. tostring(seq:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsquad"><div class="item-row-main"><h3>newSquad</h3><pre class="inline-signature">lurek.ai.newSquad(name: string) -&gt; LSquad</pre><p>Creates an empty named squad. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2929</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local squad = lurek.ai.newSquad(&quot;bravo&quot;)
+  squad:addMember(&quot;leader&quot;)
+  squad:setLeader(&quot;leader&quot;)
+  print(&quot;lurek.ai.newSquad: name=&quot; .. squad:getName())
+  print(&quot;lurek.ai.newSquad: members=&quot; .. tostring(squad:getMemberCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstatemachine"><div class="item-row-main"><h3>newStateMachine</h3><pre class="inline-signature">lurek.ai.newStateMachine() -&gt; LStateMachine</pre><p>Creates an empty finite state machine with Lua-backed states and transitions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2680</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local fsm = lurek.ai.newStateMachine()
+  fsm:addState(&quot;idle&quot;, {})
+  fsm:setInitialState(&quot;idle&quot;)
+  print(&quot;lurek.ai.newStateMachine: ok=&quot; .. tostring(fsm ~= nil))
+  print(&quot;lurek.ai.newStateMachine: current=&quot; .. tostring(fsm:getCurrentState()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsteeringmanager"><div class="item-row-main"><h3>newSteeringManager</h3><pre class="inline-signature">lurek.ai.newSteeringManager() -&gt; LSteeringManager</pre><p>Creates an empty steering manager with support for built-in and custom behaviors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2855</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local steer = lurek.ai.newSteeringManager()
+  steer:addSeek(320, 180, 1.0)
+  print(&quot;lurek.ai.newSteeringManager: ok=&quot; .. tostring(steer ~= nil))
+  print(&quot;lurek.ai.newSteeringManager: behaviors=&quot; .. tostring(steer:getBehaviorCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstimulusworld"><div class="item-row-main"><h3>newStimulusWorld</h3><pre class="inline-signature">lurek.ai.newStimulusWorld() -&gt; LStimulusWorld</pre><p>Creates an empty stimulus world for visual and auditory stimulus records.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2962</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local sw = lurek.ai.newStimulusWorld()
+  sw:addVisual(100, 150, 1.0, 48.0, &quot;enemy&quot;)
+  print(&quot;lurek.ai.newStimulusWorld: stimuli=&quot; .. tostring(sw:count()))
+  print(&quot;lurek.ai.newStimulusWorld: type=&quot; .. sw:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstrategyai"><div class="item-row-main"><h3>newStrategyAI</h3><pre class="inline-signature">lurek.ai.newStrategyAI(update_interval: number) -&gt; LStrategyAI</pre><p>Creates a strategy AI that reevaluates goals on a fixed interval.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:3146</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local strat = lurek.ai.newStrategyAI(3.0)
+  strat:addGoal(&quot;expand&quot;)
+  strat:addTag(&quot;economy&quot;)
+  print(&quot;lurek.ai.newStrategyAI: ok=&quot; .. tostring(strat ~= nil))
+  print(&quot;lurek.ai.newStrategyAI: next_eval=&quot; .. tostring(strat:timeUntilNext()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsucceeder"><div class="item-row-main"><h3>newSucceeder</h3><pre class="inline-signature">lurek.ai.newSucceeder() -&gt; LBTNode</pre><p>Creates a behavior tree succeeder decorator with an empty sequence child.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2786</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local suc = lurek.ai.newSucceeder()
+  suc:setChild(lurek.ai.newAction(function() return &quot;failure&quot; end))
+  print(&quot;lurek.ai.newSucceeder: type=&quot; .. suc:getNodeType())
+  print(&quot;lurek.ai.newSucceeder: child_count=&quot; .. tostring(suc:getChildCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtraitprofile"><div class="item-row-main"><h3>newTraitProfile</h3><pre class="inline-signature">lurek.ai.newTraitProfile() -&gt; LTraitProfile</pre><p>Creates an empty trait profile with modifier support.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2951</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local traits = lurek.ai.newTraitProfile()
+  traits:set(&quot;courage&quot;, 0.7)
+  print(&quot;lurek.ai.newTraitProfile: ok=&quot; .. tostring(traits ~= nil))
+  print(&quot;lurek.ai.newTraitProfile: courage=&quot; .. tostring(traits:get(&quot;courage&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newutilityai"><div class="item-row-main"><h3>newUtilityAI</h3><pre class="inline-signature">lurek.ai.newUtilityAI() -&gt; LUtilityAI</pre><p>Creates an empty utility AI action scorer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2880</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local util = lurek.ai.newUtilityAI()
+  util:addAction(&quot;wait&quot;, function() return 0.2 end)
+  util:addAction(&quot;attack&quot;, function() return 0.9 end)
+  print(&quot;lurek.ai.newUtilityAI: ok=&quot; .. tostring(util ~= nil))
+  print(&quot;lurek.ai.newUtilityAI: pick=&quot; .. tostring(util:evaluate()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newworld"><div class="item-row-main"><h3>newWorld</h3><pre class="inline-signature">lurek.ai.newWorld() -&gt; LAIWorld</pre><p>Creates an isolated AI world for agents, blackboards, and custom decision callbacks.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/ai_api.rs:2657</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local scout = world:addAgent(&quot;scout_preview&quot;)
+  local count = world:getAgentCount()
+  print(&quot;lurek.ai.newWorld: agents=&quot; .. tostring(count))
+  print(&quot;lurek.ai.newWorld: first_agent=&quot; .. scout:getName())
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAIBlackboard.html">LAIBlackboard</a></h3><p>Lua handle for a typed AI blackboard storing local key-value facts.</p></div><div class="item-row-meta"><span>13 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAIDirector.html">LAIDirector</a></h3><p>Lua handle for an AI director that tracks encounter tension and pacing factors.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAILod.html">LAILod</a></h3><p>Lua handle for distance-based AI level-of-detail tier selection.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAIWorld.html">LAIWorld</a></h3><p>Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAgent.html">LAgent</a></h3><p>Lua handle for a named agent stored inside an AI world.</p></div><div class="item-row-meta"><span>20 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBTNode.html">LBTNode</a></h3><p>Lua handle for a behavior tree node that can be assembled into composites and decorators.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBehaviorTree.html">LBehaviorTree</a></h3><p>Lua handle for a behavior tree root and its most recent execution status.</p></div><div class="item-row-meta"><span>5 methods</span><span>module ai</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCommandQueue.html">LCommandQueue</a></h3><p>Lua handle for a command queue that stores ordered callback-backed commands.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LContextSteering.html">LContextSteering</a></h3><p>Lua handle for slot-based context steering direction selection.</p></div><div class="item-row-meta"><span>10 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LEmotionModel.html">LEmotionModel</a></h3><p>Lua handle for decaying named emotion intensities.</p></div><div class="item-row-meta"><span>9 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LGOAPPlanner.html">LGOAPPlanner</a></h3><p>Lua handle for a GOAP planner with boolean preconditions, effects, and goals.</p></div><div class="item-row-meta"><span>12 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LHTNDomain.html">LHTNDomain</a></h3><p>Lua handle for a hierarchical task network domain.</p></div><div class="item-row-meta"><span>6 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LInfluenceMap.html">LInfluenceMap</a></h3><p>Lua handle for a grid-based influence map with named layers.</p></div><div class="item-row-meta"><span>18 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMCTSEngine.html">LMCTSEngine</a></h3><p>Lua handle for Monte Carlo tree search over Lua-defined game states and actions.</p></div><div class="item-row-meta"><span>3 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNeedSystem.html">LNeedSystem</a></h3><p>Lua handle for decaying needs and urgency selection.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LORCASolver.html">LORCASolver</a></h3><p>Lua handle for reciprocal velocity obstacle avoidance agents.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSquad.html">LSquad</a></h3><p>Lua handle for a named squad with members, leader, formation, and shared blackboard.</p></div><div class="item-row-meta"><span>14 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStateMachine.html">LStateMachine</a></h3><p>Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSteeringManager.html">LSteeringManager</a></h3><p>Lua handle for a steering behavior stack that combines movement forces for an agent.</p></div><div class="item-row-meta"><span>22 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStimulusWorld.html">LStimulusWorld</a></h3><p>Lua handle for sensory stimuli tracked in world space.</p></div><div class="item-row-meta"><span>8 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStrategyAI.html">LStrategyAI</a></h3><p>Lua handle for interval-based strategic goal selection.</p></div><div class="item-row-meta"><span>9 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTraitProfile.html">LTraitProfile</a></h3><p>Lua handle for trait values with temporary modifiers and archetype lookup.</p></div><div class="item-row-meta"><span>11 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LUtilityAI.html">LUtilityAI</a></h3><p>Lua handle for utility AI action scoring and consideration curves.</p></div><div class="item-row-meta"><span>7 methods</span><span>module ai</span></div><div class="card-note">Example: ai.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

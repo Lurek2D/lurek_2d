@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.color - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a class="active" href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.color</h1>
+  <p>`lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.</p>
+  <div class="api-meta api-meta-header"><span>19 functions</span><span>0 classes</span><span>src/lua_api/color_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 19</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.color.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-additive"><div class="item-row-main"><h3>additive</h3><pre class="inline-signature">lurek.color.additive(c1: table, c2: table) -&gt; table</pre><p>Additive blend of two colors (clamped to 0–1 per channel).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local a = lurek.color.new(0.5, 0.3, 0.1)
+    local b = lurek.color.new(0.3, 0.4, 0.2)
+    local result = lurek.color.additive(a, b)
+    print(&quot;additive r=&quot; .. string.format(&quot;%.2f&quot;, result[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, result[2]))
+    print(&quot;additive b=&quot; .. string.format(&quot;%.2f&quot;, result[3]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-alphablend"><div class="item-row-main"><h3>alphaBlend</h3><pre class="inline-signature">lurek.color.alphaBlend(fg: table, bg: table) -&gt; table</pre><p>Alpha compositing (Porter-Duff &quot;over&quot;) of foreground over background.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:247</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local fg = lurek.color.new(1, 0, 0, 0.5)
+    local bg = lurek.color.new(0, 0, 1, 1.0)
+    local result = lurek.color.alphaBlend(fg, bg)
+    print(&quot;alphaBlend r=&quot; .. string.format(&quot;%.2f&quot;, result[1]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, result[3]))
+    print(&quot;alphaBlend a=&quot; .. string.format(&quot;%.2f&quot;, result[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-brightness"><div class="item-row-main"><h3>brightness</h3><pre class="inline-signature">lurek.color.brightness(r: number, g: number, b: number) -&gt; number</pre><p>Computes perceived luminance (ITU-R BT.601) of an RGB color.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:283</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local lum = lurek.color.brightness(0.5, 0.5, 0.5)
+    print(&quot;brightness = &quot; .. string.format(&quot;%.3f&quot;, lum))
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromhex"><div class="item-row-main"><h3>fromHex</h3><pre class="inline-signature">lurek.color.fromHex(hex: string) -&gt; table|nil</pre><p>Parses a hex color string (&quot;#RRGGBB&quot; or &quot;#RRGGBBAA&quot;) into a color table. Returns nil on invalid input.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:86</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.fromHex(&quot;#FF6600&quot;)
+    if c then
+        print(&quot;fromHex r=&quot; .. string.format(&quot;%.2f&quot;, c[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, c[2]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, c[3]))
+        print(&quot;fromHex alpha=&quot; .. string.format(&quot;%.2f&quot;, c[4]))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromhsl"><div class="item-row-main"><h3>fromHsl</h3><pre class="inline-signature">lurek.color.fromHsl(h: number, s: number, l: number) -&gt; table</pre><p>Creates a color from HSL components. Returns an opaque color (alpha = 1).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:100</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.fromHsl(210, 0.8, 0.5)
+    print(&quot;fromHsl r=&quot; .. string.format(&quot;%.2f&quot;, c[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, c[2]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, c[3]))
+    print(&quot;fromHsl hex=&quot; .. lurek.color.toHex(c[1], c[2], c[3], c[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromhsv"><div class="item-row-main"><h3>fromHsv</h3><pre class="inline-signature">lurek.color.fromHsv(h: number, s: number, v: number) -&gt; table</pre><p>Creates a color from HSV components. Returns an opaque color (alpha = 1).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:114</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.fromHsv(120, 1.0, 0.8)
+    print(&quot;fromHsv r=&quot; .. string.format(&quot;%.2f&quot;, c[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, c[2]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, c[3]))
+    print(&quot;fromHsv alpha=&quot; .. string.format(&quot;%.2f&quot;, c[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromu8"><div class="item-row-main"><h3>fromU8</h3><pre class="inline-signature">lurek.color.fromU8(r: integer, g: integer, b: integer, a: integer?) -&gt; table</pre><p>Creates a color from 0–255 integer components. Alpha defaults to 255.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:73</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.fromU8(255, 128, 0, 255)
+    print(&quot;fromU8 r=&quot; .. string.format(&quot;%.2f&quot;, c[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, c[2]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, c[3]))
+    print(&quot;fromU8 a=&quot; .. string.format(&quot;%.2f&quot;, c[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-gammatolinear"><div class="item-row-main"><h3>gammaToLinear</h3><pre class="inline-signature">lurek.color.gammaToLinear(c: number) -&gt; number</pre><p>Converts a single sRGB gamma-encoded component to linear space.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:310</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local linear = lurek.color.gammaToLinear(0.5)
+    print(&quot;gammaToLinear = &quot; .. string.format(&quot;%.4f&quot;, linear))
+end</code></pre></details></article><article class="item-row api-row" id="fn-invert"><div class="item-row-main"><h3>invert</h3><pre class="inline-signature">lurek.color.invert(r: number, g: number, b: number, a: number?) -&gt; table</pre><p>Inverts the RGB channels of a color, keeping alpha unchanged.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:268</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local inv = lurek.color.invert(0.2, 0.8, 0.4)
+    print(&quot;invert r=&quot; .. string.format(&quot;%.2f&quot;, inv[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, inv[2]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, inv[3]))
+    print(&quot;invert a=&quot; .. string.format(&quot;%.2f&quot;, inv[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lerp"><div class="item-row-main"><h3>lerp</h3><pre class="inline-signature">lurek.color.lerp(c1: table, c2: table, t: number) -&gt; table</pre><p>Linearly interpolates between two color tables by factor t (clamped to 0–1).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:162</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local red = lurek.color.new(1, 0, 0)
+    local blue = lurek.color.new(0, 0, 1)
+    local mid = lurek.color.lerp(red, blue, 0.5)
+    print(&quot;lerp r=&quot; .. string.format(&quot;%.2f&quot;, mid[1]) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, mid[3]))
+    print(&quot;lerp alpha=&quot; .. string.format(&quot;%.2f&quot;, mid[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lineartogamma"><div class="item-row-main"><h3>linearToGamma</h3><pre class="inline-signature">lurek.color.linearToGamma(c: number) -&gt; number</pre><p>Converts a single linear component to sRGB gamma-encoded space.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local gamma = lurek.color.linearToGamma(0.2)
+    print(&quot;linearToGamma = &quot; .. string.format(&quot;%.4f&quot;, gamma))
+end</code></pre></details></article><article class="item-row api-row" id="fn-multiply"><div class="item-row-main"><h3>multiply</h3><pre class="inline-signature">lurek.color.multiply(c1: table, c2: table) -&gt; table</pre><p>Channel-wise multiply blend of two colors.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:179</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local a = lurek.color.new(0.8, 0.6, 0.4)
+    local b = lurek.color.new(0.5, 0.5, 0.5)
+    local result = lurek.color.multiply(a, b)
+    print(&quot;multiply r=&quot; .. string.format(&quot;%.2f&quot;, result[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, result[2]))
+    print(&quot;multiply b=&quot; .. string.format(&quot;%.2f&quot;, result[3]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.color.new(r: number, g: number, b: number, a: number?) -&gt; table</pre><p>Creates an RGBA color from 0–1 float components. Alpha defaults to 1.0.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:59</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.new(0.2, 0.6, 0.9, 1.0)
+    print(&quot;color r=&quot; .. c[1] .. &quot; g=&quot; .. c[2] .. &quot; b=&quot; .. c[3] .. &quot; a=&quot; .. c[4])
+    print(&quot;hex = &quot; .. lurek.color.toHex(c[1], c[2], c[3], c[4]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-overlay"><div class="item-row-main"><h3>overlay</h3><pre class="inline-signature">lurek.color.overlay(base: table, blend: table) -&gt; table</pre><p>Overlay blend of two colors exposed by the lurek engine.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:213</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local base = lurek.color.new(0.4, 0.4, 0.4)
+    local blend = lurek.color.new(0.8, 0.2, 0.6)
+    local result = lurek.color.overlay(base, blend)
+    print(&quot;overlay r=&quot; .. string.format(&quot;%.2f&quot;, result[1]) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, result[2]))
+    print(&quot;overlay b=&quot; .. string.format(&quot;%.2f&quot;, result[3]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-palette"><div class="item-row-main"><h3>palette</h3><pre class="inline-signature">lurek.color.palette(name: string) -&gt; table</pre><p>Returns a named retro palette as a table of color tables. Supported: &quot;pico8&quot;, &quot;gameboy&quot;, &quot;nes&quot;.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:328</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local pal = lurek.color.palette(&quot;pico8&quot;)
+    print(&quot;pico8 palette count = &quot; .. #pal)
+    if #pal &gt; 0 then
+        print(&quot;first pico8 color = &quot; .. string.format(&quot;%.2f&quot;, pal[1][1]) .. &quot;, &quot; .. string.format(&quot;%.2f&quot;, pal[1][2]) .. &quot;, &quot; .. string.format(&quot;%.2f&quot;, pal[1][3]))
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-screen"><div class="item-row-main"><h3>screen</h3><pre class="inline-signature">lurek.color.screen(c1: table, c2: table) -&gt; table</pre><p>Apply screen blend mode to combine two color values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:196</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local a = lurek.color.new(0.3, 0.3, 0.3)
+    local b = lurek.color.new(0.6, 0.6, 0.6)
+    local result = lurek.color.screen(a, b)
+    print(&quot;screen r=&quot; .. string.format(&quot;%.2f&quot;, result[1]))
+    print(&quot;screen g=&quot; .. string.format(&quot;%.2f&quot;, result[2]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-tohex"><div class="item-row-main"><h3>toHex</h3><pre class="inline-signature">lurek.color.toHex(r: number, g: number, b: number, a: number?) -&gt; string</pre><p>Converts RGBA components to a hex string (&quot;#RRGGBB&quot; or &quot;#RRGGBBAA&quot; if alpha &lt; 1).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:146</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local hex = lurek.color.toHex(1.0, 0.5, 0.0)
+    print(&quot;toHex = &quot; .. hex)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tohsl"><div class="item-row-main"><h3>toHsl</h3><pre class="inline-signature">lurek.color.toHsl(r: number, g: number, b: number) -&gt; number, number, number</pre><p>Convert RGB color components to HSL color representation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:130</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local h, s, l = lurek.color.toHsl(0.2, 0.6, 0.9)
+    print(&quot;toHsl h=&quot; .. string.format(&quot;%.1f&quot;, h) .. &quot; s=&quot; .. string.format(&quot;%.2f&quot;, s) .. &quot; l=&quot; .. string.format(&quot;%.2f&quot;, l))
+end</code></pre></details></article><article class="item-row api-row" id="fn-withalpha"><div class="item-row-main"><h3>withAlpha</h3><pre class="inline-signature">lurek.color.withAlpha(r: number, g: number, b: number, a: number, newAlpha: number) -&gt; table</pre><p>Returns a color with the alpha channel replaced.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/color_api.rs:299</span></div><details class="example-block"><summary>Example · Exact example · color.lua</summary><pre><code>do
+    local c = lurek.color.withAlpha(0.9, 0.2, 0.3, 1.0, 0.5)
+    print(&quot;withAlpha a=&quot; .. string.format(&quot;%.1f&quot;, c[4]))
+    print(&quot;withAlpha rgb = &quot; .. string.format(&quot;%.1f&quot;, c[1]) .. &quot;, &quot; .. string.format(&quot;%.1f&quot;, c[2]) .. &quot;, &quot; .. string.format(&quot;%.1f&quot;, c[3]))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

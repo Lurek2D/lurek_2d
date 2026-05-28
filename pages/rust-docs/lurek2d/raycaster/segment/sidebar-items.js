@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cast_ray_2d"],"struct":["Segment"]};

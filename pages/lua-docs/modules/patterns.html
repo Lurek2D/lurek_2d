@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.patterns - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a class="active" href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.patterns</h1>
+  <p>`lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs. - Registers `lurek.patterns.*` functions and types via `register()`. - Userdata types: `LuaEventBus`, `LuaObjectPool`, `LuaCommandStack`. - Userdata types: `LuaServiceLocator`, `LuaFactory`, `LuaSimpleState`. - Userdata types: `LuaBlackboard`, `LuaObserver`, `LuaThrottle`. - Userdata types: `LuaDebounce`, `LuaPriorityQueue`, `LuaRing`. - Userdata types: `LuaFunnel`, `LuaRelationshipManager`, `LuaMediator`. - Userdata types: `LuaStrategy`, `LuaStack`, `LuaQueue`. - Userdata types: `LuaList`, `LuaSet`, `LuaMap`.</p>
+  <div class="api-meta api-meta-header"><span>24 functions</span><span>24 classes</span><span>src/lua_api/patterns_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 242</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.patterns.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-newbehaviortree"><div class="item-row-main"><h3>newBehaviorTree</h3><pre class="inline-signature">lurek.patterns.newBehaviorTree() -&gt; LBehaviorTree</pre><p>Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3335</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local bt = lurek.patterns.newBehaviorTree()
+    local root = bt:addSequence(&quot;root&quot;)
+    local check = bt:addLeaf(&quot;check&quot;)
+    local act = bt:addLeaf(&quot;act&quot;)
+    bt:addChild(root, check)
+    bt:addChild(root, act)
+    bt:setLeaf(&quot;check&quot;, function()
+        return &quot;success&quot;
+    end)
+    bt:setLeaf(&quot;act&quot;, function()
+        return &quot;success&quot;
+    end)
+    bt:setRoot(root)
+    print(&quot;result = &quot; .. bt:tick())
+    print(&quot;nodes = &quot; .. bt:nodeCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newblackboard"><div class="item-row-main"><h3>newBlackboard</h3><pre class="inline-signature">lurek.patterns.newBlackboard(name: string?) -&gt; LBlackboard</pre><p>Create a new shared key-value blackboard supporting reactive watchers for game logic variables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3119</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local bb = lurek.patterns.newBlackboard(&quot;game_state&quot;)
+    bb:set(&quot;health&quot;, 100)
+    bb:set(&quot;mode&quot;, &quot;idle&quot;)
+    print(&quot;health = &quot; .. tostring(bb:get(&quot;health&quot;)))
+    print(&quot;keys = &quot; .. #bb:keys())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcommandstack"><div class="item-row-main"><h3>newCommandStack</h3><pre class="inline-signature">lurek.patterns.newCommandStack(maxSize: integer?) -&gt; LCommandStack</pre><p>Create a new undo/redo command stack for recording and reversing player or editor actions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3064</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local cmds = lurek.patterns.newCommandStack(10)
+    local value = 1
+    cmds:execute(&quot;add&quot;, function()
+        value = value + 4
+    end, function()
+        value = value - 4
+    end)
+    cmds:execute(&quot;double&quot;, function()
+        value = value * 2
+    end, function()
+        value = value / 2
+    end)
+    print(&quot;value = &quot; .. value)
+    print(&quot;history = &quot; .. cmds:getHistorySize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdebounce"><div class="item-row-main"><h3>newDebounce</h3><pre class="inline-signature">lurek.patterns.newDebounce(wait: number) -&gt; LDebounce</pre><p>Create a new debounce that delays firing until input stops for a specified wait period.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3165</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local db = lurek.patterns.newDebounce(0.5)
+    db:onFire(function()
+        print(&quot;debounce fired&quot;)
+    end)
+    db:trigger()
+    print(&quot;pending = &quot; .. tostring(db:isPending()))
+    db:update(0.6)
+    print(&quot;fires = &quot; .. db:getFireCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-neweventbus"><div class="item-row-main"><h3>newEventBus</h3><pre class="inline-signature">lurek.patterns.newEventBus(name: string?) -&gt; LEventBus</pre><p>Create a new publish/subscribe event bus for decoupled communication between game systems.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3036</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local bus = lurek.patterns.newEventBus(&quot;game_events&quot;)
+    local id = bus:on(&quot;damage&quot;, function(amount, source)
+        print(&quot;damage = &quot; .. tostring(amount) .. &quot; from &quot; .. tostring(source))
+    end)
+    bus:emit(&quot;damage&quot;, 25, &quot;fire&quot;)
+    print(&quot;listeners = &quot; .. bus:getListenerCount(&quot;damage&quot;))
+    bus:off(id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfactory"><div class="item-row-main"><h3>newFactory</h3><pre class="inline-signature">lurek.patterns.newFactory() -&gt; LFactory</pre><p>Create a new factory for producing typed game objects from registered constructor functions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3092</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local factory = lurek.patterns.newFactory()
+    factory:register(&quot;enemy&quot;, function(hp)
+        return {type = &quot;enemy&quot;, hp = hp or 100}
+    end)
+    local enemy = factory:create(&quot;enemy&quot;, 120)
+    print(&quot;enemy hp = &quot; .. tostring(enemy and enemy.hp))
+    print(&quot;types = &quot; .. #factory:getTypes())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfunnel"><div class="item-row-main"><h3>newFunnel</h3><pre class="inline-signature">lurek.patterns.newFunnel(window: number, maxEntries: integer?, name: string?) -&gt; LFunnel</pre><p>Create a new batching funnel that collects events over a time window and flushes them together.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3211</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local funnel = lurek.patterns.newFunnel(1.0, 5, &quot;damage_log&quot;)
+    funnel:onFlush(function(entries)
+        print(&quot;flushed = &quot; .. #entries)
+    end)
+    funnel:push(&quot;fire&quot;, 10)
+    funnel:push(&quot;ice&quot;, 5)
+    print(&quot;pending = &quot; .. funnel:pendingCount())
+    funnel:update(1.1)
+    print(&quot;flush count = &quot; .. funnel:getFlushCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newgraph"><div class="item-row-main"><h3>newGraph</h3><pre class="inline-signature">lurek.patterns.newGraph(undirected: boolean?) -&gt; LPatternGraph</pre><p>Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3349</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local g = lurek.patterns.newGraph(true)
+    local a = g:addNode(&quot;A&quot;, {cost = 10})
+    local b = g:addNode(&quot;B&quot;, {cost = 5})
+    g:addEdge(a, b, 1.5, &quot;road&quot;)
+    print(&quot;nodes = &quot; .. g:nodeCount())
+    print(&quot;edges = &quot; .. g:edgeCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlist"><div class="item-row-main"><h3>newList</h3><pre class="inline-signature">lurek.patterns.newList() -&gt; LList</pre><p>Create a new dynamic array list with indexed access, insertion, removal, and search.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3290</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local list = lurek.patterns.newList()
+    list:add(&quot;alpha&quot;)
+    list:add(&quot;beta&quot;)
+    list:add(&quot;gamma&quot;)
+    print(&quot;len = &quot; .. list:len())
+    print(&quot;second = &quot; .. tostring(list:get(2)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmap"><div class="item-row-main"><h3>newMap</h3><pre class="inline-signature">lurek.patterns.newMap() -&gt; LMap</pre><p>Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3312</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local map = lurek.patterns.newMap()
+    map:set(&quot;name&quot;, &quot;hero&quot;)
+    map:set(&quot;level&quot;, 5)
+    print(&quot;name = &quot; .. tostring(map:get(&quot;name&quot;)))
+    print(&quot;len = &quot; .. map:len())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmediator"><div class="item-row-main"><h3>newMediator</h3><pre class="inline-signature">lurek.patterns.newMediator() -&gt; LMediator</pre><p>Create a new mediator for channel-based message passing between decoupled game systems.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3240</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local med = lurek.patterns.newMediator()
+    local id = med:on(&quot;ui&quot;, function(msg, data)
+        print(msg .. &quot; = &quot; .. tostring(data))
+    end)
+    med:send(&quot;ui&quot;, &quot;hp&quot;, 80)
+    print(&quot;channels = &quot; .. #med:channels())
+    med:off(&quot;ui&quot;, id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newobjectpool"><div class="item-row-main"><h3>newObjectPool</h3><pre class="inline-signature">lurek.patterns.newObjectPool() -&gt; LObjectPool</pre><p>Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3050</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local pool = lurek.patterns.newObjectPool()
+    pool:add({id = 1, active = false})
+    print(&quot;total = &quot; .. pool:getTotalCount())
+    print(&quot;available = &quot; .. pool:getAvailableCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newobserver"><div class="item-row-main"><h3>newObserver</h3><pre class="inline-signature">lurek.patterns.newObserver(name: string?) -&gt; LObserver</pre><p>Create a new reactive observer that stores values and notifies subscribers when they change.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3136</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local obs = lurek.patterns.newObserver(&quot;player_stats&quot;)
+    local id = obs:subscribe(&quot;hp&quot;, function(key, value)
+        print(key .. &quot; = &quot; .. tostring(value))
+    end)
+    obs:set(&quot;hp&quot;, 100)
+    print(&quot;hp = &quot; .. tostring(obs:get(&quot;hp&quot;)))
+    obs:unsubscribe(id)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpriorityqueue"><div class="item-row-main"><h3>newPriorityQueue</h3><pre class="inline-signature">lurek.patterns.newPriorityQueue(name: string?) -&gt; LPriorityQueue</pre><p>Create a new priority queue that orders elements by numeric priority (highest first).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3178</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local pq = lurek.patterns.newPriorityQueue(&quot;tasks&quot;)
+    pq:push(1, &quot;low_task&quot;, &quot;low&quot;)
+    pq:push(10, &quot;high_task&quot;, &quot;high&quot;)
+    print(&quot;peek = &quot; .. tostring(pq:peek()))
+    print(&quot;len = &quot; .. pq:len())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newqueue"><div class="item-row-main"><h3>newQueue</h3><pre class="inline-signature">lurek.patterns.newQueue(capacity: integer?) -&gt; LQueue</pre><p>Create a new FIFO queue with optional capacity limit.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3278</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local q = lurek.patterns.newQueue(10)
+    q:enqueue(&quot;msg1&quot;)
+    q:enqueue(&quot;msg2&quot;)
+    print(&quot;front = &quot; .. tostring(q:front()))
+    print(&quot;len = &quot; .. q:len())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrelationshipmanager"><div class="item-row-main"><h3>newRelationshipManager</h3><pre class="inline-signature">lurek.patterns.newRelationshipManager() -&gt; LRelationshipManager</pre><p>Create a new relationship manager for tracking numeric values and named levels between entity pairs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3229</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local rm = lurek.patterns.newRelationshipManager()
+    rm:setValue(1, 2, 50)
+    rm:setValue(1, 3, -20)
+    print(&quot;1-&gt;2 = &quot; .. rm:getValue(1, 2))
+    print(&quot;1-&gt;3 = &quot; .. rm:getValue(1, 3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newring"><div class="item-row-main"><h3>newRing</h3><pre class="inline-signature">lurek.patterns.newRing(capacity: integer, name: string?) -&gt; LRing</pre><p>Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3194</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local ring = lurek.patterns.newRing(5, &quot;fps_samples&quot;)
+    ring:push(60)
+    ring:push(58)
+    ring:push(62)
+    print(&quot;len = &quot; .. ring:len())
+    print(&quot;average = &quot; .. ring:average())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newservicelocator"><div class="item-row-main"><h3>newServiceLocator</h3><pre class="inline-signature">lurek.patterns.newServiceLocator() -&gt; LServiceLocator</pre><p>Create a new service locator for registering and retrieving shared services by name at runtime.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3080</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local services = lurek.patterns.newServiceLocator()
+    services:provide(&quot;audio&quot;, {volume = 0.8})
+    print(&quot;has audio = &quot; .. tostring(services:has(&quot;audio&quot;)))
+    print(&quot;services = &quot; .. #services:getServices())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newset"><div class="item-row-main"><h3>newSet</h3><pre class="inline-signature">lurek.patterns.newSet() -&gt; LSet</pre><p>Create a new string set with add/remove/has operations and set algebra (union, intersection).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3301</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local set = lurek.patterns.newSet()
+    set:add(&quot;fire&quot;)
+    set:add(&quot;ice&quot;)
+    print(&quot;len = &quot; .. set:len())
+    print(&quot;has fire = &quot; .. tostring(set:has(&quot;fire&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newsimplestate"><div class="item-row-main"><h3>newSimpleState</h3><pre class="inline-signature">lurek.patterns.newSimpleState() -&gt; LSimpleState</pre><p>Create a new finite state machine with enter/exit/update callbacks per state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3104</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local fsm = lurek.patterns.newSimpleState()
+    fsm:addState(&quot;idle&quot;, {
+        enter = function()
+            print(&quot;enter idle&quot;)
+        end,
+        update = function(dt)
+            print(&quot;idle dt = &quot; .. dt)
+        end
+    })
+    fsm:transitionTo(&quot;idle&quot;)
+    fsm:update(0.016)
+    print(&quot;current = &quot; .. tostring(fsm:getCurrent()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstack"><div class="item-row-main"><h3>newStack</h3><pre class="inline-signature">lurek.patterns.newStack(capacity: integer?) -&gt; LStack</pre><p>Create a new LIFO stack with optional capacity limit.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3265</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local st = lurek.patterns.newStack(100)
+    st:push(&quot;first&quot;)
+    st:push(&quot;second&quot;)
+    print(&quot;peek = &quot; .. tostring(st:peek()))
+    print(&quot;len = &quot; .. st:len())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newstrategy"><div class="item-row-main"><h3>newStrategy</h3><pre class="inline-signature">lurek.patterns.newStrategy() -&gt; LStrategy</pre><p>Create a new strategy pattern container for hot-swappable algorithm implementations.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3252</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local strat = lurek.patterns.newStrategy()
+    strat:register(&quot;attack&quot;, function(target)
+        return &quot;attack &quot; .. target
+    end)
+    strat:register(&quot;flee&quot;, function(target)
+        return &quot;flee from &quot; .. target
+    end)
+    strat:set(&quot;attack&quot;)
+    print(&quot;current = &quot; .. tostring(strat:getCurrent()))
+    print(&quot;result = &quot; .. tostring(strat:execute(&quot;orc&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newthrottle"><div class="item-row-main"><h3>newThrottle</h3><pre class="inline-signature">lurek.patterns.newThrottle(interval: number) -&gt; LThrottle</pre><p>Create a new throttle that limits how often an action can fire, enforcing a minimum interval.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3152</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local th = lurek.patterns.newThrottle(0.2)
+    local fires = 0
+    th:onFire(function()
+        fires = fires + 1
+        print(&quot;throttle fired = &quot; .. fires)
+    end)
+    th:update(0.1)
+    th:update(0.1)
+    th:update(0.2)
+    print(&quot;fires = &quot; .. th:getFireCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newweightedrandom"><div class="item-row-main"><h3>newWeightedRandom</h3><pre class="inline-signature">lurek.patterns.newWeightedRandom() -&gt; LWeightedRandom</pre><p>Create a new weighted random selection pool. Add items with weights and pick random selections.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/patterns_api.rs:3323</span></div><details class="example-block"><summary>Example · Exact example · patterns.lua</summary><pre><code>do
+    local wr = lurek.patterns.newWeightedRandom()
+    wr:add(10, &quot;common&quot;, &quot;common_loot&quot;)
+    wr:add(3, &quot;rare&quot;, &quot;rare_loot&quot;)
+    print(&quot;items = &quot; .. wr:len())
+    print(&quot;picked = &quot; .. tostring(wr:pick(0.5)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBehaviorTree.html">LBehaviorTree</a></h3><p>Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.</p></div><div class="item-row-meta"><span>13 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBlackboard.html">LBlackboard</a></h3><p>Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.</p></div><div class="item-row-meta"><span>10 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCommandStack.html">LCommandStack</a></h3><p>Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.</p></div><div class="item-row-meta"><span>8 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDebounce.html">LDebounce</a></h3><p>Lua-facing debounce that delays firing until input stops for a specified wait period.</p></div><div class="item-row-meta"><span>6 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LEventBus.html">LEventBus</a></h3><p>Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.</p></div><div class="item-row-meta"><span>7 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFactory.html">LFactory</a></h3><p>Lua-facing factory pattern for creating typed game objects from registered constructor functions.</p></div><div class="item-row-meta"><span>7 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFunnel.html">LFunnel</a></h3><p>Lua-facing batching funnel that collects events over a time window and flushes them together.</p></div><div class="item-row-meta"><span>7 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LList.html">LList</a></h3><p>Lua-facing dynamic array list with indexed access, insertion, removal, and search.</p></div><div class="item-row-meta"><span>16 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMap.html">LMap</a></h3><p>Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.</p></div><div class="item-row-meta"><span>11 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMediator.html">LMediator</a></h3><p>Lua-facing mediator for channel-based message passing between decoupled game systems.</p></div><div class="item-row-meta"><span>8 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LObjectPool.html">LObjectPool</a></h3><p>Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.</p></div><div class="item-row-meta"><span>7 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LObserver.html">LObserver</a></h3><p>Lua-facing reactive observer that stores values and notifies subscribers when values change.</p></div><div class="item-row-meta"><span>5 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPatternGraph.html">LPatternGraph</a></h3><p>Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.</p></div><div class="item-row-meta"><span>13 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPriorityQueue.html">LPriorityQueue</a></h3><p>Lua-facing priority queue that orders elements by numeric priority (highest first).</p></div><div class="item-row-meta"><span>6 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LQueue.html">LQueue</a></h3><p>Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.</p></div><div class="item-row-meta"><span>14 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRelationshipManager.html">LRelationshipManager</a></h3><p>Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.</p></div><div class="item-row-meta"><span>10 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRing.html">LRing</a></h3><p>Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.</p></div><div class="item-row-meta"><span>8 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LServiceLocator.html">LServiceLocator</a></h3><p>Lua-facing service locator for registering and retrieving shared services by name at runtime.</p></div><div class="item-row-meta"><span>6 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSet.html">LSet</a></h3><p>Lua-facing string set with add/remove/has operations and set algebra (union, intersection).</p></div><div class="item-row-meta"><span>9 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSimpleState.html">LSimpleState</a></h3><p>Lua-facing finite state machine with enter/exit/update callbacks per state.</p></div><div class="item-row-meta"><span>7 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStack.html">LStack</a></h3><p>Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.</p></div><div class="item-row-meta"><span>16 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LStrategy.html">LStrategy</a></h3><p>Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.</p></div><div class="item-row-meta"><span>8 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LThrottle.html">LThrottle</a></h3><p>Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.</p></div><div class="item-row-meta"><span>6 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LWeightedRandom.html">LWeightedRandom</a></h3><p>Lua-facing weighted random selection pool. Add items with weights and pick random selections.</p></div><div class="item-row-meta"><span>10 methods</span><span>module patterns</span></div><div class="card-note">Example: patterns.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

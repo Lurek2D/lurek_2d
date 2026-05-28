@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LVec3 - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a class="active" href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LVec3</h1>
+  <p>Represents the Lua-visible LVec3 object exposed by this module.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/math.html">lurek.math</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 2)
+    print(&quot;length = &quot; .. v:length())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LVec3 userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-add"><div class="item-row-main"><h3>add</h3><pre class="inline-signature">LVec3:add(other: LVec3) -&gt; LVec3</pre><p>Returns the sum with another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:282</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(1, 2, 3)
+    local b = lurek.math.vec3(4, 5, 6)
+    local sum = a:add(b)
+    print(&quot;add = &quot; .. sum.x .. &quot;,&quot; .. sum.y .. &quot;,&quot; .. sum.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-cross"><div class="item-row-main"><h3>cross</h3><pre class="inline-signature">LVec3:cross(other: LVec3) -&gt; LVec3</pre><p>Returns the 3D cross product with another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:253</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(1, 0, 0)
+    local b = lurek.math.vec3(0, 1, 0)
+    local c = a:cross(b)
+    print(&quot;cross = &quot; .. c.x .. &quot;,&quot; .. c.y .. &quot;,&quot; .. c.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-distance"><div class="item-row-main"><h3>distance</h3><pre class="inline-signature">LVec3:distance(other: LVec3) -&gt; number</pre><p>Returns distance to another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:274</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(0, 0, 0)
+    local b = lurek.math.vec3(3, 4, 0)
+    print(&quot;distance = &quot; .. a:distance(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-dot"><div class="item-row-main"><h3>dot</h3><pre class="inline-signature">LVec3:dot(other: LVec3) -&gt; number</pre><p>Returns the dot product with another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:245</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(1, 0, 0)
+    local b = lurek.math.vec3(0, 1, 0)
+    print(&quot;dot = &quot; .. a:dot(b))
+end</code></pre></details></article><article class="item-row api-row" id="method-length"><div class="item-row-main"><h3>length</h3><pre class="inline-signature">LVec3:length() -&gt; number</pre><p>Returns this vector length. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:226</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 2)
+    print(&quot;length = &quot; .. v:length())
+end</code></pre></details></article><article class="item-row api-row" id="method-lengthsquared"><div class="item-row-main"><h3>lengthSquared</h3><pre class="inline-signature">LVec3:lengthSquared() -&gt; number</pre><p>Returns this vector squared length.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 2)
+    print(&quot;lengthSq = &quot; .. v:lengthSquared())
+end</code></pre></details></article><article class="item-row api-row" id="method-lerp"><div class="item-row-main"><h3>lerp</h3><pre class="inline-signature">LVec3:lerp(other: LVec3, t: number) -&gt; LVec3</pre><p>Returns a vector interpolated toward another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(0, 0, 0)
+    local b = lurek.math.vec3(3, 4, 0)
+    local mid = a:lerp(b, 0.5)
+    print(&quot;lerp = &quot; .. mid.x .. &quot;,&quot; .. mid.y .. &quot;,&quot; .. mid.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-normalize"><div class="item-row-main"><h3>normalize</h3><pre class="inline-signature">LVec3:normalize() -&gt; LVec3</pre><p>Returns a normalized copy of this vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:236</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.vec3(3, 0, 4)
+    local n = v:normalize()
+    print(&quot;normalized = &quot; .. n.x .. &quot;,&quot; .. n.y .. &quot;,&quot; .. n.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-scale"><div class="item-row-main"><h3>scale</h3><pre class="inline-signature">LVec3:scale(s: number) -&gt; LVec3</pre><p>Returns this vector multiplied by a scalar.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.vec3(1, 2, 3)
+    local scaled = v:scale(2)
+    print(&quot;scale = &quot; .. scaled.x .. &quot;,&quot; .. scaled.y .. &quot;,&quot; .. scaled.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-splat"><div class="item-row-main"><h3>splat</h3><pre class="inline-signature">LVec3:splat(self: LVec3, v: number) -&gt; LVec3</pre><p>Creates a vector with all components set to one value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:312</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.vec3(0, 0, 0)
+    local s = v:splat(5)
+    print(&quot;splat = &quot; .. s.x .. &quot;,&quot; .. s.y .. &quot;,&quot; .. s.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-sub"><div class="item-row-main"><h3>sub</h3><pre class="inline-signature">LVec3:sub(other: LVec3) -&gt; LVec3</pre><p>Returns the difference from another vector.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:292</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.vec3(1, 2, 3)
+    local b = lurek.math.vec3(4, 5, 6)
+    local diff = a:sub(b)
+    print(&quot;sub = &quot; .. diff.x .. &quot;,&quot; .. diff.y .. &quot;,&quot; .. diff.z)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LVec3:type() -&gt; string</pre><p>Returns the Lua-visible type name for this vector handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:320</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 3)
+    print(v:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LVec3:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this vector handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/math_api.rs:325</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 3)
+    print(tostring(v:typeOf(&quot;LVec3&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

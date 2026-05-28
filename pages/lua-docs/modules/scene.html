@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.scene - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a class="active" href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.scene</h1>
+  <p>`lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`. - Registers `lurek.scene.*` functions and types via `register()`. - `LuaDepthSorter`: userdata type exposed to Lua. - Bridges 70 Lua-callable methods via `mlua`. - See `docs/specs/scene.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>59 functions</span><span>1 classes</span><span>src/lua_api/scene_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 69</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.scene.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.scene.clear()</pre><p>Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After this call the stack is empty and `isEmpty()` returns true. Useful for returning to a title screen or tearing down the entire scene graph.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.clear()
+    print(&quot;is empty = &quot; .. tostring(lurek.scene.isEmpty()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-clearqueuedtransitions"><div class="item-row-main"><h3>clearQueuedTransitions</h3><pre class="inline-signature">lurek.scene.clearQueuedTransitions()</pre><p>Discard all queued transitions without affecting the currently-playing transition (if any). Use this to cancel a planned transition sequence mid-way.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:754</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.queueTransition(&quot;fade&quot;, 0.25, &quot;linear&quot;)
+    print(&quot;queued before = &quot; .. lurek.scene.getQueuedTransitionCount())
+    lurek.scene.clearQueuedTransitions()
+    print(&quot;queued after = &quot; .. lurek.scene.getQueuedTransitionCount())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-define"><div class="item-row-main"><h3>define</h3><pre class="inline-signature">lurek.scene.define(def: table?) -&gt; function</pre><p>Create a reusable scene constructor function from a prototype table. Each call to the returned factory produces a fresh instance that inherits methods from the prototype via metatables. Ideal for defining scene &quot;classes&quot; that can be instantiated multiple times.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:927</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local GameplayFactory = lurek.scene.define({
+        name = &quot;gameplay&quot;,
+        level = 0,
+        enter = function(self, params)
+            self.level = params and (params.level or 1) or self.level
+            print(&quot;gameplay enter level &quot; .. self.level)
+        end,
+        leave = function()
+            print(&quot;gameplay leave&quot;)
+        end,
+        update = function()
+        end,
+        draw = function()
+        end,
+    })
+    local instance1 = GameplayFactory()
+    local instance2 = GameplayFactory()
+    print(&quot;two instances: &quot; .. tostring(instance1 ~= instance2))
+end</code></pre></details></article><article class="item-row api-row" id="fn-depth"><div class="item-row-main"><h3>depth</h3><pre class="inline-signature">lurek.scene.depth() -&gt; number</pre><p>Alias for `getStackSize`. Returns the total number of scenes currently on the stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:649</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local d0 = lurek.scene.depth()
+    lurek.scene.push(lurek.scene.new({ name = &quot;d1&quot; }))
+    local d1 = lurek.scene.depth()
+    lurek.scene.clear()
+    print(&quot;depth 0=&quot; .. d0 .. &quot; 1=&quot; .. d1)
+end</code></pre></details></article><article class="item-row api-row" id="fn-deserializescene"><div class="item-row-main"><h3>deserializeScene</h3><pre class="inline-signature">lurek.scene.deserializeScene(snapshot: table)</pre><p>Restore shared scene data from a previously-serialized snapshot table. Only the `data` key-value map is restored; the scene stack itself must be rebuilt manually by pushing or registering scenes. Pair with `serializeScene` for save/load workflows.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1371</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.setData(&quot;score&quot;, 42)
+    local snapshot = lurek.scene.serializeScene()
+    lurek.scene.removeData(&quot;score&quot;)
+    lurek.scene.deserializeScene(snapshot)
+    print(&quot;restored score = &quot; .. tostring(lurek.scene.getData(&quot;score&quot;)))
+    print(&quot;stack size after load = &quot; .. lurek.scene.getStackSize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-draw"><div class="item-row-main"><h3>draw</h3><pre class="inline-signature">lurek.scene.draw()</pre><p>Call `draw(self)` on render-active scenes ordered by layer (lowest first).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:564</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local draws = 0
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;draw_scene&quot;, draw = function() draws = draws + 1 end }))
+    lurek.scene.draw()
+    print(&quot;draw calls = &quot; .. draws)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-fade"><div class="item-row-main"><h3>fade</h3><pre class="inline-signature">lurek.scene.fade(duration: number?) -&gt; table</pre><p>Helper sub-table `lurek.scene.transitions` with convenience factory functions that build transition descriptor tables for use with transition-aware APIs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1397</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local fade = lurek.scene.transitions.fade(0.5)
+    print(&quot;fade type = &quot; .. fade.type .. &quot; dur = &quot; .. fade.duration)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getactivescenes"><div class="item-row-main"><h3>getActiveScenes</h3><pre class="inline-signature">lurek.scene.getActiveScenes() -&gt; table</pre><p>Returns a Lua array of all process-active scene tables ordered by their layer value (lowest layer first). Includes regular scenes and overlays.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1022</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base&quot; }))
+    lurek.scene.push(lurek.scene.new({ name = &quot;mid&quot; }))
+    lurek.scene.pushOverlay(lurek.scene.new({ name = &quot;overlay&quot; }))
+    local active = lurek.scene.getActiveScenes()
+    print(&quot;active scenes = &quot; .. #active)
+    print(&quot;top active = &quot; .. tostring(active[#active] and active[#active].name))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcurrent"><div class="item-row-main"><h3>getCurrent</h3><pre class="inline-signature">lurek.scene.getCurrent() -&gt; table|nil</pre><p>Returns the scene table currently on top of the stack, or nil if the stack is empty. Use this to inspect or call methods on the active scene directly.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:665</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    local current = lurek.scene.getCurrent()
+    print(&quot;current name = &quot; .. tostring(current and current.name))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcurrentlayer"><div class="item-row-main"><h3>getCurrentLayer</h3><pre class="inline-signature">lurek.scene.getCurrentLayer() -&gt; number</pre><p>Get the rendering layer of the current top scene. Returns 0 if the stack is empty or if no layer was explicitly set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:697</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.setCurrentLayer(12)
+    print(&quot;current layer = &quot; .. tostring(lurek.scene.getCurrentLayer()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdata"><div class="item-row-main"><h3>getData</h3><pre class="inline-signature">lurek.scene.getData(key: string) -&gt; LuaValue</pre><p>Retrieve a value from the shared data map by key, or nil if the key has not been set. Commonly used in a scene&#x27;s `enter` callback to read parameters set by the previous scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:844</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.setData(&quot;score&quot;, 42)
+    print(&quot;score = &quot; .. tostring(lurek.scene.getData(&quot;score&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getqueuedtransitioncount"><div class="item-row-main"><h3>getQueuedTransitionCount</h3><pre class="inline-signature">lurek.scene.getQueuedTransitionCount() -&gt; number</pre><p>Returns the number of transitions waiting in the queue behind the currently-playing transition.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:747</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.queueTransition(&quot;fade&quot;, 0.25, &quot;linear&quot;)
+    print(&quot;queued transitions = &quot; .. lurek.scene.getQueuedTransitionCount())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getregistered"><div class="item-row-main"><h3>getRegistered</h3><pre class="inline-signature">lurek.scene.getRegistered(name: string) -&gt; table|nil</pre><p>Retrieve a previously registered scene table by its name, or nil if no scene is registered under that name. Does not affect the stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:782</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.registerScene(&quot;main_scene&quot;, lurek.scene.new({ name = &quot;main_scene&quot; }))
+    local scene = lurek.scene.getRegistered(&quot;main_scene&quot;)
+    print(&quot;registered scene = &quot; .. tostring(scene and scene.name))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getregisterednames"><div class="item-row-main"><h3>getRegisteredNames</h3><pre class="inline-signature">lurek.scene.getRegisteredNames() -&gt; string[]</pre><p>Returns an array of all currently registered scene name strings. Useful for debugging or building dynamic scene-selection UIs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:819</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.registerScene(&quot;main_scene&quot;, lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.registerScene(&quot;pause_scene&quot;, lurek.scene.new({ name = &quot;pause_scene&quot; }))
+    local names = lurek.scene.getRegisteredNames()
+    print(&quot;registered names = &quot; .. #names)
+    print(&quot;first name = &quot; .. tostring(names[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getrenderactivescenes"><div class="item-row-main"><h3>getRenderActiveScenes</h3><pre class="inline-signature">lurek.scene.getRenderActiveScenes() -&gt; table</pre><p>Returns the scene table(s) that are render-active this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1047</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base&quot; }))
+    lurek.scene.pushOverlay(lurek.scene.new({ name = &quot;overlay&quot; }))
+    local active = lurek.scene.getRenderActiveScenes()
+    print(&quot;getRenderActiveScenes count = &quot; .. #active)
+    print(&quot;top render-active = &quot; .. tostring(active[1] and active[1].name))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstacksize"><div class="item-row-main"><h3>getStackSize</h3><pre class="inline-signature">lurek.scene.getStackSize() -&gt; number</pre><p>Returns the total number of scenes currently on the stack, including overlays. Useful for asserting expected navigation depth or debugging scene flow.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:641</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;stack size = &quot; .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettransitionprogress"><div class="item-row-main"><h3>getTransitionProgress</h3><pre class="inline-signature">lurek.scene.getTransitionProgress() -&gt; number</pre><p>Returns the raw linear progress (0.0 to 1.0) of the current transition animation, ignoring easing. Returns 0 when no transition is active. Use `getTransitionProgressEased` for the eased value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:719</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base_scene&quot; }))
+    lurek.scene.switchTo(lurek.scene.new({ name = &quot;next_scene&quot; }), &quot;fade&quot;, 0.25, &quot;linear&quot;)
+    print(&quot;transition progress = &quot; .. lurek.scene.getTransitionProgress())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettransitionprogresseased"><div class="item-row-main"><h3>getTransitionProgressEased</h3><pre class="inline-signature">lurek.scene.getTransitionProgressEased() -&gt; number</pre><p>Returns the eased progress (0.0 to 1.0) of the current transition, with the selected easing curve applied. Returns 0 when no transition is active. Use this instead of `getTransitionProgress` when you want smooth, non-linear animation values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:950</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base_scene&quot; }))
+    lurek.scene.switchTo(lurek.scene.new({ name = &quot;next_scene&quot; }), &quot;fade&quot;, 0.25, &quot;linear&quot;)
+    print(&quot;eased progress = &quot; .. lurek.scene.getTransitionProgressEased())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettransitiontypes"><div class="item-row-main"><h3>getTransitionTypes</h3><pre class="inline-signature">lurek.scene.getTransitionTypes() -&gt; string[]</pre><p>Returns a Lua array of all supported transition type name strings. Use this to discover available transitions at runtime or build a transition picker UI.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1308</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local types = lurek.scene.getTransitionTypes()
+    print(&quot;transition types = &quot; .. #types)
+    print(&quot;first type = &quot; .. tostring(types[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasdata"><div class="item-row-main"><h3>hasData</h3><pre class="inline-signature">lurek.scene.hasData(key: string) -&gt; boolean</pre><p>Check whether a key exists in the shared scene data map without retrieving its value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:860</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.setData(&quot;score&quot;, 42)
+    print(&quot;has score = &quot; .. tostring(lurek.scene.hasData(&quot;score&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasregistered"><div class="item-row-main"><h3>hasRegistered</h3><pre class="inline-signature">lurek.scene.hasRegistered(name: string) -&gt; boolean</pre><p>Check whether a scene is registered under the given name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:800</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.registerScene(&quot;main_scene&quot;, lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;has main_scene = &quot; .. tostring(lurek.scene.hasRegistered(&quot;main_scene&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-iris"><div class="item-row-main"><h3>iris</h3><pre class="inline-signature">lurek.scene.iris(duration: number?) -&gt; table</pre><p>Create an iris (circle) transition descriptor table. A circular aperture opens or closes to reveal the new scene, similar to classic cartoon transitions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1458</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local iris = lurek.scene.transitions.iris(0.6)
+    print(&quot;iris type = &quot; .. iris.type .. &quot; dur = &quot; .. iris.duration)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isempty"><div class="item-row-main"><h3>isEmpty</h3><pre class="inline-signature">lurek.scene.isEmpty() -&gt; boolean</pre><p>Returns true if the scene stack contains no scenes at all. Useful for guarding against calling `pop` on an empty stack or for detecting when the game should quit.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:657</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;before clear = &quot; .. tostring(lurek.scene.isEmpty()))
+    lurek.scene.clear()
+    print(&quot;after clear = &quot; .. tostring(lurek.scene.isEmpty()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-islateenabled"><div class="item-row-main"><h3>isLateEnabled</h3><pre class="inline-signature">lurek.scene.isLateEnabled(target: any?) -&gt; boolean</pre><p>Returns whether `process_late` is enabled for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1179</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;isLateEnabled = &quot; .. tostring(lurek.scene.isLateEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isoverlay"><div class="item-row-main"><h3>isOverlay</h3><pre class="inline-signature">lurek.scene.isOverlay() -&gt; boolean</pre><p>Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both scenes to remain process-active unless explicitly frozen.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1005</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.pushOverlay(lurek.scene.new({ name = &quot;pause_overlay&quot; }), &quot;fade&quot;, 0.2)
+    print(&quot;top scene is overlay = &quot; .. tostring(lurek.scene.isOverlay()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isphysicsenabled"><div class="item-row-main"><h3>isPhysicsEnabled</h3><pre class="inline-signature">lurek.scene.isPhysicsEnabled(target: any?) -&gt; boolean</pre><p>Returns whether `process_physics` is enabled for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1162</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;isPhysicsEnabled = &quot; .. tostring(lurek.scene.isPhysicsEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-ispreloaded"><div class="item-row-main"><h3>isPreloaded</h3><pre class="inline-signature">lurek.scene.isPreloaded(name: string) -&gt; boolean</pre><p>Returns true if the named preload loader has already been executed at least once. Once a loader runs, subsequent `pushPreloaded` calls skip the loader and push the already-registered scene directly.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1225</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.preload(&quot;main_scene&quot;, function()
+        lurek.scene.registerScene(&quot;main_scene&quot;, lurek.scene.new({ name = &quot;main_scene&quot; }))
+    end)
+    print(&quot;preloaded = &quot; .. tostring(lurek.scene.isPreloaded(&quot;main_scene&quot;)))
+    lurek.scene.push(lurek.scene.new({ name = &quot;loader&quot; }))
+    lurek.scene.pushPreloaded(&quot;main_scene&quot;)
+    print(&quot;after push = &quot; .. tostring(lurek.scene.isPreloaded(&quot;main_scene&quot;)))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isprocessenabled"><div class="item-row-main"><h3>isProcessEnabled</h3><pre class="inline-signature">lurek.scene.isProcessEnabled(target: any?) -&gt; boolean</pre><p>Returns whether `process` is enabled for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1145</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;isProcessEnabled = &quot; .. tostring(lurek.scene.isProcessEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-istransitioning"><div class="item-row-main"><h3>isTransitioning</h3><pre class="inline-signature">lurek.scene.isTransitioning() -&gt; boolean</pre><p>Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base_scene&quot; }))
+    lurek.scene.switchTo(lurek.scene.new({ name = &quot;next_scene&quot; }), &quot;fade&quot;, 0.25, &quot;linear&quot;)
+    print(&quot;is transitioning = &quot; .. tostring(lurek.scene.isTransitioning()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isupdateenabled"><div class="item-row-main"><h3>isUpdateEnabled</h3><pre class="inline-signature">lurek.scene.isUpdateEnabled(target: any?) -&gt; boolean</pre><p>Returns whether `update` is enabled for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1196</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    print(&quot;isUpdateEnabled = &quot; .. tostring(lurek.scene.isUpdateEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.scene.new(def: table?) -&gt; table</pre><p>Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:890</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local myScene = lurek.scene.new({ name = &quot;menu&quot;, enter = function() print(&quot;entering menu scene&quot;) end, leave = function() print(&quot;leaving menu scene&quot;) end, update = function() end, draw = function() end })
+    print(&quot;scene created&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdepthsorter"><div class="item-row-main"><h3>newDepthSorter</h3><pre class="inline-signature">lurek.scene.newDepthSorter() -&gt; LDepthSorter</pre><p>Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter&#x27;s algorithm) order.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:881</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local sorter = lurek.scene.newDepthSorter()
+    print(&quot;type = &quot; .. sorter:type() .. &quot; is LDepthSorter = &quot; .. tostring(sorter:typeOf(&quot;LDepthSorter&quot;)))
+    sorter:add(function()
+        print(&quot;draw back layer&quot;)
+    end, 10)
+    sorter:add(function()
+        print(&quot;draw front layer&quot;)
+    end, 15)
+    print(&quot;count = &quot; .. sorter:getCount())
+    sorter:flush()
+    print(&quot;after flush count = &quot; .. sorter:getCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newscene"><div class="item-row-main"><h3>newScene</h3><pre class="inline-signature">lurek.scene.newScene(def: table?) -&gt; table</pre><p>Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:909</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local scene = lurek.scene.newScene({ name = &quot;test_new&quot; })
+    print(&quot;scene name = &quot; .. tostring(scene.name))
+    print(&quot;has metatable = &quot; .. tostring(getmetatable(scene) ~= nil))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pop"><div class="item-row-main"><h3>pop</h3><pre class="inline-signature">lurek.scene.pop(transition: string?, duration: number?, easing: string?)</pre><p>Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for &quot;back&quot; navigation, closing menus, or exiting sub-screens.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:266</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;first_scene&quot; }))
+    lurek.scene.push(lurek.scene.new({ name = &quot;second_scene&quot; }))
+    lurek.scene.pop()
+    print(&quot;stack size after pop = &quot; .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-popto"><div class="item-row-main"><h3>popTo</h3><pre class="inline-signature">lurek.scene.popTo(name: string) -&gt; boolean</pre><p>Pop scenes off the stack until the named registered scene is on top. Every popped scene receives `leave()` and the target scene receives `resume()`. The target scene must have been previously added via `registerScene`. Returns false if no scene with that name exists on the stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:391</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local base = lurek.scene.new({ name = &quot;base&quot; })
+    local mid = lurek.scene.new({ name = &quot;middle&quot; })
+    local top = lurek.scene.new({ name = &quot;top&quot; })
+    lurek.scene.registerScene(&quot;base&quot;, base)
+    lurek.scene.registerScene(&quot;middle&quot;, mid)
+    lurek.scene.push(base)
+    lurek.scene.push(mid)
+    lurek.scene.push(top)
+    local found = lurek.scene.popTo(&quot;base&quot;)
+    local missing = lurek.scene.popTo(&quot;nonexistent&quot;)
+    print(&quot;popTo base = &quot; .. tostring(found))
+    print(&quot;popTo missing = &quot; .. tostring(missing) .. &quot; depth = &quot; .. lurek.scene.depth())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-preload"><div class="item-row-main"><h3>preload</h3><pre class="inline-signature">lurek.scene.preload(name: string, loader: function)</pre><p>Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1211</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local loadCount = 0
+    lurek.scene.clear()
+    lurek.scene.preload(&quot;heavyLevel&quot;, function()
+        loadCount = loadCount + 1
+        lurek.scene.registerScene(&quot;heavyLevel&quot;, lurek.scene.new({ name = &quot;heavyLevel&quot; }))
+    end)
+    print(&quot;preloaded = &quot; .. tostring(lurek.scene.isPreloaded(&quot;heavyLevel&quot;)))
+    lurek.scene.push(lurek.scene.new({ name = &quot;loader&quot; }))
+    lurek.scene.pushPreloaded(&quot;heavyLevel&quot;, &quot;fade&quot;, 0.3)
+    print(&quot;after push preloaded = &quot; .. tostring(lurek.scene.isPreloaded(&quot;heavyLevel&quot;)) .. &quot; load count = &quot; .. loadCount)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-process"><div class="item-row-main"><h3>process</h3><pre class="inline-signature">lurek.scene.process(dt: number)</pre><p>Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:459</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local processCount = 0
+    local scene = lurek.scene.new({
+        process = function(self, dt)
+            self.last_dt = dt
+            processCount = processCount + 1
+        end,
+    })
+    lurek.scene.push(scene)
+    lurek.scene.process(0.016)
+    print(&quot;process count = &quot; .. processCount)
+    print(&quot;last dt = &quot; .. tostring(scene.last_dt))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-processlate"><div class="item-row-main"><h3>processLate</h3><pre class="inline-signature">lurek.scene.processLate(dt: number)</pre><p>Call `process_late(self, dt)` on every process-active scene after all other processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:534</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local lateCount = 0
+    local physCount = 0
+    local scene = lurek.scene.new({
+        process_late = function()
+            lateCount = lateCount + 1
+        end,
+        process_physics = function()
+            physCount = physCount + 1
+        end,
+    })
+    lurek.scene.push(scene)
+    lurek.scene.processLate(1 / 60)
+    lurek.scene.processPhysics(1 / 60)
+    print(&quot;late = &quot; .. lateCount .. &quot; physics = &quot; .. physCount)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-processphysics"><div class="item-row-main"><h3>processPhysics</h3><pre class="inline-signature">lurek.scene.processPhysics(dt: number)</pre><p>Call `process_physics(self, dt)` on every process-active scene ordered by layer.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:504</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local physicsCount = 0
+    local scene = lurek.scene.new({
+        process_physics = function(self, dt)
+            self.last_physics_dt = dt
+            physicsCount = physicsCount + 1
+        end,
+    })
+    lurek.scene.push(scene)
+    lurek.scene.processPhysics(0.016)
+    print(&quot;physics count = &quot; .. physicsCount)
+    print(&quot;last physics dt = &quot; .. tostring(scene.last_physics_dt))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-push"><div class="item-row-main"><h3>push</h3><pre class="inline-signature">lurek.scene.push(scene: table, transition: string?, duration: number?, easing: string?, params: table?)</pre><p>Push a new scene onto the stack, making it the active scene. The previously-active scene receives its `pause()` lifecycle callback and the new scene receives `enter(self, params)`. An optional visual transition (fade, slide, iris, etc.) animates between the two scenes over the specified duration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:213</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local scene1 = lurek.scene.new({ name = &quot;title&quot;, enter = function() print(&quot;title enter&quot;) end, leave = function() print(&quot;title leave&quot;) end })
+    lurek.scene.push(scene1)
+    print(&quot;after push depth = &quot; .. lurek.scene.getStackSize())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushoverlay"><div class="item-row-main"><h3>pushOverlay</h3><pre class="inline-signature">lurek.scene.pushOverlay(scene: table, transition: string?, duration: number?, easing: string?, params: table?)</pre><p>Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:962</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local gameScene = lurek.scene.new({ name = &quot;game&quot; })
+    local pauseOverlay = lurek.scene.new({ name = &quot;pause&quot; })
+    lurek.scene.push(gameScene)
+    print(&quot;overlay before push = &quot; .. tostring(lurek.scene.isOverlay()))
+    lurek.scene.pushOverlay(pauseOverlay, &quot;fade&quot;, 0.2)
+    print(&quot;overlay after push = &quot; .. tostring(lurek.scene.isOverlay()) .. &quot; stack depth = &quot; .. lurek.scene.getStackSize())
+    lurek.scene.pop()
+    print(&quot;after pop overlay = &quot; .. tostring(lurek.scene.isOverlay()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-pushpreloaded"><div class="item-row-main"><h3>pushPreloaded</h3><pre class="inline-signature">lurek.scene.pushPreloaded(name: string, transition: string?, duration: number?, easing: string?, params: table?)</pre><p>Push a preloaded scene onto the stack by name. If the loader registered via `preload` has not yet run, it executes first to create and register the scene. Then the registered scene is pushed with the specified transition. Combines deferred loading with stack navigation in a single call.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1239</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.preload(&quot;main_scene&quot;, function()
+        lurek.scene.registerScene(&quot;main_scene&quot;, lurek.scene.new({ name = &quot;main_scene&quot; }))
+    end)
+    lurek.scene.push(lurek.scene.new({ name = &quot;base_scene&quot; }))
+    lurek.scene.pushPreloaded(&quot;main_scene&quot;, &quot;fade&quot;, 0.3)
+    print(&quot;stack size after push = &quot; .. lurek.scene.getStackSize())
+    print(&quot;current = &quot; .. tostring(lurek.scene.getCurrent() and lurek.scene.getCurrent().name))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-queuetransition"><div class="item-row-main"><h3>queueTransition</h3><pre class="inline-signature">lurek.scene.queueTransition(transition: string, duration: number, easing: string?)</pre><p>Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:729</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;base&quot; }))
+    lurek.scene.queueTransition(&quot;fade&quot;, 0.2)
+    lurek.scene.queueTransition(&quot;iris&quot;, 0.3)
+    lurek.scene.queueTransition(&quot;wipe&quot;, 0.4, &quot;ease_in&quot;)
+    print(&quot;queued = &quot; .. lurek.scene.getQueuedTransitionCount())
+    lurek.scene.clearQueuedTransitions()
+    print(&quot;after clear queued = &quot; .. lurek.scene.getQueuedTransitionCount())
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-registerscene"><div class="item-row-main"><h3>registerScene</h3><pre class="inline-signature">lurek.scene.registerScene(name: string, scene: table)</pre><p>Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:766</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local menuScene = lurek.scene.new({ name = &quot;mainMenu&quot; })
+    lurek.scene.registerScene(&quot;mainMenu&quot;, menuScene)
+    print(&quot;has mainMenu = &quot; .. tostring(lurek.scene.hasRegistered(&quot;mainMenu&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-removedata"><div class="item-row-main"><h3>removeData</h3><pre class="inline-signature">lurek.scene.removeData(key: string)</pre><p>Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:868</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.setData(&quot;_test_key&quot;, 42)
+    print(&quot;before remove = &quot; .. tostring(lurek.scene.hasData(&quot;_test_key&quot;)))
+    lurek.scene.removeData(&quot;_test_key&quot;)
+    print(&quot;after remove = &quot; .. tostring(lurek.scene.hasData(&quot;_test_key&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">lurek.scene.render()</pre><p>Call `render(self)` on render-active scenes ordered by layer (lowest first).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:590</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local renderCount = 0
+    lurek.scene.push(lurek.scene.new({ render = function() renderCount = renderCount + 1 end }))
+    lurek.scene.render()
+    print(&quot;render count = &quot; .. renderCount)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-renderui"><div class="item-row-main"><h3>renderUi</h3><pre class="inline-signature">lurek.scene.renderUi()</pre><p>Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:616</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local uiCount = 0
+    lurek.scene.push(lurek.scene.new({ render_ui = function() uiCount = uiCount + 1 end }))
+    lurek.scene.renderUi()
+    print(&quot;render ui count = &quot; .. uiCount)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-serializescene"><div class="item-row-main"><h3>serializeScene</h3><pre class="inline-signature">lurek.scene.serializeScene() -&gt; table</pre><p>Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player&#x27;s navigation state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1336</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    local menu = lurek.scene.new({ name = &quot;menu&quot; })
+    local game = lurek.scene.new({ name = &quot;game&quot; })
+    lurek.scene.registerScene(&quot;menu&quot;, menu)
+    lurek.scene.registerScene(&quot;game&quot;, game)
+    lurek.scene.push(menu)
+    lurek.scene.push(game)
+    lurek.scene.setData(&quot;level&quot;, 7)
+    lurek.scene.setData(&quot;checkpoint&quot;, &quot;bridge&quot;)
+    local snapshot = lurek.scene.serializeScene()
+    print(&quot;stack = &quot; .. #snapshot.stack)
+    print(&quot;saved level = &quot; .. tostring(snapshot.data.level) .. &quot; checkpoint = &quot; .. tostring(snapshot.data.checkpoint))
+    lurek.scene.clear()
+    lurek.scene.deserializeScene(snapshot)
+    print(&quot;restored level = &quot; .. tostring(lurek.scene.getData(&quot;level&quot;)))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcurrentlayer"><div class="item-row-main"><h3>setCurrentLayer</h3><pre class="inline-signature">lurek.scene.setCurrentLayer(layer: integer) -&gt; boolean</pre><p>Set the rendering layer of the current top scene. Scenes with higher layer values are processed and drawn after lower-layer scenes. Use layers to control draw order when multiple scenes are active (e.g. game world at layer 0, HUD overlay at layer 10).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:682</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;layer_scene&quot; }))
+    local ok = lurek.scene.setCurrentLayer(8)
+    print(&quot;set layer ok = &quot; .. tostring(ok))
+    print(&quot;current layer = &quot; .. tostring(lurek.scene.getCurrentLayer()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdata"><div class="item-row-main"><h3>setData</h3><pre class="inline-signature">lurek.scene.setData(key: string, value: any)</pre><p>Store an arbitrary Lua value in the scene module&#x27;s shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:828</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.setData(&quot;selectedLevel&quot;, 5)
+    print(&quot;has selectedLevel = &quot; .. tostring(lurek.scene.hasData(&quot;selectedLevel&quot;)))
+    print(&quot;selectedLevel = &quot; .. lurek.scene.getData(&quot;selectedLevel&quot;))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setlateenabled"><div class="item-row-main"><h3>setLateEnabled</h3><pre class="inline-signature">lurek.scene.setLateEnabled(target: any?, enabled: boolean) -&gt; boolean</pre><p>Enable or disable `process_late(self, dt)` execution for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1108</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.setLateEnabled(nil, false)
+    print(&quot;setLateEnabled = &quot; .. tostring(lurek.scene.isLateEnabled()))
+    lurek.scene.setLateEnabled(nil, true)
+    print(&quot;after reset = &quot; .. tostring(lurek.scene.isLateEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setphysicsenabled"><div class="item-row-main"><h3>setPhysicsEnabled</h3><pre class="inline-signature">lurek.scene.setPhysicsEnabled(target: any?, enabled: boolean) -&gt; boolean</pre><p>Enable or disable `process_physics(self, dt)` execution for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1089</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.setPhysicsEnabled(nil, false)
+    print(&quot;setPhysicsEnabled = &quot; .. tostring(lurek.scene.isPhysicsEnabled()))
+    lurek.scene.setPhysicsEnabled(nil, true)
+    print(&quot;after reset = &quot; .. tostring(lurek.scene.isPhysicsEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setprocessenabled"><div class="item-row-main"><h3>setProcessEnabled</h3><pre class="inline-signature">lurek.scene.setProcessEnabled(target: any?, enabled: boolean) -&gt; boolean</pre><p>Enable or disable `process(self, dt)` execution for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1070</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    local disabled = lurek.scene.setProcessEnabled(nil, false)
+    local enabled = lurek.scene.setProcessEnabled(nil, true)
+    print(&quot;disabled ok = &quot; .. tostring(disabled))
+    print(&quot;setProcessEnabled = &quot; .. tostring(lurek.scene.isProcessEnabled()))
+    print(&quot;enabled ok = &quot; .. tostring(enabled))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setupdateenabled"><div class="item-row-main"><h3>setUpdateEnabled</h3><pre class="inline-signature">lurek.scene.setUpdateEnabled(target: any?, enabled: boolean) -&gt; boolean</pre><p>Enable or disable `update(self, dt)` execution for a selected scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1127</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.push(lurek.scene.new({ name = &quot;main_scene&quot; }))
+    lurek.scene.setUpdateEnabled(nil, false)
+    print(&quot;setUpdateEnabled = &quot; .. tostring(lurek.scene.isUpdateEnabled()))
+    lurek.scene.setUpdateEnabled(nil, true)
+    print(&quot;after reset = &quot; .. tostring(lurek.scene.isUpdateEnabled()))
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-slide"><div class="item-row-main"><h3>slide</h3><pre class="inline-signature">lurek.scene.slide(direction: string?, duration: number?) -&gt; table</pre><p>Create a directional slide transition descriptor table. The new scene slides in from the specified direction, pushing the old scene out.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1415</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local slide = lurek.scene.transitions.slide(&quot;left&quot;, 0.4)
+    print(&quot;slide type = &quot; .. slide.type .. &quot; dur = &quot; .. slide.duration)
+end</code></pre></details></article><article class="item-row api-row" id="fn-switchto"><div class="item-row-main"><h3>switchTo</h3><pre class="inline-signature">lurek.scene.switchTo(scene: table, transition: string?, duration: number?, easing: string?, params: table?)</pre><p>Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:314</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local sceneA = lurek.scene.new({
+        name = &quot;level1&quot;,
+        enter = function()
+            print(&quot;level1 enter&quot;)
+        end,
+        leave = function()
+            print(&quot;level1 leave&quot;)
+        end,
+    })
+    local sceneB = lurek.scene.new({
+        name = &quot;level2&quot;,
+        enter = function(_, params)
+            print(&quot;level2 enter, from=&quot; .. (params and params.from or &quot;none&quot;))
+        end,
+        leave = function()
+            print(&quot;level2 leave&quot;)
+        end,
+    })
+    lurek.scene.push(sceneA)
+    print(&quot;before switch: depth=&quot; .. lurek.scene.getStackSize())
+    lurek.scene.switchTo(sceneB, &quot;none&quot;, 0, &quot;linear&quot;, { from = &quot;level1&quot; })
+    print(&quot;after switch: depth=&quot; .. lurek.scene.getStackSize())
+    print(&quot;current = &quot; .. lurek.scene.getCurrent().name)
+    lurek.scene.clear()
+end</code></pre></details></article><article class="item-row api-row" id="fn-unregisterscene"><div class="item-row-main"><h3>unregisterScene</h3><pre class="inline-signature">lurek.scene.unregisterScene(name: string)</pre><p>Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:808</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    lurek.scene.clear()
+    lurek.scene.registerScene(&quot;_tmp_unreg&quot;, lurek.scene.new({ name = &quot;_tmp_unreg&quot; }))
+    print(&quot;before unregister = &quot; .. tostring(lurek.scene.hasRegistered(&quot;_tmp_unreg&quot;)))
+    lurek.scene.unregisterScene(&quot;_tmp_unreg&quot;)
+    print(&quot;after unregister = &quot; .. tostring(lurek.scene.hasRegistered(&quot;_tmp_unreg&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">lurek.scene.update(dt: number)</pre><p>Advance any active transition animation and call `update(self, dt)` on the current top scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:433</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    -- update advances transitions and dispatches the update callback to the top scene
+    lurek.scene.clear()
+    local s = lurek.scene.new({ name = &quot;update_test&quot; })
+    lurek.scene.push(s)
+    lurek.scene.update(0.016)
+    lurek.scene.clear()
+    print(&quot;lurek.scene.update ok&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-wipe"><div class="item-row-main"><h3>wipe</h3><pre class="inline-signature">lurek.scene.wipe(duration: number?) -&gt; table</pre><p>Create a horizontal wipe transition descriptor table. A wipe bar sweeps across the screen to reveal the new scene.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/scene_api.rs:1441</span></div><details class="example-block"><summary>Example · Exact example · scene.lua</summary><pre><code>do
+    local wipe = lurek.scene.transitions.wipe(0.5)
+    print(&quot;wipe type = &quot; .. wipe.type .. &quot; dur = &quot; .. wipe.duration)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LDepthSorter.html">LDepthSorter</a></h3><p>Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter&#x27;s-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.</p></div><div class="item-row-meta"><span>10 methods</span><span>module scene</span></div><div class="card-note">Example: scene.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

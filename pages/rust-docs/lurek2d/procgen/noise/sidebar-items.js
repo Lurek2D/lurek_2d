@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DistType","FractalType","NoiseKind"],"fn":["fbm","generate_noise_map_parallel","perlin2d","perlin3d","perlin4d","perlin_noise_periodic","simplex2d","simplex_noise_2d","simplex_noise_3d"],"struct":["MapGenOptions","NoiseGenerator"]};

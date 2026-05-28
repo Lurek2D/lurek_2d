@@ -2,8 +2,8 @@
 //!
 //! - Registers `lurek.learning.*` functions and types via `register()`.
 //! - Userdata types: `LuaQLearner`, `LuaNeuralNet`, `LuaGeneticAlgorithm`.
-//! - Userdata types: `LuaBandit`, `LuaNeuroevolution`.
-//! - Bridges 59 Lua-callable methods via `mlua`.
+//! - Userdata types: `LuaBandit`, `LuaNeuroevolution`, `LuaModel`.
+//! - Bridges 67 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::learning::{
@@ -183,6 +183,13 @@ impl LuaUserData for LuaQLearner {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LQLearner" || name == "LObject")
         });
+        // -- predict --
+        /// Alias for `chooseAction`. Selects an action for the given one-based state using the learner's policy.
+        /// @param | state | integer | One-based state index.
+        /// @return | integer | One-based chosen action index.
+        methods.add_method("predict", |_, this, state: usize| {
+            Ok(this.inner.borrow().choose_action(state.saturating_sub(1)) + 1)
+        });
     }
 }
 
@@ -259,6 +266,18 @@ impl LuaUserData for LuaNeuralNet {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LNeuralNet" || name == "LObject")
+        });
+        // -- predict --
+        /// Alias for `forward`. Runs a forward pass and returns output values.
+        /// @param | input | table | Array of numeric input values.
+        /// @return | number[] | Numeric output values.
+        methods.add_method("predict", |lua, this, input: Vec<f32>| {
+            let out = this.inner.borrow().forward(&input);
+            let t = lua.create_table()?;
+            for (i, v) in out.into_iter().enumerate() {
+                t.raw_set(i + 1, v)?;
+            }
+            Ok(t)
         });
     }
 }
@@ -397,6 +416,12 @@ impl LuaUserData for LuaBandit {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LBandit" || name == "LObject")
         });
+        // -- predict --
+        /// Alias for `select`. Selects an arm using the configured bandit strategy.
+        /// @return | integer | Zero-based selected arm index.
+        methods.add_method_mut("predict", |_, this, ()| {
+            Ok(this.inner.borrow_mut().select() as i64)
+        });
     }
 }
 
@@ -469,6 +494,58 @@ impl LuaUserData for LuaNeuroevolution {
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "LNeuroevolution" || name == "LObject")
+        });
+    }
+}
+
+/// A uniform model wrapper that delegates `predict` to any supported learning model type.
+///
+/// Wraps one of `LuaQLearner`, `LuaNeuralNet`, or `LuaBandit` so callers can use a
+/// single `predict(...)` call without knowing the concrete model type at call sites.
+#[derive(Clone)]
+pub(crate) enum LuaModel {
+    QLearner(LuaQLearner),
+    NeuralNet(LuaNeuralNet),
+    Bandit(LuaBandit),
+}
+impl LuaUserData for LuaModel {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- predict --
+        /// Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
+        /// depending on the wrapped type. Input is interpreted as `integer` for QLearner/Bandit
+        /// and as a `table` of numbers for NeuralNet.
+        /// @param | input | any | State index (integer) for QLearner/Bandit, or number array table for NeuralNet.
+        /// @return | any | Action index (integer) for QLearner/Bandit, or number array for NeuralNet.
+        methods.add_method_mut("predict", |lua, this, input: LuaValue| {
+            match this {
+                LuaModel::QLearner(q) => {
+                    let state: usize = lua.unpack(input)?;
+                    Ok(lua.pack(q.inner.borrow().choose_action(state.saturating_sub(1)) + 1)?)
+                }
+                LuaModel::NeuralNet(n) => {
+                    let v: Vec<f32> = lua.unpack(input)?;
+                    let out = n.inner.borrow().forward(&v);
+                    let t = lua.create_table()?;
+                    for (i, val) in out.into_iter().enumerate() {
+                        t.raw_set(i + 1, val)?;
+                    }
+                    Ok(lua.pack(t)?)
+                }
+                LuaModel::Bandit(b) => {
+                    Ok(lua.pack(b.inner.borrow_mut().select() as i64)?)
+                }
+            }
+        });
+        // -- type --
+        /// Returns the type name `"LModel"`.
+        /// @return | string | The string `LModel`.
+        methods.add_method("type", |_, _, ()| Ok("LModel"));
+        // -- typeOf --
+        /// Returns whether this model wrapper matches a supported type name.
+        /// @param | name | string | Type name to compare against `LModel` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this wrapper.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LModel" || name == "LObject")
         });
     }
 }
@@ -569,6 +646,30 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(LuaNeuroevolution {
                 inner: Rc::new(RefCell::new(Neuroevolution::new(spec, pop_size, seed))),
             })
+        })?,
+    )?;
+    // -- wrap --
+    /// Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
+    /// The returned LModel exposes a single `predict(input)` method that delegates to the wrapped type.
+    /// @param | model | any | An LQLearner, LNeuralNet, or LBandit instance.
+    /// @return | LModel | A uniform model wrapper exposing predict().
+    tbl.set(
+        "wrap",
+        lua.create_function(|_, model: LuaValue| {
+            if let LuaValue::UserData(ud) = &model {
+                if let Ok(q) = ud.borrow::<LuaQLearner>() {
+                    return Ok(LuaModel::QLearner(q.clone()));
+                }
+                if let Ok(n) = ud.borrow::<LuaNeuralNet>() {
+                    return Ok(LuaModel::NeuralNet(n.clone()));
+                }
+                if let Ok(b) = ud.borrow::<LuaBandit>() {
+                    return Ok(LuaModel::Bandit(b.clone()));
+                }
+            }
+            Err(LuaError::RuntimeError(
+                "wrap: expected LQLearner, LNeuralNet, or LBandit".into(),
+            ))
         })?,
     )?;
 

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["from_pixels","get_height","get_scale_info","get_scale_mode","get_width","set_scale_mode","set_scale_mode_validated","to_pixels"],"struct":["ScaleInfo"]};

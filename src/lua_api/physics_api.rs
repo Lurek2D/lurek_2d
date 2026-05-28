@@ -1,4 +1,4 @@
-//! `lurek.physics` â€” 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+﻿//! `lurek.physics` Ă˘â‚¬â€ť 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
 //!
 //! - Registers `lurek.physics.*` functions and types via `register()`.
 //! - `LuaWorld`: userdata type exposed to Lua.
@@ -12,7 +12,7 @@
 use super::SharedState;
 use crate::math::Vec2;
 use crate::physics::{
-    Body, BodyId, BodyType, CellType, CellularWorld, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
+    Body, BodyId, BodyType, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -407,7 +407,7 @@ impl LuaUserData for LuaWorld {
         /// Updates the friction coefficient of a specific fixture on a body.
         /// @param | bodyId | integer | The body ID.
         /// @param | fixtureIndex | integer | Zero-based fixture index on the body.
-        /// @param | friction | number | New friction value (0â€“1 typical range).
+        /// @param | friction | number | New friction value (0Ă˘â‚¬â€ś1 typical range).
         methods.add_method(
             "setFixtureFriction",
             |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
@@ -569,7 +569,7 @@ impl LuaUserData for LuaWorld {
         /// Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
         /// @param | bodyA | integer | First body ID.
         /// @param | bodyB | integer | Second body ID.
-        /// @param | factor | number | Correction factor (0â€“1), higher = faster convergence.
+        /// @param | factor | number | Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence.
         /// @return | integer | The joint ID.
         methods.add_method(
             "addMotorJoint",
@@ -1084,7 +1084,7 @@ impl LuaUserData for LuaWorld {
         });
         // -- setSolverIterations --
         /// Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
-        /// @param | n | integer | Number of iterations (default is typically 4â€“8).
+        /// @param | n | integer | Number of iterations (default is typically 4Ă˘â‚¬â€ś8).
         methods.add_method("setSolverIterations", |_, this, n: usize| {
             this.world.borrow_mut().set_solver_iterations(n);
             Ok(())
@@ -1512,162 +1512,6 @@ impl LuaUserData for LuaTerrain {
         });
     }
 }
-/// A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
-#[derive(Clone)]
-pub struct LuaCellular {
-    sim: Rc<RefCell<CellularWorld>>,
-}
-impl LuaUserData for LuaCellular {
-    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // -- setCell --
-        /// Sets a single cell in the cellular grid to a specific material type.
-        /// @param | cx | integer | Cell column (0-based).
-        /// @param | cy | integer | Cell row (0-based).
-        /// @param | cellType | integer | Material type constant (CELL_AIR, CELL_SAND, etc.).
-        methods.add_method_mut("setCell", |_, this, (cx, cy, t): (u32, u32, u8)| {
-            this.sim.borrow_mut().set_cell(cx, cy, CellType::from_u8(t));
-            Ok(())
-        });
-        // -- getCell --
-        /// Returns the material type of a cell at the given grid position.
-        /// @param | cx | integer | Cell column.
-        /// @param | cy | integer | Cell row.
-        /// @return | integer | Material type constant.
-        methods.add_method("getCell", |_, this, (cx, cy): (u32, u32)| {
-            Ok(this.sim.borrow().get_cell(cx, cy) as u8)
-        });
-        // -- fillRect --
-        /// Fills a rectangular region of cells with a material type.
-        /// @param | cx0 | integer | Top-left cell column.
-        /// @param | cy0 | integer | Top-left cell row.
-        /// @param | cw | integer | Width in cells.
-        /// @param | ch | integer | Height in cells.
-        /// @param | cellType | integer | Material type constant.
-        methods.add_method_mut(
-            "fillRect",
-            |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
-                this.sim
-                    .borrow_mut()
-                    .fill_rect(cx0, cy0, cw, ch, CellType::from_u8(t));
-                Ok(())
-            },
-        );
-        // -- fillCircle --
-        /// Fills a circular region of cells with a material type.
-        /// @param | cx | integer | Center cell column.
-        /// @param | cy | integer | Center cell row.
-        /// @param | r | integer | Radius in cells.
-        /// @param | cellType | integer | Material type constant.
-        methods.add_method_mut(
-            "fillCircle",
-            |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
-                this.sim
-                    .borrow_mut()
-                    .fill_circle(cx, cy, r, CellType::from_u8(t));
-                Ok(())
-            },
-        );
-        // -- step --
-        /// Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-        methods.add_method_mut("step", |_, this, ()| {
-            this.sim.borrow_mut().step();
-            Ok(())
-        });
-        // -- stepN --
-        /// Advances the cellular simulation by N ticks in a single call.
-        /// @param | n | integer | Number of simulation ticks to run.
-        methods.add_method_mut("stepN", |_, this, n: u32| {
-            this.sim.borrow_mut().step_n(n);
-            Ok(())
-        });
-        // -- toImageData --
-        /// Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
-        /// @return | string | Raw RGBA pixel bytes (width * height * 4).
-        methods.add_method("toImageData", |lua, this, ()| {
-            let buf = this
-                .sim
-                .borrow()
-                .to_image_data(crate::physics::default_palette);
-            lua.create_string(&buf)
-        });
-        // -- toImageDataRegion --
-        /// Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
-        /// @param | cx0 | integer | Top-left cell column.
-        /// @param | cy0 | integer | Top-left cell row.
-        /// @param | cw | integer | Width in cells.
-        /// @param | ch | integer | Height in cells.
-        /// @return | string | Raw RGBA pixel bytes (cw * ch * 4).
-        methods.add_method(
-            "toImageDataRegion",
-            |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
-                let buf = this.sim.borrow().to_image_data_region(
-                    cx0,
-                    cy0,
-                    cw,
-                    ch,
-                    crate::physics::default_palette,
-                );
-                lua.create_string(&buf)
-            },
-        );
-        // -- countCells --
-        /// Counts how many cells of a given material type exist in the grid.
-        /// @param | cellType | integer | Material type constant to count.
-        /// @return | integer | Cell count.
-        methods.add_method("countCells", |_, this, t: u8| {
-            Ok(this.sim.borrow().count_cells(CellType::from_u8(t)))
-        });
-        // -- findCells --
-        /// Returns positions of all cells matching a material type.
-        /// @param | cellType | integer | Material type constant to find.
-        /// @return | table | Array of {x, y} tables with cell coordinates.
-        /// @field | x | number | X.
-        /// @field | y | number | Y.
-        methods.add_method("findCells", |lua, this, t: u8| {
-            let positions = this.sim.borrow().find_cells(CellType::from_u8(t));
-            let tbl = lua.create_table()?;
-            for (i, (cx, cy)) in positions.iter().enumerate() {
-                let row = lua.create_table()?;
-                /// The 'x' field value exposed to Lua scripts.
-                row.set("x", *cx)?;
-                /// The 'y' field value exposed to Lua scripts.
-                row.set("y", *cy)?;
-                tbl.set(i + 1, row)?;
-            }
-            Ok(tbl)
-        });
-        // -- toBytes --
-        /// Serializes the cellular grid to a compact binary format for saving.
-        /// @return | string | Binary cellular data.
-        methods.add_method("toBytes", |lua, this, ()| {
-            lua.create_string(this.sim.borrow().to_bytes())
-        });
-        // -- loadFromBytes --
-        /// Restores cellular grid state from binary data previously produced by toBytes.
-        /// @param | data | string | Binary cellular data.
-        /// @return | boolean | True if loading succeeded, false if data was invalid.
-        methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
-            match CellularWorld::from_bytes(data.as_bytes()) {
-                Some(loaded) => {
-                    *this.sim.borrow_mut() = loaded;
-                    Ok(true)
-                }
-                None => Ok(false),
-            }
-        });
-        // -- type --
-        /// Returns the type name of this object ("LCellular").
-        /// @return | string | "LCellular".
-        methods.add_method("type", |_, _, ()| Ok("LCellular"));
-        // -- typeOf --
-        /// Checks if this object is of a given type name.
-        /// @param | name | string | Type name to check.
-        /// @return | boolean | True if the object matches.
-        methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LCellular" || name == "LObject")
-        });
-    }
-}
 /// A handle to a single physics body in the world, providing per-body manipulation methods.
 #[derive(Clone)]
 pub struct LuaBody {
@@ -1829,7 +1673,7 @@ impl LuaUserData for LuaBody {
         });
         // -- setRestitution --
         /// Sets the body's restitution (bounciness) value.
-        /// @param | restitution | number | New restitution (0â€“1).
+        /// @param | restitution | number | New restitution (0Ă˘â‚¬â€ś1).
         methods.add_method("setRestitution", |_, this, restitution: f32| {
             let mut w = this.world.borrow_mut();
             if let Some(b) = w.get_body_mut(this.id.0) {
@@ -2567,31 +2411,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             }
         })?,
     )?;
-    // -- newCellular --
-    /// Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
-    /// @param | width | integer | Grid width in cells.
-    /// @param | height | integer | Grid height in cells.
-    /// @return | LCellular | The cellular simulation object.
-    tbl.set(
-        "newCellular",
-        lua.create_function(move |_, (width, height): (u32, u32)| {
-            Ok(LuaCellular {
-                sim: Rc::new(RefCell::new(CellularWorld::new(width, height))),
-            })
-        })?,
-    )?;
-    /// Cell type constant: air â€” passable empty cell for cellular simulation.
-    tbl.set("CELL_AIR", CellType::Air as u8)?;
-    /// Cell type constant: sand â€” granular solid that falls and piles.
-    tbl.set("CELL_SAND", CellType::Sand as u8)?;
-    /// Cell type constant: water â€” liquid that flows and spreads.
-    tbl.set("CELL_WATER", CellType::Water as u8)?;
-    /// Cell type constant: rock â€” immovable solid barrier.
-    tbl.set("CELL_ROCK", CellType::Rock as u8)?;
-    /// Cell type constant: fire â€” active combustion that spreads and consumes.
-    tbl.set("CELL_FIRE", CellType::Fire as u8)?;
-    /// Cell type constant: gas â€” diffusing vapor that rises.
-    tbl.set("CELL_GAS", CellType::Gas as u8)?;
     // -- testAABB --
     /// Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.
     /// @param | ax | number | First rect X.

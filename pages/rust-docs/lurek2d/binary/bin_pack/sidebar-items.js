@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BinValue"],"fn":["measure_size","read","write"]};

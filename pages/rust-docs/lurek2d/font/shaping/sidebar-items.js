@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TextAlign","WordWrap"],"fn":["shape_text","wrap_characters","wrap_words"],"struct":["LineBreak","ShapedLine","ShapedText"]};

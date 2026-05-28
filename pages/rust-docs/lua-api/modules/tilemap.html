@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.tilemap - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a class="active" href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.tilemap</h1>
+  <p>`lurek.tilemap` - Provides tile-based map rendering with layers, animated tiles, auto-tiling, collision maps, and TMX/Tiled import.</p>
+  <div class="api-meta api-meta-header"><span>28 functions</span><span>10 classes</span><span>src/lua_api/tilemap_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 190</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.tilemap.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-fromldtk"><div class="item-row-main"><h3>fromLDtk</h3><pre class="inline-signature">lurek.tilemap.fromLDtk(jsonStr: string, levelName: string?) -&gt; LTileMap</pre><p>Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2473</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local ldtkJson = &#x27;{&quot;levels&quot;:[{&quot;identifier&quot;:&quot;Level_0&quot;,&quot;layerInstances&quot;:[]}]}&#x27;
+    local map = lurek.tilemap.fromLDtk(ldtkJson)
+    print(&quot;LDtk map type = &quot; .. map:type())
+    local named = lurek.tilemap.fromLDtk(ldtkJson, &quot;Level_0&quot;)
+    print(&quot;named level loaded&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromscreenhex"><div class="item-row-main"><h3>fromScreenHex</h3><pre class="inline-signature">lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -&gt; integer</pre><p>Converts screen-space pixel coordinates to axial hex coordinates.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2059</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
+    print(&quot;hex_x=&quot; .. hx .. &quot; hex_y=&quot; .. hy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-fromscreeniso"><div class="item-row-main"><h3>fromScreenIso</h3><pre class="inline-signature">lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -&gt; number</pre><p>Converts screen-space coordinates back to tile coordinates for isometric projection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2031</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
+    print(&quot;iso_x=&quot; .. ix .. &quot; iso_y=&quot; .. iy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexarea"><div class="item-row-main"><h3>hexArea</h3><pre class="inline-signature">lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -&gt; table</pre><p>Returns all hex cells within a filled area of a given radius.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2190</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local area = lurek.tilemap.hexArea(0, 0, 1)
+    print(&quot;area radius 1: &quot; .. #area .. &quot; cells&quot;)
+    local bigArea = lurek.tilemap.hexArea(5, 5, 3)
+    print(&quot;area radius 3 around (5,5): &quot; .. #bigArea .. &quot; cells&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexdistance"><div class="item-row-main"><h3>hexDistance</h3><pre class="inline-signature">lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -&gt; integer</pre><p>Computes the hex grid distance between two axial coordinates.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2096</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local d = lurek.tilemap.hexDistance(0, 0, 3, 2)
+    print(&quot;hex distance (0,0) to (3,2) = &quot; .. d)
+    d = lurek.tilemap.hexDistance(1, 1, 1, 1)
+    print(&quot;same cell distance = &quot; .. d)
+    d = lurek.tilemap.hexDistance(-2, 1, 2, -1)
+    print(&quot;across-origin distance = &quot; .. d)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexline"><div class="item-row-main"><h3>hexLine</h3><pre class="inline-signature">lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -&gt; table</pre><p>Returns all hex cells along a line between two axial coordinates.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2124</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local line = lurek.tilemap.hexLine(0, 0, 4, 2)
+    print(&quot;line (0,0) to (4,2): &quot; .. #line .. &quot; cells&quot;)
+    for i, cell in ipairs(line) do
+        print(&quot;  step &quot; .. i .. &quot;: q=&quot; .. cell.q .. &quot; r=&quot; .. cell.r)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexneighbors"><div class="item-row-main"><h3>hexNeighbors</h3><pre class="inline-signature">lurek.tilemap.hexNeighbors(q: integer, r: integer) -&gt; table</pre><p>Returns the six neighboring hex cells of a given axial coordinate.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2073</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local neighbors = lurek.tilemap.hexNeighbors(3, 4)
+    print(&quot;neighbors of (3,4): &quot; .. #neighbors .. &quot; cells&quot;)
+    for i, n in ipairs(neighbors) do
+        print(&quot;  &quot; .. i .. &quot;: q=&quot; .. n.q .. &quot; r=&quot; .. n.r)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexreflect"><div class="item-row-main"><h3>hexReflect</h3><pre class="inline-signature">lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -&gt; integer</pre><p>Reflects a hex cell across an axis through a center point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2231</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local q, r = lurek.tilemap.hexReflect(3, 1, 0, 0, &quot;q&quot;)
+    print(&quot;reflect (3,1) across q axis = &quot; .. q .. &quot;, &quot; .. r)
+    q, r = lurek.tilemap.hexReflect(2, -1, 0, 0, &quot;r&quot;)
+    print(&quot;reflect (2,-1) across r axis = &quot; .. q .. &quot;, &quot; .. r)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexring"><div class="item-row-main"><h3>hexRing</h3><pre class="inline-signature">lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -&gt; table</pre><p>Returns all hex cells forming a ring at a given radius around a center.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2146</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local ring = lurek.tilemap.hexRing(0, 0, 2)
+    print(&quot;ring at radius 2: &quot; .. #ring .. &quot; cells&quot;)
+    for _, cell in ipairs(ring) do
+        print(&quot;  q=&quot; .. cell.q .. &quot; r=&quot; .. cell.r)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexrotate"><div class="item-row-main"><h3>hexRotate</h3><pre class="inline-signature">lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -&gt; integer</pre><p>Rotates a hex cell around a center point by a number of 60-degree steps.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2213</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 1)
+    print(&quot;(2,0) rotated 60deg CW around origin = &quot; .. q .. &quot;, &quot; .. r)
+    q, r = lurek.tilemap.hexRotate(2, 0, 0, 0, 3)
+    print(&quot;(2,0) rotated 180deg = &quot; .. q .. &quot;, &quot; .. r)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexround"><div class="item-row-main"><h3>hexRound</h3><pre class="inline-signature">lurek.tilemap.hexRound(q: number, r: number) -&gt; integer</pre><p>Rounds fractional axial hex coordinates to the nearest integer hex cell.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2108</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local q, r = lurek.tilemap.hexRound(2.3, 1.7)
+    print(&quot;round(2.3, 1.7) = &quot; .. q .. &quot;, &quot; .. r)
+    q, r = lurek.tilemap.hexRound(-0.4, 0.6)
+    print(&quot;round(-0.4, 0.6) = &quot; .. q .. &quot;, &quot; .. r)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hexspiral"><div class="item-row-main"><h3>hexSpiral</h3><pre class="inline-signature">lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -&gt; table</pre><p>Returns all hex cells in a spiral pattern out to a given radius.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2168</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local spiral = lurek.tilemap.hexSpiral(0, 0, 2)
+    print(&quot;spiral radius 2: &quot; .. #spiral .. &quot; cells&quot;)
+    print(&quot;center = q=&quot; .. spiral[1].q .. &quot; r=&quot; .. spiral[1].r)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isodirectionfromangle"><div class="item-row-main"><h3>isoDirectionFromAngle</h3><pre class="inline-signature">lurek.tilemap.isoDirectionFromAngle(angle: number) -&gt; integer</pre><p>Converts an angle in degrees to the nearest isometric direction index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2263</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local dir = lurek.tilemap.isoDirectionFromAngle(45)
+    print(&quot;45 degrees -&gt; direction &quot; .. dir)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isodirectionname"><div class="item-row-main"><h3>isoDirectionName</h3><pre class="inline-signature">lurek.tilemap.isoDirectionName(direction: integer) -&gt; string</pre><p>Returns a human-readable name for an isometric direction index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2255</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local name = lurek.tilemap.isoDirectionName(1)
+    print(&quot;iso_dir=&quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-isorotate"><div class="item-row-main"><h3>isoRotate</h3><pre class="inline-signature">lurek.tilemap.isoRotate(direction: integer, steps: integer) -&gt; integer</pre><p>Rotates an isometric direction index by a number of 90-degree steps.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2245</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local rotated = lurek.tilemap.isoRotate(1, 2)
+    print(&quot;iso_rotated=&quot; .. rotated)
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadtmx"><div class="item-row-main"><h3>loadTMX</h3><pre class="inline-signature">lurek.tilemap.loadTMX(xml: string) -&gt; table</pre><p>Parses a TMX (Tiled XML) string and returns a table describing the map structure.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2417</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local tmxData = [[&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;map version=&quot;1.10&quot; orientation=&quot;orthogonal&quot; width=&quot;4&quot; height=&quot;4&quot; tilewidth=&quot;32&quot; tileheight=&quot;32&quot;&gt; &lt;layer name=&quot;ground&quot; width=&quot;4&quot; height=&quot;4&quot;&gt; &lt;data encoding=&quot;csv&quot;&gt;1,1,1,1,1,2,2,1,1,2,2,1,1,1,1,1&lt;/data&gt; &lt;/layer&gt; &lt;/map&gt;]]
+    local result = lurek.tilemap.loadTMX(tmxData)
+    print(&quot;TMX width = &quot; .. result.width)
+    print(&quot;TMX height = &quot; .. result.height)
+    print(&quot;TMX tile size = &quot; .. result.tileWidth .. &quot;x&quot; .. result.tileHeight)
+    print(&quot;TMX orientation = &quot; .. result.orientation)
+    print(&quot;TMX layers = &quot; .. #result.layers)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newautotilesheet"><div class="item-row-main"><h3>newAutoTileSheet</h3><pre class="inline-signature">lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -&gt; LAutoTileSheet</pre><p>Creates an auto-tile sheet with a given tile size and layout.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1909</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local blob = lurek.tilemap.newAutoTileSheet(16, 16, &quot;blob47&quot;)
+    print(&quot;blob47 layout = &quot; .. blob:getLayout())
+    print(&quot;blob47 tile count = &quot; .. blob:getTileCount())
+    print(&quot;blob47 tile size = &quot; .. blob:getTileWidth() .. &quot;x&quot; .. blob:getTileHeight())
+    local minimal = lurek.tilemap.newAutoTileSheet(16, 16, &quot;minimal16&quot;)
+    print(&quot;minimal16 tile count = &quot; .. minimal:getTileCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newchunkmap"><div class="item-row-main"><h3>newChunkMap</h3><pre class="inline-signature">lurek.tilemap.newChunkMap(chunkSize: integer?) -&gt; LChunkMap</pre><p>Creates a new infinite chunk-based tile map.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1932</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LChunkMap
+    local cm = lurek.tilemap.newChunkMap(16)
+    print(&quot;type = &quot; .. cm:type())
+    print(&quot;chunk size = &quot; .. cm:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newisomap"><div class="item-row-main"><h3>newIsoMap</h3><pre class="inline-signature">lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, partCount: integer?) -&gt; LIsoMap</pre><p>Creates a new isometric map with the given dimensions and tile geometry.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1949</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local iso = lurek.tilemap.newIsoMap(20, 20, 64, 32, 16)
+    print(&quot;type = &quot; .. iso:type())
+    print(&quot;size = &quot; .. iso:getWidth() .. &quot;x&quot; .. iso:getHeight())
+    print(&quot;tile size = &quot; .. iso:getTileWidth() .. &quot;x&quot; .. iso:getTileHeight())
+    print(&quot;level height = &quot; .. iso:getLevelHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newlargemaprenderer"><div class="item-row-main"><h3>newLargeMapRenderer</h3><pre class="inline-signature">lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -&gt; LLargeMapRenderer</pre><p>Creates a chunk-based large-map renderer for efficient rendering of very large maps.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2500</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LLargeMapRenderer
+    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
+    print(&quot;type = &quot; .. lmr:type())
+    print(&quot;chunk size = &quot; .. lmr:getChunkSize())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmapblock"><div class="item-row-main"><h3>newMapBlock</h3><pre class="inline-signature">lurek.tilemap.newMapBlock(width: integer, height: integer, layers: integer?, segmentSize: integer?) -&gt; LMapBlock</pre><p>Creates a new procedural map block with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1981</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local block = lurek.tilemap.newMapBlock(8, 8, 2, 2) ; print(&quot;type = &quot; .. block:type())
+    local w, h = block:getDimensions() ; print(&quot;dimensions = &quot; .. w .. &quot;x&quot; .. h)
+    print(&quot;layers = &quot; .. block:getLayerCount()) ; print(&quot;segment size = &quot; .. block:getSegmentSize())
+    print(&quot;width in segments = &quot; .. block:getWidthInSegments())
+    print(&quot;height in segments = &quot; .. block:getHeightInSegments())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmapgen"><div class="item-row-main"><h3>newMapGen</h3><pre class="inline-signature">lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, segmentSize: integer?) -&gt; LMapGen</pre><p>Creates a procedural map generator from a group and either a size preset or explicit dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2294</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local group = lurek.tilemap.newMapGroup(&quot;caves&quot;) ; local block = lurek.tilemap.newMapBlock(4, 4) ; block:setName(&quot;open&quot;)
+    block:setTile(1, 1, 1, 1) ; block:setTile(1, 2, 2, 1) ; group:addBlock(block)
+    local script = lurek.tilemap.newMapScript() ; script:addStep({ type = &quot;fill&quot;, gid = 1 }) ; group:addScript(script)
+    local gen = lurek.tilemap.newMapGen(group, &quot;small&quot;, 1) ; print(&quot;type = &quot; .. gen:type())
+    local result = gen:generate(1, 42, &quot;terrain&quot;) ; print(&quot;generated map type = &quot; .. result:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmapgroup"><div class="item-row-main"><h3>newMapGroup</h3><pre class="inline-signature">lurek.tilemap.newMapGroup(name: string) -&gt; LMapGroup</pre><p>Creates a new map group to hold blocks and generation scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2000</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local group = lurek.tilemap.newMapGroup(&quot;dungeon&quot;) ; print(&quot;type = &quot; .. group:type()) ; print(&quot;name = &quot; .. group:getName())
+    local b1 = lurek.tilemap.newMapBlock(4, 4) ; b1:setName(&quot;corridor&quot;) ; local b2 = lurek.tilemap.newMapBlock(4, 4)
+    b2:setName(&quot;room&quot;) ; group:addBlock(b1)
+    group:addBlock(b2) ; print(&quot;block count = &quot; .. group:getBlockCount())
+    group:removeBlock(1) ; print(&quot;after remove = &quot; .. group:getBlockCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newmapscript"><div class="item-row-main"><h3>newMapScript</h3><pre class="inline-signature">lurek.tilemap.newMapScript() -&gt; LMapScript</pre><p>Creates a new empty map-generation script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2270</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local script = lurek.tilemap.newMapScript() ; print(&quot;type = &quot; .. script:type())
+    script:addStep({ type = &quot;fill&quot;, gid = 1 })
+    script:addStep({ type = &quot;scatter&quot;, gid = 5, chance = 0.1 })
+    script:addStep({ type = &quot;border&quot;, gid = 2 })
+    print(&quot;step count = &quot; .. script:getStepCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtilemap"><div class="item-row-main"><h3>newTileMap</h3><pre class="inline-signature">lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, chunkSize: integer?) -&gt; LTileMap</pre><p>Creates a new empty tilemap with the given tile dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1883</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileMap
+    local map = lurek.tilemap.newTileMap(32, 32)
+    print(&quot;type = &quot; .. map:type())
+    local tw, th = map:getTileDimensions()
+    print(&quot;tile size = &quot; .. tw .. &quot;x&quot; .. th)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtileset"><div class="item-row-main"><h3>newTileSet</h3><pre class="inline-signature">lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, spacing: integer?, margin: integer?) -&gt; LTileSet</pre><p>Creates a new tileset from atlas parameters.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:1849</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    ---@type LTileSet
+    local ts = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
+    print(&quot;type = &quot; .. ts:type())
+    print(&quot;first gid = &quot; .. ts:getFirstGid())
+    print(&quot;tile count = &quot; .. ts:getTileCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-toscreenhex"><div class="item-row-main"><h3>toScreenHex</h3><pre class="inline-signature">lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -&gt; number</pre><p>Converts axial hex coordinates to screen-space pixel position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2045</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sx, sy = lurek.tilemap.toScreenHex(2, 3, 32)
+    print(&quot;hex(2,3) -&gt; screen(&quot; .. sx .. &quot;, &quot; .. sy .. &quot;)&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-toscreeniso"><div class="item-row-main"><h3>toScreenIso</h3><pre class="inline-signature">lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -&gt; number</pre><p>Converts tile coordinates to screen-space position for isometric projection.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/tilemap_api.rs:2016</span></div><details class="example-block"><summary>Example · Exact example · tilemap.lua</summary><pre><code>do
+    local sx, sy = lurek.tilemap.toScreenIso(3, 5, 64, 32)
+    print(&quot;tile(3,5) -&gt; screen(&quot; .. sx .. &quot;, &quot; .. sy .. &quot;)&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAutoTileSheet.html">LAutoTileSheet</a></h3><p>Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.</p></div><div class="item-row-meta"><span>10 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LChunkMap.html">LChunkMap</a></h3><p>Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.</p></div><div class="item-row-meta"><span>12 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LIsoMap.html">LIsoMap</a></h3><p>Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.</p></div><div class="item-row-meta"><span>20 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LLargeMapRenderer.html">LLargeMapRenderer</a></h3><p>Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.</p></div><div class="item-row-meta"><span>19 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMapBlock.html">LMapBlock</a></h3><p>Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.</p></div><div class="item-row-meta"><span>17 methods</span><span>module tilemap</span></div><div class="card-note">Example: mapblock.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMapGen.html">LMapGen</a></h3><p>Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.</p></div><div class="item-row-meta"><span>3 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMapGroup.html">LMapGroup</a></h3><p>Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.</p></div><div class="item-row-meta"><span>8 methods</span><span>module tilemap</span></div><div class="card-note">Example: mapblock.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LMapScript.html">LMapScript</a></h3><p>Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.</p></div><div class="item-row-meta"><span>4 methods</span><span>module tilemap</span></div><div class="card-note">Example: mapblock.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTileMap.html">LTileMap</a></h3><p>Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.</p></div><div class="item-row-meta"><span>50 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTileSet.html">LTileSet</a></h3><p>Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.</p></div><div class="item-row-meta"><span>19 methods</span><span>module tilemap</span></div><div class="card-note">Example: tilemap.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CellType"],"fn":["default_palette"],"struct":["CellularWorld"]};

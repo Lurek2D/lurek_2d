@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.math - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a class="active" href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.math</h1>
+  <p>`lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers. - Registers `lurek.math.*` functions and types via `register()`. - Userdata types: `LuaVec2`, `LuaVec3`, `LuaCatmullRom`. - Userdata types: `LuaHermite`, `LuaRandomGenerator`, `LuaTransform`. - Userdata types: `LuaBezierCurve`, `LuaTween`, `LuaSpatialHash`. - Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`. - Bridges 233 Lua-callable methods via `mlua`. - See `docs/specs/math.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>92 functions</span><span>12 classes</span><span>src/lua_api/math_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 232</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.math.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-vec2"><div class="item-row-main"><h3>Vec2</h3><pre class="inline-signature">lurek.math.Vec2(x: number, y: number) -&gt; LVec2</pre><p>Creates a 2D vector. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2314</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec2(3, 4)
+    print(&quot;vec2 = &quot; .. v.x .. &quot;,&quot; .. v.y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-vec3"><div class="item-row-main"><h3>Vec3</h3><pre class="inline-signature">lurek.math.Vec3(x: number, y: number, z: number) -&gt; LVec3</pre><p>Creates a 3D vector. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2342</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 3)
+    print(&quot;vec3 = &quot; .. v.x .. &quot;,&quot; .. v.y .. &quot;,&quot; .. v.z)
+end</code></pre></details></article><article class="item-row api-row" id="fn-aabbtree"><div class="item-row-main"><h3>aabbTree</h3><pre class="inline-signature">lurek.math.aabbTree() -&gt; LAabbTree</pre><p>Creates an empty AABB tree. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2526</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local tree = lurek.math.aabbTree()
+    tree:insert(1, 0, 0, 10, 10)
+    tree:insert(2, 5, 5, 15, 15)
+    print(&quot;len = &quot; .. tree:len())
+    print(&quot;empty = &quot; .. tostring(tree:isEmpty()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-abs"><div class="item-row-main"><h3>abs</h3><pre class="inline-signature">lurek.math.abs(x: number) -&gt; number</pre><p>Returns absolute value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2147</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;abs(-5) = &quot; .. lurek.math.abs(-5))
+    print(&quot;abs(3) = &quot; .. lurek.math.abs(3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-acos"><div class="item-row-main"><h3>acos</h3><pre class="inline-signature">lurek.math.acos(x: number) -&gt; number</pre><p>Returns arccosine of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2114</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;acos(1) = &quot; .. lurek.math.acos(1))
+    print(&quot;acos(0) = &quot; .. lurek.math.acos(0))
+end</code></pre></details></article><article class="item-row api-row" id="fn-anglebetween"><div class="item-row-main"><h3>angleBetween</h3><pre class="inline-signature">lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -&gt; number</pre><p>Returns the angle between two points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1781</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = lurek.math.angleBetween(0, 0, 1, 0)
+    print(&quot;angle to right = &quot; .. a)
+    local b = lurek.math.angleBetween(0, 0, 0, 1)
+    print(&quot;angle down = &quot; .. b)
+end</code></pre></details></article><article class="item-row api-row" id="fn-applyeasing"><div class="item-row-main"><h3>applyEasing</h3><pre class="inline-signature">lurek.math.applyEasing(name: string, t: number) -&gt; number</pre><p>Applies a named easing function to a normalized value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1511</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local linear = lurek.math.applyEasing(&quot;linear&quot;, 0.5)
+    local eased = lurek.math.applyEasing(&quot;inOutCubic&quot;, 0.5)
+    print(&quot;linear = &quot; .. linear)
+    print(&quot;inOutCubic = &quot; .. eased)
+end</code></pre></details></article><article class="item-row api-row" id="fn-asin"><div class="item-row-main"><h3>asin</h3><pre class="inline-signature">lurek.math.asin(x: number) -&gt; number</pre><p>Returns arcsine of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2109</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;asin(1) = &quot; .. lurek.math.asin(1))
+    print(&quot;asin(0) = &quot; .. lurek.math.asin(0))
+end</code></pre></details></article><article class="item-row api-row" id="fn-atan"><div class="item-row-main"><h3>atan</h3><pre class="inline-signature">lurek.math.atan(y: number, x: number?) -&gt; number</pre><p>Returns arctangent or two-argument arctangent.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2120</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;atan(1) = &quot; .. lurek.math.atan(1))
+    print(&quot;atan(1, 1) = &quot; .. lurek.math.atan(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-atan2"><div class="item-row-main"><h3>atan2</h3><pre class="inline-signature">lurek.math.atan2(y: number, x: number) -&gt; number</pre><p>Returns two-argument arctangent.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2134</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;atan2(1, 0) = &quot; .. lurek.math.atan2(1, 0))
+    print(&quot;atan2(0, 1) = &quot; .. lurek.math.atan2(0, 1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-bresenham"><div class="item-row-main"><h3>bresenham</h3><pre class="inline-signature">lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -&gt; table</pre><p>Returns integer grid points along a Bresenham line.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2054</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = lurek.math.bresenham(0, 0, 5, 3)
+    print(&quot;bresenham points = &quot; .. #pts)
+    for _, p in ipairs(pts) do
+        print(&quot;  &quot; .. p.x .. &quot;,&quot; .. p.y)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-catmullrom"><div class="item-row-main"><h3>catmullRom</h3><pre class="inline-signature">lurek.math.catmullRom(points: table) -&gt; LCatmullRom</pre><p>Creates a Catmull-Rom spline from point tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2354</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local spline = lurek.math.catmullRom({{x = 0, y = 0}, {x = 50, y = 80}, {x = 100, y = 20}, {x = 150, y = 60}})
+    print(&quot;points = &quot; .. spline:len())
+    local x, y = spline:sample(0.5)
+    print(&quot;mid = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-ceil"><div class="item-row-main"><h3>ceil</h3><pre class="inline-signature">lurek.math.ceil(x: number) -&gt; number</pre><p>Returns ceiling of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2157</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;ceil(2.3) = &quot; .. lurek.math.ceil(2.3))
+    print(&quot;ceil(-1.7) = &quot; .. lurek.math.ceil(-1.7))
+end</code></pre></details></article><article class="item-row api-row" id="fn-circlecontainspoint"><div class="item-row-main"><h3>circleContainsPoint</h3><pre class="inline-signature">lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -&gt; boolean</pre><p>Returns whether a circle contains a point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1795</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local inside = lurek.math.circleContainsPoint(5, 5, 10, 6, 6)
+    print(&quot;inside = &quot; .. tostring(inside))
+end</code></pre></details></article><article class="item-row api-row" id="fn-circleintersectscircle"><div class="item-row-main"><h3>circleIntersectsCircle</h3><pre class="inline-signature">lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -&gt; boolean</pre><p>Returns whether two circles intersect.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1810</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local hit = lurek.math.circleIntersectsCircle(0, 0, 5, 8, 0, 5)
+    print(&quot;circles overlap = &quot; .. tostring(hit))
+end</code></pre></details></article><article class="item-row api-row" id="fn-circleintersectsline"><div class="item-row-main"><h3>circleIntersectsLine</h3><pre class="inline-signature">lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -&gt; boolean</pre><p>Returns circle-line intersection state and hit points when present.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1832</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsLine(5, 5, 3, 0, 5, 10, 5)
+    print(&quot;circle/line hit = &quot; .. tostring(hit))
+    if hx1 then print(&quot;  hit1 = &quot; .. hx1 .. &quot;,&quot; .. hy1) end
+    if hx2 then print(&quot;  hit2 = &quot; .. hx2 .. &quot;,&quot; .. hy2) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-circleintersectssegment"><div class="item-row-main"><h3>circleIntersectsSegment</h3><pre class="inline-signature">lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -&gt; boolean</pre><p>Returns circle-segment intersection state and hit points when present.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1861</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsSegment(5, 5, 3, 0, 5, 10, 5)
+    print(&quot;circle/seg hit = &quot; .. tostring(hit))
+    if hx1 then print(&quot;  seg hit1 = &quot; .. hx1 .. &quot;,&quot; .. hy1) end
+    _ = hx2
+    _ = hy2
+end</code></pre></details></article><article class="item-row api-row" id="fn-clamp"><div class="item-row-main"><h3>clamp</h3><pre class="inline-signature">lurek.math.clamp(v: number, min: number, max: number) -&gt; number</pre><p>Clamps a value to a range. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2417</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;clamp(15, 0, 10) = &quot; .. lurek.math.clamp(15, 0, 10))
+    print(&quot;clamp(-3, 0, 10) = &quot; .. lurek.math.clamp(-3, 0, 10))
+    print(&quot;clamp(5, 0, 10) = &quot; .. lurek.math.clamp(5, 0, 10))
+end</code></pre></details></article><article class="item-row api-row" id="fn-closestpointonsegment"><div class="item-row-main"><h3>closestPointOnSegment</h3><pre class="inline-signature">lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -&gt; number</pre><p>Returns the closest point on a segment to an input point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1887</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local cx, cy = lurek.math.closestPointOnSegment(5, 5, 0, 0, 10, 0)
+    print(&quot;closest on segment = &quot; .. cx .. &quot;,&quot; .. cy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-convexhull"><div class="item-row-main"><h3>convexHull</h3><pre class="inline-signature">lurek.math.convexHull(pts: table) -&gt; number[]</pre><p>Computes the convex hull for a flat point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1899</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 5, 5, 10, 0, 3, 2, 7, 2, 5, 10}
+    local hull = lurek.math.convexHull(pts)
+    print(&quot;hull vertices = &quot; .. #hull / 2)
+end</code></pre></details></article><article class="item-row api-row" id="fn-cos"><div class="item-row-main"><h3>cos</h3><pre class="inline-signature">lurek.math.cos(x: number) -&gt; number</pre><p>Returns cosine of an angle. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2099</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;cos(0) = &quot; .. lurek.math.cos(0))
+    print(&quot;cos(pi) = &quot; .. lurek.math.cos(lurek.math.pi))
+end</code></pre></details></article><article class="item-row api-row" id="fn-deg"><div class="item-row-main"><h3>deg</h3><pre class="inline-signature">lurek.math.deg(rad: number) -&gt; number</pre><p>Converts radians to degrees. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2086</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;deg(pi) = &quot; .. lurek.math.deg(lurek.math.pi))
+    print(&quot;deg(pi/2) = &quot; .. lurek.math.deg(lurek.math.pi / 2))
+end</code></pre></details></article><article class="item-row api-row" id="fn-delaunaytriangulate"><div class="item-row-main"><h3>delaunayTriangulate</h3><pre class="inline-signature">lurek.math.delaunayTriangulate(pts: table) -&gt; table</pre><p>Computes Delaunay triangles for a flat point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1923</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 5, 10, 3, 5, 7, 5}
+    local tris = lurek.math.delaunayTriangulate(pts)
+    print(&quot;delaunay triangles = &quot; .. #tris)
+end</code></pre></details></article><article class="item-row api-row" id="fn-distance"><div class="item-row-main"><h3>distance</h3><pre class="inline-signature">lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -&gt; number</pre><p>Returns Euclidean distance between two points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2231</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local d = lurek.math.distance(0, 0, 3, 4)
+    print(&quot;distance = &quot; .. d)
+end</code></pre></details></article><article class="item-row api-row" id="fn-distancesq"><div class="item-row-main"><h3>distanceSq</h3><pre class="inline-signature">lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -&gt; number</pre><p>Returns squared Euclidean distance between two points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2246</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local d2 = lurek.math.distanceSq(0, 0, 3, 4)
+    print(&quot;distanceSq = &quot; .. d2)
+end</code></pre></details></article><article class="item-row api-row" id="fn-exp"><div class="item-row-main"><h3>exp</h3><pre class="inline-signature">lurek.math.exp(x: number) -&gt; number</pre><p>Returns exponential of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2167</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;exp(1) = &quot; .. lurek.math.exp(1))
+    print(&quot;exp(0) = &quot; .. lurek.math.exp(0))
+end</code></pre></details></article><article class="item-row api-row" id="fn-floor"><div class="item-row-main"><h3>floor</h3><pre class="inline-signature">lurek.math.floor(x: number) -&gt; number</pre><p>Returns floor of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2152</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;floor(2.9) = &quot; .. lurek.math.floor(2.9))
+    print(&quot;floor(-1.1) = &quot; .. lurek.math.floor(-1.1))
+end</code></pre></details></article><article class="item-row api-row" id="fn-fmod"><div class="item-row-main"><h3>fmod</h3><pre class="inline-signature">lurek.math.fmod(x: number, y: number) -&gt; number</pre><p>Returns floating-point remainder.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2220</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;fmod(7, 3) = &quot; .. lurek.math.fmod(7, 3))
+    print(&quot;fmod(10.5, 3) = &quot; .. lurek.math.fmod(10.5, 3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hermite"><div class="item-row-main"><h3>hermite</h3><pre class="inline-signature">lurek.math.hermite(p0x: number, p0y: number, p1x: number, p1y: number, m0x: number, m0y: number, m1x: number, m1y: number) -&gt; LHermite</pre><p>Creates a Hermite spline from endpoints and tangents.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2380</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local spline = lurek.math.hermite(0, 0, 100, 0, 50, 100, 50, -100)
+    local x0, y0 = spline:sample(0)
+    local xm, ym = spline:sample(0.5)
+    local x1, y1 = spline:sample(1)
+    print(&quot;start = &quot; .. x0 .. &quot;,&quot; .. y0)
+    print(&quot;mid = &quot; .. xm .. &quot;,&quot; .. ym)
+    print(&quot;end = &quot; .. x1 .. &quot;,&quot; .. y1)</code></pre></details></article><article class="item-row api-row" id="fn-inback"><div class="item-row-main"><h3>inBack</h3><pre class="inline-signature">lurek.math.inBack(t: number) -&gt; number</pre><p>Applies back ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1682</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inBack(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inBack(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inbounce"><div class="item-row-main"><h3>inBounce</h3><pre class="inline-signature">lurek.math.inBounce(t: number) -&gt; number</pre><p>Applies bounce ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1674</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inBounce(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inBounce(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-incubic"><div class="item-row-main"><h3>inCubic</h3><pre class="inline-signature">lurek.math.inCubic(t: number) -&gt; number</pre><p>Applies cubic ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1554</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inCubic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inCubic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inelastic"><div class="item-row-main"><h3>inElastic</h3><pre class="inline-signature">lurek.math.inElastic(t: number) -&gt; number</pre><p>Applies elastic ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1650</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inElastic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inElastic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inexpo"><div class="item-row-main"><h3>inExpo</h3><pre class="inline-signature">lurek.math.inExpo(t: number) -&gt; number</pre><p>Applies exponential ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1626</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inExpo(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inExpo(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutback"><div class="item-row-main"><h3>inOutBack</h3><pre class="inline-signature">lurek.math.inOutBack(t: number) -&gt; number</pre><p>Applies back ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1714</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutBack(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutBack(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutbounce"><div class="item-row-main"><h3>inOutBounce</h3><pre class="inline-signature">lurek.math.inOutBounce(t: number) -&gt; number</pre><p>Applies bounce ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1706</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutBounce(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutBounce(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutcubic"><div class="item-row-main"><h3>inOutCubic</h3><pre class="inline-signature">lurek.math.inOutCubic(t: number) -&gt; number</pre><p>Applies cubic ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1570</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutCubic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutCubic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutelastic"><div class="item-row-main"><h3>inOutElastic</h3><pre class="inline-signature">lurek.math.inOutElastic(t: number) -&gt; number</pre><p>Applies elastic ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1698</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutElastic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutElastic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutexpo"><div class="item-row-main"><h3>inOutExpo</h3><pre class="inline-signature">lurek.math.inOutExpo(t: number) -&gt; number</pre><p>Applies exponential ease-in-out.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1642</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutExpo(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutExpo(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutquad"><div class="item-row-main"><h3>inOutQuad</h3><pre class="inline-signature">lurek.math.inOutQuad(t: number) -&gt; number</pre><p>Applies quadratic ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1546</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutQuad(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutQuad(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutquart"><div class="item-row-main"><h3>inOutQuart</h3><pre class="inline-signature">lurek.math.inOutQuart(t: number) -&gt; number</pre><p>Applies quartic ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1594</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutQuart(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutQuart(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inoutsine"><div class="item-row-main"><h3>inOutSine</h3><pre class="inline-signature">lurek.math.inOutSine(t: number) -&gt; number</pre><p>Applies sine ease-in-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1618</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inOutSine(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inOutSine(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inquad"><div class="item-row-main"><h3>inQuad</h3><pre class="inline-signature">lurek.math.inQuad(t: number) -&gt; number</pre><p>Applies quadratic ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1530</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inQuad(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inQuad(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inquart"><div class="item-row-main"><h3>inQuart</h3><pre class="inline-signature">lurek.math.inQuart(t: number) -&gt; number</pre><p>Applies quartic ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1578</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inQuart(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inQuart(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-insine"><div class="item-row-main"><h3>inSine</h3><pre class="inline-signature">lurek.math.inSine(t: number) -&gt; number</pre><p>Applies sine ease-in. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1602</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.inSine(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.inSine(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-inverselerp"><div class="item-row-main"><h3>inverseLerp</h3><pre class="inline-signature">lurek.math.inverseLerp(a: number, b: number, v: number) -&gt; number</pre><p>Returns the interpolation factor of a value between two bounds.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2444</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;inverseLerp(0, 100, 50) = &quot; .. lurek.math.inverseLerp(0, 100, 50))
+    print(&quot;inverseLerp(10, 20, 15) = &quot; .. lurek.math.inverseLerp(10, 20, 15))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isconvex"><div class="item-row-main"><h3>isConvex</h3><pre class="inline-signature">lurek.math.isConvex(pts: table) -&gt; boolean</pre><p>Returns whether a flat polygon point table is convex.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1757</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local square = {0, 0, 10, 0, 10, 10, 0, 10}
+    print(&quot;square convex = &quot; .. tostring(lurek.math.isConvex(square)))
+    local concave = {0, 0, 5, 3, 10, 0, 10, 10, 0, 10}
+    print(&quot;concave = &quot; .. tostring(lurek.math.isConvex(concave)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lerp"><div class="item-row-main"><h3>lerp</h3><pre class="inline-signature">lurek.math.lerp(a: number, b: number, t: number) -&gt; number</pre><p>Linearly interpolates between two values.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2391</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;lerp(0, 100, 0.5) = &quot; .. lurek.math.lerp(0, 100, 0.5))
+    print(&quot;lerp(10, 20, 0.25) = &quot; .. lurek.math.lerp(10, 20, 0.25))
+end</code></pre></details></article><article class="item-row api-row" id="fn-lineintersect"><div class="item-row-main"><h3>lineIntersect</h3><pre class="inline-signature">lurek.math.lineIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -&gt; number</pre><p>Returns intersection point for two infinite lines when present.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1959</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local ix, iy = lurek.math.lineIntersect(0, 0, 10, 10, 0, 10, 10, 0)
+    if ix then print(&quot;lines cross at &quot; .. ix .. &quot;,&quot; .. iy) else print(&quot;lines are parallel&quot;) end
+end</code></pre></details></article><article class="item-row api-row" id="fn-linear"><div class="item-row-main"><h3>linear</h3><pre class="inline-signature">lurek.math.linear(t: number) -&gt; number</pre><p>Applies linear easing. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1522</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.linear(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.linear(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-log"><div class="item-row-main"><h3>log</h3><pre class="inline-signature">lurek.math.log(x: number, b: number?) -&gt; number</pre><p>Returns natural logarithm or logarithm with a supplied base.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2173</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;log(e) = &quot; .. lurek.math.log(lurek.math.exp(1)))
+    print(&quot;log(100, 10) = &quot; .. lurek.math.log(100, 10))
+end</code></pre></details></article><article class="item-row api-row" id="fn-max"><div class="item-row-main"><h3>max</h3><pre class="inline-signature">lurek.math.max(...: number) -&gt; number</pre><p>Returns the largest supplied value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2207</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;max(3, 7, 1, 9) = &quot; .. lurek.math.max(3, 7, 1, 9))
+    print(&quot;max(0, -5) = &quot; .. lurek.math.max(0, -5))
+end</code></pre></details></article><article class="item-row api-row" id="fn-min"><div class="item-row-main"><h3>min</h3><pre class="inline-signature">lurek.math.min(...: number) -&gt; number</pre><p>Returns the smallest supplied value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2195</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;min(3, 7, 1, 9) = &quot; .. lurek.math.min(3, 7, 1, 9))
+    print(&quot;min(0, -5) = &quot; .. lurek.math.min(0, -5))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbeziercurve"><div class="item-row-main"><h3>newBezierCurve</h3><pre class="inline-signature">lurek.math.newBezierCurve(points: table) -&gt; LBezierCurve</pre><p>Creates a Bezier curve from a flat point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1448</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local curve = lurek.math.newBezierCurve({0, 0, 30, 60, 70, 60, 100, 0})
+    print(&quot;control points = &quot; .. curve:getControlPointCount())
+    local x, y = curve:evaluate(0.5)
+    print(&quot;mid = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcircle"><div class="item-row-main"><h3>newCircle</h3><pre class="inline-signature">lurek.math.newCircle(x: number, y: number, radius: number) -&gt; LCircle</pre><p>Creates a circle primitive. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2540</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local c = lurek.math.newCircle(50, 50, 25)
+    print(&quot;circle at &quot; .. c:x() .. &quot;,&quot; .. c:y() .. &quot; r=&quot; .. c:radius())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrandomgenerator"><div class="item-row-main"><h3>newRandomGenerator</h3><pre class="inline-signature">lurek.math.newRandomGenerator(seed: integer?) -&gt; LRandomGenerator</pre><p>Creates a deterministic random generator with an optional seed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1387</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local rng = lurek.math.newRandomGenerator(42)
+    print(&quot;seed = &quot; .. rng:getSeed())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrectpacker"><div class="item-row-main"><h3>newRectPacker</h3><pre class="inline-signature">lurek.math.newRectPacker(width: integer, height: integer, padding: integer?) -&gt; LRectPacker</pre><p>Creates a rectangle packer. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1498</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local rp = lurek.math.newRectPacker(256, 256, 1)
+    local x, y = rp:pack(32, 32, &quot;icon1&quot;)
+    print(&quot;icon1 = &quot; .. tostring(x) .. &quot;,&quot; .. tostring(y))
+    print(&quot;occupancy = &quot; .. rp:occupancy())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newspatialhash"><div class="item-row-main"><h3>newSpatialHash</h3><pre class="inline-signature">lurek.math.newSpatialHash(cell_size: number) -&gt; LSpatialHash</pre><p>Creates a spatial hash index with a cell size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1484</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local sh = lurek.math.newSpatialHash(32)
+    sh:insert(&quot;a&quot;, 10, 10, 20, 20)
+    sh:insert(&quot;b&quot;, 50, 50, 30, 30)
+    print(&quot;cell size = &quot; .. sh:getCellSize() .. &quot; items = &quot; .. sh:getItemCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtransform"><div class="item-row-main"><h3>newTransform</h3><pre class="inline-signature">lurek.math.newTransform(x: number?, y: number?, angle: number?, sx: number?, sy: number?, ox: number?, oy: number?, kx: number?, ky: number?) -&gt; LTransform</pre><p>Creates a 2D transform. All components are optional; omitting all returns an identity transform.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1409</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local t = lurek.math.newTransform(100, 200, lurek.math.pi / 4, 2, 2)
+    local x, y = t:transformPoint(0, 0)
+    print(&quot;origin transformed = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newtween"><div class="item-row-main"><h3>newTween</h3><pre class="inline-signature">lurek.math.newTween(duration: number, easing_name: string?) -&gt; LTween</pre><p>Creates a tween with a duration and optional easing name.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1471</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local tw = lurek.math.newTween(2.0, &quot;inOutCubic&quot;)
+    print(&quot;duration = &quot; .. tw:getDuration())
+    print(&quot;easing = &quot; .. tw:getEasingName())
+end</code></pre></details></article><article class="item-row api-row" id="fn-outback"><div class="item-row-main"><h3>outBack</h3><pre class="inline-signature">lurek.math.outBack(t: number) -&gt; number</pre><p>Applies back ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1690</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outBack(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outBack(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outbounce"><div class="item-row-main"><h3>outBounce</h3><pre class="inline-signature">lurek.math.outBounce(t: number) -&gt; number</pre><p>Applies bounce ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1666</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outBounce(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outBounce(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outcubic"><div class="item-row-main"><h3>outCubic</h3><pre class="inline-signature">lurek.math.outCubic(t: number) -&gt; number</pre><p>Applies cubic ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1562</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outCubic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outCubic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outelastic"><div class="item-row-main"><h3>outElastic</h3><pre class="inline-signature">lurek.math.outElastic(t: number) -&gt; number</pre><p>Applies elastic ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1658</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outElastic(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outElastic(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outexpo"><div class="item-row-main"><h3>outExpo</h3><pre class="inline-signature">lurek.math.outExpo(t: number) -&gt; number</pre><p>Applies exponential ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1634</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outExpo(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outExpo(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outquad"><div class="item-row-main"><h3>outQuad</h3><pre class="inline-signature">lurek.math.outQuad(t: number) -&gt; number</pre><p>Applies quadratic ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1538</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outQuad(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outQuad(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outquart"><div class="item-row-main"><h3>outQuart</h3><pre class="inline-signature">lurek.math.outQuart(t: number) -&gt; number</pre><p>Applies quartic ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1586</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outQuart(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outQuart(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-outsine"><div class="item-row-main"><h3>outSine</h3><pre class="inline-signature">lurek.math.outSine(t: number) -&gt; number</pre><p>Applies sine ease-out. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1610</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;t=0.25 = &quot; .. lurek.math.outSine(0.25))
+    print(&quot;t=0.75 = &quot; .. lurek.math.outSine(0.75))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pointinpolygon"><div class="item-row-main"><h3>pointInPolygon</h3><pre class="inline-signature">lurek.math.pointInPolygon(pts: table, px: number, py: number) -&gt; boolean</pre><p>Returns whether a point lies inside a polygon.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1976</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local inside = lurek.math.pointInPolygon(pts, 5, 5)
+    local outside = lurek.math.pointInPolygon(pts, 15, 5)
+    print(&quot;inside = &quot; .. tostring(inside) .. &quot; outside = &quot; .. tostring(outside))
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygonarea"><div class="item-row-main"><h3>polygonArea</h3><pre class="inline-signature">lurek.math.polygonArea(pts: table) -&gt; number</pre><p>Computes signed area for a flat polygon point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1992</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local area = lurek.math.polygonArea(pts)
+    print(&quot;area = &quot; .. area)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygoncentroid"><div class="item-row-main"><h3>polygonCentroid</h3><pre class="inline-signature">lurek.math.polygonCentroid(pts: table) -&gt; number</pre><p>Computes the centroid for a flat polygon point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2009</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local cx, cy = lurek.math.polygonCentroid(pts)
+    print(&quot;centroid = &quot; .. cx .. &quot;,&quot; .. cy)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygonclip"><div class="item-row-main"><h3>polygonClip</h3><pre class="inline-signature">lurek.math.polygonClip(pts: table, nx: number, ny: number, d: number) -&gt; number[]</pre><p>Clips a flat polygon point table against a plane.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2498</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local clipped = lurek.math.polygonClip(pts, 1, 0, -5)
+    print(&quot;clipped vertices = &quot; .. #clipped / 2)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygondifference"><div class="item-row-main"><h3>polygonDifference</h3><pre class="inline-signature">lurek.math.polygonDifference(a: table, b: table) -&gt; number[]</pre><p>Returns polygon difference points for two polygon tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2581</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
+    local result = lurek.math.polygonDifference(a, b)
+    print(&quot;difference vertices = &quot; .. #result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygonintersection"><div class="item-row-main"><h3>polygonIntersection</h3><pre class="inline-signature">lurek.math.polygonIntersection(a: table, b: table) -&gt; number[]</pre><p>Returns polygon intersection points for two polygon tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2553</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
+    local result = lurek.math.polygonIntersection(a, b)
+    print(&quot;intersection vertices = &quot; .. #result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-polygonunion"><div class="item-row-main"><h3>polygonUnion</h3><pre class="inline-signature">lurek.math.polygonUnion(a: table, b: table) -&gt; number[]</pre><p>Returns polygon union points for two polygon tables.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2567</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
+    local result = lurek.math.polygonUnion(a, b)
+    print(&quot;union vertices = &quot; .. #result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-pow"><div class="item-row-main"><h3>pow</h3><pre class="inline-signature">lurek.math.pow(x: number, y: number) -&gt; number</pre><p>Raises a value to a power. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2187</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;pow(2, 10) = &quot; .. lurek.math.pow(2, 10))
+    print(&quot;pow(3, 3) = &quot; .. lurek.math.pow(3, 3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-rad"><div class="item-row-main"><h3>rad</h3><pre class="inline-signature">lurek.math.rad(deg: number) -&gt; number</pre><p>Converts degrees to radians. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2078</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;rad(180) = &quot; .. lurek.math.rad(180))
+    print(&quot;rad(90) = &quot; .. lurek.math.rad(90))
+end</code></pre></details></article><article class="item-row api-row" id="fn-random"><div class="item-row-main"><h3>random</h3><pre class="inline-signature">lurek.math.random(a: number?, b: number?) -&gt; number</pre><p>Returns a Lua math random value, optionally scaled to one or two bounds.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2259</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local r1 = lurek.math.random()
+    local r2 = lurek.math.random(10)
+    local r3 = lurek.math.random(5, 15)
+    print(&quot;random = &quot; .. r1 .. &quot;, &quot; .. r2 .. &quot;, &quot; .. r3)
+end</code></pre></details></article><article class="item-row api-row" id="fn-randomint"><div class="item-row-main"><h3>randomInt</h3><pre class="inline-signature">lurek.math.randomInt(lo: integer, hi: integer) -&gt; integer</pre><p>Returns a Lua math random integer in an inclusive range.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2287</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local r = lurek.math.randomInt(1, 6)
+    print(&quot;randomInt(1,6) = &quot; .. r)
+end</code></pre></details></article><article class="item-row api-row" id="fn-rectfromcenter"><div class="item-row-main"><h3>rectFromCenter</h3><pre class="inline-signature">lurek.math.rectFromCenter(cx: number, cy: number, w: number, h: number) -&gt; number</pre><p>Creates a rectangle tuple from center coordinates and size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2484</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local x, y, w, h = lurek.math.rectFromCenter(50, 50, 20, 10)
+    print(&quot;rect = &quot; .. x .. &quot;,&quot; .. y .. &quot; &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-rectunion"><div class="item-row-main"><h3>rectUnion</h3><pre class="inline-signature">lurek.math.rectUnion(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) -&gt; number</pre><p>Returns the union rectangle for two rectangles.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2463</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local x, y, w, h = lurek.math.rectUnion(0, 0, 10, 10, 5, 5, 10, 10)
+    print(&quot;union rect = &quot; .. x .. &quot;,&quot; .. y .. &quot; &quot; .. w .. &quot;x&quot; .. h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-remap"><div class="item-row-main"><h3>remap</h3><pre class="inline-signature">lurek.math.remap(v: number, in_min: number, in_max: number, out_min: number, out_max: number) -&gt; number</pre><p>Remaps a value from one range to another.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2403</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.remap(5, 0, 10, 0, 100)
+    print(&quot;remap(5, 0-10 â†’ 0-100) = &quot; .. v)
+end</code></pre></details></article><article class="item-row api-row" id="fn-round"><div class="item-row-main"><h3>round</h3><pre class="inline-signature">lurek.math.round(x: number) -&gt; number</pre><p>Returns rounded value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2162</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;round(2.4) = &quot; .. lurek.math.round(2.4))
+    print(&quot;round(2.5) = &quot; .. lurek.math.round(2.5))
+end</code></pre></details></article><article class="item-row api-row" id="fn-segmentintersectssegment"><div class="item-row-main"><h3>segmentIntersectsSegment</h3><pre class="inline-signature">lurek.math.segmentIntersectsSegment(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -&gt; boolean</pre><p>Returns whether two segments intersect and their intersection point when present.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2034</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local hit, ix, iy = lurek.math.segmentIntersectsSegment( 0, 0, 10, 10, 0, 10, 10, 0 )
+    if hit and ix then print(&quot;segments cross at &quot; .. ix .. &quot;,&quot; .. iy) else print(&quot;segments do not cross&quot;) end
+end
+
+--@api-stub: lurek.math.circleContainsPoint
+do
+    local inside = lurek.math.circleContainsPoint(5, 5, 10, 6, 6)
+    print(&quot;inside = &quot; .. tostring(inside))
+end
+
+--@api-stub: lurek.math.circleIntersectsCircle
+do
+    local hit = lurek.math.circleIntersectsCircle(0, 0, 5, 8, 0, 5)
+    print(&quot;circles overlap = &quot; .. tostring(hit))
+end
+
+--@api-stub: lurek.math.circleIntersectsLine
+do
+    local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsLine(5, 5, 3, 0, 5, 10, 5)
+    print(&quot;circle/line hit = &quot; .. tostring(hit))
+    if hx1 then print(&quot;  hit1 = &quot; .. hx1 .. &quot;,&quot; .. hy1) end
+    if hx2 then print(&quot;  hit2 = &quot; .. hx2 .. &quot;,&quot; .. hy2) end
+end
+
+--@api-stub: lurek.math.circleIntersectsSegment
+do
+    local hit, hx1, hy1, hx2, hy2 = lurek.math.circleIntersectsSegment(5, 5, 3, 0, 5, 10, 5)
+    print(&quot;circle/seg hit = &quot; .. tostring(hit))
+    if hx1 then print(&quot;  seg hit1 = &quot; .. hx1 .. &quot;,&quot; .. hy1) end
+    _ = hx2
+    _ = hy2
+end
+
+--@api-stub: lurek.math.pointInPolygon
+do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local inside = lurek.math.pointInPolygon(pts, 5, 5)
+    local outside = lurek.math.pointInPolygon(pts, 15, 5)
+    print(&quot;inside = &quot; .. tostring(inside) .. &quot; outside = &quot; .. tostring(outside))
+end
+
+--@api-stub: lurek.math.polygonArea
+do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local area = lurek.math.polygonArea(pts)
+    print(&quot;area = &quot; .. area)
+end</code></pre></details></article><article class="item-row api-row" id="fn-sign"><div class="item-row-main"><h3>sign</h3><pre class="inline-signature">lurek.math.sign(v: number) -&gt; number</pre><p>Returns the sign of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2425</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;sign(-7) = &quot; .. lurek.math.sign(-7))
+    print(&quot;sign(0) = &quot; .. lurek.math.sign(0))
+    print(&quot;sign(3) = &quot; .. lurek.math.sign(3))
+end</code></pre></details></article><article class="item-row api-row" id="fn-sin"><div class="item-row-main"><h3>sin</h3><pre class="inline-signature">lurek.math.sin(x: number) -&gt; number</pre><p>Returns sine of an angle. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2094</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;sin(0) = &quot; .. lurek.math.sin(0))
+    print(&quot;sin(pi/2) = &quot; .. lurek.math.sin(lurek.math.pi / 2))
+end</code></pre></details></article><article class="item-row api-row" id="fn-smoothstep"><div class="item-row-main"><h3>smoothstep</h3><pre class="inline-signature">lurek.math.smoothstep(edge0: number, edge1: number, x: number) -&gt; number</pre><p>Applies smoothstep interpolation between two edges.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2432</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;smoothstep(0, 1, 0.5) = &quot; .. lurek.math.smoothstep(0, 1, 0.5))
+    print(&quot;smoothstep(0, 1, 0.0) = &quot; .. lurek.math.smoothstep(0, 1, 0.0))
+    print(&quot;smoothstep(0, 1, 1.0) = &quot; .. lurek.math.smoothstep(0, 1, 1.0))
+end</code></pre></details></article><article class="item-row api-row" id="fn-sqrt"><div class="item-row-main"><h3>sqrt</h3><pre class="inline-signature">lurek.math.sqrt(x: number) -&gt; number</pre><p>Returns square root of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2142</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;sqrt(144) = &quot; .. lurek.math.sqrt(144))
+    print(&quot;sqrt(2) = &quot; .. lurek.math.sqrt(2))
+end</code></pre></details></article><article class="item-row api-row" id="fn-tan"><div class="item-row-main"><h3>tan</h3><pre class="inline-signature">lurek.math.tan(x: number) -&gt; number</pre><p>Returns tangent of an angle. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2104</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    print(&quot;tan(0) = &quot; .. lurek.math.tan(0))
+    print(&quot;tan(pi/4) = &quot; .. lurek.math.tan(lurek.math.pi / 4))
+end</code></pre></details></article><article class="item-row api-row" id="fn-triangulate"><div class="item-row-main"><h3>triangulate</h3><pre class="inline-signature">lurek.math.triangulate(pts: table) -&gt; table</pre><p>Triangulates a flat polygon point table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:1723</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local pts = {0, 0, 10, 0, 10, 10, 0, 10}
+    local tris = lurek.math.triangulate(pts)
+    print(&quot;triangles = &quot; .. #tris)
+end</code></pre></details></article><article class="item-row api-row" id="fn-vec2"><div class="item-row-main"><h3>vec2</h3><pre class="inline-signature">lurek.math.vec2(x: number, y: number) -&gt; LVec2</pre><p>Creates a 2D vector. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2301</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec2(3, 4)
+    print(&quot;vec2 = &quot; .. v.x .. &quot;,&quot; .. v.y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-vec3"><div class="item-row-main"><h3>vec3</h3><pre class="inline-signature">lurek.math.vec3(x: number, y: number, z: number) -&gt; LVec3</pre><p>Creates a 3D vector. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2328</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local v = lurek.math.Vec3(1, 2, 3)
+    print(&quot;vec3 = &quot; .. v.x .. &quot;,&quot; .. v.y .. &quot;,&quot; .. v.z)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAabbTree.html">LAabbTree</a></h3><p>Lua-side wrapper for an AABB tree spatial index.</p></div><div class="item-row-meta"><span>11 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBezierCurve.html">LBezierCurve</a></h3><p>Lua-side wrapper for a Bezier curve.</p></div><div class="item-row-meta"><span>15 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCatmullRom.html">LCatmullRom</a></h3><p>Lua-side wrapper for a Catmull-Rom spline.</p></div><div class="item-row-meta"><span>7 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCircle.html">LCircle</a></h3><p>Lua-side wrapper for a circle primitive.</p></div><div class="item-row-meta"><span>10 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LHermite.html">LHermite</a></h3><p>Lua-side wrapper for a Hermite spline.</p></div><div class="item-row-meta"><span>3 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRandomGenerator.html">LRandomGenerator</a></h3><p>Lua-side wrapper for a deterministic random generator.</p></div><div class="item-row-meta"><span>20 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LRectPacker.html">LRectPacker</a></h3><p>Lua-side wrapper for a rectangle packer.</p></div><div class="item-row-meta"><span>4 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LSpatialHash.html">LSpatialHash</a></h3><p>Lua-side wrapper for a spatial hash index.</p></div><div class="item-row-meta"><span>11 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTransform.html">LTransform</a></h3><p>Lua-side wrapper for a 2D transform matrix.</p></div><div class="item-row-meta"><span>14 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTween.html">LTween</a></h3><p>Lua-side wrapper for numeric tween state.</p></div><div class="item-row-meta"><span>15 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LVec2.html">LVec2</a></h3><p>Represents the Lua-visible LVec2 object exposed by this module.</p></div><div class="item-row-meta"><span>17 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LVec3.html">LVec3</a></h3><p>Represents the Lua-visible LVec3 object exposed by this module.</p></div><div class="item-row-meta"><span>13 methods</span><span>module math</span></div><div class="card-note">Example: math.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

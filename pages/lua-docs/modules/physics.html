@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.physics - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a class="active" href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.physics</h1>
+  <p>`lurek.physics` Ă˘â‚¬â€ť 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D. - Registers `lurek.physics.*` functions and types via `register()`. - `LuaWorld`: userdata type exposed to Lua. - `LuaZone`: userdata type exposed to Lua. - `LuaTerrain`: userdata type exposed to Lua. - `LuaCellular`: userdata type exposed to Lua. - `LuaBody`: userdata type exposed to Lua. - `LuaPhysicsShape`: userdata type exposed to Lua. - Bridges 205 Lua-callable methods via `mlua`.</p>
+  <div class="api-meta api-meta-header"><span>22 functions</span><span>5 classes</span><span>src/lua_api/physics_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 190</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.physics.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-attachshape"><div class="item-row-main"><h3>attachShape</h3><pre class="inline-signature">lurek.physics.attachShape(body: LBody, shape: LPhysicsShape)</pre><p>Attaches a previously created shape to a body, using the shape&#x27;s stored material properties.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2277</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(120, 120, &quot;dynamic&quot;)
+    local shape = lurek.physics.newCircleShape(10)
+    shape:setDensity(1.5)
+    lurek.physics.attachShape(body, shape)
+    print(&quot;fixture_count&quot;, world:fixtureCount(body:getId()))
+    print(&quot;position&quot;, body:getPosition())
+end</code></pre></details></article><article class="item-row api-row" id="fn-debugdraw"><div class="item-row-main"><h3>debugDraw</h3><pre class="inline-signature">lurek.physics.debugDraw(enable: boolean)</pre><p>Enables or disables automatic physics debug overlay rendering for the next frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2322</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 15, &quot;dynamic&quot;)
+    lurek.physics.debugDraw(true)
+    lurek.physics.drawDebugGpu(world, { lineWidth = 2 })
+    print(&quot;body_count&quot;, world:getBodyCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-destroyworld"><div class="item-row-main"><h3>destroyWorld</h3><pre class="inline-signature">lurek.physics.destroyWorld(world: LWorld)</pre><p>No-op placeholder for API parity. Worlds are freed when no longer referenced.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2069</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 10, &quot;dynamic&quot;)
+    print(&quot;before&quot;, world:getBodyCount())
+    lurek.physics.destroyWorld(world)
+    print(&quot;after&quot;, world:getBodyCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-drawdebuggpu"><div class="item-row-main"><h3>drawDebugGpu</h3><pre class="inline-signature">lurek.physics.drawDebugGpu(world: LWorld, config: table?)</pre><p>Queues a GPU-rendered physics debug visualization using the world&#x27;s current body state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2334</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 9.8)
+    lurek.physics.drawDebugGpu(world, {})
+    print(&quot;body_count&quot;, world:getBodyCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getbody"><div class="item-row-main"><h3>getBody</h3><pre class="inline-signature">lurek.physics.getBody(world: LWorld, body: LBody) -&gt; number</pre><p>Returns position and velocity of a body (free-function variant for quick queries).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2128</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 0, 0, &quot;dynamic&quot;)
+    body:setVelocity(10, 5)
+    print(&quot;body&quot;, lurek.physics.getBody(world, body))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcollisions"><div class="item-row-main"><h3>getCollisions</h3><pre class="inline-signature">lurek.physics.getCollisions(world: LWorld) -&gt; table</pre><p>Returns all collision events from the last world step as {body_a, body_b} pairs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2300</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    world:newBody(200, 500, &quot;static&quot;)
+    world:newCircleBody(200, 100, 10, &quot;dynamic&quot;)
+    for _ = 1, 120 do
+        lurek.physics.step(world, 1 / 60)
+    end
+    local collisions = lurek.physics.getCollisions(world)
+    print(&quot;count&quot;, #collisions)
+    if collisions[1] then
+        print(&quot;first&quot;, collisions[1].body_a, collisions[1].body_b)
+    end
+end</code></pre></details></article><article class="item-row api-row" id="fn-issleepingallowed"><div class="item-row-main"><h3>isSleepingAllowed</h3><pre class="inline-signature">lurek.physics.isSleepingAllowed(world: LWorld, body: LBody) -&gt; boolean</pre><p>Checks if sleeping is allowed on a body (free-function variant).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2169</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, &quot;dynamic&quot;)
+    lurek.physics.setSleepingAllowed(world, body, true)
+    print(&quot;allowed&quot;, lurek.physics.isSleepingAllowed(world, body))
+    lurek.physics.setSleepingAllowed(world, body, false)
+    print(&quot;allowed_after&quot;, lurek.physics.isSleepingAllowed(world, body))
+end</code></pre></details></article><article class="item-row api-row" id="fn-newbody"><div class="item-row-main"><h3>newBody</h3><pre class="inline-signature">lurek.physics.newBody(world: LWorld, x: number, y: number, bodyType: string) -&gt; LBody</pre><p>Creates a new body in a world (free-function variant).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2080</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 0)
+    local body = lurek.physics.newBody(world, 50, 50, &quot;static&quot;)
+    print(&quot;id&quot;, body:getId())
+    print(&quot;type&quot;, body:getType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newchainshape"><div class="item-row-main"><h3>newChainShape</h3><pre class="inline-signature">lurek.physics.newChainShape(closed: boolean, ...: number) -&gt; LPhysicsShape</pre><p>Creates a chain (polyline) collision shape. Useful for terrain outlines.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2258</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local chain = lurek.physics.newChainShape(false, 0, 100, 50, 80, 100, 90, 150, 70, 200, 100)
+    local loop = lurek.physics.newChainShape(true, 0, 0, 100, 0, 100, 100, 0, 100)
+    print(&quot;open_type&quot;, chain:getType())
+    print(&quot;closed_type&quot;, loop:getType())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcircleshape"><div class="item-row-main"><h3>newCircleShape</h3><pre class="inline-signature">lurek.physics.newCircleShape(r: number) -&gt; LPhysicsShape</pre><p>Creates a circle collision shape with the given radius.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2214</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local circle = lurek.physics.newCircleShape(16)
+    local minX, minY, maxX, maxY = circle:getBoundingBox()
+    print(&quot;type&quot;, circle:getType())
+    print(&quot;radius&quot;, circle:getRadius())
+    print(&quot;bounds&quot;, minX, minY, maxX, maxY)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newedgeshape"><div class="item-row-main"><h3>newEdgeShape</h3><pre class="inline-signature">lurek.physics.newEdgeShape(x1: number, y1: number, x2: number, y2: number) -&gt; LPhysicsShape</pre><p>Creates an edge (line segment) collision shape between two local points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2225</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local edge = lurek.physics.newEdgeShape(0, 0, 100, 0)
+    local minX, minY, maxX, maxY = edge:getBoundingBox()
+    print(&quot;type&quot;, edge:getType())
+    print(&quot;bounds&quot;, minX, minY, maxX, maxY)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpolygonshape"><div class="item-row-main"><h3>newPolygonShape</h3><pre class="inline-signature">lurek.physics.newPolygonShape(...: number) -&gt; LPhysicsShape</pre><p>Creates a convex polygon collision shape from vertex coordinate pairs.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2238</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local triangle = lurek.physics.newPolygonShape(0, -20, -15, 15, 15, 15)
+    local minX, minY, maxX, maxY = triangle:getBoundingBox()
+    print(&quot;type&quot;, triangle:getType())
+    print(&quot;bounds&quot;, minX, minY, maxX, maxY)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newrectangleshape"><div class="item-row-main"><h3>newRectangleShape</h3><pre class="inline-signature">lurek.physics.newRectangleShape(w: number, h: number) -&gt; LPhysicsShape</pre><p>Creates a rectangle collision shape with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2201</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local rect = lurek.physics.newRectangleShape(64, 32)
+    local minX, minY, maxX, maxY = rect:getBoundingBox()
+    print(&quot;type&quot;, rect:getType())
+    print(&quot;bounds&quot;, minX, minY, maxX, maxY)
+end</code></pre></details></article><article class="item-row api-row" id="fn-newterrain"><div class="item-row-main"><h3>newTerrain</h3><pre class="inline-signature">lurek.physics.newTerrain(width: integer, height: integer, cellSize: number, world: LWorld) -&gt; LTerrain</pre><p>Creates a destructible terrain grid linked to a physics world for automatic collider generation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2401</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = lurek.physics.newTerrain(128, 64, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(256, 128, 40, false)
+    terrain:flush()
+    print(&quot;dirty&quot;, terrain:isDirty())
+    print(&quot;type&quot;, terrain:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newworld"><div class="item-row-main"><h3>newWorld</h3><pre class="inline-signature">lurek.physics.newWorld(gx: number, gy: number) -&gt; LWorld</pre><p>Creates a new physics world with the given gravity vector.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2043</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print(&quot;gravity&quot;, gx, gy)
+    print(&quot;type&quot;, world:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setbodyvelocity"><div class="item-row-main"><h3>setBodyVelocity</h3><pre class="inline-signature">lurek.physics.setBodyVelocity(world: LWorld, body: LBody, vx: number, vy: number)</pre><p>Sets a body&#x27;s velocity (free-function variant).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2150</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 0, 0, &quot;dynamic&quot;)
+    lurek.physics.setBodyVelocity(world, body, 10, 5)
+    print(&quot;velocity&quot;, body:getVelocity())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setsleepingallowed"><div class="item-row-main"><h3>setSleepingAllowed</h3><pre class="inline-signature">lurek.physics.setSleepingAllowed(world: LWorld, body: LBody, allowed: boolean)</pre><p>Sets whether a body is allowed to sleep (free-function variant).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2184</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 0, 0, &quot;dynamic&quot;)
+    lurek.physics.setSleepingAllowed(world, body, false)
+    print(&quot;allowed&quot;, body:isSleepingAllowed())
+end</code></pre></details></article><article class="item-row api-row" id="fn-step"><div class="item-row-main"><h3>step</h3><pre class="inline-signature">lurek.physics.step(world: LWorld, dt: number)</pre><p>Steps a physics world forward by dt seconds (free-function variant).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2058</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, &quot;dynamic&quot;)
+    lurek.physics.step(world, 1 / 60)
+    print(&quot;body&quot;, lurek.physics.getBody(world, body))
+end</code></pre></details></article><article class="item-row api-row" id="fn-testaabb"><div class="item-row-main"><h3>testAABB</h3><pre class="inline-signature">lurek.physics.testAABB(ax: number, ay: number, aw: number, ah: number, bx: number, by: number, bw: number, bh: number) -&gt; boolean</pre><p>Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2425</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local overlap = lurek.physics.testAABB(0, 0, 50, 50, 25, 25, 50, 50)
+    local miss = lurek.physics.testAABB(0, 0, 10, 10, 100, 100, 10, 10)
+    print(&quot;overlap&quot;, overlap)
+    print(&quot;miss&quot;, miss)
+end</code></pre></details></article><article class="item-row api-row" id="fn-testcircleaabb"><div class="item-row-main"><h3>testCircleAABB</h3><pre class="inline-signature">lurek.physics.testCircleAABB(cx: number, cy: number, cr: number, ax: number, ay: number, aw: number, ah: number) -&gt; boolean</pre><p>Tests whether a circle overlaps an AABB. Lightweight check without physics world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2483</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local hit = lurek.physics.testCircleAABB(50, 50, 20, 30, 30, 40, 40)
+    local miss = lurek.physics.testCircleAABB(0, 0, 5, 100, 100, 10, 10)
+    print(&quot;hit&quot;, hit)
+    print(&quot;miss&quot;, miss)
+end</code></pre></details></article><article class="item-row api-row" id="fn-testcircles"><div class="item-row-main"><h3>testCircles</h3><pre class="inline-signature">lurek.physics.testCircles(ax: number, ay: number, ar: number, bx: number, by: number, br: number) -&gt; boolean</pre><p>Tests whether two circles overlap. Lightweight collision check without physics world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2444</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local touching = lurek.physics.testCircles(0, 0, 20, 30, 0, 20)
+    local apart = lurek.physics.testCircles(0, 0, 5, 100, 0, 5)
+    print(&quot;touching&quot;, touching)
+    print(&quot;apart&quot;, apart)
+end</code></pre></details></article><article class="item-row api-row" id="fn-testpoint"><div class="item-row-main"><h3>testPoint</h3><pre class="inline-signature">lurek.physics.testPoint(px: number, py: number, ax: number, ay: number, aw: number, ah: number) -&gt; boolean</pre><p>Tests whether a point lies inside an AABB. Lightweight check without physics world.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/physics_api.rs:2463</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    local inside = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
+    local outside = lurek.physics.testPoint(20, 20, 0, 0, 10, 10)
+    print(&quot;inside&quot;, inside)
+    print(&quot;outside&quot;, outside)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBody.html">LBody</a></h3><p>A handle to a single physics body in the world, providing per-body manipulation methods.</p></div><div class="item-row-meta"><span>48 methods</span><span>module physics</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPhysicsShape.html">LPhysicsShape</a></h3><p>A standalone collision shape with material properties, to be attached to bodies via `attachShape`.</p></div><div class="item-row-meta"><span>10 methods</span><span>module physics</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LTerrain.html">LTerrain</a></h3><p>A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.</p></div><div class="item-row-meta"><span>15 methods</span><span>module physics</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LWorld.html">LWorld</a></h3><p>A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.</p></div><div class="item-row-meta"><span>81 methods</span><span>module physics</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LZone.html">LZone</a></h3><p>A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.</p></div><div class="item-row-meta"><span>14 methods</span><span>module physics</span></div><div class="card-note">Example: physics.lua</div></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

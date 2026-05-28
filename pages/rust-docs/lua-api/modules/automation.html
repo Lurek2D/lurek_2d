@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.simulator - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a class="active" href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.simulator</h1>
+  <p>`lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.</p>
+  <div class="api-meta api-meta-header"><span>32 functions</span><span>0 classes</span><span>src/lua_api/automation_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 32</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.simulator.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-getcondition"><div class="item-row-main"><h3>getCondition</h3><pre class="inline-signature">lurek.simulator.getCondition(name: string) -&gt; boolean</pre><p>Returns a named automation condition value.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:193</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.setCondition(&quot;ready&quot;, true)
+    local val = lurek.automation.getCondition(&quot;ready&quot;)
+    print(&quot;ready = &quot; .. tostring(val))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcurrentscript"><div class="item-row-main"><h3>getCurrentScript</h3><pre class="inline-signature">lurek.simulator.getCurrentScript() -&gt; string</pre><p>Returns the current script name when a script is active.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:217</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;current_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;current_test&quot;)
+    local name = lurek.automation.getCurrentScript()
+    print(&quot;current script = &quot; .. tostring(name))
+    print(&quot;running = &quot; .. tostring(lurek.automation.isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcurrentstep"><div class="item-row-main"><h3>getCurrentStep</h3><pre class="inline-signature">lurek.simulator.getCurrentStep() -&gt; integer</pre><p>Returns the current step index of the active script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:201</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.2 },
+    }
+    lurek.automation.load(&quot;step_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;step_test&quot;)
+    local step = lurek.automation.getCurrentStep()
+    print(&quot;current step = &quot; .. tostring(step))
+    print(&quot;step count = &quot; .. tostring(lurek.automation.getStepCount()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getelapsedtime"><div class="item-row-main"><h3>getElapsedTime</h3><pre class="inline-signature">lurek.simulator.getElapsedTime() -&gt; number</pre><p>Returns elapsed playback time for the current script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:225</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.2 },
+    }
+    lurek.automation.load(&quot;elapsed_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;elapsed_test&quot;)
+    lurek.automation.update(0.05)
+    local t = lurek.automation.getElapsedTime()
+    print(&quot;elapsed = &quot; .. tostring(t) .. &quot;s&quot;)
+    print(&quot;current script = &quot; .. tostring(lurek.automation.getCurrentScript()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getlasterror"><div class="item-row-main"><h3>getLastError</h3><pre class="inline-signature">lurek.simulator.getLastError() -&gt; string</pre><p>Returns the last automation error message when one exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:172</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.stop()
+    local err = lurek.automation.getLastError()
+    print(&quot;last error = &quot; .. tostring(err))
+    print(&quot;failed = &quot; .. tostring(lurek.automation.isFailed()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getplaybackspeed"><div class="item-row-main"><h3>getPlaybackSpeed</h3><pre class="inline-signature">lurek.simulator.getPlaybackSpeed() -&gt; number</pre><p>Returns automation playback speed multiplier.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:325</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local speed = lurek.automation.getPlaybackSpeed()
+    print(&quot;playback speed = &quot; .. tostring(speed))
+    print(&quot;speed query completed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscripts"><div class="item-row-main"><h3>getScripts</h3><pre class="inline-signature">lurek.simulator.getScripts() -&gt; string[]</pre><p>Returns the names of loaded automation scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:58</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;list_one&quot;, { steps = steps })
+    lurek.automation.load(&quot;list_two&quot;, { steps = steps })
+    local scripts = lurek.automation.getScripts()
+    print(&quot;loaded scripts = &quot; .. #scripts)
+    print(&quot;first script = &quot; .. tostring(scripts[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getstepcount"><div class="item-row-main"><h3>getStepCount</h3><pre class="inline-signature">lurek.simulator.getStepCount() -&gt; integer</pre><p>Returns the number of steps in the active script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.2 },
+        { action = &quot;wait&quot;, time = 0.4 },
+    }
+    lurek.automation.load(&quot;count_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;count_test&quot;)
+    local count = lurek.automation.getStepCount()
+    print(&quot;step count = &quot; .. tostring(count))
+    print(&quot;current step = &quot; .. tostring(lurek.automation.getCurrentStep()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsteplimit"><div class="item-row-main"><h3>getStepLimit</h3><pre class="inline-signature">lurek.simulator.getStepLimit(name: string) -&gt; integer</pre><p>Returns the configured step limit for a loaded script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:248</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;limit_query&quot;, { steps = steps })
+    local limit = lurek.automation.getStepLimit(&quot;run_test&quot;)
+    local loaded_limit = lurek.automation.getStepLimit(&quot;limit_query&quot;)
+    print(&quot;step limit for run_test = &quot; .. tostring(limit))
+    print(&quot;step limit for limit_query = &quot; .. tostring(loaded_limit))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasmacro"><div class="item-row-main"><h3>hasMacro</h3><pre class="inline-signature">lurek.simulator.hasMacro(name: string) -&gt; boolean</pre><p>Returns whether a macro is saved. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:298</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local has = lurek.automation.hasMacro(&quot;fast_login&quot;)
+    print(&quot;has macro = &quot; .. tostring(has))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasscript"><div class="item-row-main"><h3>hasScript</h3><pre class="inline-signature">lurek.simulator.hasScript(name: string) -&gt; boolean</pre><p>Returns whether a script is loaded.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:50</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;status_check&quot;, { steps = steps })
+    local has = lurek.automation.hasScript(&quot;nonexistent&quot;)
+    local loaded = lurek.automation.hasScript(&quot;status_check&quot;)
+    print(&quot;has nonexistent = &quot; .. tostring(has))
+    print(&quot;has status_check = &quot; .. tostring(loaded))
+end</code></pre></details></article><article class="item-row api-row" id="fn-iscomplete"><div class="item-row-main"><h3>isComplete</h3><pre class="inline-signature">lurek.simulator.isComplete() -&gt; boolean</pre><p>Returns whether the current automation script completed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:156</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;complete_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;complete_test&quot;)
+    lurek.automation.update(0.1)
+    local done = lurek.automation.isComplete()
+    print(&quot;isComplete = &quot; .. tostring(done))
+    print(&quot;current step = &quot; .. tostring(lurek.automation.getCurrentStep()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isfailed"><div class="item-row-main"><h3>isFailed</h3><pre class="inline-signature">lurek.simulator.isFailed() -&gt; boolean</pre><p>Returns whether the current automation script failed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:164</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local failed = lurek.automation.isFailed()
+    print(&quot;isFailed = &quot; .. tostring(failed))
+end</code></pre></details></article><article class="item-row api-row" id="fn-ishighlightmode"><div class="item-row-main"><h3>isHighlightMode</h3><pre class="inline-signature">lurek.simulator.isHighlightMode() -&gt; boolean</pre><p>Returns whether automation highlight mode is enabled.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:344</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.setHighlightMode(true)
+    local hl = lurek.automation.isHighlightMode()
+    print(&quot;highlight mode = &quot; .. tostring(hl))
+    lurek.automation.setHighlightMode(false)
+    print(&quot;highlight mode after reset = &quot; .. tostring(lurek.automation.isHighlightMode()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-ispaused"><div class="item-row-main"><h3>isPaused</h3><pre class="inline-signature">lurek.simulator.isPaused() -&gt; boolean</pre><p>Returns whether automation playback is paused.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:148</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.5 },
+    }
+    lurek.automation.load(&quot;paused_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;paused_test&quot;)
+    lurek.automation.pause()
+    local paused = lurek.automation.isPaused()
+    print(&quot;isPaused = &quot; .. tostring(paused))
+    lurek.automation.resume()
+    print(&quot;isPaused after resume = &quot; .. tostring(lurek.automation.isPaused()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isrunning"><div class="item-row-main"><h3>isRunning</h3><pre class="inline-signature">lurek.simulator.isRunning() -&gt; boolean</pre><p>Returns whether automation playback is running.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:140</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;running_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;running_test&quot;)
+    local running = lurek.automation.isRunning()
+    print(&quot;isRunning = &quot; .. tostring(running))
+    lurek.automation.stop()
+    print(&quot;isRunning after stop = &quot; .. tostring(lurek.automation.isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-listmacros"><div class="item-row-main"><h3>listMacros</h3><pre class="inline-signature">lurek.simulator.listMacros() -&gt; string[]</pre><p>Returns the names of saved macros. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;macro_list_source&quot;, { steps = steps })
+    lurek.automation.saveMacro(&quot;fast_login&quot;, &quot;macro_list_source&quot;)
+    local macros = lurek.automation.listMacros()
+    print(&quot;macros = &quot; .. #macros)
+    print(&quot;first macro = &quot; .. tostring(macros[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">lurek.simulator.load(name: string, data: table)</pre><p>Loads an automation script from a Lua table of steps and optional metadata.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:18</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;login_flow&quot;, { steps = steps })
+    print(&quot;loaded = &quot; .. tostring(lurek.automation.hasScript(&quot;login_flow&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-loadfromtoml"><div class="item-row-main"><h3>loadFromToml</h3><pre class="inline-signature">lurek.simulator.loadFromToml(name: string, toml_str: string)</pre><p>Loads an automation script from TOML text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:234</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local toml = &quot;[[steps]]\naction = \&quot;wait\&quot;\ntime = 0.0\n&quot;
+    lurek.automation.loadFromToml(&quot;toml_script&quot;, toml)
+    print(&quot;loaded from TOML = &quot; .. tostring(lurek.automation.hasScript(&quot;toml_script&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">lurek.simulator.pause()</pre><p>Pauses automation playback. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:85</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.5 },
+    }
+    lurek.automation.load(&quot;pause_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;pause_test&quot;)
+    lurek.automation.pause()
+    print(&quot;paused = &quot; .. tostring(lurek.automation.isPaused()))
+    print(&quot;running = &quot; .. tostring(lurek.automation.isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-playmacro"><div class="item-row-main"><h3>playMacro</h3><pre class="inline-signature">lurek.simulator.playMacro(name: string)</pre><p>Starts playback of a saved macro. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:285</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;macro_play_source&quot;, { steps = steps })
+    lurek.automation.saveMacro(&quot;fast_login&quot;, &quot;macro_play_source&quot;)
+    lurek.automation.playMacro(&quot;fast_login&quot;)
+    print(&quot;macro playing = &quot; .. tostring(lurek.automation.isRunning()))
+    print(&quot;current script = &quot; .. tostring(lurek.automation.getCurrentScript()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">lurek.simulator.resume()</pre><p>Resumes automation playback. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:95</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.5 },
+    }
+    lurek.automation.load(&quot;resume_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;resume_test&quot;)
+    lurek.automation.pause()
+    lurek.automation.resume()
+    print(&quot;paused after resume = &quot; .. tostring(lurek.automation.isPaused()))
+    print(&quot;running after resume = &quot; .. tostring(lurek.automation.isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-savemacro"><div class="item-row-main"><h3>saveMacro</h3><pre class="inline-signature">lurek.simulator.saveMacro(macro_name: string, script_name: string)</pre><p>Saves a loaded script as a named macro.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;macro_source&quot;, { steps = steps })
+    lurek.automation.saveMacro(&quot;fast_login&quot;, &quot;macro_source&quot;)
+    print(&quot;macro saved = &quot; .. tostring(lurek.automation.hasMacro(&quot;fast_login&quot;)))
+    print(&quot;macro count = &quot; .. tostring(#lurek.automation.listMacros()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setcondition"><div class="item-row-main"><h3>setCondition</h3><pre class="inline-signature">lurek.simulator.setCondition(name: string, value: boolean)</pre><p>Sets a named boolean condition used by automation steps.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:181</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.setCondition(&quot;logged_in&quot;, true)
+    print(&quot;condition set&quot;)
+    print(&quot;logged_in = &quot; .. tostring(lurek.automation.getCondition(&quot;logged_in&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-sethighlightmode"><div class="item-row-main"><h3>setHighlightMode</h3><pre class="inline-signature">lurek.simulator.setHighlightMode(enable: boolean)</pre><p>Enables or disables automation highlight mode.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:333</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.setHighlightMode(true)
+    print(&quot;highlight = &quot; .. tostring(lurek.automation.isHighlightMode()))
+    lurek.automation.setHighlightMode(false)
+    print(&quot;highlight after reset = &quot; .. tostring(lurek.automation.isHighlightMode()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setplaybackspeed"><div class="item-row-main"><h3>setPlaybackSpeed</h3><pre class="inline-signature">lurek.simulator.setPlaybackSpeed(factor: number)</pre><p>Sets automation playback speed multiplier.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:314</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.setPlaybackSpeed(2.0)
+    print(&quot;configured speed = 2.0&quot;)
+    print(&quot;speed = &quot; .. tostring(lurek.automation.getPlaybackSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-setsteplimit"><div class="item-row-main"><h3>setStepLimit</h3><pre class="inline-signature">lurek.simulator.setStepLimit(name: string, n: integer) -&gt; boolean</pre><p>Sets the maximum step count for a loaded script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:260</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;limit_set&quot;, { steps = steps })
+    local ok = lurek.automation.setStepLimit(&quot;limit_set&quot;, 1000)
+    print(&quot;step limit updated = &quot; .. tostring(ok))
+    print(&quot;step limit = &quot; .. tostring(lurek.automation.getStepLimit(&quot;limit_set&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">lurek.simulator.start(name: string)</pre><p>Starts playback of a loaded automation script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:66</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;run_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;run_test&quot;)
+    print(&quot;running = &quot; .. tostring(lurek.automation.isRunning()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-stop"><div class="item-row-main"><h3>stop</h3><pre class="inline-signature">lurek.simulator.stop()</pre><p>Stops the current automation script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:75</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;stop_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;stop_test&quot;)
+    lurek.automation.stop()
+    print(&quot;stopped = &quot; .. tostring(not lurek.automation.isRunning()))
+    print(&quot;current script = &quot; .. tostring(lurek.automation.getCurrentScript()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-unload"><div class="item-row-main"><h3>unload</h3><pre class="inline-signature">lurek.simulator.unload(name: string) -&gt; boolean</pre><p>Unloads a named automation script.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:41</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = { { action = &quot;wait&quot;, time = 0.0 } }
+    lurek.automation.load(&quot;temp_script&quot;, { steps = steps })
+    lurek.automation.unload(&quot;temp_script&quot;)
+    print(&quot;unloaded = &quot; .. tostring(not lurek.automation.hasScript(&quot;temp_script&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">lurek.simulator.update(dt: number)</pre><p>Advances automation playback and dispatches generated input events.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:108</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    local steps = {
+        { action = &quot;wait&quot;, time = 0.0 },
+        { action = &quot;wait&quot;, time = 0.1 },
+    }
+    lurek.automation.load(&quot;update_test&quot;, { steps = steps })
+    lurek.automation.start(&quot;update_test&quot;)
+    lurek.automation.update(0.016)
+    print(&quot;updated by 16ms&quot;)
+    print(&quot;elapsed = &quot; .. tostring(lurek.automation.getElapsedTime()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-waituntil"><div class="item-row-main"><h3>waitUntil</h3><pre class="inline-signature">lurek.simulator.waitUntil(predicate: function, timeout: number)</pre><p>Suspends automation updates until a predicate returns true or a timeout elapses.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/automation_api.rs:353</span></div><details class="example-block"><summary>Example · Exact example · automation.lua</summary><pre><code>do
+    lurek.automation.waitUntil(function()
+        return lurek.automation.getCondition(&quot;ready&quot;)
+    end, 5.0)
+    print(&quot;waitUntil registered with 5s timeout&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

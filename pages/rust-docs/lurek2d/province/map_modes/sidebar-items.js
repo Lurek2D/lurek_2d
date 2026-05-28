@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["resolve_color_fallback"],"struct":["MapModeConfig","MapModeRegistry"]};

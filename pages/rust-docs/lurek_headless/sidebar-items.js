@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_dir_to_zip","main","print_usage","run_pack","run_screenshot_batch","run_validate"]};

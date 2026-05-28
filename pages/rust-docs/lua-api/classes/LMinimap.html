@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LMinimap - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a class="active" href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LMinimap</h1>
+  <p>Lua-side wrapper for a minimap instance and access to render command state.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/minimap.html">lurek.minimap</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(10, 20)
+    print(&quot;grid width = &quot; .. mm:getGridWidth())
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LMinimap userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addmarker"><div class="item-row-main"><h3>addMarker</h3><pre class="inline-signature">LMinimap:addMarker(x: number, y: number, desc: string?, r: number?, g: number?, b: number?, a: number?) -&gt; integer</pre><p>Adds a world-space marker and returns its unique id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:634</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    local id1 = mm:addMarker(10, 10, &quot;Base&quot;, 0, 1, 0, 1)
+
+    mm:addMarker(20, 5, &quot;Enemy&quot;, 1, 0, 0, 1)
+    print(&quot;marker id = &quot; .. id1)
+    print(&quot;marker count = &quot; .. mm:getMarkerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-addobjecttype"><div class="item-row-main"><h3>addObjectType</h3><pre class="inline-signature">LMinimap:addObjectType(name: string, r: number, g: number, b: number, a: number?) -&gt; integer</pre><p>Adds an object type and returns its one-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:284</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local unit = mm:addObjectType(&quot;unit&quot;, 0, 0, 1, 1)
+    local building = mm:addObjectType(&quot;building&quot;, 1, 1, 0, 0.8)
+
+    print(&quot;types = &quot; .. mm:getObjectTypeCount())
+    print(&quot;unit = &quot; .. unit .. &quot; building = &quot; .. building)
+end</code></pre></details></article><article class="item-row api-row" id="method-addping"><div class="item-row-main"><h3>addPing</h3><pre class="inline-signature">LMinimap:addPing(x: number, y: number, duration: number, r: number?, g: number?, b: number?, a: number?)</pre><p>Adds a timed ping effect at a minimap world position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:596</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:addPing(8, 8, 2.0, 1, 1, 0, 1)
+    mm:addPing(4, 4, 1.0)
+    print(&quot;pings before = &quot; .. mm:getPingCount())
+    mm:update(2.5)
+    print(&quot;pings after = &quot; .. mm:getPingCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearmarkeranimation"><div class="item-row-main"><h3>clearMarkerAnimation</h3><pre class="inline-signature">LMinimap:clearMarkerAnimation(id: integer)</pre><p>Clears the animation assigned to a marker by id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:733</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local id = mm:addMarker(8, 8, &quot;Blink&quot;)
+
+    mm:setMarkerAnimation(id, &quot;blink&quot;, 4.0)
+    mm:clearMarkerAnimation(id)
+    mm:update(0.25)
+    print(&quot;marker exists = &quot; .. tostring(mm:hasMarker(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-clearmarkertexture"><div class="item-row-main"><h3>clearMarkerTexture</h3><pre class="inline-signature">LMinimap:clearMarkerTexture(id: integer)</pre><p>Clears image texture from a marker.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:702</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
+    local id = mm:addMarker(16, 16, &quot;Hero&quot;)
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_icon.png&quot;)
+
+    mm:setMarkerTexture(id, img, 24, 24)
+    mm:clearMarkerTexture(id)
+    print(&quot;marker exists = &quot; .. tostring(mm:hasMarker(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-clearobjecttypetexture"><div class="item-row-main"><h3>clearObjectTypeTexture</h3><pre class="inline-signature">LMinimap:clearObjectTypeTexture(type_idx: integer)</pre><p>Clears image texture for an object type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
+    local type_idx = mm:addObjectType(&quot;unit&quot;, 0, 1, 0, 1)
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_icon.png&quot;)
+
+    mm:setObjectTypeTexture(type_idx, img, 16, 16)
+    mm:clearObjectTypeTexture(type_idx)
+    print(&quot;object types = &quot; .. mm:getObjectTypeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearobjects"><div class="item-row-main"><h3>clearObjects</h3><pre class="inline-signature">LMinimap:clearObjects()</pre><p>Clears all objects from the minimap.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:402</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local npc = mm:addObjectType(&quot;npc&quot;, 0, 1, 0, 1)
+
+    mm:setObject(1, 4, 4, npc, 0)
+    mm:setObject(2, 8, 8, npc, 1)
+    print(&quot;before = &quot; .. mm:getObjectCount())
+    mm:clearObjects()
+    print(&quot;after = &quot; .. mm:getObjectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearoverlay"><div class="item-row-main"><h3>clearOverlay</h3><pre class="inline-signature">LMinimap:clearOverlay()</pre><p>Clears all minimap overlay shapes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:769</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
+    mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
+    print(&quot;before = &quot; .. mm:getOverlayShapeCount())
+    mm:clearOverlay()
+    print(&quot;after = &quot; .. mm:getOverlayShapeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearpath"><div class="item-row-main"><h3>clearPath</h3><pre class="inline-signature">LMinimap:clearPath(id: integer?)</pre><p>Clears one path by id or all paths when no id is provided.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:803</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local pts = {
+        { 2, 2 },
+        { 4, 4 },
+        { 6, 2 },
+    }
+    local pid = mm:showPath(pts, { 255, 255, 255, 255 })
+
+    print(&quot;before = &quot; .. mm:getPathCount())
+    mm:clearPath(pid)
+    print(&quot;after = &quot; .. mm:getPathCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-clearviewportrect"><div class="item-row-main"><h3>clearViewportRect</h3><pre class="inline-signature">LMinimap:clearViewportRect()</pre><p>Clears the minimap viewport rectangle overlay.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:534</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setViewportRect(4, 4, 12, 12)
+    mm:clearViewportRect()
+    local x = select(1, mm:getViewportRect())
+    print(&quot;viewport cleared = &quot; .. tostring(x == nil))
+end</code></pre></details></article><article class="item-row api-row" id="method-drawline"><div class="item-row-main"><h3>drawLine</h3><pre class="inline-signature">LMinimap:drawLine(x1: number, y1: number, x2: number, y2: number, color_tbl: table)</pre><p>Adds an overlay line between two world-space points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:744</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
+    print(&quot;overlay shapes = &quot; .. mm:getOverlayShapeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawrect"><div class="item-row-main"><h3>drawRect</h3><pre class="inline-signature">LMinimap:drawRect(x: number, y: number, w: number, h: number, color_tbl: table)</pre><p>Adds an overlay rectangle at a world-space position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:759</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
+    print(&quot;overlay shapes = &quot; .. mm:getOverlayShapeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-drawtoimage"><div class="item-row-main"><h3>drawToImage</h3><pre class="inline-signature">LMinimap:drawToImage(pixel_size: integer) -&gt; LImageData</pre><p>Draws the minimap into image data at a pixel size.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:965</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setTerrainColor(0, 0.5, 0.5, 0.5, 1.0)
+    local img = mm:drawToImage(2)
+
+    print(&quot;image type = &quot; .. img:type())
+    print(&quot;image size = &quot; .. img:getWidth() .. &quot;x&quot; .. img:getHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcellcount"><div class="item-row-main"><h3>getCellCount</h3><pre class="inline-signature">LMinimap:getCellCount() -&gt; integer</pre><p>Returns the total number of grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:76</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(10, 20)
+    print(&quot;cell count = &quot; .. mm:getCellCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcenter"><div class="item-row-main"><h3>getCenter</h3><pre class="inline-signature">LMinimap:getCenter() -&gt; number</pre><p>Returns the current minimap world-space center position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:508</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(10, 20)
+    local cx, cy = mm:getCenter()
+    print(&quot;center = &quot; .. cx .. &quot;,&quot; .. cy)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcenterx"><div class="item-row-main"><h3>getCenterX</h3><pre class="inline-signature">LMinimap:getCenterX() -&gt; number</pre><p>Returns minimap world center x coordinate.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:514</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(14, 9)
+    print(&quot;center x = &quot; .. mm:getCenterX())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcentery"><div class="item-row-main"><h3>getCenterY</h3><pre class="inline-signature">LMinimap:getCenterY() -&gt; number</pre><p>Returns minimap world center y coordinate.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:518</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(14, 9)
+    print(&quot;center y = &quot; .. mm:getCenterY())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcolormode"><div class="item-row-main"><h3>getColorMode</h3><pre class="inline-signature">LMinimap:getColorMode() -&gt; string</pre><p>Returns the current minimap color mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:454</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setColorMode(&quot;terrain&quot;)
+    print(&quot;mode = &quot; .. mm:getColorMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdisplayheight"><div class="item-row-main"><h3>getDisplayHeight</h3><pre class="inline-signature">LMinimap:getDisplayHeight() -&gt; integer</pre><p>Returns the minimap display height.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:93</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
+    mm:setDisplaySize(300, 250)
+    print(&quot;display height = &quot; .. mm:getDisplayHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdisplaysize"><div class="item-row-main"><h3>getDisplaySize</h3><pre class="inline-signature">LMinimap:getDisplaySize() -&gt; integer</pre><p>Returns the minimap display width and height in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:100</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
+    local dw, dh = mm:getDisplaySize()
+
+    print(&quot;display = &quot; .. dw .. &quot;x&quot; .. dh)
+end</code></pre></details></article><article class="item-row api-row" id="method-getdisplaywidth"><div class="item-row-main"><h3>getDisplayWidth</h3><pre class="inline-signature">LMinimap:getDisplayWidth() -&gt; integer</pre><p>Returns the minimap display width.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:87</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
+    mm:setDisplaySize(300, 250)
+    print(&quot;display width = &quot; .. mm:getDisplayWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getfogcolor"><div class="item-row-main"><h3>getFogColor</h3><pre class="inline-signature">LMinimap:getFogColor() -&gt; number</pre><p>Returns the current RGBA fog overlay color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:259</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogColor(0.1, 0.2, 0.3, 0.6)
+    local r, g, b, a = mm:getFogColor()
+    print(&quot;fog color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfoglevel"><div class="item-row-main"><h3>getFogLevel</h3><pre class="inline-signature">LMinimap:getFogLevel(x: integer, y: integer) -&gt; integer</pre><p>Returns fog level for a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:232</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogEnabled(true)
+    mm:setFogLevel(2, 2, 1)
+    print(&quot;fog(2,2) = &quot; .. mm:getFogLevel(2, 2))
+end</code></pre></details></article><article class="item-row api-row" id="method-getgridheight"><div class="item-row-main"><h3>getGridHeight</h3><pre class="inline-signature">LMinimap:getGridHeight() -&gt; integer</pre><p>Returns the height of the minimap grid in cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:72</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(10, 20)
+    print(&quot;grid height = &quot; .. mm:getGridHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-getgridsize"><div class="item-row-main"><h3>getGridSize</h3><pre class="inline-signature">LMinimap:getGridSize() -&gt; integer</pre><p>Returns the minimap grid width and height in cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:81</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 200, 200)
+    local gw, gh = mm:getGridSize()
+
+    print(&quot;grid = &quot; .. gw .. &quot;x&quot; .. gh)
+end</code></pre></details></article><article class="item-row api-row" id="method-getgridwidth"><div class="item-row-main"><h3>getGridWidth</h3><pre class="inline-signature">LMinimap:getGridWidth() -&gt; integer</pre><p>Returns the width of the minimap grid in cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:68</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(10, 20)
+    print(&quot;grid width = &quot; .. mm:getGridWidth())
+end</code></pre></details></article><article class="item-row api-row" id="method-gethoverinfo"><div class="item-row-main"><h3>getHoverInfo</h3><pre class="inline-signature">LMinimap:getHoverInfo(sx: number, sy: number, mx: number, my: number) -&gt; string</pre><p>Returns hover text for a screen position when available.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:895</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8, 80, 80)
+    mm:setTileDescription(1, &quot;Plains&quot;)
+    mm:setTerrain(1, 1, 1)
+    print(&quot;hover = &quot; .. tostring(mm:getHoverInfo(1, 1, 0, 0)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayer"><div class="item-row-main"><h3>getLayer</h3><pre class="inline-signature">LMinimap:getLayer() -&gt; integer</pre><p>Returns the active minimap display layer index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:821</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    mm:setLayer(1)
+    print(&quot;layer = &quot; .. mm:getLayer())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayercount"><div class="item-row-main"><h3>getLayerCount</h3><pre class="inline-signature">LMinimap:getLayerCount() -&gt; integer</pre><p>Returns the number of minimap layers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:825</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+
+    for i = 1, 16 do
+        data[i] = i % 4
+    end
+
+    mm:setLayerData(1, data)
+    print(&quot;layer count = &quot; .. mm:getLayerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayerdata"><div class="item-row-main"><h3>getLayerData</h3><pre class="inline-signature">LMinimap:getLayerData(layer: integer) -&gt; integer[]</pre><p>Returns raw cell data for a minimap layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:856</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+
+    for i = 1, 16 do
+        data[i] = i % 5
+    end
+
+    mm:setLayerData(1, data)
+    local out = mm:getLayerData(1)
+    print(&quot;layer 1 size = &quot; .. #(out or {}))
+    print(&quot;layer 1 last = &quot; .. (out and out[#out] or -1))
+end</code></pre></details></article><article class="item-row api-row" id="method-getmarkercount"><div class="item-row-main"><h3>getMarkerCount</h3><pre class="inline-signature">LMinimap:getMarkerCount() -&gt; integer</pre><p>Returns the total number of minimap markers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:681</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:addMarker(10, 10, &quot;Base&quot;)
+    mm:addMarker(20, 5, &quot;Enemy&quot;)
+    print(&quot;marker count = &quot; .. mm:getMarkerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getmarkerdescription"><div class="item-row-main"><h3>getMarkerDescription</h3><pre class="inline-signature">LMinimap:getMarkerDescription(id: integer) -&gt; string</pre><p>Returns a marker description by id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:675</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    local id = mm:addMarker(10, 10, &quot;Quest&quot;)
+
+    print(&quot;marker desc = &quot; .. tostring(mm:getMarkerDescription(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getobjectcount"><div class="item-row-main"><h3>getObjectCount</h3><pre class="inline-signature">LMinimap:getObjectCount() -&gt; integer</pre><p>Returns the number of objects on the minimap.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:409</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local npc = mm:addObjectType(&quot;npc&quot;, 0, 1, 0, 1)
+
+    mm:setObject(1, 4, 4, npc, 0)
+    mm:setObject(2, 8, 8, npc, 1)
+    print(&quot;object count = &quot; .. mm:getObjectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getobjecttypecount"><div class="item-row-main"><h3>getObjectTypeCount</h3><pre class="inline-signature">LMinimap:getObjectTypeCount() -&gt; integer</pre><p>Returns the number of object types.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:324</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:addObjectType(&quot;unit&quot;, 0, 0, 1, 1)
+    mm:addObjectType(&quot;building&quot;, 1, 1, 0, 0.8)
+    print(&quot;object type count = &quot; .. mm:getObjectTypeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getoverlayshapecount"><div class="item-row-main"><h3>getOverlayShapeCount</h3><pre class="inline-signature">LMinimap:getOverlayShapeCount() -&gt; integer</pre><p>Returns the number of overlay shapes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:776</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:drawLine(0, 0, 15, 15, { 255, 255, 255, 255 })
+    mm:drawRect(2, 2, 4, 4, { 0, 255, 0, 200 })
+    print(&quot;overlay shape count = &quot; .. mm:getOverlayShapeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getownercolor"><div class="item-row-main"><h3>getOwnerColor</h3><pre class="inline-signature">LMinimap:getOwnerColor(owner: integer) -&gt; number</pre><p>Returns the current RGBA color for an owner id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:434</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setOwnerColor(2, 1, 0, 0, 1)
+    local r, g, b, a = mm:getOwnerColor(2)
+    print(&quot;owner 2 = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getpathcount"><div class="item-row-main"><h3>getPathCount</h3><pre class="inline-signature">LMinimap:getPathCount() -&gt; integer</pre><p>Returns the number of active path overlays.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:810</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local pts = {
+        { 1, 1 },
+        { 3, 3 },
+        { 5, 2 },
+    }
+
+    mm:showPath(pts, { 0, 255, 0, 255 })
+    print(&quot;path count = &quot; .. mm:getPathCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getpingcount"><div class="item-row-main"><h3>getPingCount</h3><pre class="inline-signature">LMinimap:getPingCount() -&gt; integer</pre><p>Returns the number of active pings.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:622</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:addPing(8, 8, 2.0)
+    mm:addPing(4, 4, 1.0)
+    print(&quot;ping count = &quot; .. mm:getPingCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-getterrain"><div class="item-row-main"><h3>getTerrain</h3><pre class="inline-signature">LMinimap:getTerrain(x: integer, y: integer) -&gt; integer</pre><p>Returns terrain type for a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:133</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrain(2, 3, 7)
+    print(&quot;terrain(2,3) = &quot; .. mm:getTerrain(2, 3))
+end</code></pre></details></article><article class="item-row api-row" id="method-getterraincolor"><div class="item-row-main"><h3>getTerrainColor</h3><pre class="inline-signature">LMinimap:getTerrainColor(terrain_type: integer) -&gt; number</pre><p>Returns RGBA color for a terrain type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:176</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrainColor(3, 0.7, 0.4, 0.2, 1.0)
+    local r, g, b, a = mm:getTerrainColor(3)
+    print(&quot;terrain 3 color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettiledescription"><div class="item-row-main"><h3>getTileDescription</h3><pre class="inline-signature">LMinimap:getTileDescription(type_id: integer) -&gt; string</pre><p>Returns text description for a tile type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:195</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setTileDescription(3, &quot;Mountain&quot;)
+    print(&quot;tile 3 = &quot; .. tostring(mm:getTileDescription(3)))
+end</code></pre></details></article><article class="item-row api-row" id="method-getviewportcolor"><div class="item-row-main"><h3>getViewportColor</h3><pre class="inline-signature">LMinimap:getViewportColor() -&gt; number</pre><p>Returns the viewport rectangle color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:582</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportColor(0.2, 0.4, 1.0, 0.75)
+    local r, g, b, a = mm:getViewportColor()
+    print(&quot;viewport color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getviewportrect"><div class="item-row-main"><h3>getViewportRect</h3><pre class="inline-signature">LMinimap:getViewportRect() -&gt; number</pre><p>Returns the viewport rectangle when one is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:544</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setViewportRect(6, 8, 10, 14)
+    local x, y, w, h = mm:getViewportRect()
+    print(&quot;viewport = &quot; .. tostring(x) .. &quot;,&quot; .. tostring(y) .. &quot; &quot; .. tostring(w) .. &quot;x&quot; .. tostring(h))
+end</code></pre></details></article><article class="item-row api-row" id="method-getzoom"><div class="item-row-main"><h3>getZoom</h3><pre class="inline-signature">LMinimap:getZoom() -&gt; number</pre><p>Returns the current minimap zoom magnification level.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:467</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setZoom(1.5)
+    print(&quot;zoom = &quot; .. mm:getZoom())
+end</code></pre></details></article><article class="item-row api-row" id="method-gridtoscreen"><div class="item-row-main"><h3>gridToScreen</h3><pre class="inline-signature">LMinimap:gridToScreen(gx: number, gy: number, mx: number, my: number) -&gt; number</pre><p>Converts grid coordinates to screen coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:926</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
+    local sx, sy = mm:gridToScreen(8, 8, 0, 0)
+
+    print(&quot;screen = &quot; .. sx .. &quot;,&quot; .. sy)
+end</code></pre></details></article><article class="item-row api-row" id="method-hasmarker"><div class="item-row-main"><h3>hasMarker</h3><pre class="inline-signature">LMinimap:hasMarker(id: integer) -&gt; boolean</pre><p>Returns whether a marker id exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:668</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    local id = mm:addMarker(10, 10, &quot;Outpost&quot;)
+
+    print(&quot;has marker = &quot; .. tostring(mm:hasMarker(id)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isantialias"><div class="item-row-main"><h3>isAntiAlias</h3><pre class="inline-signature">LMinimap:isAntiAlias() -&gt; boolean</pre><p>Returns whether anti-aliasing is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:876</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setAntiAlias(false)
+    print(&quot;anti alias = &quot; .. tostring(mm:isAntiAlias()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isclickable"><div class="item-row-main"><h3>isClickable</h3><pre class="inline-signature">LMinimap:isClickable() -&gt; boolean</pre><p>Returns whether minimap click handling is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:887</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setClickable(true)
+    print(&quot;clickable = &quot; .. tostring(mm:isClickable()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isfogenabled"><div class="item-row-main"><h3>isFogEnabled</h3><pre class="inline-signature">LMinimap:isFogEnabled() -&gt; boolean</pre><p>Returns whether fog display is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:211</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setFogEnabled(false)
+    print(&quot;fog enabled = &quot; .. tostring(mm:isFogEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isobjecttypevisible"><div class="item-row-main"><h3>isObjectTypeVisible</h3><pre class="inline-signature">LMinimap:isObjectTypeVisible(type_idx: integer) -&gt; boolean</pre><p>Returns visibility for an object type by one-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:313</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local t = mm:addObjectType(&quot;scout&quot;, 0, 1, 1, 1)
+
+    mm:setObjectTypeVisible(t, true)
+    print(&quot;visible = &quot; .. tostring(mm:isObjectTypeVisible(t)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isviewportvisible"><div class="item-row-main"><h3>isViewportVisible</h3><pre class="inline-signature">LMinimap:isViewportVisible() -&gt; boolean</pre><p>Returns whether the viewport rectangle is visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:560</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportVisible(false)
+    print(&quot;viewport visible = &quot; .. tostring(mm:isViewportVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-removemarker"><div class="item-row-main"><h3>removeMarker</h3><pre class="inline-signature">LMinimap:removeMarker(id: integer) -&gt; boolean</pre><p>Removes a minimap marker by its unique id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:661</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local id = mm:addMarker(5, 5, &quot;Temp&quot;)
+
+    print(&quot;before = &quot; .. mm:getMarkerCount())
+    print(&quot;removed = &quot; .. tostring(mm:removeMarker(id)))
+    print(&quot;after = &quot; .. mm:getMarkerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-removeobject"><div class="item-row-main"><h3>removeObject</h3><pre class="inline-signature">LMinimap:removeObject(id: integer) -&gt; boolean</pre><p>Removes a minimap object by its unique id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:397</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local npc = mm:addObjectType(&quot;npc&quot;, 0, 1, 0, 1)
+
+    mm:setObject(1, 4, 4, npc, 0)
+    mm:setObject(2, 8, 8, npc, 1)
+    print(&quot;before = &quot; .. mm:getObjectCount())
+    print(&quot;removed = &quot; .. tostring(mm:removeObject(2)))
+    print(&quot;after = &quot; .. mm:getObjectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LMinimap:render(x: number?, y: number?)</pre><p>Enqueues minimap render commands at an optional screen position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:954</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8, 96, 96)
+    mm:setTerrain(1, 1, 1)
+    mm:render(10, 10)
+    print(&quot;render queued at = 10,10&quot;)
+    print(&quot;type = &quot; .. mm:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-revealradius"><div class="item-row-main"><h3>revealRadius</h3><pre class="inline-signature">LMinimap:revealRadius(cx: number, cy: number, radius: number)</pre><p>Reveals fog inside a world-space radius.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:497</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    local fog = {}
+
+    mm:setFogEnabled(true)
+
+    for i = 1, 32 * 32 do
+        fog[i] = 0
+    end
+
+    mm:setFogData(fog)
+    mm:revealRadius(16, 16, 5)
+    print(&quot;center fog = &quot; .. mm:getFogLevel(16, 16))
+    print(&quot;corner fog = &quot; .. mm:getFogLevel(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-screentogrid"><div class="item-row-main"><h3>screenToGrid</h3><pre class="inline-signature">LMinimap:screenToGrid(sx: number, sy: number, mx: number, my: number) -&gt; number</pre><p>Converts a screen position to grid coordinates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:912</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16, 160, 160)
+    local sx, sy = mm:gridToScreen(8, 8, 0, 0)
+    local gx, gy = mm:screenToGrid(sx, sy, 0, 0)
+
+    print(&quot;grid = &quot; .. gx .. &quot;,&quot; .. gy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setantialias"><div class="item-row-main"><h3>setAntiAlias</h3><pre class="inline-signature">LMinimap:setAntiAlias(enabled: boolean)</pre><p>Enables or disables minimap anti-aliasing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:869</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setAntiAlias(true)
+    print(&quot;anti alias = &quot; .. tostring(mm:isAntiAlias()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcenter"><div class="item-row-main"><h3>setCenter</h3><pre class="inline-signature">LMinimap:setCenter(x: number, y: number)</pre><p>Sets the minimap world-space center position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:472</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setCenter(16, 12)
+    local cx, cy = mm:getCenter()
+    print(&quot;center = &quot; .. cx .. &quot;,&quot; .. cy)
+end</code></pre></details></article><article class="item-row api-row" id="method-setclickable"><div class="item-row-main"><h3>setClickable</h3><pre class="inline-signature">LMinimap:setClickable(enabled: boolean)</pre><p>Enables or disables minimap click handling.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:880</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setClickable(false)
+    print(&quot;clickable = &quot; .. tostring(mm:isClickable()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcolormode"><div class="item-row-main"><h3>setColorMode</h3><pre class="inline-signature">LMinimap:setColorMode(mode: string)</pre><p>Sets the minimap color mode to terrain or political.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:441</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setColorMode(&quot;political&quot;)
+    print(&quot;mode = &quot; .. mm:getColorMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-setdisplaysize"><div class="item-row-main"><h3>setDisplaySize</h3><pre class="inline-signature">LMinimap:setDisplaySize(w: integer, h: integer)</pre><p>Sets the minimap display width and height in pixels.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:107</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16, 100, 100)
+    mm:setDisplaySize(300, 250)
+    print(&quot;display = &quot; .. mm:getDisplayWidth() .. &quot;x&quot; .. mm:getDisplayHeight())
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogcolor"><div class="item-row-main"><h3>setFogColor</h3><pre class="inline-signature">LMinimap:setFogColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the RGBA fog overlay color for covered cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:246</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogColor(0.0, 0.0, 0.0, 0.7)
+    local r, g, b, a = mm:getFogColor()
+    print(&quot;fog color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogdata"><div class="item-row-main"><h3>setFogData</h3><pre class="inline-signature">LMinimap:setFogData(data: table)</pre><p>Replaces fog data from a flat array table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:266</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local fog = {}
+
+    mm:setFogEnabled(true)
+
+    for i = 1, 16 do
+        fog[i] = (i - 1) % 3
+    end
+
+    mm:setFogData(fog)
+    print(&quot;fog(1,1) = &quot; .. mm:getFogLevel(1, 1))
+    print(&quot;fog(4,4) = &quot; .. mm:getFogLevel(4, 4))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogenabled"><div class="item-row-main"><h3>setFogEnabled</h3><pre class="inline-signature">LMinimap:setFogEnabled(enabled: boolean)</pre><p>Enables or disables the minimap fog display.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:204</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setFogEnabled(true)
+    print(&quot;fog enabled = &quot; .. tostring(mm:isFogEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setfoglevel"><div class="item-row-main"><h3>setFogLevel</h3><pre class="inline-signature">LMinimap:setFogLevel(x: integer, y: integer, level: integer)</pre><p>Sets fog level for a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:217</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setFogEnabled(true)
+    mm:setFogLevel(1, 1, 2)
+    print(&quot;fog(1,1) = &quot; .. mm:getFogLevel(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayer"><div class="item-row-main"><h3>setLayer</h3><pre class="inline-signature">LMinimap:setLayer(layer: integer)</pre><p>Sets the active minimap display layer index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:814</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    mm:setLayer(2)
+    print(&quot;layer = &quot; .. mm:getLayer())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayerdata"><div class="item-row-main"><h3>setLayerData</h3><pre class="inline-signature">LMinimap:setLayerData(layer: integer, data_tbl: table)</pre><p>Sets raw cell data for a minimap layer.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:830</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+
+    for i = 1, 16 do
+        data[i] = i
+    end
+
+    mm:setLayerData(0, data)
+    local out = mm:getLayerData(0)
+    print(&quot;layer 0 size = &quot; .. #(out or {}))
+    print(&quot;layer 0 first = &quot; .. (out and out[1] or -1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkeranimation"><div class="item-row-main"><h3>setMarkerAnimation</h3><pre class="inline-signature">LMinimap:setMarkerAnimation(id: integer, anim_type: string, speed: number)</pre><p>Sets marker animation by type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local id = mm:addMarker(8, 8, &quot;Pulse&quot;)
+
+    mm:setMarkerAnimation(id, &quot;pulse&quot;, 2.0)
+    mm:update(0.5)
+    print(&quot;marker exists = &quot; .. tostring(mm:hasMarker(id)))
+    print(&quot;marker count = &quot; .. mm:getMarkerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setmarkertexture"><div class="item-row-main"><h3>setMarkerTexture</h3><pre class="inline-signature">LMinimap:setMarkerTexture(id: integer, image_ud: LImage, width: number?, height: number?)</pre><p>Assigns an image texture to a marker.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:690</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
+    local id = mm:addMarker(16, 16, &quot;Hero&quot;)
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_icon.png&quot;)
+
+    mm:setMarkerTexture(id, img, 24, 24)
+    print(&quot;marker count = &quot; .. mm:getMarkerCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setobject"><div class="item-row-main"><h3>setObject</h3><pre class="inline-signature">LMinimap:setObject(id: integer, x: number, y: number, type_idx: integer, owner: integer?)</pre><p>Adds or updates an object on the minimap.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local npc = mm:addObjectType(&quot;npc&quot;, 0, 1, 0, 1)
+
+    mm:setObject(1, 4, 4, npc, 2)
+    print(&quot;object count = &quot; .. mm:getObjectCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setobjecttypetexture"><div class="item-row-main"><h3>setObjectTypeTexture</h3><pre class="inline-signature">LMinimap:setObjectTypeTexture(type_idx: integer, image_ud: LImage, width: number?, height: number?)</pre><p>Assigns an image texture to an object type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:333</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
+    local type_idx = mm:addObjectType(&quot;unit&quot;, 0, 1, 0, 1)
+    local img = lurek.render.newImage(&quot;content/examples/assets/images/sample_icon.png&quot;)
+
+    mm:setObjectTypeTexture(type_idx, img, 16, 16)
+    print(&quot;object types = &quot; .. mm:getObjectTypeCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setobjecttypevisible"><div class="item-row-main"><h3>setObjectTypeVisible</h3><pre class="inline-signature">LMinimap:setObjectTypeVisible(type_idx: integer, visible: boolean)</pre><p>Sets visibility for an object type by one-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local t = mm:addObjectType(&quot;hidden&quot;, 1, 0, 0, 1)
+
+    mm:setObjectTypeVisible(t, false)
+    print(&quot;visible = &quot; .. tostring(mm:isObjectTypeVisible(t)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setownercolor"><div class="item-row-main"><h3>setOwnerColor</h3><pre class="inline-signature">LMinimap:setOwnerColor(owner: integer, r: number, g: number, b: number, a: number?)</pre><p>Sets the RGBA display color for an owner id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:419</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setOwnerColor(1, 0, 0, 1, 1)
+    local r, g, b, a = mm:getOwnerColor(1)
+    print(&quot;owner 1 = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setterrain"><div class="item-row-main"><h3>setTerrain</h3><pre class="inline-signature">LMinimap:setTerrain(x: integer, y: integer, terrain_type: integer)</pre><p>Sets terrain type for a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:116</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrain(1, 1, 2)
+    print(&quot;terrain(1,1) = &quot; .. mm:getTerrain(1, 1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setterraincolor"><div class="item-row-main"><h3>setTerrainColor</h3><pre class="inline-signature">LMinimap:setTerrainColor(terrain_type: integer, r: number, g: number, b: number, a: number?)</pre><p>Sets the RGBA display color for a terrain type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:161</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setTerrainColor(1, 0.2, 0.6, 0.1, 0.9)
+    local r, g, b, a = mm:getTerrainColor(1)
+    print(&quot;terrain 1 color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setterraindata"><div class="item-row-main"><h3>setTerrainData</h3><pre class="inline-signature">LMinimap:setTerrainData(data: table)</pre><p>Replaces terrain data from a flat array table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:144</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(4, 4)
+    local data = {}
+
+    for i = 1, 16 do
+        data[i] = ((i - 1) % 3) + 1
+    end
+
+    mm:setTerrainData(data)
+    print(&quot;terrain(1,1) = &quot; .. mm:getTerrain(1, 1))
+    print(&quot;terrain(4,4) = &quot; .. mm:getTerrain(4, 4))
+end</code></pre></details></article><article class="item-row api-row" id="method-settiledescription"><div class="item-row-main"><h3>setTileDescription</h3><pre class="inline-signature">LMinimap:setTileDescription(type_id: integer, desc: string)</pre><p>Sets text description for a tile type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:184</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:setTileDescription(1, &quot;Grass&quot;)
+    mm:setTileDescription(2, &quot;Water&quot;)
+    print(&quot;tile 1 = &quot; .. tostring(mm:getTileDescription(1)))
+    print(&quot;tile 2 = &quot; .. tostring(mm:getTileDescription(2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setviewportcolor"><div class="item-row-main"><h3>setViewportColor</h3><pre class="inline-signature">LMinimap:setViewportColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the viewport rectangle color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:569</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportColor(1, 1, 0, 0.5)
+    local r, g, b, a = mm:getViewportColor()
+    print(&quot;viewport color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setviewportrect"><div class="item-row-main"><h3>setViewportRect</h3><pre class="inline-signature">LMinimap:setViewportRect(x: number, y: number, w: number, h: number)</pre><p>Sets the visible viewport rectangle shown on the minimap.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:525</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setViewportRect(4, 4, 12, 12)
+    local x, y, w, h = mm:getViewportRect()
+    print(&quot;viewport = &quot; .. tostring(x) .. &quot;,&quot; .. tostring(y) .. &quot; &quot; .. tostring(w) .. &quot;x&quot; .. tostring(h))
+end</code></pre></details></article><article class="item-row api-row" id="method-setviewportvisible"><div class="item-row-main"><h3>setViewportVisible</h3><pre class="inline-signature">LMinimap:setViewportVisible(visible: boolean)</pre><p>Sets whether the viewport rectangle is visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:553</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    mm:setViewportVisible(true)
+    print(&quot;viewport visible = &quot; .. tostring(mm:isViewportVisible()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setzoom"><div class="item-row-main"><h3>setZoom</h3><pre class="inline-signature">LMinimap:setZoom(zoom: number)</pre><p>Sets the minimap zoom magnification level.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:460</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32)
+    mm:setZoom(2.0)
+    print(&quot;zoom = &quot; .. mm:getZoom())
+end</code></pre></details></article><article class="item-row api-row" id="method-showpath"><div class="item-row-main"><h3>showPath</h3><pre class="inline-signature">LMinimap:showPath(points_tbl: table, color_tbl: table) -&gt; integer</pre><p>Adds a colored path overlay and returns its id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:784</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    local pts = {
+        { 2, 2 },
+        { 4, 4 },
+        { 6, 2 },
+        { 8, 4 },
+    }
+    local pid = mm:showPath(pts, { 255, 0, 0, 255 })
+
+    print(&quot;path id = &quot; .. pid)
+    print(&quot;path count = &quot; .. mm:getPathCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-trackcamera"><div class="item-row-main"><h3>trackCamera</h3><pre class="inline-signature">LMinimap:trackCamera(camera_ud: LCamera)</pre><p>Centers the minimap and viewport rectangle from a camera handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:479</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(32, 32, 256, 256)
+    local cam = lurek.camera.newCamera(1280, 720)
+
+    cam:setPosition(320, 240)
+    mm:trackCamera(cam)
+
+    local cx, cy = mm:getCenter()
+    local _, _, vw, vh = mm:getViewportRect()
+    print(&quot;center = &quot; .. cx .. &quot;,&quot; .. cy)
+    print(&quot;viewport size = &quot; .. tostring(vw) .. &quot;x&quot; .. tostring(vh))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LMinimap:type() -&gt; string</pre><p>Returns the Lua-visible type name for this minimap handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:942</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    print(&quot;type = &quot; .. mm:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LMinimap:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this minimap handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:947</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(16, 16)
+    print(&quot;is LMinimap = &quot; .. tostring(mm:typeOf(&quot;LMinimap&quot;)))
+    print(&quot;is LObject = &quot; .. tostring(mm:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LMinimap:update(dt: number)</pre><p>Advances minimap animations and timers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/minimap_api.rs:935</span></div><details class="example-block"><summary>Example · Exact example · minimap.lua</summary><pre><code>do
+    local mm = lurek.minimap.newMinimap(8, 8)
+    mm:addPing(4, 4, 0.25)
+    print(&quot;pings before = &quot; .. mm:getPingCount())
+    mm:update(0.5)
+    print(&quot;pings after = &quot; .. mm:getPingCount())
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LMidiPlayer - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a class="active" href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LMidiPlayer</h1>
+  <p>Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/audio.html">lurek.audio</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local ok = player:load(path)
+    print(&quot;loaded = &quot; .. tostring(ok))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LMidiPlayer userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-getbus"><div class="item-row-main"><h3>getBus</h3><pre class="inline-signature">LMidiPlayer:getBus() -&gt; LBus</pre><p>Returns the audio bus this MIDI player is routed through.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:869</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local bus = lurek.audio.newBus(&quot;midi_out&quot;)
+    player:setBus(bus)
+    local b = player:getBus()
+    print(&quot;bus = &quot; .. b:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getchannelcount"><div class="item-row-main"><h3>getChannelCount</h3><pre class="inline-signature">LMidiPlayer:getChannelCount() -&gt; integer</pre><p>Returns the number of active MIDI channels in the loaded file.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:991</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local count = player:getChannelCount()
+    print(&quot;channels = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-getchannelinstrument"><div class="item-row-main"><h3>getChannelInstrument</h3><pre class="inline-signature">LMidiPlayer:getChannelInstrument(ch: integer) -&gt; integer</pre><p>Returns the current GM instrument program for a channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:981</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelInstrument(2, 48)
+    local inst = player:getChannelInstrument(2)
+    print(&quot;ch2 instrument = &quot; .. inst)
+end</code></pre></details></article><article class="item-row api-row" id="method-getchannelvolume"><div class="item-row-main"><h3>getChannelVolume</h3><pre class="inline-signature">LMidiPlayer:getChannelVolume(ch: integer) -&gt; number</pre><p>Returns the volume of a specific MIDI channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:936</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelVolume(2, 0.6)
+    local v = player:getChannelVolume(2)
+    print(&quot;ch2 volume = &quot; .. v)
+end</code></pre></details></article><article class="item-row api-row" id="method-getchannels"><div class="item-row-main"><h3>getChannels</h3><pre class="inline-signature">LMidiPlayer:getChannels() -&gt; integer</pre><p>Returns the number of output audio channels for MIDI synthesis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1094</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local ch = player:getChannels()
+    print(&quot;output channels = &quot; .. ch)
+end</code></pre></details></article><article class="item-row api-row" id="method-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">LMidiPlayer:getDuration() -&gt; number</pre><p>Returns the total duration of the loaded MIDI file in seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:822</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local dur = player:getDuration()
+    print(&quot;duration = &quot; .. dur .. &quot;s&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getfilepath"><div class="item-row-main"><h3>getFilePath</h3><pre class="inline-signature">LMidiPlayer:getFilePath() -&gt; string</pre><p>Returns the file path of the currently loaded MIDI file.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:752</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    print(&quot;file = &quot; .. tostring(player:getFilePath()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getnotecount"><div class="item-row-main"><h3>getNoteCount</h3><pre class="inline-signature">LMidiPlayer:getNoteCount() -&gt; integer</pre><p>Returns the total number of note events in the loaded MIDI file.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1054</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local notes = player:getNoteCount()
+    print(&quot;notes = &quot; .. notes)
+end</code></pre></details></article><article class="item-row api-row" id="method-getoriginaltempo"><div class="item-row-main"><h3>getOriginalTempo</h3><pre class="inline-signature">LMidiPlayer:getOriginalTempo() -&gt; number</pre><p>Returns the original tempo of the MIDI file as authored.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:900</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local orig = player:getOriginalTempo()
+    print(&quot;original tempo = &quot; .. orig)
+end</code></pre></details></article><article class="item-row api-row" id="method-getsamplerate"><div class="item-row-main"><h3>getSampleRate</h3><pre class="inline-signature">LMidiPlayer:getSampleRate() -&gt; integer</pre><p>Returns the output sample rate used for MIDI synthesis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1081</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local rate = player:getSampleRate()
+    print(&quot;sample rate = &quot; .. rate)
+end</code></pre></details></article><article class="item-row api-row" id="method-getsoundfontpath"><div class="item-row-main"><h3>getSoundFontPath</h3><pre class="inline-signature">LMidiPlayer:getSoundFontPath() -&gt; string</pre><p>Returns the path of the currently set SoundFont (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:765</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local sf_path = &quot;content/examples/assets/audio/sample_soundfont.sf2&quot;
+    local ok = pcall(function() player:setSoundFont(sf_path) end)
+    local p = ok and player:getSoundFontPath() or nil
+    print(&quot;soundfont = &quot; .. tostring(p))
+end</code></pre></details></article><article class="item-row api-row" id="method-gettempo"><div class="item-row-main"><h3>getTempo</h3><pre class="inline-signature">LMidiPlayer:getTempo() -&gt; number</pre><p>Returns the current effective tempo in beats per minute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:893</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempo(120)
+    local t = player:getTempo()
+    print(&quot;tempo = &quot; .. t)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettemposcale"><div class="item-row-main"><h3>getTempoScale</h3><pre class="inline-signature">LMidiPlayer:getTempoScale() -&gt; number</pre><p>Returns the current tempo scale multiplier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:913</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempoScale(0.8)
+    local s = player:getTempoScale()
+    print(&quot;scale = &quot; .. s)
+end</code></pre></details></article><article class="item-row api-row" id="method-getticksperbeat"><div class="item-row-main"><h3>getTicksPerBeat</h3><pre class="inline-signature">LMidiPlayer:getTicksPerBeat() -&gt; integer</pre><p>Returns the MIDI file&#x27;s resolution in ticks per beat (PPQN).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:919</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local tpb = player:getTicksPerBeat()
+    print(&quot;ticks/beat = &quot; .. tpb)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettrackcount"><div class="item-row-main"><h3>getTrackCount</h3><pre class="inline-signature">LMidiPlayer:getTrackCount() -&gt; integer</pre><p>Returns the number of tracks in the loaded MIDI file.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1012</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local count = player:getTrackCount()
+    print(&quot;tracks = &quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-gettrackname"><div class="item-row-main"><h3>getTrackName</h3><pre class="inline-signature">LMidiPlayer:getTrackName(idx: integer) -&gt; string</pre><p>Returns the name of a MIDI track by 1-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1019</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    local name = player:getTrackName(1)
+    print(&quot;track 1 = &quot; .. tostring(name))
+end</code></pre></details></article><article class="item-row api-row" id="method-getvolume"><div class="item-row-main"><h3>getVolume</h3><pre class="inline-signature">LMidiPlayer:getVolume() -&gt; number</pre><p>Returns the current master volume of the MIDI player.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:848</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setVolume(0.5)
+    local v = player:getVolume()
+    print(&quot;volume = &quot; .. v)
+end</code></pre></details></article><article class="item-row api-row" id="method-ischannelmuted"><div class="item-row-main"><h3>isChannelMuted</h3><pre class="inline-signature">LMidiPlayer:isChannelMuted(ch: integer) -&gt; boolean</pre><p>Returns whether a specific MIDI channel is muted.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:957</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelMuted(3, true)
+    print(&quot;ch3 muted = &quot; .. tostring(player:isChannelMuted(3)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isloaded"><div class="item-row-main"><h3>isLoaded</h3><pre class="inline-signature">LMidiPlayer:isLoaded() -&gt; boolean</pre><p>Returns whether a MIDI file is currently loaded and ready to play.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:746</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    print(&quot;loaded = &quot; .. tostring(player:isLoaded()))
+end</code></pre></details></article><article class="item-row api-row" id="method-islooping"><div class="item-row-main"><h3>isLooping</h3><pre class="inline-signature">LMidiPlayer:isLooping() -&gt; boolean</pre><p>Returns whether MIDI looping is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:835</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setLooping(true)
+    print(&quot;isLooping = &quot; .. tostring(player:isLooping()))
+end</code></pre></details></article><article class="item-row api-row" id="method-ispaused"><div class="item-row-main"><h3>isPaused</h3><pre class="inline-signature">LMidiPlayer:isPaused() -&gt; boolean</pre><p>Returns whether the MIDI player is currently paused.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:805</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:pause()
+    print(&quot;paused = &quot; .. tostring(player:isPaused()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isplaying"><div class="item-row-main"><h3>isPlaying</h3><pre class="inline-signature">LMidiPlayer:isPlaying() -&gt; boolean</pre><p>Returns whether the MIDI player is currently playing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:799</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    print(&quot;playing = &quot; .. tostring(player:isPlaying()))
+end</code></pre></details></article><article class="item-row api-row" id="method-istrackmuted"><div class="item-row-main"><h3>isTrackMuted</h3><pre class="inline-signature">LMidiPlayer:isTrackMuted(idx: integer) -&gt; boolean</pre><p>Returns whether a specific MIDI track is muted.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1044</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setTrackMuted(2, true)
+    print(&quot;track 2 muted = &quot; .. tostring(player:isTrackMuted(2)))
+end</code></pre></details></article><article class="item-row api-row" id="method-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">LMidiPlayer:load(path: string) -&gt; boolean</pre><p>Loads a MIDI file from the given path relative to the game directory.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:730</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local ok = player:load(path)
+    print(&quot;loaded = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-loaddata"><div class="item-row-main"><h3>loadData</h3><pre class="inline-signature">LMidiPlayer:loadData(data: string) -&gt; boolean</pre><p>Loads MIDI data from a raw byte string in memory.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:739</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local data = string.char(77,84,104,100,0,0,0,6,0,0,0,1,0,96,77,84,114,107,0,0,0,4,0,255,47,0)
+    local ok = player:loadData(data)
+    print(&quot;loaded data = &quot; .. tostring(ok))
+end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LMidiPlayer:pause()</pre><p>Pauses MIDI playback at the current position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:786</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:pause()
+    print(&quot;midi paused = &quot; .. tostring(player:isPaused()))
+end</code></pre></details></article><article class="item-row api-row" id="method-play"><div class="item-row-main"><h3>play</h3><pre class="inline-signature">LMidiPlayer:play()</pre><p>Starts MIDI playback from the current position using the audio output stream.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:777</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    print(&quot;midi playing = &quot; .. tostring(player:isPlaying()))
+end</code></pre></details></article><article class="item-row api-row" id="method-seek"><div class="item-row-main"><h3>seek</h3><pre class="inline-signature">LMidiPlayer:seek(secs: number)</pre><p>Seeks to a specific position in the MIDI file.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:811</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:seek(5.0)
+    print(&quot;seeked to &quot; .. player:tell())
+end</code></pre></details></article><article class="item-row api-row" id="method-setbus"><div class="item-row-main"><h3>setBus</h3><pre class="inline-signature">LMidiPlayer:setBus(bus: LBus?)</pre><p>Routes this MIDI player&#x27;s output through the specified audio bus.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:852</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local bus = lurek.audio.newBus(&quot;midi_bus&quot;)
+    player:setBus(bus)
+    print(&quot;bus set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setchannelinstrument"><div class="item-row-main"><h3>setChannelInstrument</h3><pre class="inline-signature">LMidiPlayer:setChannelInstrument(ch: integer, inst: integer)</pre><p>Sets the General MIDI instrument program for a channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:968</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelInstrument(1, 25)
+    print(&quot;ch1 instrument = &quot; .. player:getChannelInstrument(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setchannelmuted"><div class="item-row-main"><h3>setChannelMuted</h3><pre class="inline-signature">LMidiPlayer:setChannelMuted(ch: integer, muted: boolean)</pre><p>Mutes or unmutes a specific MIDI channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:947</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelMuted(10, true)
+    print(&quot;ch10 muted = &quot; .. tostring(player:isChannelMuted(10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setchannelvolume"><div class="item-row-main"><h3>setChannelVolume</h3><pre class="inline-signature">LMidiPlayer:setChannelVolume(ch: integer, vol: number)</pre><p>Sets the volume for a specific MIDI channel (1-16).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:926</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelVolume(1, 0.8)
+    print(&quot;ch1 volume = &quot; .. player:getChannelVolume(1))
+end</code></pre></details></article><article class="item-row api-row" id="method-setchannels"><div class="item-row-main"><h3>setChannels</h3><pre class="inline-signature">LMidiPlayer:setChannels(channels: integer)</pre><p>Sets the number of output audio channels for MIDI synthesis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1100</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannels(2)
+    print(&quot;set stereo output&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlooping"><div class="item-row-main"><h3>setLooping</h3><pre class="inline-signature">LMidiPlayer:setLooping(looping: boolean)</pre><p>Enables or disables looping for MIDI playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:828</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setLooping(true)
+    print(&quot;looping = &quot; .. tostring(player:isLooping()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setonend"><div class="item-row-main"><h3>setOnEnd</h3><pre class="inline-signature">LMidiPlayer:setOnEnd(cb: function?)</pre><p>Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1074</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnEnd(function()
+        print(&quot;midi playback ended&quot;)
+    end)
+    print(&quot;onEnd callback set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setonnoteoff"><div class="item-row-main"><h3>setOnNoteOff</h3><pre class="inline-signature">LMidiPlayer:setOnNoteOff(cb: function?)</pre><p>Registers a callback for MIDI note-off events (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1067</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnNoteOff(function(ch, note)
+        print(&quot;note off: ch=&quot; .. ch .. &quot; note=&quot; .. note)
+    end)
+    print(&quot;onNoteOff callback set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setonnoteon"><div class="item-row-main"><h3>setOnNoteOn</h3><pre class="inline-signature">LMidiPlayer:setOnNoteOn(cb: function?)</pre><p>Registers a callback for MIDI note-on events (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1060</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnNoteOn(function(ch, note, vel)
+        print(&quot;note on: ch=&quot; .. ch .. &quot; note=&quot; .. note .. &quot; vel=&quot; .. vel)
+    end)
+    print(&quot;onNoteOn callback set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setsamplerate"><div class="item-row-main"><h3>setSampleRate</h3><pre class="inline-signature">LMidiPlayer:setSampleRate(rate: integer)</pre><p>Sets the output sample rate for MIDI synthesis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1087</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setSampleRate(48000)
+    print(&quot;sample rate = &quot; .. player:getSampleRate())
+end</code></pre></details></article><article class="item-row api-row" id="method-setsoundfont"><div class="item-row-main"><h3>setSoundFont</h3><pre class="inline-signature">LMidiPlayer:setSoundFont(path: string)</pre><p>Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:758</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    local sf_path = &quot;content/examples/assets/audio/sample_soundfont.sf2&quot;
+    local ok = pcall(function() player:setSoundFont(sf_path) end)
+    print(&quot;sf = &quot; .. tostring(ok and player:getSoundFontPath()))
+end</code></pre></details></article><article class="item-row api-row" id="method-settempo"><div class="item-row-main"><h3>setTempo</h3><pre class="inline-signature">LMidiPlayer:setTempo(bpm: number)</pre><p>Sets the playback tempo in beats per minute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:881</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempo(140)
+    print(&quot;tempo = &quot; .. player:getTempo())
+end</code></pre></details></article><article class="item-row api-row" id="method-settemposcale"><div class="item-row-main"><h3>setTempoScale</h3><pre class="inline-signature">LMidiPlayer:setTempoScale(scale: number)</pre><p>Sets a tempo multiplier relative to the original speed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:906</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempoScale(1.5)
+    print(&quot;tempo scale = &quot; .. player:getTempoScale())
+end</code></pre></details></article><article class="item-row api-row" id="method-settrackmuted"><div class="item-row-main"><h3>setTrackMuted</h3><pre class="inline-signature">LMidiPlayer:setTrackMuted(idx: integer, muted: boolean)</pre><p>Mutes or unmutes a specific MIDI track.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1034</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setTrackMuted(1, true)
+    print(&quot;track 1 muted = &quot; .. tostring(player:isTrackMuted(1)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setvolume"><div class="item-row-main"><h3>setVolume</h3><pre class="inline-signature">LMidiPlayer:setVolume(vol: number)</pre><p>Sets the master volume for MIDI playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:841</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:setVolume(0.7)
+    print(&quot;volume = &quot; .. player:getVolume())
+end</code></pre></details></article><article class="item-row api-row" id="method-solochannel"><div class="item-row-main"><h3>soloChannel</h3><pre class="inline-signature">LMidiPlayer:soloChannel(ch: integer)</pre><p>Solos a specific MIDI channel, muting all others.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:997</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:soloChannel(1)
+    print(&quot;ch1 soloed&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-stop"><div class="item-row-main"><h3>stop</h3><pre class="inline-signature">LMidiPlayer:stop()</pre><p>Stops MIDI playback and resets position to the beginning.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:792</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:stop()
+    print(&quot;midi stopped&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-tell"><div class="item-row-main"><h3>tell</h3><pre class="inline-signature">LMidiPlayer:tell() -&gt; number</pre><p>Returns the current playback position of the MIDI player in seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:818</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local path = &quot;content/examples/assets/audio/sample_midi.mid&quot;
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    local pos = player:tell()
+    print(&quot;position = &quot; .. pos)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LMidiPlayer:type() -&gt; string</pre><p>Returns the type name of this object for runtime type-checking.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1107</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    print(&quot;type = &quot; .. player:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LMidiPlayer:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1112</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    print(&quot;is LMidiPlayer = &quot; .. tostring(player:typeOf(&quot;LMidiPlayer&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-unsoloall"><div class="item-row-main"><h3>unsoloAll</h3><pre class="inline-signature">LMidiPlayer:unsoloAll()</pre><p>Removes solo from all channels, restoring normal playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:1005</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:soloChannel(1)
+    player:unsoloAll()
+    print(&quot;unsolo all done&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-usedefaultsoundfont"><div class="item-row-main"><h3>useDefaultSoundFont</h3><pre class="inline-signature">LMidiPlayer:useDefaultSoundFont()</pre><p>Reverts to the built-in default SoundFont (stub, not yet implemented).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/audio_api.rs:771</span></div><details class="example-block"><summary>Example · Exact example · audio.lua</summary><pre><code>do
+    local player = lurek.audio.newMidiPlayer()
+    player:useDefaultSoundFont()
+    print(&quot;using default soundfont&quot;)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

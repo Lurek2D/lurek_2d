@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLight - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a class="active" href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LLight</h1>
+  <p>Lua-side handle for a light stored in the shared light world.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/light.html">lurek.light</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setPosition(200, 150)
+    local x, y = light:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LLight userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addflicker"><div class="item-row-main"><h3>addFlicker</h3><pre class="inline-signature">LLight:addFlicker(min: number, max: number, hz: number)</pre><p>Adds flicker from min/max intensity range and frequency.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:879</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(100, 100, 80)
+    light:addFlicker(0.5, 1.0, 8.0)
+    local speed, strength = light:getFlicker()
+    print(&quot;flicker speed = &quot; .. speed)
+    print(&quot;flicker strength = &quot; .. strength)
+end</code></pre></details></article><article class="item-row api-row" id="method-clearcookie"><div class="item-row-main"><h3>clearCookie</h3><pre class="inline-signature">LLight:clearCookie()</pre><p>Clears the cookie texture path stored on this Lua light handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:990</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    light:clearCookie()
+    print(&quot;cookie = &quot; .. tostring(light:getCookie()))
+end</code></pre></details></article><article class="item-row api-row" id="method-clearnormalmap"><div class="item-row-main"><h3>clearNormalMap</h3><pre class="inline-signature">LLight:clearNormalMap()</pre><p>Clears the normal map path used by this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1019</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap(&quot;content/examples/assets/images/sample_normal.dds&quot;)
+    light:clearNormalMap()
+    print(&quot;normal map = &quot; .. tostring(light:getNormalMap()))
+end</code></pre></details></article><article class="item-row api-row" id="method-getattenuation"><div class="item-row-main"><h3>getAttenuation</h3><pre class="inline-signature">LLight:getAttenuation() -&gt; number</pre><p>Returns this light attenuation coefficients.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:740</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setAttenuation(1, 0.1, 0.01)
+    local c, l, q = light:getAttenuation()
+    print(&quot;attenuation c=&quot; .. c .. &quot; l=&quot; .. l .. &quot; q=&quot; .. q)
+end</code></pre></details></article><article class="item-row api-row" id="method-getblendmode"><div class="item-row-main"><h3>getBlendMode</h3><pre class="inline-signature">LLight:getBlendMode() -&gt; string</pre><p>Returns this light blend mode string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:401</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setBlendMode(&quot;add&quot;)
+    print(&quot;blend = &quot; .. light:getBlendMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-getcolor"><div class="item-row-main"><h3>getColor</h3><pre class="inline-signature">LLight:getColor() -&gt; number</pre><p>Returns this light RGBA color. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:330</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0.5, 0, 0.9)
+    local r, g, b, a = light:getColor()
+    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcookie"><div class="item-row-main"><h3>getCookie</h3><pre class="inline-signature">LLight:getCookie() -&gt; string</pre><p>Returns the cookie texture path stored on this Lua light handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:985</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    print(&quot;cookie = &quot; .. light:getCookie())
+end</code></pre></details></article><article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LLight:getDirection() -&gt; number</pre><p>Returns this light direction angle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;directional&quot;)
+    light:setDirection(1.57)
+    print(&quot;direction = &quot; .. light:getDirection())
+end</code></pre></details></article><article class="item-row api-row" id="method-getenergy"><div class="item-row-main"><h3>getEnergy</h3><pre class="inline-signature">LLight:getEnergy() -&gt; number</pre><p>Returns this light energy value. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:377</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnergy(2.5)
+    print(&quot;energy = &quot; .. light:getEnergy())
+end</code></pre></details></article><article class="item-row api-row" id="method-getfalloff"><div class="item-row-main"><h3>getFalloff</h3><pre class="inline-signature">LLight:getFalloff() -&gt; string</pre><p>Returns this light falloff mode string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:425</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFalloff(&quot;smooth&quot;)
+    print(&quot;falloff = &quot; .. light:getFalloff())
+end</code></pre></details></article><article class="item-row api-row" id="method-getflicker"><div class="item-row-main"><h3>getFlicker</h3><pre class="inline-signature">LLight:getFlicker() -&gt; number</pre><p>Returns this light flicker speed and strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:769</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(3.0, 0.4)
+    local speed, strength = light:getFlicker()
+    print(&quot;flicker speed=&quot; .. speed .. &quot; strength=&quot; .. strength)
+end</code></pre></details></article><article class="item-row api-row" id="method-getgroupid"><div class="item-row-main"><h3>getGroupId</h3><pre class="inline-signature">LLight:getGroupId() -&gt; integer</pre><p>Returns this light group id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:819</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setGroupId(5)
+    print(&quot;group = &quot; .. light:getGroupId())
+end</code></pre></details></article><article class="item-row api-row" id="method-getinnerangle"><div class="item-row-main"><h3>getInnerAngle</h3><pre class="inline-signature">LLight:getInnerAngle() -&gt; number</pre><p>Returns this spot light inner cone angle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:690</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print(&quot;inner = &quot; .. light:getInnerAngle() .. &quot; outer = &quot; .. light:getOuterAngle())
+end</code></pre></details></article><article class="item-row api-row" id="method-getintensity"><div class="item-row-main"><h3>getIntensity</h3><pre class="inline-signature">LLight:getIntensity() -&gt; number</pre><p>Returns this light intensity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:354</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setIntensity(5)
+    print(&quot;intensity = &quot; .. light:getIntensity())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlightmask"><div class="item-row-main"><h3>getLightMask</h3><pre class="inline-signature">LLight:getLightMask() -&gt; integer</pre><p>Returns this light&#x27;s inclusion mask.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:574</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightMask(3)
+    print(&quot;mask = &quot; .. light:getLightMask())
+end</code></pre></details></article><article class="item-row api-row" id="method-getlighttype"><div class="item-row-main"><h3>getLightType</h3><pre class="inline-signature">LLight:getLightType() -&gt; string</pre><p>Returns this light type string. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:644</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    print(&quot;type = &quot; .. light:getLightType())
+end</code></pre></details></article><article class="item-row api-row" id="method-getnormalmap"><div class="item-row-main"><h3>getNormalMap</h3><pre class="inline-signature">LLight:getNormalMap() -&gt; string</pre><p>Returns the normal map path used by this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1009</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap(&quot;content/examples/assets/images/sample_normal.dds&quot;)
+    print(&quot;normal map = &quot; .. light:getNormalMap())
+end</code></pre></details></article><article class="item-row api-row" id="method-getnormalstrength"><div class="item-row-main"><h3>getNormalStrength</h3><pre class="inline-signature">LLight:getNormalStrength() -&gt; number</pre><p>Returns this light&#x27;s normal map strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1043</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalStrength(1.5)
+    print(&quot;normal strength = &quot; .. light:getNormalStrength())
+end</code></pre></details></article><article class="item-row api-row" id="method-getouterangle"><div class="item-row-main"><h3>getOuterAngle</h3><pre class="inline-signature">LLight:getOuterAngle() -&gt; number</pre><p>Returns this spot light outer cone angle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:713</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print(&quot;inner = &quot; .. light:getInnerAngle() .. &quot; outer = &quot; .. light:getOuterAngle())
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LLight:getPosition() -&gt; number</pre><p>Returns this light position. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:275</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setPosition(200, 150)
+    local x, y = light:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-getradius"><div class="item-row-main"><h3>getRadius</h3><pre class="inline-signature">LLight:getRadius() -&gt; number</pre><p>Returns this light radius. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:298</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setRadius(250)
+    print(&quot;radius = &quot; .. light:getRadius())
+end</code></pre></details></article><article class="item-row api-row" id="method-getshadowcolor"><div class="item-row-main"><h3>getShadowColor</h3><pre class="inline-signature">LLight:getShadowColor() -&gt; number</pre><p>Returns this light shadow RGBA color.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:480</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowColor(0, 0, 0.1, 0.8)
+    local r, g, b, a = light:getShadowColor()
+    print(&quot;shadow color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-getshadowfilter"><div class="item-row-main"><h3>getShadowFilter</h3><pre class="inline-signature">LLight:getShadowFilter() -&gt; string</pre><p>Returns this light shadow filter string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:505</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowFilter(&quot;pcf5&quot;)
+    print(&quot;shadow filter = &quot; .. light:getShadowFilter())
+end</code></pre></details></article><article class="item-row api-row" id="method-getshadowmask"><div class="item-row-main"><h3>getShadowMask</h3><pre class="inline-signature">LLight:getShadowMask() -&gt; integer</pre><p>Returns this light&#x27;s shadow receiver mask.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:597</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowMask(7)
+    print(&quot;shadow mask = &quot; .. light:getShadowMask())
+end</code></pre></details></article><article class="item-row api-row" id="method-getshadowsmooth"><div class="item-row-main"><h3>getShadowSmooth</h3><pre class="inline-signature">LLight:getShadowSmooth() -&gt; number</pre><p>Returns this light shadow smoothing value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:528</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSmooth(2.0)
+    print(&quot;shadow smooth = &quot; .. light:getShadowSmooth())
+end</code></pre></details></article><article class="item-row api-row" id="method-getshadowsoftness"><div class="item-row-main"><h3>getShadowSoftness</h3><pre class="inline-signature">LLight:getShadowSoftness() -&gt; number</pre><p>Returns this light shadow softness value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:551</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSoftness(1.5)
+    print(&quot;shadow softness = &quot; .. light:getShadowSoftness())
+end</code></pre></details></article><article class="item-row api-row" id="method-isenabled"><div class="item-row-main"><h3>isEnabled</h3><pre class="inline-signature">LLight:isEnabled() -&gt; boolean</pre><p>Returns whether this light is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:620</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnabled(false)
+    print(&quot;enabled = &quot; .. tostring(light:isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isflickerenabled"><div class="item-row-main"><h3>isFlickerEnabled</h3><pre class="inline-signature">LLight:isFlickerEnabled() -&gt; boolean</pre><p>Returns whether this light flicker is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:796</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(2.0, 0.3)
+    light:setFlickerEnabled(true)
+    print(&quot;flicker on = &quot; .. tostring(light:isFlickerEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isshadowenabled"><div class="item-row-main"><h3>isShadowEnabled</h3><pre class="inline-signature">LLight:isShadowEnabled() -&gt; boolean</pre><p>Returns whether this light casts shadows.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:448</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(200, 200, 150)
+    light:setShadowEnabled(true)
+    print(&quot;shadows = &quot; .. tostring(light:isShadowEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvalid"><div class="item-row-main"><h3>isValid</h3><pre class="inline-signature">LLight:isValid() -&gt; boolean</pre><p>Returns whether this light handle still points to a live light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:859</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    print(&quot;valid = &quot; .. tostring(light:isValid()))
+    light:remove()
+    print(&quot;valid after remove = &quot; .. tostring(light:isValid()))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvolumetric"><div class="item-row-main"><h3>isVolumetric</h3><pre class="inline-signature">LLight:isVolumetric() -&gt; boolean</pre><p>Returns whether this light is volumetric.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:842</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 200)
+    light:setVolumetric(true)
+    print(&quot;volumetric = &quot; .. tostring(light:isVolumetric()))
+end</code></pre></details></article><article class="item-row api-row" id="method-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">LLight:remove()</pre><p>Removes this light from the shared light world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:852</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local lt = lurek.light.newLight(200, 300, 150)
+    print(&quot;lights = &quot; .. lurek.light.getLightCount())
+    lt:remove()
+    print(&quot;after remove = &quot; .. lurek.light.getLightCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-setattenuation"><div class="item-row-main"><h3>setAttenuation</h3><pre class="inline-signature">LLight:setAttenuation(c: number, l: number, q: number)</pre><p>Sets this light attenuation coefficients.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:726</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setAttenuation(1, 0.1, 0.01)
+    local c, l, q = light:getAttenuation()
+    print(&quot;attenuation c=&quot; .. c .. &quot; l=&quot; .. l .. &quot; q=&quot; .. q)
+end</code></pre></details></article><article class="item-row api-row" id="method-setblendmode"><div class="item-row-main"><h3>setBlendMode</h3><pre class="inline-signature">LLight:setBlendMode(mode: string)</pre><p>Sets this light blend mode. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:388</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setBlendMode(&quot;add&quot;)
+    print(&quot;blend = &quot; .. light:getBlendMode())
+end</code></pre></details></article><article class="item-row api-row" id="method-setcolor"><div class="item-row-main"><h3>setColor</h3><pre class="inline-signature">LLight:setColor(r: number, g: number, b: number, a: number?)</pre><p>Sets this light RGBA color. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:312</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0.5, 0, 0.9)
+    local r, g, b, a = light:getColor()
+    print(&quot;color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcookie"><div class="item-row-main"><h3>setCookie</h3><pre class="inline-signature">LLight:setCookie(path: string)</pre><p>Stores a cookie texture path on this Lua light handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:978</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie(&quot;content/examples/assets/images/sample_texture.png&quot;)
+    print(&quot;cookie = &quot; .. light:getCookie())
+end</code></pre></details></article><article class="item-row api-row" id="method-setdirection"><div class="item-row-main"><h3>setDirection</h3><pre class="inline-signature">LLight:setDirection(dir: number)</pre><p>Sets this light direction angle. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:655</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;directional&quot;)
+    light:setDirection(1.57)
+    print(&quot;direction = &quot; .. light:getDirection())
+end</code></pre></details></article><article class="item-row api-row" id="method-setenabled"><div class="item-row-main"><h3>setEnabled</h3><pre class="inline-signature">LLight:setEnabled(b: boolean)</pre><p>Enables or disables this light. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:608</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnabled(false)
+    print(&quot;enabled = &quot; .. tostring(light:isEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setenergy"><div class="item-row-main"><h3>setEnergy</h3><pre class="inline-signature">LLight:setEnergy(e: number)</pre><p>Sets this light energy value. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:365</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnergy(2.5)
+    print(&quot;energy = &quot; .. light:getEnergy())
+end</code></pre></details></article><article class="item-row api-row" id="method-setfalloff"><div class="item-row-main"><h3>setFalloff</h3><pre class="inline-signature">LLight:setFalloff(mode: string)</pre><p>Sets this light falloff mode. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:412</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFalloff(&quot;smooth&quot;)
+    print(&quot;falloff = &quot; .. light:getFalloff())
+end</code></pre></details></article><article class="item-row api-row" id="method-setflicker"><div class="item-row-main"><h3>setFlicker</h3><pre class="inline-signature">LLight:setFlicker(speed: number, strength: number)</pre><p>Configures flicker speed and strength for this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(3.0, 0.4)
+    local speed, strength = light:getFlicker()
+    print(&quot;flicker speed=&quot; .. speed .. &quot; strength=&quot; .. strength)
+end</code></pre></details></article><article class="item-row api-row" id="method-setflickerenabled"><div class="item-row-main"><h3>setFlickerEnabled</h3><pre class="inline-signature">LLight:setFlickerEnabled(b: boolean)</pre><p>Enables or disables this light flicker state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:781</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(2.0, 0.3)
+    light:setFlickerEnabled(true)
+    print(&quot;flicker on = &quot; .. tostring(light:isFlickerEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setgroupid"><div class="item-row-main"><h3>setGroupId</h3><pre class="inline-signature">LLight:setGroupId(id: integer)</pre><p>Sets this light group id. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:807</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setGroupId(5)
+    print(&quot;group = &quot; .. light:getGroupId())
+end</code></pre></details></article><article class="item-row api-row" id="method-setinnerangle"><div class="item-row-main"><h3>setInnerAngle</h3><pre class="inline-signature">LLight:setInnerAngle(a: number)</pre><p>Sets this spot light inner cone angle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:678</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print(&quot;inner = &quot; .. light:getInnerAngle() .. &quot; outer = &quot; .. light:getOuterAngle())
+end</code></pre></details></article><article class="item-row api-row" id="method-setintensity"><div class="item-row-main"><h3>setIntensity</h3><pre class="inline-signature">LLight:setIntensity(i: number)</pre><p>Sets this light intensity. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:342</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setIntensity(5)
+    print(&quot;intensity = &quot; .. light:getIntensity())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlightmask"><div class="item-row-main"><h3>setLightMask</h3><pre class="inline-signature">LLight:setLightMask(mask: integer)</pre><p>Sets this light&#x27;s inclusion mask. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:562</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightMask(3)
+    print(&quot;mask = &quot; .. light:getLightMask())
+end</code></pre></details></article><article class="item-row api-row" id="method-setlighttype"><div class="item-row-main"><h3>setLightType</h3><pre class="inline-signature">LLight:setLightType(t: string)</pre><p>Sets this light type. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:631</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    print(&quot;type = &quot; .. light:getLightType())
+end</code></pre></details></article><article class="item-row api-row" id="method-setnormalmap"><div class="item-row-main"><h3>setNormalMap</h3><pre class="inline-signature">LLight:setNormalMap(path: string)</pre><p>Sets the normal map path used by this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:997</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap(&quot;content/examples/assets/images/sample_normal.dds&quot;)
+    print(&quot;normal map = &quot; .. light:getNormalMap())
+end</code></pre></details></article><article class="item-row api-row" id="method-setnormalstrength"><div class="item-row-main"><h3>setNormalStrength</h3><pre class="inline-signature">LLight:setNormalStrength(strength: number)</pre><p>Sets this light&#x27;s normal map strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1031</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalStrength(1.5)
+    print(&quot;normal strength = &quot; .. light:getNormalStrength())
+end</code></pre></details></article><article class="item-row api-row" id="method-setouterangle"><div class="item-row-main"><h3>setOuterAngle</h3><pre class="inline-signature">LLight:setOuterAngle(a: number)</pre><p>Sets this spot light outer cone angle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:701</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType(&quot;spot&quot;)
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print(&quot;inner = &quot; .. light:getInnerAngle() .. &quot; outer = &quot; .. light:getOuterAngle())
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LLight:setPosition(x: number, y: number)</pre><p>Sets this light position. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:262</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setPosition(200, 150)
+    local x, y = light:getPosition()
+    print(&quot;pos = &quot; .. x .. &quot;,&quot; .. y)
+end</code></pre></details></article><article class="item-row api-row" id="method-setradius"><div class="item-row-main"><h3>setRadius</h3><pre class="inline-signature">LLight:setRadius(r: number)</pre><p>Sets this light radius. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:286</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setRadius(250)
+    print(&quot;radius = &quot; .. light:getRadius())
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowcolor"><div class="item-row-main"><h3>setShadowColor</h3><pre class="inline-signature">LLight:setShadowColor(r: number, g: number, b: number, a: number?)</pre><p>Sets this light shadow RGBA color. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:462</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowColor(0, 0, 0.1, 0.8)
+    local r, g, b, a = light:getShadowColor()
+    print(&quot;shadow color = &quot; .. r .. &quot;,&quot; .. g .. &quot;,&quot; .. b .. &quot;,&quot; .. a)
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowenabled"><div class="item-row-main"><h3>setShadowEnabled</h3><pre class="inline-signature">LLight:setShadowEnabled(b: boolean)</pre><p>Enables or disables shadow casting for this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:436</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(200, 200, 150)
+    light:setShadowEnabled(true)
+    print(&quot;shadows = &quot; .. tostring(light:isShadowEnabled()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowfilter"><div class="item-row-main"><h3>setShadowFilter</h3><pre class="inline-signature">LLight:setShadowFilter(filter: string)</pre><p>Sets this light shadow filter. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:492</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowFilter(&quot;pcf5&quot;)
+    print(&quot;shadow filter = &quot; .. light:getShadowFilter())
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowmask"><div class="item-row-main"><h3>setShadowMask</h3><pre class="inline-signature">LLight:setShadowMask(mask: integer)</pre><p>Sets this light&#x27;s shadow receiver mask.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:585</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowMask(7)
+    print(&quot;shadow mask = &quot; .. light:getShadowMask())
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowsmooth"><div class="item-row-main"><h3>setShadowSmooth</h3><pre class="inline-signature">LLight:setShadowSmooth(s: number)</pre><p>Sets this light shadow smoothing value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:516</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSmooth(2.0)
+    print(&quot;shadow smooth = &quot; .. light:getShadowSmooth())
+end</code></pre></details></article><article class="item-row api-row" id="method-setshadowsoftness"><div class="item-row-main"><h3>setShadowSoftness</h3><pre class="inline-signature">LLight:setShadowSoftness(softness: number)</pre><p>Sets this light shadow softness value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:539</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSoftness(1.5)
+    print(&quot;shadow softness = &quot; .. light:getShadowSoftness())
+end</code></pre></details></article><article class="item-row api-row" id="method-setvolumetric"><div class="item-row-main"><h3>setVolumetric</h3><pre class="inline-signature">LLight:setVolumetric(b: boolean)</pre><p>Enables or disables volumetric behavior for this light.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:830</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 200)
+    light:setVolumetric(true)
+    print(&quot;volumetric = &quot; .. tostring(light:isVolumetric()))
+end</code></pre></details></article><article class="item-row api-row" id="method-stoptransition"><div class="item-row-main"><h3>stopTransition</h3><pre class="inline-signature">LLight:stopTransition()</pre><p>Stops and clears this light&#x27;s active transition.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:960</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    light:stopTransition()
+    print(&quot;stopped, progress = &quot; .. light:transitionProgress())
+end</code></pre></details></article><article class="item-row api-row" id="method-transitionprogress"><div class="item-row-main"><h3>transitionProgress</h3><pre class="inline-signature">LLight:transitionProgress() -&gt; number</pre><p>Returns active transition progress or 1.0 when no transition is active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:967</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    light:updateTransition(0.5)
+    print(&quot;progress = &quot; .. light:transitionProgress())
+end</code></pre></details></article><article class="item-row api-row" id="method-transitionto"><div class="item-row-main"><h3>transitionTo</h3><pre class="inline-signature">LLight:transitionTo(target: table, duration: number)</pre><p>Starts a transition toward target color, intensity, and radius values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:897</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0, 0, 1)
+    light:setIntensity(1.0)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    print(&quot;progress = &quot; .. light:transitionProgress())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LLight:type() -&gt; string</pre><p>Returns the Lua-visible type name for this light handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1054</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    print(&quot;type = &quot; .. light:type())
+    print(&quot;is LLight = &quot; .. tostring(light:typeOf(&quot;LLight&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LLight:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this light handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:1059</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    print(&quot;type = &quot; .. light:type())
+    print(&quot;is LLight = &quot; .. tostring(light:typeOf(&quot;LLight&quot;)))
+    print(&quot;is Object = &quot; .. tostring(light:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-updatetransition"><div class="item-row-main"><h3>updateTransition</h3><pre class="inline-signature">LLight:updateTransition(dt: number) -&gt; boolean</pre><p>Advances this light&#x27;s active transition and applies interpolated values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/light_api.rs:937</span></div><details class="example-block"><summary>Example · Exact example · light.lua</summary><pre><code>do
+    local light = lurek.light.newLight(0, 0, 100)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    local applied = light:updateTransition(0.5)
+    print(&quot;applied = &quot; .. tostring(applied))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

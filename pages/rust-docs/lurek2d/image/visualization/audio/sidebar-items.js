@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["draw_sound_waveform_to_image","waveform_stereo_to_image","waveform_to_image","waveform_zoomed_to_image"]};

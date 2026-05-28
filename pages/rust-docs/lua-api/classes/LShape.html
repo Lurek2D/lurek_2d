@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LShape - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a class="active" href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">129 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">23 fn · 6 cls · 182 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">2 fn · 2 cls · 7 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">5 fn · 5 cls · 54 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 42 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">30 fn · 2 cls · 23 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LShape</h1>
+  <p>Retained compound shape that accumulates drawing commands and can be rendered in one call.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/render.html">lurek.render</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:circle(&quot;fill&quot;, 0, 0, 10)
+    shape:circle(&quot;fill&quot;, 50, 50, 10)
+    local before = shape:getCommandCount()
+    shape:clear()
+    local after = shape:getCommandCount()
+    print(&quot;shape commands before clear = &quot; .. before)
+    print(&quot;shape commands after clear = &quot; .. after)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LShape userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-arc"><div class="item-row-main"><h3>arc</h3><pre class="inline-signature">LShape:arc(mode: string, x: number, y: number, r: number, astart: number, aend: number, segments: number?)</pre><p>Adds a filled or outlined arc command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1140</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(1, 0.5, 0, 1)
+    shape:arc(&quot;fill&quot;, 100, 100, 40, 0, math.pi)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape arc added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-circle"><div class="item-row-main"><h3>circle</h3><pre class="inline-signature">LShape:circle(mode: string, x: number, y: number, r: number)</pre><p>Adds a filled or outlined circle command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:996</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(0.2, 0.8, 0.4, 1)
+    shape:circle(&quot;line&quot;, 80, 80, 24)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape circle added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LShape:clear()</pre><p>Removes all drawing commands from this shape, making it empty.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:905</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:rectangle(&quot;fill&quot;, 0, 0, 10, 10)
+    shape:circle(&quot;fill&quot;, 20, 20, 5)
+    print(&quot;shape commands before clear = &quot; .. shape:getCommandCount())
+    shape:clear()
+    print(&quot;shape commands after clear = &quot; .. shape:getCommandCount())
+end</code></pre></details></article><article class="item-row api-row" id="method-draw"><div class="item-row-main"><h3>draw</h3><pre class="inline-signature">LShape:draw(x: number, y: number, rotation: number?, sx: number?, sy: number?, ox: number?, oy: number?)</pre><p>Renders the accumulated shape commands to the screen with optional transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1183</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setLineWidth(2)
+    shape:triangle(&quot;line&quot;, 0, 0, 50, 0, 25, 50)
+    shape:draw(100, 100, 0, 1, 1, 0, 0)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape draw called&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-ellipse"><div class="item-row-main"><h3>ellipse</h3><pre class="inline-signature">LShape:ellipse(mode: string, x: number, y: number, rx: number, ry: number)</pre><p>Adds an ellipse command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1019</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:ellipse(&quot;fill&quot;, 100, 100, 50, 30)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape ellipse added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-getcommandcount"><div class="item-row-main"><h3>getCommandCount</h3><pre class="inline-signature">LShape:getCommandCount() -&gt; number</pre><p>Returns the number of drawing commands accumulated in this shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:896</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:circle(&quot;fill&quot;, 0, 0, 10)
+    shape:circle(&quot;fill&quot;, 50, 50, 10)
+    local before = shape:getCommandCount()
+    shape:clear()
+    local after = shape:getCommandCount()
+    print(&quot;shape commands before clear = &quot; .. before)
+    print(&quot;shape commands after clear = &quot; .. after)
+end</code></pre></details></article><article class="item-row api-row" id="method-line"><div class="item-row-main"><h3>line</h3><pre class="inline-signature">LShape:line(x1: number, y1: number, x2: number, y2: number)</pre><p>Adds a line segment command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1106</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:line(10, 10, 90, 90)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape line added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-polygon"><div class="item-row-main"><h3>polygon</h3><pre class="inline-signature">LShape:polygon(mode: string, ...: number)</pre><p>Adds a polygon command to the shape from a flat list of x,y coordinate pairs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1078</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(0.8, 0.3, 0, 1)
+    shape:polygon(&quot;fill&quot;, 0, 0, 40, -10, 50, 30, 20, 50, -10, 30)
+    shape:draw(250, 380)
+    print(&quot;shape polygon commands = &quot; .. shape:getCommandCount())
+    print(&quot;shape polygon drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-polyline"><div class="item-row-main"><h3>polyline</h3><pre class="inline-signature">LShape:polyline(...: number)</pre><p>Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1117</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setLineWidth(3)
+    shape:polyline(0, 0, 20, 20, 40, 0, 60, 20)
+    shape:draw(330, 380)
+    print(&quot;shape polyline commands = &quot; .. shape:getCommandCount())
+    print(&quot;shape polyline drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-rectangle"><div class="item-row-main"><h3>rectangle</h3><pre class="inline-signature">LShape:rectangle(mode: string, x: number, y: number, w: number, h: number)</pre><p>Adds a rectangle command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:948</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:rectangle(&quot;fill&quot;, 20, 20, 60, 40)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape rectangle added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-roundedrectangle"><div class="item-row-main"><h3>roundedRectangle</h3><pre class="inline-signature">LShape:roundedRectangle(mode: string, x: number, y: number, w: number, h: number, rx: number, ry: number?)</pre><p>Adds a rounded rectangle command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:979</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(0.5, 0.5, 1, 1)
+    shape:roundedRectangle(&quot;line&quot;, 0, 0, 70, 36, 8)
+    shape:draw(410, 380)
+    print(&quot;shape rounded rectangle commands = &quot; .. shape:getCommandCount())
+    print(&quot;shape rounded rectangle drawn&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setcolor"><div class="item-row-main"><h3>setColor</h3><pre class="inline-signature">LShape:setColor(r: number, g: number, b: number, a: number?)</pre><p>Sets the drawing color for subsequent shape commands.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:919</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setColor(0.8, 0.2, 0.8, 1)
+    shape:rectangle(&quot;fill&quot;, 0, 0, 20, 20)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape color set before rectangle&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-setlinewidth"><div class="item-row-main"><h3>setLineWidth</h3><pre class="inline-signature">LShape:setLineWidth(w: number)</pre><p>Sets the line width for subsequent line-mode shape commands.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:933</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setLineWidth(2)
+    shape:triangle(&quot;line&quot;, 0, 0, 50, 0, 25, 50)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape line width set to 2&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-triangle"><div class="item-row-main"><h3>triangle</h3><pre class="inline-signature">LShape:triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)</pre><p>Adds a triangle command to the shape.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1050</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    shape:setLineWidth(2)
+    shape:triangle(&quot;line&quot;, 0, 0, 50, 0, 25, 50)
+    print(&quot;shape command count = &quot; .. shape:getCommandCount())
+    print(&quot;shape triangle added&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LShape:type() -&gt; string</pre><p>Returns the type name string for this shape object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1222</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    print(&quot;shape type = &quot; .. shape:type())
+    print(&quot;shape typeOf LShape = &quot; .. tostring(shape:typeOf(&quot;LShape&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LShape:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/render_api.rs:1216</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local shape = lurek.render.newShape()
+    print(&quot;shape typeOf LShape = &quot; .. tostring(shape:typeOf(&quot;LShape&quot;)))
+    print(&quot;shape typeOf LObject = &quot; .. tostring(shape:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

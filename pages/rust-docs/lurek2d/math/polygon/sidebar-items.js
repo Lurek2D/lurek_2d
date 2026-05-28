@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_convex","polygon_clip","polygon_difference","polygon_intersection","polygon_union","triangulate"]};

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.layout - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a class="active" href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.layout</h1>
+  <p>`lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms. - Registers `lurek.layout.*` functions and types via `register()`. - Bridges 5 Lua-callable methods via `mlua`. - See `docs/specs/layout.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>5 functions</span><span>0 classes</span><span>src/lua_api/layout_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 5</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.layout.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-centerinarea"><div class="item-row-main"><h3>centerInArea</h3><pre class="inline-signature">lurek.layout.centerInArea(result: table, width: number, height: number) -&gt; table</pre><p>Centers the layout within a given area.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/layout_api.rs:204</span></div><details class="example-block"><summary>Example · Exact example · layout.lua</summary><pre><code>do
+    local result = {
+        nodes = {
+            { id = 1, x = 0, y = 0, width = 50, height = 30 },
+            { id = 2, x = 60, y = 0, width = 40, height = 30 },
+        },
+    }
+    local centered = lurek.layout.centerInArea(result, 400, 300)
+    print(&quot;centered nodes = &quot; .. #centered.nodes)
+    print(&quot;node 1 x = &quot; .. centered.nodes[1].x)
+    print(&quot;layout height = &quot; .. centered.height)
+end</code></pre></details></article><article class="item-row api-row" id="fn-dag"><div class="item-row-main"><h3>dag</h3><pre class="inline-signature">lurek.layout.dag(nodes: table, edges: table, config: table|nil) -&gt; table</pre><p>Lays out a DAG using the Sugiyama layered algorithm.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/layout_api.rs:138</span></div><details class="example-block"><summary>Example · Exact example · layout.lua</summary><pre><code>do
+    local nodes = {
+        { id = 1, width = 60, height = 30, label = &quot;Start&quot; },
+        { id = 2, width = 60, height = 30, label = &quot;Build&quot; },
+        { id = 3, width = 60, height = 30, label = &quot;Test&quot; },
+    }
+    local edges = {
+        { from = 1, to = 2, weight = 1.0 },
+        { from = 1, to = 3, weight = 1.0 },
+    }
+    local result = lurek.layout.dag(nodes, edges, {
+        hSpacing = 80,
+        vSpacing = 100,
+        margin = 24,
+    })
+    print(&quot;dag nodes = &quot; .. #result.nodes)
+    print(&quot;dag size = &quot; .. result.width .. &quot;x&quot; .. result.height)
+    print(&quot;node 2 y = &quot; .. result.nodes[2].y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-force"><div class="item-row-main"><h3>force</h3><pre class="inline-signature">lurek.layout.force(nodes: table, edges: table, config: table|nil) -&gt; table</pre><p>Lays out a graph using force-directed Fruchterman-Reingold simulation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/layout_api.rs:157</span></div><details class="example-block"><summary>Example · Exact example · layout.lua</summary><pre><code>do
+    local nodes = {
+        { id = 1, width = 40, height = 24, label = &quot;A&quot; },
+        { id = 2, width = 40, height = 24, label = &quot;B&quot; },
+        { id = 3, width = 40, height = 24, label = &quot;C&quot; },
+    }
+    local edges = {
+        { from = 1, to = 2, weight = 1.0 },
+        { from = 2, to = 3, weight = 1.0 },
+    }
+    local result = lurek.layout.force(nodes, edges, {
+        iterations = 40,
+        repulsion = 6000,
+        attraction = 0.02,
+        cooling = 0.9,
+        areaWidth = 400,
+        areaHeight = 300,
+    })
+    print(&quot;force nodes = &quot; .. #result.nodes)
+    print(&quot;force size = &quot; .. result.width .. &quot;x&quot; .. result.height)
+    print(&quot;node 1 pos = &quot; .. result.nodes[1].x .. &quot;,&quot; .. result.nodes[1].y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-snaptogrid"><div class="item-row-main"><h3>snapToGrid</h3><pre class="inline-signature">lurek.layout.snapToGrid(result: table, gridSize: number) -&gt; table</pre><p>Snaps all node positions to the nearest grid point.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/layout_api.rs:187</span></div><details class="example-block"><summary>Example · Exact example · layout.lua</summary><pre><code>do
+    local result = {
+        nodes = {
+            { id = 1, x = 13.5, y = 27.3, width = 40, height = 20 },
+            { id = 2, x = 42.1, y = 11.9, width = 40, height = 20 },
+        },
+    }
+    local snapped = lurek.layout.snapToGrid(result, 16)
+    print(&quot;snapped nodes = &quot; .. #snapped.nodes)
+    print(&quot;node 1 = &quot; .. snapped.nodes[1].x .. &quot;,&quot; .. snapped.nodes[1].y)
+    print(&quot;node 2 = &quot; .. snapped.nodes[2].x .. &quot;,&quot; .. snapped.nodes[2].y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-tree"><div class="item-row-main"><h3>tree</h3><pre class="inline-signature">lurek.layout.tree(nodes: table, children: table, root: integer, config: table|nil) -&gt; table</pre><p>Lays out a tree using the Reingold-Tilford algorithm.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/layout_api.rs:100</span></div><details class="example-block"><summary>Example · Exact example · layout.lua</summary><pre><code>do
+    local nodes = {
+        { id = 1, width = 60, height = 30, label = &quot;Root&quot; },
+        { id = 2, width = 50, height = 24, label = &quot;Left&quot; },
+        { id = 3, width = 50, height = 24, label = &quot;Right&quot; },
+    }
+    local children = {
+        [1] = { 2, 3 },
+    }
+    local result = lurek.layout.tree(nodes, children, 1, {
+        hSpacing = 70,
+        vSpacing = 90,
+        margin = 20,
+    })
+    print(&quot;tree nodes = &quot; .. #result.nodes)
+    print(&quot;tree size = &quot; .. result.width .. &quot;x&quot; .. result.height)
+    print(&quot;root x = &quot; .. result.nodes[1].x)
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

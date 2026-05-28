@@ -10,6 +10,7 @@
 - Source path: `src/serialize/`
 - Lua API path(s): `src/lua_api/serialize_api.rs`
 - Primary Lua namespace: `lurek.serial`
+- Alias Lua namespace: `lurek.serialize` (same table, both names are supported)
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 

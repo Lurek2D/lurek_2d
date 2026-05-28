@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["load_rules_from_file","load_rules_from_toml"]};

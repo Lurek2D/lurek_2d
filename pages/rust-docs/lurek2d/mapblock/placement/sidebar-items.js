@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["find_valid_positions"],"struct":["PlacedBlock","PlacementGrid"]};

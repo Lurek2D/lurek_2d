@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CATALOG_TOML"],"fn":["catalog","get_message","has_message","init","message_count","resolve_message"],"struct":["MessageCatalog"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["bandit","genetic","neural_net","neuroevolution","qlearner"]};

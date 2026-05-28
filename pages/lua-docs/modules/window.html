@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>lurek.window - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="../index.html">
+        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
+        <div>
+          <strong>Lurek Lua Docs</strong>
+          <span>Static browser for the generated API</span>
+        </div>
+      </a>
+      <label class="search-box">
+        <span>Search API</span>
+        <input id="search" type="search" placeholder="module, class, function, method">
+      </label>
+      <div class="search-filters">
+        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
+        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a class="active" href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Module</p>
+  <h1>lurek.window</h1>
+  <p>`lurek.window` - Provides window management with resizing, fullscreen, title, icon, DPI scaling, and display mode control. - Registers `lurek.window.*` functions and types via `register()`. - Bridges 55 Lua-callable methods via `mlua`. - See `docs/specs/window.md` for the full API specification.</p>
+  <div class="api-meta api-meta-header"><span>55 functions</span><span>0 classes</span><span>src/lua_api/window_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 55</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+</header>
+
+<section class="section-block" id="functions">
+  <div class="section-head">
+    <h2>Functions</h2>
+    <p>Standalone namespace functions registered under lurek.window.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="fn-close"><div class="item-row-main"><h3>close</h3><pre class="inline-signature">lurek.window.close()</pre><p>Closes the window and signals the engine to shut down.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:482</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    -- Call lurek.window.close() to programmatically end the session, e.g. from a Quit button.
+    -- Safe to query the function exists before calling it in a headless test context.
+    print(&quot;close available = &quot; .. tostring(type(lurek.window.close) == &quot;function&quot;))
+end
+
+--@api-stub: LWindow:getTitle
+do
+    local win = lurek.ui.newWindow(&quot;Test Window&quot;)
+    print(&quot;win_title=&quot; .. win:getTitle())
+    win:setTitle(&quot;Renamed Window&quot;)
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print(&quot;window_closed&quot;) end)
+    print(&quot;win_title2=&quot; .. win:getTitle() .. &quot; closeable=&quot; .. tostring(win:isCloseable()) .. &quot; draggable=&quot; .. tostring(win:isDraggable()) .. &quot; resizable=&quot; .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.2
+do
+    local win = lurek.ui.newWindow(&quot;Test Window&quot;)
+    print(&quot;win_title=&quot; .. win:getTitle())
+    win:setTitle(&quot;Renamed Window&quot;)
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print(&quot;window_closed&quot;) end)
+    print(&quot;win_title2=&quot; .. win:getTitle() .. &quot; closeable=&quot; .. tostring(win:isCloseable()) .. &quot; draggable=&quot; .. tostring(win:isDraggable()) .. &quot; resizable=&quot; .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.3
+do
+    local win = lurek.ui.newWindow(&quot;Test Window&quot;)
+    print(&quot;win_title=&quot; .. win:getTitle())
+    win:setTitle(&quot;Renamed Window&quot;)
+    win:setCloseable(true)
+    win:setDraggable(false)
+    win:setResizable(true)
+    win:setOnClose(function() print(&quot;window_closed&quot;) end)
+    print(&quot;win_title2=&quot; .. win:getTitle() .. &quot; closeable=&quot; .. tostring(win:isCloseable()) .. &quot; draggable=&quot; .. tostring(win:isDraggable()) .. &quot; resizable=&quot; .. tostring(win:isResizable()))
+end
+
+--@api-stub: LWindow:getTitle.4
+do
+    local win = lurek.ui.newWindow(&quot;Test Window&quot;)
+    print(&quot;win_title=&quot; .. win:getTitle())
+    win:setTitle(&quot;Renamed Window&quot;)
+    win:setCloseable(true)</code></pre></details></article><article class="item-row api-row" id="fn-flash"><div class="item-row-main"><h3>flash</h3><pre class="inline-signature">lurek.window.flash()</pre><p>Flashes the window briefly to attract the user&#x27;s attention.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:502</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setDisplay(0)
+    lurek.window.flash()
+    lurek.window.requestAttention()
+    print(&quot;display orientation:&quot;, lurek.window.getDisplayOrientation())
+    print(&quot;system theme:&quot;, lurek.window.getSystemTheme())
+end</code></pre></details></article><article class="item-row api-row" id="fn-focus"><div class="item-row-main"><h3>focus</h3><pre class="inline-signature">lurek.window.focus()</pre><p>Requests keyboard focus for the window. No-op if already focused.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:609</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;before focus = &quot; .. tostring(lurek.window.hasFocus()))
+    lurek.window.focus()
+    print(&quot;after focus = &quot; .. tostring(lurek.window.hasFocus()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-frompixels"><div class="item-row-main"><h3>fromPixels</h3><pre class="inline-signature">lurek.window.fromPixels(value: number) -&gt; number</pre><p>Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:363</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local logical = lurek.window.fromPixels(200)
+    print(&quot;200 pixels in logical:&quot;, logical)
+    local pixels = lurek.window.toPixels(100)
+    print(&quot;100 logical in pixels:&quot;, pixels)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getcurrentdisplay"><div class="item-row-main"><h3>getCurrentDisplay</h3><pre class="inline-signature">lurek.window.getCurrentDisplay() -&gt; number</pre><p>Returns the index of the display that currently contains the window.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:287</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local count = lurek.window.getDisplayCount()
+    print(&quot;display count:&quot;, count)
+    local current = lurek.window.getCurrentDisplay()
+    print(&quot;current display index:&quot;, current)
+    local name = lurek.window.getDisplayName(current)
+    print(&quot;display name:&quot;, name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdpiscale"><div class="item-row-main"><h3>getDPIScale</h3><pre class="inline-signature">lurek.window.getDPIScale() -&gt; number</pre><p>Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:343</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local s = lurek.window.getDPIScale()
+    print(&quot;DPI scale:&quot;, s)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdesktopdimensions"><div class="item-row-main"><h3>getDesktopDimensions</h3><pre class="inline-signature">lurek.window.getDesktopDimensions(display: integer?) -&gt; number</pre><p>Returns the desktop resolution of a specific display, or the current display if none is specified.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:320</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local dw, dh = lurek.window.getDesktopDimensions()
+    print(&quot;desktop resolution:&quot;, dw, dh)
+    local displays = lurek.window.getDisplays()
+    local d = displays[1] or { index = -1, name = &quot;none&quot;, width = 0, height = 0, scale = 0 }
+    print(&quot;display&quot;, d.index, d.name, d.width .. &quot;x&quot; .. d.height, &quot;scale:&quot;, d.scale)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdimensions"><div class="item-row-main"><h3>getDimensions</h3><pre class="inline-signature">lurek.window.getDimensions() -&gt; number</pre><p>Returns the current window width and height in logical pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:57</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local w, h = lurek.window.getDimensions()
+    print(&quot;window dimensions:&quot;, w, h)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdisplaycount"><div class="item-row-main"><h3>getDisplayCount</h3><pre class="inline-signature">lurek.window.getDisplayCount() -&gt; number</pre><p>Returns the number of connected displays (monitors).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:206</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local count = lurek.window.getDisplayCount()
+    print(&quot;display count:&quot;, count)
+    local current = lurek.window.getCurrentDisplay()
+    print(&quot;current display index:&quot;, current)
+    local name = lurek.window.getDisplayName(current)
+    print(&quot;display name:&quot;, name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdisplayname"><div class="item-row-main"><h3>getDisplayName</h3><pre class="inline-signature">lurek.window.getDisplayName(display: integer?) -&gt; string</pre><p>Returns the human-readable name of a display. Returns &quot;Unknown&quot; if the display cannot be identified.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:546</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local count = lurek.window.getDisplayCount()
+    print(&quot;display count:&quot;, count)
+    local current = lurek.window.getCurrentDisplay()
+    print(&quot;current display index:&quot;, current)
+    local name = lurek.window.getDisplayName(current)
+    print(&quot;display name:&quot;, name)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdisplayorientation"><div class="item-row-main"><h3>getDisplayOrientation</h3><pre class="inline-signature">lurek.window.getDisplayOrientation() -&gt; string</pre><p>Returns the display orientation based on the window&#x27;s aspect ratio.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:622</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setDisplay(0)
+    lurek.window.flash()
+    lurek.window.requestAttention()
+    print(&quot;display orientation:&quot;, lurek.window.getDisplayOrientation())
+    print(&quot;system theme:&quot;, lurek.window.getSystemTheme())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getdisplays"><div class="item-row-main"><h3>getDisplays</h3><pre class="inline-signature">lurek.window.getDisplays() -&gt; table</pre><p>Returns a list of all connected displays with their properties. Each entry contains index, name, position (x, y), resolution (width, height), scale factor, refresh rate, and whether it is the primary monitor.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:230</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local dw, dh = lurek.window.getDesktopDimensions()
+    print(&quot;desktop resolution:&quot;, dw, dh)
+    local displays = lurek.window.getDisplays()
+    local d = displays[1] or { index = -1, name = &quot;none&quot;, width = 0, height = 0, scale = 0 }
+    print(&quot;display&quot;, d.index, d.name, d.width .. &quot;x&quot; .. d.height, &quot;scale:&quot;, d.scale)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfullscreen"><div class="item-row-main"><h3>getFullscreen</h3><pre class="inline-signature">lurek.window.getFullscreen() -&gt; boolean</pre><p>Returns the current fullscreen state and type.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:84</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local enabled, fsType = lurek.window.getFullscreen()
+    print(&quot;fullscreen enabled:&quot;, enabled)
+    print(&quot;fullscreen type:&quot;, fsType)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getfullscreenmodes"><div class="item-row-main"><h3>getFullscreenModes</h3><pre class="inline-signature">lurek.window.getFullscreenModes() -&gt; table</pre><p>Returns a list of all supported fullscreen video modes across all monitors. Each entry contains width, height, and refresh rate.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:516</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local modes = lurek.window.getFullscreenModes()
+    print(&quot;fullscreen modes available:&quot;, #modes)
+    local m = modes[1] or { width = 0, height = 0, refreshRate = 0 }
+    print(&quot;first mode:&quot;, m.width .. &quot;x&quot; .. m.height, &quot;@&quot;, m.refreshRate, &quot;Hz&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgameheight"><div class="item-row-main"><h3>getGameHeight</h3><pre class="inline-signature">lurek.window.getGameHeight() -&gt; number</pre><p>Returns the logical game height as defined by the current scale mode and game configuration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:726</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;game width:&quot;, lurek.window.getGameWidth())
+    print(&quot;game height:&quot;, lurek.window.getGameHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgamewidth"><div class="item-row-main"><h3>getGameWidth</h3><pre class="inline-signature">lurek.window.getGameWidth() -&gt; number</pre><p>Returns the logical game width as defined by the current scale mode and game configuration.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:718</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;game width:&quot;, lurek.window.getGameWidth())
+    print(&quot;game height:&quot;, lurek.window.getGameHeight())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">lurek.window.getHeight() -&gt; number</pre><p>Returns the current window height in logical (DPI-independent) pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:48</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local w = lurek.window.getWidth()
+    local h = lurek.window.getHeight()
+    local focused = lurek.window.hasFocus()
+    print(&quot;window size:&quot;, w, h, &quot;focused:&quot;, focused)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getmode"><div class="item-row-main"><h3>getMode</h3><pre class="inline-signature">lurek.window.getMode() -&gt; number</pre><p>Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local w, h, flags = lurek.window.getMode()
+    print(&quot;mode:&quot;, w, &quot;x&quot;, h)
+    print(&quot;fullscreen:&quot;, flags.fullscreen)
+    print(&quot;fullscreen type:&quot;, flags.fullscreentype, &quot;vsync:&quot;, flags.vsync)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getnativedpiscale"><div class="item-row-main"><h3>getNativeDPIScale</h3><pre class="inline-signature">lurek.window.getNativeDPIScale() -&gt; number</pre><p>Returns the native DPI scale factor reported by the operating system.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:614</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local s = lurek.window.getNativeDPIScale()
+    print(&quot;native DPI scale:&quot;, s)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpixeldimensions"><div class="item-row-main"><h3>getPixelDimensions</h3><pre class="inline-signature">lurek.window.getPixelDimensions() -&gt; number</pre><p>Returns the window dimensions in actual physical pixels, accounting for DPI scaling.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:570</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local pw, ph = lurek.window.getPixelDimensions()
+    print(&quot;pixel dimensions:&quot;, pw, ph)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">lurek.window.getPosition() -&gt; number</pre><p>Returns the window position on screen in pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:186</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local x, y = lurek.window.getPosition()
+    print(&quot;position:&quot;, x, y)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsafearea"><div class="item-row-main"><h3>getSafeArea</h3><pre class="inline-signature">lurek.window.getSafeArea() -&gt; number</pre><p>Returns the safe drawing area of the window. On desktop this is the full window area. Useful for compatibility with mobile-style layout code.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:640</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local sx, sy, sw, sh = lurek.window.getSafeArea()
+    print(&quot;safe area:&quot;, sx, sy, sw, sh)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscaleinfo"><div class="item-row-main"><h3>getScaleInfo</h3><pre class="inline-signature">lurek.window.getScaleInfo() -&gt; table</pre><p>Returns detailed scaling information including scale factors, offsets, and logical game dimensions. Useful for coordinate conversion between screen space and game space.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:673</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setScaleMode(&quot;letterbox&quot;)
+    print(&quot;scale mode:&quot;, lurek.window.getScaleMode())
+    local info = lurek.window.getScaleInfo()
+    print(&quot;scale:&quot;, info.scale_x, info.scale_y, &quot;offset:&quot;, info.offset_x, info.offset_y, &quot;game:&quot;, info.game_width, info.game_height)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getscalemode"><div class="item-row-main"><h3>getScaleMode</h3><pre class="inline-signature">lurek.window.getScaleMode() -&gt; string</pre><p>Returns the current content scale mode name (e.g., &quot;stretch&quot;, &quot;letterbox&quot;, &quot;pixel-perfect&quot;).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:697</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setScaleMode(&quot;letterbox&quot;)
+    print(&quot;scale mode:&quot;, lurek.window.getScaleMode())
+    local info = lurek.window.getScaleInfo()
+    print(&quot;scale:&quot;, info.scale_x, info.scale_y, &quot;offset:&quot;, info.offset_x, info.offset_y, &quot;game:&quot;, info.game_width, info.game_height)
+end</code></pre></details></article><article class="item-row api-row" id="fn-getsystemtheme"><div class="item-row-main"><h3>getSystemTheme</h3><pre class="inline-signature">lurek.window.getSystemTheme() -&gt; string</pre><p>Returns the operating system&#x27;s current color theme. Desktop currently returns &quot;unknown&quot;.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:655</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setDisplay(0)
+    lurek.window.flash()
+    lurek.window.requestAttention()
+    print(&quot;display orientation:&quot;, lurek.window.getDisplayOrientation())
+    print(&quot;system theme:&quot;, lurek.window.getSystemTheme())
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettitle"><div class="item-row-main"><h3>getTitle</h3><pre class="inline-signature">lurek.window.getTitle() -&gt; string</pre><p>Returns the current window title bar text.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:32</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setTitle(&quot;My Game - Level 1&quot;)
+    print(&quot;title:&quot;, lurek.window.getTitle())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getvsync"><div class="item-row-main"><h3>getVSync</h3><pre class="inline-signature">lurek.window.getVSync() -&gt; number</pre><p>Returns the current VSync mode. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:107</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setVSync(1)
+    print(&quot;vsync:&quot;, lurek.window.getVSync())
+    lurek.window.setVSync(0)
+    print(&quot;vsync off:&quot;, lurek.window.getVSync())
+    lurek.window.setVSync(-1)
+    print(&quot;adaptive vsync:&quot;, lurek.window.getVSync())
+end</code></pre></details></article><article class="item-row api-row" id="fn-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">lurek.window.getWidth() -&gt; number</pre><p>Returns the current window width in logical (DPI-independent) pixels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:40</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local w = lurek.window.getWidth()
+    local h = lurek.window.getHeight()
+    local focused = lurek.window.hasFocus()
+    print(&quot;window size:&quot;, w, h, &quot;focused:&quot;, focused)
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasfocus"><div class="item-row-main"><h3>hasFocus</h3><pre class="inline-signature">lurek.window.hasFocus() -&gt; boolean</pre><p>Returns whether the window currently has keyboard focus.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:115</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;before focus = &quot; .. tostring(lurek.window.hasFocus()))
+    lurek.window.focus()
+    print(&quot;after focus = &quot; .. tostring(lurek.window.hasFocus()))
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasmousefocus"><div class="item-row-main"><h3>hasMouseFocus</h3><pre class="inline-signature">lurek.window.hasMouseFocus() -&gt; boolean</pre><p>Returns whether the mouse cursor is inside the window.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:123</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local v = lurek.window.hasMouseFocus()
+    print(&quot;mouse focus = &quot; .. tostring(v))
+end</code></pre></details></article><article class="item-row api-row" id="fn-isfullscreen"><div class="item-row-main"><h3>isFullscreen</h3><pre class="inline-signature">lurek.window.isFullscreen() -&gt; boolean</pre><p>Returns whether the window is currently in fullscreen mode.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:734</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local v = lurek.window.isFullscreen()
+    print(&quot;is fullscreen:&quot;, v)
+end</code></pre></details></article><article class="item-row api-row" id="fn-ishighdpiallowed"><div class="item-row-main"><h3>isHighDPIAllowed</h3><pre class="inline-signature">lurek.window.isHighDPIAllowed() -&gt; boolean</pre><p>Returns whether high-DPI rendering is allowed. Currently always returns false on desktop.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:662</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local v = lurek.window.isHighDPIAllowed()
+    print(&quot;high DPI allowed:&quot;, v)
+end</code></pre></details></article><article class="item-row api-row" id="fn-ismaximized"><div class="item-row-main"><h3>isMaximized</h3><pre class="inline-signature">lurek.window.isMaximized() -&gt; boolean</pre><p>Returns whether the window is currently maximized.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:139</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.maximize()
+    print(&quot;is maximized = &quot; .. tostring(lurek.window.isMaximized()))
+    lurek.window.restore()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isminimized"><div class="item-row-main"><h3>isMinimized</h3><pre class="inline-signature">lurek.window.isMinimized() -&gt; boolean</pre><p>Returns whether the window is currently minimized to the taskbar.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:131</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.minimize()
+    print(&quot;is minimized = &quot; .. tostring(lurek.window.isMinimized()))
+    lurek.window.restore()
+end</code></pre></details></article><article class="item-row api-row" id="fn-isopen"><div class="item-row-main"><h3>isOpen</h3><pre class="inline-signature">lurek.window.isOpen() -&gt; boolean</pre><p>Returns whether the window is currently open. Always returns true while the game is running.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:91</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;is open:&quot;, lurek.window.isOpen())
+    print(&quot;visible/resizable/maximized/minimized:&quot;, lurek.window.isVisible(), lurek.window.isResizable(), lurek.window.isMaximized(), lurek.window.isMinimized())
+end</code></pre></details></article><article class="item-row api-row" id="fn-isresizable"><div class="item-row-main"><h3>isResizable</h3><pre class="inline-signature">lurek.window.isResizable() -&gt; boolean</pre><p>Returns whether the window can be resized by the user.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:742</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;is resizable:&quot;, lurek.window.isResizable())
+    print(&quot;open/visible/maximized/minimized:&quot;, lurek.window.isOpen(), lurek.window.isVisible(), lurek.window.isMaximized(), lurek.window.isMinimized())
+end</code></pre></details></article><article class="item-row api-row" id="fn-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">lurek.window.isVisible() -&gt; boolean</pre><p>Returns whether the window is currently visible on screen.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:147</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    print(&quot;is visible:&quot;, lurek.window.isVisible())
+    print(&quot;open/resizable/maximized/minimized:&quot;, lurek.window.isOpen(), lurek.window.isResizable(), lurek.window.isMaximized(), lurek.window.isMinimized())
+end</code></pre></details></article><article class="item-row api-row" id="fn-maximize"><div class="item-row-main"><h3>maximize</h3><pre class="inline-signature">lurek.window.maximize()</pre><p>Maximizes the window to fill the screen.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:164</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.maximize()
+    print(&quot;maximized:&quot;, lurek.window.isMaximized())
+    lurek.window.restore()
+    print(&quot;after restore:&quot;, lurek.window.isMaximized())
+    lurek.window.minimize()
+    print(&quot;minimized:&quot;, lurek.window.isMinimized())
+    lurek.window.restore()
+end</code></pre></details></article><article class="item-row api-row" id="fn-minimize"><div class="item-row-main"><h3>minimize</h3><pre class="inline-signature">lurek.window.minimize()</pre><p>Minimizes the window to the taskbar.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:154</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.maximize()
+    print(&quot;maximized:&quot;, lurek.window.isMaximized())
+    lurek.window.restore()
+    print(&quot;after restore:&quot;, lurek.window.isMaximized())
+    lurek.window.minimize()
+    print(&quot;minimized:&quot;, lurek.window.isMinimized())
+    lurek.window.restore()
+end</code></pre></details></article><article class="item-row api-row" id="fn-ondpichange"><div class="item-row-main"><h3>onDpiChange</h3><pre class="inline-signature">lurek.window.onDpiChange(func: function)</pre><p>Registers a callback function that is called whenever the DPI scale factor changes (e.g., when the window is moved to a different monitor). Only one callback can be active at a time; setting a new one replaces the previous.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:759</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.onDpiChange(function(scale) print(&quot;dpi changed:&quot;, scale) end)
+    local currentScale = lurek.window.pollDpiChange()
+    print(&quot;current dpi scale:&quot;, currentScale)
+end</code></pre></details></article><article class="item-row api-row" id="fn-openfiledialog"><div class="item-row-main"><h3>openFileDialog</h3><pre class="inline-signature">lurek.window.openFileDialog(opts: table?) -&gt; string[]</pre><p>Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:795</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local files = lurek.window.openFileDialog({ title = &quot;Select file&quot;, multiple = true })
+    print(&quot;selected file count:&quot;, #files)
+    print(&quot;first file:&quot;, tostring(files[1]))
+end</code></pre></details></article><article class="item-row api-row" id="fn-polldpichange"><div class="item-row-main"><h3>pollDpiChange</h3><pre class="inline-signature">lurek.window.pollDpiChange() -&gt; number</pre><p>Checks if the DPI scale has changed since the last poll and fires the onDpiChange callback if so. Call this once per frame in your update loop to detect monitor changes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:775</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.onDpiChange(function(scale) print(&quot;dpi changed:&quot;, scale) end)
+    local currentScale = lurek.window.pollDpiChange()
+    print(&quot;current dpi scale:&quot;, currentScale)
+end</code></pre></details></article><article class="item-row api-row" id="fn-requestattention"><div class="item-row-main"><h3>requestAttention</h3><pre class="inline-signature">lurek.window.requestAttention()</pre><p>Requests user attention by flashing the taskbar icon. Useful for notifying the player when the window is in the background.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:492</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setDisplay(0)
+    lurek.window.flash()
+    lurek.window.requestAttention()
+    print(&quot;display orientation:&quot;, lurek.window.getDisplayOrientation())
+    print(&quot;system theme:&quot;, lurek.window.getSystemTheme())
+end</code></pre></details></article><article class="item-row api-row" id="fn-restore"><div class="item-row-main"><h3>restore</h3><pre class="inline-signature">lurek.window.restore()</pre><p>Restores the window from minimized or maximized state to its previous size and position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:174</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.maximize()
+    print(&quot;maximized:&quot;, lurek.window.isMaximized())
+    lurek.window.restore()
+    print(&quot;after restore:&quot;, lurek.window.isMaximized())
+    lurek.window.minimize()
+    print(&quot;minimized:&quot;, lurek.window.isMinimized())
+    lurek.window.restore()
+end</code></pre></details></article><article class="item-row api-row" id="fn-setdisplay"><div class="item-row-main"><h3>setDisplay</h3><pre class="inline-signature">lurek.window.setDisplay(display: integer)</pre><p>Moves the window to the specified display. Throws an error if the index is negative.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:303</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setDisplay(0)
+    lurek.window.flash()
+    lurek.window.requestAttention()
+    print(&quot;display orientation:&quot;, lurek.window.getDisplayOrientation())
+    print(&quot;system theme:&quot;, lurek.window.getSystemTheme())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setfullscreen"><div class="item-row-main"><h3>setFullscreen</h3><pre class="inline-signature">lurek.window.setFullscreen(enabled: boolean, fstype: string?)</pre><p>Enables or disables fullscreen mode. Supports &quot;desktop&quot; (borderless) and &quot;exclusive&quot; types.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:69</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setFullscreen(true, &quot;desktop&quot;)
+    print(&quot;after enable:&quot;, lurek.window.isFullscreen())
+    lurek.window.setFullscreen(false)
+    print(&quot;after disable:&quot;, lurek.window.isFullscreen())
+end</code></pre></details></article><article class="item-row api-row" id="fn-seticon"><div class="item-row-main"><h3>setIcon</h3><pre class="inline-signature">lurek.window.setIcon(path: string)</pre><p>Sets the window icon from an image file. The file must exist in the game&#x27;s filesystem. Supports PNG and other common image formats.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setIcon(&quot;content/examples/assets/images/sample_icon.png&quot;)
+    print(&quot;icon set&quot;)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setmode"><div class="item-row-main"><h3>setMode</h3><pre class="inline-signature">lurek.window.setMode(w: integer, h: integer, flags: table?)</pre><p>Sets the window display mode with a specific resolution and optional flags. Use this to resize the window and configure fullscreen or VSync at the same time.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:396</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setMode(1280, 720, { fullscreen = false, fullscreentype = &quot;desktop&quot;, vsync = 1 })
+    local nw, nh, nflags = lurek.window.getMode()
+    print(&quot;new mode:&quot;, nw, &quot;x&quot;, nh, &quot;vsync:&quot;, nflags.vsync)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">lurek.window.setPosition(x: integer, y: integer)</pre><p>Moves the window to the specified screen position.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:195</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setPosition(100, 100)
+    local nx, ny = lurek.window.getPosition()
+    print(&quot;new position:&quot;, nx, ny)
+end</code></pre></details></article><article class="item-row api-row" id="fn-setscalemode"><div class="item-row-main"><h3>setScaleMode</h3><pre class="inline-signature">lurek.window.setScaleMode(mode: string)</pre><p>Sets the content scale mode. Controls how the game&#x27;s logical resolution maps to the window size.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:707</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setScaleMode(&quot;letterbox&quot;)
+    print(&quot;scale mode:&quot;, lurek.window.getScaleMode())
+    local info = lurek.window.getScaleInfo()
+    print(&quot;scale:&quot;, info.scale_x, info.scale_y, &quot;offset:&quot;, info.offset_x, info.offset_y, &quot;game:&quot;, info.game_width, info.game_height)
+end</code></pre></details></article><article class="item-row api-row" id="fn-settitle"><div class="item-row-main"><h3>setTitle</h3><pre class="inline-signature">lurek.window.setTitle(title: string)</pre><p>Sets the window title bar text. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:21</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setTitle(&quot;My Game - Level 1&quot;)
+    print(&quot;title:&quot;, lurek.window.getTitle())
+end</code></pre></details></article><article class="item-row api-row" id="fn-setvsync"><div class="item-row-main"><h3>setVSync</h3><pre class="inline-signature">lurek.window.setVSync(mode: integer)</pre><p>Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:96</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.setVSync(1)
+    print(&quot;vsync:&quot;, lurek.window.getVSync())
+    lurek.window.setVSync(0)
+    print(&quot;vsync off:&quot;, lurek.window.getVSync())
+    lurek.window.setVSync(-1)
+    print(&quot;adaptive vsync:&quot;, lurek.window.getVSync())
+end</code></pre></details></article><article class="item-row api-row" id="fn-showmessagebox"><div class="item-row-main"><h3>showMessageBox</h3><pre class="inline-signature">lurek.window.showMessageBox(title: string, message: string, box_type: string?, btn_type: string?) -&gt; string</pre><p>Displays a native OS message box dialog. Blocks execution until the user dismisses it.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local title = &quot;Save?&quot;
+    local message = &quot;Do you want to save before exit?&quot;
+    local box_type = &quot;warning&quot;
+    local btn_type = &quot;yesno&quot;
+    local result = lurek.window.showMessageBox(title, message, box_type, btn_type)
+    print(&quot;message box result:&quot;, result)
+end</code></pre></details></article><article class="item-row api-row" id="fn-topixels"><div class="item-row-main"><h3>toPixels</h3><pre class="inline-signature">lurek.window.toPixels(value: number) -&gt; number</pre><p>Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    local logical = lurek.window.fromPixels(200)
+    print(&quot;200 pixels in logical:&quot;, logical)
+    local pixels = lurek.window.toPixels(100)
+    print(&quot;100 logical in pixels:&quot;, pixels)
+end</code></pre></details></article><article class="item-row api-row" id="fn-windowconfig"><div class="item-row-main"><h3>windowConfig</h3><pre class="inline-signature">lurek.window.windowConfig(opts: table)</pre><p>Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/window_api.rs:445</span></div><details class="example-block"><summary>Example · Exact example · window.lua</summary><pre><code>do
+    lurek.window.windowConfig({ title = &quot;Configured Window&quot;, width = 1024, height = 768, fullscreen = false, vsync = 1, scaleMode = &quot;letterbox&quot; })
+    print(&quot;title after config:&quot;, lurek.window.getTitle())
+    print(&quot;dimensions after config:&quot;, lurek.window.getDimensions())
+end</code></pre></details></article>
+  </div>
+</section>
+
+<section class="section-block" id="classes">
+  <div class="section-head">
+    <h2>Classes</h2>
+    <p>Lua userdata types that expose methods through this module.</p>
+  </div>
+    <div class="item-list compact-list">
+    <p class="empty-state">No classes in this module.</p>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+    <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

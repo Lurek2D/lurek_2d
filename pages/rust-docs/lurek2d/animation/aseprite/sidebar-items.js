@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AsepriteDirection"],"fn":["load_aseprite_json"],"struct":["AsepriteFrameData","AsepriteParsed","AsepriteTagData"]};
