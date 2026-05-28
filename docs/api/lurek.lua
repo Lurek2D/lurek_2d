@@ -11972,6 +11972,67 @@ function LBandit:typeOf(name) end
 ---@param reward number Reward value assigned to the arm pull.
 function LBandit:update(idx, reward) end
 
+--- Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
+---@class LEnv
+LEnv = {}
+
+--- Returns the action space descriptor.
+---@return table Action space with shape/low/high or n fields.
+function LEnv:actionSpace() end
+
+--- Returns the observation space descriptor.
+---@return table Observation space with shape, low, high fields.
+function LEnv:obsSpace() end
+
+--- Resets the environment and returns the initial observation.
+---@return number[] Initial observation vector.
+function LEnv:reset() end
+
+--- Advances the environment one step.
+---@param action any Action to apply (integer or table depending on action space).
+---@return number[] a Next observation vector.
+---@return number b Reward for this step.
+---@return boolean c Whether the episode has ended.
+---@return table d Extra info table.
+function LEnv:step(action) end
+
+--- Returns the type name `"LEnv"`.
+---@return string The string `LEnv`.
+function LEnv:type() end
+
+--- Returns whether this env handle matches a supported type name.
+---@param name string Type name to compare against `LEnv` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LEnv:typeOf(name) end
+
+--- Lua handle wrapping a frame-stacking ring buffer.
+---@class LFrameStack
+LFrameStack = {}
+
+--- Returns the maximum number of frames retained.
+---@return number Frame capacity n.
+function LFrameStack:capacity() end
+
+--- Returns the flattened observation stack, zero-padded when not yet full.
+---@return number[] Flattened frame-stack vector of length capacity × obs_dim.
+function LFrameStack:get() end
+
+--- Pushes one observation into the stack.
+---@param obs number[] Observation vector to push.
+function LFrameStack:push(obs) end
+
+--- Clears all stored frames.
+function LFrameStack:reset() end
+
+--- Returns the type name `"LFrameStack"`.
+---@return string The string `LFrameStack`.
+function LFrameStack:type() end
+
+--- Returns whether this frame stack handle matches a supported type name.
+---@param name string Type name to compare against `LFrameStack` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LFrameStack:typeOf(name) end
+
 --- Lua handle for a floating-point genetic algorithm population.
 ---@class LGeneticAlgorithm
 LGeneticAlgorithm = {}
@@ -12116,6 +12177,32 @@ function LNeuroevolution:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LNeuroevolution:typeOf(name) end
 
+--- ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
+---@class LOnnxModel
+LOnnxModel = {}
+
+--- Returns the number of input tensors expected by the model.
+---@return number Input tensor count.
+function LOnnxModel:inputCount() end
+
+--- Returns the number of output tensors produced by the model.
+---@return number Output tensor count.
+function LOnnxModel:outputCount() end
+
+--- Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
+---@param inputs table Array-indexed table of LTensor input values.
+---@return table Array-indexed table of LTensor output values.
+function LOnnxModel:run(inputs) end
+
+--- Returns the type name `"LOnnxModel"`.
+---@return string The string `LOnnxModel`.
+function LOnnxModel:type() end
+
+--- Returns whether this model handle matches a supported type name.
+---@param name string Type name to compare against `LOnnxModel` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LOnnxModel:typeOf(name) end
+
 --- Lua handle for a Q-learning table with configurable exploration and learning parameters.
 ---@class LQLearner
 LQLearner = {}
@@ -12218,6 +12305,51 @@ function LQLearner:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LQLearner:typeOf(name) end
 
+--- Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+---@class LTensor
+LTensor = {}
+
+--- Returns all elements as a flat number array in row-major order.
+---@return number[] Flat element data.
+function LTensor:data() end
+
+--- Gets a single element by one-based multi-dimensional indices.
+---@param indices any Variadic one-based index per dimension.
+---@return number Element value at the given position.
+function LTensor:get(indices) end
+
+--- Returns the total number of elements in the tensor.
+---@return number Total element count.
+function LTensor:len() end
+
+--- Returns the tensor's dimension sizes as an integer array (one entry per axis).
+---@return number[] Dimension sizes in row-major order.
+function LTensor:shape() end
+
+--- Returns the type name `"LTensor"`.
+---@return string The string `LTensor`.
+function LTensor:type() end
+
+--- Returns whether this tensor handle matches a supported type name.
+---@param name string Type name to compare against `LTensor` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTensor:typeOf(name) end
+
+--- Defines a Lua-described RL environment from a config table.
+---@param config table Config with `reset` (function), `step` (function), `obs_space` (table), `action_space` (table).
+---@return LEnv New environment handle.
+lurek.learning.defineEnv = function(config) end
+
+--- Creates a frame-stacking ring buffer of the last n observations.
+---@param n number Number of frames to retain.
+---@return LFrameStack New frame stack handle.
+lurek.learning.frameStack = function(n) end
+
+--- Loads and optimises an ONNX model from a file path.
+---@param path string Filesystem path to the `.onnx` model file.
+---@return LOnnxModel Loaded model handle ready for inference.
+lurek.learning.loadOnnx = function(path) end
+
 --- Creates a multi-armed bandit with a named selection strategy.
 ---@param arm_count number Number of selectable arms.
 ---@param strategy string Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.
@@ -12249,6 +12381,25 @@ lurek.learning.newNeuroevolution = function(layer_spec, pop_size, seed) end
 ---@param ac number Number of discrete actions.
 ---@return LQLearner New Q-learner handle.
 lurek.learning.newQLearner = function(sc, ac) end
+
+--- Creates a tensor from a shape (integer array) and flat float data (number array).
+---@param shape number[] Dimension sizes in row-major order.
+---@param data number[] Flat element values matching the product of `shape`.
+---@return LTensor New tensor handle.
+lurek.learning.newTensor = function(shape, data) end
+
+--- Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
+---@param env LEnv The environment to wrap.
+---@param mean number[] Per-dimension mean values matching the obs_space shape.
+---@param std number[] Per-dimension standard deviation values matching the obs_space shape.
+---@return LEnv New wrapped environment handle.
+lurek.learning.normalizeEnv = function(env, mean, std) end
+
+--- Wraps an LEnv so episodes end automatically after max_steps steps.
+---@param env LEnv The environment to wrap.
+---@param max_steps number Maximum number of steps before done is forced true.
+---@return LEnv New wrapped environment handle.
+lurek.learning.timeLimit = function(env, max_steps) end
 
 --- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
 ---@param model any An LQLearner, LNeuralNet, or LBandit instance.
@@ -14091,6 +14242,15 @@ lurek.math.convexHull = function(pts) end
 ---@return number Cosine value.
 lurek.math.cos = function(x) end
 
+--- Computes the CSS cubic-bezier Y value at input t (0..1).
+---@param p1x number First control point X. |
+---@param p1y number First control point Y. |
+---@param p2x number Second control point X. |
+---@param p2y number Second control point Y. |
+---@param t number Input time (0..1). |
+---@return number The eased Y value. |
+lurek.math.cubicBezier = function(p1x, p1y, p2x, p2y, t) end
+
 --- Converts radians to degrees. This function is exposed to Lua scripts.
 ---@param rad number Angle in radians.
 ---@return number Angle in degrees.
@@ -14116,6 +14276,10 @@ lurek.math.distance = function(x1, y1, x2, y2) end
 ---@param y2 number Second point y coordinate.
 ---@return number Squared distance.
 lurek.math.distanceSq = function(x1, y1, x2, y2) end
+
+--- Returns an array of all built-in easing function names.
+---@return string[] List of easing names. |
+lurek.math.easingNames = function() end
 
 --- Returns exponential of a value. This function is exposed to Lua scripts.
 ---@param x number Input value.
@@ -20878,6 +21042,11 @@ lurek.procgen.roomsDungeon = function(opts) end
 ---@return ProcgenRoomsDungeonWithPrefabsResult b Array of placed prefabs: {name, x, y, width, height}.
 lurek.procgen.roomsDungeonWithPrefabs = function(opts, prefabs, stampValue) end
 
+--- Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
+---@param prompt string Natural-language description of the desired tile adjacency rules.
+---@return table Map from tile ID (integer key) to array of allowed neighbour IDs. Empty table on error.
+lurek.procgen.setConstraintsFromLLM = function(prompt) end
+
 --- Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
@@ -20907,6 +21076,18 @@ lurek.procgen.simplexNoise = function(x, y, z) end
 ---@return number[] b Flat array of distances to nearest seed.
 ---@return number[] c Flat array of distances to second-nearest seed.
 lurek.procgen.voronoi = function(width, height, points, opts) end
+
+---@class ProcgenWfcFromPromptResult
+---@field width number Grid width.
+---@field height number Grid height.
+---@field cells table Array of {x, y, tile} tables for resolved cells.
+---@field failed_cells table Array of {x, y} tables for unresolved cells.
+
+--- Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
+---@param prompt string Description of the desired tile map (e.g. "dungeon with stone corridors").
+---@param config table WFC config: width (integer), height (integer), seed (integer?), max_attempts (integer?).
+---@return ProcgenWfcFromPromptResult WFC grid table with .width, .height, .cells ([{x,y,tile},...]), .failed_cells ([{x,y},...]).
+lurek.procgen.wfcFromPrompt = function(prompt, config) end
 
 ---@class ProcgenWfcGenerateResult
 ---@field cells number[] Tile ID per cell.

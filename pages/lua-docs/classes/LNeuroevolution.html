@@ -69,7 +69,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LNeuroevolution userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-bestfitness"><div class="item-row-main"><h3>bestFitness</h3><pre class="inline-signature">LNeuroevolution:bestFitness() -&gt; number</pre><p>Returns the best fitness value in the population.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:472</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-bestfitness"><div class="item-row-main"><h3>bestFitness</h3><pre class="inline-signature">LNeuroevolution:bestFitness() -&gt; number</pre><p>Returns the best fitness value in the population.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:473</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 4, activation = &quot;relu&quot; },
         { inputs = 4, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -81,7 +81,7 @@ end</code></pre></details>
     end
 
     print(&quot;LNeuroevolution:bestFitness&quot;, evo:bestFitness())
-end</code></pre></details></article><article class="item-row api-row" id="method-bestnetwork"><div class="item-row-main"><h3>bestNetwork</h3><pre class="inline-signature">LNeuroevolution:bestNetwork() -&gt; LNeuralNet</pre><p>Converts the best chromosome into a neural network handle when one exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:463</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-bestnetwork"><div class="item-row-main"><h3>bestNetwork</h3><pre class="inline-signature">LNeuroevolution:bestNetwork() -&gt; LNeuralNet</pre><p>Converts the best chromosome into a neural network handle when one exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:464</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = &quot;relu&quot; },
         { inputs = 3, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -95,7 +95,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local best_net = evo:bestNetwork()
     print(&quot;LNeuroevolution:bestNetwork type&quot;, best_net:type())
     print(&quot;LNeuroevolution:bestNetwork layers&quot;, best_net:layerCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-chromosometonet"><div class="item-row-main"><h3>chromosomeToNet</h3><pre class="inline-signature">LNeuroevolution:chromosomeToNet(idx: integer) -&gt; LNeuralNet</pre><p>Converts one chromosome into a neural network handle when the index is valid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:454</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-chromosometonet"><div class="item-row-main"><h3>chromosomeToNet</h3><pre class="inline-signature">LNeuroevolution:chromosomeToNet(idx: integer) -&gt; LNeuralNet</pre><p>Converts one chromosome into a neural network handle when the index is valid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:455</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = &quot;relu&quot; },
         { inputs = 3, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -106,7 +106,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LNeuroevolution:chromosomeToNet type&quot;, net:type())
     print(&quot;LNeuroevolution:chromosomeToNet out&quot;, output[1])
-end</code></pre></details></article><article class="item-row api-row" id="method-evolve"><div class="item-row-main"><h3>evolve</h3><pre class="inline-signature">LNeuroevolution:evolve()</pre><p>Advances the neuroevolution population by one generation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:438</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-evolve"><div class="item-row-main"><h3>evolve</h3><pre class="inline-signature">LNeuroevolution:evolve()</pre><p>Advances the neuroevolution population by one generation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:439</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 3, outputs = 4, activation = &quot;relu&quot; },
         { inputs = 4, outputs = 2, activation = &quot;softmax&quot; }
@@ -119,7 +119,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     evo:evolve()
     print(&quot;LNeuroevolution:evolve generation&quot;, evo:generation())
-end</code></pre></details></article><article class="item-row api-row" id="method-generation"><div class="item-row-main"><h3>generation</h3><pre class="inline-signature">LNeuroevolution:generation() -&gt; integer</pre><p>Returns the current generation index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:484</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-generation"><div class="item-row-main"><h3>generation</h3><pre class="inline-signature">LNeuroevolution:generation() -&gt; integer</pre><p>Returns the current generation index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:485</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 2, activation = &quot;relu&quot; },
         { inputs = 2, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -128,7 +128,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     evo:evolve()
 
     print(&quot;LNeuroevolution:generation&quot;, evo:generation())
-end</code></pre></details></article><article class="item-row api-row" id="method-popsize"><div class="item-row-main"><h3>popSize</h3><pre class="inline-signature">LNeuroevolution:popSize() -&gt; integer</pre><p>Returns the population size. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:478</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-popsize"><div class="item-row-main"><h3>popSize</h3><pre class="inline-signature">LNeuroevolution:popSize() -&gt; integer</pre><p>Returns the population size. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:479</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = &quot;relu&quot; },
         { inputs = 3, outputs = 1, activation = &quot;linear&quot; }
@@ -137,7 +137,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local pop_size = evo:popSize()
 
     print(&quot;LNeuroevolution:popSize&quot;, pop_size)
-end</code></pre></details></article><article class="item-row api-row" id="method-setfitness"><div class="item-row-main"><h3>setFitness</h3><pre class="inline-signature">LNeuroevolution:setFitness(idx: integer, fitness: number)</pre><p>Sets the fitness value for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:446</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setfitness"><div class="item-row-main"><h3>setFitness</h3><pre class="inline-signature">LNeuroevolution:setFitness(idx: integer, fitness: number)</pre><p>Sets the fitness value for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:447</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 4, activation = &quot;relu&quot; },
         { inputs = 4, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -149,7 +149,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LNeuroevolution:setFitness generation&quot;, evo:generation())
     print(&quot;LNeuroevolution:setFitness bestFitness&quot;, evo:bestFitness())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNeuroevolution:type() -&gt; string</pre><p>Returns the Lua-visible type name for this neuroevolution handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:490</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNeuroevolution:type() -&gt; string</pre><p>Returns the Lua-visible type name for this neuroevolution handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:491</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = &quot;relu&quot; },
         { inputs = 3, outputs = 1, activation = &quot;sigmoid&quot; }
@@ -158,7 +158,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local type_name = evo:type()
 
     print(&quot;LNeuroevolution:type&quot;, type_name)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNeuroevolution:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this neuroevolution handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:495</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNeuroevolution:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this neuroevolution handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local layer_spec = {
         { inputs = 2, outputs = 3, activation = &quot;relu&quot; },
         { inputs = 3, outputs = 1, activation = &quot;sigmoid&quot; }

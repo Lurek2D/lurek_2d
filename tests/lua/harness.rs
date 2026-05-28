@@ -557,6 +557,11 @@ fn lua_unit_input_unit() {
 }
 
 #[test]
+fn lua_unit_learning_unit() {
+    run_lua_test("unit/test_learning_core_unit.lua");
+}
+
+#[test]
 fn lua_unit_light_unit() {
     run_lua_test("unit/test_light_core_unit.lua");
 }

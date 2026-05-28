@@ -63,41 +63,41 @@ end</code></pre></details>
     <p>Instance methods exported from the LNeuralNet userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-addlayer"><div class="item-row-main"><h3>addLayer</h3><pre class="inline-signature">LNeuralNet:addLayer(inputs: integer, outputs: integer, activation: string)</pre><p>Adds a neural network layer with an activation function.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:209</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-addlayer"><div class="item-row-main"><h3>addLayer</h3><pre class="inline-signature">LNeuralNet:addLayer(inputs: integer, outputs: integer, activation: string)</pre><p>Adds a neural network layer with an activation function.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:210</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(4, 6, &quot;relu&quot;)
     net:addLayer(6, 2, &quot;sigmoid&quot;)
 
     print(&quot;LNeuralNet:addLayer layerCount&quot;, net:layerCount())
     print(&quot;LNeuralNet:addLayer paramCount&quot;, net:paramCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-forward"><div class="item-row-main"><h3>forward</h3><pre class="inline-signature">LNeuralNet:forward(input: table) -&gt; number[]</pre><p>Runs a forward pass and returns output values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:221</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-forward"><div class="item-row-main"><h3>forward</h3><pre class="inline-signature">LNeuralNet:forward(input: table) -&gt; number[]</pre><p>Runs a forward pass and returns output values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:222</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(3, 4, &quot;relu&quot;)
     net:addLayer(4, 1, &quot;sigmoid&quot;)
     local output = net:forward({ 0.1, 0.5, 0.9 })
 
     print(&quot;LNeuralNet:forward out&quot;, output[1])
-end</code></pre></details></article><article class="item-row api-row" id="method-getweights"><div class="item-row-main"><h3>getWeights</h3><pre class="inline-signature">LNeuralNet:getWeights() -&gt; number[]</pre><p>Returns the network weights as a flat numeric array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:239</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getweights"><div class="item-row-main"><h3>getWeights</h3><pre class="inline-signature">LNeuralNet:getWeights() -&gt; number[]</pre><p>Returns the network weights as a flat numeric array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:240</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 3, &quot;relu&quot;)
     local weights = net:getWeights()
 
     print(&quot;LNeuralNet:getWeights count&quot;, #weights)
     print(&quot;LNeuralNet:getWeights first&quot;, weights[1])
-end</code></pre></details></article><article class="item-row api-row" id="method-layercount"><div class="item-row-main"><h3>layerCount</h3><pre class="inline-signature">LNeuralNet:layerCount() -&gt; integer</pre><p>Returns the number of layers in the network.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:256</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-layercount"><div class="item-row-main"><h3>layerCount</h3><pre class="inline-signature">LNeuralNet:layerCount() -&gt; integer</pre><p>Returns the number of layers in the network.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:257</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(4, 8, &quot;relu&quot;)
     net:addLayer(8, 4, &quot;relu&quot;)
     net:addLayer(4, 1, &quot;sigmoid&quot;)
 
     print(&quot;LNeuralNet:layerCount&quot;, net:layerCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-paramcount"><div class="item-row-main"><h3>paramCount</h3><pre class="inline-signature">LNeuralNet:paramCount() -&gt; integer</pre><p>Returns the total number of trainable parameters.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:250</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-paramcount"><div class="item-row-main"><h3>paramCount</h3><pre class="inline-signature">LNeuralNet:paramCount() -&gt; integer</pre><p>Returns the total number of trainable parameters.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:251</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 4, &quot;relu&quot;)
     net:addLayer(4, 1, &quot;sigmoid&quot;)
 
     print(&quot;LNeuralNet:paramCount&quot;, net:paramCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LNeuralNet:predict(input: table) -&gt; number[]</pre><p>Alias for `forward`. Runs a forward pass and returns output values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:274</span></div></article><article class="item-row api-row" id="method-setweights"><div class="item-row-main"><h3>setWeights</h3><pre class="inline-signature">LNeuralNet:setWeights(weights: table) -&gt; boolean</pre><p>Replaces the network weights from a flat numeric array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:233</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LNeuralNet:predict(input: table) -&gt; number[]</pre><p>Alias for `forward`. Runs a forward pass and returns output values.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:275</span></div></article><article class="item-row api-row" id="method-setweights"><div class="item-row-main"><h3>setWeights</h3><pre class="inline-signature">LNeuralNet:setWeights(weights: table) -&gt; boolean</pre><p>Replaces the network weights from a flat numeric array.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:234</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     net:addLayer(2, 2, &quot;linear&quot;)
     local weights = net:getWeights()
@@ -105,12 +105,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LNeuralNet:setWeights applied&quot;, tostring(applied))
     print(&quot;LNeuralNet:setWeights paramCount&quot;, net:paramCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNeuralNet:type() -&gt; string</pre><p>Returns the Lua-visible type name for this neural network handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:262</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNeuralNet:type() -&gt; string</pre><p>Returns the Lua-visible type name for this neural network handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:263</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     local type_name = net:type()
 
     print(&quot;LNeuralNet:type&quot;, type_name)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNeuralNet:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this neural network handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:267</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNeuralNet:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this neural network handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:268</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local net = lurek.learning.newNeuralNet()
     local is_net = net:typeOf(&quot;LNeuralNet&quot;)
     local is_object = net:typeOf(&quot;LObject&quot;)

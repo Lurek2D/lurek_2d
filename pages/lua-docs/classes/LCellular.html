@@ -61,22 +61,22 @@ end</code></pre></details>
     <p>Instance methods exported from the LCellular userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-countcells"><div class="item-row-main"><h3>countCells</h3><pre class="inline-signature">LCellular:countCells(cellType: integer) -&gt; integer</pre><p>Counts how many cells of a given material type exist in the grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:584</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-countcells"><div class="item-row-main"><h3>countCells</h3><pre class="inline-signature">LCellular:countCells(cellType: integer) -&gt; integer</pre><p>Counts how many cells of a given material type exist in the grid.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:586</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     ca:setCell(5, 5, lurek.physics.CELL_SAND)
     print(&quot;count&quot;, ca:countCells(lurek.physics.CELL_SAND))
     print(&quot;type&quot;, ca:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-fillcircle"><div class="item-row-main"><h3>fillCircle</h3><pre class="inline-signature">LCellular:fillCircle(cx: integer, cy: integer, r: integer, cellType: integer)</pre><p>Fills a circular region of cells with a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:528</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fillcircle"><div class="item-row-main"><h3>fillCircle</h3><pre class="inline-signature">LCellular:fillCircle(cx: integer, cy: integer, r: integer, cellType: integer)</pre><p>Fills a circular region of cells with a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:530</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(128, 128)
     grid:fillCircle(64, 64, 15, lurek.physics.CELL_FIRE)
     print(&quot;fire&quot;, grid:countCells(lurek.physics.CELL_FIRE))
     print(&quot;type&quot;, grid:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-fillrect"><div class="item-row-main"><h3>fillRect</h3><pre class="inline-signature">LCellular:fillRect(cx0: integer, cy0: integer, cw: integer, ch: integer, cellType: integer)</pre><p>Fills a rectangular region of cells with a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:513</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fillrect"><div class="item-row-main"><h3>fillRect</h3><pre class="inline-signature">LCellular:fillRect(cx0: integer, cy0: integer, cw: integer, ch: integer, cellType: integer)</pre><p>Fills a rectangular region of cells with a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:515</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(128, 128)
     grid:fillRect(10, 10, 20, 5, lurek.physics.CELL_WATER)
     print(&quot;water&quot;, grid:countCells(lurek.physics.CELL_WATER))
     print(&quot;type&quot;, grid:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-findcells"><div class="item-row-main"><h3>findCells</h3><pre class="inline-signature">LCellular:findCells(cellType: integer) -&gt; table</pre><p>Returns positions of all cells matching a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:593</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findcells"><div class="item-row-main"><h3>findCells</h3><pre class="inline-signature">LCellular:findCells(cellType: integer) -&gt; table</pre><p>Returns positions of all cells matching a material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:595</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(32, 32)
     grid:fillRect(14, 0, 4, 2, lurek.physics.CELL_SAND)
     local positions = grid:findCells(lurek.physics.CELL_SAND)
@@ -84,58 +84,58 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     if positions[1] then
         print(&quot;first&quot;, positions[1].x, positions[1].y)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-getcell"><div class="item-row-main"><h3>getCell</h3><pre class="inline-signature">LCellular:getCell(cx: integer, cy: integer) -&gt; integer</pre><p>Returns the material type of a cell at the given grid position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:503</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcell"><div class="item-row-main"><h3>getCell</h3><pre class="inline-signature">LCellular:getCell(cx: integer, cy: integer) -&gt; integer</pre><p>Returns the material type of a cell at the given grid position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:505</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     ca:setCell(5, 5, lurek.physics.CELL_SAND)
     print(&quot;cell&quot;, ca:getCell(5, 5))
     print(&quot;count&quot;, ca:countCells(lurek.physics.CELL_SAND))
-end</code></pre></details></article><article class="item-row api-row" id="method-loadfrombytes"><div class="item-row-main"><h3>loadFromBytes</h3><pre class="inline-signature">LCellular:loadFromBytes(data: string) -&gt; boolean</pre><p>Restores cellular grid state from binary data previously produced by toBytes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:614</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-loadfrombytes"><div class="item-row-main"><h3>loadFromBytes</h3><pre class="inline-signature">LCellular:loadFromBytes(data: string) -&gt; boolean</pre><p>Restores cellular grid state from binary data previously produced by toBytes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:616</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
     local bytes = grid:toBytes()
     local clone = lurek.physics.newCellular(32, 32)
     print(&quot;loaded&quot;, clone:loadFromBytes(bytes))
     print(&quot;cell&quot;, clone:getCell(16, 16))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcell"><div class="item-row-main"><h3>setCell</h3><pre class="inline-signature">LCellular:setCell(cx: integer, cy: integer, cellType: integer)</pre><p>Sets a single cell in the cellular grid to a specific material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:494</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcell"><div class="item-row-main"><h3>setCell</h3><pre class="inline-signature">LCellular:setCell(cx: integer, cy: integer, cellType: integer)</pre><p>Sets a single cell in the cellular grid to a specific material type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:496</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     ca:setCell(5, 5, lurek.physics.CELL_SAND)
     print(&quot;cell&quot;, ca:getCell(5, 5))
     print(&quot;type&quot;, ca:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-step"><div class="item-row-main"><h3>step</h3><pre class="inline-signature">LCellular:step()</pre><p>Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:539</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-step"><div class="item-row-main"><h3>step</h3><pre class="inline-signature">LCellular:step()</pre><p>Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:541</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     ca:setCell(5, 5, lurek.physics.CELL_SAND)
     ca:step()
     print(&quot;count&quot;, ca:countCells(lurek.physics.CELL_SAND))
     print(&quot;type&quot;, ca:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-stepn"><div class="item-row-main"><h3>stepN</h3><pre class="inline-signature">LCellular:stepN(n: integer)</pre><p>Advances the cellular simulation by N ticks in a single call.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:546</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-stepn"><div class="item-row-main"><h3>stepN</h3><pre class="inline-signature">LCellular:stepN(n: integer)</pre><p>Advances the cellular simulation by N ticks in a single call.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:548</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(32, 32)
     grid:fillRect(14, 0, 4, 2, lurek.physics.CELL_SAND)
     grid:stepN(10)
     print(&quot;sand&quot;, grid:countCells(lurek.physics.CELL_SAND))
     print(&quot;type&quot;, grid:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-tobytes"><div class="item-row-main"><h3>toBytes</h3><pre class="inline-signature">LCellular:toBytes() -&gt; string</pre><p>Serializes the cellular grid to a compact binary format for saving.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:607</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-tobytes"><div class="item-row-main"><h3>toBytes</h3><pre class="inline-signature">LCellular:toBytes() -&gt; string</pre><p>Serializes the cellular grid to a compact binary format for saving.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:609</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
     local bytes = grid:toBytes()
     print(&quot;bytes&quot;, #bytes)
     print(&quot;type&quot;, grid:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-toimagedata"><div class="item-row-main"><h3>toImageData</h3><pre class="inline-signature">LCellular:toImageData() -&gt; string</pre><p>Renders the entire cellular grid to raw RGBA pixel data using the default material palette.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:553</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-toimagedata"><div class="item-row-main"><h3>toImageData</h3><pre class="inline-signature">LCellular:toImageData() -&gt; string</pre><p>Renders the entire cellular grid to raw RGBA pixel data using the default material palette.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:555</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local grid = lurek.physics.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.physics.CELL_SAND)
     local pixels = grid:toImageData()
     print(&quot;bytes&quot;, #pixels)
     print(&quot;count&quot;, grid:countCells(lurek.physics.CELL_SAND))
-end</code></pre></details></article><article class="item-row api-row" id="method-toimagedataregion"><div class="item-row-main"><h3>toImageDataRegion</h3><pre class="inline-signature">LCellular:toImageDataRegion(cx0: integer, cy0: integer, cw: integer, ch: integer) -&gt; string</pre><p>Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:567</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-toimagedataregion"><div class="item-row-main"><h3>toImageDataRegion</h3><pre class="inline-signature">LCellular:toImageDataRegion(cx0: integer, cy0: integer, cw: integer, ch: integer) -&gt; string</pre><p>Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:569</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     ca:setCell(5, 5, lurek.physics.CELL_SAND)
     local img = ca:toImageDataRegion(0, 0, 32, 32)
     print(&quot;bytes&quot;, #img)
     print(&quot;type&quot;, ca:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LCellular:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LCellular&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:626</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LCellular:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LCellular&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:628</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     print(&quot;type&quot;, ca:type())
     print(&quot;type_of&quot;, ca:typeOf(&quot;LCellular&quot;))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LCellular:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:631</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LCellular:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/procgen_api.rs:633</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local ca = lurek.physics.newCellular(32, 32)
     print(&quot;type_of&quot;, ca:typeOf(&quot;LCellular&quot;), ca:typeOf(&quot;LObject&quot;))
     print(&quot;type&quot;, ca:type())

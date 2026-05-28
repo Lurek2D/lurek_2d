@@ -829,4 +829,43 @@ describe("procgen.noiseMapParallelSeeded", function()
     end)
 end)
 
+-- @describe setConstraintsFromLLM(prompt)
+describe("setConstraintsFromLLM(prompt)", function()
+    -- @covers lurek.procgen.setConstraintsFromLLM
+    it("exposes setConstraintsFromLLM as a function", function()
+        expect_type("function", lurek.procgen.setConstraintsFromLLM)
+    end)
+
+    -- @covers lurek.procgen.setConstraintsFromLLM
+    it("returns a table (may be empty when LLM is offline)", function()
+        local result = lurek.procgen.setConstraintsFromLLM("test prompt")
+        expect_type("table", result)
+    end)
+end)
+
+-- @describe wfcFromPrompt(prompt, config)
+describe("wfcFromPrompt(prompt, config)", function()
+    -- @covers lurek.procgen.wfcFromPrompt
+    it("exposes wfcFromPrompt as a function", function()
+        expect_type("function", lurek.procgen.wfcFromPrompt)
+    end)
+
+    -- @covers lurek.procgen.wfcFromPrompt
+    it("returns a table with the expected shape fields", function()
+        local result = lurek.procgen.wfcFromPrompt("test", { width = 5, height = 5 })
+        expect_type("table", result)
+        expect_not_nil(result.width, "width field missing")
+        expect_not_nil(result.height, "height field missing")
+        expect_not_nil(result.cells, "cells field missing")
+        expect_not_nil(result.failed_cells, "failed_cells field missing")
+    end)
+
+    -- @covers lurek.procgen.wfcFromPrompt
+    it("returns correct width and height when LLM is offline", function()
+        local result = lurek.procgen.wfcFromPrompt("test", { width = 3, height = 7 })
+        expect_equal(3, result.width)
+        expect_equal(7, result.height)
+    end)
+end)
+
 test_summary()

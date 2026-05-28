@@ -91,6 +91,196 @@ describe("lurek.learning", function()
         expect_true(net ~= nil, "should convert chromosome 0 to net")
         expect_equal(net:layerCount(), 1)
     end)
+
+    -- @covers lurek.learning.defineEnv
+    it("defineEnv returns LEnv with correct type", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {0.0, 0.0} end,
+            step  = function(a) return {{0.1, 0.2}, 1.0, false, {}} end,
+            obs_space    = { shape = {2}, low = {-1}, high = {1} },
+            action_space = { shape = {1}, low = {0}, high = {3}, n = 4 },
+        })
+        expect_true(env ~= nil, "env should be created")
+        expect_equal(env:type(), "LEnv")
+        expect_true(env:typeOf("LEnv"), "typeOf LEnv")
+        expect_true(env:typeOf("LObject"), "typeOf LObject")
+        expect_true(not env:typeOf("LBandit"), "typeOf LBandit false")
+    end)
+
+    -- @covers lurek.learning.defineEnv
+    it("LEnv:obsSpace and actionSpace return tables", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {0.0} end,
+            step  = function(a) return {{0.0}, 0.0, false, {}} end,
+            obs_space    = { shape = {3}, low = {-1}, high = {1} },
+            action_space = { n = 4 },
+        })
+        local obs = env:obsSpace()
+        expect_true(obs ~= nil, "obsSpace not nil")
+        expect_equal(#obs.shape, 1)
+        expect_equal(obs.shape[1], 3)
+        local act = env:actionSpace()
+        expect_true(act ~= nil, "actionSpace not nil")
+        expect_equal(act.n, 4)
+    end)
+
+    -- @covers lurek.learning.defineEnv
+    it("LEnv:reset returns obs table", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {1.0, 2.0, 3.0} end,
+            step  = function(a) return {{0.0, 0.0, 0.0}, 0.0, false, {}} end,
+            obs_space    = { shape = {3}, low = {-1}, high = {1} },
+            action_space = { n = 2 },
+        })
+        local obs = env:reset()
+        expect_true(obs ~= nil, "obs not nil")
+        expect_equal(#obs, 3)
+        expect_equal(obs[1], 1.0)
+    end)
+
+    -- @covers lurek.learning.defineEnv
+    it("LEnv:step returns obs, reward, done, info", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {0.0} end,
+            step  = function(a) return {{0.5}, 2.5, false, {score=99}} end,
+            obs_space    = { shape = {1}, low = {0}, high = {1} },
+            action_space = { n = 2 },
+        })
+        local obs, reward, done, info = env:step(1)
+        expect_true(obs ~= nil, "obs not nil")
+        expect_equal(obs[1], 0.5)
+        expect_equal(reward, 2.5)
+        expect_true(not done, "not done yet")
+    end)
+
+    -- @covers lurek.learning.frameStack
+    it("frameStack returns LFrameStack with correct type", function()
+        local fs = lurek.learning.frameStack(3)
+        expect_true(fs ~= nil, "frame stack created")
+        expect_equal(fs:type(), "LFrameStack")
+        expect_true(fs:typeOf("LFrameStack"), "typeOf LFrameStack")
+        expect_true(fs:typeOf("LObject"), "typeOf LObject")
+        expect_equal(fs:capacity(), 3)
+    end)
+
+    -- @covers lurek.learning.frameStack
+    it("LFrameStack:push and get return flat vector", function()
+        local fs = lurek.learning.frameStack(3)
+        fs:push({1.0, 2.0})
+        fs:push({3.0, 4.0})
+        local flat = fs:get()
+        -- 3 frames * 2 dims = 6 elements (last frame zero-padded)
+        expect_equal(#flat, 6)
+        -- first frame: 1,2 (oldest pushed first but capacity*dim padded)
+        expect_true(flat[1] ~= nil, "flat[1] not nil")
+    end)
+
+    -- @covers lurek.learning.frameStack
+    it("LFrameStack:reset clears frames", function()
+        local fs = lurek.learning.frameStack(2)
+        fs:push({1.0})
+        fs:push({2.0})
+        fs:reset()
+        local flat = fs:get()
+        -- After reset with no dim info, returns empty/zeros
+        expect_equal(#flat, 0)
+    end)
+
+    -- @covers lurek.learning.normalizeEnv
+    it("normalizeEnv wraps an env and type is LEnv", function()
+        local base = lurek.learning.defineEnv({
+            reset = function() return {2.0, 4.0} end,
+            step  = function(a) return {{2.0, 4.0}, 1.0, false, {}} end,
+            obs_space    = { shape = {2}, low = {0}, high = {10} },
+            action_space = { n = 2 },
+        })
+        local wrapped = lurek.learning.normalizeEnv(base, {1.0, 2.0}, {1.0, 2.0})
+        expect_true(wrapped ~= nil, "wrapped env not nil")
+        expect_equal(wrapped:type(), "LEnv")
+        local obs = wrapped:reset()
+        -- (2-1)/1 = 1.0, (4-2)/2 = 1.0
+        expect_true(math.abs(obs[1] - 1.0) < 0.001, "obs[1] normalized")
+        expect_true(math.abs(obs[2] - 1.0) < 0.001, "obs[2] normalized")
+    end)
+
+    -- @covers lurek.learning.timeLimit
+    it("timeLimit forces done after max_steps", function()
+        local env = lurek.learning.defineEnv({
+            reset = function() return {0.0} end,
+            step  = function(a) return {{0.0}, 0.0, false, {}} end,
+            obs_space    = { shape = {1}, low = {0}, high = {1} },
+            action_space = { n = 2 },
+        })
+        local limited = lurek.learning.timeLimit(env, 3)
+        expect_equal(limited:type(), "LEnv")
+        limited:reset()
+        local _, _, done1 = limited:step(1)
+        local _, _, done2 = limited:step(1)
+        local _, _, done3 = limited:step(1)
+        expect_true(not done1, "step 1 not done")
+        expect_true(not done2, "step 2 not done")
+        expect_true(done3, "step 3 done (time limit reached)")
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("newTensor creates LTensor with correct type", function()
+        local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+        expect_true(t ~= nil, "tensor should be created")
+        expect_equal(t:type(), "LTensor")
+        expect_true(t:typeOf("LTensor"), "typeOf LTensor")
+        expect_true(t:typeOf("LObject"), "typeOf LObject")
+        expect_true(not t:typeOf("LOnnxModel"), "typeOf LOnnxModel false")
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("LTensor:shape returns correct dimensions", function()
+        local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+        local s = t:shape()
+        expect_equal(#s, 2)
+        expect_equal(s[1], 2)
+        expect_equal(s[2], 3)
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("LTensor:data returns flat element array", function()
+        local t = lurek.learning.newTensor({3}, {10.5, 20.5, 30.5})
+        local d = t:data()
+        expect_equal(#d, 3)
+        expect_true(math.abs(d[1] - 10.5) < 0.001, "d[1] close to 10.5")
+        expect_true(math.abs(d[2] - 20.5) < 0.001, "d[2] close to 20.5")
+        expect_true(math.abs(d[3] - 30.5) < 0.001, "d[3] close to 30.5")
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("LTensor:len returns total element count", function()
+        local t = lurek.learning.newTensor({4, 2}, {1, 2, 3, 4, 5, 6, 7, 8})
+        expect_equal(t:len(), 8)
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("LTensor:get returns element by one-based index", function()
+        local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
+        expect_true(math.abs(t:get(1) - 7.0) < 0.001, "get(1) = 7.0")
+        expect_true(math.abs(t:get(2) - 8.0) < 0.001, "get(2) = 8.0")
+        expect_true(math.abs(t:get(3) - 9.0) < 0.001, "get(3) = 9.0")
+    end)
+
+    -- @covers lurek.learning.newTensor
+    it("LTensor:get out of bounds returns error", function()
+        local t = lurek.learning.newTensor({2}, {1.0, 2.0})
+        local ok, err = pcall(function() return t:get(5) end)
+        expect_true(not ok, "out-of-bounds get should error")
+        expect_true(err ~= nil, "error message not nil")
+    end)
+
+    -- @covers lurek.learning.loadOnnx
+    it("loadOnnx on missing file returns error", function()
+        local ok, err = pcall(function()
+            return lurek.learning.loadOnnx("nonexistent_does_not_exist.onnx")
+        end)
+        expect_true(not ok, "missing file should return error")
+        expect_true(err ~= nil, "error message not nil")
+    end)
 end)
 
 test_summary()

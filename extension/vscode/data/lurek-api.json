@@ -1,6 +1,6 @@
 {
   "version": "auto-generated",
-  "generated": "2026-05-28",
+  "generated": "2026-05-29",
   "modules": [
     {
       "name": "agent",
@@ -12767,6 +12767,138 @@
           "returnType": "LModel",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "defineEnv",
+          "fullPath": "lurek.learning.defineEnv",
+          "signature": "(config)",
+          "description": "Defines a Lua-described RL environment from a config table.",
+          "parameters": [
+            {
+              "name": "config",
+              "type": "table",
+              "description": "Config with `reset` (function), `step` (function), `obs_space` (table), `action_space` (table).",
+              "optional": false
+            }
+          ],
+          "returns": "LEnv",
+          "returnType": "LEnv",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "frameStack",
+          "fullPath": "lurek.learning.frameStack",
+          "signature": "(n)",
+          "description": "Creates a frame-stacking ring buffer of the last n observations.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Number of frames to retain.",
+              "optional": false
+            }
+          ],
+          "returns": "LFrameStack",
+          "returnType": "LFrameStack",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "normalizeEnv",
+          "fullPath": "lurek.learning.normalizeEnv",
+          "signature": "(env_ud, mean, std)",
+          "description": "Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.",
+          "parameters": [
+            {
+              "name": "env",
+              "type": "LEnv",
+              "description": "The environment to wrap.",
+              "optional": false
+            },
+            {
+              "name": "mean",
+              "type": "number[]",
+              "description": "Per-dimension mean values matching the obs_space shape.",
+              "optional": false
+            },
+            {
+              "name": "std",
+              "type": "number[]",
+              "description": "Per-dimension standard deviation values matching the obs_space shape.",
+              "optional": false
+            }
+          ],
+          "returns": "LEnv",
+          "returnType": "LEnv",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "timeLimit",
+          "fullPath": "lurek.learning.timeLimit",
+          "signature": "(env_ud, max_steps)",
+          "description": "Wraps an LEnv so episodes end automatically after max_steps steps.",
+          "parameters": [
+            {
+              "name": "env",
+              "type": "LEnv",
+              "description": "The environment to wrap.",
+              "optional": false
+            },
+            {
+              "name": "max_steps",
+              "type": "integer",
+              "description": "Maximum number of steps before done is forced true.",
+              "optional": false
+            }
+          ],
+          "returns": "LEnv",
+          "returnType": "LEnv",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "loadOnnx",
+          "fullPath": "lurek.learning.loadOnnx",
+          "signature": "(path)",
+          "description": "Loads and optimises an ONNX model from a file path.",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "Filesystem path to the `.onnx` model file.",
+              "optional": false
+            }
+          ],
+          "returns": "LOnnxModel",
+          "returnType": "LOnnxModel",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newTensor",
+          "fullPath": "lurek.learning.newTensor",
+          "signature": "(shape_tbl, data_tbl)",
+          "description": "Creates a tensor from a shape (integer array) and flat float data (number array).",
+          "parameters": [
+            {
+              "name": "shape",
+              "type": "integer[]",
+              "description": "Dimension sizes in row-major order.",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "number[]",
+              "description": "Flat element values matching the product of `shape`.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -16108,6 +16240,59 @@
           "returnType": "number[]",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "easingNames",
+          "fullPath": "lurek.math.easingNames",
+          "signature": "()",
+          "description": "Returns an array of all built-in easing function names.",
+          "parameters": [],
+          "returns": "string[]",
+          "returnType": "string[]",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "cubicBezier",
+          "fullPath": "lurek.math.cubicBezier",
+          "signature": "(p1x, p1y, p2x, p2y, t)",
+          "description": "Computes the CSS cubic-bezier Y value at input t (0..1).",
+          "parameters": [
+            {
+              "name": "p1x",
+              "type": "number",
+              "description": "First control point X. |",
+              "optional": false
+            },
+            {
+              "name": "p1y",
+              "type": "number",
+              "description": "First control point Y. |",
+              "optional": false
+            },
+            {
+              "name": "p2x",
+              "type": "number",
+              "description": "Second control point X. |",
+              "optional": false
+            },
+            {
+              "name": "p2y",
+              "type": "number",
+              "description": "Second control point Y. |",
+              "optional": false
+            },
+            {
+              "name": "t",
+              "type": "number",
+              "description": "Input time (0..1). |",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -19308,6 +19493,48 @@
           ],
           "returns": "LCellular",
           "returnType": "LCellular",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setConstraintsFromLLM",
+          "fullPath": "lurek.procgen.setConstraintsFromLLM",
+          "signature": "(prompt)",
+          "description": "Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.",
+          "parameters": [
+            {
+              "name": "prompt",
+              "type": "string",
+              "description": "Natural-language description of the desired tile adjacency rules.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "wfcFromPrompt",
+          "fullPath": "lurek.procgen.wfcFromPrompt",
+          "signature": "(prompt, config)",
+          "description": "Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.",
+          "parameters": [
+            {
+              "name": "prompt",
+              "type": "string",
+              "description": "Description of the desired tile map (e.g. \"dungeon with stone corridors\").",
+              "optional": false
+            },
+            {
+              "name": "config",
+              "type": "table",
+              "description": "WFC config: width (integer), height (integer), seed (integer?), max_attempts (integer?).",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         }
@@ -57360,6 +57587,92 @@
       ]
     },
     {
+      "name": "LEnv",
+      "description": "Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.",
+      "methods": [
+        {
+          "name": "reset",
+          "fullPath": "LEnv:reset",
+          "signature": "()",
+          "description": "Resets the environment and returns the initial observation.",
+          "parameters": [],
+          "returns": "number[]",
+          "returnType": "number[]",
+          "isMethod": true,
+          "objectType": "LEnv"
+        },
+        {
+          "name": "step",
+          "fullPath": "LEnv:step",
+          "signature": "(action)",
+          "description": "Advances the environment one step.",
+          "parameters": [
+            {
+              "name": "action",
+              "type": "any",
+              "description": "Action to apply (integer or table depending on action space).",
+              "optional": false
+            }
+          ],
+          "returns": "number[]",
+          "returnType": "number[]",
+          "isMethod": true,
+          "objectType": "LEnv"
+        },
+        {
+          "name": "obsSpace",
+          "fullPath": "LEnv:obsSpace",
+          "signature": "()",
+          "description": "Returns the observation space descriptor.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LEnv"
+        },
+        {
+          "name": "actionSpace",
+          "fullPath": "LEnv:actionSpace",
+          "signature": "()",
+          "description": "Returns the action space descriptor.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LEnv"
+        },
+        {
+          "name": "type",
+          "fullPath": "LEnv:type",
+          "signature": "()",
+          "description": "Returns the type name `\"LEnv\"`.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LEnv"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LEnv:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this env handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LEnv` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LEnv"
+        }
+      ]
+    },
+    {
       "name": "LEpisodicMemory",
       "description": "Lua-side handle for append-only episodic memory.",
       "methods": [
@@ -59790,6 +60103,92 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LFont"
+        }
+      ]
+    },
+    {
+      "name": "LFrameStack",
+      "description": "Lua handle wrapping a frame-stacking ring buffer.",
+      "methods": [
+        {
+          "name": "push",
+          "fullPath": "LFrameStack:push",
+          "signature": "(obs)",
+          "description": "Pushes one observation into the stack.",
+          "parameters": [
+            {
+              "name": "obs",
+              "type": "number[]",
+              "description": "Observation vector to push.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFrameStack"
+        },
+        {
+          "name": "get",
+          "fullPath": "LFrameStack:get",
+          "signature": "()",
+          "description": "Returns the flattened observation stack, zero-padded when not yet full.",
+          "parameters": [],
+          "returns": "number[]",
+          "returnType": "number[]",
+          "isMethod": true,
+          "objectType": "LFrameStack"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LFrameStack:reset",
+          "signature": "()",
+          "description": "Clears all stored frames.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFrameStack"
+        },
+        {
+          "name": "capacity",
+          "fullPath": "LFrameStack:capacity",
+          "signature": "()",
+          "description": "Returns the maximum number of frames retained.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LFrameStack"
+        },
+        {
+          "name": "type",
+          "fullPath": "LFrameStack:type",
+          "signature": "()",
+          "description": "Returns the type name `\"LFrameStack\"`.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFrameStack"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LFrameStack:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this frame stack handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LFrameStack` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFrameStack"
         }
       ]
     },
@@ -92526,6 +92925,81 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LOllamaManager"
+        }
+      ]
+    },
+    {
+      "name": "LOnnxModel",
+      "description": "ONNX model handle that wraps a tract runnable plan for Lua-driven inference.",
+      "methods": [
+        {
+          "name": "run",
+          "fullPath": "LOnnxModel:run",
+          "signature": "(inputs_tbl)",
+          "description": "Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.",
+          "parameters": [
+            {
+              "name": "inputs",
+              "type": "table",
+              "description": "Array-indexed table of LTensor input values.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LOnnxModel"
+        },
+        {
+          "name": "inputCount",
+          "fullPath": "LOnnxModel:inputCount",
+          "signature": "()",
+          "description": "Returns the number of input tensors expected by the model.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LOnnxModel"
+        },
+        {
+          "name": "outputCount",
+          "fullPath": "LOnnxModel:outputCount",
+          "signature": "()",
+          "description": "Returns the number of output tensors produced by the model.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LOnnxModel"
+        },
+        {
+          "name": "type",
+          "fullPath": "LOnnxModel:type",
+          "signature": "()",
+          "description": "Returns the type name `\"LOnnxModel\"`.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LOnnxModel"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LOnnxModel:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this model handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LOnnxModel` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LOnnxModel"
         }
       ]
     },
@@ -128058,6 +128532,92 @@
           "returnType": "nil",
           "isMethod": true,
           "objectType": "LTabBar"
+        }
+      ]
+    },
+    {
+      "name": "LTensor",
+      "description": "Flat tensor handle exposing shape, element access, and tract conversion to Lua.",
+      "methods": [
+        {
+          "name": "shape",
+          "fullPath": "LTensor:shape",
+          "signature": "()",
+          "description": "Returns the tensor's dimension sizes as an integer array (one entry per axis).",
+          "parameters": [],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LTensor"
+        },
+        {
+          "name": "data",
+          "fullPath": "LTensor:data",
+          "signature": "()",
+          "description": "Returns all elements as a flat number array in row-major order.",
+          "parameters": [],
+          "returns": "number[]",
+          "returnType": "number[]",
+          "isMethod": true,
+          "objectType": "LTensor"
+        },
+        {
+          "name": "get",
+          "fullPath": "LTensor:get",
+          "signature": "(...)",
+          "description": "Gets a single element by one-based multi-dimensional indices.",
+          "parameters": [
+            {
+              "name": "indices",
+              "type": "any",
+              "description": "Variadic one-based index per dimension.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTensor"
+        },
+        {
+          "name": "len",
+          "fullPath": "LTensor:len",
+          "signature": "()",
+          "description": "Returns the total number of elements in the tensor.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTensor"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTensor:type",
+          "signature": "()",
+          "description": "Returns the type name `\"LTensor\"`.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTensor"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTensor:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this tensor handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `LTensor` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTensor"
         }
       ]
     },

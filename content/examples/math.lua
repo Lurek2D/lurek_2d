@@ -1616,3 +1616,15 @@ do
     local v = lurek.math.Vec3(1, 2, 3)
     print(tostring(v:typeOf("LVec3")))
 end
+
+--@api-stub: lurek.math.easingNames
+do
+    local names = lurek.math.easingNames()
+    print("easing count = " .. #names)
+end
+
+--@api-stub: lurek.math.cubicBezier
+do
+    local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
+    print("cubicBezier(0.5) = " .. y)
+end

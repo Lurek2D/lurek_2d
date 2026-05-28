@@ -2838,4 +2838,47 @@ describe("unit: migrated from integration/test_timer_math.lua", function()
 
 end)
 
+-- @describe lurek.math.easingNames and cubicBezier
+describe("lurek.math easingNames and cubicBezier", function()
+    -- @covers lurek.math.easingNames
+    it("easingNames returns a table", function()
+        local names = lurek.math.easingNames()
+        assert(type(names) == "table", "easingNames should return table")
+    end)
+
+    -- @covers lurek.math.easingNames
+    it("easingNames has entries", function()
+        local names = lurek.math.easingNames()
+        assert(#names > 0, "easingNames should have entries")
+    end)
+
+    -- @covers lurek.math.easingNames
+    it("easingNames contains 'linear'", function()
+        local names = lurek.math.easingNames()
+        local found_linear = false
+        for _, n in ipairs(names) do
+            if n == "linear" then found_linear = true end
+        end
+        assert(found_linear, "easingNames should contain 'linear'")
+    end)
+
+    -- @covers lurek.math.cubicBezier
+    it("cubicBezier(t=0) is approx 0", function()
+        local v0 = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.0)
+        expect_near(0.0, v0, 1e-4, "cubicBezier(t=0) should be approx 0")
+    end)
+
+    -- @covers lurek.math.cubicBezier
+    it("cubicBezier(t=1) is approx 1", function()
+        local v1 = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 1.0)
+        expect_near(1.0, v1, 1e-4, "cubicBezier(t=1) should be approx 1")
+    end)
+
+    -- @covers lurek.math.cubicBezier
+    it("cubicBezier mid returns a number", function()
+        local vmid = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
+        assert(type(vmid) == "number", "cubicBezier mid should be number")
+    end)
+end)
+
 test_summary()

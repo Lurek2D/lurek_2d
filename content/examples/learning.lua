@@ -608,3 +608,267 @@ do
     learner:endEpisode()
     print("LQLearner:getEpisodeCount", learner:getEpisodeCount())
 end
+
+--@api-stub: lurek.learning.defineEnv
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0, 0.0} end,
+        step  = function(a) return {{0.1, 0.2}, 1.0, false, {}} end,
+        obs_space    = { shape = {2}, low = {-1.0}, high = {1.0} },
+        action_space = { n = 4 },
+    })
+    local obs = env:reset()
+    print("lurek.learning.defineEnv type", env:type())
+    print("lurek.learning.defineEnv obs[1]", obs[1])
+end
+
+--@api-stub: lurek.learning.frameStack
+do
+    local fs = lurek.learning.frameStack(3)
+    fs:push({1.0, 2.0})
+    fs:push({3.0, 4.0})
+    local flat = fs:get()
+    print("lurek.learning.frameStack capacity", fs:capacity())
+    print("lurek.learning.frameStack flat len", #flat)
+end
+
+--@api-stub: lurek.learning.normalizeEnv
+do
+    local base = lurek.learning.defineEnv({
+        reset = function() return {2.0, 4.0} end,
+        step  = function(a) return {{2.0, 4.0}, 1.0, false, {}} end,
+        obs_space    = { shape = {2}, low = {0.0}, high = {10.0} },
+        action_space = { n = 2 },
+    })
+    local wrapped = lurek.learning.normalizeEnv(base, {1.0, 2.0}, {1.0, 2.0})
+    local obs = wrapped:reset()
+    print("lurek.learning.normalizeEnv obs[1]", obs[1])
+    print("lurek.learning.normalizeEnv obs[2]", obs[2])
+end
+
+--@api-stub: lurek.learning.timeLimit
+do
+    local base = lurek.learning.defineEnv({
+        reset = function() return {0.0} end,
+        step  = function(a) return {{0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
+        action_space = { n = 2 },
+    })
+    local limited = lurek.learning.timeLimit(base, 5)
+    limited:reset()
+    print("lurek.learning.timeLimit type", limited:type())
+end
+
+--@api-stub: LEnv:reset
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {1.0, 2.0} end,
+        step  = function(a) return {{0.0, 0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {2}, low = {-1.0}, high = {1.0} },
+        action_space = { n = 2 },
+    })
+    local obs = env:reset()
+    print("LEnv:reset obs len", #obs)
+    print("LEnv:reset obs[1]", obs[1])
+end
+
+--@api-stub: LEnv:step
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0} end,
+        step  = function(a) return {{0.5}, 1.5, false, {}} end,
+        obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
+        action_space = { n = 3 },
+    })
+    local obs, reward, done, info = env:step(1)
+    print("LEnv:step obs[1]", obs[1])
+    print("LEnv:step reward", reward)
+    print("LEnv:step done", tostring(done))
+end
+
+--@api-stub: LEnv:obsSpace
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0, 0.0} end,
+        step  = function(a) return {{0.0, 0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {4}, low = {-1.0}, high = {1.0} },
+        action_space = { n = 2 },
+    })
+    local space = env:obsSpace()
+    print("LEnv:obsSpace shape[1]", space.shape[1])
+end
+
+--@api-stub: LEnv:actionSpace
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0} end,
+        step  = function(a) return {{0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
+        action_space = { n = 6 },
+    })
+    local space = env:actionSpace()
+    print("LEnv:actionSpace n", space.n)
+end
+
+--@api-stub: LEnv:type
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0} end,
+        step  = function(a) return {{0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
+        action_space = { n = 2 },
+    })
+    print("LEnv:type", env:type())
+end
+
+--@api-stub: LEnv:typeOf
+do
+    local env = lurek.learning.defineEnv({
+        reset = function() return {0.0} end,
+        step  = function(a) return {{0.0}, 0.0, false, {}} end,
+        obs_space    = { shape = {1}, low = {0.0}, high = {1.0} },
+        action_space = { n = 2 },
+    })
+    print("LEnv:typeOf LEnv", tostring(env:typeOf("LEnv")))
+    print("LEnv:typeOf LObject", tostring(env:typeOf("LObject")))
+end
+
+--@api-stub: LFrameStack:push
+do
+    local fs = lurek.learning.frameStack(4)
+    fs:push({0.1, 0.2})
+    fs:push({0.3, 0.4})
+    print("LFrameStack:push capacity", fs:capacity())
+end
+
+--@api-stub: LFrameStack:get
+do
+    local fs = lurek.learning.frameStack(2)
+    fs:push({1.0, 2.0})
+    fs:push({3.0, 4.0})
+    local flat = fs:get()
+    print("LFrameStack:get len", #flat)
+    print("LFrameStack:get first", flat[1])
+end
+
+--@api-stub: LFrameStack:reset
+do
+    local fs = lurek.learning.frameStack(3)
+    fs:push({1.0})
+    fs:push({2.0})
+    fs:reset()
+    print("LFrameStack:reset capacity", fs:capacity())
+end
+
+--@api-stub: LFrameStack:capacity
+do
+    local fs = lurek.learning.frameStack(5)
+    print("LFrameStack:capacity", fs:capacity())
+end
+
+--@api-stub: LFrameStack:type
+do
+    local fs = lurek.learning.frameStack(3)
+    print("LFrameStack:type", fs:type())
+end
+
+--@api-stub: LFrameStack:typeOf
+do
+    local fs = lurek.learning.frameStack(3)
+    print("LFrameStack:typeOf LFrameStack", tostring(fs:typeOf("LFrameStack")))
+    print("LFrameStack:typeOf LObject", tostring(fs:typeOf("LObject")))
+end
+
+--@api-stub: lurek.learning.newTensor
+do
+    local t = lurek.learning.newTensor({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0})
+    print("lurek.learning.newTensor type", t:type())
+    print("lurek.learning.newTensor len", t:len())
+end
+
+--@api-stub: lurek.learning.loadOnnx
+do
+    local ok, err = pcall(function()
+        return lurek.learning.loadOnnx("nonexistent.onnx")
+    end)
+    print("lurek.learning.loadOnnx missing file errors", tostring(not ok))
+end
+
+--@api-stub: LOnnxModel:run
+do
+    -- Requires a real .onnx file; stub demonstrates the call shape only.
+    -- local model = lurek.learning.loadOnnx("model.onnx")
+    -- local input = lurek.learning.newTensor({1, 4}, {0.1, 0.2, 0.3, 0.4})
+    -- local outputs = model:run({input})
+    print("LOnnxModel:run stub ok", true)
+end
+
+--@api-stub: LOnnxModel:inputCount
+do
+    -- local model = lurek.learning.loadOnnx("model.onnx")
+    -- print("LOnnxModel:inputCount", model:inputCount())
+    print("LOnnxModel:inputCount stub ok", true)
+end
+
+--@api-stub: LOnnxModel:outputCount
+do
+    -- local model = lurek.learning.loadOnnx("model.onnx")
+    -- print("LOnnxModel:outputCount", model:outputCount())
+    print("LOnnxModel:outputCount stub ok", true)
+end
+
+--@api-stub: LOnnxModel:type
+do
+    -- local model = lurek.learning.loadOnnx("model.onnx")
+    -- print("LOnnxModel:type", model:type())
+    print("LOnnxModel:type stub ok", true)
+end
+
+--@api-stub: LOnnxModel:typeOf
+do
+    -- local model = lurek.learning.loadOnnx("model.onnx")
+    -- print("LOnnxModel:typeOf LOnnxModel", tostring(model:typeOf("LOnnxModel")))
+    print("LOnnxModel:typeOf stub ok", true)
+end
+
+--@api-stub: LTensor:shape
+do
+    local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+    local s = t:shape()
+    print("LTensor:shape rank", #s)
+    print("LTensor:shape dim0", s[1])
+end
+
+--@api-stub: LTensor:data
+do
+    local t = lurek.learning.newTensor({3}, {10.0, 20.0, 30.0})
+    local d = t:data()
+    print("LTensor:data len", #d)
+    print("LTensor:data first", d[1])
+end
+
+--@api-stub: LTensor:get
+do
+    local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
+    print("LTensor:get index1", t:get(1))
+    print("LTensor:get index3", t:get(3))
+end
+
+--@api-stub: LTensor:len
+do
+    local t = lurek.learning.newTensor({4}, {1.0, 2.0, 3.0, 4.0})
+    print("LTensor:len", t:len())
+end
+
+--@api-stub: LTensor:type
+do
+    local t = lurek.learning.newTensor({1}, {0.0})
+    print("LTensor:type", t:type())
+end
+
+--@api-stub: LTensor:typeOf
+do
+    local t = lurek.learning.newTensor({1}, {0.0})
+    print("LTensor:typeOf LTensor", tostring(t:typeOf("LTensor")))
+    print("LTensor:typeOf LObject", tostring(t:typeOf("LObject")))
+end

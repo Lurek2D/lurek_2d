@@ -2625,6 +2625,40 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set("geometricVoronoi", geometric_voronoi_fn.clone())?;
     /// Alias for geometricVoronoi — builds Voronoi cells from a polygon-style point table.
     tbl.set("voronoi", geometric_voronoi_fn)?; // backward compat alias
+    // -- easingNames --
+    /// Returns an array of all built-in easing function names.
+    /// @group math
+    /// @function easingNames
+    /// @desc Returns an array of all built-in easing function names.
+    /// @return | string[] | List of easing names. |
+    tbl.set(
+        "easingNames",
+        lua.create_function(|lua, ()| {
+            let names = easing::easing_names();
+            let tbl = lua.create_table()?;
+            for (i, name) in names.iter().enumerate() {
+                tbl.set(i + 1, *name)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+    // -- cubicBezier --
+    /// Computes the CSS cubic-bezier Y value at input t (0..1).
+    /// @group math
+    /// @function cubicBezier
+    /// @desc Computes the CSS cubic-bezier Y value at input t (0..1).
+    /// @param | p1x | number | First control point X. |
+    /// @param | p1y | number | First control point Y. |
+    /// @param | p2x | number | Second control point X. |
+    /// @param | p2y | number | Second control point Y. |
+    /// @param | t | number | Input time (0..1). |
+    /// @return | number | The eased Y value. |
+    tbl.set(
+        "cubicBezier",
+        lua.create_function(|_, (p1x, p1y, p2x, p2y, t): (f64, f64, f64, f64, f64)| {
+            Ok(easing::cubic_bezier(p1x, p1y, p2x, p2y, t))
+        })?,
+    )?;
     /// Performs the 'math' operation.
     luna.set("math", tbl)?;
     Ok(())

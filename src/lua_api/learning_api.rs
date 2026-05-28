@@ -7,7 +7,8 @@
 
 use super::SharedState;
 use crate::learning::{
-    Activation, Bandit, BanditStrategy, GeneticAlgorithm, NeuralNet, Neuroevolution, QLearner,
+    Activation, Bandit, BanditStrategy, FrameStack, GeneticAlgorithm, LurekTensor, NeuralNet,
+    Neuroevolution, OnnxModel, QLearner, SpaceSpec,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -550,6 +551,387 @@ impl LuaUserData for LuaModel {
     }
 }
 
+// ---------------------------------------------------------------------------
+// LuaEnv — gym-compatible RL environment wrapper
+// ---------------------------------------------------------------------------
+
+/// Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
+pub(crate) struct LuaEnv {
+    reset_fn: Option<LuaRegistryKey>,
+    step_fn: Option<LuaRegistryKey>,
+    obs_space: SpaceSpec,
+    action_space: SpaceSpec,
+    normalize_mean: Option<Vec<f32>>,
+    normalize_std: Option<Vec<f32>>,
+    time_limit: Option<u32>,
+    step_count: u32,
+    inner_env: Option<Rc<RefCell<LuaEnv>>>,
+}
+
+impl LuaEnv {
+    fn call_reset(&mut self, lua: &Lua) -> LuaResult<Vec<f32>> {
+        if let Some(ref inner) = self.inner_env.clone() {
+            return inner.borrow_mut().call_reset(lua);
+        }
+        let key = self
+            .reset_fn
+            .as_ref()
+            .ok_or_else(|| LuaError::RuntimeError("LEnv: no reset function defined".into()))?;
+        let f: LuaFunction = lua.registry_value(key)?;
+        let result: LuaTable = f.call(())?;
+        let mut obs = Vec::with_capacity(result.raw_len());
+        for i in 1..=result.raw_len() {
+            let v: f64 = result.raw_get(i).unwrap_or(0.0);
+            obs.push(v as f32);
+        }
+        Ok(obs)
+    }
+
+    fn call_step<'lua>(
+        &mut self,
+        lua: &'lua Lua,
+        action: LuaValue<'lua>,
+    ) -> LuaResult<(Vec<f32>, f32, bool, LuaTable<'lua>)> {
+        if let Some(ref inner) = self.inner_env.clone() {
+            return inner.borrow_mut().call_step(lua, action);
+        }
+        let key = self
+            .step_fn
+            .as_ref()
+            .ok_or_else(|| LuaError::RuntimeError("LEnv: no step function defined".into()))?;
+        let f: LuaFunction = lua.registry_value(key)?;
+        let result: LuaTable = f.call(action)?;
+        let obs_tbl: LuaTable = result.raw_get(1)?;
+        let reward: f64 = result.raw_get(2).unwrap_or(0.0);
+        let done: bool = result.raw_get(3).unwrap_or(false);
+        let info: LuaTable = result
+            .raw_get(4)
+            .unwrap_or_else(|_| lua.create_table().expect("table"));
+        let mut obs = Vec::with_capacity(obs_tbl.raw_len());
+        for i in 1..=obs_tbl.raw_len() {
+            let v: f64 = obs_tbl.raw_get(i).unwrap_or(0.0);
+            obs.push(v as f32);
+        }
+        Ok((obs, reward as f32, done, info))
+    }
+
+    fn apply_normalize(&self, obs: &mut [f32]) {
+        if let (Some(mean), Some(std)) = (&self.normalize_mean, &self.normalize_std) {
+            for (i, v) in obs.iter_mut().enumerate() {
+                let m = mean.get(i).copied().unwrap_or(0.0);
+                let s = std.get(i).copied().unwrap_or(1.0);
+                let s = if s == 0.0 { 1.0 } else { s };
+                *v = (*v - m) / s;
+            }
+        }
+    }
+
+    fn obs_to_table<'lua>(lua: &'lua Lua, obs: Vec<f32>) -> LuaResult<LuaTable<'lua>> {
+        let t = lua.create_table()?;
+        for (i, v) in obs.into_iter().enumerate() {
+            t.raw_set(i + 1, v as f64)?;
+        }
+        Ok(t)
+    }
+
+    fn space_to_table<'lua>(lua: &'lua Lua, space: &SpaceSpec) -> LuaResult<LuaTable<'lua>> {
+        let t = lua.create_table()?;
+        let shape_tbl = lua.create_table()?;
+        for (i, &v) in space.shape.iter().enumerate() {
+            shape_tbl.raw_set(i + 1, v)?;
+        }
+        t.raw_set("shape", shape_tbl)?;
+        let low_tbl = lua.create_table()?;
+        for (i, &v) in space.low.iter().enumerate() {
+            low_tbl.raw_set(i + 1, v as f64)?;
+        }
+        t.raw_set("low", low_tbl)?;
+        let high_tbl = lua.create_table()?;
+        for (i, &v) in space.high.iter().enumerate() {
+            high_tbl.raw_set(i + 1, v as f64)?;
+        }
+        t.raw_set("high", high_tbl)?;
+        if space.n > 0 {
+            t.raw_set("n", space.n)?;
+        }
+        Ok(t)
+    }
+}
+
+impl LuaUserData for LuaEnv {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- reset --
+        /// Resets the environment and returns the initial observation.
+        /// @return | number[] | Initial observation vector.
+        methods.add_method_mut("reset", |lua, this, ()| {
+            this.step_count = 0;
+            let mut obs = this.call_reset(lua)?;
+            this.apply_normalize(&mut obs);
+            Self::obs_to_table(lua, obs)
+        });
+        // -- step --
+        /// Advances the environment one step.
+        /// @param | action | any | Action to apply (integer or table depending on action space).
+        /// @return | number[] | Next observation vector.
+        /// @return | number | Reward for this step.
+        /// @return | boolean | Whether the episode has ended.
+        /// @return | table | Extra info table.
+        methods.add_method_mut(
+            "step",
+            |lua, this, action: LuaValue| {
+                let (mut obs, reward, mut done, info) = this.call_step(lua, action)?;
+                this.apply_normalize(&mut obs);
+                this.step_count += 1;
+                if let Some(limit) = this.time_limit {
+                    if this.step_count >= limit {
+                        done = true;
+                    }
+                }
+                let obs_tbl = Self::obs_to_table(lua, obs)?;
+                Ok((obs_tbl, reward as f64, done, info))
+            },
+        );
+        // -- obsSpace --
+        /// Returns the observation space descriptor.
+        /// @return | table | Observation space with shape, low, high fields.
+        methods.add_method("obsSpace", |lua, this, ()| {
+            Self::space_to_table(lua, &this.obs_space)
+        });
+        // -- actionSpace --
+        /// Returns the action space descriptor.
+        /// @return | table | Action space with shape/low/high or n fields.
+        methods.add_method("actionSpace", |lua, this, ()| {
+            Self::space_to_table(lua, &this.action_space)
+        });
+        // -- type --
+        /// Returns the type name `"LEnv"`.
+        /// @return | string | The string `LEnv`.
+        methods.add_method("type", |_, _, ()| Ok("LEnv"));
+        // -- typeOf --
+        /// Returns whether this env handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LEnv` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LEnv" || name == "LObject")
+        });
+    }
+}
+
+// ---------------------------------------------------------------------------
+// LuaFrameStack — ring-buffer for stacking observations
+// ---------------------------------------------------------------------------
+
+/// Lua handle wrapping a frame-stacking ring buffer.
+#[derive(Clone)]
+pub(crate) struct LuaFrameStack {
+    inner: Rc<RefCell<FrameStack>>,
+}
+
+impl LuaUserData for LuaFrameStack {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- push --
+        /// Pushes one observation into the stack.
+        /// @param | obs | number[] | Observation vector to push.
+        methods.add_method("push", |_, this, obs: Vec<f64>| {
+            let obs_f32: Vec<f32> = obs.iter().map(|&v| v as f32).collect();
+            this.inner.borrow_mut().push(obs_f32);
+            Ok(())
+        });
+        // -- get --
+        /// Returns the flattened observation stack, zero-padded when not yet full.
+        /// @return | number[] | Flattened frame-stack vector of length capacity × obs_dim.
+        methods.add_method("get", |lua, this, ()| {
+            let flat = this.inner.borrow().get();
+            let t = lua.create_table()?;
+            for (i, v) in flat.into_iter().enumerate() {
+                t.raw_set(i + 1, v as f64)?;
+            }
+            Ok(t)
+        });
+        // -- reset --
+        /// Clears all stored frames.
+        methods.add_method("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+        // -- capacity --
+        /// Returns the maximum number of frames retained.
+        /// @return | integer | Frame capacity n.
+        methods.add_method("capacity", |_, this, ()| {
+            Ok(this.inner.borrow().capacity())
+        });
+        // -- type --
+        /// Returns the type name `"LFrameStack"`.
+        /// @return | string | The string `LFrameStack`.
+        methods.add_method("type", |_, _, ()| Ok("LFrameStack"));
+        // -- typeOf --
+        /// Returns whether this frame stack handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LFrameStack` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LFrameStack" || name == "LObject")
+        });
+    }
+}
+
+/// Parses a `SpaceSpec` from a Lua table.
+fn parse_space_spec(tbl: &LuaTable) -> LuaResult<SpaceSpec> {
+    let shape_tbl: Option<LuaTable> = tbl.raw_get("shape").ok();
+    let mut shape = Vec::new();
+    if let Some(st) = shape_tbl {
+        for i in 1..=st.raw_len() {
+            let v: u32 = st.raw_get(i).unwrap_or(1);
+            shape.push(v);
+        }
+    }
+    let low_tbl: Option<LuaTable> = tbl.raw_get("low").ok();
+    let mut low = Vec::new();
+    if let Some(lt) = low_tbl {
+        for i in 1..=lt.raw_len() {
+            let v: f64 = lt.raw_get(i).unwrap_or(0.0);
+            low.push(v as f32);
+        }
+    }
+    let high_tbl: Option<LuaTable> = tbl.raw_get("high").ok();
+    let mut high = Vec::new();
+    if let Some(ht) = high_tbl {
+        for i in 1..=ht.raw_len() {
+            let v: f64 = ht.raw_get(i).unwrap_or(1.0);
+            high.push(v as f32);
+        }
+    }
+    let n: u32 = tbl.raw_get("n").unwrap_or(0);
+    Ok(SpaceSpec { shape, low, high, n })
+}
+
+// ---------------------------------------------------------------------------
+// LuaTensor — flat f32 tensor with shape metadata
+// ---------------------------------------------------------------------------
+
+/// Flat tensor handle exposing shape, element access, and tract conversion to Lua.
+#[derive(Clone)]
+pub(crate) struct LuaTensor(pub(crate) Rc<RefCell<LurekTensor>>);
+
+impl LuaUserData for LuaTensor {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- shape --
+        /// Returns the tensor's dimension sizes as an integer array (one entry per axis).
+        /// @return | integer[] | Dimension sizes in row-major order.
+        methods.add_method("shape", |lua, this, ()| {
+            let tbl = lua.create_table()?;
+            for (i, &s) in this.0.borrow().shape.iter().enumerate() {
+                tbl.raw_set(i + 1, s as i64)?;
+            }
+            Ok(tbl)
+        });
+        // -- data --
+        /// Returns all elements as a flat number array in row-major order.
+        /// @return | number[] | Flat element data.
+        methods.add_method("data", |lua, this, ()| {
+            let tbl = lua.create_table()?;
+            for (i, &v) in this.0.borrow().data.iter().enumerate() {
+                tbl.raw_set(i + 1, v as f64)?;
+            }
+            Ok(tbl)
+        });
+        // -- get --
+        /// Gets a single element by one-based multi-dimensional indices.
+        /// @param | indices | any | Variadic one-based index per dimension.
+        /// @return | number | Element value at the given position.
+        methods.add_method("get", |_, this, indices: LuaMultiValue| {
+            let idx_vec: Vec<usize> = indices
+                .iter()
+                .map(|v| match v {
+                    LuaValue::Integer(n) => Ok((*n as usize).saturating_sub(1)),
+                    LuaValue::Number(n) => Ok((*n as usize).saturating_sub(1)),
+                    _ => Err(LuaError::RuntimeError(
+                        "LTensor:get: expected integer indices".into(),
+                    )),
+                })
+                .collect::<LuaResult<Vec<usize>>>()?;
+            let val = this
+                .0
+                .borrow()
+                .get_element(&idx_vec)
+                .ok_or_else(|| LuaError::RuntimeError("LTensor:get: index out of bounds".into()))?;
+            Ok(val as f64)
+        });
+        // -- len --
+        /// Returns the total number of elements in the tensor.
+        /// @return | integer | Total element count.
+        methods.add_method("len", |_, this, ()| Ok(this.0.borrow().len() as i64));
+        // -- type --
+        /// Returns the type name `"LTensor"`.
+        /// @return | string | The string `LTensor`.
+        methods.add_method("type", |_, _, ()| Ok("LTensor"));
+        // -- typeOf --
+        /// Returns whether this tensor handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LTensor` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTensor" || name == "LObject")
+        });
+    }
+}
+
+// ---------------------------------------------------------------------------
+// LuaOnnxModel — loaded and optimised ONNX inference model
+// ---------------------------------------------------------------------------
+
+/// ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
+#[derive(Clone)]
+pub(crate) struct LuaOnnxModel(pub(crate) Rc<RefCell<OnnxModel>>);
+
+impl LuaUserData for LuaOnnxModel {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- run --
+        /// Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
+        /// @param | inputs | table | Array-indexed table of LTensor input values.
+        /// @return | table | Array-indexed table of LTensor output values.
+        methods.add_method("run", |lua, this, inputs_tbl: LuaTable| {
+            let mut tract_inputs: Vec<LurekTensor> = Vec::new();
+            for i in 1..=inputs_tbl.raw_len() {
+                let ud: LuaAnyUserData = inputs_tbl.raw_get(i)?;
+                let lt = ud.borrow::<LuaTensor>()?;
+                tract_inputs.push(lt.0.borrow().clone());
+            }
+            let outputs = this
+                .0
+                .borrow()
+                .run(tract_inputs)
+                .map_err(LuaError::RuntimeError)?;
+            let out_tbl = lua.create_table()?;
+            for (i, tensor) in outputs.into_iter().enumerate() {
+                out_tbl.raw_set(i + 1, LuaTensor(Rc::new(RefCell::new(tensor))))?;
+            }
+            Ok(out_tbl)
+        });
+        // -- inputCount --
+        /// Returns the number of input tensors expected by the model.
+        /// @return | integer | Input tensor count.
+        methods.add_method("inputCount", |_, this, ()| {
+            Ok(this.0.borrow().input_count() as i64)
+        });
+        // -- outputCount --
+        /// Returns the number of output tensors produced by the model.
+        /// @return | integer | Output tensor count.
+        methods.add_method("outputCount", |_, this, ()| {
+            Ok(this.0.borrow().output_count() as i64)
+        });
+        // -- type --
+        /// Returns the type name `"LOnnxModel"`.
+        /// @return | string | The string `LOnnxModel`.
+        methods.add_method("type", |_, _, ()| Ok("LOnnxModel"));
+        // -- typeOf --
+        /// Returns whether this model handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LOnnxModel` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LOnnxModel" || name == "LObject")
+        });
+    }
+}
+
 /// Registers the `lurek.learning` API table with the Lua VM.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -670,6 +1052,144 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Err(LuaError::RuntimeError(
                 "wrap: expected LQLearner, LNeuralNet, or LBandit".into(),
             ))
+        })?,
+    )?;
+    // -- defineEnv --
+    /// Defines a Lua-described RL environment from a config table.
+    /// @param | config | table | Config with `reset` (function), `step` (function), `obs_space` (table), `action_space` (table).
+    /// @return | LEnv | New environment handle.
+    tbl.set(
+        "defineEnv",
+        lua.create_function(|lua, config: LuaTable| {
+            let reset_fn: LuaFunction = config.raw_get("reset").map_err(|_| {
+                LuaError::RuntimeError("defineEnv: config.reset must be a function".into())
+            })?;
+            let step_fn: LuaFunction = config.raw_get("step").map_err(|_| {
+                LuaError::RuntimeError("defineEnv: config.step must be a function".into())
+            })?;
+            let obs_tbl: LuaTable = config.raw_get("obs_space").map_err(|_| {
+                LuaError::RuntimeError("defineEnv: config.obs_space must be a table".into())
+            })?;
+            let act_tbl: LuaTable = config.raw_get("action_space").map_err(|_| {
+                LuaError::RuntimeError("defineEnv: config.action_space must be a table".into())
+            })?;
+            let obs_space = parse_space_spec(&obs_tbl)?;
+            let action_space = parse_space_spec(&act_tbl)?;
+            Ok(LuaEnv {
+                reset_fn: Some(lua.create_registry_value(reset_fn)?),
+                step_fn: Some(lua.create_registry_value(step_fn)?),
+                obs_space,
+                action_space,
+                normalize_mean: None,
+                normalize_std: None,
+                time_limit: None,
+                step_count: 0,
+                inner_env: None,
+            })
+        })?,
+    )?;
+    // -- frameStack --
+    /// Creates a frame-stacking ring buffer of the last n observations.
+    /// @param | n | integer | Number of frames to retain.
+    /// @return | LFrameStack | New frame stack handle.
+    tbl.set(
+        "frameStack",
+        lua.create_function(|_, n: usize| {
+            Ok(LuaFrameStack {
+                inner: Rc::new(RefCell::new(FrameStack::new(n))),
+            })
+        })?,
+    )?;
+    // -- normalizeEnv --
+    /// Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
+    /// @param | env | LEnv | The environment to wrap.
+    /// @param | mean | number[] | Per-dimension mean values matching the obs_space shape.
+    /// @param | std | number[] | Per-dimension standard deviation values matching the obs_space shape.
+    /// @return | LEnv | New wrapped environment handle.
+    tbl.set(
+        "normalizeEnv",
+        lua.create_function(|_, (env_ud, mean, std): (LuaAnyUserData, Vec<f64>, Vec<f64>)| {
+            let source = env_ud.borrow::<LuaEnv>().map_err(|_| {
+                LuaError::RuntimeError("normalizeEnv: expected LEnv".into())
+            })?;
+            let obs_space = source.obs_space.clone();
+            let action_space = source.action_space.clone();
+            drop(source);
+            let mean_f32: Vec<f32> = mean.iter().map(|&v| v as f32).collect();
+            let std_f32: Vec<f32> = std.iter().map(|&v| v as f32).collect();
+            Ok(LuaEnv {
+                reset_fn: None,
+                step_fn: None,
+                obs_space,
+                action_space,
+                normalize_mean: Some(mean_f32),
+                normalize_std: Some(std_f32),
+                time_limit: None,
+                step_count: 0,
+                inner_env: Some(Rc::new(RefCell::new(env_ud.take::<LuaEnv>()?))),
+            })
+        })?,
+    )?;
+    // -- timeLimit --
+    /// Wraps an LEnv so episodes end automatically after max_steps steps.
+    /// @param | env | LEnv | The environment to wrap.
+    /// @param | max_steps | integer | Maximum number of steps before done is forced true.
+    /// @return | LEnv | New wrapped environment handle.
+    tbl.set(
+        "timeLimit",
+        lua.create_function(|_, (env_ud, max_steps): (LuaAnyUserData, u32)| {
+            let source = env_ud.borrow::<LuaEnv>().map_err(|_| {
+                LuaError::RuntimeError("timeLimit: expected LEnv".into())
+            })?;
+            let obs_space = source.obs_space.clone();
+            let action_space = source.action_space.clone();
+            drop(source);
+            Ok(LuaEnv {
+                reset_fn: None,
+                step_fn: None,
+                obs_space,
+                action_space,
+                normalize_mean: None,
+                normalize_std: None,
+                time_limit: Some(max_steps),
+                step_count: 0,
+                inner_env: Some(Rc::new(RefCell::new(env_ud.take::<LuaEnv>()?))),
+            })
+        })?,
+    )?;
+
+    // -- loadOnnx --
+    /// Loads and optimises an ONNX model from a file path.
+    /// @param | path | string | Filesystem path to the `.onnx` model file.
+    /// @return | LOnnxModel | Loaded model handle ready for inference.
+    tbl.set(
+        "loadOnnx",
+        lua.create_function(|_, path: String| {
+            OnnxModel::load(&path).map(|m| LuaOnnxModel(Rc::new(RefCell::new(m))))
+                .map_err(LuaError::RuntimeError)
+        })?,
+    )?;
+    // -- newTensor --
+    /// Creates a tensor from a shape (integer array) and flat float data (number array).
+    /// @param | shape | integer[] | Dimension sizes in row-major order.
+    /// @param | data | number[] | Flat element values matching the product of `shape`.
+    /// @return | LTensor | New tensor handle.
+    tbl.set(
+        "newTensor",
+        lua.create_function(|_, (shape_tbl, data_tbl): (LuaTable, LuaTable)| {
+            let shape: Vec<usize> = (1..=shape_tbl.raw_len())
+                .map(|i| {
+                    let v: i64 = shape_tbl.raw_get(i)?;
+                    Ok(v as usize)
+                })
+                .collect::<LuaResult<Vec<usize>>>()?;
+            let data: Vec<f32> = (1..=data_tbl.raw_len())
+                .map(|i| {
+                    let v: f64 = data_tbl.raw_get(i)?;
+                    Ok(v as f32)
+                })
+                .collect::<LuaResult<Vec<f32>>>()?;
+            Ok(LuaTensor(Rc::new(RefCell::new(LurekTensor::new(shape, data)))))
         })?,
     )?;
 

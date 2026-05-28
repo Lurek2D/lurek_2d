@@ -4336,6 +4336,22 @@
     "keywords": "math polygonDifference function polygonDifference(a: table, b: table) -> number[]"
   },
   {
+    "kind": "function",
+    "module": "math",
+    "title": "lurek.math.easingNames",
+    "subtitle": "Returns an array of all built-in easing function names.",
+    "href": "modules/math.html#fn-easingnames",
+    "keywords": "math easingNames function easingNames() -> string[]"
+  },
+  {
+    "kind": "function",
+    "module": "math",
+    "title": "lurek.math.cubicBezier",
+    "subtitle": "Computes the CSS cubic-bezier Y value at input t (0..1).",
+    "href": "modules/math.html#fn-cubicbezier",
+    "keywords": "math cubicBezier function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number, t: number) -> number"
+  },
+  {
     "kind": "class",
     "module": "math",
     "title": "LVec2",
@@ -33768,6 +33784,54 @@
     "keywords": "learning wrap function wrap(model: any) -> LModel"
   },
   {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.defineEnv",
+    "subtitle": "Defines a Lua-described RL environment from a config table.",
+    "href": "modules/learning.html#fn-defineenv",
+    "keywords": "learning defineEnv function defineEnv(config: table) -> LEnv"
+  },
+  {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.frameStack",
+    "subtitle": "Creates a frame-stacking ring buffer of the last n observations.",
+    "href": "modules/learning.html#fn-framestack",
+    "keywords": "learning frameStack function frameStack(n: integer) -> LFrameStack"
+  },
+  {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.normalizeEnv",
+    "subtitle": "Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.",
+    "href": "modules/learning.html#fn-normalizeenv",
+    "keywords": "learning normalizeEnv function normalizeEnv(env: LEnv, mean: number[], std: number[]) -> LEnv"
+  },
+  {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.timeLimit",
+    "subtitle": "Wraps an LEnv so episodes end automatically after max_steps steps.",
+    "href": "modules/learning.html#fn-timelimit",
+    "keywords": "learning timeLimit function timeLimit(env: LEnv, max_steps: integer) -> LEnv"
+  },
+  {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.loadOnnx",
+    "subtitle": "Loads and optimises an ONNX model from a file path.",
+    "href": "modules/learning.html#fn-loadonnx",
+    "keywords": "learning loadOnnx function loadOnnx(path: string) -> LOnnxModel"
+  },
+  {
+    "kind": "function",
+    "module": "learning",
+    "title": "lurek.learning.newTensor",
+    "subtitle": "Creates a tensor from a shape (integer array) and flat float data (number array).",
+    "href": "modules/learning.html#fn-newtensor",
+    "keywords": "learning newTensor function newTensor(shape: integer[], data: number[]) -> LTensor"
+  },
+  {
     "kind": "class",
     "module": "learning",
     "title": "LQLearner",
@@ -34294,6 +34358,222 @@
     "subtitle": "Returns whether this model wrapper matches a supported type name.",
     "href": "classes/LModel.html#method-typeof",
     "keywords": "LModel typeOf method learning typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "learning",
+    "title": "LEnv",
+    "subtitle": "Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.",
+    "href": "classes/LEnv.html",
+    "keywords": "LEnv class learning userdata"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:reset",
+    "subtitle": "Resets the environment and returns the initial observation.",
+    "href": "classes/LEnv.html#method-reset",
+    "keywords": "LEnv reset method learning reset() -> number[]"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:step",
+    "subtitle": "Advances the environment one step.",
+    "href": "classes/LEnv.html#method-step",
+    "keywords": "LEnv step method learning step(action: any) -> number[]"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:obsSpace",
+    "subtitle": "Returns the observation space descriptor.",
+    "href": "classes/LEnv.html#method-obsspace",
+    "keywords": "LEnv obsSpace method learning obsSpace() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:actionSpace",
+    "subtitle": "Returns the action space descriptor.",
+    "href": "classes/LEnv.html#method-actionspace",
+    "keywords": "LEnv actionSpace method learning actionSpace() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:type",
+    "subtitle": "Returns the type name `\"LEnv\"`.",
+    "href": "classes/LEnv.html#method-type",
+    "keywords": "LEnv type method learning type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LEnv:typeOf",
+    "subtitle": "Returns whether this env handle matches a supported type name.",
+    "href": "classes/LEnv.html#method-typeof",
+    "keywords": "LEnv typeOf method learning typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "learning",
+    "title": "LFrameStack",
+    "subtitle": "Lua handle wrapping a frame-stacking ring buffer.",
+    "href": "classes/LFrameStack.html",
+    "keywords": "LFrameStack class learning userdata"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:push",
+    "subtitle": "Pushes one observation into the stack.",
+    "href": "classes/LFrameStack.html#method-push",
+    "keywords": "LFrameStack push method learning push(obs: number[])"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:get",
+    "subtitle": "Returns the flattened observation stack, zero-padded when not yet full.",
+    "href": "classes/LFrameStack.html#method-get",
+    "keywords": "LFrameStack get method learning get() -> number[]"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:reset",
+    "subtitle": "Clears all stored frames.",
+    "href": "classes/LFrameStack.html#method-reset",
+    "keywords": "LFrameStack reset method learning reset()"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:capacity",
+    "subtitle": "Returns the maximum number of frames retained.",
+    "href": "classes/LFrameStack.html#method-capacity",
+    "keywords": "LFrameStack capacity method learning capacity() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:type",
+    "subtitle": "Returns the type name `\"LFrameStack\"`.",
+    "href": "classes/LFrameStack.html#method-type",
+    "keywords": "LFrameStack type method learning type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LFrameStack:typeOf",
+    "subtitle": "Returns whether this frame stack handle matches a supported type name.",
+    "href": "classes/LFrameStack.html#method-typeof",
+    "keywords": "LFrameStack typeOf method learning typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "learning",
+    "title": "LTensor",
+    "subtitle": "Flat tensor handle exposing shape, element access, and tract conversion to Lua.",
+    "href": "classes/LTensor.html",
+    "keywords": "LTensor class learning userdata"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:shape",
+    "subtitle": "Returns the tensor's dimension sizes as an integer array (one entry per axis).",
+    "href": "classes/LTensor.html#method-shape",
+    "keywords": "LTensor shape method learning shape() -> integer[]"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:data",
+    "subtitle": "Returns all elements as a flat number array in row-major order.",
+    "href": "classes/LTensor.html#method-data",
+    "keywords": "LTensor data method learning data() -> number[]"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:get",
+    "subtitle": "Gets a single element by one-based multi-dimensional indices.",
+    "href": "classes/LTensor.html#method-get",
+    "keywords": "LTensor get method learning get(indices: any) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:len",
+    "subtitle": "Returns the total number of elements in the tensor.",
+    "href": "classes/LTensor.html#method-len",
+    "keywords": "LTensor len method learning len() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:type",
+    "subtitle": "Returns the type name `\"LTensor\"`.",
+    "href": "classes/LTensor.html#method-type",
+    "keywords": "LTensor type method learning type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LTensor:typeOf",
+    "subtitle": "Returns whether this tensor handle matches a supported type name.",
+    "href": "classes/LTensor.html#method-typeof",
+    "keywords": "LTensor typeOf method learning typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "learning",
+    "title": "LOnnxModel",
+    "subtitle": "ONNX model handle that wraps a tract runnable plan for Lua-driven inference.",
+    "href": "classes/LOnnxModel.html",
+    "keywords": "LOnnxModel class learning userdata"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LOnnxModel:run",
+    "subtitle": "Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.",
+    "href": "classes/LOnnxModel.html#method-run",
+    "keywords": "LOnnxModel run method learning run(inputs: table) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LOnnxModel:inputCount",
+    "subtitle": "Returns the number of input tensors expected by the model.",
+    "href": "classes/LOnnxModel.html#method-inputcount",
+    "keywords": "LOnnxModel inputCount method learning inputCount() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LOnnxModel:outputCount",
+    "subtitle": "Returns the number of output tensors produced by the model.",
+    "href": "classes/LOnnxModel.html#method-outputcount",
+    "keywords": "LOnnxModel outputCount method learning outputCount() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LOnnxModel:type",
+    "subtitle": "Returns the type name `\"LOnnxModel\"`.",
+    "href": "classes/LOnnxModel.html#method-type",
+    "keywords": "LOnnxModel type method learning type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "learning",
+    "title": "LOnnxModel:typeOf",
+    "subtitle": "Returns whether this model handle matches a supported type name.",
+    "href": "classes/LOnnxModel.html#method-typeof",
+    "keywords": "LOnnxModel typeOf method learning typeOf(name: string) -> boolean"
   },
   {
     "kind": "module",
@@ -38310,6 +38590,22 @@
     "subtitle": "Performs the 'procgen' operation.",
     "href": "modules/procgen.html#fn-newcellular",
     "keywords": "procgen newCellular function newCellular(width: integer, height: integer) -> LCellular"
+  },
+  {
+    "kind": "function",
+    "module": "procgen",
+    "title": "lurek.procgen.setConstraintsFromLLM",
+    "subtitle": "Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.",
+    "href": "modules/procgen.html#fn-setconstraintsfromllm",
+    "keywords": "procgen setConstraintsFromLLM function setConstraintsFromLLM(prompt: string) -> table"
+  },
+  {
+    "kind": "function",
+    "module": "procgen",
+    "title": "lurek.procgen.wfcFromPrompt",
+    "subtitle": "Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.",
+    "href": "modules/procgen.html#fn-wfcfromprompt",
+    "keywords": "procgen wfcFromPrompt function wfcFromPrompt(prompt: string, config: table) -> table"
   },
   {
     "kind": "class",

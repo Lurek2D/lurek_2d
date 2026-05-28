@@ -580,3 +580,22 @@ do
     print(string.format("lurek.procgen.simplexNoise2d=%.4f", value2d))
     print(string.format("lurek.procgen.simplexNoise3d=%.4f", value3d))
 end
+
+--@api-stub: lurek.procgen.setConstraintsFromLLM
+do
+    -- LLM may be offline in CI; result is always a table (empty on error)
+    local constraints = lurek.procgen.setConstraintsFromLLM("2 tiles: grass and water. Grass can be next to grass or water. Water can only be next to water.")
+    print("setConstraintsFromLLM type=" .. type(constraints))
+end
+
+--@api-stub: lurek.procgen.wfcFromPrompt
+do
+    -- LLM may be offline in CI; result always has the required shape fields
+    local grid = lurek.procgen.wfcFromPrompt(
+        "small dungeon with stone floor and walls",
+        { width = 4, height = 4, seed = 1, max_attempts = 5 }
+    )
+    print("wfcFromPrompt width=" .. grid.width .. " height=" .. grid.height)
+    print("wfcFromPrompt cells_type=" .. type(grid.cells))
+    print("wfcFromPrompt failed_type=" .. type(grid.failed_cells))
+end

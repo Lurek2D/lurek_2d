@@ -87,6 +87,11 @@ rapier2d = { version = "0.32", features = ["parallel"] }
 # we declare it explicitly so the crate can use rayon::prelude directly.
 rayon = "1"
 
+# ONNX model inference (pure Rust, no native library required)
+tract-onnx = "0.21"
+# ndarray matching tract-onnx 0.21's transitive dependency for tensor construction
+ndarray = "0.16"
+
 # Gamepad hardware input (cross-platform, includes bundled SDL_GameControllerDB)
 gilrs = "0.11"
 

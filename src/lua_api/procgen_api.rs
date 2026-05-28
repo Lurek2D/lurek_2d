@@ -26,6 +26,8 @@ use crate::procgen::{
     NoiseKind, RoomPrefabStamp, RoomsOpts, VoronoiOpts, WfcOpts, WfcRules, WfcTile,
 };
 use crate::procgen::cellular_world::default_palette as cellular_default_palette;
+use crate::procgen::{parse_llm_constraints, parse_llm_wfc_response, wfc_generate};
+use crate::agent::chat::{ollama_generate_json, read_global_config};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -1796,6 +1798,93 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set("CELL_FIRE", CellType::Fire as u8)?;
     /// Cell type constant: gas — diffusing vapor that rises.
     tbl.set("CELL_GAS", CellType::Gas as u8)?;
+    // -- setConstraintsFromLLM --
+    /// Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
+    /// The LLM is asked to respond with JSON: {"adjacencies":{"tileId":[neighborIds...],...}}.
+    /// Returns an empty table when the LLM is unavailable or returns malformed JSON.
+    /// @param | prompt | string | Natural-language description of the desired tile adjacency rules.
+    /// @return | table | Map from tile ID (integer key) to array of allowed neighbour IDs. Empty table on error.
+    tbl.set(
+        "setConstraintsFromLLM",
+        lua.create_function(|lua, prompt: String| {
+            let cfg = read_global_config();
+            let system = "You are a WFC tile adjacency rule generator. Respond ONLY with valid JSON in the format: {\"adjacencies\":{\"0\":[1,2],\"1\":[0,3]}}.";
+            let timeout = (cfg.timeout_ms / 1000).max(5);
+            let result = ollama_generate_json(&cfg.base_url, &cfg.model, &prompt, system, timeout);
+            let out = lua.create_table()?;
+            if let Ok(val) = result {
+                let constraints = parse_llm_constraints(&val);
+                for (id, neighbors) in &constraints {
+                    let neighbors_tbl = lua.create_table()?;
+                    for (i, n) in neighbors.iter().enumerate() {
+                        neighbors_tbl.set(i + 1, *n)?;
+                    }
+                    out.set(*id, neighbors_tbl)?;
+                }
+            }
+            Ok(out)
+        })?,
+    )?;
+    // -- wfcFromPrompt --
+    /// Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
+    /// The LLM is asked to respond with JSON: {"tiles":[{"id":0,"weight":1.0},...], "adjacencies":{"0":[1,2],...}}.
+    /// Returns the same grid table as wfcGenerate. Returns an empty grid table when the LLM is unavailable or returns malformed JSON.
+    /// @param | prompt | string | Description of the desired tile map (e.g. "dungeon with stone corridors").
+    /// @param | config | table | WFC config: width (integer), height (integer), seed (integer?), max_attempts (integer?).
+    /// @return | table | WFC grid table with .width, .height, .cells ([{x,y,tile},...]), .failed_cells ([{x,y},...]).
+    /// @field | width | integer | Grid width.
+    /// @field | height | integer | Grid height.
+    /// @field | cells | table | Array of {x, y, tile} tables for resolved cells.
+    /// @field | failed_cells | table | Array of {x, y} tables for unresolved cells.
+    tbl.set(
+        "wfcFromPrompt",
+        lua.create_function(|lua, (prompt, config): (String, LuaTable)| {
+            let width: u32 = config.get::<_, u32>("width").unwrap_or(10);
+            let height: u32 = config.get::<_, u32>("height").unwrap_or(10);
+            let seed: u64 = config.get::<_, u64>("seed").unwrap_or(42);
+            let max_attempts: u32 = config.get::<_, u32>("max_attempts").unwrap_or(10);
+
+            let cfg = read_global_config();
+            let system = "You are a WFC tile map generator. Respond ONLY with valid JSON: {\"tiles\":[{\"id\":0,\"weight\":1.0},...],\"adjacencies\":{\"0\":[1,2],...}}.";
+            let timeout = (cfg.timeout_ms / 1000).max(5);
+            let result = ollama_generate_json(&cfg.base_url, &cfg.model, &prompt, system, timeout);
+
+            let grid_tbl = lua.create_table()?;
+            grid_tbl.set("width", width)?;
+            grid_tbl.set("height", height)?;
+            let cells = lua.create_table()?;
+            let failed = lua.create_table()?;
+
+            if let Ok(val) = result {
+                if let Some(opts) = parse_llm_wfc_response(&val, width, height, seed, max_attempts) {
+                    let grid = wfc_generate(&opts);
+                    let mut ci = 1usize;
+                    let mut fi = 1usize;
+                    for (i, cell) in grid.cells.iter().enumerate() {
+                        let x = (i as u32) % width;
+                        let y = (i as u32) / width;
+                        if let Some(tile_id) = cell {
+                            let c = lua.create_table()?;
+                            c.set("x", x)?;
+                            c.set("y", y)?;
+                            c.set("tile", *tile_id)?;
+                            cells.set(ci, c)?;
+                            ci += 1;
+                        } else {
+                            let f = lua.create_table()?;
+                            f.set("x", x)?;
+                            f.set("y", y)?;
+                            failed.set(fi, f)?;
+                            fi += 1;
+                        }
+                    }
+                }
+            }
+            grid_tbl.set("cells", cells)?;
+            grid_tbl.set("failed_cells", failed)?;
+            Ok(grid_tbl)
+        })?,
+    )?;
     luna.set("procgen", tbl)?;
     Ok(())
 }

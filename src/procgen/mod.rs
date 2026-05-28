@@ -37,6 +37,8 @@ pub mod rooms;
 pub mod voronoi;
 /// Wave Function Collapse tile map generator.
 pub mod wfc;
+/// LLM-assisted WFC constraint and tile-weight generation.
+pub mod wfc_llm;
 /// World region graph with A*, Dijkstra, and Kruskal MST.
 pub mod world_graph;
 
@@ -65,4 +67,5 @@ pub use rooms::{
 };
 pub use voronoi::{voronoi_diagram, VoronoiOpts};
 pub use wfc::{wfc_generate, WfcGrid, WfcOpts, WfcRules, WfcTile};
+pub use wfc_llm::{parse_llm_constraints, parse_llm_wfc_response};
 pub use world_graph::{generate_world_graph, WorldEdge, WorldGraph, WorldRegion};

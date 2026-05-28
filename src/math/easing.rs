@@ -228,6 +228,75 @@ pub fn apply(name: &str, t: f32) -> Option<f32> {
     resolve_easing_fn(name).map(|f| f(t))
 }
 
+/// Returns a static slice of all built-in easing function names in canonical form.
+pub fn easing_names() -> &'static [&'static str] {
+    &[
+        "linear",
+        "easeInQuad",
+        "easeOutQuad",
+        "easeInOutQuad",
+        "easeInCubic",
+        "easeOutCubic",
+        "easeInOutCubic",
+        "easeInQuart",
+        "easeOutQuart",
+        "easeInOutQuart",
+        "easeInQuint",
+        "easeOutQuint",
+        "easeInOutQuint",
+        "easeInSine",
+        "easeOutSine",
+        "easeInOutSine",
+        "easeInExpo",
+        "easeOutExpo",
+        "easeInOutExpo",
+        "easeInCirc",
+        "easeOutCirc",
+        "easeInOutCirc",
+        "easeInBounce",
+        "easeOutBounce",
+        "easeInOutBounce",
+        "easeInElastic",
+        "easeOutElastic",
+        "easeInOutElastic",
+        "easeInBack",
+        "easeOutBack",
+        "easeInOutBack",
+    ]
+}
+
+/// Compute CSS cubic-bezier Y value for input `t` (0..1).
+///
+/// Control points: P0=(0,0), P1=(p1x,p1y), P2=(p2x,p2y), P3=(1,1).
+/// Uses Newton's method to invert the X parametric equation, then evaluates Y.
+pub fn cubic_bezier(p1x: f64, p1y: f64, p2x: f64, p2y: f64, t: f64) -> f64 {
+    let cx = 3.0 * p1x;
+    let bx = 3.0 * (p2x - p1x) - cx;
+    let ax = 1.0 - cx - bx;
+
+    let cy = 3.0 * p1y;
+    let by_coef = 3.0 * (p2y - p1y) - cy;
+    let ay = 1.0 - cy - by_coef;
+
+    let sample_curve_x = |u: f64| ((ax * u + bx) * u + cx) * u;
+    let sample_curve_dx = |u: f64| (3.0 * ax * u + 2.0 * bx) * u + cx;
+    let sample_curve_y = |u: f64| ((ay * u + by_coef) * u + cy) * u;
+
+    let mut u = t;
+    for _ in 0..8 {
+        let x = sample_curve_x(u) - t;
+        if x.abs() < 1e-7 {
+            break;
+        }
+        let dx = sample_curve_dx(u);
+        if dx.abs() < 1e-6 {
+            break;
+        }
+        u -= x / dx;
+    }
+    sample_curve_y(u)
+}
+
 /// Return the function pointer for a named easing function; returns None when unrecognised.
 pub fn resolve_easing_fn(name: &str) -> Option<fn(f32) -> f32> {
     match name.to_lowercase().as_str() {

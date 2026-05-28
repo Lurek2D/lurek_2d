@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LModel - Lurek2D Lua API Browser</title>
+  <title>LFrameStack - Lurek2D Lua API Browser</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -44,19 +44,52 @@
       
 <header class="page-header">
   <p class="eyebrow">Class</p>
-  <h1>LModel</h1>
-  <p>Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.</p>
+  <h1>LFrameStack</h1>
+  <p>Lua handle wrapping a frame-stacking ring buffer.</p>
   <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/learning.html">lurek.learning</a></div>
-  
+  <details class="example-block"><summary>Class Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(4)
+    fs:push({0.1, 0.2})
+    fs:push({0.3, 0.4})
+    print(&quot;LFrameStack:push capacity&quot;, fs:capacity())
+end</code></pre></details>
 </header>
 
 <section class="section-block">
   <div class="section-head">
     <h2>Methods</h2>
-    <p>Instance methods exported from the LModel userdata.</p>
+    <p>Instance methods exported from the LFrameStack userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LModel:predict(input: any)</pre><p>Runs the wrapped model&#x27;s prediction. Delegates to `chooseAction`, `forward`, or `select`</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:520</span></div></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LModel:type() -&gt; string</pre><p>Returns the type name `&quot;LModel&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:543</span></div></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LModel:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this model wrapper matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:548</span></div></article>
+    <article class="item-row api-row" id="method-capacity"><div class="item-row-main"><h3>capacity</h3><pre class="inline-signature">LFrameStack:capacity() -&gt; integer</pre><p>Returns the maximum number of frames retained.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:760</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(5)
+    print(&quot;LFrameStack:capacity&quot;, fs:capacity())
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LFrameStack:get() -&gt; number[]</pre><p>Returns the flattened observation stack, zero-padded when not yet full.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:743</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(2)
+    fs:push({1.0, 2.0})
+    fs:push({3.0, 4.0})
+    local flat = fs:get()
+    print(&quot;LFrameStack:get len&quot;, #flat)
+    print(&quot;LFrameStack:get first&quot;, flat[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-push"><div class="item-row-main"><h3>push</h3><pre class="inline-signature">LFrameStack:push(obs: number[])</pre><p>Pushes one observation into the stack.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:735</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(4)
+    fs:push({0.1, 0.2})
+    fs:push({0.3, 0.4})
+    print(&quot;LFrameStack:push capacity&quot;, fs:capacity())
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LFrameStack:reset()</pre><p>Clears all stored frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(3)
+    fs:push({1.0})
+    fs:push({2.0})
+    fs:reset()
+    print(&quot;LFrameStack:reset capacity&quot;, fs:capacity())
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LFrameStack:type() -&gt; string</pre><p>Returns the type name `&quot;LFrameStack&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:766</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(3)
+    print(&quot;LFrameStack:type&quot;, fs:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LFrameStack:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this frame stack handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:771</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local fs = lurek.learning.frameStack(3)
+    print(&quot;LFrameStack:typeOf LFrameStack&quot;, tostring(fs:typeOf(&quot;LFrameStack&quot;)))
+    print(&quot;LFrameStack:typeOf LObject&quot;, tostring(fs:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article>
   </div>
 </section>
 

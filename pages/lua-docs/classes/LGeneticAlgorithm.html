@@ -65,7 +65,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LGeneticAlgorithm userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-bestgenes"><div class="item-row-main"><h3>bestGenes</h3><pre class="inline-signature">LGeneticAlgorithm:bestGenes() -&gt; number[]</pre><p>Returns the genes for the best chromosome in the population.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:338</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-bestgenes"><div class="item-row-main"><h3>bestGenes</h3><pre class="inline-signature">LGeneticAlgorithm:bestGenes() -&gt; number[]</pre><p>Returns the genes for the best chromosome in the population.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:339</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(5, 3, 10)
 
     for index = 0, ga:popSize() - 1 do
@@ -75,7 +75,7 @@ end</code></pre></details>
     local genes = ga:bestGenes()
     print(&quot;LGeneticAlgorithm:bestGenes count&quot;, #genes)
     print(&quot;LGeneticAlgorithm:bestGenes first&quot;, genes[1])
-end</code></pre></details></article><article class="item-row api-row" id="method-evolve"><div class="item-row-main"><h3>evolve</h3><pre class="inline-signature">LGeneticAlgorithm:evolve()</pre><p>Advances the genetic algorithm by one generation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:295</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-evolve"><div class="item-row-main"><h3>evolve</h3><pre class="inline-signature">LGeneticAlgorithm:evolve()</pre><p>Advances the genetic algorithm by one generation.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(5, 4, 11)
 
     for index = 0, ga:popSize() - 1 do
@@ -84,24 +84,24 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     ga:evolve()
     print(&quot;LGeneticAlgorithm:evolve generation&quot;, ga:generation())
-end</code></pre></details></article><article class="item-row api-row" id="method-generation"><div class="item-row-main"><h3>generation</h3><pre class="inline-signature">LGeneticAlgorithm:generation() -&gt; integer</pre><p>Returns the current generation index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-generation"><div class="item-row-main"><h3>generation</h3><pre class="inline-signature">LGeneticAlgorithm:generation() -&gt; integer</pre><p>Returns the current generation index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:303</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(4, 3, 12)
     ga:evolve()
     ga:evolve()
 
     print(&quot;LGeneticAlgorithm:generation&quot;, ga:generation())
-end</code></pre></details></article><article class="item-row api-row" id="method-getgenes"><div class="item-row-main"><h3>getGenes</h3><pre class="inline-signature">LGeneticAlgorithm:getGenes(idx: integer) -&gt; number[]</pre><p>Returns the genes for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:325</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getgenes"><div class="item-row-main"><h3>getGenes</h3><pre class="inline-signature">LGeneticAlgorithm:getGenes(idx: integer) -&gt; number[]</pre><p>Returns the genes for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:326</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(4, 5, 13)
     local genes = ga:getGenes(0)
 
     print(&quot;LGeneticAlgorithm:getGenes count&quot;, #genes)
     print(&quot;LGeneticAlgorithm:getGenes first&quot;, genes[1])
-end</code></pre></details></article><article class="item-row api-row" id="method-popsize"><div class="item-row-main"><h3>popSize</h3><pre class="inline-signature">LGeneticAlgorithm:popSize() -&gt; integer</pre><p>Returns the population size. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:308</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-popsize"><div class="item-row-main"><h3>popSize</h3><pre class="inline-signature">LGeneticAlgorithm:popSize() -&gt; integer</pre><p>Returns the population size. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:309</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(15, 8, 14)
     local pop_size = ga:popSize()
 
     print(&quot;LGeneticAlgorithm:popSize&quot;, pop_size)
-end</code></pre></details></article><article class="item-row api-row" id="method-setfitness"><div class="item-row-main"><h3>setFitness</h3><pre class="inline-signature">LGeneticAlgorithm:setFitness(idx: integer, fitness: number)</pre><p>Sets the fitness value for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:315</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setfitness"><div class="item-row-main"><h3>setFitness</h3><pre class="inline-signature">LGeneticAlgorithm:setFitness(idx: integer, fitness: number)</pre><p>Sets the fitness value for a chromosome by zero-based index.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:316</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(6, 3, 15)
     ga:setFitness(0, 1.25)
     ga:setFitness(1, 0.5)
@@ -109,12 +109,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LGeneticAlgorithm:setFitness generation&quot;, ga:generation())
     print(&quot;LGeneticAlgorithm:setFitness bestGenes&quot;, #ga:bestGenes())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LGeneticAlgorithm:type() -&gt; string</pre><p>Returns the Lua-visible type name for this genetic algorithm handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:351</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LGeneticAlgorithm:type() -&gt; string</pre><p>Returns the Lua-visible type name for this genetic algorithm handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 16)
     local type_name = ga:type()
 
     print(&quot;LGeneticAlgorithm:type&quot;, type_name)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LGeneticAlgorithm:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this genetic algorithm handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:356</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LGeneticAlgorithm:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this genetic algorithm handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:357</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local ga = lurek.learning.newGeneticAlgorithm(4, 2, 17)
     local is_ga = ga:typeOf(&quot;LGeneticAlgorithm&quot;)
     local is_object = ga:typeOf(&quot;LObject&quot;)

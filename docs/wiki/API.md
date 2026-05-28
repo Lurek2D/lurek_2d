@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8618 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29330 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8679 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29511 lines)
 
 ## Coverage
 
 - 68 modules
-- 5362 functions and methods
+- 5395 functions and methods
 - 99.9% documented
 
 ## API Module Index
@@ -62,11 +62,11 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
 | [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [lurek.layout](Module-layout) | 5 | 0 | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
-| [lurek.learning](Module-learning) | 6 | 6 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
+| [lurek.learning](Module-learning) | 12 | 10 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [lurek.mapblock](Module-mapblock) | 10 | 9 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
-| [lurek.math](Module-math) | 90 | 12 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
+| [lurek.math](Module-math) | 92 | 12 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
 | [lurek.midi](Module-midi) | 4 | 0 | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
 | [lurek.mods](Module-mods) | 4 | 3 | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config. |
@@ -78,7 +78,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.patterns](Module-patterns) | 24 | 24 | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
 | [lurek.physics](Module-physics) | 22 | 5 | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
 | [lurek.pipeline](Module-pipeline) | 3 | 2 | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
-| [lurek.procgen](Module-procgen) | 31 | 3 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
+| [lurek.procgen](Module-procgen) | 33 | 3 | Procedural content generation: noise, L-systems, WFC, BSP, dungeon gen, cellular worlds. |
 | [lurek.province](Module-province) | 15 | 1 | Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge. |
 | [lurek.raycaster](Module-raycaster) | 9 | 5 | Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting. |
 | [lurek.render](Module-render) | 118 | 12 | wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks. |

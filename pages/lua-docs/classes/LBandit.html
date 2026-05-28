@@ -63,19 +63,19 @@ end</code></pre></details>
     <p>Instance methods exported from the LBandit userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-armcount"><div class="item-row-main"><h3>armCount</h3><pre class="inline-signature">LBandit:armCount() -&gt; integer</pre><p>Returns the number of arms in this bandit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:399</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-armcount"><div class="item-row-main"><h3>armCount</h3><pre class="inline-signature">LBandit:armCount() -&gt; integer</pre><p>Returns the number of arms in this bandit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:400</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(4, &quot;ucb1&quot;, 0.1, 1)
     local arm_count = bandit:armCount()
 
     print(&quot;LBandit:armCount&quot;, arm_count)
-end</code></pre></details></article><article class="item-row api-row" id="method-bestarm"><div class="item-row-main"><h3>bestArm</h3><pre class="inline-signature">LBandit:bestArm() -&gt; integer</pre><p>Returns the arm with the best current estimate.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:387</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-bestarm"><div class="item-row-main"><h3>bestArm</h3><pre class="inline-signature">LBandit:bestArm() -&gt; integer</pre><p>Returns the arm with the best current estimate.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:388</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;ucb1&quot;, 0.1, 2)
     bandit:update(0, 0.25)
     bandit:update(1, 0.9)
     bandit:update(2, 0.4)
 
     print(&quot;LBandit:bestArm&quot;, bandit:bestArm())
-end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LBandit:predict() -&gt; integer</pre><p>Alias for `select`. Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:422</span></div></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LBandit:reset()</pre><p>Resets all bandit arm statistics. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:392</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LBandit:predict() -&gt; integer</pre><p>Alias for `select`. Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:423</span></div></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LBandit:reset()</pre><p>Resets all bandit arm statistics. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;thompson&quot;, 0.1, 3)
     local selected_arm = bandit:select()
     bandit:update(selected_arm, 0.5)
@@ -83,33 +83,33 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LBandit:reset pulls&quot;, bandit:totalPulls())
     print(&quot;LBandit:reset bestArm&quot;, bandit:bestArm())
-end</code></pre></details></article><article class="item-row api-row" id="method-select"><div class="item-row-main"><h3>select</h3><pre class="inline-signature">LBandit:select() -&gt; integer</pre><p>Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:373</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-select"><div class="item-row-main"><h3>select</h3><pre class="inline-signature">LBandit:select() -&gt; integer</pre><p>Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:374</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(5, &quot;thompson&quot;, 0.1, 4)
     local first_arm = bandit:select()
     local second_arm = bandit:select()
 
     print(&quot;LBandit:select first&quot;, first_arm)
     print(&quot;LBandit:select second&quot;, second_arm)
-end</code></pre></details></article><article class="item-row api-row" id="method-totalpulls"><div class="item-row-main"><h3>totalPulls</h3><pre class="inline-signature">LBandit:totalPulls() -&gt; integer</pre><p>Returns the total number of arm selections recorded by this bandit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:405</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-totalpulls"><div class="item-row-main"><h3>totalPulls</h3><pre class="inline-signature">LBandit:totalPulls() -&gt; integer</pre><p>Returns the total number of arm selections recorded by this bandit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:406</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;ucb1&quot;, 0.1, 5)
     bandit:select()
     bandit:select()
     local total_pulls = bandit:totalPulls()
 
     print(&quot;LBandit:totalPulls&quot;, total_pulls)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LBandit:type() -&gt; string</pre><p>Returns the Lua-visible type name for this bandit handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:411</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LBandit:type() -&gt; string</pre><p>Returns the Lua-visible type name for this bandit handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:412</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;ucb1&quot;, 0.1, 6)
     local type_name = bandit:type()
 
     print(&quot;LBandit:type&quot;, type_name)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LBandit:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this bandit handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:416</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LBandit:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this bandit handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:417</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;ucb1&quot;, 0.1, 7)
     local is_bandit = bandit:typeOf(&quot;LBandit&quot;)
     local is_object = bandit:typeOf(&quot;LObject&quot;)
 
     print(&quot;LBandit:typeOf LBandit&quot;, tostring(is_bandit))
     print(&quot;LBandit:typeOf LObject&quot;, tostring(is_object))
-end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LBandit:update(idx: integer, reward: number)</pre><p>Updates one arm with a received reward.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LBandit:update(idx: integer, reward: number)</pre><p>Updates one arm with a received reward.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:381</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(4, &quot;ucb1&quot;, 0.1, 8)
     local arm_index = bandit:select()
     bandit:update(arm_index, 0.8)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LModel - Lurek2D Lua API Browser</title>
+  <title>LTensor - Lurek2D Lua API Browser</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -44,19 +44,48 @@
       
 <header class="page-header">
   <p class="eyebrow">Class</p>
-  <h1>LModel</h1>
-  <p>Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.</p>
+  <h1>LTensor</h1>
+  <p>Flat tensor handle exposing shape, element access, and tract conversion to Lua.</p>
   <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/learning.html">lurek.learning</a></div>
-  
+  <details class="example-block"><summary>Class Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+    local s = t:shape()
+    print(&quot;LTensor:shape rank&quot;, #s)
+    print(&quot;LTensor:shape dim0&quot;, s[1])
+end</code></pre></details>
 </header>
 
 <section class="section-block">
   <div class="section-head">
     <h2>Methods</h2>
-    <p>Instance methods exported from the LModel userdata.</p>
+    <p>Instance methods exported from the LTensor userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LModel:predict(input: any)</pre><p>Runs the wrapped model&#x27;s prediction. Delegates to `chooseAction`, `forward`, or `select`</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:520</span></div></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LModel:type() -&gt; string</pre><p>Returns the type name `&quot;LModel&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:543</span></div></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LModel:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this model wrapper matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:548</span></div></article>
+    <article class="item-row api-row" id="method-data"><div class="item-row-main"><h3>data</h3><pre class="inline-signature">LTensor:data() -&gt; number[]</pre><p>Returns all elements as a flat number array in row-major order.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:830</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({3}, {10.0, 20.0, 30.0})
+    local d = t:data()
+    print(&quot;LTensor:data len&quot;, #d)
+    print(&quot;LTensor:data first&quot;, d[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LTensor:get(indices: any) -&gt; number</pre><p>Gets a single element by one-based multi-dimensional indices.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:841</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({3}, {7.0, 8.0, 9.0})
+    print(&quot;LTensor:get index1&quot;, t:get(1))
+    print(&quot;LTensor:get index3&quot;, t:get(3))
+end</code></pre></details></article><article class="item-row api-row" id="method-len"><div class="item-row-main"><h3>len</h3><pre class="inline-signature">LTensor:len() -&gt; integer</pre><p>Returns the total number of elements in the tensor.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:862</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({4}, {1.0, 2.0, 3.0, 4.0})
+    print(&quot;LTensor:len&quot;, t:len())
+end</code></pre></details></article><article class="item-row api-row" id="method-shape"><div class="item-row-main"><h3>shape</h3><pre class="inline-signature">LTensor:shape() -&gt; integer[]</pre><p>Returns the tensor&#x27;s dimension sizes as an integer array (one entry per axis).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:820</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({2, 3}, {1, 2, 3, 4, 5, 6})
+    local s = t:shape()
+    print(&quot;LTensor:shape rank&quot;, #s)
+    print(&quot;LTensor:shape dim0&quot;, s[1])
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTensor:type() -&gt; string</pre><p>Returns the type name `&quot;LTensor&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:866</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({1}, {0.0})
+    print(&quot;LTensor:type&quot;, t:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTensor:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this tensor handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:871</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local t = lurek.learning.newTensor({1}, {0.0})
+    print(&quot;LTensor:typeOf LTensor&quot;, tostring(t:typeOf(&quot;LTensor&quot;)))
+    print(&quot;LTensor:typeOf LObject&quot;, tostring(t:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article>
   </div>
 </section>
 

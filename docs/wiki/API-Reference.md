@@ -152,11 +152,15 @@
 - [lurek.layout](#lureklayout)
 - [lurek.learning](#lureklearning)
   - [LBandit](#lbandit)
+  - [LEnv](#lenv)
+  - [LFrameStack](#lframestack)
   - [LGeneticAlgorithm](#lgeneticalgorithm)
   - [LModel](#lmodel)
   - [LNeuralNet](#lneuralnet)
   - [LNeuroevolution](#lneuroevolution)
+  - [LOnnxModel](#lonnxmodel)
   - [LQLearner](#lqlearner)
+  - [LTensor](#ltensor)
 - [lurek.light](#lureklight)
   - [LLight](#llight)
   - [LOccluder](#loccluder)
@@ -3399,11 +3403,17 @@ lurek.layout.tree(nodes: table, children: table, root: integer, config: table|ni
 [Module page](Module-learning)
 
 ```lua
+lurek.learning.defineEnv(config: table) -> LEnv -- Defines a Lua-described RL environment from a config table.
+lurek.learning.frameStack(n: integer) -> LFrameStack -- Creates a frame-stacking ring buffer of the last n observations.
+lurek.learning.loadOnnx(path: string) -> LOnnxModel -- Loads and optimises an ONNX model from a file path.
 lurek.learning.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit -- Creates a multi-armed bandit with a named selection strategy.
 lurek.learning.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm -- Creates a genetic algorithm population with fixed chromosome length.
 lurek.learning.newNeuralNet() -> LNeuralNet -- Creates an empty feed-forward neural network.
 lurek.learning.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution -- Creates a neuroevolution population from a layer specification table.
 lurek.learning.newQLearner(sc: integer, ac: integer) -> LQLearner -- Creates a Q-learner with fixed state and action counts.
+lurek.learning.newTensor(shape: integer[], data: number[]) -> LTensor -- Creates a tensor from a shape (integer array) and flat float data (number array).
+lurek.learning.normalizeEnv(env: LEnv, mean: number[], std: number[]) -> LEnv -- Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
+lurek.learning.timeLimit(env: LEnv, max_steps: integer) -> LEnv -- Wraps an LEnv so episodes end automatically after max_steps steps.
 lurek.learning.wrap(model: any) -> LModel -- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
 ```
 
@@ -3419,6 +3429,28 @@ LBandit:totalPulls() -> integer -- Returns the total number of arm selections re
 LBandit:type() -> string -- Returns the Lua-visible type name for this bandit handle.
 LBandit:typeOf(name: string) -> boolean -- Returns whether this bandit handle matches a supported type name.
 LBandit:update(idx: integer, reward: number) -- Updates one arm with a received reward.
+```
+
+### LEnv
+
+```lua
+LEnv:actionSpace() -> table -- Returns the action space descriptor.
+LEnv:obsSpace() -> table -- Returns the observation space descriptor.
+LEnv:reset() -> number[] -- Resets the environment and returns the initial observation.
+LEnv:step(action: any) -> number[] -- Advances the environment one step.
+LEnv:type() -> string -- Returns the type name `"LEnv"`.
+LEnv:typeOf(name: string) -> boolean -- Returns whether this env handle matches a supported type name.
+```
+
+### LFrameStack
+
+```lua
+LFrameStack:capacity() -> integer -- Returns the maximum number of frames retained.
+LFrameStack:get() -> number[] -- Returns the flattened observation stack, zero-padded when not yet full.
+LFrameStack:push(obs: number[]) -- Pushes one observation into the stack.
+LFrameStack:reset() -- Clears all stored frames.
+LFrameStack:type() -> string -- Returns the type name `"LFrameStack"`.
+LFrameStack:typeOf(name: string) -> boolean -- Returns whether this frame stack handle matches a supported type name.
 ```
 
 ### LGeneticAlgorithm
@@ -3470,6 +3502,16 @@ LNeuroevolution:type() -> string -- Returns the Lua-visible type name for this n
 LNeuroevolution:typeOf(name: string) -> boolean -- Returns whether this neuroevolution handle matches a supported type name.
 ```
 
+### LOnnxModel
+
+```lua
+LOnnxModel:inputCount() -> integer -- Returns the number of input tensors expected by the model.
+LOnnxModel:outputCount() -> integer -- Returns the number of output tensors produced by the model.
+LOnnxModel:run(inputs: table) -> table -- Runs inference on a table of LTensor inputs and returns a table of LTensor outputs.
+LOnnxModel:type() -> string -- Returns the type name `"LOnnxModel"`.
+LOnnxModel:typeOf(name: string) -> boolean -- Returns whether this model handle matches a supported type name.
+```
+
 ### LQLearner
 
 ```lua
@@ -3495,6 +3537,17 @@ LQLearner:setLearningRate(v: number) -- Sets the Q-learning alpha learning rate.
 LQLearner:setQValue(state: integer, action: integer, value: number) -- Sets the stored Q-value for a one-based state and action pair.
 LQLearner:type() -> string -- Returns the Lua-visible type name for this Q-learner handle.
 LQLearner:typeOf(name: string) -> boolean -- Returns whether this Q-learner handle matches a supported type name.
+```
+
+### LTensor
+
+```lua
+LTensor:data() -> number[] -- Returns all elements as a flat number array in row-major order.
+LTensor:get(indices: any) -> number -- Gets a single element by one-based multi-dimensional indices.
+LTensor:len() -> integer -- Returns the total number of elements in the tensor.
+LTensor:shape() -> integer[] -- Returns the tensor's dimension sizes as an integer array (one entry per axis).
+LTensor:type() -> string -- Returns the type name `"LTensor"`.
+LTensor:typeOf(name: string) -> boolean -- Returns whether this tensor handle matches a supported type name.
 ```
 
 ## lurek.light
@@ -3777,10 +3830,12 @@ lurek.math.clamp(v: number, min: number, max: number) -> number -- Clamps a valu
 lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number -- Returns the closest point on a segment to an input point.
 lurek.math.convexHull(pts: table) -> number[] -- Computes the convex hull for a flat point table.
 lurek.math.cos(x: number) -> number -- Returns cosine of an angle. This function is exposed to Lua scripts.
+lurek.math.cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number, t: number) -> number -- Computes the CSS cubic-bezier Y value at input t (0..1).
 lurek.math.deg(rad: number) -> number -- Converts radians to degrees. This function is exposed to Lua scripts.
 lurek.math.delaunayTriangulate(pts: table) -> table -- Computes Delaunay triangles for a flat point table.
 lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -> number -- Returns Euclidean distance between two points.
 lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -> number -- Returns squared Euclidean distance between two points.
+lurek.math.easingNames() -> string[] -- Returns an array of all built-in easing function names.
 lurek.math.exp(x: number) -> number -- Returns exponential of a value. This function is exposed to Lua scripts.
 lurek.math.floor(x: number) -> number -- Returns floor of a value. This function is exposed to Lua scripts.
 lurek.math.fmod(x: number, y: number) -> number -- Returns floating-point remainder.
@@ -5484,10 +5539,12 @@ lurek.procgen.perlinNoise(x: number, y: number, periodX: number, periodY: number
 lurek.procgen.poissonDisk(width: number, height: number, minDist: number, [maxAttempts]: integer, [seed]: integer) -> table -- Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot w...
 lurek.procgen.roomsDungeon([opts]: table) -> table -- Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns...
 lurek.procgen.roomsDungeonWithPrefabs([opts]: table, prefabs: table, [stampValue]: number) -> table -- Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape...
+lurek.procgen.setConstraintsFromLLM(prompt: string) -> table -- Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.
 lurek.procgen.simplex2d(x: number, y: number) -> number -- Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 lurek.procgen.simplex3d(x: number, y: number, z: number) -> number -- Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
 lurek.procgen.simplexNoise(x: number, y: number, [z]: number) -> number -- Sample a 2D or 3D simplex noise value at a given point.
 lurek.procgen.voronoi(width: integer, height: integer, points: table, [opts]: table) -> integer[] -- Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and dis...
+lurek.procgen.wfcFromPrompt(prompt: string, config: table) -> table -- Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
 lurek.procgen.wfcGenerate(opts: table) -> table -- Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
 lurek.procgen.worldGraph(width: number, height: number, regionCount: integer, [seed]: integer) -> table -- Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade ro...
 ```

@@ -103,6 +103,7 @@ The glossary collects terms that appear across module and API pages.
 - `LDspGraph` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph that stores nodes, edges, and offline processing order.
 - `LDspNode` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph node carrying type and simple numeric parameters.
 - `LEmotionModel` ([lurek.ai](Module-ai)) - Lua handle for decaying named emotion intensities.
+- `LEnv` ([lurek.learning](Module-learning)) - Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
 - `LEpisodicMemory` ([lurek.agent](Module-agent)) - Lua-side handle for append-only episodic memory.
 - `LEventBus` ([lurek.patterns](Module-patterns)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 - `LFactory` ([lurek.patterns](Module-patterns)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
@@ -113,6 +114,7 @@ The glossary collects terms that appear across module and API pages.
 - `LFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a flow field over a navigation grid.
 - `LFont` ([lurek.font](Module-font)) - Lua-visible font handle storing the slot key and cached metadata.
 - `LFont` ([lurek.render](Module-render)) - Bitmap font handle for measuring and rendering text.
+- `LFrameStack` ([lurek.learning](Module-learning)) - Lua handle wrapping a frame-stacking ring buffer.
 - `LFunnel` ([lurek.patterns](Module-patterns)) - Lua-facing batching funnel that collects events over a time window and flushes them together.
 - `LGeneticAlgorithm` ([lurek.learning](Module-learning)) - Lua handle for a floating-point genetic algorithm population.
 - `LGlobe` ([lurek.globe](Module-globe)) - Lua-side handle for a named globe stored inside a shared registry.
@@ -142,5 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LIsoMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
 - `LJpsGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a Jump Point Search grid.
 - `LLabel` ([lurek.ui](Module-ui)) - Adds label-specific methods (setText, getText) to a label widget table.
-- `LLargeMapRenderer` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
-- `LLayeredImage` ([lurek.image](Module-image)) - Lua-side handle for multiple image layers with visibility, opacity, and ordering.

@@ -46,8 +46,8 @@
   <p class="eyebrow">Module</p>
   <h1>lurek.math</h1>
   <p>`lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers. - Registers `lurek.math.*` functions and types via `register()`. - Userdata types: `LuaVec2`, `LuaVec3`, `LuaCatmullRom`. - Userdata types: `LuaHermite`, `LuaRandomGenerator`, `LuaTransform`. - Userdata types: `LuaBezierCurve`, `LuaTween`, `LuaSpatialHash`. - Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`. - Bridges 233 Lua-callable methods via `mlua`. - See `docs/specs/math.md` for the full API specification.</p>
-  <div class="api-meta api-meta-header"><span>92 functions</span><span>12 classes</span><span>src/lua_api/math_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 232</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+  <div class="api-meta api-meta-header"><span>94 functions</span><span>12 classes</span><span>src/lua_api/math_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 234</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
 </header>
 
 <section class="section-block" id="functions">
@@ -138,6 +138,9 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-con
 end</code></pre></details></article><article class="item-row api-row" id="fn-cos"><div class="item-row-main"><h3>cos</h3><pre class="inline-signature">lurek.math.cos(x: number) -&gt; number</pre><p>Returns cosine of an angle. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2099</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
     print(&quot;cos(0) = &quot; .. lurek.math.cos(0))
     print(&quot;cos(pi) = &quot; .. lurek.math.cos(lurek.math.pi))
+end</code></pre></details></article><article class="item-row api-row" id="fn-cubicbezier"><div class="item-row-main"><h3>cubicBezier</h3><pre class="inline-signature">lurek.math.cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number, t: number) -&gt; number</pre><p>Computes the CSS cubic-bezier Y value at input t (0..1).</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2656</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
+    print(&quot;cubicBezier(0.5) = &quot; .. y)
 end</code></pre></details></article><article class="item-row api-row" id="fn-deg"><div class="item-row-main"><h3>deg</h3><pre class="inline-signature">lurek.math.deg(rad: number) -&gt; number</pre><p>Converts radians to degrees. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2086</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
     print(&quot;deg(pi) = &quot; .. lurek.math.deg(lurek.math.pi))
     print(&quot;deg(pi/2) = &quot; .. lurek.math.deg(lurek.math.pi / 2))
@@ -151,6 +154,9 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-dis
 end</code></pre></details></article><article class="item-row api-row" id="fn-distancesq"><div class="item-row-main"><h3>distanceSq</h3><pre class="inline-signature">lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -&gt; number</pre><p>Returns squared Euclidean distance between two points.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2246</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
     local d2 = lurek.math.distanceSq(0, 0, 3, 4)
     print(&quot;distanceSq = &quot; .. d2)
+end</code></pre></details></article><article class="item-row api-row" id="fn-easingnames"><div class="item-row-main"><h3>easingNames</h3><pre class="inline-signature">lurek.math.easingNames() -&gt; string[]</pre><p>Returns an array of all built-in easing function names.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2634</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
+    local names = lurek.math.easingNames()
+    print(&quot;easing count = &quot; .. #names)
 end</code></pre></details></article><article class="item-row api-row" id="fn-exp"><div class="item-row-main"><h3>exp</h3><pre class="inline-signature">lurek.math.exp(x: number) -&gt; number</pre><p>Returns exponential of a value. This function is exposed to Lua scripts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/math_api.rs:2167</span></div><details class="example-block"><summary>Example · Exact example · math.lua</summary><pre><code>do
     print(&quot;exp(1) = &quot; .. lurek.math.exp(1))
     print(&quot;exp(0) = &quot; .. lurek.math.exp(0))
