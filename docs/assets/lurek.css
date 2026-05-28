@@ -1,0 +1,41 @@
+/* Lurek2D — Material for MkDocs custom palette */
+
+:root {
+  --lurek-blue: #17385f;
+  --lurek-sky: #7fc4e7;
+  --lurek-sky-light: #b8dff5;
+}
+
+/* Primary colour override — light mode */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #17385f;
+  --md-primary-fg-color--light: #2a5a96;
+  --md-primary-fg-color--dark:  #0f2540;
+  --md-accent-fg-color:         #7fc4e7;
+}
+
+/* Primary colour override — dark mode */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #1e4a7a;
+  --md-primary-fg-color--light: #2a5a96;
+  --md-primary-fg-color--dark:  #17385f;
+  --md-accent-fg-color:         #7fc4e7;
+  --md-default-bg-color:        #0d1b2a;
+  --md-default-fg-color:        #d8e8f5;
+  --md-code-bg-color:           #111e2e;
+}
+
+/* Code blocks */
+[data-md-color-scheme="slate"] .highlight code {
+  background: #111e2e;
+}
+
+/* Admonition tip — use Lurek sky blue */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: var(--lurek-sky);
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: color-mix(in srgb, var(--lurek-sky) 15%, transparent);
+}

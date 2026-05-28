@@ -10,6 +10,8 @@ pub mod agent_api;
 pub mod ai_api;
 /// Exposes the `lurek.animation` binding module.
 pub mod animation_api;
+/// Exposes the `lurek.asset` binding module.
+pub mod asset_api;
 /// Exposes the `lurek.audio` binding module.
 pub mod audio_api;
 /// Exposes the `lurek.automation` binding module.

@@ -450,6 +450,33 @@ function LAgent:skillCount() end
 ---@return nil No value is returned.
 function LAgent:update() end
 
+--- Lua-side handle for a stateful LLM chat session.
+---@class LAgentChat
+LAgentChat = {}
+
+--- Appends a message to the chat history without sending a completion.
+---@param role string Role identifier: `"user"`, `"assistant"`, or `"system"`.
+---@param content string Message content.
+---@return nil No value is returned.
+function LAgentChat:addMessage(role, content) end
+
+--- Clears the chat history.
+---@return nil No value is returned.
+function LAgentChat:clear() end
+
+--- Sends the current history to the LLM and returns the assistant reply.
+---@return string Assistant reply text, or raises an error on failure.
+function LAgentChat:complete() end
+
+--- Returns the chat history as an array of `{role, content}` tables.
+---@return table Array of `{ role = string, content = string }` tables.
+function LAgentChat:getHistory() end
+
+--- Sets the system prompt used for all completions in this session.
+---@param prompt string System prompt text.
+---@return nil No value is returned.
+function LAgentChat:setSystemPrompt(prompt) end
+
 --- Lua-side handle for managing multiple LLM Agents in parallel.
 ---@class LAgentManager
 LAgentManager = {}
@@ -463,6 +490,63 @@ function LAgentManager:runAll(tasks, callback) end
 --- Polls the manager's background client for completed tasks and dispatches callbacks.
 ---@return nil No value is returned.
 function LAgentManager:update() end
+
+--- Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
+---@class LAgentMemory
+LAgentMemory = {}
+
+--- Returns the episodic memory component.
+---@return LEpisodicMemory Episodic memory handle.
+function LAgentMemory:episodic() end
+
+--- Deserialises memory state from the configured persist_path.
+---@return boolean `true` on success, raises an error on failure.
+function LAgentMemory:load() end
+
+--- Serialises all memory banks to the configured persist_path.
+---@return boolean `true` on success, raises an error on failure.
+function LAgentMemory:save() end
+
+--- Returns the semantic memory component.
+---@return LSemanticMemory Semantic memory handle.
+function LAgentMemory:semantic() end
+
+--- Returns the working memory component.
+---@return LWorkingMemory Working memory handle.
+function LAgentMemory:working() end
+
+--- Lua-side handle for a `{key}` placeholder prompt template.
+---@class LAgentTemplate
+LAgentTemplate = {}
+
+--- Renders the template by substituting `{key}` placeholders from `values`.
+---@param values table Map of key → string substitutions.
+---@return string Rendered string, or raises an error if a key is missing.
+function LAgentTemplate:render(values) end
+
+--- Lua-side handle for append-only episodic memory.
+---@class LEpisodicMemory
+LEpisodicMemory = {}
+
+--- Removes all episodes with tick < `cutoff`.
+---@param cutoff number Tick threshold; episodes older than this are removed.
+---@return nil No value is returned.
+function LEpisodicMemory:forgetBefore(cutoff) end
+
+--- Returns the number of stored episodes.
+---@return number Episode count.
+function LEpisodicMemory:len() end
+
+--- Returns all episodes whose data matches every key-value pair in `filter`.
+---@param filter table Key-value filter table (empty = return all).
+---@return table Array of `{ tick = integer, data = table }` episode tables.
+function LEpisodicMemory:query(filter) end
+
+--- Records a new episode at `tick` with `data`.
+---@param tick number Logical tick or frame counter for this episode.
+---@param data table Key-value payload stored with the episode.
+---@return nil No value is returned.
+function LEpisodicMemory:record(tick, data) end
 
 --- Lua-side handle for managing a local Ollama server lifecycle and models.
 ---@class LOllamaManager
@@ -524,10 +608,119 @@ function LOllamaManager:update() end
 ---@return string Ollama version or `""`.
 function LOllamaManager:version() end
 
+--- Lua-side handle for an unbounded key → value fact store.
+---@class LSemanticMemory
+LSemanticMemory = {}
+
+--- Removes the fact at `key`.  Returns `true` if it existed.
+---@param key string Fact key.
+---@return boolean `true` if the fact was removed.
+function LSemanticMemory:forget(key) end
+
+--- Inserts or replaces a fact at `key`.
+---@param key string Fact key.
+---@param value any Fact value.
+---@return nil No value is returned.
+function LSemanticMemory:learn(key, value) end
+
+--- Returns the number of stored facts.
+---@return number Fact count.
+function LSemanticMemory:len() end
+
+--- Returns all facts whose value matches every key-value pair in `filter`.
+---@param filter table Key-value filter applied to each fact's value object (empty = return all).
+---@return table Array of `{ key = string, value = any }` tables.
+function LSemanticMemory:query(filter) end
+
+--- Returns the fact for `key`, or `nil` if not found.
+---@param key string Fact key.
+---@return any Stored fact, or `nil`.
+function LSemanticMemory:recall(key) end
+
+--- Lua-side handle for a bounded FIFO working memory.
+---@class LWorkingMemory
+LWorkingMemory = {}
+
+--- Returns the configured capacity (0 = unlimited).
+---@return number Capacity.
+function LWorkingMemory:capacity() end
+
+--- Removes the entry with `key`.  Returns `true` if it existed.
+---@param key string Entry key.
+---@return boolean `true` if the entry was removed.
+function LWorkingMemory:forget(key) end
+
+--- Returns the value for `key`, or `nil` if not found.
+---@param key string Entry key.
+---@return any Stored value, or `nil`.
+function LWorkingMemory:get(key) end
+
+--- Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
+---@param n number Maximum number of entries to return.
+---@return table Array of `{ key = string, value = any }` tables.
+function LWorkingMemory:getRecent(n) end
+
+--- Returns the current number of entries.
+---@return number Entry count.
+function LWorkingMemory:len() end
+
+--- Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
+---@param key string Entry key.
+---@param value any Entry value (any serialisable Lua value).
+---@return nil No value is returned.
+function LWorkingMemory:push(key, value) end
+
+--- Sends a single prompt to the global LLM and returns the response text.
+---@param prompt string Prompt text.
+---@return string Response text, or raises an error on failure.
+lurek.agent.complete = function(prompt) end
+
+--- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+---@param prompt string Prompt text.
+---@param callback function Called with `(text, err)` on completion (`err` is `nil` on success).
+---@return nil No value is returned.
+lurek.agent.completeAsync = function(prompt, callback) end
+
+--- Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
+---@param prompt string Prompt text.
+---@return table Parsed JSON response as a Lua table, or raises an error on failure.
+lurek.agent.completeJson = function(prompt) end
+
+--- Configures the global LLM provider settings used by module-level functions.
+---@param config table Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.
+---@return nil No value is returned.
+lurek.agent.configure = function(config) end
+
+--- Returns an embedding vector for `text` from the global LLM.
+---@param text string Text to embed.
+---@return table Number array of float embedding values, or raises an error on failure.
+lurek.agent.embed = function(text) end
+
+--- Returns `true` if the configured LLM server responds within 5 seconds.
+---@return boolean `true` if the server is reachable.
+lurek.agent.isAvailable = function() end
+
+--- Returns a list of available model names from the configured LLM server.
+---@return table String array of model names; empty if the server is unreachable.
+lurek.agent.listModels = function() end
+
 --- Creates a new LLM Agent instance.
 ---@param config table Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
 ---@return LAgent A new agent object.
 lurek.agent.new = function(config) end
+
+--- Creates a bundled working+episodic+semantic memory with optional disk persistence.
+---@param config? table Config with `working_capacity` (integer) and `persist_path` (string?) fields.
+---@return LAgentMemory A new agent memory object.
+lurek.agent.newAgentMemory = function(config) end
+
+--- Creates a new stateful chat session using the global LLM config.
+---@return LAgentChat A new chat session object.
+lurek.agent.newChat = function() end
+
+--- Creates a new episodic memory for recording time-stamped events.
+---@return LEpisodicMemory A new episodic memory object.
+lurek.agent.newEpisodicMemory = function() end
 
 --- Creates a new Agent Manager for batching multiple LLM agents over a shared client.
 ---@return LAgentManager A new agent manager object.
@@ -538,10 +731,24 @@ lurek.agent.newManager = function() end
 ---@return LOllamaManager A new Ollama manager object.
 lurek.agent.newOllama = function(config) end
 
+--- Creates a new semantic memory for storing named facts.
+---@return LSemanticMemory A new semantic memory object.
+lurek.agent.newSemanticMemory = function() end
+
 --- Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
 ---@param config table Config with `system_prompt` for the shared system context.
 ---@return LAISystem A new AI system object.
 lurek.agent.newSystem = function(config) end
+
+--- Creates a new `{key}` placeholder prompt template.
+---@param pattern string Template string with `{key}` placeholders.
+---@return LAgentTemplate A new template object.
+lurek.agent.newTemplate = function(pattern) end
+
+--- Creates a new bounded FIFO working memory with the given capacity.
+---@param capacity number Maximum number of key-value slots (0 = unlimited).
+---@return LWorkingMemory A new working memory object.
+lurek.agent.newWorkingMemory = function(capacity) end
 
 ---@class lurek.ai
 lurek.ai = {}
@@ -2352,6 +2559,52 @@ lurek.animation.newStateMachine = function(anim_ud, initial) end
 --- Creates an empty animation synchronization group.
 ---@return LAnimSyncGroup New animation sync group handle.
 lurek.animation.newSyncGroup = function() end
+
+---@class lurek.asset
+lurek.asset = {}
+
+--- Lua-side handle for a single cached asset entry.
+---@class LAssetHandle
+LAssetHandle = {}
+
+--- Returns the Lua-visible type name for this asset handle.
+---@return string The string `LAssetHandle`.
+function LAssetHandle:type() end
+
+--- Returns whether this handle matches a supported type name.
+---@param name string Type name to compare against `LAssetHandle` and `LObject`.
+---@return boolean True when the supplied type name matches this handle.
+function LAssetHandle:typeOf(name) end
+
+lurek.asset.clear = function() end
+
+---@param handle any
+lurek.asset.get = function(handle) end
+
+--- Returns true when the asset for the given handle is still in the cache.
+---@param handle LAssetHandle Asset handle to check.
+---@return boolean True when the asset is still cached.
+lurek.asset.isLoaded = function(handle) end
+
+---@param path any
+---@param type_str any
+lurek.asset.load = function(path, type_str) end
+
+---@param paths any
+---@param callback any
+lurek.asset.preload = function(paths, callback) end
+
+--- Returns the current ref count for a handle, or 0 when it is no longer loaded.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return number Current reference count.
+lurek.asset.refcount = function(handle) end
+
+lurek.asset.stats = function() end
+
+--- Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+---@param handle LAssetHandle Asset handle to release.
+---@return nil No value is returned.
+lurek.asset.unload = function(handle) end
 
 ---@class lurek.audio
 lurek.audio = {}
@@ -11208,11 +11461,27 @@ lurek.input.bind = function(action, keys) end
 --- Removes all action bindings from the map.
 lurek.input.clearBindings = function() end
 
+--- Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+---@param name string Action name.
+---@param bindings any Binding string or array of binding strings.
+---@param category? string Category label for grouping (default empty string).
+lurek.input.define = function(name, bindings, category) end
+
+--- Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
+---@param json string JSON string with action definitions.
+---@return boolean True on success.
+lurek.input.deserializeBindings = function(json) end
+
 --- Returns a gamepad axis value by index.
 ---@param id number Gamepad id.
 ---@param axis number Axis index.
 ---@return number Axis value, or zero when missing.
 lurek.input.gamepad.getAxis = function(id, axis) end
+
+--- Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.
+---@param name string Action name.
+---@return number Axis value: +1.0, -1.0, or 0.0.
+lurek.input.getAxis = function(name) end
 
 --- Returns the axis count for a gamepad.
 ---@param id number Gamepad id.
@@ -11231,6 +11500,15 @@ lurek.input.getBindings = function() end
 ---@param id number Gamepad id.
 ---@return number Button count, or zero when missing.
 lurek.input.gamepad.getButtonCount = function(id) end
+
+--- Returns action names belonging to the given category.
+---@param category string Category label.
+---@return string[] Array of matching action names.
+lurek.input.getByCategory = function(category) end
+
+--- Returns a table mapping each binding key to the action names that share it; only keys with two or more actions are included.
+---@return table Map of binding string to array of conflicting action names.
+lurek.input.getConflicts = function() end
 
 --- Returns the number of gamepad slots tracked by the runtime.
 ---@return number Gamepad slot count.
@@ -11321,6 +11599,13 @@ lurek.input.touch.getTouchCount = function() end
 --- Returns active touch points with id, position, and pressure.
 ---@return TouchGetTouchesResult Array table of touch records.
 lurek.input.touch.getTouches = function() end
+
+--- Returns a 2D axis vector from two named actions.
+---@param hname string Horizontal action name (positive = right).
+---@param vname string Vertical action name (positive = down).
+---@return number a Horizontal axis value.
+---@return number b Vertical axis value.
+lurek.input.getVector = function(hname, vname) end
 
 --- Returns the current mouse wheel delta.
 ---@return number a Horizontal wheel delta.
@@ -11447,9 +11732,21 @@ lurek.input.mouse.newCursor = function(pixels, width, height, hotx, hoty) end
 ---@return InputNewMappingResult Mapping table with action query closures.
 lurek.input.newMapping = function(name, keys) end
 
+--- Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
+---@param callback function function(action_name, new_keys) called on any change.
+lurek.input.onRebind = function(callback) end
+
+--- Removes bindings for one action by name, or all actions when name is nil.
+---@param name? string Action name. When nil, all actions are removed.
+lurek.input.reset = function(name) end
+
 --- Saves gamepad mapping strings to a file.
 ---@param path string Mapping file path.
 lurek.input.gamepad.saveGamepadMappings = function(path) end
+
+--- Serialises all action definitions to a JSON string.
+---@return string JSON representation of all action definitions.
+lurek.input.serializeBindings = function() end
 
 --- Enables or disables background gamepad event processing.
 ---@param enable boolean New background event flag.
@@ -15269,6 +15566,30 @@ function LNetworkRuntime:wsConnect(url) end
 ---@param data string Text payload.
 function LNetworkRuntime:wsSend(id, data) end
 
+--- Lua userdata wrapping an `SseStream` with an optional stored callback.
+---@class LSseStream
+LSseStream = {}
+
+--- Signals the background reader thread to stop and closes the stream.
+function LSseStream:close() end
+
+--- Returns true if the background reader thread is still connected and reading.
+---@return boolean True while the stream is open.
+function LSseStream:isOpen() end
+
+--- Polls for the next available event from the SSE stream (non-blocking).
+---@return table? Event table `{ id?, event?, data }`, or nil when no event is ready.
+function LSseStream:next() end
+
+--- Returns the Lua-visible type name for this SSE stream handle.
+---@return string The string `LSseStream`.
+function LSseStream:type() end
+
+--- Returns whether this SSE stream handle matches a supported type name.
+---@param name string Type name to compare against `LSseStream` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSseStream:typeOf(name) end
+
 ---@class NetworkCreateLobbyResult
 ---@field name string Lobby name.
 ---@field host string Host address.
@@ -15427,6 +15748,19 @@ lurek.network.predictLinear = function(snapshot, dt) end
 ---@param alpha number Blend factor.
 ---@return NetworkReconcileSnapshotResult Reconciled snapshot table.
 lurek.network.reconcileSnapshot = function(pred, auth, alpha) end
+
+--- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
+---@param url string SSE endpoint URL.
+---@param n number Maximum number of events to collect.
+---@param timeout_secs? number Optional timeout in seconds; defaults to 5.
+---@return table Array of event tables `{ id?, event?, data }`.
+lurek.network.sseCollect = function(url, n, timeout_secs) end
+
+--- Opens an SSE stream to `url` and returns an `LSseStream` handle.
+---@param url string SSE endpoint URL.
+---@param callback function Called with each event table `{ id?, event?, data }`.
+---@return LSseStream Stream handle for polling or closing.
+lurek.network.sseConnect = function(url, callback) end
 
 --- Broadcasts a packed entity sync payload through a network host.
 ---@param host_ud LNetworkHost Network host handle.

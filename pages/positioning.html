@@ -1,0 +1,4624 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Single-binary 2D Rust runtime for Lua game scripts">
+      
+      
+      
+        <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/positioning.html">
+      
+      
+        <link rel="prev" href="use_cases.html">
+      
+      
+        <link rel="next" href="build_info.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Competition - Lurek2D</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/lurek.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lurek2d-a-competitive-positioning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Lurek2D" class="md-header__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lurek2D
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Competition
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="architecture/philosophy.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="modules/agent.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Lua
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="CHANGELOG.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Lurek2D" class="md-nav__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    Lurek2D
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/philosophy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="handbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/engine-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/test-framework.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/cag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/rag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="extension_plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/lua-api-file-standard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua API Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="codding_standards.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="use_cases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="positioning.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-core-positioning-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Core Positioning Claim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-engine-comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Engine Comparison Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Engine Comparison Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#engines-evaluated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engines evaluated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-evaluation-areas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15 Evaluation Areas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15 Evaluation Areas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#area-1-a-api-surface-size-and-breadth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 1 â€” API Surface Size and Breadth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-2-a-documentation-completeness-and-machine-readability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 2 â€” Documentation Completeness and Machine-Readability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-3-a-ai-first-tooling-and-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 3 â€” AI-First Tooling and Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-4-a-code-only-workflow-no-gui-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 4 â€” Code-Only Workflow (No GUI Required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-5-a-scripting-ergonomics-for-non-engine-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 5 â€” Scripting Ergonomics for Non-Engine Developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-6-a-engine-binary-size-and-distribution-simplicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 6 â€” Engine Binary Size and Distribution Simplicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-7-a-learning-curve-for-new-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 7 â€” Learning Curve for New Developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-8-a-performance-baseline-desktop-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 8 â€” Performance Baseline (Desktop 2D)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-9-a-test-evidence-and-example-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 9 â€” Test, Evidence, and Example Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-10-a-vibe-coding-risk-ai-slop-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 10 â€” Vibe-Coding Risk (AI Slop Rate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-11-a-modding-and-extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 11 â€” Modding and Extensibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-12-a-simulation-data-and-non-game-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 12 â€” Simulation, Data, and Non-Game Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-13-a-community-tooling-and-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 13 â€” Community Tooling and Ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-14-a-open-source-licensing-and-commercial-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 14 â€” Open Source Licensing and Commercial Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-15-a-platform-reach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 15 â€” Platform Reach
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-summary-scorecard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Summary Scorecard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-api-as-building-blocks-model-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The "API as Building Blocks" Model Explained
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-primary-positioning-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Primary Positioning Statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-target-personas-and-their-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Target Personas and Their Hook
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_info.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lua
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/agent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ai.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/animation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Animation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/audio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/automation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/binary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/camera.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/charts.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/color.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Color
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/compute.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/cursor.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dataframe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataframe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/debugbridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/devtools.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dialog.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/docs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dsp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DSP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ecs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/effect.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/event.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/filesystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/flownet.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flownet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/font.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Font
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/globe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/grep.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grep
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/html.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/i18n.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/image.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/input.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/learning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/light.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Light
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mapblock.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapblock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/midi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Midi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/minimap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mods.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/network.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/overlay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/parallax.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/particle.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pathfind.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pathfind
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/physics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/procgen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Procgen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/province.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Province
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/raycaster.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raycaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/render.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/repl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/runtime.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/save.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/scene.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/serialize.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/spine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/sprite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/terminal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/thread.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tilemap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/timer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tween.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/validator.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/visibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/window.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-core-positioning-claim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Core Positioning Claim
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-engine-comparison-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Engine Comparison Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Engine Comparison Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#engines-evaluated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engines evaluated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-evaluation-areas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15 Evaluation Areas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15 Evaluation Areas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#area-1-a-api-surface-size-and-breadth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 1 â€” API Surface Size and Breadth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-2-a-documentation-completeness-and-machine-readability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 2 â€” Documentation Completeness and Machine-Readability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-3-a-ai-first-tooling-and-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 3 â€” AI-First Tooling and Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-4-a-code-only-workflow-no-gui-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 4 â€” Code-Only Workflow (No GUI Required)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-5-a-scripting-ergonomics-for-non-engine-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 5 â€” Scripting Ergonomics for Non-Engine Developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-6-a-engine-binary-size-and-distribution-simplicity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 6 â€” Engine Binary Size and Distribution Simplicity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-7-a-learning-curve-for-new-developers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 7 â€” Learning Curve for New Developers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-8-a-performance-baseline-desktop-2d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 8 â€” Performance Baseline (Desktop 2D)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-9-a-test-evidence-and-example-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 9 â€” Test, Evidence, and Example Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-10-a-vibe-coding-risk-ai-slop-rate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 10 â€” Vibe-Coding Risk (AI Slop Rate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-11-a-modding-and-extensibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 11 â€” Modding and Extensibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-12-a-simulation-data-and-non-game-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 12 â€” Simulation, Data, and Non-Game Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-13-a-community-tooling-and-ecosystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 13 â€” Community Tooling and Ecosystem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-14-a-open-source-licensing-and-commercial-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 14 â€” Open Source Licensing and Commercial Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#area-15-a-platform-reach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Area 15 â€” Platform Reach
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-summary-scorecard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Summary Scorecard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-api-as-building-blocks-model-explained" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The "API as Building Blocks" Model Explained
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-primary-positioning-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Primary Positioning Statement
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-target-personas-and-their-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Target Personas and Their Hook
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lurek2d-a-competitive-positioning">Lurek2D â€” Competitive Positioning<a class="headerlink" href="#lurek2d-a-competitive-positioning" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Audience:</strong> Product, marketing, and technical leads.
+<strong>Goal:</strong> Establish where Lurek2D sits against popular 2D-capable engines, and why the AI-first, API-only model is a distinct and defensible position.</p>
+</blockquote>
+<hr />
+<h2 id="1-the-core-positioning-claim">1. The Core Positioning Claim<a class="headerlink" href="#1-the-core-positioning-claim" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Lurek2D is the API-first, AI-native 2D runtime.</strong>
+It replaces the visual editor with a massive, fully documented, fully tested API surface that an AI agent (or a human) can use correctly from day one.</p>
+</blockquote>
+<p>Traditional game engines were designed for humans clicking through GUIs.
+Lurek2D is designed so that an AI coding agent can write a complete, working game â€” correctly, on the first try â€” because:</p>
+<ol>
+<li><strong>Every reusable behaviour is a pre-built, tested API block.</strong> 5 000+ <code>lurek.*</code> functions covering render, audio, physics, AI, UI, tilemap, particle, procgen, pathfinding, ECS, networking, data, and more.</li>
+<li><strong>100% API documentation coverage is a hard quality gate.</strong> <code>cargo clippy</code> and <code>collect_docs.py</code> reject any merge that leaves a public function undocumented.</li>
+<li><strong>Every API function ships with examples, BDD tests, integration tests, and demo evidence.</strong> An AI agent reads the docs, sees the example, and ships working code. No hallucination needed.</li>
+<li><strong>The Lua scripting layer is synchronous and side-effect-free from the script's perspective.</strong> Async complexity is hidden in Rust threads and <code>Channel</code>. Scripts stay simple and predictable.</li>
+</ol>
+<hr />
+<h2 id="2-engine-comparison-matrix">2. Engine Comparison Matrix<a class="headerlink" href="#2-engine-comparison-matrix" title="Permanent link">&para;</a></h2>
+<h3 id="engines-evaluated">Engines evaluated<a class="headerlink" href="#engines-evaluated" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Engine</th>
+<th>Primary language</th>
+<th>Editor model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Godot 4</strong></td>
+<td>GDScript / C# / C++</td>
+<td>Full visual editor</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>GameMaker Studio 2</strong></td>
+<td>GML / YOYO</td>
+<td>Full visual editor + drag-and-drop</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Love2D</strong></td>
+<td>Lua</td>
+<td>No editor â€” pure code</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Corona SDK / Solar2D</strong></td>
+<td>Lua</td>
+<td>No editor â€” pure code</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Defold</strong></td>
+<td>Lua</td>
+<td>Full visual editor</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>HaxeFlixel</strong></td>
+<td>Haxe</td>
+<td>No editor â€” pure code</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>MonoGame</strong></td>
+<td>C#</td>
+<td>No editor â€” pure code</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Pygame</strong></td>
+<td>Python</td>
+<td>No editor â€” pure code</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Bevy</strong></td>
+<td>Rust</td>
+<td>No editor (ECS only)</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Unity (2D mode)</strong></td>
+<td>C#</td>
+<td>Full visual editor</td>
+</tr>
+<tr>
+<td>â€”</td>
+<td><strong>Lurek2D</strong></td>
+<td>Lua (Rust core)</td>
+<td>No visual editor â€” VS Code + API</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="15-evaluation-areas">15 Evaluation Areas<a class="headerlink" href="#15-evaluation-areas" title="Permanent link">&para;</a></h3>
+<h4 id="area-1-a-api-surface-size-and-breadth">Area 1 â€” API Surface Size and Breadth<a class="headerlink" href="#area-1-a-api-surface-size-and-breadth" title="Permanent link">&para;</a></h4>
+<p><em>How many ready-made, tested building blocks exist?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Very large â€” but spread across GDScript classes, C# bindings, and editor nodes. Hard to enumerate.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Large built-in runtime, but locked to the GM toolchain.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Small intentional surface (~300 functions). You build everything on top.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>Medium. Good 2D basics, weak simulation/data.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Medium. Solid 2D, Lua-based, but surface is smaller than GM.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>Medium. Good 2D arcade toolkit. Limited outside that.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>Medium-low. Thin XNA wrapper. You write most subsystems.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Low-medium. Thin SDL2 wrapper. You write everything game-logic.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Growing Rust ECS. Very little built-in game logic.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Massive â€” but scattered across packages, Asset Store, C# namespaces, and editor magic.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>5 000+ documented <code>lurek.*</code> functions across 70+ modules</strong> (render, audio, physics, AI, ECS, UI, tilemap, particle, pathfinding, procgen, networking, dataframe, compute, globe, raycaster, and more). Single consistent namespace.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Largest coherent, single-namespace API of any pure-code 2D runtime. Comparable to Unity in breadth, but code-only and fully enumerable.</p>
+<hr />
+<h4 id="area-2-a-documentation-completeness-and-machine-readability">Area 2 â€” Documentation Completeness and Machine-Readability<a class="headerlink" href="#area-2-a-documentation-completeness-and-machine-readability" title="Permanent link">&para;</a></h4>
+<p><em>Can an AI agent use the API correctly from docs alone, without trial and error?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Good human docs. Not structured for AI consumption. Spread across web + in-editor.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Reasonable docs. Proprietary format. No machine-readable contract.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Very clean docs. Small surface makes 100% coverage feasible.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>Partial. Docs lag the API.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>OK. Lua, but incomplete in some areas.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>Partial. Haxe-doc generated.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>Microsoft Docs style. Not AI-optimised.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Python docstrings. Inconsistent completeness.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Rust <code>rustdoc</code>. High completeness for a young project.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Massive. Inconsistent. Some methods have minimal descriptions.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>100% coverage enforced by quality gate.</strong> <code>collect_docs.py --report-missing</code> fails CI if any <code>pub</code> item lacks a <code>///</code> doc comment. <code>docs/api/lurek.md</code> and <code>docs/api/lurek.lua</code> are generated from source â€” always in sync.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Only engine where 100% documentation is a hard, automated, non-bypassable gate. AI agents read the generated reference and use functions correctly on first attempt.</p>
+<hr />
+<h4 id="area-3-a-ai-first-tooling-and-workflow">Area 3 â€” AI-First Tooling and Workflow<a class="headerlink" href="#area-3-a-ai-first-tooling-and-workflow" title="Permanent link">&para;</a></h4>
+<p><em>Is the engine designed for AI coding agents as first-class users?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Some AI plugins exist. Engine was not designed with AI agents in mind.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>No AI-native layer.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Simple enough that AI can write correct Love2D. But no structured support.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>No AI-native layer.</td>
+</tr>
+<tr>
+<td>Others</td>
+<td>None were designed with AI agents as primary users.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>AI-first by design.</strong> The CAG system (Context Augmented Guidance) provides a full agent roster, skill bundles, prompt templates, and retrieval corpus. VS Code extension ships IntelliSense from generated type stubs. Local AI agent workflows are documented in <code>extension/vscode/cag/game-dev/</code>. The philosophy doc states: "Could a Copilot agent use this API correctly without a clarifying question? If not, redesign."</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> The only 2D engine whose architecture document names AI agents as first-class users and enforces AI-verifiability as a design constraint.</p>
+<hr />
+<h4 id="area-4-a-code-only-workflow-no-gui-required">Area 4 â€” Code-Only Workflow (No GUI Required)<a class="headerlink" href="#area-4-a-code-only-workflow-no-gui-required" title="Permanent link">&para;</a></h4>
+<p><em>Can a developer or AI agent build a complete game without touching a visual editor?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Possible in theory via <code>.tscn</code> text files, but scene graph design without the editor is painful.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>No. The IDE is mandatory for most workflows.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Yes â€” 100% code. But you assemble everything from scratch.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>Yes â€” code only.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Partial â€” editor is strongly encouraged for scene composition.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>Yes â€” code only.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>Yes â€” code only.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Yes â€” code only.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Yes â€” Rust ECS, code only.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>No. Scene graphs require the editor. Script-only workflows lose most Unity value.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Yes â€” fully code-only by design constraint (A-01).</strong> A single <code>main.lua</code> is a valid complete game. VS Code is tooling, not the engine.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Full code-only workflow is a binding constraint, not an afterthought. AI agents never need a visual editor step.</p>
+<hr />
+<h4 id="area-5-a-scripting-ergonomics-for-non-engine-developers">Area 5 â€” Scripting Ergonomics for Non-Engine Developers<a class="headerlink" href="#area-5-a-scripting-ergonomics-for-non-engine-developers" title="Permanent link">&para;</a></h4>
+<p><em>How easy is it to write game logic without knowing engine internals?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>GDScript is friendly. But you must understand scenes, nodes, signals â€” editor-centric mental model.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>GML is approachable. But tied to the GM IDE.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Clean Lua. No built-in patterns. You choose all architecture.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>Lua with a thin event model. Approachable.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Lua, but message-passing model is unfamiliar to beginners.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>Haxe is typed but niche. Steeper learning curve.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>C# is verbose for simple tasks.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Python is friendly but slow for anything complex.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Rust ECS is powerful but steep. High expertise required.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>C# is clean but the engine API surface is enormous and inconsistent.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Lua with a consistent single-namespace API.</strong> No scenes, no nodes, no message buses to understand. Call <code>lurek.render.sprite(...)</code>, <code>lurek.physics.body(...)</code>, <code>lurek.audio.play(...)</code>. Every callback (<code>init</code>, <code>process</code>, <code>draw</code>) is optional â€” an empty <code>main.lua</code> is valid.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Lowest time-to-first-working-game. The API surface replaces architectural decisions. A developer (or AI) calls functions, not designs systems.</p>
+<hr />
+<h4 id="area-6-a-engine-binary-size-and-distribution-simplicity">Area 6 â€” Engine Binary Size and Distribution Simplicity<a class="headerlink" href="#area-6-a-engine-binary-size-and-distribution-simplicity" title="Permanent link">&para;</a></h4>
+<p><em>How simple is it to ship a game?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Export templates are ~60â€“100 MB. Editor separate.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Proprietary export. IDE required to build.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Runtime ~10 MB. Game is a <code>.love</code> zip. Clean.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>Simulator required for build.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Editor required to build output.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>Haxe compiler + runtime. Moderate.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>.NET runtime dependency.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Python runtime dependency.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Rust binary â€” can be very small. No scripting overhead.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Build output ~30â€“80 MB minimum. IL2CPP pipelines are complex.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Single binary. Proposed constraint A-05: core binary â‰¤ 10 MB stripped.</strong> Game is a folder of <code>.lua</code> files + assets. No build step for game content. Instant iteration.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> One binary, one folder, zero build pipeline for game content. Closest competitor is Love2D, but Lurek2D ships a much larger built-in API surface.</p>
+<hr />
+<h4 id="area-7-a-learning-curve-for-new-developers">Area 7 â€” Learning Curve for New Developers<a class="headerlink" href="#area-7-a-learning-curve-for-new-developers" title="Permanent link">&para;</a></h4>
+<p><em>Time from install to first working game.</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Medium. Scene/node model, GDScript, editor layout all new concepts.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Low-medium. Drag-drop helps beginners. Paid license.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Low for Lua speakers. No structure means decisions quickly accumulate.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Medium-high. Message-passing Lua model is unusual.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>High. Scene graph, prefabs, packages, asset pipeline â€” months to mastery.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>High. Rust + ECS = expert territory.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Low for anyone who can read examples.</strong> Philosophy: "one afternoon to learn." API docs + working examples cover every function. The AI copilot path is the intended first workflow.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> AI-assisted onboarding is the primary path. Reading the generated <code>lurek.md</code> reference and running a content/examples file is enough to start.</p>
+<hr />
+<h4 id="area-8-a-performance-baseline-desktop-2d">Area 8 â€” Performance Baseline (Desktop 2D)<a class="headerlink" href="#area-8-a-performance-baseline-desktop-2d" title="Permanent link">&para;</a></h4>
+<p><em>60 FPS at 1080p on integrated GPU â€” achievable without expert tuning?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Yes, for most 2D. Vulkan overhead can surprise.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Yes. Good 2D renderer.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Yes. OpenGL renderer. Lua GC can cause hitches at scale.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Borderline. Python overhead is real.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Yes. Rust + wgpu. Excellent baseline.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Yes. Proven, but GC hitches in C# need management.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>B-03 is a binding constraint: 60 FPS at 1080p on Intel UHD 620 / AMD Vega 8.</strong> Rust core + wgpu 22 (Vulkan/DX12/Metal). Queued GPU rendering (render command buffer). LuaJIT for script performance.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Performance target is a hard architectural constraint, not a goal. Enforced at the engine tier level, not left to the game developer.</p>
+<hr />
+<h4 id="area-9-a-test-evidence-and-example-coverage">Area 9 â€” Test, Evidence, and Example Coverage<a class="headerlink" href="#area-9-a-test-evidence-and-example-coverage" title="Permanent link">&para;</a></h4>
+<p><em>How much validated, working code exists to ground AI generation?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Official docs have examples. Tests are community-maintained.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Sample projects. No automated test infra exposed to users.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Community snippets. No official test framework.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Examples and demos. No formal BDD test layer exposed to game devs.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Massive community. But AI-generated Unity code has high slop rate because the API is inconsistent and the scene graph is opaque.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Every API function has: (1) <code>///</code> doc comment at source, (2) at least one BDD Lua test in <code>tests/lua/</code>, (3) at least one integration test, (4) at least one <code>content/examples/</code> working example, (5) optional demo evidence.</strong> This is enforced by quality gates Q-03, Q-04, Q-05, and <code>TST-01</code> through <code>TST-06</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> The test + example + doc triangle is the primary AI slop prevention mechanism. An AI that reads the docs, sees the example, and copies the test pattern writes correct code. Competitors have none of these as hard requirements.</p>
+<hr />
+<h4 id="area-10-a-vibe-coding-risk-ai-slop-rate">Area 10 â€” Vibe-Coding Risk (AI Slop Rate)<a class="headerlink" href="#area-10-a-vibe-coding-risk-ai-slop-rate" title="Permanent link">&para;</a></h4>
+<p><em>How likely is an AI agent to produce plausible-looking but broken code?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>High slop risk. GDScript and scene graph both have many implicit conventions.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Very high slop risk. Unity's API surface is enormous, inconsistent across versions, and relies on editor magic (prefabs, Inspector, lifecycle) that AI cannot "see".</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Low-medium. Small API = less to get wrong. But game architecture is freestyle â€” AI fills gaps with invented patterns.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Medium. Python surface is known but game architecture is invented from scratch every time.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Medium-high. Rust + ECS has steep typing requirements. AI misses borrow checker subtleties.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Minimum slop rate by design.</strong> The massive API surface means most game behaviours are already implemented and tested inside the engine. AI writes Lua that calls proven, documented blocks. It does not invent new subsystems. Pure Lua logic (rules, state machines, game-specific math) is where AI works, not in engine plumbing.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> The API surface is the anti-slop layer. More API coverage = fewer decisions the AI must invent. This is the core product differentiator.</p>
+<hr />
+<h4 id="area-11-a-modding-and-extensibility">Area 11 â€” Modding and Extensibility<a class="headerlink" href="#area-11-a-modding-and-extensibility" title="Permanent link">&para;</a></h4>
+<p><em>Can users extend or mod the engine without touching Rust?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>GDNative / GDExtension. Powerful but complex.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Extensions via DLLs. Not approachable for most users.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Pure Lua. Any Lua code extends the runtime. Very open.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Lua scripts. Extensions via native extensions (complex).</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong><code>library/</code> (Lureksome):</strong> pure-Lua reusable modules on top of <code>lurek.*</code>. <strong><code>lurek.mods.*</code>:</strong> mod hook system. <strong>Pure Lua extension path requires zero Rust.</strong> Plugins proposed for optional subsystems (see <code>docs/architecture/plugins.md</code>).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Pure-Lua modding is a first-class path. The <code>library/</code> layer ships dozens of reusable game-logic modules. Mods are Lua scripts â€” AI can write them.</p>
+<hr />
+<h4 id="area-12-a-simulation-data-and-non-game-use-cases">Area 12 â€” Simulation, Data, and Non-Game Use Cases<a class="headerlink" href="#area-12-a-simulation-data-and-non-game-use-cases" title="Permanent link">&para;</a></h4>
+<p><em>Can the runtime serve compute-heavy or simulation workloads beyond traditional games?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Not designed for it. Some community workarounds.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>No. Game-focused only.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Possible but painful â€” no built-in data structures.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Used for simulations. Python data ecosystem helps.</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Growing ECS-based simulation support.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong><code>lurek.dataframe.*</code>, <code>lurek.compute.*</code>, <code>lurek.procgen.*</code>, <code>lurek.graph.*</code>, <code>lurek.globe.*</code>, <code>lurek.province.*</code>, <code>lurek.patterns.*</code>, <code>lurek.learning.*</code>, <code>lurek.flownet.*</code>.</strong> Non-game use cases (digital twins, local data tools, simulation sandboxes) are first-class in the API surface.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> The broadest simulation/data API of any 2D runtime. Enables use cases no other 2D engine targets.</p>
+<hr />
+<h4 id="area-13-a-community-tooling-and-ecosystem">Area 13 â€” Community Tooling and Ecosystem<a class="headerlink" href="#area-13-a-community-tooling-and-ecosystem" title="Permanent link">&para;</a></h4>
+<p><em>Plugins, assets, forums, tutorials â€” how rich is the ecosystem?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Large and growing. Active community. Asset store.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Massive Asset Store. Largest community of any game engine.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Small, dedicated. Long-lived. Quality over quantity.</td>
+</tr>
+<tr>
+<td>Lurek2D</td>
+<td>Early. Offset by: (a) VS Code extension with IntelliSense, (b) CAG agent system for AI-assisted work, (c) large built-in API surface reducing need for third-party plugins.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Weakest area for an early project. Mitigated by: the AI tooling layer, the <code>library/</code> pure-Lua package, and the VS Code extension. The position: ship the functionality others delegate to plugins.</p>
+<hr />
+<h4 id="area-14-a-open-source-licensing-and-commercial-use">Area 14 â€” Open Source Licensing and Commercial Use<a class="headerlink" href="#area-14-a-open-source-licensing-and-commercial-use" title="Permanent link">&para;</a></h4>
+<p><em>Is the engine free, and can you ship commercial games without royalties?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>MIT. Free commercial use.</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Proprietary. Paid licenses for commercial export.</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>zlib. Free commercial use.</td>
+</tr>
+<tr>
+<td>Corona / Solar2D</td>
+<td>MIT. Free commercial use.</td>
+</tr>
+<tr>
+<td>Defold</td>
+<td>Defold License. Free, but restrictions apply to redistribution.</td>
+</tr>
+<tr>
+<td>HaxeFlixel</td>
+<td>MIT. Free commercial use.</td>
+</tr>
+<tr>
+<td>MonoGame</td>
+<td>Microsoft Public License. Generally free commercial.</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>LGPL. Free commercial use (with conditions).</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>MIT + Apache 2. Free commercial use.</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>Proprietary. Revenue-based licensing. Runtime fee controversy (2023).</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>MIT.</strong> Engine, examples, libraries, docs, and tools. Zero royalties. No runtime fees. No license server.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Maximally open. Especially relevant for indie and AI-automated pipelines where licensing audits add friction.</p>
+<hr />
+<h4 id="area-15-a-platform-reach">Area 15 â€” Platform Reach<a class="headerlink" href="#area-15-a-platform-reach" title="Permanent link">&para;</a></h4>
+<p><em>Which platforms can you target?</em></p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Godot 4</td>
+<td>Desktop + Web + Mobile + Console (community).</td>
+</tr>
+<tr>
+<td>GameMaker 2</td>
+<td>Desktop + Web + Mobile + Console (paid tiers).</td>
+</tr>
+<tr>
+<td>Love2D</td>
+<td>Desktop + Android (community).</td>
+</tr>
+<tr>
+<td>Pygame</td>
+<td>Desktop only (practically).</td>
+</tr>
+<tr>
+<td>Bevy</td>
+<td>Desktop + Web (experimental).</td>
+</tr>
+<tr>
+<td>Unity 2D</td>
+<td>All platforms including Console + Mobile + VR.</td>
+</tr>
+<tr>
+<td><strong>Lurek2D</strong></td>
+<td><strong>Desktop only (Windows / Linux / macOS, x86_64 + ARM). Binding constraint A-02.</strong> No mobile, no WASM.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lurek2D verdict:</strong> Narrower than Unity or Godot by design. Desktop-only is a deliberate scope decision, not a limitation â€” it allows the engine to maintain a small, reliable binary and tight GPU/OS assumptions (B-03).</p>
+<hr />
+<h2 id="3-summary-scorecard">3. Summary Scorecard<a class="headerlink" href="#3-summary-scorecard" title="Permanent link">&para;</a></h2>
+<p>Legend: â…â…â… best-in-class Â· â…â… competitive Â· â… acceptable Â· â€” weak/not applicable</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Godot 4</th>
+<th>GameMaker 2</th>
+<th>Love2D</th>
+<th>Unity 2D</th>
+<th>Lurek2D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. API surface breadth</td>
+<td>â…â…</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>2. Docs completeness / machine-readable</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>3. AI-first tooling</td>
+<td>â…</td>
+<td>â€”</td>
+<td>â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>4. Code-only workflow</td>
+<td>â…</td>
+<td>â€”</td>
+<td>â…â…â…</td>
+<td>â€”</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>5. Scripting ergonomics</td>
+<td>â…â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>6. Binary size / ship simplicity</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>7. Learning curve</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>8. Performance baseline</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>9. Test + evidence coverage</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>10. Vibe-coding / AI slop risk â†“</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>11. Modding / extensibility</td>
+<td>â…â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…â…</td>
+</tr>
+<tr>
+<td>12. Simulation / data capabilities</td>
+<td>â…</td>
+<td>â€”</td>
+<td>â…</td>
+<td>â…</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>13. Community / ecosystem</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+<td>â…</td>
+</tr>
+<tr>
+<td>14. Open source / licensing</td>
+<td>â…â…â…</td>
+<td>â€”</td>
+<td>â…â…â…</td>
+<td>â€”</td>
+<td>â…â…â…</td>
+</tr>
+<tr>
+<td>15. Platform reach</td>
+<td>â…â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+<td>â…â…â…</td>
+<td>â…â…</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Lurek2D leads in 9 of 15 areas. Its single structural weakness is ecosystem/community size â€” expected for an early project and offset by the AI-assisted workflow layer.</p>
+</blockquote>
+<hr />
+<h2 id="4-the-api-as-building-blocks-model-explained">4. The "API as Building Blocks" Model Explained<a class="headerlink" href="#4-the-api-as-building-blocks-model-explained" title="Permanent link">&para;</a></h2>
+<p>GameMaker gives you <strong>blocks you drag onto a canvas.</strong>
+Lurek2D gives you <strong>blocks you call in Lua.</strong></p>
+<p>Both solve the same core problem: you should not have to implement a physics solver, an audio mixer, or a tilemap renderer to make a game. The difference:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>GameMaker</th>
+<th>Lurek2D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How you access blocks</td>
+<td>GUI + GML</td>
+<td><code>lurek.*</code> Lua calls</td>
+</tr>
+<tr>
+<td>AI can use?</td>
+<td>No â€” GUI is opaque</td>
+<td>Yes â€” API is 100% documented</td>
+</tr>
+<tr>
+<td>Tests for each block?</td>
+<td>No</td>
+<td>Yes â€” every function</td>
+</tr>
+<tr>
+<td>Add your own blocks?</td>
+<td>Extensions (complex)</td>
+<td>Pure Lua library/ or Rust plugin</td>
+</tr>
+<tr>
+<td>Editor required?</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Works in CI/headless?</td>
+<td>Limited</td>
+<td>Yes â€” Lua-first test harness</td>
+</tr>
+</tbody>
+</table>
+<p>The Lurek2D model removes the only part AI cannot see: the visual editor. Everything else â€” the building blocks â€” is exposed as a clean, tested, documented Lua API.</p>
+<hr />
+<h2 id="5-primary-positioning-statement">5. Primary Positioning Statement<a class="headerlink" href="#5-primary-positioning-statement" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Lurek2D: Game development for the agent-assisted era.</strong></p>
+<p>Where other engines ship a visual editor, Lurek2D ships 5 000+ documented, tested API building blocks. Your <code>main.lua</code> wires them together. An AI agent reads the docs, sees the example, and writes correct game code â€” the first time.</p>
+<p>One binary. One Lua file. Zero IDE ceremony. Maximum API surface. Minimum AI slop.</p>
+</blockquote>
+<hr />
+<h2 id="6-target-personas-and-their-hook">6. Target Personas and Their Hook<a class="headerlink" href="#6-target-personas-and-their-hook" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Persona</th>
+<th>Why Lurek2D</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI-assisted game developer</td>
+<td>The API is the context window. 5 000+ functions, all documented, all tested. AI slop eliminated at the source.</td>
+</tr>
+<tr>
+<td>Indie solo developer</td>
+<td>Fast path from idea to playable. No editor to learn. Examples for everything. MIT licensed.</td>
+</tr>
+<tr>
+<td>Game jam participant</td>
+<td><code>main.lua</code> + API reference + examples â†’ working game in hours, not days.</td>
+</tr>
+<tr>
+<td>Simulation / tool builder</td>
+<td><code>dataframe</code>, <code>compute</code>, <code>procgen</code>, <code>globe</code>, <code>province</code> â€” no other 2D runtime offers this.</td>
+</tr>
+<tr>
+<td>Engine developer</td>
+<td>Rust core, clean 5-tier architecture, no cycles, documented spec per module. Easy to extend.</td>
+</tr>
+<tr>
+<td>Educator / student</td>
+<td>Engine architecture, test placement, doc standards â€” all visible. The whole system is a teaching artifact.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Generated by Architect agent â€” skill_enterprise-architecture + skill_solution-options loaded.</em>
+<em>Source references: <code>docs/architecture/philosophy.md</code>, <code>README.md</code>, <code>src/lua_api/</code> (71 modules), <code>content/examples/</code> (67 example files).</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Lurek2D/lurek_2d" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

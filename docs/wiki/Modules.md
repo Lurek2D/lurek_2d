@@ -64,6 +64,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [agent](Module-agent) | `lurek.agent` | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
 | [ai](Module-ai) | `lurek.ai` | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [animation](Module-animation) | `lurek.animation` | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
+| [asset](Module-asset) | `lurek.asset` | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
 | [automation](Module-automation) | `lurek.automation` | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [charts](Module-charts) | `lurek.charts` | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers. |
 | [cursor](Module-cursor) | `lurek.cursor` | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom. |

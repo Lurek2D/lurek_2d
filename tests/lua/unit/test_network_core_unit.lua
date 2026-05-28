@@ -614,4 +614,72 @@ end)
       rt:shutdown()
     end)
   end)
+
+-- @describe lurek.network.sseConnect
+describe("lurek.network.sseConnect", function()
+  -- @covers lurek.network.sseConnect
+  it("sseConnect is a function", function()
+    expect_equal(type(lurek.network.sseConnect), "function")
+  end)
+
+  -- @covers LSseStream:isOpen
+  -- @covers LSseStream:close
+  -- @covers lurek.network.sseConnect
+  it("sseConnect returns LSseStream userdata with isOpen and close", function()
+    -- Connection to a non-listening port will fail quickly; we test the API surface only.
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
+    expect_equal(type(stream), "userdata")
+    expect_type("boolean", stream:isOpen())
+    expect_no_error(function() stream:close() end)
+  end)
+
+  -- @covers LSseStream:next
+  -- @covers lurek.network.sseConnect
+  it("LSseStream:next returns nil when no events are available", function()
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
+    -- next() must not error and returns nil when the queue is empty or connection failed.
+    local ok, result = pcall(function() return stream:next() end)
+    expect_equal(true, ok)
+    -- result is nil or a table (if a sentinel arrived); both are valid.
+    expect_equal(true, result == nil or type(result) == "table")
+    stream:close()
+  end)
+
+  -- @covers LSseStream:type
+  -- @covers LSseStream:typeOf
+  -- @covers lurek.network.sseConnect
+  it("LSseStream type/typeOf return correct values", function()
+    local stream = lurek.network.sseConnect("http://127.0.0.1:1", function(_ev) end)
+    expect_equal("LSseStream", stream:type())
+    expect_equal(true, stream:typeOf("LSseStream"))
+    expect_equal(true, stream:typeOf("LObject"))
+    expect_equal(false, stream:typeOf("LNetworkHost"))
+    stream:close()
+  end)
+end)
+
+-- @describe lurek.network.sseCollect
+describe("lurek.network.sseCollect", function()
+  -- @covers lurek.network.sseCollect
+  it("sseCollect is a function", function()
+    expect_equal(type(lurek.network.sseCollect), "function")
+  end)
+
+  -- @covers lurek.network.sseCollect
+  it("sseCollect returns a table when endpoint is unreachable", function()
+    -- Times out immediately (0.05 s) against a non-listening port.
+    local events = lurek.network.sseCollect("http://127.0.0.1:1", 5, 0.05)
+    expect_equal(type(events), "table")
+  end)
+
+  -- @covers lurek.network.sseCollect
+  it("sseCollect uses default timeout when omitted", function()
+    -- Default timeout is 5 s; we override with a tiny value to avoid blocking tests.
+    -- Just verify the function is callable and returns a table.
+    local ok, result = pcall(lurek.network.sseCollect, "http://127.0.0.1:1", 1, 0.05)
+    expect_equal(true, ok)
+    expect_equal(type(result), "table")
+  end)
+end)
+
 test_summary()

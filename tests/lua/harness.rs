@@ -397,6 +397,11 @@ fn lua_unit_animation_unit() {
 }
 
 #[test]
+fn lua_unit_asset_unit() {
+    run_lua_test("unit/test_asset_core_unit.lua");
+}
+
+#[test]
 fn lua_unit_audio_unit() {
     run_lua_test("unit/test_audio_core_unit.lua");
 }

@@ -1,0 +1,164 @@
+site_name: Lurek2D
+site_description: Single-binary 2D Rust runtime for Lua game scripts
+site_url: https://lurek2d.github.io/lurek_2d/
+repo_url: https://github.com/Lurek2D/lurek_2d
+repo_name: Lurek2D/lurek_2d
+edit_uri: ""
+
+docs_dir: docs
+site_dir: pages
+use_directory_urls: false
+
+exclude_docs: |
+  specs/
+  api/
+  wiki/
+  templates/
+  snippets.md
+  linux_build.md
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.indexes
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+
+extra_css:
+  - assets/lurek.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+validation:
+  omitted_files: ignore
+  absolute_links: ignore
+  unrecognized_links: ignore
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Lurek2D/lurek_2d
+
+nav:
+  - Home: index.md
+  - Architecture:
+    - Philosophy: architecture/philosophy.md
+    - Handbook: handbook.md
+    - Engine: architecture/engine-architecture.md
+    - Testing: architecture/test-framework.md
+    - CAG System: architecture/cag-system.md
+    - RAG System: architecture/rag-system.md
+    - VS Code Extension: extension_plan.md
+    - Lua API Standards: architecture/lua-api-file-standard.md
+    - Coding Standards: codding_standards.md
+    - Use Cases: use_cases.md
+    - Competition: positioning.md
+    - Build: build_info.md
+  - Lua:
+    - Agent: modules/agent.md
+    - AI: modules/ai.md
+    - Animation: modules/animation.md
+    - App: modules/app.md
+    - Audio: modules/audio.md
+    - Automation: modules/automation.md
+    - Binary: modules/binary.md
+    - Camera: modules/camera.md
+    - Charts: modules/charts.md
+    - Color: modules/color.md
+    - Compute: modules/compute.md
+    - Cursor: modules/cursor.md
+    - Dataframe: modules/dataframe.md
+    - Debug Bridge: modules/debugbridge.md
+    - Dev Tools: modules/devtools.md
+    - Dialog: modules/dialog.md
+    - Docs: modules/docs.md
+    - DSP: modules/dsp.md
+    - ECS: modules/ecs.md
+    - Effect: modules/effect.md
+    - Event: modules/event.md
+    - Filesystem: modules/filesystem.md
+    - Flownet: modules/flownet.md
+    - Font: modules/font.md
+    - Globe: modules/globe.md
+    - Grep: modules/grep.md
+    - HTML: modules/html.md
+    - I18n: modules/i18n.md
+    - Image: modules/image.md
+    - Input: modules/input.md
+    - Layout: modules/layout.md
+    - Learning: modules/learning.md
+    - Light: modules/light.md
+    - Log: modules/log.md
+    - Mapblock: modules/mapblock.md
+    - Math: modules/math.md
+    - Midi: modules/midi.md
+    - Minimap: modules/minimap.md
+    - Mods: modules/mods.md
+    - Network: modules/network.md
+    - Overlay: modules/overlay.md
+    - Parallax: modules/parallax.md
+    - Particle: modules/particle.md
+    - Pathfind: modules/pathfind.md
+    - Patterns: modules/patterns.md
+    - Physics: modules/physics.md
+    - Pipeline: modules/pipeline.md
+    - Procgen: modules/procgen.md
+    - Province: modules/province.md
+    - Raycaster: modules/raycaster.md
+    - Render: modules/render.md
+    - Repl: modules/repl.md
+    - Runtime: modules/runtime.md
+    - Save: modules/save.md
+    - Scene: modules/scene.md
+    - Serialize: modules/serialize.md
+    - Spine: modules/spine.md
+    - Sprite: modules/sprite.md
+    - Terminal: modules/terminal.md
+    - Thread: modules/thread.md
+    - Tilemap: modules/tilemap.md
+    - Timer: modules/timer.md
+    - Tween: modules/tween.md
+    - UI: modules/ui.md
+    - Validator: modules/validator.md
+    - Visibility: modules/visibility.md
+    - Window: modules/window.md
+  - Changelog: CHANGELOG.md

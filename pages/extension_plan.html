@@ -1,0 +1,5292 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Single-binary 2D Rust runtime for Lua game scripts">
+      
+      
+      
+        <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/extension_plan.html">
+      
+      
+        <link rel="prev" href="architecture/rag-system.html">
+      
+      
+        <link rel="next" href="architecture/lua-api-file-standard.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>VS Code Extension - Lurek2D</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/lurek.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#detailed-description-of-vs-code-panels-and-functions-recreation-guide-for-gemini-canvas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Lurek2D" class="md-header__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lurek2D
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VS Code Extension
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="architecture/philosophy.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="modules/agent.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Lua
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="CHANGELOG.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Lurek2D" class="md-nav__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    Lurek2D
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/philosophy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="handbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/engine-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/test-framework.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/cag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/rag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="extension_plan.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ux-ui-layout-conventions-for-webview-editors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UX / UI Layout Conventions for Webview Editors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-activity-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Activity Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-side-bar-main-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Side Bar (Main Panel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Side Bar (Main Panel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-view-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. View: Explorer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-view-search-global-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. View: Search (Global Search)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-view-source-control-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. View: Source Control (Git)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-view-run-and-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. View: Run and Debug
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-view-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. View: Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-editor-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Editor Area
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Editor Area">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-tabs-and-editor-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Tabs and Editor Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-main-code-editor-eg-monaco-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Main Code Editor (e.g., Monaco Editor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-panel-bottom-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Panel (Bottom Panel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Panel (Bottom Panel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-debug-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Debug Console
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. Terminal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-ports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. Ports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-status-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Status Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-title-bar-command-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Title Bar &amp; Command Palette
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-custom-editors-lurek2d-engine-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Custom Editors (Lurek2D Engine Tools)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Custom Editors (Lurek2D Engine Tools)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tilemapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. TileMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scenefloweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SceneFlowEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-entityeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. EntityEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-pixelarteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PixelArtEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-particleeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ParticleEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-dialogeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. DialogEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-databaseeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. DatabaseEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-procmapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ProcMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-questtreeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. QuestTreeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-guiwidgeteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. GuiWidgetEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-aibehavioreditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. AiBehaviorEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-grapheditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. GraphEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-tilemapscripteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. TilemapScriptEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-voxeleditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. VoxelEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-testrunnereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. TestRunnerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-apireferenceeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. ApiReferenceEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-postfxoverlayeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. PostFxOverlayEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-sounddspeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. SoundDspEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-spriteanimeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. SpriteAnimEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#20-tileseteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. TilesetEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21-audiomixereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        21. AudioMixerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-colorpaletteeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22. ColorPaletteEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-inputmappereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        23. InputMapperEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-timelineeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24. TimelineEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-shaderprevieweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25. ShaderPreviewEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-fontprevieweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26. FontPreviewEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-localizationeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        27. LocalizationEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-physicsmaterialseditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        28. PhysicsMaterialsEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-worldmapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29. WorldMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#30-provinceeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        30. ProvinceEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#31-globeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        31. GlobeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-navmesheditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32. NavMeshEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-skeletonriggingeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        33. SkeletonRiggingEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-visualshadereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        34. VisualShaderEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-lightingenvironmenteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        35. LightingEnvironmentEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-guithemeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        36. GuiThemeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-networktopologyeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        37. NetworkTopologyEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-globalautoloadeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        38. GlobalAutoloadEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-assetmanifesteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        39. AssetManifestEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#40-performanceprofilereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        40. PerformanceProfilerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#41-projectexporteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        41. ProjectExportEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/lua-api-file-standard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua API Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="codding_standards.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="use_cases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="positioning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_info.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lua
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/agent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ai.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/animation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Animation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/audio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/automation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/binary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/camera.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/charts.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/color.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Color
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/compute.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/cursor.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dataframe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataframe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/debugbridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/devtools.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dialog.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/docs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dsp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DSP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ecs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/effect.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/event.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/filesystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/flownet.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flownet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/font.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Font
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/globe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/grep.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grep
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/html.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/i18n.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/image.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/input.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/learning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/light.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Light
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mapblock.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapblock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/midi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Midi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/minimap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mods.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/network.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/overlay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/parallax.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/particle.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pathfind.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pathfind
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/physics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/procgen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Procgen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/province.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Province
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/raycaster.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raycaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/render.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/repl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/runtime.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/save.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/scene.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/serialize.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/spine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/sprite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/terminal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/thread.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tilemap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/timer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tween.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/validator.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/visibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/window.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ux-ui-layout-conventions-for-webview-editors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UX / UI Layout Conventions for Webview Editors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-activity-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Activity Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-side-bar-main-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Side Bar (Main Panel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Side Bar (Main Panel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-view-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. View: Explorer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-view-search-global-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. View: Search (Global Search)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-view-source-control-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. View: Source Control (Git)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-view-run-and-debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. View: Run and Debug
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-view-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. View: Extensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-editor-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Editor Area
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Editor Area">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-tabs-and-editor-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Tabs and Editor Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-main-code-editor-eg-monaco-editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Main Code Editor (e.g., Monaco Editor)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-panel-bottom-panel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Panel (Bottom Panel)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Panel (Bottom Panel)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Problems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-debug-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Debug Console
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D. Terminal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-ports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E. Ports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-status-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Status Bar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-title-bar-command-palette" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Title Bar &amp; Command Palette
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-custom-editors-lurek2d-engine-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Custom Editors (Lurek2D Engine Tools)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Custom Editors (Lurek2D Engine Tools)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tilemapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. TileMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scenefloweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SceneFlowEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-entityeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. EntityEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-pixelarteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. PixelArtEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-particleeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ParticleEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-dialogeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. DialogEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-databaseeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. DatabaseEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-procmapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ProcMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-questtreeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. QuestTreeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-guiwidgeteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. GuiWidgetEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-aibehavioreditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. AiBehaviorEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-grapheditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. GraphEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-tilemapscripteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. TilemapScriptEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-voxeleditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. VoxelEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-testrunnereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. TestRunnerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-apireferenceeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. ApiReferenceEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-postfxoverlayeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. PostFxOverlayEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-sounddspeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        18. SoundDspEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#19-spriteanimeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        19. SpriteAnimEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#20-tileseteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. TilesetEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21-audiomixereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        21. AudioMixerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-colorpaletteeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22. ColorPaletteEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-inputmappereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        23. InputMapperEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-timelineeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        24. TimelineEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-shaderprevieweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        25. ShaderPreviewEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-fontprevieweditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        26. FontPreviewEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-localizationeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        27. LocalizationEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-physicsmaterialseditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        28. PhysicsMaterialsEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-worldmapeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29. WorldMapEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#30-provinceeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        30. ProvinceEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#31-globeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        31. GlobeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-navmesheditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32. NavMeshEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-skeletonriggingeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        33. SkeletonRiggingEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-visualshadereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        34. VisualShaderEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-lightingenvironmenteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        35. LightingEnvironmentEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-guithemeeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        36. GuiThemeEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#37-networktopologyeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        37. NetworkTopologyEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#38-globalautoloadeditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        38. GlobalAutoloadEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#39-assetmanifesteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        39. AssetManifestEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#40-performanceprofilereditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        40. PerformanceProfilerEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#41-projectexporteditor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        41. ProjectExportEditor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="detailed-description-of-vs-code-panels-and-functions-recreation-guide-for-gemini-canvas">Detailed Description of VS Code Panels and Functions (Recreation Guide for Gemini Canvas)<a class="headerlink" href="#detailed-description-of-vs-code-panels-and-functions-recreation-guide-for-gemini-canvas" title="Permanent link">&para;</a></h1>
+<p>This document contains a comprehensive specification of all standard Visual Studio Code panels and custom Lurek2D editors. It emphasizes a detailed <strong>description of available features</strong> and the <strong>purpose</strong> of each element, serving as a direct instruction manual for recreating a full-fledged IDE interface as a standalone application (e.g., in Gemini Canvas).</p>
+<hr />
+<h2 id="ux-ui-layout-conventions-for-webview-editors">UX / UI Layout Conventions for Webview Editors<a class="headerlink" href="#ux-ui-layout-conventions-for-webview-editors" title="Permanent link">&para;</a></h2>
+<p>To maintain a true MS VS Code experience, every custom Lurek2D editor should strictly adhere to the following layout conventions. The AI agent implementing these panels must use this spatial architecture to ensure a uniform developer experience:</p>
+<ol>
+<li><strong>Top Action Toolbar:</strong> </li>
+<li>Positioned directly under the editor tab.</li>
+<li>Used for global/document-level actions.</li>
+<li>Typical buttons: <code>Save</code>, <code>Import/Export</code>, <code>Play/Pause/Stop</code> (for simulations), <code>Zoom In/Out</code>, and <code>Toggle Grid/Snap</code>.</li>
+<li>
+<p>Never place object-specific property forms here.</p>
+</li>
+<li>
+<p><strong>Left Sidebar (Palette / Tool Picker):</strong></p>
+</li>
+<li>Typically used for <em>Selection</em> and <em>Tool modes</em>.</li>
+<li>Contains tools (Brush, Eraser, Selection Marquee).</li>
+<li>Contains libraries (Tile Palettes, Node lists to drag-and-drop into a graph, Prefab lists).</li>
+<li>
+<p>Can be collapsed to maximize canvas space.</p>
+</li>
+<li>
+<p><strong>Right Sidebar (Inspector / Configuration):</strong></p>
+</li>
+<li>Strictly reserved for <em>Properties</em> and <em>Configuration</em>.</li>
+<li>When a user clicks a node, tile, or entity in the main canvas, this panel populates with its specific properties (e.g., X/Y coordinates, health values, specific names).</li>
+<li>
+<p>This is where complex TOML/JSON fields are exposed as input boxes, dropdowns, and sliders.</p>
+</li>
+<li>
+<p><strong>Main Canvas (Center):</strong></p>
+</li>
+<li>The primary interactive zone (Grid map, Node Graph, Text Editor, 3D Viewport).</li>
+<li>
+<p>Must support panning (Middle Mouse Button / Space+Drag) and zooming (Mouse Wheel).</p>
+</li>
+<li>
+<p><strong>Bottom Panel (Optional):</strong></p>
+</li>
+<li>Reserved for temporal or analytical data.</li>
+<li>Typically houses Timelines (for animation), Output Logs (for testing/compilation errors), or Data Tables.</li>
+</ol>
+<hr />
+<h2 id="1-activity-bar">1. Activity Bar<a class="headerlink" href="#1-activity-bar" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> 
+Provides the main global navigation point between the application's primary workspaces (Viewlets). It acts as a switcher that changes the content of the adjacent Side Bar.</p>
+<p><strong>Detailed Feature List:</strong>
+- <strong>View Switching:</strong> Clicking an icon (Explorer, Search, Source Control, Run &amp; Debug, Extensions) loads the corresponding view in the Side Bar. Clicking the active icon again collapses/hides the Side Bar.
+- <strong>Status Badges:</strong> Dynamic notifications on icons, such as a blue circle with the number of uncommitted files (in Git) or available extension updates.
+- <strong>Global Actions (Bottom):</strong>
+  - <strong>Account Management (User Icon):</strong> Log in to synchronize settings or authenticate with GitHub.
+  - <strong>Settings (Gear Icon):</strong> Expands a global menu granting access to Settings, Keyboard Shortcuts, Color Themes, and the Command Palette.
+- <strong>Layout Management:</strong> Users can drag and drop icons to reorder them and right-click to hide specific icons entirely.</p>
+<hr />
+<h2 id="2-side-bar-main-panel">2. Side Bar (Main Panel)<a class="headerlink" href="#2-side-bar-main-panel" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> 
+Displays detailed tools, trees, lists, and information for the currently selected context from the Activity Bar.</p>
+<h3 id="a-view-explorer">A. View: Explorer<a class="headerlink" href="#a-view-explorer" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Manage the project's file and folder structure.
+<strong>Features:</strong>
+- <strong>File Tree:</strong> Displays directory structures with support for expanding/collapsing folders, creating new files/folders, renaming, and deleting. Supports file drag &amp; drop.
+- <strong>Open Editors:</strong> A list of currently open tabs in the editor area, allowing quick closing, saving, or switching without searching through the top tab bar.
+- <strong>Outline:</strong> A hierarchical tree of classes, methods, functions, and variables in the currently open file, enabling instant navigation to specific code blocks.
+- <strong>Timeline:</strong> A history of local saves and Git revisions for a specific file, allowing preview and restoration of older versions.</p>
+<h3 id="b-view-search-global-search">B. View: Search (Global Search)<a class="headerlink" href="#b-view-search-global-search" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Search and replace text across the entire open workspace ("find in files").
+<strong>Features:</strong>
+- <strong>Search and Replace:</strong> Input fields for <em>Search</em> and <em>Replace</em>.
+- <strong>Match Options:</strong> Toggles for <code>Match Case</code>, <code>Match Whole Word</code>, and <code>Use Regular Expression</code>.
+- <strong>Path Filtering:</strong> <code>Files to include</code> and <code>Files to exclude</code> fields to target specific file types or ignore directories (e.g., <code>node_modules</code>).
+- <strong>Result View:</strong> Results grouped by file. Clicking a result instantly navigates to the exact line in the editor, highlighting the match.</p>
+<h3 id="c-view-source-control-git">C. View: Source Control (Git)<a class="headerlink" href="#c-view-source-control-git" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Manage modification history, commit changes, and synchronize with a remote repository.
+<strong>Features:</strong>
+- <strong>Commit Message Box:</strong> Text area to write change descriptions, paired with a <code>Commit</code> button.
+- <strong>Changes Tree:</strong> List of files separated into <code>Staged Changes</code> (included in the commit) and <code>Changes</code> (modified but not staged).
+- <strong>Inline Actions:</strong> Quick buttons next to each file: <code>+</code> (Stage), <code>-</code> (Unstage), and <code>Arrow</code> (Revert changes).
+- <strong>Diff View:</strong> Clicking a file in the list opens a Diff View (before/after comparison) in the editor area, highlighting added and removed lines.</p>
+<h3 id="d-view-run-and-debug">D. View: Run and Debug<a class="headerlink" href="#d-view-run-and-debug" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Full control over application execution and step-by-step code debugging.
+<strong>Features:</strong>
+- <strong>Variables:</strong> A tree showing local and global variables and their current values when paused at a breakpoint.
+- <strong>Watch:</strong> Ability to add custom mathematical expressions or variable names that are continuously evaluated.
+- <strong>Call Stack:</strong> The execution path showing how the application reached the current line, allowing navigation up and down the stack.
+- <strong>Breakpoints:</strong> List and management of all breakpoints set in the code, with one-click toggles to enable/disable them.</p>
+<h3 id="e-view-extensions">E. View: Extensions<a class="headerlink" href="#e-view-extensions" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Install and manage plugins integrated into the IDE.
+<strong>Features:</strong>
+- <strong>Search and List:</strong> A module to search for extensions by keywords, displaying descriptions, install counts, and ratings.
+- <strong>State Management:</strong> Options to Disable, Uninstall, or Install each item directly from the sidebar list.</p>
+<hr />
+<h2 id="3-editor-area">3. Editor Area<a class="headerlink" href="#3-editor-area" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> The main workspace canvas where the user reads/writes code, analyzes file differences, and interacts with rich plugin interfaces. It is the most complex area of the window.</p>
+<p><strong>Detailed Feature List:</strong></p>
+<h3 id="a-tabs-and-editor-groups">A. Tabs and Editor Groups<a class="headerlink" href="#a-tabs-and-editor-groups" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Tabs:</strong> Cards for open files at the top of the area. Tabs support visual states:</li>
+<li>"Active" (highlighted).</li>
+<li>"Unsaved" (a dot replaces the 'X' icon).</li>
+<li>"Preview" (italic text – the file is only being previewed and will be replaced if another preview is opened).</li>
+<li>"Pinned" (pin icon – hides the filename and minimizes tab width).</li>
+<li><strong>Editor Groups (Grid/Split):</strong> A system allowing vertical and horizontal space division. Users can edit multiple files simultaneously in independent, tiled view groups within a single window.</li>
+</ul>
+<h3 id="b-main-code-editor-eg-monaco-editor">B. Main Code Editor (e.g., Monaco Editor)<a class="headerlink" href="#b-main-code-editor-eg-monaco-editor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Breadcrumbs:</strong> A thin bar above the text showing the exact structure and cursor location (e.g., <code>src &gt; components &gt; index.ts &gt; class Server &gt; start()</code>).</li>
+<li><strong>Line Numbers &amp; Gutter:</strong> A left margin displaying line numbers with extra features:</li>
+<li>Space to place red Breakpoint dots.</li>
+<li>Git decorators – colored vertical bars indicating version control status (green for added, red for deleted).</li>
+<li>Code Folding – arrows to collapse entire functions or loops into a single line.</li>
+<li><strong>Minimap:</strong> A miniaturized "bird's-eye" view of the entire file structure on the right edge, acting as a scrollbar and highlighting errors or search results.</li>
+<li><strong>Scrollbars &amp; Decorators:</strong> The scrollbar acts as a radar; errors or warnings on specific lines appear as colored marks on the scroll track.</li>
+<li><strong>IntelliSense and Hover:</strong></li>
+<li><strong>Autocomplete:</strong> Context menus suggesting keywords, class properties, and code snippets upon typing.</li>
+<li><strong>Hover:</strong> Resting the mouse over a variable or function displays a popup with its JSDoc documentation and type declaration.</li>
+<li><strong>Peek Definition:</strong> A shortcut expands a mini-editor inline, showing the source definition of a function without leaving the current file.</li>
+</ul>
+<hr />
+<h2 id="4-panel-bottom-panel">4. Panel (Bottom Panel)<a class="headerlink" href="#4-panel-bottom-panel" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> Consolidates logs, output streams, compilation errors, and terminal access in one place without obstructing the main editor above.</p>
+<p><strong>Detailed Feature List:</strong></p>
+<h3 id="a-problems">A. Problems<a class="headerlink" href="#a-problems" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A live aggregated list of all Errors, Warnings, and Infos declared by build systems and linters (e.g., ESLint, tsc) across the project.</li>
+<li>Double-clicking a problem opens the file and precisely places the cursor at the exact column of the error.</li>
+<li>Supports text filtering to hide errors from specific files.</li>
+</ul>
+<h3 id="b-output">B. Output<a class="headerlink" href="#b-output" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A read-only container for logs generated by background processes.</li>
+<li>Features a dropdown menu to quickly switch "channels" (e.g., Git logs, TypeScript Server, specific extensions).</li>
+</ul>
+<h3 id="c-debug-console">C. Debug Console<a class="headerlink" href="#c-debug-console" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A Read-Eval-Print Loop (REPL) interface. Used to interactively type commands directly into the running environment when paused at a breakpoint.</li>
+</ul>
+<h3 id="d-terminal">D. Terminal<a class="headerlink" href="#d-terminal" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A fully embedded system terminal emulator (bash, PowerShell, zsh) with its own internal tab system.</li>
+<li>Supports running multiple shells simultaneously or splitting a single console in half.</li>
+<li>Clickable Links: File paths printed in the terminal (e.g., <code>src/index.js:55</code>) become Ctrl-clickable links that open the file in the editor.</li>
+</ul>
+<h3 id="e-ports">E. Ports<a class="headerlink" href="#e-ports" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Port forwarding management panel. Displays applications running on localhost and allows mapping them to public URLs for collaboration (used heavily in Codespaces/Dev Containers).</li>
+</ul>
+<hr />
+<h2 id="5-status-bar">5. Status Bar<a class="headerlink" href="#5-status-bar" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> An information bar containing widgets at the very bottom of the screen. It not only displays status but provides instant <strong>shortcuts to modify that status</strong> upon clicking.</p>
+<p><strong>Detailed Feature List (Left to Right):</strong>
+- <strong>Remote Host:</strong> Signals remote connections (e.g., "WSL: Ubuntu"). Clicking manages remote sessions.
+- <strong>Git Branch:</strong> Displays the active branch. Clicking opens a quick-pick menu to checkout or create branches.
+- <strong>Git Sync:</strong> Shows commits ahead/behind the remote. Clicking executes a background Fetch -&gt; Pull -&gt; Push.
+- <strong>Problems Summary:</strong> Quick overview of project errors/warnings (X Error, ! Warning). Clicking focuses the bottom Problems Panel.
+- <strong>Cursor Position (Ln X, Col Y):</strong> Real-time display of the cursor's exact line and column.
+- <strong>Indentation:</strong> Displays space or tab rules (e.g., <code>Spaces: 2</code>). Clicking allows instant conversion between tabs and spaces.
+- <strong>Encoding &amp; Line Endings:</strong> Parameters like <code>UTF-8</code> and <code>CRLF</code>. Clicking allows saving or reopening the document with new encoding.
+- <strong>Language Mode:</strong> Displays the recognized language (e.g., <code>TypeScript</code>). Clicking allows overriding the syntax highlighting mode regardless of the file extension.
+- <strong>Notifications (Bell Icon):</strong> Opens an archive of past toast notifications.</p>
+<hr />
+<h2 id="6-title-bar-command-palette">6. Title Bar &amp; Command Palette<a class="headerlink" href="#6-title-bar-command-palette" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose:</strong> Provides access to all program options that lack dedicated windows, organized via a global search engine. Relies heavily on keyboard shortcuts (Ctrl+P / Cmd+P).</p>
+<p><strong>Detailed Feature List:</strong>
+- <strong>Command Center:</strong> A central search bar replacing traditional menus (File, Edit, View). Clicking opens the Command Palette.
+- <strong>Command Palette:</strong> The main dialog engine, functioning differently based on the leading character:
+  - <code>&gt;</code> : Execute a command (e.g., <code>&gt; Format Document</code>). Searches hundreds of built-in and extension actions.
+  - <em>(no prefix)</em> : "Go to File". Fuzzy search across all workspace files by name.
+  - <code>@</code> : "Go to Symbol in Editor". Lists all variables and functions in the current file.
+  - <code>#</code> : "Go to Symbol in Workspace". Global search for classes and functions across the entire project.
+  - <code>:</code> : Line navigation (e.g., typing <code>:150</code> jumps to line 150).
+- <strong>Layout Control:</strong> Buttons in the top right corner to instantly toggle the visibility of the Activity Bar, Side Bar, and Bottom Panel.</p>
+<hr />
+<h2 id="7-custom-editors-lurek2d-engine-tools">7. Custom Editors (Lurek2D Engine Tools)<a class="headerlink" href="#7-custom-editors-lurek2d-engine-tools" title="Permanent link">&para;</a></h2>
+<p>Lurek2D at its core philosophy operates like Love2D: a beautiful, code-first API without a bloated standalone editor. However, when paired with MS VS Code and these 31 custom webview editors, the experience transforms into a cohesive, Godot-like environment. </p>
+<p>The primary requirement for these editors is that they <strong>must generate and save data formats perfectly and natively compatible with specific Lurek2D API modules</strong>. Each editor has a strictly unique use case to prevent functionality overlap and ensure a unified pipeline.</p>
+<h3 id="1-tilemapeditor">1. TileMapEditor<a class="headerlink" href="#1-tilemapeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Tiled Map Editor, Godot TileMap Node.</li>
+<li><strong>Use case:</strong> Designing and building 2D grid-based maps, levels, and environments manually.</li>
+<li><strong>Lurek API Integration:</strong> Tightly integrated with <code>lurek.tilemap</code>. Outputs data loaded natively to instantiate grid-based structures.</li>
+<li><strong>Ideas / Vision:</strong> This editor must strictly focus on deterministic, hand-crafted level design to distinguish itself from the ProcMapEditor. It should output an optimized spatial grid format (<code>.ltm</code>) that the <code>lurek.tilemap</code> namespace can immediately consume for culling and collision generation without extra parsing logic.</li>
+<li><strong>Feature list:</strong></li>
+<li>Layer management (add, delete, reorder) for parallax and depth sorting.</li>
+<li>Interactive tile palette selector fetching from defined Tilesets.</li>
+<li>Brush drawing tool with dynamic sizing.</li>
+<li>Flood fill algorithm for rapid area coloring.</li>
+<li>Stamp tool for saving and pasting multi-tile patterns (e.g., entire houses).</li>
+<li>Collision mask painting mode overlay.</li>
+<li>Auto-tiling support for seamless terrain generation on the fly.</li>
+<li>Custom property injection per tile for logical triggers.</li>
+</ul>
+<h3 id="2-scenefloweditor">2. SceneFlowEditor<a class="headerlink" href="#2-scenefloweditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unity Animator (State Machine View), Unreal Engine Blueprints.</li>
+<li><strong>Use case:</strong> Designing the global state machine structure defining transitions between scenes (e.g., Splash -&gt; Main Menu -&gt; Gameplay).</li>
+<li><strong>Lurek API Integration:</strong> Integrates with <code>lurek.scene</code> and <code>lurek.scene.transitions</code> to generate state machine flows.</li>
+<li><strong>Ideas / Vision:</strong> Must act as the absolute top-level entry point router. It should completely eliminate the need for hardcoded state-switching logic by letting developers visually connect which Scene loads when an event is fired.</li>
+<li><strong>Feature list:</strong></li>
+<li>Visual node-based state machine editor mapping entire game states.</li>
+<li>Drag-and-drop state creation for UI screens and gameplay segments.</li>
+<li>Event-driven transition linking lines with conditional parameters.</li>
+<li>Real-time path highlighting during live gameplay debugging.</li>
+<li>State validation and unreachable code/node checking.</li>
+<li>Global variable bindings persistent across specific state transitions.</li>
+<li>Export flow data structurally to JSON/Lua definitions.</li>
+<li>Nested sub-scenes visualization for complex, deep UI menus.</li>
+</ul>
+<h3 id="3-entityeditor">3. EntityEditor<a class="headerlink" href="#3-entityeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot Node Inspector, Unity GameObject Inspector.</li>
+<li><strong>Use case:</strong> Visual configuration of "prefabs" or in-game spatial objects by setting their attributes and components.</li>
+<li><strong>Lurek API Integration:</strong> Fully bound to <code>lurek.ecs</code> (Entity Component System). Outputs data that translates directly into ECS entities.</li>
+<li><strong>Ideas / Vision:</strong> Completely distinct from the DatabaseEditor. This editor focuses exclusively on spatial, component-based actors in the world. It provides the Godot-like "Inspector" experience where developers assemble an entity from a Sprite and a Collider without writing boilerplate ECS registration code.</li>
+<li><strong>Feature list:</strong></li>
+<li>Component attachment library (Transform, Sprite, Rigidbody, Custom Scripts).</li>
+<li>Real-time component property inspector with slider and text inputs.</li>
+<li>Visual bounds, hitbox, and offset relative child preview.</li>
+<li>Default instantiation value overriding directly in the inspector.</li>
+<li>Nested child entity grouping (Parent/Child transform hierarchy).</li>
+<li>Quick-search component filtering.</li>
+<li>Copy/paste entire component configurations between different entities.</li>
+<li>Live stat and variable monitoring while the game is running.</li>
+</ul>
+<h3 id="4-pixelarteditor">4. PixelArtEditor<a class="headerlink" href="#4-pixelarteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Aseprite, Piskel.</li>
+<li><strong>Use case:</strong> Built-in painting tool allowing editing, drawing from scratch, and tweaking pixel-art textures directly in the IDE.</li>
+<li><strong>Lurek API Integration:</strong> Works with <code>lurek.image</code> and <code>lurek.sprite</code> to save and live-reload optimized image assets.</li>
+<li><strong>Ideas / Vision:</strong> Must integrate flawlessly with Lurek's live-reload functionality. If an artist tweaks a single pixel in this editor, it must instantly reflect on the moving character in the running Lurek2D game window via <code>lurek.image</code> hot-reloading.</li>
+<li><strong>Feature list:</strong></li>
+<li>Pixel-perfect pencil and eraser tools optimized for low resolutions.</li>
+<li>Bucket fill and magic wand with tolerance settings.</li>
+<li>Multi-layer management with opacity and blend mode controls.</li>
+<li>Custom color palette selection locked to specific hexadecimal ranges.</li>
+<li>Symmetry and mirror drawing axes for character faces.</li>
+<li>Frame-by-frame animation timeline integrated into the painting view.</li>
+<li>Onion skinning for visualizing previous and next frames.</li>
+<li>Real-time zoom and customizable grid overlays.</li>
+</ul>
+<h3 id="5-particleeditor">5. ParticleEditor<a class="headerlink" href="#5-particleeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unity Shuriken Particle System, Godot Particles2D.</li>
+<li><strong>Use case:</strong> Authoring 2D particle systems—creating visual special effects like smoke, explosions, or sparks.</li>
+<li><strong>Lurek API Integration:</strong> Integrates directly with <code>lurek.particle</code> and <code>lurek.effect</code> namespaces.</li>
+<li><strong>Ideas / Vision:</strong> Must remain completely distinct from the PostFxOverlayEditor. The ParticleEditor deals with localized, spawned spatial entities in the <code>lurek.particle</code> system, whereas PostFx handles global screen space.</li>
+<li><strong>Feature list:</strong></li>
+<li>Emitter shape configuration (cone, circle, edge, box area).</li>
+<li>Lifetime, emission rate, and max particle count controls.</li>
+<li>Color over lifetime complex gradient curve editor.</li>
+<li>Size and scale over time spline interpolations.</li>
+<li>Gravity, wind vector, and tangential velocity modifiers.</li>
+<li>Live interactive preview canvas running local physics simulations.</li>
+<li>Burst emission triggers for explosion effects.</li>
+<li>Custom texture/sprite assignment per individual particle.</li>
+</ul>
+<h3 id="6-dialogeditor">6. DialogEditor<a class="headerlink" href="#6-dialogeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Twine, Yarn Spinner, Articy: Draft.</li>
+<li><strong>Use case:</strong> Composing branching and multi-threaded narrative dialogue for RPGs or adventure games.</li>
+<li><strong>Lurek API Integration:</strong> Generates data for <code>LDialogueAI</code> inside the <code>lurek.ai</code> namespace, rendering text via <code>lurek.html</code>.</li>
+<li><strong>Ideas / Vision:</strong> Uniquely bridges narrative with AI logic. It must not overlap with the QuestTreeEditor: Dialog is strictly for conversational text and dialogue AI choices, while QuestTree tracks game-state progress. It utilizes <code>LDialogueAI</code> for topic and branch selection.</li>
+<li><strong>Feature list:</strong></li>
+<li>Node-based branching narrative and conversation structure layout.</li>
+<li>Designated NPC and Player dialogue nodes with distinct styling.</li>
+<li>Conditional checks for node execution (e.g. requires specific item in inventory).</li>
+<li>Lua script trigger insertion to execute game commands mid-sentence.</li>
+<li>Localization key mapping for multi-language translation.</li>
+<li>Character portrait and mood assignment per dialogue line.</li>
+<li>Voice-over audio track linking and playback preview.</li>
+<li>Auto-arrange layout tool for massive, tangled conversation webs.</li>
+</ul>
+<h3 id="7-databaseeditor">7. DatabaseEditor<a class="headerlink" href="#7-databaseeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> CastleDB, RPG Maker Database, Google Sheets.</li>
+<li><strong>Use case:</strong> Editing and managing pure game mechanics databases (e.g., weapon stats, merchant prices, loot tables) in a spreadsheet layout.</li>
+<li><strong>Lurek API Integration:</strong> Interfaces with <code>lurek.data</code> and <code>lurek.dataframe</code> namespaces to export structured tables.</li>
+<li><strong>Ideas / Vision:</strong> Distinctly handles tabular, abstract game balance data. Unlike the EntityEditor, the DatabaseEditor is where systems designers balance numeric values across hundreds of rows without ever looking at visual sprites, heavily utilizing <code>lurek.dataframe</code> capabilities.</li>
+<li><strong>Feature list:</strong></li>
+<li>Spreadsheet-style interactive grid view.</li>
+<li>Strongly-typed columns (integer, string, boolean, enum, asset reference).</li>
+<li>Advanced row sorting, tagging, and filtering capabilities.</li>
+<li>Foreign key relational linking between distinct tables.</li>
+<li>CSV/JSON structural import and export mapping.</li>
+<li>Bulk find/replace and math operations (e.g., +10% to entire column).</li>
+<li>Custom Lua formula columns for calculated fields.</li>
+<li>Real-time data validation and schema error highlighting.</li>
+</ul>
+<h3 id="8-procmapeditor">8. ProcMapEditor<a class="headerlink" href="#8-procmapeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> World Machine (2D adaptation), Blender Geometry Nodes.</li>
+<li><strong>Use case:</strong> Tuning procedural generation algorithms for maps, dungeons, and caves by manipulating seeds and mathematical noise grids.</li>
+<li><strong>Lurek API Integration:</strong> Feeds procedural rules and noise generation configuration directly to <code>lurek.procgen</code> and <code>lurek.math</code>.</li>
+<li><strong>Ideas / Vision:</strong> Outputs the <em>rules</em> of generation for <code>lurek.procgen</code> rather than baking static maps. It gives technical artists a playground to visually tweak Perlin noise octaves in <code>lurek.math</code>, outputting a configuration file for runtime generation.</li>
+<li><strong>Feature list:</strong></li>
+<li>Visual noise generation and heatmap preview.</li>
+<li>Configurable seed and frequency numeric inputs.</li>
+<li>Multi-octave Perlin/Simplex noise node mixing.</li>
+<li>Rule-based biome assignment based on moisture/elevation data.</li>
+<li>Density thresholds and radial falloff map masking.</li>
+<li>Real-time procedural map generation visualization overlay.</li>
+<li>Export generated heightmaps to PNG assets.</li>
+<li>Terrain smoothing and cellular automata configuration controls.</li>
+</ul>
+<h3 id="9-questtreeeditor">9. QuestTreeEditor<a class="headerlink" href="#9-questtreeeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Obsidian Canvas, Articy: Draft (Quest Flows).</li>
+<li><strong>Use case:</strong> Defining main story arcs and side quests as branching objective trees.</li>
+<li><strong>Lurek API Integration:</strong> Integrates with <code>lurek.save</code>, <code>lurek.event</code>, and <code>lurek.patterns</code> to track objective flags.</li>
+<li><strong>Ideas / Vision:</strong> Acts as the macro-orchestrator of game states. It allows developers to visualize the entire logical flow of the game's campaign without hardcoding progression flags, tracking states directly through <code>lurek.save</code> events.</li>
+<li><strong>Feature list:</strong></li>
+<li>Visual flowchart mapping of quest progression stages.</li>
+<li>Prerequisite and mutual exclusion link routing between nodes.</li>
+<li>Objective tracking configuration (e.g., kill 5 X, fetch Y).</li>
+<li>Reward dispensing triggers upon successful node completion.</li>
+<li>Interactive quest stage simulation mimicking player progress.</li>
+<li>Automatic layout generation for complex branching story arcs.</li>
+<li>Note and documentation attachments for writers.</li>
+<li>Quest state tracking and live debugging overlay.</li>
+</ul>
+<h3 id="10-guiwidgeteditor">10. GuiWidgetEditor<a class="headerlink" href="#10-guiwidgeteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Figma, Godot Control Nodes, Unity UI Builder.</li>
+<li><strong>Use case:</strong> Visually designing and composing user interfaces (UI/HUD, inventory windows, health bars, menus).</li>
+<li><strong>Lurek API Integration:</strong> Outputs UI layouts designed with HTML/CSS directly for the <code>lurek.html</code> namespace.</li>
+<li><strong>Ideas / Vision:</strong> Focuses purely on screen-space anchors and relative positioning using standard web technologies. It provides a visual builder so developers don't have to guess X/Y pixel coordinates in code, letting <code>lurek.html</code> natively render the resulting layouts.</li>
+<li><strong>Feature list:</strong></li>
+<li>Drag-and-drop UI component canvas (Divs, Text, Buttons).</li>
+<li>Screen anchor and alignment snapping features.</li>
+<li>Margin, padding, and Flexbox properties inspector.</li>
+<li>Font and text styling CSS overrides.</li>
+<li>TOML to CSS translation property panel.</li>
+<li>Z-index layer management for overlapping HUD elements.</li>
+<li>Hover and click active state simulation previews.</li>
+<li>Responsive scaling simulation across various aspect ratios.</li>
+</ul>
+<h3 id="11-aibehavioreditor">11. AiBehaviorEditor<a class="headerlink" href="#11-aibehavioreditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unreal Engine Behavior Tree Editor, NodeCanvas.</li>
+<li><strong>Use case:</strong> Constructing artificial intelligence logic for characters using Behavior Trees.</li>
+<li><strong>Lurek API Integration:</strong> Integrates natively with <code>lurek.ai</code> (specifically <code>LAIWorld</code>, <code>LBehaviorTree</code>, and <code>LBTNode</code>).</li>
+<li><strong>Ideas / Vision:</strong> Distinct from the general GraphEditor. This is strictly designed around the strict paradigm of Behavior Trees (Selectors, Sequences, Decorators) for decision-making agents. It outputs tree data that <code>lurek.ai</code> processes efficiently per tick.</li>
+<li><strong>Feature list:</strong></li>
+<li>Top-down tree execution topology visualization.</li>
+<li>Composite node insertion (Sequence, Selector, Parallel).</li>
+<li>Decorator wrapping (Inverter, Limiter, Cooldown, Repeater).</li>
+<li>Custom condition and action nodes with Lua bindings.</li>
+<li>Direct compilation of node logic to raw Lua code.</li>
+<li>Real-time visual execution pinging during live game debug.</li>
+<li>Sub-tree referencing to modularize AI behaviors.</li>
+<li>Node copy/paste and duplication across multiple enemy types.</li>
+</ul>
+<h3 id="12-grapheditor">12. GraphEditor<a class="headerlink" href="#12-grapheditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unreal Engine Blueprints, Godot VisualScript.</li>
+<li><strong>Use case:</strong> A generic directed-graph editor used for visual scripting and generic logical flows.</li>
+<li><strong>Lurek API Integration:</strong> Utilizes <code>lurek.graph</code> for managing visual node-based execution logic.</li>
+<li><strong>Ideas / Vision:</strong> Functions as the "Blueprint" equivalent for Lurek2D. It empowers game designers who do not want to type raw Lua code to build custom gameplay logic by connecting functional nodes parsed by <code>lurek.graph</code>.</li>
+<li><strong>Feature list:</strong></li>
+<li>Infinite panning and zooming visual scripting canvas.</li>
+<li>Custom input and output execution/data pins.</li>
+<li>Typed connection cables enforcing logic (float, string, vector).</li>
+<li>Live data flow visualization and value inspection during runtime.</li>
+<li>Grouping and commenting blocks for organized logic.</li>
+<li>Automatic node arrangement algorithms.</li>
+<li>Graph diffing capabilities for Git version control.</li>
+<li>Mini-map navigation for massively complex scripts.</li>
+</ul>
+<h3 id="13-tilemapscripteditor">13. TilemapScriptEditor<a class="headerlink" href="#13-tilemapscripteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Warcraft III World Editor (Region triggers), RPG Maker Event Map.</li>
+<li><strong>Use case:</strong> Attaching specific triggers and Lua mechanics directly to specific cells on a tilemap.</li>
+<li><strong>Lurek API Integration:</strong> Injects embedded Lua callbacks (e.g., <code>OnStep</code>) into <code>lurek.tilemap</code> events triggered via <code>lurek.event</code>.</li>
+<li><strong>Ideas / Vision:</strong> A text-based editor strongly bound to physical grid coordinates. It solves the problem of local tile logic by allowing script injection directly onto <code>lurek.tilemap</code> data structures.</li>
+<li><strong>Feature list:</strong></li>
+<li>Inline Lua code editor attached to grid coordinates.</li>
+<li>Syntax highlighting and Lurek API IntelliSense.</li>
+<li>Exact tile coordinate binding and visualization.</li>
+<li>Event trigger dropdown selection (OnStep, OnInteract).</li>
+<li>Debug print console integration within the panel.</li>
+<li>Parameter exposure allowing designers to tweak variables.</li>
+<li>Real-time syntax validation before saving.</li>
+<li>Snippet injection for common logic patterns (e.g., teleporting).</li>
+</ul>
+<h3 id="14-voxeleditor">14. VoxelEditor<a class="headerlink" href="#14-voxeleditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> MagicaVoxel, Blockbench.</li>
+<li><strong>Use case:</strong> Constructing 3D models using volumetric blocks (voxels).</li>
+<li><strong>Lurek API Integration:</strong> Exports slice data used by <code>lurek.raycaster</code> and pseudo-3D isometric sprites for <code>lurek.sprite</code>.</li>
+<li><strong>Ideas / Vision:</strong> Since Lurek is primarily a 2D engine, this editor provides a unique workflow to create the illusion of 3D. It allows artists to build voxel models and automatically projects them into 2.5D representations for <code>lurek.raycaster</code> and <code>lurek.sprite</code>.</li>
+<li><strong>Feature list:</strong></li>
+<li>Full 3D grid voxel painting viewport.</li>
+<li>Layer-by-layer slicing view for interior detailing.</li>
+<li>Isometric rendering projection preview.</li>
+<li>Voxel color palette manager with hex inputs.</li>
+<li>Hollow and fill bucket tools for mass placement.</li>
+<li>Extrusion and carving operators.</li>
+<li>Export tools for generating optimized 2D isometric sprite sheets.</li>
+<li>Lighting and shading parameter adjustments for baked shadows.</li>
+</ul>
+<h3 id="15-testrunnereditor">15. TestRunnerEditor<a class="headerlink" href="#15-testrunnereditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Jest VS Code Extension, IntelliJ Test Runner.</li>
+<li><strong>Use case:</strong> Managing, invoking, and monitoring engine unit tests without relying solely on the console.</li>
+<li><strong>Lurek API Integration:</strong> Deeply integrated with <code>lurek.debugbridge</code> and <code>lurek.devtools</code> to fetch test results.</li>
+<li><strong>Ideas / Vision:</strong> Uniquely bridges the gap between CI/CD pipelines and the developer's immediate VS Code environment. It ensures that writing and running game logic tests through <code>lurek.devtools</code> feels native and visual.</li>
+<li><strong>Feature list:</strong></li>
+<li>Categorized hierarchical test list (Pass/Fail/Skip/Running).</li>
+<li>Test tagging and regex filtering capabilities.</li>
+<li>Run/Debug execution buttons per individual test or suite.</li>
+<li>Inline error stack trace expansion mapping back to code lines.</li>
+<li>Code coverage visualization and heatmaps.</li>
+<li>Performance execution timers per test.</li>
+<li>Output log capture segregated per test instance.</li>
+<li>Automatic re-run on save (Watch mode).</li>
+</ul>
+<h3 id="16-apireferenceeditor">16. ApiReferenceEditor<a class="headerlink" href="#16-apireferenceeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Dash, Zeal, Godot built-in Help.</li>
+<li><strong>Use case:</strong> Quick, built-in offline access to the full, specific API documentation of the Lurek2D engine.</li>
+<li><strong>Lurek API Integration:</strong> Pulls data from <code>lurek.docs</code> to provide fully generated, up-to-date offline documentation.</li>
+<li><strong>Ideas / Vision:</strong> Acts as the offline heartbeat of the Love2D-style code-first philosophy. By reading directly from <code>lurek.docs</code>, it guarantees that the documentation never drifts from the actual installed engine version.</li>
+<li><strong>Feature list:</strong></li>
+<li>Full offline markdown-rendered documentation browser.</li>
+<li>Fuzzy search across all Lurek API namespaces.</li>
+<li>Syntax examples and executable code snippets.</li>
+<li>Cross-linking hyperlinks between related functions.</li>
+<li>One-click copy-to-clipboard API signatures.</li>
+<li>Dark/Light theme readability support.</li>
+<li>Detailed parameter and return type definitions.</li>
+<li>Direct hyperlink to engine source code files.</li>
+</ul>
+<h3 id="17-postfxoverlayeditor">17. PostFxOverlayEditor<a class="headerlink" href="#17-postfxoverlayeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unity Post Processing Stack v2, ReShade.</li>
+<li><strong>Use case:</strong> Live testing and refining of post-processing filters applied globally to game screens.</li>
+<li><strong>Lurek API Integration:</strong> Interfaces with <code>lurek.pipeline</code> and <code>lurek.effect</code> to apply visual overlays globally.</li>
+<li><strong>Ideas / Vision:</strong> This editor is for designers tweaking global visual parameters (like bloom or blur intensity) over an existing game scene in <code>lurek.pipeline</code>, distinct from engineers writing raw compute shaders.</li>
+<li><strong>Feature list:</strong></li>
+<li>Full-screen interactive game viewport preview.</li>
+<li>Bloom threshold, intensity, and knee curve sliders.</li>
+<li>Chromatic aberration shifting inputs.</li>
+<li>CRT distortion, curvature, and scanline toggles.</li>
+<li>Color grading LUT injection and interpolation.</li>
+<li>Real-time performance profiling (GPU cost).</li>
+<li>Preset saving, loading, and cross-fading.</li>
+<li>Split-screen before/after comparison view.</li>
+</ul>
+<h3 id="18-sounddspeditor">18. SoundDspEditor<a class="headerlink" href="#18-sounddspeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Pure Data, FL Studio Patcher, Max/MSP.</li>
+<li><strong>Use case:</strong> Creating Digital Signal Processing (DSP) chains for audio modification.</li>
+<li><strong>Lurek API Integration:</strong> Configures processing chains directly within the <code>lurek.audio</code> namespace.</li>
+<li><strong>Ideas / Vision:</strong> Distinct from the AudioMixer. While the mixer balances volumes, the DSP editor physically alters the sound waves (adding reverb, EQ, compression) using a node graph tied to <code>lurek.audio</code> effects.</li>
+<li><strong>Feature list:</strong></li>
+<li>Node-based audio routing graph architecture.</li>
+<li>Parametric EQ node configuration with graphical curves.</li>
+<li>Reverb room size, delay, and damping control dials.</li>
+<li>Compressor threshold, ratio, and attack/release dials.</li>
+<li>Live visual audio spectrum analyzer.</li>
+<li>Audio playback scrubbing and looping tools.</li>
+<li>Channel muting, soloing, and bypass toggles.</li>
+<li>Export functionality for saving DSP chains to JSON.</li>
+</ul>
+<h3 id="19-spriteanimeditor">19. SpriteAnimEditor<a class="headerlink" href="#19-spriteanimeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Spine 2D (basic timeline), Godot AnimationPlayer.</li>
+<li><strong>Use case:</strong> Assembling motion clips from Sprite Sheet files by defining frames and animation states.</li>
+<li><strong>Lurek API Integration:</strong> Relies on <code>lurek.animation</code> and <code>lurek.sprite</code> to define frame durations and states.</li>
+<li><strong>Ideas / Vision:</strong> Bridges the gap between static PNG images and active game entities. By allowing developers to visually define frame durations, hitboxes, and hurtboxes per frame, it outputs data <code>lurek.animation</code> can instantly consume.</li>
+<li><strong>Feature list:</strong></li>
+<li>Frame sequence horizontal timeline view.</li>
+<li>Keyframe duration tweaking and easing adjustments.</li>
+<li>Playback modes: Looping, Ping-pong, Once.</li>
+<li>Hitbox and hurtbox rectangular drawing synchronized per frame.</li>
+<li>Real-time animation playback preview at target framerates.</li>
+<li>Onion skinning displaying adjacent animation frames.</li>
+<li>Custom event triggers bound to specific frames (e.g., 'footstep').</li>
+<li>Sprite sheet slicing grid generation.</li>
+</ul>
+<h3 id="20-tileseteditor">20. TilesetEditor<a class="headerlink" href="#20-tileseteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Tiled Tileset Editor, RPG Maker Tileset Manager.</li>
+<li><strong>Use case:</strong> Preparing graphic sheets and marking individual tiles before actual usage in the TileMapEditor.</li>
+<li><strong>Lurek API Integration:</strong> Prepares properties, bounds, and auto-tile rules used strictly by <code>lurek.tilemap</code>.</li>
+<li><strong>Ideas / Vision:</strong> Strictly decoupled from map painting. This editor exists purely to define the "source material" for <code>lurek.tilemap</code>. By defining collision polygons and terrain tags here, the TileMapEditor can remain focused solely on painting grids.</li>
+<li><strong>Feature list:</strong></li>
+<li>Grid dimension definition and offset spacing controls.</li>
+<li>Solid and one-way collision polygon drawing per specific tile.</li>
+<li>Terrain mask and bitmask rule configuration for auto-tiling logic.</li>
+<li>Animation sequence linking for defining animated tiles (e.g., water).</li>
+<li>Custom tag assignment (e.g. 'water_type', 'slippery_ice').</li>
+<li>Precision zoom and pan tools for pixel-perfect slicing.</li>
+<li>Bulk tile property editing via marquee selection.</li>
+<li>Export to structured tileset JSON referencing the source image.</li>
+</ul>
+<h3 id="21-audiomixereditor">21. AudioMixerEditor<a class="headerlink" href="#21-audiomixereditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> FL Studio Mixer, Unity Audio Mixer.</li>
+<li><strong>Use case:</strong> A classic virtual audio console to balance channel levels between BGM, SFX, and Master.</li>
+<li><strong>Lurek API Integration:</strong> Configures global audio bus routing directly into <code>lurek.audio</code>.</li>
+<li><strong>Ideas / Vision:</strong> Prevents developers from hardcoding volume calls throughout scripts. It establishes a Godot-like centralized audio routing system inside <code>lurek.audio</code>, where logic scripts merely play a sound, and the Mixer dictates its final output volume.</li>
+<li><strong>Feature list:</strong></li>
+<li>Multi-track vertical fader interface (Master, BGM, SFX, UI).</li>
+<li>Real-time volume peak metering in decibels (dB).</li>
+<li>Mute and solo isolation toggles per audio bus.</li>
+<li>Audio ducking and sidechain compression rules (e.g., lower BGM when Dialogue plays).</li>
+<li>Panning and 2D spatialization balance settings.</li>
+<li>Clipping indicators and redline warnings.</li>
+<li>Snapshot saving for transitioning between different scene mixes.</li>
+<li>Sub-mix grouping and auxiliary sends.</li>
+</ul>
+<h3 id="22-colorpaletteeditor">22. ColorPaletteEditor<a class="headerlink" href="#22-colorpaletteeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Lospec Palette Viewer, Adobe Color.</li>
+<li><strong>Use case:</strong> Establishing a global system of predefined colors and gradients for cohesive aesthetics.</li>
+<li><strong>Lurek API Integration:</strong> Defines color constants applied throughout <code>lurek.render</code> and <code>lurek.image</code>.</li>
+<li><strong>Ideas / Vision:</strong> Enforces strict art direction. Instead of developers guessing hex codes, this editor ensures they reference semantic names mapped to <code>lurek.render</code>, allowing for one-click color blindness mode swaps.</li>
+<li><strong>Feature list:</strong></li>
+<li>Hex, RGB, and HSL color picker wheels and sliders.</li>
+<li>Semantic color swatch saving and naming (e.g. 'Enemy_Blood').</li>
+<li>Mathematical gradient interpolation generator.</li>
+<li>Color contrast and accessibility ratio checker.</li>
+<li>Dynamic theme swapping configurations (Light Mode / Dark Mode).</li>
+<li>Auto-generation of complementary, analogous, and triadic colors.</li>
+<li>Export palettes to global Lua tables.</li>
+<li>Import functionality from standard <code>.gpl</code> palette formats.</li>
+</ul>
+<h3 id="23-inputmappereditor">23. InputMapperEditor<a class="headerlink" href="#23-inputmappereditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Steam Input Configuration, Godot Input Map.</li>
+<li><strong>Use case:</strong> Designing unified input mappings bound to virtual actions rather than specific hardware keys.</li>
+<li><strong>Lurek API Integration:</strong> Configures bindings mapped to <code>lurek.input</code> and its submodules (<code>lurek.input.keyboard</code>, <code>lurek.input.gamepad</code>).</li>
+<li><strong>Ideas / Vision:</strong> Completely separates physical hardware from game logic. It ensures that a script checks if a virtual action was triggered in <code>lurek.input</code>, while the editor handles whether that action means the Spacebar, a Gamepad 'A' button, or a screen tap.</li>
+<li><strong>Feature list:</strong></li>
+<li>Virtual action creation list (e.g. 'Jump', 'Shoot').</li>
+<li>Keyboard, mouse, and gamepad hardware sniffing and binding.</li>
+<li>Analog stick deadzone threshold curves and sensitivity sliders.</li>
+<li>Axis mapping converting hardware input to Vector2 math.</li>
+<li>Combo and chord definition (e.g., Shift + Space).</li>
+<li>Input conflict and overlapping binding warnings.</li>
+<li>Live input testing overlay visualizing controller states.</li>
+<li>Export to standardized config TOML.</li>
+</ul>
+<h3 id="24-timelineeditor">24. TimelineEditor<a class="headerlink" href="#24-timelineeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unity Timeline, Adobe Premiere sequence.</li>
+<li><strong>Use case:</strong> Producing cutscenes, staged shots, and time-controlled cinematic sequences.</li>
+<li><strong>Lurek API Integration:</strong> Operates closely with <code>lurek.automation</code> and <code>lurek.tween</code> to script sequences over time.</li>
+<li><strong>Ideas / Vision:</strong> Uniquely solves the problem of coordinating multiple independent systems over time. It provides a visual track to align animations, sound effects, and camera pans perfectly using <code>lurek.automation</code>.</li>
+<li><strong>Feature list:</strong></li>
+<li>Multi-track horizontal timeline (Animation Track, Audio Track, Event Track).</li>
+<li>Keyframe insertion, deletion, and manipulation.</li>
+<li>Easing curve editor providing Bezier, Linear, and Bounce interpolation.</li>
+<li>Playhead scrubbing perfectly synchronized with the game viewport.</li>
+<li>Audio waveform visualization overlaid on the timeline track.</li>
+<li>Event trigger tracks executing Lua functions at specific milliseconds.</li>
+<li>Sub-timeline nesting for modular cutscene architecture.</li>
+<li>Real-time cinematic preview at target framerate.</li>
+</ul>
+<h3 id="25-shaderprevieweditor">25. ShaderPreviewEditor<a class="headerlink" href="#25-shaderprevieweditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> ShaderToy, The Book of Shaders Editor.</li>
+<li><strong>Use case:</strong> Writing, testing, and visualizing raw compute and rendering shaders from scratch.</li>
+<li><strong>Lurek API Integration:</strong> Compiles shaders tested directly against <code>lurek.compute</code> and <code>lurek.pipeline</code>.</li>
+<li><strong>Ideas / Vision:</strong> A low-level graphics programming environment for raw <code>lurek.compute</code> shaders. It provides immediate visual feedback for math-heavy shader coding, mimicking tools like ShaderToy directly inside the IDE.</li>
+<li><strong>Feature list:</strong></li>
+<li>Split-screen code editor paired with a live preview canvas.</li>
+<li>Syntax highlighting for shader-specific languages (GLSL/WGSL).</li>
+<li>Live compilation error reporting with line-number mapping.</li>
+<li>Uniform variable injection exposing sliders and color pickers to the editor.</li>
+<li>Time and resolution variable auto-mocking for testing animations.</li>
+<li>Custom texture binding for previewing displacement maps.</li>
+<li>Vertex and fragment shader separation tabs.</li>
+<li>Performance metric overlay showing GPU instruction counts.</li>
+</ul>
+<h3 id="26-fontprevieweditor">26. FontPreviewEditor<a class="headerlink" href="#26-fontprevieweditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> BMFont, FontForge preview.</li>
+<li><strong>Use case:</strong> Inspecting how vector fonts (TTF) or bitmap fonts render under scaling.</li>
+<li><strong>Lurek API Integration:</strong> Generates font atlas data used by <code>lurek.render</code> and UI text rendered by <code>lurek.html</code>.</li>
+<li><strong>Ideas / Vision:</strong> Ensures text rendering is performant and visually crisp in <code>lurek.render</code>. By previewing exactly how Lurek's rasterizer will pack the glyphs into a texture atlas, developers can tweak kerning visually before committing to UI layouts.</li>
+<li><strong>Feature list:</strong></li>
+<li>Custom sample text input testing rendering.</li>
+<li>Real-time font size and scaling interpolation preview.</li>
+<li>Kerning and line-height numeric nudging.</li>
+<li>Font atlas texture packing visualization.</li>
+<li>Hinting and anti-aliasing rendering toggles.</li>
+<li>Missing glyph highlighting and fallback font configuration.</li>
+<li>Export configuration to Lua/JSON rendering profiles.</li>
+<li>Memory usage estimation based on atlas size.</li>
+</ul>
+<h3 id="27-localizationeditor">27. LocalizationEditor<a class="headerlink" href="#27-localizationeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> POEditor, Crowdin.</li>
+<li><strong>Use case:</strong> Organizing multi-language translated text strings used across the game.</li>
+<li><strong>Lurek API Integration:</strong> Outputs structured <code>.locale.json</code> dictionaries consumed seamlessly by <code>lurek.i18n</code>.</li>
+<li><strong>Ideas / Vision:</strong> Completely separates hardcoded strings from logic. It provides a dedicated matrix specifically tailored for translators, ensuring the game is internationalization-ready through <code>lurek.i18n</code> from day one.</li>
+<li><strong>Feature list:</strong></li>
+<li>Side-by-side multi-language column view grid.</li>
+<li>Missing translation warnings and progress percentage trackers.</li>
+<li>Regex search and filtering by localization key or text content.</li>
+<li>Pluralization and variable interpolation syntax support (e.g. "{count} apples").</li>
+<li>Export/Import to JSON/CSV for external localization agencies.</li>
+<li>Integration with machine translation APIs (optional capability).</li>
+<li>Context note attachments guiding translators on meaning.</li>
+<li>Duplicate key detection and strict validation.</li>
+</ul>
+<h3 id="28-physicsmaterialseditor">28. PhysicsMaterialsEditor<a class="headerlink" href="#28-physicsmaterialseditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Unity Physics Material 2D, Godot PhysicsMaterial.</li>
+<li><strong>Use case:</strong> Managing physical parameters (friction, bounce) for environmental substances.</li>
+<li><strong>Lurek API Integration:</strong> Configures physical material presets natively applied in <code>lurek.physics</code>.</li>
+<li><strong>Ideas / Vision:</strong> Separates physical collision logic from individual objects. Rather than an entity defining its own friction, it assigns itself an "Ice" material defined here, ensuring consistent <code>lurek.physics</code> behavior across the world.</li>
+<li><strong>Feature list:</strong></li>
+<li>Density and mass configuration baseline sliders.</li>
+<li>Friction coefficient settings (static and dynamic separation).</li>
+<li>Restitution (bounciness) tuning and energy retention.</li>
+<li>Preset templates creation (e.g. Ice, Rubber, Metal).</li>
+<li>Visual bounce simulation sandbox.</li>
+<li>Layer collision matrix configuration (defining who collides with whom).</li>
+<li>Export material constants to global Lua tables.</li>
+<li>Continuous vs Discrete collision detection toggles.</li>
+</ul>
+<h3 id="29-worldmapeditor">29. WorldMapEditor<a class="headerlink" href="#29-worldmapeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Super Mario World Map Editor (Lunar Magic), CK3 Point Map.</li>
+<li><strong>Use case:</strong> Mapping macro-geographical overworld navigation structures (e.g., node-based travel).</li>
+<li><strong>Lurek API Integration:</strong> Exports topological graphing data natively parsed by <code>lurek.pathfind</code> and <code>lurek.graph</code>.</li>
+<li><strong>Ideas / Vision:</strong> Distinct from the TileMapEditor. This editor focuses on high-level topological graphs for travel logic analyzed by <code>lurek.pathfind</code>, rather than pixel-perfect, local-level collision mapping.</li>
+<li><strong>Feature list:</strong></li>
+<li>Node placement for points of interest across the overworld.</li>
+<li>Spline path linking with automatic distance calculation.</li>
+<li>Region boundary drawing.</li>
+<li>Encounter and danger zone definitions overlay.</li>
+<li>Fast travel point tagging and unlock condition bindings.</li>
+<li>Visual weather zone mapping and ambient sound linking.</li>
+<li>Custom icon assignment per individual node.</li>
+<li>Export graph structure to JSON pathfinding logic.</li>
+</ul>
+<h3 id="30-provinceeditor">30. ProvinceEditor<a class="headerlink" href="#30-provinceeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Hearts of Iron IV Nudge Tool, Europa Universalis IV Mapper.</li>
+<li><strong>Use case:</strong> Designing territorial map divisions for macro-management or grand-strategy games.</li>
+<li><strong>Lurek API Integration:</strong> Generates regional metadata seamlessly queried by <code>lurek.province</code>.</li>
+<li><strong>Ideas / Vision:</strong> Distinct from the WorldMapEditor. Instead of points connected by lines, this uses polygon-based territory claiming integrated directly with the <code>lurek.province</code> system to handle wealth and population data visually.</li>
+<li><strong>Feature list:</strong></li>
+<li>Polygon border drawing tools and vertex snapping.</li>
+<li>Territory ownership color mapping.</li>
+<li>Resource and demographic metadata inputs (Population, Wealth).</li>
+<li>Automatic neighbor adjacency and border length calculation.</li>
+<li>Heatmap visualization toggles (e.g. viewing wealth distribution).</li>
+<li>Quick-select and bulk edit lasso tools.</li>
+<li>Export map data to indexed arrays for strategy calculation.</li>
+<li>Sea versus Land province boolean toggles.</li>
+</ul>
+<h3 id="31-globeeditor">31. GlobeEditor<a class="headerlink" href="#31-globeeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Google Earth Engine, Kerbal Space Program MapView.</li>
+<li><strong>Use case:</strong> Topography editing and viewing for environments depicting game worlds directly on a convex sphere.</li>
+<li><strong>Lurek API Integration:</strong> Fully integrated with <code>lurek.globe</code>, outputting spherical coordinates for mapping and projection.</li>
+<li><strong>Ideas / Vision:</strong> A completely unique topological mapping tool. Since 2D flat maps fail at representing planetary scales, this editor provides genuine spherical coordinate systems (Lat/Lon) tailored exactly for the specialized <code>lurek.globe</code> API.</li>
+<li><strong>Feature list:</strong></li>
+<li>3D interactive convex sphere viewport preview.</li>
+<li>Precise latitude and longitude coordinate plotting tools.</li>
+<li>Equirectangular texture projection wrapping and preview.</li>
+<li>Camera rotation and altitude zoom controls.</li>
+<li>Waypoint placement mapped directly onto the sphere surface.</li>
+<li>Day/Night cycle terminator line simulation.</li>
+<li>Export coordinates directly to Lua vector representations.</li>
+<li>Pole distortion severity warning visualization.</li>
+</ul>
+<h3 id="32-navmesheditor">32. NavMeshEditor<a class="headerlink" href="#32-navmesheditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot NavigationPolygon, Unity NavMesh (2D adapted).</li>
+<li><strong>Use case:</strong> Drawing walkable and obstacle polygons for free-form 2D navigation.</li>
+<li><strong>Lurek API Integration:</strong> Generates polygon arrays consumed natively by <code>lurek.pathfind</code> for A* routing.</li>
+<li><strong>Ideas / Vision:</strong> Essential for point-and-click or aRPG games where agents navigate off-grid. Completely distinct from TileMap or WorldMap; this provides actual vector-based movement areas.</li>
+<li><strong>Feature list:</strong></li>
+<li>Polygon drawing and vertex snapping tools over the game map.</li>
+<li>Subtraction tools for cutting holes (obstacles) in walkable areas.</li>
+<li>Bake configuration for agent radius offsets.</li>
+<li>Multi-layer navigation linking (e.g. ground vs water).</li>
+<li>Visualization overlay of the final baked navigation mesh.</li>
+<li>Dynamic obstacle insertion rules.</li>
+<li>Cost modifiers assigned to specific polygons (e.g. swamp is slower).</li>
+<li>Export to optimized 2D vertex arrays for fast pathfinding.</li>
+</ul>
+<h3 id="33-skeletonriggingeditor">33. SkeletonRiggingEditor<a class="headerlink" href="#33-skeletonriggingeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Spine 2D, Godot 2D Skeleton/Polygon2D.</li>
+<li><strong>Use case:</strong> Rigging 2D sprites with bones for procedural deformation animation.</li>
+<li><strong>Lurek API Integration:</strong> Integrates directly with <code>lurek.spine</code> to manage skeletal hierarchy.</li>
+<li><strong>Ideas / Vision:</strong> Avoids reliance on external software (Spine) for basic 2D rigging. Allows creating fluid boss animations using vertex weights and Inverse Kinematics (IK) instead of drawing 50 individual sprite frames.</li>
+<li><strong>Feature list:</strong></li>
+<li>Bone placement and hierarchical parent/child linking.</li>
+<li>Inverse Kinematics (IK) chain creation for limbs.</li>
+<li>Polygon mesh generation over 2D sprites.</li>
+<li>Vertex weight painting assigned to specific bones.</li>
+<li>Animation timeline for keyframing bone rotations and IK targets.</li>
+<li>Skin switching (swapping texture while keeping the rig).</li>
+<li>Real-time physics ragdoll testing sandbox.</li>
+<li>Export to <code>lurek.spine</code> native data format.</li>
+</ul>
+<h3 id="34-visualshadereditor">34. VisualShaderEditor<a class="headerlink" href="#34-visualshadereditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot VisualShader, Unity Shader Graph.</li>
+<li><strong>Use case:</strong> Creating fragment, vertex, and compute shaders via a visual node interface.</li>
+<li><strong>Lurek API Integration:</strong> Translates node logic into raw code for <code>lurek.compute</code> and <code>lurek.pipeline</code>.</li>
+<li><strong>Ideas / Vision:</strong> Enables technical artists to build complex visual effects (like flowing water or dissolve transitions) without writing mathematical GLSL code.</li>
+<li><strong>Feature list:</strong></li>
+<li>Infinite node canvas with math, texture, and logic blocks.</li>
+<li>Real-time preview sphere/sprite updating with every connection.</li>
+<li>Automatic conversion of nodes to optimized shader code.</li>
+<li>Uniform variable exposure for the main properties inspector.</li>
+<li>Sub-graph creation for reusable shader functions.</li>
+<li>Built-in time and screen-UV coordinate nodes.</li>
+<li>Vertex displacement logic implementation.</li>
+<li>Compute shader dispatch node configuration.</li>
+</ul>
+<h3 id="35-lightingenvironmenteditor">35. LightingEnvironmentEditor<a class="headerlink" href="#35-lightingenvironmenteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot WorldEnvironment, 2D Lights &amp; Shadows.</li>
+<li><strong>Use case:</strong> Configuring global ambient lighting, 2D shadows, and Global Illumination (GI).</li>
+<li><strong>Lurek API Integration:</strong> Direct configuration of the <code>lurek.light</code> system.</li>
+<li><strong>Ideas / Vision:</strong> Elevates the 2D aesthetic by adding dynamic shadows and ambient occlusion. It shifts Lurek2D from flat pixel art to a modern 2D lit environment.</li>
+<li><strong>Feature list:</strong></li>
+<li>Ambient light color and energy scaling.</li>
+<li>2D Point Light and Directional Light placement.</li>
+<li>Shadow caster polygon drawing tools.</li>
+<li>2D Global Illumination (GI) bounce intensity tuning.</li>
+<li>Normal map visualization for 2D sprites.</li>
+<li>Signed Distance Field (SDF) baking configuration.</li>
+<li>Light culling mask layer assignments.</li>
+<li>Volumetric fog/haze density sliders.</li>
+</ul>
+<h3 id="36-guithemeeditor">36. GuiThemeEditor<a class="headerlink" href="#36-guithemeeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot Theme Editor.</li>
+<li><strong>Use case:</strong> Establishing global CSS styling constants for all UI widgets.</li>
+<li><strong>Lurek API Integration:</strong> Generates global CSS stylesheets injected into <code>lurek.html</code>.</li>
+<li><strong>Ideas / Vision:</strong> Separates UI layout (GuiWidgetEditor) from UI styling. Ensures that changing the "Button" color updates across the entire game immediately, preventing hardcoded styles.</li>
+<li><strong>Feature list:</strong></li>
+<li>Component-specific styling (Buttons, Sliders, TextBoxes).</li>
+<li>State configuration (Normal, Hover, Pressed, Disabled).</li>
+<li>Border radius, box-shadow, and stroke editing.</li>
+<li>Nine-patch scale configuration for UI panels.</li>
+<li>Custom font assignment and baseline shifting.</li>
+<li>CSS variable generation and overriding.</li>
+<li>Live preview across a sample "UI Gallery".</li>
+<li>Theme exporting to global <code>.css</code> files.</li>
+</ul>
+<h3 id="37-networktopologyeditor">37. NetworkTopologyEditor<a class="headerlink" href="#37-networktopologyeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot MultiplayerSynchronizer/Spawner, Photon PUN.</li>
+<li><strong>Use case:</strong> Defining multiplayer authority, synchronization targets, and RPCs.</li>
+<li><strong>Lurek API Integration:</strong> Configures data packet rules for <code>lurek.network</code>.</li>
+<li><strong>Ideas / Vision:</strong> Makes netcode visual. Instead of coding serialization by hand, developers define which entity variables are synchronized over the network and who owns them (Server vs Client).</li>
+<li><strong>Feature list:</strong></li>
+<li>Variable synchronization tagging (Position, Health, State).</li>
+<li>RPC (Remote Procedure Call) registration and permissions.</li>
+<li>Authority delegation (Server authoritative vs Client prediction).</li>
+<li>Network interpolation and extrapolation smoothing settings.</li>
+<li>Entity spawning/despawning replication rules.</li>
+<li>Bandwidth consumption estimator based on sync rate.</li>
+<li>Simulated latency and packet-loss testing environment.</li>
+<li>Export to optimized network manifest configurations.</li>
+</ul>
+<h3 id="38-globalautoloadeditor">38. GlobalAutoloadEditor<a class="headerlink" href="#38-globalautoloadeditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot Autoloads / Project Settings.</li>
+<li><strong>Use case:</strong> Managing persistent global singletons and services that survive scene loads.</li>
+<li><strong>Lurek API Integration:</strong> Registers modules via <code>lurek.system</code> and <code>lurek.scene</code>.</li>
+<li><strong>Ideas / Vision:</strong> Solves the problem of "where do I put the player's inventory across levels?". Provides a clean registry for persistent Lua scripts.</li>
+<li><strong>Feature list:</strong></li>
+<li>Singleton script registration table.</li>
+<li>Load order prioritization (who boots first).</li>
+<li>Scene-agnostic persistent data viewing.</li>
+<li>Hot-reloading toggles for specific singletons.</li>
+<li>Dependency injection mapping.</li>
+<li>Boot initialization timing (Pre-engine vs Post-engine ready).</li>
+<li>Export to core boot configuration files.</li>
+<li>Isolation sandbox configuration for secure modules.</li>
+</ul>
+<h3 id="39-assetmanifesteditor">39. AssetManifestEditor<a class="headerlink" href="#39-assetmanifesteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot ResourcePreloader, Unity Addressables.</li>
+<li><strong>Use case:</strong> Grouping and managing asynchronous asset loading packages.</li>
+<li><strong>Lurek API Integration:</strong> Configures preload groups for <code>lurek.filesystem</code>.</li>
+<li><strong>Ideas / Vision:</strong> Prevents mid-game stutter by explicitly defining what needs to be in RAM for Level 1 vs Level 2. Essential for memory management on lower-end devices.</li>
+<li><strong>Feature list:</strong></li>
+<li>Grouping assets into named "Loading Buckets".</li>
+<li>RAM consumption estimation per bucket.</li>
+<li>Priority queuing for asynchronous background loading.</li>
+<li>Missing asset dependency detection.</li>
+<li>Unused asset highlighting and purging.</li>
+<li>Automatic packing into encrypted <code>.pak</code> files.</li>
+<li>Live VRAM memory visualization per group.</li>
+<li>Loading screen progress bar integration hooks.</li>
+</ul>
+<h3 id="40-performanceprofilereditor">40. PerformanceProfilerEditor<a class="headerlink" href="#40-performanceprofilereditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot Debugger Monitors, Unity Profiler.</li>
+<li><strong>Use case:</strong> Visualizing real-time game performance and bottlenecks.</li>
+<li><strong>Lurek API Integration:</strong> Hooks directly into telemetry from <code>lurek.devtools</code> and <code>lurek.debugbridge</code>.</li>
+<li><strong>Ideas / Vision:</strong> The command center for optimization. Ensures 2D games run at a locked 60FPS by exposing Lua GC pauses and draw-call spikes.</li>
+<li><strong>Feature list:</strong></li>
+<li>Real-time frame-time line graphs (CPU vs GPU).</li>
+<li>Lua Garbage Collection pause monitoring.</li>
+<li>VRAM and RAM consumption tracking.</li>
+<li>Draw call and batch count tracking.</li>
+<li>Heavy function execution time highlighting (Flame graphs).</li>
+<li>Physics step simulation timing.</li>
+<li>Remote profiling of built executables over network.</li>
+<li>Snapshot saving for performance regression comparison.</li>
+</ul>
+<h3 id="41-projectexporteditor">41. ProjectExportEditor<a class="headerlink" href="#41-projectexporteditor" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reference / Inspiration:</strong> Godot Export Profiles, Unity Build Settings.</li>
+<li><strong>Use case:</strong> Configuring platform-specific build settings and compiling the game.</li>
+<li><strong>Lurek API Integration:</strong> Interfaces with <code>lurek.engine</code> and <code>lurek.system</code> compilation flags.</li>
+<li><strong>Ideas / Vision:</strong> The final step. Replaces writing manual Cargo build scripts with a visual UI to set app icons, window sizing, and platform targeting.</li>
+<li><strong>Feature list:</strong></li>
+<li>Target platform selection (Windows, Linux, macOS).</li>
+<li>Application icon assignment per platform resolution.</li>
+<li>Window configuration (Resizable, Borderless, Fullscreen, V-Sync).</li>
+<li>Feature flag toggles (e.g., Disable Console in Release build).</li>
+<li>Security and permission configurations.</li>
+<li>File exclusion filters (e.g., ignore <code>.psd</code> files on build).</li>
+<li>Archive encryption setting configuration.</li>
+<li>One-click build triggering and progress monitoring.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Lurek2D/lurek_2d" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

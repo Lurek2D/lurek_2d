@@ -617,3 +617,67 @@ do
     print("id=" .. msg.id)
     print("data=" .. msg.data)
 end
+
+--@api-stub: lurek.network.sseConnect
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(ev)
+        print("event=" .. tostring(ev.event) .. " data=" .. ev.data)
+    end)
+    -- Poll for events each frame; close when done.
+    local ev = stream:next()
+    if ev then
+        print("got event: " .. ev.data)
+    end
+    stream:close()
+end
+
+--@api-stub: lurek.network.sseCollect
+do
+    local events = lurek.network.sseCollect("http://127.0.0.1:9999/events", 10, 2.0)
+    for _, ev in ipairs(events) do
+        print("collected: " .. ev.data)
+    end
+end
+
+--@api-stub: LSseStream:next
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    local ev = stream:next()
+    if ev then
+        print("data=" .. ev.data)
+    end
+    stream:close()
+end
+
+--@api-stub: LSseStream:close
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    stream:close()
+end
+
+--@api-stub: LSseStream:isOpen
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    print("open=" .. tostring(stream:isOpen()))
+    stream:close()
+end
+
+--@api-stub: LSseStream:type
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    print(stream:type())
+    stream:close()
+end
+
+--@api-stub: LSseStream:typeOf
+do
+    ---@type LSseStream
+    local stream = lurek.network.sseConnect("http://127.0.0.1:9999/events", function(_ev) end)
+    print(stream:typeOf("LSseStream"))
+    stream:close()
+end

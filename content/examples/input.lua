@@ -719,3 +719,81 @@ do
     print("lurek.input.getTouchCount=" .. n)
     print("touch type = " .. type(n))
 end
+
+--- Input Module Part 3: extended action binding (NM-04)
+
+--@api-stub: lurek.input.define
+do
+    lurek.input.define("jump", {"space", "up"}, "movement")
+    print("define ok")
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.getAxis
+do
+    lurek.input.bind("move_x", {"d", "a"})
+    local v = lurek.input.getAxis("move_x")
+    print("getAxis=" .. tostring(v))
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.getVector
+do
+    lurek.input.bind("haxis", {"d", "a"})
+    lurek.input.bind("vaxis", {"s", "w"})
+    local h, v = lurek.input.getVector("haxis", "vaxis")
+    print("getVector=" .. tostring(h) .. "," .. tostring(v))
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.reset
+do
+    lurek.input.bind("temp", "t")
+    lurek.input.reset("temp")
+    print("reset(name) ok")
+    lurek.input.reset()
+    print("reset() ok")
+end
+
+--@api-stub: lurek.input.getConflicts
+do
+    lurek.input.bind("act_a", "x")
+    lurek.input.bind("act_b", "x")
+    local c = lurek.input.getConflicts()
+    print("getConflicts type=" .. type(c))
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.serializeBindings
+do
+    lurek.input.bind("test_ser", "s")
+    local json = lurek.input.serializeBindings()
+    print("serializeBindings len=" .. #json)
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.deserializeBindings
+do
+    lurek.input.bind("test_deser", "q")
+    local json = lurek.input.serializeBindings()
+    lurek.input.reset()
+    local ok = lurek.input.deserializeBindings(json)
+    print("deserializeBindings=" .. tostring(ok))
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.getByCategory
+do
+    lurek.input.define("run", "lshift", "movement")
+    local cats = lurek.input.getByCategory("movement")
+    print("getByCategory count=" .. #cats)
+    lurek.input.reset()
+end
+
+--@api-stub: lurek.input.onRebind
+do
+    lurek.input.onRebind(function(action, keys)
+        print("rebind: " .. action .. " keys=" .. #keys)
+    end)
+    print("onRebind registered")
+end

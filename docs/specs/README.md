@@ -115,8 +115,9 @@ Game-domain services. Imports Foundations + Core Runtime + Platform Services.
 | `ai`         | [ai.md](ai.md)                 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.             | `TIER-1-PLUGIN` |
 | `dialog`     | [dialog.md](dialog.md)         | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry.          | â€”               |
 | `learning`   | [learning.md](learning.md)     | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits.   | `TIER-1-PLUGIN` |
-| `animation`  | [animation.md](animation.md)   | Sprite animation: source-rect changes over time. Imports only `math`; headless-testable.               | â€”               |
-| `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | â€”            |
+| `animation`  | [animation.md](animation.md)   | Sprite animation: source-rect changes over time. Imports only `math`; headless-testable.               | —               |
+| `asset`      | [asset.md](asset.md)           | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold `LAssetHandle` values to keep them alive. | — |
+| `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | —            |
 | `automation` | [automation.md](automation.md) | Automated input simulation for headless tests, QA replay, recorded sessions.                           | â€”               |
 | `charts`     | [charts.md](charts.md)         | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.            | `TIER-2-PLUGIN` |
 | `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | â€”               |

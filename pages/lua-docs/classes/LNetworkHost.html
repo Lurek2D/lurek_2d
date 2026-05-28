@@ -7,27 +7,38 @@
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
+  <header class="topnav">
+    <div class="topnav-left">
+      <a class="topnav-home" href="../index.html" title="Back to portal">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+      <span class="topnav-sep" aria-hidden="true">/</span>
+      <a class="topnav-brand" href="../index.html">
+        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
+        <span>Lua API</span>
+      </a>
+    </div>
+    <div class="topnav-right">
+      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
+    </div>
+  </header>
   <div class="shell">
     <aside class="sidebar">
-      <a class="brand" href="../index.html">
-        <img class="brand-mark" src="../assets/lurek-logo.png" alt="Lurek2D logo">
-        <div>
-          <strong>Lurek Lua Docs</strong>
-          <span>Static browser for the generated API</span>
-        </div>
-      </a>
       <label class="search-box">
-        <span>Search API</span>
-        <input id="search" type="search" placeholder="module, class, function, method">
+        <span class="sr-only">Search API</span>
+        <input id="search" type="search" placeholder="Search module, class, function…">
       </label>
       <div class="search-filters">
-        <label><span>Module</span><select id="filter-module"><option value="">All modules</option></select></label>
-        <label><span>Type</span><select id="filter-kind"><option value="">All types</option></select></label>
+        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
+        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
       </div>
       <div id="search-results" class="search-results" hidden></div>
       <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
 <a class="global-link" href="../callbacks.html">Callbacks</a>
-<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html"><span class="nav-name">lurek.render</span><span class="nav-meta">130 fn · 12 cls · 88 meth</span></a><a href="../modules/window.html"><span class="nav-name">lurek.window</span><span class="nav-meta">55 fn · 0 cls · 0 meth</span></a><a href="../modules/input.html"><span class="nav-name">lurek.input</span><span class="nav-meta">80 fn · 3 cls · 18 meth</span></a><a href="../modules/timer.html"><span class="nav-name">lurek.time</span><span class="nav-meta">21 fn · 1 cls · 28 meth</span></a><a href="../modules/math.html"><span class="nav-name">lurek.math</span><span class="nav-meta">92 fn · 12 cls · 140 meth</span></a><a href="../modules/audio.html"><span class="nav-name">lurek.audio</span><span class="nav-meta">83 fn · 6 cls · 122 meth</span></a><a href="../modules/physics.html"><span class="nav-name">lurek.physics</span><span class="nav-meta">22 fn · 5 cls · 168 meth</span></a><a href="../modules/filesystem.html"><span class="nav-name">lurek.filesystem</span><span class="nav-meta">44 fn · 3 cls · 23 meth</span></a><a href="../modules/particle.html"><span class="nav-name">lurek.particle</span><span class="nav-meta">5 fn · 2 cls · 105 meth</span></a><a href="../modules/event.html"><span class="nav-name">lurek.signal</span><span class="nav-meta">16 fn · 1 cls · 12 meth</span></a><a href="../modules/system.html"><span class="nav-name">lurek.system</span><span class="nav-meta">28 fn · 0 cls · 0 meth</span></a><a href="../modules/thread.html"><span class="nav-name">lurek.thread</span><span class="nav-meta">7 fn · 4 cls · 34 meth</span></a><a href="../modules/ai.html"><span class="nav-name">lurek.ai</span><span class="nav-meta">36 fn · 23 cls · 237 meth</span></a><a href="../modules/compute.html"><span class="nav-name">lurek.compute</span><span class="nav-meta">13 fn · 1 cls · 80 meth</span></a><a href="../modules/dataframe.html"><span class="nav-name">lurek.dataframe</span><span class="nav-meta">15 fn · 6 cls · 143 meth</span></a><a href="../modules/image.html"><span class="nav-name">lurek.image</span><span class="nav-meta">12 fn · 5 cls · 90 meth</span></a><a href="../modules/tilemap.html"><span class="nav-name">lurek.tilemap</span><span class="nav-meta">28 fn · 10 cls · 162 meth</span></a><a href="../modules/dialog.html"><span class="nav-name">lurek.dialog</span><span class="nav-meta">3 fn · 3 cls · 30 meth</span></a><a href="../modules/ecs.html"><span class="nav-name">lurek.ecs</span><span class="nav-meta">1 fn · 1 cls · 68 meth</span></a><a href="../modules/scene.html"><span class="nav-name">lurek.scene</span><span class="nav-meta">59 fn · 1 cls · 10 meth</span></a><a href="../modules/pathfind.html"><span class="nav-name">lurek.pathfind</span><span class="nav-meta">12 fn · 8 cls · 90 meth</span></a><a href="../modules/minimap.html"><span class="nav-name">lurek.minimap</span><span class="nav-meta">1 fn · 1 cls · 86 meth</span></a><a href="../modules/save.html"><span class="nav-name">lurek.save</span><span class="nav-meta">1 fn · 1 cls · 27 meth</span></a><a href="../modules/mods.html"><span class="nav-name">lurek.mods</span><span class="nav-meta">4 fn · 3 cls · 51 meth</span></a><a href="../modules/i18n.html"><span class="nav-name">lurek.i18n</span><span class="nav-meta">36 fn · 0 cls · 0 meth</span></a><a href="../modules/log.html"><span class="nav-name">lurek.log</span><span class="nav-meta">18 fn · 0 cls · 0 meth</span></a><a href="../modules/debugbridge.html"><span class="nav-name">lurek.debugbridge</span><span class="nav-meta">16 fn · 0 cls · 0 meth</span></a><a href="../modules/docs.html"><span class="nav-name">lurek.docs</span><span class="nav-meta">26 fn · 5 cls · 60 meth</span></a><a href="../modules/patterns.html"><span class="nav-name">lurek.patterns</span><span class="nav-meta">24 fn · 24 cls · 218 meth</span></a><a href="../modules/agent.html"><span class="nav-name">lurek.agent</span><span class="nav-meta">4 fn · 4 cls · 59 meth</span></a><a href="../modules/animation.html"><span class="nav-name">lurek.animation</span><span class="nav-meta">7 fn · 5 cls · 65 meth</span></a><a href="../modules/automation.html"><span class="nav-name">lurek.simulator</span><span class="nav-meta">32 fn · 0 cls · 0 meth</span></a><a href="../modules/binary.html"><span class="nav-name">lurek.binary</span><span class="nav-meta">22 fn · 4 cls · 50 meth</span></a><a href="../modules/camera.html"><span class="nav-name">lurek.camera</span><span class="nav-meta">3 fn · 2 cls · 85 meth</span></a><a href="../modules/charts.html"><span class="nav-name">lurek.charts</span><span class="nav-meta">7 fn · 5 cls · 32 meth</span></a><a href="../modules/color.html"><span class="nav-name">lurek.color</span><span class="nav-meta">19 fn · 0 cls · 0 meth</span></a><a href="../modules/cursor.html"><span class="nav-name">lurek.cursor</span><span class="nav-meta">4 fn · 3 cls · 30 meth</span></a><a href="../modules/devtools.html"><span class="nav-name">lurek.devtools</span><span class="nav-meta">50 fn · 2 cls · 12 meth</span></a><a href="../modules/dsp.html"><span class="nav-name">lurek.dsp</span><span class="nav-meta">29 fn · 7 cls · 27 meth</span></a><a href="../modules/effect.html"><span class="nav-name">lurek.effect</span><span class="nav-meta">10 fn · 3 cls · 62 meth</span></a><a href="../modules/engine.html"><span class="nav-name">lurek.engine</span><span class="nav-meta">13 fn · 0 cls · 0 meth</span></a><a href="../modules/flownet.html"><span class="nav-name">lurek.flownet</span><span class="nav-meta">1 fn · 4 cls · 130 meth</span></a><a href="../modules/font.html"><span class="nav-name">lurek.font</span><span class="nav-meta">11 fn · 1 cls · 8 meth</span></a><a href="../modules/globe.html"><span class="nav-name">lurek.globe</span><span class="nav-meta">11 fn · 2 cls · 72 meth</span></a><a href="../modules/grep.html"><span class="nav-name">lurek.grep</span><span class="nav-meta">7 fn · 2 cls · 9 meth</span></a><a href="../modules/html.html"><span class="nav-name">lurek.html</span><span class="nav-meta">6 fn · 2 cls · 54 meth</span></a><a href="../modules/layout.html"><span class="nav-name">lurek.layout</span><span class="nav-meta">5 fn · 0 cls · 0 meth</span></a><a href="../modules/learning.html"><span class="nav-name">lurek.learning</span><span class="nav-meta">6 fn · 6 cls · 60 meth</span></a><a href="../modules/light.html"><span class="nav-name">lurek.light</span><span class="nav-meta">20 fn · 2 cls · 79 meth</span></a><a href="../modules/mapblock.html"><span class="nav-name">lurek.mapblock</span><span class="nav-meta">10 fn · 9 cls · 53 meth</span></a><a href="../modules/midi.html"><span class="nav-name">lurek.midi</span><span class="nav-meta">4 fn · 0 cls · 0 meth</span></a><a class="active" href="../modules/network.html"><span class="nav-name">lurek.network</span><span class="nav-meta">19 fn · 2 cls · 44 meth</span></a><a href="../modules/overlay.html"><span class="nav-name">lurek.overlay</span><span class="nav-meta">2 fn · 2 cls · 88 meth</span></a><a href="../modules/parallax.html"><span class="nav-name">lurek.parallax</span><span class="nav-meta">3 fn · 2 cls · 48 meth</span></a><a href="../modules/pipeline.html"><span class="nav-name">lurek.pipeline</span><span class="nav-meta">3 fn · 2 cls · 63 meth</span></a><a href="../modules/procgen.html"><span class="nav-name">lurek.procgen</span><span class="nav-meta">31 fn · 3 cls · 37 meth</span></a><a href="../modules/province.html"><span class="nav-name">lurek.province</span><span class="nav-meta">15 fn · 1 cls · 39 meth</span></a><a href="../modules/raycaster.html"><span class="nav-name">lurek.raycaster</span><span class="nav-meta">9 fn · 5 cls · 67 meth</span></a><a href="../modules/repl.html"><span class="nav-name">lurek.repl</span><span class="nav-meta">1 fn · 1 cls · 7 meth</span></a><a href="../modules/serialize.html"><span class="nav-name">lurek.serialize</span><span class="nav-meta">15 fn · 0 cls · 0 meth</span></a><a href="../modules/spine.html"><span class="nav-name">lurek.spine</span><span class="nav-meta">3 fn · 2 cls · 34 meth</span></a><a href="../modules/sprite.html"><span class="nav-name">lurek.sprite</span><span class="nav-meta">5 fn · 2 cls · 19 meth</span></a><a href="../modules/terminal.html"><span class="nav-name">lurek.terminal</span><span class="nav-meta">29 fn · 2 cls · 59 meth</span></a><a href="../modules/tween.html"><span class="nav-name">lurek.tween</span><span class="nav-meta">14 fn · 5 cls · 55 meth</span></a><a href="../modules/ui.html"><span class="nav-name">lurek.ui</span><span class="nav-meta">91 fn · 41 cls · 338 meth</span></a><a href="../modules/validator.html"><span class="nav-name">lurek.validator</span><span class="nav-meta">3 fn · 1 cls · 9 meth</span></a><a href="../modules/visibility.html"><span class="nav-name">lurek.visibility</span><span class="nav-meta">1 fn · 1 cls · 15 meth</span></a></nav>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a class="active" href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
     </aside>
     <main class="content">
       
@@ -51,7 +62,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LNetworkHost userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-broadcast"><div class="item-row-main"><h3>broadcast</h3><pre class="inline-signature">LNetworkHost:broadcast(channel_id: integer, data: string, reliable: boolean?)</pre><p>Broadcasts bytes to all connected peers on a channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:240</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-broadcast"><div class="item-row-main"><h3>broadcast</h3><pre class="inline-signature">LNetworkHost:broadcast(channel_id: integer, data: string, reliable: boolean?)</pre><p>Broadcasts bytes to all connected peers on a channel.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:241</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client = connect_pair(7782, 2)
     server:broadcast(1, &quot;state:update&quot;, true)
     server:flush()
@@ -60,7 +71,7 @@ end</code></pre></details>
     print(&quot;payload=&quot; .. tostring(event and event.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-connect"><div class="item-row-main"><h3>connect</h3><pre class="inline-signature">LNetworkHost:connect(addr_str: string, channels: integer?, data: integer?) -&gt; integer</pre><p>Connects to a remote address. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:210</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-connect"><div class="item-row-main"><h3>connect</h3><pre class="inline-signature">LNetworkHost:connect(addr_str: string, channels: integer?, data: integer?) -&gt; integer</pre><p>Connects to a remote address. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:211</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server = lurek.network.newServer({port = 7779, maxPeers = 4, channels = 2})
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 1, channels = 2})
     local peer_id = host:connect(&quot;127.0.0.1:7779&quot;, 2, 17)
@@ -69,12 +80,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;server_event=&quot; .. tostring(event and event.type or &quot;nil&quot;))
     host:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LNetworkHost:destroy()</pre><p>Destroys the network host and releases resources.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:446</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LNetworkHost:destroy()</pre><p>Destroys the network host and releases resources.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:447</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;before=&quot; .. tostring(host:isDestroyed()))
     host:destroy()
     print(&quot;after=&quot; .. tostring(host:isDestroyed()))
-end</code></pre></details></article><article class="item-row api-row" id="method-disconnect"><div class="item-row-main"><h3>disconnect</h3><pre class="inline-signature">LNetworkHost:disconnect(peer_id: integer, data: integer?)</pre><p>Requests a graceful peer disconnect.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:258</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-disconnect"><div class="item-row-main"><h3>disconnect</h3><pre class="inline-signature">LNetworkHost:disconnect(peer_id: integer, data: integer?)</pre><p>Requests a graceful peer disconnect.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:259</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7791, 2)
     server:disconnect(server_connect.peer_id, 7)
     server:flush()
@@ -83,7 +94,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;data=&quot; .. tostring(event and event.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-disconnectlater"><div class="item-row-main"><h3>disconnectLater</h3><pre class="inline-signature">LNetworkHost:disconnectLater(peer_id: integer, data: integer?)</pre><p>Schedules a peer disconnect after pending packets.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:284</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-disconnectlater"><div class="item-row-main"><h3>disconnectLater</h3><pre class="inline-signature">LNetworkHost:disconnectLater(peer_id: integer, data: integer?)</pre><p>Schedules a peer disconnect after pending packets.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:285</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7792, 2)
     server:send(server_connect.peer_id, 0, &quot;queued-goodbye&quot;, true)
     server:disconnectLater(server_connect.peer_id, 8)
@@ -94,7 +105,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;disconnect_data=&quot; .. tostring(disconnect and disconnect.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-disconnectnow"><div class="item-row-main"><h3>disconnectNow</h3><pre class="inline-signature">LNetworkHost:disconnectNow(peer_id: integer, data: integer?)</pre><p>Disconnects a peer immediately. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-disconnectnow"><div class="item-row-main"><h3>disconnectNow</h3><pre class="inline-signature">LNetworkHost:disconnectNow(peer_id: integer, data: integer?)</pre><p>Disconnects a peer immediately. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:272</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7793, 2)
     server:disconnectNow(server_connect.peer_id, 9)
     server:flush()
@@ -103,7 +114,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;data=&quot; .. tostring(event and event.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-flush"><div class="item-row-main"><h3>flush</h3><pre class="inline-signature">LNetworkHost:flush()</pre><p>Flushes queued outgoing network packets.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:251</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-flush"><div class="item-row-main"><h3>flush</h3><pre class="inline-signature">LNetworkHost:flush()</pre><p>Flushes queued outgoing network packets.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:252</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, _, client_connect = connect_pair(7794, 2)
     client:send(client_connect.peer_id, 0, &quot;flush-check&quot;, true)
     client:flush()
@@ -112,80 +123,80 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;payload=&quot; .. tostring(event and event.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getaddress"><div class="item-row-main"><h3>getAddress</h3><pre class="inline-signature">LNetworkHost:getAddress() -&gt; string</pre><p>Returns local host socket address.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:348</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getaddress"><div class="item-row-main"><h3>getAddress</h3><pre class="inline-signature">LNetworkHost:getAddress() -&gt; string</pre><p>Returns local host socket address.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:349</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;addr=&quot; .. host:getAddress())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getbandwidthlimit"><div class="item-row-main"><h3>getBandwidthLimit</h3><pre class="inline-signature">LNetworkHost:getBandwidthLimit() -&gt; table</pre><p>Returns incoming and outgoing bandwidth limits.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getbandwidthlimit"><div class="item-row-main"><h3>getBandwidthLimit</h3><pre class="inline-signature">LNetworkHost:getBandwidthLimit() -&gt; table</pre><p>Returns incoming and outgoing bandwidth limits.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:381</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server = lurek.network.newServer({port = 7789, maxPeers = 4})
     server:setBandwidthLimit(64000, 32000)
     local bw = server:getBandwidthLimit()
     print(&quot;bw_in=&quot; .. tostring(bw.incoming))
     print(&quot;bw_out=&quot; .. tostring(bw.outgoing))
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getchannellimit"><div class="item-row-main"><h3>getChannelLimit</h3><pre class="inline-signature">LNetworkHost:getChannelLimit() -&gt; integer</pre><p>Returns configured channel limit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:360</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getchannellimit"><div class="item-row-main"><h3>getChannelLimit</h3><pre class="inline-signature">LNetworkHost:getChannelLimit() -&gt; integer</pre><p>Returns configured channel limit.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:361</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;channels=&quot; .. host:getChannelLimit())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getconnectedpeercount"><div class="item-row-main"><h3>getConnectedPeerCount</h3><pre class="inline-signature">LNetworkHost:getConnectedPeerCount() -&gt; integer</pre><p>Returns the number of currently connected peers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:409</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getconnectedpeercount"><div class="item-row-main"><h3>getConnectedPeerCount</h3><pre class="inline-signature">LNetworkHost:getConnectedPeerCount() -&gt; integer</pre><p>Returns the number of currently connected peers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:410</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client = connect_pair(7783, 2)
     print(&quot;connected=&quot; .. server:getConnectedPeerCount())
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getconnectedpeerids"><div class="item-row-main"><h3>getConnectedPeerIds</h3><pre class="inline-signature">LNetworkHost:getConnectedPeerIds() -&gt; integer[]</pre><p>Returns an array of ids for all connected peers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:418</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getconnectedpeerids"><div class="item-row-main"><h3>getConnectedPeerIds</h3><pre class="inline-signature">LNetworkHost:getConnectedPeerIds() -&gt; integer[]</pre><p>Returns an array of ids for all connected peers.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:419</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client = connect_pair(7784, 2)
     local ids = server:getConnectedPeerIds()
     print(&quot;peer_count=&quot; .. #ids)
     print(&quot;first_peer=&quot; .. tostring(ids[1]))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getpeeraddress"><div class="item-row-main"><h3>getPeerAddress</h3><pre class="inline-signature">LNetworkHost:getPeerAddress(peer_id: integer) -&gt; string</pre><p>Returns peer socket address when available.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:337</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpeeraddress"><div class="item-row-main"><h3>getPeerAddress</h3><pre class="inline-signature">LNetworkHost:getPeerAddress(peer_id: integer) -&gt; string</pre><p>Returns peer socket address when available.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:338</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7786, 2)
     print(&quot;peer_addr=&quot; .. tostring(server:getPeerAddress(server_connect.peer_id)))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getpeerlimit"><div class="item-row-main"><h3>getPeerLimit</h3><pre class="inline-signature">LNetworkHost:getPeerLimit() -&gt; integer</pre><p>Returns configured peer limit. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:354</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpeerlimit"><div class="item-row-main"><h3>getPeerLimit</h3><pre class="inline-signature">LNetworkHost:getPeerLimit() -&gt; integer</pre><p>Returns configured peer limit. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:355</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;peer_limit=&quot; .. host:getPeerLimit())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getpeerstate"><div class="item-row-main"><h3>getPeerState</h3><pre class="inline-signature">LNetworkHost:getPeerState(peer_id: integer) -&gt; string</pre><p>Returns peer connection state. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:327</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpeerstate"><div class="item-row-main"><h3>getPeerState</h3><pre class="inline-signature">LNetworkHost:getPeerState(peer_id: integer) -&gt; string</pre><p>Returns peer connection state. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:328</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7785, 2)
     print(&quot;peer_state=&quot; .. server:getPeerState(server_connect.peer_id))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getpeerstats"><div class="item-row-main"><h3>getPeerStats</h3><pre class="inline-signature">LNetworkHost:getPeerStats(peer_id: integer) -&gt; table</pre><p>Returns statistics for a peer. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:436</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpeerstats"><div class="item-row-main"><h3>getPeerStats</h3><pre class="inline-signature">LNetworkHost:getPeerStats(peer_id: integer) -&gt; table</pre><p>Returns statistics for a peer. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:437</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7788, 2)
     local stats = server:getPeerStats(server_connect.peer_id)
     print(&quot;packets_sent=&quot; .. stats.packets_sent)
     print(&quot;rtt_ms=&quot; .. stats.round_trip_time)
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getrole"><div class="item-row-main"><h3>getRole</h3><pre class="inline-signature">LNetworkHost:getRole() -&gt; string</pre><p>Returns host role string. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:459</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getrole"><div class="item-row-main"><h3>getRole</h3><pre class="inline-signature">LNetworkHost:getRole() -&gt; string</pre><p>Returns host role string. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:460</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;role=&quot; .. host:getRole())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-getroundtriptime"><div class="item-row-main"><h3>getRoundTripTime</h3><pre class="inline-signature">LNetworkHost:getRoundTripTime(peer_id: integer) -&gt; number</pre><p>Returns peer round trip time in milliseconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:315</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getroundtriptime"><div class="item-row-main"><h3>getRoundTripTime</h3><pre class="inline-signature">LNetworkHost:getRoundTripTime(peer_id: integer) -&gt; number</pre><p>Returns peer round trip time in milliseconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:316</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7787, 2)
     server:ping(server_connect.peer_id)
     server:flush()
     print(&quot;rtt_ms=&quot; .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-isclient"><div class="item-row-main"><h3>isClient</h3><pre class="inline-signature">LNetworkHost:isClient() -&gt; boolean</pre><p>Returns whether this host has client role.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:471</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isclient"><div class="item-row-main"><h3>isClient</h3><pre class="inline-signature">LNetworkHost:isClient() -&gt; boolean</pre><p>Returns whether this host has client role.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:472</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server = lurek.network.newServer({port = 7798, maxPeers = 4, channels = 2})
     local client = lurek.network.newClient({addr = &quot;127.0.0.1:7798&quot;, channels = 2})
     print(&quot;is_client=&quot; .. tostring(client:isClient()))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-isdestroyed"><div class="item-row-main"><h3>isDestroyed</h3><pre class="inline-signature">LNetworkHost:isDestroyed() -&gt; boolean</pre><p>Returns whether the network host is destroyed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:453</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isdestroyed"><div class="item-row-main"><h3>isDestroyed</h3><pre class="inline-signature">LNetworkHost:isDestroyed() -&gt; boolean</pre><p>Returns whether the network host is destroyed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:454</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;is_destroyed=&quot; .. tostring(host:isDestroyed()))
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-isserver"><div class="item-row-main"><h3>isServer</h3><pre class="inline-signature">LNetworkHost:isServer() -&gt; boolean</pre><p>Returns whether this host has server role.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:465</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isserver"><div class="item-row-main"><h3>isServer</h3><pre class="inline-signature">LNetworkHost:isServer() -&gt; boolean</pre><p>Returns whether this host has server role.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:466</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server = lurek.network.newServer({port = 7799, maxPeers = 4, channels = 2})
     print(&quot;is_server=&quot; .. tostring(server:isServer()))
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-ping"><div class="item-row-main"><h3>ping</h3><pre class="inline-signature">LNetworkHost:ping(peer_id: integer)</pre><p>Sends a ping to a peer. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:305</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-ping"><div class="item-row-main"><h3>ping</h3><pre class="inline-signature">LNetworkHost:ping(peer_id: integer)</pre><p>Sends a ping to a peer. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7795, 2)
     server:ping(server_connect.peer_id)
     server:flush()
@@ -193,7 +204,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;rtt_ms=&quot; .. math.floor(server:getRoundTripTime(server_connect.peer_id)))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-resetpeer"><div class="item-row-main"><h3>resetPeer</h3><pre class="inline-signature">LNetworkHost:resetPeer(peer_id: integer)</pre><p>Resets a peer connection. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:296</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-resetpeer"><div class="item-row-main"><h3>resetPeer</h3><pre class="inline-signature">LNetworkHost:resetPeer(peer_id: integer)</pre><p>Resets a peer connection. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7796, 2)
     server:resetPeer(server_connect.peer_id)
     server:service()
@@ -202,7 +213,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;connected=&quot; .. server:getConnectedPeerCount())
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-send"><div class="item-row-main"><h3>send</h3><pre class="inline-signature">LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, reliable: boolean?)</pre><p>Sends bytes to a peer on a channel. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-send"><div class="item-row-main"><h3>send</h3><pre class="inline-signature">LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, reliable: boolean?)</pre><p>Sends bytes to a peer on a channel. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:229</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7781, 2)
     server:send(server_connect.peer_id, 0, &quot;welcome&quot;, true)
     server:flush()
@@ -211,29 +222,29 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;payload=&quot; .. tostring(event and event.data or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-service"><div class="item-row-main"><h3>service</h3><pre class="inline-signature">LNetworkHost:service() -&gt; table</pre><p>Polls the host for one network event.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:193</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-service"><div class="item-row-main"><h3>service</h3><pre class="inline-signature">LNetworkHost:service() -&gt; table</pre><p>Polls the host for one network event.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:194</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server, client, server_connect = connect_pair(7780, 2)
     print(&quot;event_type=&quot; .. tostring(server_connect and server_connect.type or &quot;nil&quot;))
     print(&quot;peer_id=&quot; .. tostring(server_connect and server_connect.peer_id or &quot;nil&quot;))
     client:destroy()
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-setbandwidthlimit"><div class="item-row-main"><h3>setBandwidthLimit</h3><pre class="inline-signature">LNetworkHost:setBandwidthLimit(incoming: integer?, outgoing: integer?)</pre><p>Sets incoming and outgoing bandwidth limits.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:397</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setbandwidthlimit"><div class="item-row-main"><h3>setBandwidthLimit</h3><pre class="inline-signature">LNetworkHost:setBandwidthLimit(incoming: integer?, outgoing: integer?)</pre><p>Sets incoming and outgoing bandwidth limits.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:398</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
     local limits = server:getBandwidthLimit()
     print(&quot;incoming=&quot; .. tostring(limits.incoming))
     print(&quot;outgoing=&quot; .. tostring(limits.outgoing))
     server:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-setchannellimit"><div class="item-row-main"><h3>setChannelLimit</h3><pre class="inline-signature">LNetworkHost:setChannelLimit(limit: integer)</pre><p>Sets channel limit. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:369</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setchannellimit"><div class="item-row-main"><h3>setChannelLimit</h3><pre class="inline-signature">LNetworkHost:setChannelLimit(limit: integer)</pre><p>Sets channel limit. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:370</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:7790&quot;, maxPeers = 2, channels = 1})
     host:setChannelLimit(4)
     print(&quot;channels=&quot; .. host:getChannelLimit())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNetworkHost:type() -&gt; string</pre><p>Returns the Lua-visible type name for this network host handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:485</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNetworkHost:type() -&gt; string</pre><p>Returns the Lua-visible type name for this network host handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:486</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;type=&quot; .. host:type())
     host:destroy()
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNetworkHost:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this network host handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:490</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNetworkHost:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this network host handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:491</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     local host = lurek.network.newHost({addr = &quot;0.0.0.0:0&quot;, maxPeers = 4, channels = 2})
     print(&quot;typeOf=&quot; .. tostring(host:typeOf(&quot;LNetworkHost&quot;)))
     host:destroy()
@@ -246,7 +257,7 @@ end</code></pre></details></article>
   <script>
     window.LUREK_SITE_BASE = "..";
   </script>
-    <script src="../assets/search-index.js"></script>
+  <script src="../assets/search-index.js"></script>
   <script src="../assets/app.js"></script>
 </body>
 </html>

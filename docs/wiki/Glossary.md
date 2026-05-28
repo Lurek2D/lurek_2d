@@ -29,7 +29,10 @@ The glossary collects terms that appear across module and API pages.
 - `LAdsrEnvelope` ([lurek.dsp](Module-dsp)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 - `LAgent` ([lurek.agent](Module-agent)) - Lua-side handle for a single LLM Agent.
 - `LAgent` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
+- `LAgentChat` ([lurek.agent](Module-agent)) - Lua-side handle for a stateful LLM chat session.
 - `LAgentManager` ([lurek.agent](Module-agent)) - Lua-side handle for managing multiple LLM Agents in parallel.
+- `LAgentMemory` ([lurek.agent](Module-agent)) - Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
+- `LAgentTemplate` ([lurek.agent](Module-agent)) - Lua-side handle for a `{key}` placeholder prompt template.
 - `LAIBlackboard` ([lurek.ai](Module-ai)) - Lua handle for a typed AI blackboard storing local key-value facts.
 - `LAIDirector` ([lurek.ai](Module-ai)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
 - `LAIFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for an AI flow field over a path grid.
@@ -45,6 +48,7 @@ The glossary collects terms that appear across module and API pages.
 - `LAreaChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a stacked area series chart.
 - `LAreaChart` ([lurek.ui](Module-ui)) - Lua-exposed area chart for data visualization.
 - `LArray` ([lurek.compute](Module-compute)) - Lua-side multidimensional numeric array handle.
+- `LAssetHandle` ([lurek.asset](Module-asset)) - Lua-side handle for a single cached asset entry.
 - `LAutoTileSheet` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 - `LBadge` ([lurek.ui](Module-ui)) - Adds badge-specific methods to a notification badge widget table.
 - `LBandit` ([lurek.learning](Module-learning)) - Lua handle for multi-armed bandit action selection.
@@ -99,6 +103,7 @@ The glossary collects terms that appear across module and API pages.
 - `LDspGraph` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph that stores nodes, edges, and offline processing order.
 - `LDspNode` ([lurek.dsp](Module-dsp)) - Lua-visible DSP graph node carrying type and simple numeric parameters.
 - `LEmotionModel` ([lurek.ai](Module-ai)) - Lua handle for decaying named emotion intensities.
+- `LEpisodicMemory` ([lurek.agent](Module-agent)) - Lua-side handle for append-only episodic memory.
 - `LEventBus` ([lurek.patterns](Module-patterns)) - Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 - `LFactory` ([lurek.patterns](Module-patterns)) - Lua-facing factory pattern for creating typed game objects from registered constructor functions.
 - `LFileData` ([lurek.filesystem](Module-filesystem))
@@ -139,8 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LLabel` ([lurek.ui](Module-ui)) - Adds label-specific methods (setText, getText) to a label widget table.
 - `LLargeMapRenderer` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
 - `LLayeredImage` ([lurek.image](Module-image)) - Lua-side handle for multiple image layers with visibility, opacity, and ordering.
-- `LLayout` ([lurek.ui](Module-ui)) - Adds layout-specific methods to a layout container widget table.
-- `LLazyQuery` ([lurek.dataframe](Module-dataframe)) - Lua-side lazy dataframe query pipeline.
-- `LLevelDetector` ([lurek.dsp](Module-dsp)) - Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
-- `LLight` ([lurek.light](Module-light)) - Lua-side handle for a light stored in the shared light world.
-- `LLineChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a connected line series chart.

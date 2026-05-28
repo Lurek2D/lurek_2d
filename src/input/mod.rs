@@ -2,7 +2,10 @@
 //!
 //! - Event constants for Lua callbacks (keypressed, mousemoved, etc.).
 //! - Combo gesture detection and input recording for replays.
+//! - Extended action definitions with category metadata for the binding system.
 
+/// Extended action definition with category metadata for the binding system.
+pub mod action_def;
 /// Combo gesture detection and multi-step input sequences.
 pub mod combo;
 /// Gamepad device state, axis/button mapping, and vibration requests via gilrs.
@@ -16,6 +19,7 @@ pub mod recorder;
 /// Touch-point state tracking for multi-touch surfaces.
 pub mod touch;
 
+pub use action_def::{ActionDef, ActionMap};
 pub use combo::{ComboDetector, ComboProgress, ComboStep};
 pub use gamepad::gilrs_axis_to_string;
 pub use gamepad::gilrs_button_to_string;

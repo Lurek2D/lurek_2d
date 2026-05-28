@@ -14,7 +14,7 @@ use super::devtools_api;
 use super::flownet_api;
 use super::lua_module::ModuleEntry;
 use super::{
-    agent_api, ai_api, animation_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
+    agent_api, ai_api, animation_api, asset_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
     dataframe_api, debugbridge_api, dialog_api, docs_api, dsp_api, ecs_api, effect_api, engine_api,
     event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api,
     input_api, layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api,
@@ -59,6 +59,7 @@ macro_rules! gated {
 static MODULES: &[ModuleEntry] = &[
     // ── Always-on core modules ──────────────────────────────────────────
     always!(agent_api),
+    always!(asset_api),
     always!(event_api),
     always!(sprite_api),
     always!(save_api),

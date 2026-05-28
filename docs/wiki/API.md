@@ -17,22 +17,23 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8481 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28996 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8618 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29330 lines)
 
 ## Coverage
 
-- 67 modules
-- 5297 functions and methods
-- 100.0% documented
+- 68 modules
+- 5362 functions and methods
+- 99.9% documented
 
 ## API Module Index
 
 | API | Functions | Types | Purpose |
 |---|---:|---:|---|
-| [lurek.agent](Module-agent) | 4 | 4 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
+| [lurek.agent](Module-agent) | 17 | 10 | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. |
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
+| [lurek.asset](Module-asset) | 8 | 1 | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
 | [lurek.audio](Module-audio) | 83 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
@@ -59,7 +60,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.html](Module-html) | 6 | 2 | It empowers game developers to construct complex, responsive User Interfaces (UIs) using familiar web markup technologies rather than proprietary layout languages. |
 | [lurek.i18n](Module-i18n) | 36 | 0 | Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*). |
 | [lurek.image](Module-image) | 12 | 5 | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
-| [lurek.input](Module-input) | 80 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
+| [lurek.input](Module-input) | 89 | 3 | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [lurek.layout](Module-layout) | 5 | 0 | Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. |
 | [lurek.learning](Module-learning) | 6 | 6 | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits. |
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
@@ -69,7 +70,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.midi](Module-midi) | 4 | 0 | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
 | [lurek.mods](Module-mods) | 4 | 3 | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config. |
-| [lurek.network](Module-network) | 19 | 2 | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
+| [lurek.network](Module-network) | 21 | 3 | Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree. |
 | [lurek.overlay](Module-overlay) | 2 | 2 | Screen overlay system: weather, atmosphere, screen effects, and transitions. |
 | [lurek.parallax](Module-parallax) | 3 | 2 | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes. |
 | [lurek.particle](Module-particle) | 5 | 2 | Emitter-based 2D particle systems with bounded pools and Euler integration. |

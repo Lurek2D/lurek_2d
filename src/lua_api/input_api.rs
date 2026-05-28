@@ -12,6 +12,7 @@ use crate::input::combo::{ComboDetector, ComboStep};
 use crate::input::keyboard::{get_key_from_scancode, get_scancode_from_key};
 use crate::input::mouse::{is_cursor_supported, CursorKind, SystemCursor};
 use crate::input::virtual_dpad;
+use crate::input::ActionDef;
 use mlua::prelude::*;
 use mlua::Variadic;
 use std::cell::RefCell;
@@ -57,6 +58,19 @@ fn binding_was_released(st: &SharedState, binding: &str) -> bool {
             .is_some_and(|gp| gp.was_button_released(button));
     }
     st.keyboard.get_released().iter().any(|k| k == binding)
+}
+/// Computes a -1/0/+1 axis value from an action's first two bindings; first binding is positive, second is negative.
+fn compute_axis(map: &HashMap<String, ActionDef>, st: &SharedState, action: &str) -> f32 {
+    let Some(def) = map.get(action) else {
+        return 0.0;
+    };
+    let pos = def.bindings.first().is_some_and(|k| binding_is_down(st, k));
+    let neg = def.bindings.get(1).is_some_and(|k| binding_is_down(st, k));
+    match (pos, neg) {
+        (true, false) => 1.0,
+        (false, true) => -1.0,
+        _ => 0.0,
+    }
 }
 /// Lua-side cursor handle for system and custom cursor requests.
 pub struct LuaCursor {
@@ -1012,42 +1026,66 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     /// Performs the 'touch' operation.
     input_tbl.set("touch", touch)?;
-    let action_map: Rc<RefCell<HashMap<String, Vec<String>>>> =
+    let action_map: Rc<RefCell<HashMap<String, ActionDef>>> =
         Rc::new(RefCell::new(HashMap::new()));
+    let rebind_callbacks: Rc<RefCell<Vec<LuaRegistryKey>>> =
+        Rc::new(RefCell::new(Vec::new()));
     let last_pressed_frame: Rc<RefCell<HashMap<String, u64>>> =
         Rc::new(RefCell::new(HashMap::new()));
     let am = action_map.clone();
+    let rbc = rebind_callbacks.clone();
     // -- bind --
     /// Adds one or more keyboard/gamepad bindings to an action.
     /// @param | action | string | Action name.
     /// @param | keys | any | Binding string or array table of binding strings.
     input_tbl.set(
         "bind",
-        lua.create_function(move |_, (action, keys): (String, LuaValue)| {
-            let mut map = am.borrow_mut();
-            let entry = map.entry(action).or_default();
-            match keys {
-                LuaValue::String(s) => {
-                    let k = s
-                        .to_str()
-                        .map_err(|e| LuaError::RuntimeError(e.to_string()))?
-                        .to_string();
-                    if !entry.contains(&k) {
-                        entry.push(k);
-                    }
-                }
-                LuaValue::Table(t) => {
-                    for pair in t.sequence_values::<String>() {
-                        let k = pair?;
-                        if !entry.contains(&k) {
-                            entry.push(k);
+        lua.create_function(move |lua, (action, keys): (String, LuaValue)| {
+            {
+                let mut map = am.borrow_mut();
+                let entry = map.entry(action.clone()).or_default();
+                match keys {
+                    LuaValue::String(s) => {
+                        let k = s
+                            .to_str()
+                            .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                            .to_string();
+                        if !entry.bindings.contains(&k) {
+                            entry.bindings.push(k);
                         }
                     }
+                    LuaValue::Table(t) => {
+                        for pair in t.sequence_values::<String>() {
+                            let k = pair?;
+                            if !entry.bindings.contains(&k) {
+                                entry.bindings.push(k);
+                            }
+                        }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(
+                            "input.bind: keys must be a string or array of strings".into(),
+                        ))
+                    }
                 }
-                _ => {
-                    return Err(LuaError::RuntimeError(
-                        "input.bind: keys must be a string or array of strings".into(),
-                    ))
+            }
+            let new_keys = am
+                .borrow()
+                .get(&action)
+                .map(|d| d.bindings.clone())
+                .unwrap_or_default();
+            let n = rbc.borrow().len();
+            for i in 0..n {
+                let cb = {
+                    let cbs = rbc.borrow();
+                    cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                };
+                if let Some(cb) = cb {
+                    let kt = lua.create_table()?;
+                    for (j, k) in new_keys.iter().enumerate() {
+                        kt.set(j + 1, k.clone())?;
+                    }
+                    cb.call::<_, ()>((action.clone(), kt))?;
                 }
             }
             Ok(())
@@ -1075,15 +1113,15 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                             .to_str()
                             .map_err(|e| LuaError::RuntimeError(e.to_string()))?
                             .to_string();
-                        if !entry.contains(&k) {
-                            entry.push(k);
+                        if !entry.bindings.contains(&k) {
+                            entry.bindings.push(k);
                         }
                     }
                     LuaValue::Table(t) => {
                         for pair in t.sequence_values::<String>() {
                             let k = pair?;
-                            if !entry.contains(&k) {
-                                entry.push(k);
+                            if !entry.bindings.contains(&k) {
+                                entry.bindings.push(k);
                             }
                         }
                     }
@@ -1106,9 +1144,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "isDown",
                 lua.create_function(move |_, ()| {
                     let map = am_is_down.borrow();
-                    if let Some(keys) = map.get(&action) {
+                    if let Some(def) = map.get(&action) {
                         let st = s_is_down.borrow();
-                        return Ok(keys.iter().any(|k| binding_is_down(&st, k)));
+                        return Ok(def.bindings.iter().any(|k| binding_is_down(&st, k)));
                     }
                     Ok(false)
                 })?,
@@ -1122,9 +1160,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "wasPressed",
                 lua.create_function(move |_, ()| {
                     let map = am_pressed.borrow();
-                    if let Some(keys) = map.get(&action) {
+                    if let Some(def) = map.get(&action) {
                         let st = s_pressed.borrow();
-                        return Ok(keys.iter().any(|k| binding_was_pressed(&st, k)));
+                        return Ok(def.bindings.iter().any(|k| binding_was_pressed(&st, k)));
                     }
                     Ok(false)
                 })?,
@@ -1138,9 +1176,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 "wasReleased",
                 lua.create_function(move |_, ()| {
                     let map = am_released.borrow();
-                    if let Some(keys) = map.get(&action) {
+                    if let Some(def) = map.get(&action) {
                         let st = s_released.borrow();
-                        return Ok(keys.iter().any(|k| binding_was_released(&st, k)));
+                        return Ok(def.bindings.iter().any(|k| binding_was_released(&st, k)));
                     }
                     Ok(false)
                 })?,
@@ -1149,14 +1187,29 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     let am = action_map.clone();
+    let rbc = rebind_callbacks.clone();
     // -- unbind --
     /// Removes all bindings for an action.
     /// @param | action | string | Action name.
     /// @return | boolean | True when the action had bindings.
     input_tbl.set(
         "unbind",
-        lua.create_function(move |_, action: String| {
-            Ok(am.borrow_mut().remove(&action).is_some())
+        lua.create_function(move |lua, action: String| {
+            let removed = am.borrow_mut().remove(&action).is_some();
+            if removed {
+                let n = rbc.borrow().len();
+                for i in 0..n {
+                    let cb = {
+                        let cbs = rbc.borrow();
+                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                    };
+                    if let Some(cb) = cb {
+                        let kt = lua.create_table()?;
+                        cb.call::<_, ()>((action.clone(), kt))?;
+                    }
+                }
+            }
+            Ok(removed)
         })?,
     )?;
     let am = action_map.clone();
@@ -1178,9 +1231,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |lua, ()| {
             let map = am.borrow();
             let out = lua.create_table()?;
-            for (action, keys) in map.iter() {
+            for (action, def) in map.iter() {
                 let kt = lua.create_table()?;
-                for (i, k) in keys.iter().enumerate() {
+                for (i, k) in def.bindings.iter().enumerate() {
                     kt.set(i + 1, k.clone())?;
                 }
                 out.set(action.clone(), kt)?;
@@ -1198,9 +1251,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "isActionDown",
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
-            if let Some(keys) = map.get(&action) {
+            if let Some(def) = map.get(&action) {
                 let st = s.borrow();
-                return Ok(keys.iter().any(|k| binding_is_down(&st, k)));
+                return Ok(def.bindings.iter().any(|k| binding_is_down(&st, k)));
             }
             Ok(false)
         })?,
@@ -1216,9 +1269,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "wasActionPressed",
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
-            if let Some(keys) = map.get(&action) {
+            if let Some(def) = map.get(&action) {
                 let st = s.borrow();
-                let was_pressed = keys.iter().any(|k| binding_was_pressed(&st, k));
+                let was_pressed = def.bindings.iter().any(|k| binding_was_pressed(&st, k));
                 if was_pressed {
                     let frame = st.clock.frame_count();
                     lpf.borrow_mut().insert(action, frame);
@@ -1238,9 +1291,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "wasActionReleased",
         lua.create_function(move |_, action: String| {
             let map = am.borrow();
-            if let Some(keys) = map.get(&action) {
+            if let Some(def) = map.get(&action) {
                 let st = s.borrow();
-                return Ok(keys.iter().any(|k| binding_was_released(&st, k)));
+                return Ok(def.bindings.iter().any(|k| binding_was_released(&st, k)));
             }
             Ok(false)
         })?,
@@ -1260,6 +1313,228 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 return Ok(current.saturating_sub(pressed_at) <= frames);
             }
             Ok(false)
+        })?,
+    )?;
+    let am = action_map.clone();
+    let rbc = rebind_callbacks.clone();
+    // -- define --
+    /// Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+    /// @param | name | string | Action name.
+    /// @param | bindings | any | Binding string or array of binding strings.
+    /// @param | category | string? | Category label for grouping (default empty string).
+    input_tbl.set(
+        "define",
+        lua.create_function(
+            move |lua, (name, keys, cat): (String, LuaValue, Option<String>)| {
+                let category = cat.unwrap_or_default();
+                let mut parsed: Vec<String> = Vec::new();
+                match keys {
+                    LuaValue::String(s) => {
+                        parsed.push(
+                            s.to_str()
+                                .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                                .to_string(),
+                        );
+                    }
+                    LuaValue::Table(t) => {
+                        for pair in t.sequence_values::<String>() {
+                            parsed.push(pair?);
+                        }
+                    }
+                    _ => {
+                        return Err(LuaError::RuntimeError(
+                            "input.define: bindings must be a string or array of strings".into(),
+                        ))
+                    }
+                }
+                {
+                    let mut map = am.borrow_mut();
+                    map.insert(name.clone(), ActionDef::new(parsed, category));
+                }
+                let new_keys = am
+                    .borrow()
+                    .get(&name)
+                    .map(|d| d.bindings.clone())
+                    .unwrap_or_default();
+                let n = rbc.borrow().len();
+                for i in 0..n {
+                    let cb = {
+                        let cbs = rbc.borrow();
+                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                    };
+                    if let Some(cb) = cb {
+                        let kt = lua.create_table()?;
+                        for (j, k) in new_keys.iter().enumerate() {
+                            kt.set(j + 1, k.clone())?;
+                        }
+                        cb.call::<_, ()>((name.clone(), kt))?;
+                    }
+                }
+                Ok(())
+            },
+        )?,
+    )?;
+    let am = action_map.clone();
+    let s = state.clone();
+    // -- getAxis --
+    /// Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.
+    /// @param | name | string | Action name.
+    /// @return | number | Axis value: +1.0, -1.0, or 0.0.
+    input_tbl.set(
+        "getAxis",
+        lua.create_function(move |_, name: String| {
+            let map = am.borrow();
+            let st = s.borrow();
+            Ok(compute_axis(&map, &st, &name))
+        })?,
+    )?;
+    let am = action_map.clone();
+    let s = state.clone();
+    // -- getVector --
+    /// Returns a 2D axis vector from two named actions.
+    /// @param | hname | string | Horizontal action name (positive = right).
+    /// @param | vname | string | Vertical action name (positive = down).
+    /// @return | number | Horizontal axis value.
+    /// @return | number | Vertical axis value.
+    input_tbl.set(
+        "getVector",
+        lua.create_function(move |_, (hname, vname): (String, String)| {
+            let map = am.borrow();
+            let st = s.borrow();
+            let h = compute_axis(&map, &st, &hname);
+            let v = compute_axis(&map, &st, &vname);
+            Ok((h, v))
+        })?,
+    )?;
+    let am = action_map.clone();
+    // -- reset --
+    /// Removes bindings for one action by name, or all actions when name is nil.
+    /// @param | name | string? | Action name. When nil, all actions are removed.
+    input_tbl.set(
+        "reset",
+        lua.create_function(move |_, name: Option<String>| {
+            match name {
+                Some(action) => {
+                    am.borrow_mut().remove(&action);
+                }
+                None => {
+                    am.borrow_mut().clear();
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+    let am = action_map.clone();
+    // -- getConflicts --
+    /// Returns a table mapping each binding key to the action names that share it; only keys with two or more actions are included.
+    /// @return | table | Map of binding string to array of conflicting action names.
+    input_tbl.set(
+        "getConflicts",
+        lua.create_function(move |lua, ()| {
+            let map = am.borrow();
+            let mut key_to_actions: HashMap<String, Vec<String>> = HashMap::new();
+            for (action, def) in map.iter() {
+                for binding in &def.bindings {
+                    key_to_actions
+                        .entry(binding.clone())
+                        .or_default()
+                        .push(action.clone());
+                }
+            }
+            let out = lua.create_table()?;
+            for (binding, actions) in &key_to_actions {
+                if actions.len() >= 2 {
+                    let at = lua.create_table()?;
+                    for (i, a) in actions.iter().enumerate() {
+                        at.set(i + 1, a.clone())?;
+                    }
+                    out.set(binding.clone(), at)?;
+                }
+            }
+            Ok(out)
+        })?,
+    )?;
+    let am = action_map.clone();
+    // -- serializeBindings --
+    /// Serialises all action definitions to a JSON string.
+    /// @return | string | JSON representation of all action definitions.
+    input_tbl.set(
+        "serializeBindings",
+        lua.create_function(move |_, ()| {
+            let map = am.borrow();
+            serde_json::to_string(&*map).map_err(|e| LuaError::RuntimeError(e.to_string()))
+        })?,
+    )?;
+    let am = action_map.clone();
+    let rbc = rebind_callbacks.clone();
+    // -- deserializeBindings --
+    /// Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
+    /// @param | json | string | JSON string with action definitions.
+    /// @return | boolean | True on success.
+    input_tbl.set(
+        "deserializeBindings",
+        lua.create_function(move |lua, json: String| {
+            let new_map: HashMap<String, ActionDef> = serde_json::from_str(&json)
+                .map_err(|e| LuaError::RuntimeError(format!("input.deserializeBindings: {e}")))?;
+            let actions: Vec<String> = new_map.keys().cloned().collect();
+            {
+                let mut map = am.borrow_mut();
+                *map = new_map;
+            }
+            let n = rbc.borrow().len();
+            for action in &actions {
+                let new_keys = am
+                    .borrow()
+                    .get(action)
+                    .map(|d| d.bindings.clone())
+                    .unwrap_or_default();
+                for i in 0..n {
+                    let cb = {
+                        let cbs = rbc.borrow();
+                        cbs.get(i).and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                    };
+                    if let Some(cb) = cb {
+                        let kt = lua.create_table()?;
+                        for (j, k) in new_keys.iter().enumerate() {
+                            kt.set(j + 1, k.clone())?;
+                        }
+                        cb.call::<_, ()>((action.clone(), kt))?;
+                    }
+                }
+            }
+            Ok(true)
+        })?,
+    )?;
+    let am = action_map.clone();
+    // -- getByCategory --
+    /// Returns action names belonging to the given category.
+    /// @param | category | string | Category label.
+    /// @return | string[] | Array of matching action names.
+    input_tbl.set(
+        "getByCategory",
+        lua.create_function(move |lua, cat: String| {
+            let map = am.borrow();
+            let tbl = lua.create_table()?;
+            let mut i = 1usize;
+            for (name, def) in map.iter() {
+                if def.category == cat {
+                    tbl.set(i, name.clone())?;
+                    i += 1;
+                }
+            }
+            Ok(tbl)
+        })?,
+    )?;
+    let rbc = rebind_callbacks.clone();
+    // -- onRebind --
+    /// Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
+    /// @param | callback | function | function(action_name, new_keys) called on any change.
+    input_tbl.set(
+        "onRebind",
+        lua.create_function(move |lua, cb: LuaFunction| {
+            let key = lua.create_registry_value(cb)?;
+            rbc.borrow_mut().push(key);
+            Ok(())
         })?,
     )?;
     // -- newCombo --

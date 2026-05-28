@@ -738,3 +738,363 @@ do
     -- Dispatch pull callbacks that completed since the last frame.
     ollama:update()
 end
+
+-- ─── lurek.agent.configure ───────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.configure
+do
+    lurek.agent.configure({
+        provider    = "ollama",
+        base_url    = "http://127.0.0.1:11434",
+        model       = "llama3",
+        timeout_ms  = 30000,
+        api_key     = nil,
+    })
+end
+
+-- ─── lurek.agent.complete ────────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.complete
+do
+    local reply = lurek.agent.complete("Hello, world!")
+    print("Reply:", reply)
+end
+
+-- ─── lurek.agent.completeAsync ───────────────────────────────────────────────
+
+--@api-stub: lurek.agent.completeAsync
+do
+    lurek.agent.completeAsync("What is Lua?", function(text, err)
+        if err then
+            print("Error:", err)
+        else
+            print("Async reply:", text)
+        end
+    end)
+end
+
+-- ─── lurek.agent.newChat ─────────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newChat
+do
+    ---@type LAgentChat
+    local chat = lurek.agent.newChat()
+    print("Chat created:", chat)
+end
+
+-- ─── LAgentChat:setSystemPrompt ──────────────────────────────────────────────
+
+--@api-stub: LAgentChat:setSystemPrompt
+do
+    local chat = lurek.agent.newChat()
+    chat:setSystemPrompt("You are a helpful assistant.")
+end
+
+-- ─── LAgentChat:addMessage ───────────────────────────────────────────────────
+
+--@api-stub: LAgentChat:addMessage
+do
+    local chat = lurek.agent.newChat()
+    chat:addMessage("user", "Tell me a joke.")
+end
+
+-- ─── LAgentChat:complete ─────────────────────────────────────────────────────
+
+--@api-stub: LAgentChat:complete
+do
+    local chat = lurek.agent.newChat()
+    chat:addMessage("user", "Hi!")
+    local reply = chat:complete()
+    print("Chat reply:", reply)
+end
+
+-- ─── LAgentChat:clear ────────────────────────────────────────────────────────
+
+--@api-stub: LAgentChat:clear
+do
+    local chat = lurek.agent.newChat()
+    chat:addMessage("user", "Hello")
+    chat:clear()
+end
+
+-- ─── LAgentChat:getHistory ───────────────────────────────────────────────────
+
+--@api-stub: LAgentChat:getHistory
+do
+    local chat = lurek.agent.newChat()
+    local history = chat:getHistory()
+    print("History entries:", #history)
+end
+
+-- ─── lurek.agent.newTemplate ─────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newTemplate
+do
+    ---@type LAgentTemplate
+    local tmpl = lurek.agent.newTemplate("Hello, {name}!")
+    print("Template created:", tmpl)
+end
+
+-- ─── LAgentTemplate:render ───────────────────────────────────────────────────
+
+--@api-stub: LAgentTemplate:render
+do
+    local tmpl = lurek.agent.newTemplate("Hello, {name}! You are {age} years old.")
+    local out  = tmpl:render({ name = "Alice", age = "30" })
+    print("Rendered:", out)
+end
+
+-- ─── lurek.agent.completeJson ────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.completeJson
+do
+    local result = lurek.agent.completeJson("List three colors as JSON.")
+    print("JSON result:", result)
+end
+
+-- ─── lurek.agent.embed ───────────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.embed
+do
+    local vec = lurek.agent.embed("Semantic embedding test.")
+    print("Embedding dimensions:", #vec)
+end
+
+-- ─── lurek.agent.isAvailable ─────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.isAvailable
+do
+    local ok = lurek.agent.isAvailable()
+    print("LLM available:", ok)
+end
+
+-- ─── lurek.agent.listModels ──────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.listModels
+do
+    local models = lurek.agent.listModels()
+    print("Available models:", #models)
+end
+
+-- ─── lurek.agent.newWorkingMemory ────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newWorkingMemory
+do
+    ---@type LWorkingMemory
+    local wm = lurek.agent.newWorkingMemory(16)
+    print("Working memory capacity:", wm:capacity())
+end
+
+-- ─── LWorkingMemory:push ─────────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:push
+do
+    local wm = lurek.agent.newWorkingMemory(8)
+    wm:push("last_action", "jump")
+end
+
+-- ─── LWorkingMemory:get ──────────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:get
+do
+    local wm = lurek.agent.newWorkingMemory(8)
+    wm:push("hp", 100)
+    local hp = wm:get("hp")
+    print("HP:", hp)
+end
+
+-- ─── LWorkingMemory:forget ───────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:forget
+do
+    local wm = lurek.agent.newWorkingMemory(8)
+    wm:push("temp", "value")
+    local removed = wm:forget("temp")
+    print("Removed:", removed)
+end
+
+-- ─── LWorkingMemory:getRecent ────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:getRecent
+do
+    local wm = lurek.agent.newWorkingMemory(8)
+    wm:push("a", 1)
+    wm:push("b", 2)
+    local recent = wm:getRecent(2)
+    print("Recent entries:", #recent)
+end
+
+-- ─── LWorkingMemory:len ──────────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:len
+do
+    local wm = lurek.agent.newWorkingMemory(8)
+    wm:push("x", 42)
+    print("WM size:", wm:len())
+end
+
+-- ─── LWorkingMemory:capacity ─────────────────────────────────────────────────
+
+--@api-stub: LWorkingMemory:capacity
+do
+    local wm = lurek.agent.newWorkingMemory(32)
+    print("WM capacity:", wm:capacity())
+end
+
+-- ─── lurek.agent.newEpisodicMemory ───────────────────────────────────────────
+
+--@api-stub: lurek.agent.newEpisodicMemory
+do
+    ---@type LEpisodicMemory
+    local em = lurek.agent.newEpisodicMemory()
+    print("Episodic memory created:", em)
+end
+
+-- ─── LEpisodicMemory:record ──────────────────────────────────────────────────
+
+--@api-stub: LEpisodicMemory:record
+do
+    local em = lurek.agent.newEpisodicMemory()
+    em:record(100, { event = "player_hit", damage = 10 })
+end
+
+-- ─── LEpisodicMemory:query ───────────────────────────────────────────────────
+
+--@api-stub: LEpisodicMemory:query
+do
+    local em = lurek.agent.newEpisodicMemory()
+    em:record(1, { type = "kill" })
+    local results = em:query({ type = "kill" })
+    print("Kill events:", #results)
+end
+
+-- ─── LEpisodicMemory:forgetBefore ────────────────────────────────────────────
+
+--@api-stub: LEpisodicMemory:forgetBefore
+do
+    local em = lurek.agent.newEpisodicMemory()
+    em:record(10, { note = "old" })
+    em:record(200, { note = "new" })
+    em:forgetBefore(100)
+    print("Episodes after prune:", em:len())
+end
+
+-- ─── LEpisodicMemory:len ─────────────────────────────────────────────────────
+
+--@api-stub: LEpisodicMemory:len
+do
+    local em = lurek.agent.newEpisodicMemory()
+    em:record(1, { x = 1 })
+    print("Episode count:", em:len())
+end
+
+-- ─── lurek.agent.newSemanticMemory ───────────────────────────────────────────
+
+--@api-stub: lurek.agent.newSemanticMemory
+do
+    ---@type LSemanticMemory
+    local sm = lurek.agent.newSemanticMemory()
+    print("Semantic memory created:", sm)
+end
+
+-- ─── LSemanticMemory:learn ───────────────────────────────────────────────────
+
+--@api-stub: LSemanticMemory:learn
+do
+    local sm = lurek.agent.newSemanticMemory()
+    sm:learn("capital_of_france", { value = "Paris" })
+end
+
+-- ─── LSemanticMemory:recall ──────────────────────────────────────────────────
+
+--@api-stub: LSemanticMemory:recall
+do
+    local sm = lurek.agent.newSemanticMemory()
+    sm:learn("color", { hex = "#FF0000" })
+    local fact = sm:recall("color")
+    print("Recalled:", fact)
+end
+
+-- ─── LSemanticMemory:forget ──────────────────────────────────────────────────
+
+--@api-stub: LSemanticMemory:forget
+do
+    local sm = lurek.agent.newSemanticMemory()
+    sm:learn("temp_fact", { value = 42 })
+    local removed = sm:forget("temp_fact")
+    print("Removed:", removed)
+end
+
+-- ─── LSemanticMemory:query ───────────────────────────────────────────────────
+
+--@api-stub: LSemanticMemory:query
+do
+    local sm = lurek.agent.newSemanticMemory()
+    sm:learn("fact_a", { category = "geo" })
+    sm:learn("fact_b", { category = "geo" })
+    local geo_facts = sm:query({ category = "geo" })
+    print("Geo facts:", #geo_facts)
+end
+
+-- ─── LSemanticMemory:len ─────────────────────────────────────────────────────
+
+--@api-stub: LSemanticMemory:len
+do
+    local sm = lurek.agent.newSemanticMemory()
+    sm:learn("k", { v = 1 })
+    print("Facts:", sm:len())
+end
+
+-- ─── lurek.agent.newAgentMemory ──────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newAgentMemory
+do
+    ---@type LAgentMemory
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 32, persist_path = nil })
+    print("Agent memory created:", mem)
+end
+
+-- ─── LAgentMemory:working ────────────────────────────────────────────────────
+
+--@api-stub: LAgentMemory:working
+do
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
+    local wm = mem:working()
+    print("Working memory from bundle:", wm)
+end
+
+-- ─── LAgentMemory:episodic ───────────────────────────────────────────────────
+
+--@api-stub: LAgentMemory:episodic
+do
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
+    local em = mem:episodic()
+    print("Episodic memory from bundle:", em)
+end
+
+-- ─── LAgentMemory:semantic ───────────────────────────────────────────────────
+
+--@api-stub: LAgentMemory:semantic
+do
+    local mem = lurek.agent.newAgentMemory({ working_capacity = 8 })
+    local sm = mem:semantic()
+    print("Semantic memory from bundle:", sm)
+end
+
+-- ─── LAgentMemory:save ───────────────────────────────────────────────────────
+
+--@api-stub: LAgentMemory:save
+do
+    local mem = lurek.agent.newAgentMemory({ persist_path = "save/agent_mem.json" })
+    local ok  = mem:save()
+    print("Memory saved:", ok)
+end
+
+-- ─── LAgentMemory:load ───────────────────────────────────────────────────────
+
+--@api-stub: LAgentMemory:load
+do
+    local mem = lurek.agent.newAgentMemory({ persist_path = "save/agent_mem.json" })
+    local ok  = mem:load()
+    print("Memory loaded:", ok)
+end

@@ -25,3 +25,6 @@ pub mod relay;
 pub mod tcp;
 /// WebSocket transport wrapping `tungstenite`; mirrors the TCP interface.
 pub mod websocket;
+/// Server-Sent Events (SSE) stream reader backed by a background thread.
+pub mod sse;
+pub use sse::{SseEvent, SseStream};

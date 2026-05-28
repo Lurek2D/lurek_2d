@@ -19,6 +19,8 @@ pub mod ai;
 pub mod animation;
 /// Exposes the application bootstrap and runtime loop module.
 pub mod app;
+/// Exposes the asset media cache subsystem module.
+pub mod asset;
 /// Exposes the audio subsystem module.
 pub mod audio;
 #[cfg(feature = "automation-plugin")]

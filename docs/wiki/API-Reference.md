@@ -10,9 +10,15 @@
 
 - [lurek.agent](#lurekagent)
   - [LAgent](#lagent)
+  - [LAgentChat](#lagentchat)
   - [LAgentManager](#lagentmanager)
+  - [LAgentMemory](#lagentmemory)
+  - [LAgentTemplate](#lagenttemplate)
   - [LAISystem](#laisystem)
+  - [LEpisodicMemory](#lepisodicmemory)
   - [LOllamaManager](#lollamamanager)
+  - [LSemanticMemory](#lsemanticmemory)
+  - [LWorkingMemory](#lworkingmemory)
 - [lurek.ai](#lurekai)
   - [LAgent](#lagent)
   - [LAIBlackboard](#laiblackboard)
@@ -43,6 +49,8 @@
   - [LAnimStateMachine](#lanimstatemachine)
   - [LAnimSyncGroup](#lanimsyncgroup)
   - [LBlendLayerSet](#lblendlayerset)
+- [lurek.asset](#lurekasset)
+  - [LAssetHandle](#lassethandle)
 - [lurek.audio](#lurekaudio)
   - [LBus](#lbus)
   - [LDecoder](#ldecoder)
@@ -186,6 +194,7 @@
 - [lurek.network](#lureknetwork)
   - [LNetworkHost](#lnetworkhost)
   - [LNetworkRuntime](#lnetworkruntime)
+  - [LSseStream](#lssestream)
 - [lurek.overlay](#lurekoverlay)
   - [LOverlay](#loverlay)
   - [LScreenTransition](#lscreentransition)
@@ -359,10 +368,23 @@ Compact index of all functions and methods. Parameter details and examples live 
 [Module page](Module-agent)
 
 ```lua
+lurek.agent.complete(prompt: string) -> string -- Sends a single prompt to the global LLM and returns the response text.
+lurek.agent.completeAsync(prompt: string, callback: function) -- Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
+lurek.agent.completeJson(prompt: string) -> table -- Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
+lurek.agent.configure(config: table) -- Configures the global LLM provider settings used by module-level functions.
+lurek.agent.embed(text: string) -> table -- Returns an embedding vector for `text` from the global LLM.
+lurek.agent.isAvailable() -> boolean -- Returns `true` if the configured LLM server responds within 5 seconds.
+lurek.agent.listModels() -> table -- Returns a list of available model names from the configured LLM server.
 lurek.agent.new(config: table) -> LAgent -- Creates a new LLM Agent instance.
+lurek.agent.newAgentMemory([config]: table) -> LAgentMemory -- Creates a bundled working+episodic+semantic memory with optional disk persistence.
+lurek.agent.newChat() -> LAgentChat -- Creates a new stateful chat session using the global LLM config.
+lurek.agent.newEpisodicMemory() -> LEpisodicMemory -- Creates a new episodic memory for recording time-stamped events.
 lurek.agent.newManager() -> LAgentManager -- Creates a new Agent Manager for batching multiple LLM agents over a shared client.
 lurek.agent.newOllama([config]: table) -> LOllamaManager -- Creates an Ollama infrastructure manager for server lifecycle and model management.
+lurek.agent.newSemanticMemory() -> LSemanticMemory -- Creates a new semantic memory for storing named facts.
 lurek.agent.newSystem(config: table) -> LAISystem -- Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
+lurek.agent.newTemplate(pattern: string) -> LAgentTemplate -- Creates a new `{key}` placeholder prompt template.
+lurek.agent.newWorkingMemory(capacity: integer) -> LWorkingMemory -- Creates a new bounded FIFO working memory with the given capacity.
 ```
 
 ### LAgent
@@ -396,11 +418,37 @@ LAgent:skillCount() -> integer -- Returns the number of registered skills.
 LAgent:update() -- Polls the background client for completed LLM requests and dispatches callbacks.
 ```
 
+### LAgentChat
+
+```lua
+LAgentChat:addMessage(role: string, content: string) -- Appends a message to the chat history without sending a completion.
+LAgentChat:clear() -- Clears the chat history.
+LAgentChat:complete() -> string -- Sends the current history to the LLM and returns the assistant reply.
+LAgentChat:getHistory() -> table -- Returns the chat history as an array of `{role, content}` tables.
+LAgentChat:setSystemPrompt(prompt: string) -- Sets the system prompt used for all completions in this session.
+```
+
 ### LAgentManager
 
 ```lua
 LAgentManager:runAll(tasks: table, callback: function) -> integer -- Runs multiple agent tasks in parallel and calls a single callback when all finish.
 LAgentManager:update() -- Polls the manager's background client for completed tasks and dispatches callbacks.
+```
+
+### LAgentMemory
+
+```lua
+LAgentMemory:episodic() -> LEpisodicMemory -- Returns the episodic memory component.
+LAgentMemory:load() -> boolean -- Deserialises memory state from the configured persist_path.
+LAgentMemory:save() -> boolean -- Serialises all memory banks to the configured persist_path.
+LAgentMemory:semantic() -> LSemanticMemory -- Returns the semantic memory component.
+LAgentMemory:working() -> LWorkingMemory -- Returns the working memory component.
+```
+
+### LAgentTemplate
+
+```lua
+LAgentTemplate:render(values: table) -> string -- Renders the template by substituting `{key}` placeholders from `values`.
 ```
 
 ### LAISystem
@@ -426,6 +474,15 @@ LAISystem:skillCount() -> integer -- Returns the number of registered system ski
 LAISystem:update() -- Polls the system's background client for completed requests and dispatches callbacks.
 ```
 
+### LEpisodicMemory
+
+```lua
+LEpisodicMemory:forgetBefore(cutoff: integer) -- Removes all episodes with tick < `cutoff`.
+LEpisodicMemory:len() -> integer -- Returns the number of stored episodes.
+LEpisodicMemory:query(filter: table) -> table -- Returns all episodes whose data matches every key-value pair in `filter`.
+LEpisodicMemory:record(tick: integer, data: table) -- Records a new episode at `tick` with `data`.
+```
+
 ### LOllamaManager
 
 ```lua
@@ -442,6 +499,27 @@ LOllamaManager:start() -> boolean -- Spawns `ollama serve` as a managed child pr
 LOllamaManager:stop() -> boolean -- Kills the Ollama process started by this manager. Returns `true` if it was running.
 LOllamaManager:update() -- Polls completed pull operations and dispatches registered callbacks.
 LOllamaManager:version() -> string -- Returns the Ollama version string, or an empty string if not running.
+```
+
+### LSemanticMemory
+
+```lua
+LSemanticMemory:forget(key: string) -> boolean -- Removes the fact at `key`. Returns `true` if it existed.
+LSemanticMemory:learn(key: string, value: any) -- Inserts or replaces a fact at `key`.
+LSemanticMemory:len() -> integer -- Returns the number of stored facts.
+LSemanticMemory:query(filter: table) -> table -- Returns all facts whose value matches every key-value pair in `filter`.
+LSemanticMemory:recall(key: string) -> any -- Returns the fact for `key`, or `nil` if not found.
+```
+
+### LWorkingMemory
+
+```lua
+LWorkingMemory:capacity() -> integer -- Returns the configured capacity (0 = unlimited).
+LWorkingMemory:forget(key: string) -> boolean -- Removes the entry with `key`. Returns `true` if it existed.
+LWorkingMemory:get(key: string) -> any -- Returns the value for `key`, or `nil` if not found.
+LWorkingMemory:getRecent(n: integer) -> table -- Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
+LWorkingMemory:len() -> integer -- Returns the current number of entries.
+LWorkingMemory:push(key: string, value: any) -- Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
 ```
 
 ## lurek.ai
@@ -941,6 +1019,28 @@ LBlendLayerSet:setMask(name: string, bones: table) -> boolean -- Replaces a laye
 LBlendLayerSet:setWeight(name: string, weight: number) -> boolean -- Sets the blend weight for an existing layer.
 LBlendLayerSet:type() -> string -- Returns the Lua-visible type name for this blend layer set handle.
 LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend layer set handle matches a supported type name.
+```
+
+## lurek.asset
+
+[Module page](Module-asset)
+
+```lua
+lurek.asset.clear()
+lurek.asset.get(handle: any)
+lurek.asset.isLoaded(handle: LAssetHandle) -> boolean -- Returns true when the asset for the given handle is still in the cache.
+lurek.asset.load(path: any, type_str: any)
+lurek.asset.preload(paths: any, callback: any)
+lurek.asset.refcount(handle: LAssetHandle) -> integer -- Returns the current ref count for a handle, or 0 when it is no longer loaded.
+lurek.asset.stats()
+lurek.asset.unload(handle: LAssetHandle) -- Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+```
+
+### LAssetHandle
+
+```lua
+LAssetHandle:type() -> string -- Returns the Lua-visible type name for this asset handle.
+LAssetHandle:typeOf(name: string) -> boolean -- Returns whether this handle matches a supported type name.
 ```
 
 ## lurek.audio
@@ -3161,11 +3261,16 @@ LProvinceGrid:typeOf(name: string) -> boolean -- Returns whether this province g
 lurek.input.advancePlayback() -> table -- Advances playback by one frame and returns events for that frame.
 lurek.input.bind(action: string, keys: any) -- Adds one or more keyboard/gamepad bindings to an action.
 lurek.input.clearBindings() -- Removes all action bindings from the map.
+lurek.input.define(name: string, bindings: any, [category]: string) -- Defines an action with a full set of bindings and an optional category, replacing any prior definition.
+lurek.input.deserializeBindings(json: string) -> boolean -- Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.
 lurek.input.gamepad.getAxis(id: integer, axis: integer) -> number -- Returns a gamepad axis value by index.
+lurek.input.getAxis(name: string) -> number -- Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.
 lurek.input.gamepad.getAxisCount(id: integer) -> integer -- Returns the axis count for a gamepad.
 lurek.input.gamepad.getBackgroundEvents() -> boolean -- Returns whether background gamepad event processing is enabled.
 lurek.input.getBindings() -> string[] -- Returns all registered action bindings.
 lurek.input.gamepad.getButtonCount(id: integer) -> integer -- Returns the button count for a gamepad.
+lurek.input.getByCategory(category: string) -> string[] -- Returns action names belonging to the given category.
+lurek.input.getConflicts() -> table -- Returns a table mapping each binding key to the action names that share it; only keys with two or more acti...
 lurek.input.gamepad.getCount() -> integer -- Returns the number of gamepad slots tracked by the runtime.
 lurek.input.mouse.getCursor() -> string -- Returns the current system cursor name.
 lurek.input.gamepad.getGamepadMappingString(guid: string) -> string -- Returns a stored mapping string for a gamepad GUID.
@@ -3184,6 +3289,7 @@ lurek.input.keyboard.getScancodeFromKey(key: string) -> string -- Converts a key
 lurek.input.mouse.getSystemCursor(name: string) -> LCursor -- Creates a system cursor handle from a cursor name.
 lurek.input.touch.getTouchCount() -> integer -- Returns the current active touch count.
 lurek.input.touch.getTouches() -> table -- Returns active touch points with id, position, and pressure.
+lurek.input.getVector(hname: string, vname: string) -> number -- Returns a 2D axis vector from two named actions.
 lurek.input.mouse.getWheelDelta() -> number -- Returns the current mouse wheel delta.
 lurek.input.mouse.getX() -> number -- Returns the current mouse x coordinate.
 lurek.input.mouse.getY() -> number -- Returns the current mouse y coordinate.
@@ -3209,7 +3315,10 @@ lurek.input.loadRecording(json: string) -- Loads recording JSON into the module 
 lurek.input.newCombo(steps: table, [opts]: table) -> LCombo -- Creates a combo detector from string steps or step tables with optional timing.
 lurek.input.mouse.newCursor(pixels: table, width: integer, height: integer, [hotx]: integer, [hoty]: integer) -> LCursor -- Creates a custom cursor handle from RGBA pixels and hotspot coordinates.
 lurek.input.newMapping(name: string, keys: any) -> table -- Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
+lurek.input.onRebind(callback: function) -- Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.
+lurek.input.reset([name]: string) -- Removes bindings for one action by name, or all actions when name is nil.
 lurek.input.gamepad.saveGamepadMappings(path: string) -- Saves gamepad mapping strings to a file.
+lurek.input.serializeBindings() -> string -- Serialises all action definitions to a JSON string.
 lurek.input.gamepad.setBackgroundEvents(enable: boolean) -- Enables or disables background gamepad event processing.
 lurek.input.mouse.setCursor(cursor: any) -- Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
 lurek.input.gamepad.setGamepadMapping(guid: string, mapping: string) -- Stores a controller mapping string for a gamepad GUID.
@@ -4150,6 +4259,8 @@ lurek.network.parsePunchProbe(payload: string) -> string -- Parses a relay punch
 lurek.network.parseRelayTicket(token: string) -> table -- Parses an encoded relay ticket. This function is exposed to Lua scripts.
 lurek.network.predictLinear(snapshot: table, dt: number) -> table -- Predicts an entity snapshot forward by linear velocity.
 lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table -- Reconciles a predicted snapshot toward an authoritative snapshot.
+lurek.network.sseCollect(url: string, n: integer, [timeout_secs]: number) -> table -- Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
+lurek.network.sseConnect(url: string, callback: function) -> LSseStream -- Opens an SSE stream to `url` and returns an `LSseStream` handle.
 lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean) -- Broadcasts a packed entity sync payload through a network host.
 lurek.network.unpack(data: string) -> table -- Unpacks a binary network message string into a Lua value.
 ```
@@ -4206,6 +4317,16 @@ LNetworkRuntime:typeOf(name: string) -> boolean -- Returns whether this network 
 LNetworkRuntime:wsClose(id: integer) -- Closes a WebSocket connection. This method is available to Lua scripts.
 LNetworkRuntime:wsConnect(url: string) -> integer -- Opens a WebSocket connection. This method is available to Lua scripts.
 LNetworkRuntime:wsSend(id: integer, data: string) -- Sends text over a WebSocket connection.
+```
+
+### LSseStream
+
+```lua
+LSseStream:close() -- Signals the background reader thread to stop and closes the stream.
+LSseStream:isOpen() -> boolean -- Returns true if the background reader thread is still connected and reading.
+LSseStream:next() -> table? -- Polls for the next available event from the SSE stream (non-blocking).
+LSseStream:type() -> string -- Returns the Lua-visible type name for this SSE stream handle.
+LSseStream:typeOf(name: string) -> boolean -- Returns whether this SSE stream handle matches a supported type name.
 ```
 
 ## lurek.overlay

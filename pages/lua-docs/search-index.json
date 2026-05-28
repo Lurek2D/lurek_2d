@@ -2866,6 +2866,78 @@
   {
     "kind": "function",
     "module": "input",
+    "title": "lurek.input.define",
+    "subtitle": "Defines an action with a full set of bindings and an optional category, replacing any prior definition.",
+    "href": "modules/input.html#fn-define",
+    "keywords": "input define function define(name: string, bindings: any, category: string?)"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.getAxis",
+    "subtitle": "Returns -1.0, 0.0, or +1.0 for a named action; first binding is positive, second is negative.",
+    "href": "modules/input.html#fn-getaxis",
+    "keywords": "input getAxis function getAxis(name: string) -> number"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.getVector",
+    "subtitle": "Returns a 2D axis vector from two named actions.",
+    "href": "modules/input.html#fn-getvector",
+    "keywords": "input getVector function getVector(hname: string, vname: string) -> number"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.reset",
+    "subtitle": "Removes bindings for one action by name, or all actions when name is nil.",
+    "href": "modules/input.html#fn-reset",
+    "keywords": "input reset function reset(name: string?)"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.getConflicts",
+    "subtitle": "Returns a table mapping each binding key to the action names that share it; only keys with two or more actions are included.",
+    "href": "modules/input.html#fn-getconflicts",
+    "keywords": "input getConflicts function getConflicts() -> table"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.serializeBindings",
+    "subtitle": "Serialises all action definitions to a JSON string.",
+    "href": "modules/input.html#fn-serializebindings",
+    "keywords": "input serializeBindings function serializeBindings() -> string"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.deserializeBindings",
+    "subtitle": "Loads action definitions from a JSON string produced by serializeBindings, replacing all current definitions.",
+    "href": "modules/input.html#fn-deserializebindings",
+    "keywords": "input deserializeBindings function deserializeBindings(json: string) -> boolean"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.getByCategory",
+    "subtitle": "Returns action names belonging to the given category.",
+    "href": "modules/input.html#fn-getbycategory",
+    "keywords": "input getByCategory function getByCategory(category: string) -> string[]"
+  },
+  {
+    "kind": "function",
+    "module": "input",
+    "title": "lurek.input.onRebind",
+    "subtitle": "Registers a callback invoked whenever bindings change via bind, unbind, define, or deserializeBindings.",
+    "href": "modules/input.html#fn-onrebind",
+    "keywords": "input onRebind function onRebind(callback: function)"
+  },
+  {
+    "kind": "function",
+    "module": "input",
     "title": "lurek.input.newCombo",
     "subtitle": "Creates a combo detector from string steps or step tables with optional timing.",
     "href": "modules/input.html#fn-newcombo",
@@ -25224,6 +25296,110 @@
     "keywords": "agent newOllama function newOllama(config: table?) -> LOllamaManager"
   },
   {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.configure",
+    "subtitle": "Configures the global LLM provider settings used by module-level functions.",
+    "href": "modules/agent.html#fn-configure",
+    "keywords": "agent configure function configure(config: table) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.complete",
+    "subtitle": "Sends a single prompt to the global LLM and returns the response text.",
+    "href": "modules/agent.html#fn-complete",
+    "keywords": "agent complete function complete(prompt: string) -> string"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.completeAsync",
+    "subtitle": "Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.",
+    "href": "modules/agent.html#fn-completeasync",
+    "keywords": "agent completeAsync function completeAsync(prompt: string, callback: function) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newChat",
+    "subtitle": "Creates a new stateful chat session using the global LLM config.",
+    "href": "modules/agent.html#fn-newchat",
+    "keywords": "agent newChat function newChat() -> LAgentChat"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newTemplate",
+    "subtitle": "Creates a new `{key}` placeholder prompt template.",
+    "href": "modules/agent.html#fn-newtemplate",
+    "keywords": "agent newTemplate function newTemplate(pattern: string) -> LAgentTemplate"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.completeJson",
+    "subtitle": "Sends a prompt requesting a JSON-format response and returns a parsed Lua table.",
+    "href": "modules/agent.html#fn-completejson",
+    "keywords": "agent completeJson function completeJson(prompt: string) -> table"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.embed",
+    "subtitle": "Returns an embedding vector for `text` from the global LLM.",
+    "href": "modules/agent.html#fn-embed",
+    "keywords": "agent embed function embed(text: string) -> table"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.isAvailable",
+    "subtitle": "Returns `true` if the configured LLM server responds within 5 seconds.",
+    "href": "modules/agent.html#fn-isavailable",
+    "keywords": "agent isAvailable function isAvailable() -> boolean"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.listModels",
+    "subtitle": "Returns a list of available model names from the configured LLM server.",
+    "href": "modules/agent.html#fn-listmodels",
+    "keywords": "agent listModels function listModels() -> table"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newWorkingMemory",
+    "subtitle": "Creates a new bounded FIFO working memory with the given capacity.",
+    "href": "modules/agent.html#fn-newworkingmemory",
+    "keywords": "agent newWorkingMemory function newWorkingMemory(capacity: integer) -> LWorkingMemory"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newEpisodicMemory",
+    "subtitle": "Creates a new episodic memory for recording time-stamped events.",
+    "href": "modules/agent.html#fn-newepisodicmemory",
+    "keywords": "agent newEpisodicMemory function newEpisodicMemory() -> LEpisodicMemory"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newSemanticMemory",
+    "subtitle": "Creates a new semantic memory for storing named facts.",
+    "href": "modules/agent.html#fn-newsemanticmemory",
+    "keywords": "agent newSemanticMemory function newSemanticMemory() -> LSemanticMemory"
+  },
+  {
+    "kind": "function",
+    "module": "agent",
+    "title": "lurek.agent.newAgentMemory",
+    "subtitle": "Creates a bundled working+episodic+semantic memory with optional disk persistence.",
+    "href": "modules/agent.html#fn-newagentmemory",
+    "keywords": "agent newAgentMemory function newAgentMemory(config: table?) -> LAgentMemory"
+  },
+  {
     "kind": "class",
     "module": "agent",
     "title": "LAgent",
@@ -25726,6 +25902,262 @@
     "subtitle": "Polls completed pull operations and dispatches registered callbacks.",
     "href": "classes/LOllamaManager.html#method-update",
     "keywords": "LOllamaManager update method agent update() -> nil"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LAgentChat",
+    "subtitle": "Lua-side handle for a stateful LLM chat session.",
+    "href": "classes/LAgentChat.html",
+    "keywords": "LAgentChat class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentChat:setSystemPrompt",
+    "subtitle": "Sets the system prompt used for all completions in this session.",
+    "href": "classes/LAgentChat.html#method-setsystemprompt",
+    "keywords": "LAgentChat setSystemPrompt method agent setSystemPrompt(prompt: string) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentChat:addMessage",
+    "subtitle": "Appends a message to the chat history without sending a completion.",
+    "href": "classes/LAgentChat.html#method-addmessage",
+    "keywords": "LAgentChat addMessage method agent addMessage(role: string, content: string) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentChat:complete",
+    "subtitle": "Sends the current history to the LLM and returns the assistant reply.",
+    "href": "classes/LAgentChat.html#method-complete",
+    "keywords": "LAgentChat complete method agent complete() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentChat:clear",
+    "subtitle": "Clears the chat history.",
+    "href": "classes/LAgentChat.html#method-clear",
+    "keywords": "LAgentChat clear method agent clear() -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentChat:getHistory",
+    "subtitle": "Returns the chat history as an array of `{role, content}` tables.",
+    "href": "classes/LAgentChat.html#method-gethistory",
+    "keywords": "LAgentChat getHistory method agent getHistory() -> table"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LAgentTemplate",
+    "subtitle": "Lua-side handle for a `{key}` placeholder prompt template.",
+    "href": "classes/LAgentTemplate.html",
+    "keywords": "LAgentTemplate class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentTemplate:render",
+    "subtitle": "Renders the template by substituting `{key}` placeholders from `values`.",
+    "href": "classes/LAgentTemplate.html#method-render",
+    "keywords": "LAgentTemplate render method agent render(values: table) -> string"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LWorkingMemory",
+    "subtitle": "Lua-side handle for a bounded FIFO working memory.",
+    "href": "classes/LWorkingMemory.html",
+    "keywords": "LWorkingMemory class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:push",
+    "subtitle": "Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.",
+    "href": "classes/LWorkingMemory.html#method-push",
+    "keywords": "LWorkingMemory push method agent push(key: string, value: any) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:get",
+    "subtitle": "Returns the value for `key`, or `nil` if not found.",
+    "href": "classes/LWorkingMemory.html#method-get",
+    "keywords": "LWorkingMemory get method agent get(key: string)"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:forget",
+    "subtitle": "Removes the entry with `key`. Returns `true` if it existed.",
+    "href": "classes/LWorkingMemory.html#method-forget",
+    "keywords": "LWorkingMemory forget method agent forget(key: string) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:getRecent",
+    "subtitle": "Returns the `n` most recently inserted entries as an array of `{key, value}` tables.",
+    "href": "classes/LWorkingMemory.html#method-getrecent",
+    "keywords": "LWorkingMemory getRecent method agent getRecent(n: integer) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:len",
+    "subtitle": "Returns the current number of entries.",
+    "href": "classes/LWorkingMemory.html#method-len",
+    "keywords": "LWorkingMemory len method agent len() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LWorkingMemory:capacity",
+    "subtitle": "Returns the configured capacity (0 = unlimited).",
+    "href": "classes/LWorkingMemory.html#method-capacity",
+    "keywords": "LWorkingMemory capacity method agent capacity() -> integer"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LEpisodicMemory",
+    "subtitle": "Lua-side handle for append-only episodic memory.",
+    "href": "classes/LEpisodicMemory.html",
+    "keywords": "LEpisodicMemory class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LEpisodicMemory:record",
+    "subtitle": "Records a new episode at `tick` with `data`.",
+    "href": "classes/LEpisodicMemory.html#method-record",
+    "keywords": "LEpisodicMemory record method agent record(tick: integer, data: table) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LEpisodicMemory:query",
+    "subtitle": "Returns all episodes whose data matches every key-value pair in `filter`.",
+    "href": "classes/LEpisodicMemory.html#method-query",
+    "keywords": "LEpisodicMemory query method agent query(filter: table) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LEpisodicMemory:forgetBefore",
+    "subtitle": "Removes all episodes with tick < `cutoff`.",
+    "href": "classes/LEpisodicMemory.html#method-forgetbefore",
+    "keywords": "LEpisodicMemory forgetBefore method agent forgetBefore(cutoff: integer) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LEpisodicMemory:len",
+    "subtitle": "Returns the number of stored episodes.",
+    "href": "classes/LEpisodicMemory.html#method-len",
+    "keywords": "LEpisodicMemory len method agent len() -> integer"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LSemanticMemory",
+    "subtitle": "Lua-side handle for an unbounded key → value fact store.",
+    "href": "classes/LSemanticMemory.html",
+    "keywords": "LSemanticMemory class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LSemanticMemory:learn",
+    "subtitle": "Inserts or replaces a fact at `key`.",
+    "href": "classes/LSemanticMemory.html#method-learn",
+    "keywords": "LSemanticMemory learn method agent learn(key: string, value: any) -> nil"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LSemanticMemory:recall",
+    "subtitle": "Returns the fact for `key`, or `nil` if not found.",
+    "href": "classes/LSemanticMemory.html#method-recall",
+    "keywords": "LSemanticMemory recall method agent recall(key: string)"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LSemanticMemory:forget",
+    "subtitle": "Removes the fact at `key`. Returns `true` if it existed.",
+    "href": "classes/LSemanticMemory.html#method-forget",
+    "keywords": "LSemanticMemory forget method agent forget(key: string) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LSemanticMemory:query",
+    "subtitle": "Returns all facts whose value matches every key-value pair in `filter`.",
+    "href": "classes/LSemanticMemory.html#method-query",
+    "keywords": "LSemanticMemory query method agent query(filter: table) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LSemanticMemory:len",
+    "subtitle": "Returns the number of stored facts.",
+    "href": "classes/LSemanticMemory.html#method-len",
+    "keywords": "LSemanticMemory len method agent len() -> integer"
+  },
+  {
+    "kind": "class",
+    "module": "agent",
+    "title": "LAgentMemory",
+    "subtitle": "Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.",
+    "href": "classes/LAgentMemory.html",
+    "keywords": "LAgentMemory class agent userdata"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentMemory:working",
+    "subtitle": "Returns the working memory component.",
+    "href": "classes/LAgentMemory.html#method-working",
+    "keywords": "LAgentMemory working method agent working() -> LWorkingMemory"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentMemory:episodic",
+    "subtitle": "Returns the episodic memory component.",
+    "href": "classes/LAgentMemory.html#method-episodic",
+    "keywords": "LAgentMemory episodic method agent episodic() -> LEpisodicMemory"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentMemory:semantic",
+    "subtitle": "Returns the semantic memory component.",
+    "href": "classes/LAgentMemory.html#method-semantic",
+    "keywords": "LAgentMemory semantic method agent semantic() -> LSemanticMemory"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentMemory:save",
+    "subtitle": "Serialises all memory banks to the configured persist_path.",
+    "href": "classes/LAgentMemory.html#method-save",
+    "keywords": "LAgentMemory save method agent save() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "agent",
+    "title": "LAgentMemory:load",
+    "subtitle": "Deserialises memory state from the configured persist_path.",
+    "href": "classes/LAgentMemory.html#method-load",
+    "keywords": "LAgentMemory load method agent load() -> boolean"
   },
   {
     "kind": "module",
@@ -26350,6 +26782,102 @@
     "subtitle": "Returns whether this animation sync group handle matches a supported type name.",
     "href": "classes/LAnimSyncGroup.html#method-typeof",
     "keywords": "LAnimSyncGroup typeOf method animation typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "module",
+    "module": "asset",
+    "title": "lurek.asset",
+    "subtitle": "`lurek.asset` — ref-counted media cache bindings. - Registers `lurek.asset.*` functions and types via `register()`. - Bridges 8 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`. - See `docs/specs/asset.md` for the full API specification.",
+    "href": "modules/asset.html",
+    "keywords": "lurek asset module"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.load",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-load",
+    "keywords": "asset load function load(path: any, type_str: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.unload",
+    "subtitle": "Decrements the ref count for a cached asset; removes the entry when it reaches zero.",
+    "href": "modules/asset.html#fn-unload",
+    "keywords": "asset unload function unload(handle: LAssetHandle) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.get",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-get",
+    "keywords": "asset get function get(handle: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.preload",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-preload",
+    "keywords": "asset preload function preload(paths: any, callback: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.refcount",
+    "subtitle": "Returns the current ref count for a handle, or 0 when it is no longer loaded.",
+    "href": "modules/asset.html#fn-refcount",
+    "keywords": "asset refcount function refcount(handle: LAssetHandle) -> integer"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.isLoaded",
+    "subtitle": "Returns true when the asset for the given handle is still in the cache.",
+    "href": "modules/asset.html#fn-isloaded",
+    "keywords": "asset isLoaded function isLoaded(handle: LAssetHandle) -> boolean"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.stats",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-stats",
+    "keywords": "asset stats function stats()"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.clear",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-clear",
+    "keywords": "asset clear function clear()"
+  },
+  {
+    "kind": "class",
+    "module": "asset",
+    "title": "LAssetHandle",
+    "subtitle": "Lua-side handle for a single cached asset entry.",
+    "href": "classes/LAssetHandle.html",
+    "keywords": "LAssetHandle class asset userdata"
+  },
+  {
+    "kind": "method",
+    "module": "asset",
+    "title": "LAssetHandle:type",
+    "subtitle": "Returns the Lua-visible type name for this asset handle.",
+    "href": "classes/LAssetHandle.html#method-type",
+    "keywords": "LAssetHandle type method asset type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "asset",
+    "title": "LAssetHandle:typeOf",
+    "subtitle": "Returns whether this handle matches a supported type name.",
+    "href": "classes/LAssetHandle.html#method-typeof",
+    "keywords": "LAssetHandle typeOf method asset typeOf(name: string) -> boolean"
   },
   {
     "kind": "module",
@@ -35368,6 +35896,22 @@
     "keywords": "network reconcileSnapshot function reconcileSnapshot(pred: table, auth: table, alpha: number) -> table"
   },
   {
+    "kind": "function",
+    "module": "network",
+    "title": "lurek.network.sseConnect",
+    "subtitle": "Opens an SSE stream to `url` and returns an `LSseStream` handle.",
+    "href": "modules/network.html#fn-sseconnect",
+    "keywords": "network sseConnect function sseConnect(url: string, callback: function) -> LSseStream"
+  },
+  {
+    "kind": "function",
+    "module": "network",
+    "title": "lurek.network.sseCollect",
+    "subtitle": "Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.",
+    "href": "modules/network.html#fn-ssecollect",
+    "keywords": "network sseCollect function sseCollect(url: string, n: integer, timeout_secs: number?) -> table"
+  },
+  {
     "kind": "class",
     "module": "network",
     "title": "LNetworkHost",
@@ -35734,6 +36278,54 @@
     "subtitle": "Returns whether this network runtime handle matches a supported type name.",
     "href": "classes/LNetworkRuntime.html#method-typeof",
     "keywords": "LNetworkRuntime typeOf method network typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "network",
+    "title": "LSseStream",
+    "subtitle": "Lua userdata wrapping an `SseStream` with an optional stored callback.",
+    "href": "classes/LSseStream.html",
+    "keywords": "LSseStream class network userdata"
+  },
+  {
+    "kind": "method",
+    "module": "network",
+    "title": "LSseStream:next",
+    "subtitle": "Polls for the next available event from the SSE stream (non-blocking).",
+    "href": "classes/LSseStream.html#method-next",
+    "keywords": "LSseStream next method network next() -> table?"
+  },
+  {
+    "kind": "method",
+    "module": "network",
+    "title": "LSseStream:close",
+    "subtitle": "Signals the background reader thread to stop and closes the stream.",
+    "href": "classes/LSseStream.html#method-close",
+    "keywords": "LSseStream close method network close()"
+  },
+  {
+    "kind": "method",
+    "module": "network",
+    "title": "LSseStream:isOpen",
+    "subtitle": "Returns true if the background reader thread is still connected and reading.",
+    "href": "classes/LSseStream.html#method-isopen",
+    "keywords": "LSseStream isOpen method network isOpen() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "network",
+    "title": "LSseStream:type",
+    "subtitle": "Returns the Lua-visible type name for this SSE stream handle.",
+    "href": "classes/LSseStream.html#method-type",
+    "keywords": "LSseStream type method network type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "network",
+    "title": "LSseStream:typeOf",
+    "subtitle": "Returns whether this SSE stream handle matches a supported type name.",
+    "href": "classes/LSseStream.html#method-typeof",
+    "keywords": "LSseStream typeOf method network typeOf(name: string) -> boolean"
   },
   {
     "kind": "module",

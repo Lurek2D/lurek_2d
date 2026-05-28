@@ -1,0 +1,4932 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Single-binary 2D Rust runtime for Lua game scripts">
+      
+      
+      
+        <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/architecture/engine-architecture.html">
+      
+      
+        <link rel="prev" href="../handbook.html">
+      
+      
+        <link rel="next" href="test-framework.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Engine - Lurek2D</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/lurek.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lurek2d-a-engine-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Lurek2D" class="md-header__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lurek2D
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Engine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="philosophy.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/agent.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Lua
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CHANGELOG.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Lurek2D" class="md-nav__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    Lurek2D
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="philosophy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../handbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="engine-architecture.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-group-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Group Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-module-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Module Inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Module Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foundations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge / Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lureksome-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lureksome (library/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-internal-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Internal File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Module Internal File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-optional-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Optional Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boot-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boot Sequence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#game-loop-and-frame-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Game Loop and Frame Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callback-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callback Contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-binding-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Binding Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audio-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audio Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#physics-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physics Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threading-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threading Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filesystem-and-virtual-fs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem and Virtual FS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#window-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Window Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="test-framework.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension_plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lua-api-file-standard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua API Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codding_standards.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use_cases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../positioning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_info.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lua
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/agent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/animation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Animation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/audio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/automation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/binary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/camera.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/charts.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/color.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Color
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/compute.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/cursor.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dataframe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataframe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/debugbridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/devtools.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dialog.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/docs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dsp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DSP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ecs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/effect.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/event.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/filesystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/flownet.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flownet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/font.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Font
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/globe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/grep.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grep
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/html.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/i18n.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/image.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/input.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/learning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/light.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Light
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mapblock.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapblock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/midi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Midi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/minimap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mods.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/network.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/overlay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/parallax.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/particle.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/pathfind.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pathfind
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/procgen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Procgen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/province.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Province
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/raycaster.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raycaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/render.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/repl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/runtime.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/save.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/scene.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/serialize.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/spine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sprite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/terminal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/thread.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tilemap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/timer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tween.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/validator.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/visibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/window.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-group-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Group Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-module-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Module Inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Complete Module Inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foundations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Runtime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Systems
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Edge / Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lureksome-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lureksome (library/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-internal-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Internal File Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Module Internal File Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#standard-optional-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Optional Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boot-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boot Sequence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#game-loop-and-frame-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Game Loop and Frame Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callback-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callback Contract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-binding-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Binding Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audio-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audio Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#physics-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physics Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threading-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threading Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filesystem-and-virtual-fs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem and Virtual FS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#window-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Window Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repository-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repository File Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lurek2d-a-engine-architecture">Lurek2D â€” Engine Architecture<a class="headerlink" href="#lurek2d-a-engine-architecture" title="Permanent link">&para;</a></h1>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Source of truth for runtime module structure, boot sequence, frame model, state management, and subsystem pipelines.</li>
+</ul>
+<p>Companion documents: <a href="philosophy.html">philosophy.md</a> Â· <a href="render-command-architecture.html">render-command-architecture.md</a> Â· <a href="test-framework.html">test-framework.md</a></p>
+<p><code>philosophy.md</code> defines <em>why</em> and <em>what constraints</em>. This document defines <em>how the engine is structured</em>. <code>render-command-architecture.md</code> defines the rendering pipeline in detail. All four documents must remain in sync.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#module-group-model">Module Group Model</a></li>
+<li><a href="#complete-module-inventory">Complete Module Inventory</a></li>
+<li><a href="#module-internal-file-structure">Module Internal File Structure</a></li>
+<li><a href="#boot-sequence">Boot Sequence</a></li>
+<li><a href="#game-loop-and-frame-model">Game Loop and Frame Model</a></li>
+<li><a href="#callback-contract">Callback Contract</a></li>
+<li><a href="#state-architecture">State Architecture</a></li>
+<li><a href="#resource-management">Resource Management</a></li>
+<li><a href="#rendering-pipeline">Rendering Pipeline</a></li>
+<li><a href="#lua-binding-architecture">Lua Binding Architecture</a></li>
+<li><a href="#input-pipeline">Input Pipeline</a></li>
+<li><a href="#audio-pipeline">Audio Pipeline</a></li>
+<li><a href="#physics-pipeline">Physics Pipeline</a></li>
+<li><a href="#threading-model">Threading Model</a></li>
+<li><a href="#filesystem-and-virtual-fs">Filesystem and Virtual FS</a></li>
+<li><a href="#window-management">Window Management</a></li>
+<li><a href="#configuration-system">Configuration System</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#quality-gates">Quality Gates</a></li>
+<li><a href="#technology-stack">Technology Stack</a></li>
+<li><a href="#repository-file-structure">Repository File Structure</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Lurek2D is a 2D game engine written in Rust that loads and executes Lua game scripts. A game is a <code>main.lua</code> file. The engine owns the GPU, the physics solver, the audio mixer, and the threading model. The developer writes Lua; the engine handles everything else.</p>
+<p>Key design principles (from <a href="philosophy.html">philosophy.md</a>):</p>
+<ul>
+<li>Runtime only â€” no embedded visual editor (A-01)</li>
+<li>Desktop only â€” Windows / Linux / macOS (A-02)</li>
+<li>2D graphics only â€” no 3D scene graph (A-03)</li>
+<li>LuaJIT scripting (B-01), wgpu 22 rendering (B-02)</li>
+<li>Module import graph is always a DAG â€” no cycles (Zen Rule 1)</li>
+<li>Lua bindings are thin and one-directional (Zen Rule 12)</li>
+<li>Every public item has a doc comment (Zen Rule 15)</li>
+</ul>
+<hr />
+<h2 id="module-group-model">Module Group Model<a class="headerlink" href="#module-group-model" title="Permanent link">&para;</a></h2>
+<p>Lurek2D organises Rust source into five responsibility groups. The binding invariant is <strong>no cycles, ever</strong> â€” the module import graph must be a DAG (T-03). Same-group imports are allowed when stable and acyclic (Zen Rule 6).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>graph TD
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    E[&quot;EDGE / INTEGRATION&lt;br/&gt;app Â· lua_api Â· devtools Â· debugbridge Â· docs Â· pipeline Â· bin&quot;]
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    F[&quot;FEATURE SYSTEMS&lt;br/&gt;ecs Â· scene Â· animation Â· tween Â· particle Â· tilemap Â· parallax&lt;br/&gt;minimap Â· raycaster Â· ui Â· terminal Â· ai Â· pathfind Â· save Â· mods&lt;br/&gt;i18n Â· automation Â· sprite Â· spine&quot;]
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    P[&quot;PLATFORM SERVICES&lt;br/&gt;render Â· audio Â· physics Â· input Â· image Â· window Â· camera Â· light Â· effect&quot;]
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    C[&quot;CORE RUNTIME&lt;br/&gt;runtime Â· event Â· timer Â· thread Â· network Â· filesystem&quot;]
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    B[&quot;FOUNDATIONS&lt;br/&gt;math Â· log Â· data Â· serial Â· compute Â· dataframe Â· graph Â· procgen Â· patterns&quot;]
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    L[&quot;Lureksome library/&lt;br/&gt;Pure-Lua libraries â€” public lurek.* API only&quot;]
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    E --&gt; F
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    E --&gt; P
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    E --&gt; C
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    E --&gt; B
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    F --&gt; P
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    F --&gt; C
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    F --&gt; B
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    P --&gt; C
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    P --&gt; B
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    C --&gt; B
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    L -.-&gt; E
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Responsibility</th>
+<th>May Import</th>
+<th>Must NOT Import</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Foundations</strong></td>
+<td>Pure algorithms, data structures, math, serialisation</td>
+<td>Nothing (leaf modules)</td>
+<td>render, audio, input, physics, Lua, any higher group</td>
+</tr>
+<tr>
+<td><strong>Core Runtime</strong></td>
+<td>Engine lifecycle, resource registry, I/O, timing, events, concurrency</td>
+<td>Foundations</td>
+<td>Platform Services, Feature Systems, Edge</td>
+</tr>
+<tr>
+<td><strong>Platform Services</strong></td>
+<td>OS-facing backends behind pure-Rust contracts (GPU, audio, physics, input, windowing)</td>
+<td>Foundations, Core Runtime</td>
+<td>Feature Systems, Edge</td>
+</tr>
+<tr>
+<td><strong>Feature Systems</strong></td>
+<td>Game-domain services: sprites, scenes, particles, UI, AI, tilemaps</td>
+<td>Foundations, Core Runtime, Platform Services</td>
+<td>Edge/Integration</td>
+</tr>
+<tr>
+<td><strong>Edge/Integration</strong></td>
+<td>Composition root (<code>app</code>), scripting bridge (<code>lua_api</code>), devtools</td>
+<td>Everything below</td>
+<td>(top of the DAG)</td>
+</tr>
+<tr>
+<td><strong>Lureksome</strong></td>
+<td>Pure-Lua gameplay libraries</td>
+<td>Public <code>lurek.*</code> API only</td>
+<td>Rust engine internals</td>
+</tr>
+</tbody>
+</table>
+<p>The binding dependency constraints <strong>T-01 through T-08</strong> are defined in <a href="philosophy.html#active-module-group-constraints">philosophy.md Â§ Active Module Group Constraints</a>. Consult <code>philosophy.md</code> directly â€” this document does not restate them.</p>
+<hr />
+<h2 id="complete-module-inventory">Complete Module Inventory<a class="headerlink" href="#complete-module-inventory" title="Permanent link">&para;</a></h2>
+<h3 id="foundations">Foundations<a class="headerlink" href="#foundations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>math</code></td>
+<td>Vectors, matrices, rects, color, interpolation, easing, RNG</td>
+<td><code>Vec2</code>, <code>Vec3</code>, <code>Vec4</code>, <code>Mat3</code>, <code>Mat4</code>, <code>Rect</code>, <code>Color</code>, <code>Transform2D</code></td>
+</tr>
+<tr>
+<td><code>log</code></td>
+<td>Logging facade, RUST_LOG filtering</td>
+<td>Log macros re-export</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>Generic data containers, bin-packing, data views</td>
+<td><code>DataView</code>, <code>BinPack</code></td>
+</tr>
+<tr>
+<td><code>serial</code></td>
+<td>Serialisation: TOML, JSON, CSV</td>
+<td><code>toml::from_str</code>, <code>json::parse</code></td>
+</tr>
+<tr>
+<td><code>compute</code></td>
+<td>GPU-free numerical computation</td>
+<td>Compute pipelines</td>
+</tr>
+<tr>
+<td><code>dataframe</code></td>
+<td>Tabular data, SQL-like queries, column operations</td>
+<td><code>DataFrame</code>, <code>Column</code></td>
+</tr>
+<tr>
+<td><code>graph</code></td>
+<td>Graph data structures, traversal algorithms</td>
+<td><code>Graph</code>, <code>Node</code>, <code>Edge</code></td>
+</tr>
+<tr>
+<td><code>procgen</code></td>
+<td>Procedural generation: noise, Voronoi, L-systems</td>
+<td><code>Noise</code>, <code>Voronoi</code></td>
+</tr>
+<tr>
+<td><code>patterns</code></td>
+<td>Design patterns: state machines, observer, command</td>
+<td><code>StateMachine</code>, <code>Observer</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="core-runtime">Core Runtime<a class="headerlink" href="#core-runtime" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>runtime</code></td>
+<td>Engine lifecycle, shared state, config, resource keys, error types</td>
+<td><code>SharedState</code>, <code>Config</code>, <code>EngineError</code></td>
+</tr>
+<tr>
+<td><code>event</code></td>
+<td>Event bus, typed event dispatch</td>
+<td><code>EventBus</code>, <code>EventId</code></td>
+</tr>
+<tr>
+<td><code>timer</code></td>
+<td>Frame timing, delta time, fixed timestep, timers</td>
+<td><code>Timer</code>, <code>TimerHandle</code></td>
+</tr>
+<tr>
+<td><code>thread</code></td>
+<td>Thread pool, worker VMs, Channel for inter-VM comms</td>
+<td><code>ThreadPool</code>, <code>Channel</code></td>
+</tr>
+<tr>
+<td><code>network</code></td>
+<td>HTTP client, WebSocket, networking utilities</td>
+<td><code>HttpRequest</code>, <code>HttpResponse</code></td>
+</tr>
+<tr>
+<td><code>filesystem</code></td>
+<td>GameFS sandbox, virtual filesystem, path traversal guards</td>
+<td><code>GameFS</code>, <code>VirtualPath</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="platform-services">Platform Services<a class="headerlink" href="#platform-services" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>render</code></td>
+<td>GPU rendering: wgpu pipelines, render passes, RenderCommand contract</td>
+<td><code>GpuRenderer</code>, <code>RenderCommand</code>, <code>DrawMode</code>, <code>BlendMode</code>, <code>Mesh</code>, <code>Font</code>, <code>Canvas</code>, <code>Shader</code></td>
+</tr>
+<tr>
+<td><code>audio</code></td>
+<td>Audio playback: rodio integration, mixer, sources</td>
+<td><code>AudioMixer</code>, <code>AudioSource</code>, <code>AudioBus</code></td>
+</tr>
+<tr>
+<td><code>physics</code></td>
+<td>Physics simulation: rapier2d, rigid bodies, colliders, raycasts</td>
+<td><code>PhysicsWorld</code>, <code>RigidBody</code>, <code>Collider</code></td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td>Keyboard, mouse, gamepad input state and events</td>
+<td><code>InputState</code>, <code>Key</code>, <code>MouseButton</code></td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td>CPU image loading/decoding, pixel operations, texture data, atlas packing</td>
+<td><code>ImageData</code>, <code>Texture</code>, <code>TextureAtlas</code></td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td>Window management: winit integration, fullscreen, cursor</td>
+<td><code>WindowConfig</code>, <code>WindowHandle</code></td>
+</tr>
+<tr>
+<td><code>camera</code></td>
+<td>Viewport transforms, scale modes, coordinate mapping</td>
+<td><code>Camera2D</code>, <code>ScaleMode</code></td>
+</tr>
+<tr>
+<td><code>light</code></td>
+<td>2D lighting data: light descriptors, occluder polygons</td>
+<td><code>Light2D</code>, <code>Occluder</code>, <code>ShadowFilter</code></td>
+</tr>
+<tr>
+<td><code>effect</code></td>
+<td>Post-processing effect descriptors, overlay systems</td>
+<td><code>PostFxEffect</code>, <code>PostFxEffectType</code>, <code>ShaderPassDescriptor</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="feature-systems">Feature Systems<a class="headerlink" href="#feature-systems" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ecs</code></td>
+<td>Entity-component-system: entities with components, queries</td>
+<td><code>Entity</code>, <code>Component</code>, <code>System</code></td>
+</tr>
+<tr>
+<td><code>scene</code></td>
+<td>Scene stack: push/pop/switch scene management</td>
+<td><code>Scene</code>, <code>SceneManager</code>, <code>Transition</code></td>
+</tr>
+<tr>
+<td><code>animation</code></td>
+<td>Sprite animation: frame sequences, playback control</td>
+<td><code>Animation</code>, <code>AnimationPlayer</code></td>
+</tr>
+<tr>
+<td><code>tween</code></td>
+<td>Value interpolation: tweens, easing, sequencing</td>
+<td><code>Tween</code>, <code>Easing</code>, <code>TweenSequence</code></td>
+</tr>
+<tr>
+<td><code>particle</code></td>
+<td>Particle systems: emitters, instances, render command generation</td>
+<td><code>ParticleSystem</code>, <code>ParticleInstance</code>, <code>ParticleShape</code></td>
+</tr>
+<tr>
+<td><code>tilemap</code></td>
+<td>Tile-based maps: tile layers, tile sets, collision</td>
+<td><code>TileMap</code>, <code>TileLayer</code>, <code>TileSet</code></td>
+</tr>
+<tr>
+<td><code>parallax</code></td>
+<td>Parallax scrolling: multi-layer backgrounds</td>
+<td><code>ParallaxLayer</code></td>
+</tr>
+<tr>
+<td><code>minimap</code></td>
+<td>Minimap rendering: terrain, fog-of-war, markers</td>
+<td><code>Minimap</code>, <code>MinimapObject</code></td>
+</tr>
+<tr>
+<td><code>raycaster</code></td>
+<td>2.5D raycasting: DDA traversal, textured-quad scene generation</td>
+<td><code>Raycaster2D</code>, <code>RayHit</code>, <code>RaycasterScene</code>, <code>WallQuad</code>, <code>FloorQuad</code>, <code>CeilingQuad</code>, <code>BillboardSprite</code></td>
+</tr>
+<tr>
+<td><code>ui</code></td>
+<td>GUI widgets: buttons, panels, text, layout</td>
+<td><code>Widget</code>, <code>GuiContext</code>, <code>WidgetBase</code></td>
+</tr>
+<tr>
+<td><code>terminal</code></td>
+<td>In-game terminal: command history, text rendering</td>
+<td><code>Terminal</code>, <code>TerminalState</code></td>
+</tr>
+<tr>
+<td><code>ai</code></td>
+<td>Game AI: FSM, behaviour trees, steering, blackboard</td>
+<td><code>FSM</code>, <code>BehaviourTree</code>, <code>Blackboard</code></td>
+</tr>
+<tr>
+<td><code>pathfind</code></td>
+<td>Pathfinding: A*, graph search, HPA</td>
+<td><code>AStar</code>, <code>PathResult</code></td>
+</tr>
+<tr>
+<td><code>save</code></td>
+<td>Save/load game state: serialisation, slots</td>
+<td><code>SaveManager</code>, <code>SaveSlot</code></td>
+</tr>
+<tr>
+<td><code>mods</code></td>
+<td>Mod loading: mod manifests, sandboxed execution</td>
+<td><code>ModManager</code>, <code>Mod</code></td>
+</tr>
+<tr>
+<td><code>i18n</code></td>
+<td>Internationalisation: string tables, locale switching</td>
+<td><code>I18n</code>, <code>Locale</code></td>
+</tr>
+<tr>
+<td><code>automation</code></td>
+<td>Test automation: simulated input, scripted sequences</td>
+<td><code>Simulator</code>, <code>AutoAction</code></td>
+</tr>
+<tr>
+<td><code>sprite</code></td>
+<td>CPU sprite data: sprite sheets, batches, nine-slice (planned)</td>
+<td><code>Sprite</code>, <code>SpriteSheet</code>, <code>SpriteBatch</code>, <code>NineSlice</code></td>
+</tr>
+<tr>
+<td><code>spine</code></td>
+<td>Spine animation runtime integration</td>
+<td><code>SpineInstance</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="edge-integration">Edge / Integration<a class="headerlink" href="#edge-integration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Responsibility</th>
+<th>Key Types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app</code></td>
+<td>Composition root: boot, winit event loop, frame orchestration</td>
+<td><code>App</code>, <code>AppBuilder</code></td>
+</tr>
+<tr>
+<td><code>lua_api</code></td>
+<td>Scripting bridge: registers all <code>lurek.*</code> Lua APIs</td>
+<td><code>register()</code> per sub-module</td>
+</tr>
+<tr>
+<td><code>devtools</code></td>
+<td>Developer overlay: FPS counter, debug draw, inspector</td>
+<td><code>DevTools</code></td>
+</tr>
+<tr>
+<td><code>debugbridge</code></td>
+<td>Remote debug server: TCP/WebSocket debug protocol</td>
+<td><code>DebugBridge</code>, <code>DebugServer</code></td>
+</tr>
+<tr>
+<td><code>docs</code></td>
+<td>Documentation generation support</td>
+<td><code>DocEntry</code>, <code>DocReport</code></td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td>Asset pipeline utilities</td>
+<td>Pipeline stages</td>
+</tr>
+<tr>
+<td><code>bin</code></td>
+<td>Binary entry points, CLI arg parsing</td>
+<td><code>main()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="lureksome-library">Lureksome (library/)<a class="headerlink" href="#lureksome-library" title="Permanent link">&para;</a></h3>
+<p>Pure-Lua gameplay libraries, each consuming only public <code>lurek.*</code> APIs:</p>
+<p><code>battle</code> Â· <code>cardgame</code> Â· <code>combat</code> Â· <code>crafting</code> Â· <code>dialog</code> Â· <code>doll</code> Â· <code>economy</code> Â· <code>inventory</code> Â· <code>item</code> Â· <code>province_map</code> Â· <code>quest</code> Â· <code>stats</code></p>
+<hr />
+<h2 id="module-internal-file-structure">Module Internal File Structure<a class="headerlink" href="#module-internal-file-structure" title="Permanent link">&para;</a></h2>
+<p>Every <code>src/&lt;module&gt;/</code> directory follows a standard internal structure. This is a binding requirement, not a suggestion. It flows from Philosophy Rules 7, 12, 13, and 15.</p>
+<h3 id="required-files">Required Files<a class="headerlink" href="#required-files" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mod.rs</code></td>
+<td>Module declaration + re-exports</td>
+<td>Thin only: <code>pub mod</code>, <code>pub use</code>, <code>//!</code> doc comment. No functions, no struct definitions, no logic. Target: â‰¤ 30 lines.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="standard-optional-files">Standard Optional Files<a class="headerlink" href="#standard-optional-files" title="Permanent link">&para;</a></h3>
+<p>Use these names when needed. Do not invent alternatives (<code>helpers.rs</code>, <code>utils.rs</code>, <code>misc.rs</code> are banned).</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;primary&gt;.rs</code></td>
+<td>Main logic â€” algorithms, state, methods</td>
+<td>Always, unless <code>mod.rs</code> alone is sufficient. Named after the module's primary concept (e.g. <code>emitter.rs</code>, <code>dda.rs</code>).</td>
+</tr>
+<tr>
+<td><code>types.rs</code></td>
+<td>Public data types (structs, enums, traits)</td>
+<td>When the module exports 5+ public types.</td>
+</tr>
+<tr>
+<td><code>draw.rs</code></td>
+<td><code>draw_to_image()</code> debug/test CPU pixel utilities</td>
+<td>Only for modules that need CPU-side pixel rendering for testing or evidence. Not the production render path.</td>
+</tr>
+<tr>
+<td><code>builder.rs</code></td>
+<td>Builder pattern for complex construction</td>
+<td>When a primary type has 5+ fields with defaults.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-rules">Key Rules<a class="headerlink" href="#key-rules" title="Permanent link">&para;</a></h3>
+<ol>
+<li><code>mod.rs</code> is a switchboard, not a workshop â€” only <code>pub mod</code>, <code>pub use</code>, <code>//!</code> doc.</li>
+<li>No <code>impl LuaUserData</code> in domain modules â€” all Lua bindings live in <code>src/lua_api/</code>.</li>
+<li>No <code>use wgpu::*</code> in domain modules â€” only <code>src/render/gpu_renderer.rs</code> and <code>src/render/shader.rs</code> touch wgpu.</li>
+<li>Every <code>pub</code> item has a <code>///</code> doc comment (constraint Q-05).</li>
+<li>Private helpers tested inline in the source file where the helper is defined.</li>
+<li>Integration and contract tests live in <code>tests/</code>.</li>
+</ol>
+<h3 id="anti-patterns">Anti-Patterns<a class="headerlink" href="#anti-patterns" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fat <code>mod.rs</code> (functions, structs, &gt; 30 lines)</td>
+<td>Move to <code>&lt;primary&gt;.rs</code>, keep <code>mod.rs</code> as re-export</td>
+</tr>
+<tr>
+<td>Business logic in <code>lua_api</code> (&gt; 10 lines per method)</td>
+<td>Extract to domain module, call from <code>lua_api</code></td>
+</tr>
+<tr>
+<td><code>impl LuaUserData</code> in <code>src/&lt;module&gt;/</code></td>
+<td>Move to <code>src/lua_api/&lt;module&gt;_api.rs</code></td>
+</tr>
+<tr>
+<td>Missing docstrings</td>
+<td>Add <code>///</code> â€” violation of Q-05</td>
+</tr>
+<tr>
+<td><code>use wgpu::*</code> in non-render module</td>
+<td>Domain modules are GPU-free (Zen Rules 3, 9)</td>
+</tr>
+<tr>
+<td>Invented file names (<code>helpers.rs</code>, <code>utils.rs</code>)</td>
+<td>Use standard names: <code>types.rs</code>, <code>draw.rs</code>, <code>builder.rs</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="boot-sequence">Boot Sequence<a class="headerlink" href="#boot-sequence" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>flowchart TD
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    A[CLI args] --&gt; B[Config::load_from_conf_lua]
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    B --&gt; C[&quot;conf.toml preferred; conf.lua legacy fallback&lt;br/&gt;Returns: Config struct&quot;]
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    C --&gt; D[&quot;App::new(config)&quot;]
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    D --&gt; E[winit: create window]
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    D --&gt; F[wgpu: request adapter â†’ device â†’ surface â†’ GpuRenderer]
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    D --&gt; G[rodio: create OutputStream â†’ AudioMixer]
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    D --&gt; H[GameFS: mount game directory and sandbox]
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    D --&gt; I[SharedState: initialise all resource pools]
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    E &amp; F &amp; G &amp; H &amp; I --&gt; J[create_lua_vm]
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    J --&gt; K[Create LuaJIT VM]
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    J --&gt; L[Create lurek global table]
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    J --&gt; M[&quot;Register 35+ API modules via lua_api::register_all()&quot;]
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    J --&gt; N[Load and execute main.lua]
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    N --&gt; O[lurek.init fires]
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    O --&gt; P[lurek.ready fires]
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    P --&gt; Q[winit event loop starts]
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    Q --&gt; R[Frame loop runs until quit]
+</code></pre></div>
+<p><strong>Boot invariants:</strong>
+- No GPU draw calls before <code>GpuRenderer</code> is fully initialised
+- No Lua execution before all <code>lurek.*</code> modules are registered
+- <code>conf.toml</code> is read first; if absent, <code>conf.lua</code> runs in a temporary sandboxed Lua VM
+- If neither config file is present, defaults apply (800Ă—600 window, all modules enabled)
+- If no game directory is provided, the engine shows the splash screen</p>
+<hr />
+<h2 id="game-loop-and-frame-model">Game Loop and Frame Model<a class="headerlink" href="#game-loop-and-frame-model" title="Permanent link">&para;</a></h2>
+<p>Every frame follows a fixed callback sequence. All callbacks are optional â€” an empty <code>main.lua</code> is a valid game.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>flowchart TD
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    A[FRAME START] --&gt; B[Input polling&lt;br/&gt;winit events â†’ InputState]
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    B --&gt; C[lurek.keypressed / keyreleased / mousepressed /&lt;br/&gt;mousereleased / mousemoved / wheelmoved / textinput]
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    C --&gt; D[&quot;lurek.process(dt)&lt;br/&gt;Game logic, animation updates, AI ticks&quot;]
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    D --&gt; E[&quot;lurek.process_physics(dt) â€” fixed timestep&lt;br/&gt;Physics stepping, collision response&lt;br/&gt;May fire multiple times per frame&quot;]
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    E --&gt; F[&quot;lurek.process_late(dt)&lt;br/&gt;Post-physics logic: camera follow, constraints&quot;]
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    F --&gt; G[&quot;lurek.draw()&lt;br/&gt;Push RenderCommands for WORLD layer&quot;]
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    G --&gt; H[&quot;lurek.draw_ui()&lt;br/&gt;Push RenderCommands for UI layer&quot;]
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    H --&gt; I[Auto-collect from domain modules&lt;br/&gt;particle, tilemap, ui, etc.]
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    I --&gt; J[&quot;GpuRenderer::render_frame&lt;br/&gt;Single GPU submission point&quot;]
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    J --&gt; K[&quot;lurek.resize / lurek.focus â€” on-demand events&quot;]
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    K --&gt; L[FRAME END]
+</code></pre></div>
+<p><strong>Timing:</strong> <code>dt</code> is wall-clock delta time in seconds (f64). <code>process_physics</code> uses fixed timestep accumulation and may fire 0, 1, or multiple times per frame. Frame limiting is handled by wgpu present mode (VSync) or manual cap.</p>
+<hr />
+<h2 id="callback-contract">Callback Contract<a class="headerlink" href="#callback-contract" title="Permanent link">&para;</a></h2>
+<p>Every callback is optional. The engine checks whether the Lua global function exists before calling it.</p>
+<table>
+<thead>
+<tr>
+<th>Callback</th>
+<th>Signature</th>
+<th>When Called</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lurek.init</code></td>
+<td><code>(config)</code></td>
+<td>Once, after VM creation</td>
+<td>Game initialisation: load assets, set up state</td>
+</tr>
+<tr>
+<td><code>lurek.ready</code></td>
+<td><code>()</code></td>
+<td>Once, after init</td>
+<td>First-frame resources are ready</td>
+</tr>
+<tr>
+<td><code>lurek.process</code></td>
+<td><code>(dt)</code></td>
+<td>Every frame</td>
+<td>Game logic, animation, AI</td>
+</tr>
+<tr>
+<td><code>lurek.process_physics</code></td>
+<td><code>(dt)</code></td>
+<td>Fixed timestep (0..N per frame)</td>
+<td>Physics stepping, collision response</td>
+</tr>
+<tr>
+<td><code>lurek.process_late</code></td>
+<td><code>(dt)</code></td>
+<td>Every frame, after physics</td>
+<td>Camera follow, constraint resolution</td>
+</tr>
+<tr>
+<td><code>lurek.draw</code></td>
+<td><code>()</code></td>
+<td>Every frame</td>
+<td>Push RenderCommands for world layer</td>
+</tr>
+<tr>
+<td><code>lurek.draw_ui</code></td>
+<td><code>()</code></td>
+<td>Every frame</td>
+<td>Push RenderCommands for UI layer</td>
+</tr>
+<tr>
+<td><code>lurek.keypressed</code></td>
+<td><code>(key, scancode, isrepeat)</code></td>
+<td>On key down</td>
+<td>Keyboard input</td>
+</tr>
+<tr>
+<td><code>lurek.keyreleased</code></td>
+<td><code>(key, scancode)</code></td>
+<td>On key up</td>
+<td>Keyboard release</td>
+</tr>
+<tr>
+<td><code>lurek.mousepressed</code></td>
+<td><code>(x, y, button)</code></td>
+<td>On mouse button down</td>
+<td>Mouse click</td>
+</tr>
+<tr>
+<td><code>lurek.mousereleased</code></td>
+<td><code>(x, y, button)</code></td>
+<td>On mouse button up</td>
+<td>Mouse release</td>
+</tr>
+<tr>
+<td><code>lurek.mousemoved</code></td>
+<td><code>(x, y, dx, dy)</code></td>
+<td>On mouse movement</td>
+<td>Mouse tracking</td>
+</tr>
+<tr>
+<td><code>lurek.wheelmoved</code></td>
+<td><code>(dx, dy)</code></td>
+<td>On scroll wheel</td>
+<td>Scroll input</td>
+</tr>
+<tr>
+<td><code>lurek.textinput</code></td>
+<td><code>(text)</code></td>
+<td>On text entry</td>
+<td>Text input (IME-aware)</td>
+</tr>
+<tr>
+<td><code>lurek.resize</code></td>
+<td><code>(w, h)</code></td>
+<td>On window resize</td>
+<td>Layout recalculation</td>
+</tr>
+<tr>
+<td><code>lurek.focus</code></td>
+<td><code>(focused)</code></td>
+<td>On focus change</td>
+<td>Pause/resume</td>
+</tr>
+<tr>
+<td><code>lurek.quit</code></td>
+<td><code>() â†’ bool</code></td>
+<td>On close request</td>
+<td>Return <code>true</code> to cancel quit</td>
+</tr>
+</tbody>
+</table>
+<p>Callback ordering within a frame: input callbacks â†’ <code>process(dt)</code> â†’ <code>process_physics(dt)</code> â†’ <code>process_late(dt)</code> â†’ <code>draw()</code> â†’ <code>draw_ui()</code>. Resize and focus callbacks fire between frames when the relevant winit event occurs.</p>
+<hr />
+<h2 id="state-architecture">State Architecture<a class="headerlink" href="#state-architecture" title="Permanent link">&para;</a></h2>
+<p>All engine state is centralised in a single <code>SharedState</code> struct, shared between Lua closures and the engine loop.</p>
+<p><strong>Design rules (from Zen Rule 10):</strong>
+- Serialisable game state must not require a GPU handle, OS window, or VM reference. State types belong in domain modules; runtime resources belong in <code>SharedState</code> resource pools.
+- No GPU handles in <code>SharedState</code> fields. The renderer accesses GPU resources through its own internal state. <code>SharedState</code> holds CPU-side descriptors and resource keys (handles into the renderer's pools).</p>
+<p><strong>SharedState contains:</strong>
+- Configuration: <code>config: Config</code>
+- Resource pools: typed SlotMaps for textures, fonts, meshes, canvases, shaders, sprite batches, particles
+- Subsystem state: <code>input</code>, <code>audio_mixer</code>, <code>physics</code>, <code>timer_state</code>, <code>scene_stack</code>
+- Rendering data (CPU side): <code>camera</code>, <code>lights</code>, <code>occluders</code>, <code>postfx_stack</code>
+- Game filesystem: <code>game_fs: GameFS</code></p>
+<p><strong>Borrow rules:</strong> Never hold a borrow across a Lua callback invocation â€” this will panic due to re-entrant borrowing.</p>
+<hr />
+<h2 id="resource-management">Resource Management<a class="headerlink" href="#resource-management" title="Permanent link">&para;</a></h2>
+<p>All engine resources (textures, fonts, meshes, canvases, shaders, sprite batches, particle systems) are stored in typed SlotMap pools inside <code>SharedState</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Key Type</th>
+<th>Resource</th>
+<th>Stored In</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TextureKey</code></td>
+<td>GPU texture handle + CPU metadata</td>
+<td><code>SharedState::textures</code></td>
+</tr>
+<tr>
+<td><code>FontKey</code></td>
+<td>Font atlas + glyph metrics</td>
+<td><code>SharedState::fonts</code></td>
+</tr>
+<tr>
+<td><code>MeshKey</code></td>
+<td>Vertex + index buffers</td>
+<td><code>SharedState::meshes</code></td>
+</tr>
+<tr>
+<td><code>CanvasKey</code></td>
+<td>Off-screen render target</td>
+<td><code>SharedState::canvases</code></td>
+</tr>
+<tr>
+<td><code>ShaderKey</code></td>
+<td>Custom WGSL shader</td>
+<td><code>SharedState::shaders</code></td>
+</tr>
+<tr>
+<td><code>SpriteBatchKey</code></td>
+<td>Batched sprite collection</td>
+<td><code>SharedState::sprite_batches</code></td>
+</tr>
+<tr>
+<td><code>ParticleKey</code></td>
+<td>Particle emitter system</td>
+<td><code>SharedState::particles</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resource lifecycle:</strong> Create â†’ Lua loads via API â†’ stored in SlotMap â†’ key returned to Lua. Use â†’ key passed to draw functions â†’ <code>RenderCommand</code> stores key â†’ renderer resolves at draw time. Destroy â†’ Lua drops key â†’ SlotMap slot freed, GPU resource released next frame.</p>
+<p><strong>Stale key safety:</strong> SlotMap keys include a generation counter. If a key is used after its resource was freed, the SlotMap returns <code>None</code> rather than a dangling reference. The engine logs a warning and skips the draw call.</p>
+<hr />
+<h2 id="rendering-pipeline">Rendering Pipeline<a class="headerlink" href="#rendering-pipeline" title="Permanent link">&para;</a></h2>
+<p>The rendering pipeline is defined in full detail in <a href="render-command-architecture.html">render-command-architecture.md</a>.</p>
+<p><strong>Summary â€” Three-Layer Model:</strong></p>
+<ol>
+<li><strong>Layer 1 â€” CPU Domain Modules</strong>: Prepare data and push <code>RenderCommand</code> variants into a queue. No GPU calls.</li>
+<li><strong>Layer 2 â€” App Coordinator</strong> (<code>src/app/</code>): Orchestrates the frame â€” polls input, runs callbacks, collects commands, passes everything to the renderer.</li>
+<li><strong>Layer 3 â€” GPU Renderer</strong> (<code>src/render/gpu_renderer.rs</code>): The only code that issues wgpu draw calls. Receives <code>Vec&lt;RenderCommand&gt;</code> plus structured data (lights, post-FX) and produces the frame.</li>
+</ol>
+<p>Key facts:
+- <code>RenderCommand</code> is a flat enum with 46+ variants (draw primitives, transform stack, batching, stencil, post-FX, etc.)
+- GPU code is confined to <code>src/render/gpu_renderer.rs</code> and <code>src/render/shader.rs</code> â€” no other module imports wgpu
+- Light data (<code>Light2D</code>, <code>Occluder</code>) and post-FX data (<code>PostFxEffect</code>) flow as structured data alongside the command list â€” they are not <code>RenderCommand</code> variants
+- <code>camera/</code>, <code>effect/</code>, <code>light/</code> are top-level CPU domain modules, not subdirectories of <code>src/render/</code></p>
+<hr />
+<h2 id="lua-binding-architecture">Lua Binding Architecture<a class="headerlink" href="#lua-binding-architecture" title="Permanent link">&para;</a></h2>
+<p><strong>Design rules (from Zen Rule 12, constraints C-01 through C-06):</strong></p>
+<ul>
+<li>All bindings under <code>lurek.*</code> â€” no bare globals (C-01)</li>
+<li>One register function per module with a standard signature (C-02)</li>
+<li>Sensible defaults â€” never require params a beginner always passes the same value (C-03)</li>
+<li>All callbacks optional â€” empty <code>main.lua</code> is valid (C-04)</li>
+<li>Synchronous from Lua's perspective â€” async work in Rust threads via <code>Channel</code> (C-05)</li>
+<li>Callback names must not shadow API module keys (C-06)</li>
+</ul>
+<p><strong>File organisation:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Contains</th>
+<th>Must NOT Contain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/&lt;module&gt;/</code></td>
+<td>Pure Rust: algorithms, data types, state</td>
+<td>mlua imports, <code>impl LuaUserData</code>, Lua types</td>
+</tr>
+<tr>
+<td><code>src/lua_api/&lt;module&gt;_api.rs</code></td>
+<td><code>pub fn register()</code>, Lua wrapper structs, <code>impl LuaUserData</code></td>
+<td>Business logic (&gt; 10 lines), algorithms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Thin wrapper rule:</strong> If a closure body exceeds ~10 lines, the logic belongs in the domain module. Extract a <code>pub fn</code> on the domain type and call it.</p>
+<p><strong>Registration flow:</strong> On boot, <code>lua_api::register_all()</code> calls each sub-module's <code>register()</code> function in sequence, installing all <code>lurek.*</code> namespaces into the global Lua table. 35+ modules are registered before <code>main.lua</code> is executed.</p>
+<p><strong>Lua API docstring format:</strong> Lua API files use inline <code>@param</code> / <code>@return</code> annotations in standard Rust <code>///</code> comments. See <code>src/lua_api/timer_api.rs</code> as the gold standard.</p>
+<hr />
+<h2 id="input-pipeline">Input Pipeline<a class="headerlink" href="#input-pipeline" title="Permanent link">&para;</a></h2>
+<p>Input events arrive from winit and are routed through <code>InputState</code>. The <code>InputState</code> stores current-frame and previous-frame state for every key and mouse button â€” enabling <code>isDown()</code>, <code>isPressed()</code> (just pressed this frame), and <code>isReleased()</code> queries from Lua. Gamepad input uses the same pattern: poll â†’ update state â†’ fire callbacks.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>flowchart LR
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    W[winit Event] --&gt; K[KeyboardInput â†’ InputState.keys]
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    W --&gt; M[MouseInput â†’ InputState.mouse_buttons]
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    W --&gt; P[CursorMoved â†’ InputState.mouse_position]
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    W --&gt; S[MouseWheel]
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    W --&gt; T[ReceivedCharacter]
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    K --&gt; LK[lurek.keypressed / keyreleased]
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    M --&gt; LM[lurek.mousepressed / mousereleased]
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    P --&gt; LP[&quot;lurek.mousemoved(x,y,dx,dy)&quot;]
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    S --&gt; LS[&quot;lurek.wheelmoved(dx,dy)&quot;]
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    T --&gt; LT[&quot;lurek.textinput(text)&quot;]
+</code></pre></div>
+<hr />
+<h2 id="audio-pipeline">Audio Pipeline<a class="headerlink" href="#audio-pipeline" title="Permanent link">&para;</a></h2>
+<p>Audio is loaded from the game filesystem, decoded by rodio, and routed through a named bus system.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>flowchart LR
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    L[&quot;Lua: lurek.audio.play(path)&quot;] --&gt; A[audio_api]
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    A --&gt; M[&quot;AudioMixer::play(path)&quot;]
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    M --&gt; FS[GameFS resolves path]
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    FS --&gt; D[rodio Decoder â†’ PCM samples]
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    D --&gt; B[Route to AudioBus: master / music / sfx]
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    B --&gt; S[rodio Sink plays through OutputStream]
+</code></pre></div>
+<p><strong>Key concepts:</strong>
+- <strong>AudioBus</strong>: Named output channel (master, music, sfx, voice). Each has independent volume. Master bus applies final gain.
+- <strong>Static source</strong>: Fully decoded in memory â€” for short SFX.
+- <strong>Streaming source</strong>: Decoded on-the-fly â€” for music and ambient audio.
+- Volume, pitch, and pan are per-source controls, composited with bus volume.</p>
+<hr />
+<h2 id="physics-pipeline">Physics Pipeline<a class="headerlink" href="#physics-pipeline" title="Permanent link">&para;</a></h2>
+<p>Physics runs through rapier2d at a fixed timestep with collision events surfaced back to Lua.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>flowchart LR
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    L[&quot;Lua: lurek.physics.newBody(type, x, y)&quot;] --&gt; A[physics_api]
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    A --&gt; W[&quot;PhysicsWorld::create_body()&quot;]
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    W --&gt; R[rapier2d: RigidBodyBuilder + ColliderBuilder â†’ RigidBodySet]
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    F[&quot;lurek.process_physics(dt)&quot;] --&gt; S[&quot;PhysicsWorld::step(dt)&quot;]
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    S --&gt; E[Collision events collected]
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    E --&gt; C[Fire Lua collision callbacks]
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    C --&gt; PL[&quot;lurek.process_late(dt) â€” read updated positions&quot;]
+</code></pre></div>
+<p><strong>Key concepts:</strong>
+- Body types: Static (immovable), Dynamic (simulated), Kinematic (script-controlled)
+- Collider shapes: Circle, Rectangle, Polygon, Capsule, Segment
+- Joints: RevoluteJoint, PrismaticJoint, FixedJoint, SpringJoint
+- Raycasting: <code>lurek.physics.raycast(x1, y1, x2, y2)</code> returns hit results
+- Collision events: <code>lurek.physics.onCollision(callback)</code> fires on begin/end</p>
+<hr />
+<h2 id="threading-model">Threading Model<a class="headerlink" href="#threading-model" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>flowchart TD
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    M[&quot;Main Thread (LuaJIT VM + engine loop)&quot;]
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    M --&gt; T[&quot;lurek.thread.spawn(worker.lua, channel)&lt;br/&gt;Creates new OS thread with its own LuaJIT VM&lt;br/&gt;Worker VM: limited lurek.* API (no GPU, audio, input)&quot;]
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    M --&gt; C[&quot;lurek.thread.channel() â†’ Channel userdata&lt;br/&gt;channel:push(value) / channel:pop() â†’ value or nil&quot;]
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    T &lt;--&gt;|Channel MPMC| C
+</code></pre></div>
+<p><strong>Rules (from B-04):</strong>
+- LuaJIT VMs are single-threaded â€” never share VM state across threads
+- Worker VMs get their own fresh <code>Lua::new()</code> with limited API surface
+- <code>Channel</code> is the only communication mechanism between VMs
+- Values sent through Channel must be Lua-serialisable (no userdata, no functions)
+- Main thread polls channels during <code>process(dt)</code> â€” no blocking</p>
+<hr />
+<h2 id="filesystem-and-virtual-fs">Filesystem and Virtual FS<a class="headerlink" href="#filesystem-and-virtual-fs" title="Permanent link">&para;</a></h2>
+<p>All file operations go through <code>GameFS</code>, never raw filesystem access.</p>
+<p><strong>Mount structure:</strong>
+- <code>/game/</code> â€” game directory (where <code>main.lua</code> lives)
+- <code>/engine/</code> â€” engine embedded assets (splash, fonts)
+- <code>/save/</code> â€” per-game save directory
+- <code>/temp/</code> â€” temporary files (cleared on exit)</p>
+<p><strong>Security (path traversal guards):</strong>
+- All paths are normalised and validated â€” <code>../</code> traversal is rejected
+- Writes are restricted to <code>/save/</code> and <code>/temp/</code> â€” game code cannot write to <code>/game/</code> or <code>/engine/</code>
+- Symlinks are not followed outside the sandbox</p>
+<hr />
+<h2 id="window-management">Window Management<a class="headerlink" href="#window-management" title="Permanent link">&para;</a></h2>
+<p>Window is created from the <code>conf.toml</code> / <code>conf.lua</code> window settings at boot. The title, size, resizable flag, fullscreen mode, and icon are all set at creation time. Runtime changes are possible through <code>lurek.window.*</code> API.</p>
+<p><strong>Scale modes (Camera):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stretch</code></td>
+<td>Fill window, ignore aspect ratio</td>
+</tr>
+<tr>
+<td><code>letterbox</code></td>
+<td>Fit to window, black bars to preserve aspect ratio</td>
+</tr>
+<tr>
+<td><code>pixel_perfect</code></td>
+<td>Integer scaling only, centred</td>
+</tr>
+<tr>
+<td><code>expand</code></td>
+<td>Design resolution fills, extra space visible</td>
+</tr>
+</tbody>
+</table>
+<p>Scale mode is set via <code>conf.toml</code> or <code>lurek.camera.setScaleMode()</code>.</p>
+<hr />
+<h2 id="configuration-system">Configuration System<a class="headerlink" href="#configuration-system" title="Permanent link">&para;</a></h2>
+<p><strong>conf.toml</strong> (preferred) or <strong>conf.lua</strong> (legacy) is read at engine startup. It drives window setup, module enablement, render settings, and physics parameters. If neither is found, defaults apply: 800Ă—600 window, all modules enabled, 60 FPS target.</p>
+<p>Configuration fields:
+- <code>window</code> â€” title, width, height, fullscreen, vsync, resizable, min_size
+- <code>modules</code> â€” boolean flags for optional subsystems (physics, audio, network, etc.)
+- <code>render</code> â€” MSAA samples, max texture size, target FPS
+- <code>physics</code> â€” gravity, fixed timestep, iterations</p>
+<p><strong>Format rule (B-05):</strong> TOML for human-authored config and project manifests. JSON for external interop. No YAML.</p>
+<hr />
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p><strong>Error types</strong> defined in <code>src/runtime/</code>:
+- <code>Lua(mlua::Error)</code> â€” Lua runtime error
+- <code>Render(wgpu::Error)</code> â€” GPU/wgpu error
+- <code>Audio(rodio::Error)</code> â€” audio playback error
+- <code>Physics(String)</code> â€” physics engine error
+- <code>Io(std::io::Error)</code> â€” file I/O error
+- <code>Config(String)</code> â€” configuration error
+- <code>Asset(String)</code> â€” asset loading error</p>
+<p><strong>Error flow:</strong>
+1. Domain modules return <code>Result&lt;T, EngineError&gt;</code> or domain-specific errors
+2. <code>lua_api</code> converts to <code>LuaError</code> at the boundary
+3. Lua scripts receive error as a Lua error (pcall-catchable)
+4. Uncaught Lua errors are logged and the frame continues â€” the engine does not crash on a single Lua error</p>
+<p><strong>Rules:</strong> Never <code>panic!</code> in engine code â€” convert to <code>Result</code> or log + skip. Never <code>unwrap()</code> on fallible operations. Every <code>unsafe</code> block requires a <code>// SAFETY:</code> comment. Error messages must include the failing path, key, or value.</p>
+<hr />
+<h2 id="quality-gates">Quality Gates<a class="headerlink" href="#quality-gates" title="Permanent link">&para;</a></h2>
+<p>Binding constraints from <a href="philosophy.html">philosophy.md</a> Â§ Quality Gate Constraints:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gate</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Q-01</strong></td>
+<td>All tests pass</td>
+<td><code>cargo test</code></td>
+</tr>
+<tr>
+<td><strong>Q-02</strong></td>
+<td>No clippy warnings</td>
+<td><code>cargo clippy -- -D warnings</code></td>
+</tr>
+<tr>
+<td><strong>Q-03</strong></td>
+<td>New public Rust API â†’ integration test</td>
+<td>Manual review</td>
+</tr>
+<tr>
+<td><strong>Q-04</strong></td>
+<td>New <code>lurek.*</code> function â†’ Lua BDD test</td>
+<td>Manual review</td>
+</tr>
+<tr>
+<td><strong>Q-05</strong></td>
+<td>No undocumented public items</td>
+<td><code>python tools/docs/collect_docs.py --report-missing</code></td>
+</tr>
+</tbody>
+</table>
+<p>Both <code>cargo test</code> and <code>cargo clippy -- -D warnings</code> must pass before every merge.</p>
+<hr />
+<h2 id="technology-stack">Technology Stack<a class="headerlink" href="#technology-stack" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Crate</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>Rust</td>
+<td>stable â‰Ą 1.78</td>
+<td>Engine implementation</td>
+</tr>
+<tr>
+<td>Scripting</td>
+<td>mlua</td>
+<td>0.9</td>
+<td>LuaJIT binding (primary), Lua 5.4 fallback</td>
+</tr>
+<tr>
+<td>Rendering</td>
+<td>wgpu</td>
+<td>22</td>
+<td>GPU abstraction (Vulkan / DX12 / Metal)</td>
+</tr>
+<tr>
+<td>Windowing</td>
+<td>winit</td>
+<td>0.30</td>
+<td>Window creation and event loop</td>
+</tr>
+<tr>
+<td>Physics</td>
+<td>rapier2d</td>
+<td>0.32</td>
+<td>2D rigid body simulation</td>
+</tr>
+<tr>
+<td>Audio</td>
+<td>rodio</td>
+<td>0.17</td>
+<td>Audio playback and mixing</td>
+</tr>
+<tr>
+<td>Font rendering</td>
+<td>fontdue</td>
+<td>0.9</td>
+<td>Font rasterisation</td>
+</tr>
+<tr>
+<td>Image loading</td>
+<td>image</td>
+<td>latest</td>
+<td>PNG / JPEG / GIF decode</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cargo feature flags:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lua-jit</code> (default)</td>
+<td>Link LuaJIT via mlua â€” primary runtime</td>
+</tr>
+<tr>
+<td><code>lua54</code></td>
+<td>Link Lua 5.4 via mlua â€” non-shipping CI fallback</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="repository-file-structure">Repository File Structure<a class="headerlink" href="#repository-file-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>lurek2d/
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>â”śâ”€â”€ src/                    Rust source â€” all five module groups
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>â”‚   â”śâ”€â”€ lib.rs              Crate root
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>â”‚   â”śâ”€â”€ main.rs             Binary entry point
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>â”‚   â”śâ”€â”€ &lt;module&gt;/           One directory per module
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>â”‚   â””â”€â”€ lua_api/            Scripting bridge (one &lt;module&gt;_api.rs per module)
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>â”śâ”€â”€ content/
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>â”‚   â”śâ”€â”€ examples/           Single-file API usage scripts (documentation only)
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>â”‚   â”śâ”€â”€ games/              Playable game demos (must all pass CI)
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>â”‚   â”śâ”€â”€ layouts/            TOML UI layout files
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>â”‚   â”śâ”€â”€ plugins/            Plugin examples
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>â”‚   â”śâ”€â”€ snippets/           VS Code snippet sources
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>â”‚   â””â”€â”€ zips/               Zipped assets and examples
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>â”śâ”€â”€ tests/
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>â”‚   â”śâ”€â”€ rust/               Rust tests (unit, stress, golden, config, security, ext)
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>â”‚   â””â”€â”€ lua/                Lua BDD tests (unit, integration, content, stress, security)
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>â”śâ”€â”€ docs/
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>â”‚   â”śâ”€â”€ architecture/       Architecture documentation
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>â”‚   â”śâ”€â”€ specs/              One &lt;module&gt;.md per src/&lt;module&gt;/
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>â”‚   â”śâ”€â”€ api/                Generated API references (never edit by hand)
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>â”‚   â””â”€â”€ CHANGELOG.md        Version history
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>â”śâ”€â”€ library/                Lureksome â€” pure-Lua standard libraries
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>â”śâ”€â”€ tools/                  CLI scripts (docs, audit, fix, validate, dist)
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>â”śâ”€â”€ assets/                 Engine assets (splash, icon, fonts)
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>â”śâ”€â”€ extension/vscode/      VS Code extension (MCP, IntelliSense, webview)
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>â”śâ”€â”€ .github/                CAG layer (agents, skills, prompts, system prompt)
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>â”śâ”€â”€ work/                   Session folders (current + archive)
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>â”śâ”€â”€ Cargo.toml              Crate manifest
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>â””â”€â”€ build.rs                Build script (asset watching)
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Lurek2D/lurek_2d" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

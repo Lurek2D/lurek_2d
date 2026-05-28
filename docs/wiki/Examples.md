@@ -17,6 +17,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [agent.lua](../blob/main/content/examples/agent.lua) | `lurek.agent` | API example |
 | [ai.lua](../blob/main/content/examples/ai.lua) | `lurek.ai` | API example |
 | [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | API example |
+| [asset.lua](../blob/main/content/examples/asset.lua) | `lurek.asset` | API example |
 | [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |
 | [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | API example |
 | [binary.lua](../blob/main/content/examples/binary.lua) | `lurek.binary` | API example |

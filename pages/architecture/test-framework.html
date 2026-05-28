@@ -1,0 +1,4516 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Single-binary 2D Rust runtime for Lua game scripts">
+      
+      
+      
+        <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/architecture/test-framework.html">
+      
+      
+        <link rel="prev" href="engine-architecture.html">
+      
+      
+        <link rel="next" href="cag-system.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Testing - Lurek2D</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/lurek.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#lurek2d-test-framework-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../index.html" title="Lurek2D" class="md-header__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lurek2D
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="philosophy.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/agent.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Lua
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CHANGELOG.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../index.html" title="Lurek2D" class="md-nav__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    Lurek2D
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="philosophy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../handbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="engine-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="test-framework.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-placement-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Placement Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Placement Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decision-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision Tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banned-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Banned Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforcement-audit-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforcement — Audit Scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#harness-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Harness Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-layer-test-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Layer Test Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory Layout
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Directory Layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testsrustgame-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/rust/game/ — Retired
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rust-test-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust Test Suites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-bdd-test-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua BDD Test Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lua BDD Test Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#framework-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Framework Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-test-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Test Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-test-documentation-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Test Documentation Standard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#golden-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Golden Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-comparison-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Float Comparison Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage Tooling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-based-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence-Based Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headless-demo-tests-testsluademos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless Demo Tests (tests/lua/demos/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-smoke-tests-testsdemo_smoke_testsrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screenshot Smoke Tests (tests/demo_smoke_tests.rs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension_plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="lua-api-file-standard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua API Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../codding_standards.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use_cases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../positioning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_info.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lua
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/agent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ai.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/animation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Animation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/audio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/automation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/binary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/camera.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/charts.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/color.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Color
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/compute.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/cursor.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dataframe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataframe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/debugbridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/devtools.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dialog.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/docs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/dsp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DSP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ecs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/effect.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/event.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/filesystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/flownet.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flownet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/font.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Font
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/globe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/grep.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grep
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/html.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/i18n.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/image.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/input.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/learning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/light.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Light
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mapblock.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapblock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/midi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Midi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/minimap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/mods.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/network.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/overlay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/parallax.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/particle.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/pathfind.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pathfind
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/physics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/procgen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Procgen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/province.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Province
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/raycaster.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raycaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/render.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/repl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/runtime.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/save.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/scene.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/serialize.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/spine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/sprite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/terminal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/thread.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tilemap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/timer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/tween.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/validator.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/visibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/window.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-placement-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Placement Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Placement Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decision-tree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision Tree
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banned-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Banned Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforcement-audit-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforcement — Audit Scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#harness-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Harness Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#two-layer-test-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two-Layer Test Model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory Layout
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Directory Layout">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testsrustgame-retired" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/rust/game/ — Retired
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rust-test-suites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust Test Suites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-bdd-test-framework" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua BDD Test Framework
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lua BDD Test Framework">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#framework-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Framework Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-test-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Test Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lua-test-documentation-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lua Test Documentation Standard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#golden-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Golden Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#float-comparison-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Float Comparison Rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quality-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-coverage-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage Tooling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evidence-based-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence-Based Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headless-demo-tests-testsluademos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless Demo Tests (tests/lua/demos/)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-smoke-tests-testsdemo_smoke_testsrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screenshot Smoke Tests (tests/demo_smoke_tests.rs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="lurek2d-test-framework-architecture">Lurek2D — Test Framework Architecture<a class="headerlink" href="#lurek2d-test-framework-architecture" title="Permanent link">&para;</a></h1>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Source of truth for the test suite structure, placement rules, BDD framework, golden tests, and CI quality gates.</li>
+</ul>
+<p>Companion documents: <a href="engine-architecture.html">engine-architecture.md</a> · <a href="philosophy.html">philosophy.md</a></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#test-placement-rules">Test Placement Rules</a></li>
+<li><a href="#two-layer-test-model">Two-Layer Test Model</a></li>
+<li><a href="#directory-layout">Directory Layout</a></li>
+<li><a href="#rust-test-suites">Rust Test Suites</a></li>
+<li><a href="#lua-bdd-test-framework">Lua BDD Test Framework</a></li>
+<li><a href="#lua-test-documentation-standard">Lua Test Documentation Standard</a></li>
+<li><a href="#golden-tests">Golden Tests</a></li>
+<li><a href="#naming-conventions">Naming Conventions</a></li>
+<li><a href="#float-comparison-rules">Float Comparison Rules</a></li>
+<li><a href="#running-tests">Running Tests</a></li>
+<li><a href="#quality-gates">Quality Gates</a></li>
+<li><a href="#test-coverage-tooling">Test Coverage Tooling</a></li>
+<li><a href="#evidence-based-testing">Evidence-Based Testing</a></li>
+<li><a href="#demo-tests">Demo Tests</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Lurek2D uses a <strong>two-layer test system</strong> executed through <code>cargo test</code>:</p>
+<ol>
+<li><strong>Rust tests</strong> — compiled test binaries exercising engine modules directly via crate imports (unit, stress, golden, config, security, ext).</li>
+<li><strong>Lua BDD tests</strong> — <code>.lua</code> scripts using <code>describe</code>/<code>it</code>/<code>expect_*</code> framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).</li>
+</ol>
+<p>Both layers run <strong>headless</strong> — no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.</p>
+<p><strong>Examples vs Demos:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>content/examples/</code></th>
+<th><code>content/games/</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Documentation — shows one <code>lurek.*</code> API in isolation</td>
+<td>Fully functional game showcases</td>
+</tr>
+<tr>
+<td>Tested?</td>
+<td>No — read-only reference scripts</td>
+<td>Yes — every demo must have a test</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>Single-file, commented</td>
+<td>Folder with <code>main.lua</code> + optional <code>conf.toml</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="test-placement-rules">Test Placement Rules<a class="headerlink" href="#test-placement-rules" title="Permanent link">&para;</a></h2>
+<p>Constraints <strong>TST-01</strong> through <strong>TST-06</strong> from <a href="philosophy.html#testing-constraints">philosophy.md § Testing Constraints</a> are binding. Summary:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TST-01</strong></td>
+<td>Lua-first. Behaviour reachable via <code>lurek.*</code> must be tested in Lua. Rust tests must not duplicate <code>lurek.*</code>-reachable coverage.</td>
+</tr>
+<tr>
+<td><strong>TST-02</strong></td>
+<td>Rust unit tests live in <code>tests/rust/unit/&lt;module&gt;_tests.rs</code>. Inline <code>#[cfg(test)]</code> blocks in <code>src/**/*.rs</code> are <strong>banned</strong>.</td>
+</tr>
+<tr>
+<td><strong>TST-03</strong></td>
+<td><code>src/lua_api/&lt;module&gt;_api.rs</code> holds only <code>impl LuaUserData</code>, registration, and type conversions. No business logic.</td>
+</tr>
+<tr>
+<td><strong>TST-04</strong></td>
+<td>Every <code>mod.rs</code> holds only <code>pub mod</code>, <code>pub use</code>, attributes, and doc comments. No definitions.</td>
+</tr>
+<tr>
+<td><strong>TST-05</strong></td>
+<td>Demo tests: headless Lua tests in <code>tests/lua/demos/test_&lt;name&gt;.lua</code>; screenshot tests in <code>tests/demo_smoke_tests.rs</code> with <code>#[ignore]</code>. Never put demo tests in <code>tests/lua/unit/</code>.</td>
+</tr>
+<tr>
+<td><strong>TST-06</strong></td>
+<td>One file per module per layer. No split per-sub-feature files. Name: <code>test_&lt;module&gt;_&lt;layer&gt;.lua</code>.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Migration note (2026-04-20).</strong> Existing inline <code>#[cfg(test)]</code> blocks are tracked for relocation under session <code>testing-cleanup-20260420</code>. No new inline blocks are accepted.</p>
+</blockquote>
+<h3 id="decision-tree">Decision Tree<a class="headerlink" href="#decision-tree" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p><strong>Reachable via any <code>lurek.*</code> function, userdata, or callback?</strong> → Lua test in <code>tests/lua/unit/test_&lt;module&gt;.lua</code> (single module) or <code>tests/lua/integration/test_&lt;a&gt;_&lt;b&gt;.lua</code> (≥2 namespaces). This is TST-01 — the default path.</p>
+</li>
+<li>
+<p><strong>Private internal helper</strong> — no Lua exposure? → Rust unit test in <code>tests/rust/unit/&lt;module&gt;_tests.rs</code>. Register binary in <code>Cargo.toml</code>. TST-02.</p>
+</li>
+<li>
+<p><strong>Test for a game demo in <code>content/games/</code>?</strong> → Headless Lua test in <code>tests/lua/demos/test_&lt;name&gt;.lua</code> (TST-05) + <code>#[ignore]</code> screenshot test in <code>tests/demo_smoke_tests.rs</code>.</p>
+</li>
+<li>
+<p><strong>Anything else</strong> (integration, golden, stress, evidence, config, security) → choose the matching subfolder in <code>tests/rust/</code> or <code>tests/lua/</code>.</p>
+</li>
+</ol>
+<p>When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to <code>pub(crate)</code> and cover through the Lua surface.</p>
+<h3 id="banned-patterns">Banned Patterns<a class="headerlink" href="#banned-patterns" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Constraint</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>#[cfg(test)] mod tests</code> inside any <code>src/**/*.rs</code></td>
+<td>TST-02</td>
+<td>Relocate to <code>tests/rust/unit/&lt;module&gt;_tests.rs</code></td>
+</tr>
+<tr>
+<td>Business logic in <code>src/lua_api/*_api.rs</code></td>
+<td>TST-03</td>
+<td>Move logic to <code>src/&lt;module&gt;/</code>, call from thin wrapper</td>
+</tr>
+<tr>
+<td><code>fn</code>, <code>struct</code>, <code>enum</code>, or <code>impl</code> in any <code>mod.rs</code></td>
+<td>TST-04</td>
+<td>Move to sibling file; keep <code>mod.rs</code> as re-export switchboard</td>
+</tr>
+<tr>
+<td>Duplicating <code>lurek.*</code>-reachable test in Rust</td>
+<td>TST-01</td>
+<td>Delete Rust duplicate, keep Lua test</td>
+</tr>
+<tr>
+<td>Demo tests in <code>tests/lua/unit/</code></td>
+<td>TST-05</td>
+<td>Move to <code>tests/lua/demos/</code></td>
+</tr>
+<tr>
+<td>Split per-sub-feature test files</td>
+<td>TST-06</td>
+<td>Merge into single canonical <code>test_&lt;module&gt;_&lt;layer&gt;.lua</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="enforcement-audit-scripts">Enforcement — Audit Scripts<a class="headerlink" href="#enforcement-audit-scripts" title="Permanent link">&para;</a></h3>
+<p>Under <code>tools/audit/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Enforces</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inline_test_audit.py</code></td>
+<td>TST-02 — lists every inline <code>#[cfg(test)]</code> block with relocation target</td>
+</tr>
+<tr>
+<td><code>thin_wrapper_audit.py</code></td>
+<td>TST-03 — flags business-logic violations inside <code>src/lua_api/</code></td>
+</tr>
+<tr>
+<td><code>thin_modrs_audit.py</code></td>
+<td>TST-04 — flags disallowed definitions inside any <code>mod.rs</code></td>
+</tr>
+<tr>
+<td><code>test_coverage.py</code></td>
+<td>TST-01 — reports undercovered <code>lurek.*</code> surface</td>
+</tr>
+<tr>
+<td><code>lua_test_structure_audit.py</code></td>
+<td>BDD documentation standard</td>
+</tr>
+<tr>
+<td><code>lua_evidence_golden_contract_audit.py</code></td>
+<td>Evidence/golden separation</td>
+</tr>
+<tr>
+<td><code>gen_lua_contract_tests.py</code></td>
+<td>Generates periodic Lua contract smoke from <code>lua_api_data.json</code></td>
+</tr>
+<tr>
+<td><code>mutation_report.py</code></td>
+<td>Runs cargo-mutants and saves mutation report</td>
+</tr>
+<tr>
+<td><code>perf_regression_gate.py</code></td>
+<td>Enforces stress/perf non-regression threshold for CI</td>
+</tr>
+</tbody>
+</table>
+<h3 id="harness-registration">Harness Registration<a class="headerlink" href="#harness-registration" title="Permanent link">&para;</a></h3>
+<p>Lua tests are registered <strong>manually</strong> in <code>tests/lua/harness.rs</code>. Auto-discovery is intentionally not used. An unregistered <code>.lua</code> file will never be executed by <code>cargo test</code>.</p>
+<hr />
+<h2 id="two-layer-test-model">Two-Layer Test Model<a class="headerlink" href="#two-layer-test-model" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>cargo test
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  ├── Rust test binaries ─────────────────────────────────────────
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  │   tests/rust/unit/          Engine module Rust contracts
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  │   tests/rust/stress/        Throughput + allocation tests
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  │   tests/rust/golden/        Snapshot: graphics/audio/text
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  │   tests/rust/config/        Config loading + validation
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  │   tests/rust/security/      Sandbox audit, path traversal
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  │   tests/rust/ext/           Cross-module Rust smoke tests
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  └── Lua BDD harness ────────────────────────────────────────────
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>      tests/lua/harness.rs
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>      ├── unit/         One file per engine module (API surface)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>      ├── library/      One file per Lureksome library
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>      ├── integration/  Tests between ≥2 modules
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>      ├── stress/       Throughput + allocation from Lua
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>      ├── security/     Sandboxing + input validation
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>      ├── golden/       Deterministic output comparison
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>      ├── config/       Configuration loading tests
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>      └── demos/        One file per demo in content/games/
+</code></pre></div>
+<p><strong>Why two layers:</strong>
+- Rust tests cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness.
+- Lua tests cover the public <code>lurek.*</code> API surface from the user's perspective — the same VM game scripts use.
+- Library tests (<code>tests/lua/library/</code>) exclusively test Lureksome pure-Lua libraries.</p>
+<hr />
+<h2 id="directory-layout">Directory Layout<a class="headerlink" href="#directory-layout" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>tests/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── fixtures/            Shared test assets (images, audio, data files)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── output/              Evidence artefact output (git-ignored)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── samples/             Golden comparison baselines (committed)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── rust/
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   ├── unit/            One file per engine module (Rust contracts)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   │   ├── math_tests.rs
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   │   ├── physics_tests.rs
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   │   ├── render_tests.rs
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   │   └── ...
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│   ├── stress/          Raw Rust-level throughput tests
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│   ├── golden/          Snapshot tests (harness.rs + expected/)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   ├── config/          TOML config loading + validation
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   ├── security/        Sandbox + path-traversal audits
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│   └── ext/             Cross-module Rust smoke tests
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>│
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>└── lua/
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    ├── harness.rs       Rust harness — one #[test] per .lua file
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    ├── init.lua         BDD framework (describe/it/expect_*)
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>    ├── unit/            One file per lurek.* namespace
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>    ├── library/         One file per Lureksome library
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    ├── integration/     Tests between ≥2 modules
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>    ├── stress/          Throughput + allocation from Lua
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>    ├── security/        Sandboxing + input validation
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>    ├── golden/          Deterministic output comparison
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>    ├── config/          Config loading tests
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>    └── demos/           One file per content/games/ demo
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        ├── _common_checks.lua
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>        └── test_&lt;name&gt;.lua
+</code></pre></div>
+<p>All Rust test binaries are <strong>explicitly registered</strong> in <code>Cargo.toml</code> under <code>[[test]]</code> sections. Unregistered <code>.rs</code> files in <code>tests/</code> are not discovered by <code>cargo test</code>.</p>
+<h3 id="testsrustgame-retired">tests/rust/game/ — Retired<a class="headerlink" href="#testsrustgame-retired" title="Permanent link">&para;</a></h3>
+<p><code>tests/rust/game/</code> previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now pure-Lua libraries in <code>library/</code>. Their tests live in <code>tests/lua/library/</code>. Do not add new files there.</p>
+<hr />
+<h2 id="rust-test-suites">Rust Test Suites<a class="headerlink" href="#rust-test-suites" title="Permanent link">&para;</a></h2>
+<p><strong>Scope rule:</strong> All public API methods must be tested in Lua. Rust tests cover private/internal code only — struct invariants, internal algorithms, resource lifecycle, and implementation details with no <code>lurek.*</code> surface.</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Path</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td><code>tests/rust/unit/</code></td>
+<td>Internal Rust types + private methods not exposed to Lua</td>
+</tr>
+<tr>
+<td>Stress</td>
+<td><code>tests/rust/stress/</code></td>
+<td>Raw Rust-level throughput (no Lua boundary)</td>
+</tr>
+<tr>
+<td>Golden</td>
+<td><code>tests/rust/golden/</code></td>
+<td>Byte-level snapshot comparison</td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>tests/rust/config/</code></td>
+<td>TOML loading + validation</td>
+</tr>
+<tr>
+<td>Security</td>
+<td><code>tests/rust/security/</code></td>
+<td>Sandbox audit, path-traversal guards</td>
+</tr>
+<tr>
+<td>Ext</td>
+<td><code>tests/rust/ext/</code></td>
+<td>Cross-module Rust smoke tests</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Test naming convention:</strong> <code>&lt;module&gt;_&lt;what&gt;_&lt;expected_behaviour&gt;()</code>. Example: <code>vec2_add_returns_component_wise_sum</code>.</p>
+<hr />
+<h2 id="lua-bdd-test-framework">Lua BDD Test Framework<a class="headerlink" href="#lua-bdd-test-framework" title="Permanent link">&para;</a></h2>
+<p>All Lua tests use the custom BDD framework in <code>tests/lua/init.lua</code>, loaded automatically by <code>create_test_vm()</code>.</p>
+<h3 id="categories">Categories<a class="headerlink" href="#categories" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Path</th>
+<th>Scope</th>
+<th>Naming</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit</td>
+<td><code>tests/lua/unit/</code></td>
+<td>One module per file</td>
+<td><code>test_&lt;module&gt;.lua</code></td>
+</tr>
+<tr>
+<td>Library</td>
+<td><code>tests/lua/library/</code></td>
+<td>One Lureksome library</td>
+<td><code>test_library_&lt;name&gt;.lua</code></td>
+</tr>
+<tr>
+<td>Integration</td>
+<td><code>tests/lua/integration/</code></td>
+<td>≥2 modules</td>
+<td><code>test_&lt;modA&gt;_&lt;modB&gt;.lua</code></td>
+</tr>
+<tr>
+<td>Stress</td>
+<td><code>tests/lua/stress/</code></td>
+<td>Throughput + allocation</td>
+<td><code>test_&lt;module&gt;_stress.lua</code></td>
+</tr>
+<tr>
+<td>Security</td>
+<td><code>tests/lua/security/</code></td>
+<td>Sandboxing + input validation</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Golden</td>
+<td><code>tests/lua/golden/</code></td>
+<td>Deterministic output</td>
+<td><code>test_&lt;module&gt;_golden.lua</code></td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>tests/lua/config/</code></td>
+<td>Configuration loading</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Demos</td>
+<td><code>tests/lua/demos/</code></td>
+<td>One per <code>content/games/</code> demo</td>
+<td><code>test_&lt;name&gt;.lua</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="framework-functions">Framework Functions<a class="headerlink" href="#framework-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>describe(name, fn)</code></td>
+<td>Group tests under a named section</td>
+</tr>
+<tr>
+<td><code>it(name, fn)</code></td>
+<td>Define a single test case</td>
+</tr>
+<tr>
+<td><code>before_each(fn)</code> / <code>after_each(fn)</code></td>
+<td>Hooks around each <code>it()</code></td>
+</tr>
+<tr>
+<td><code>expect_equal(expected, actual, msg)</code></td>
+<td>Strict equality (string, int, bool)</td>
+</tr>
+<tr>
+<td><code>expect_near(expected, actual, tol, msg)</code></td>
+<td>Float proximity; <code>tol</code> defaults to <code>1e-5</code></td>
+</tr>
+<tr>
+<td><code>expect_true(val, msg)</code> / <code>expect_false(val, msg)</code></td>
+<td>Truthy/falsy</td>
+</tr>
+<tr>
+<td><code>expect_nil(val, msg)</code> / <code>expect_not_nil(val, msg)</code></td>
+<td>Nil checks</td>
+</tr>
+<tr>
+<td><code>expect_type(type_str, val, msg)</code></td>
+<td><code>type(val) == type_str</code></td>
+</tr>
+<tr>
+<td><code>expect_error(fn, msg)</code></td>
+<td>Assert fn raises a Lua error</td>
+</tr>
+<tr>
+<td><code>expect_no_error(fn, msg)</code></td>
+<td>Assert fn does not raise</td>
+</tr>
+<tr>
+<td><code>expect_greater(a, b, msg)</code> / <code>expect_less(a, b, msg)</code></td>
+<td>Numeric comparisons</td>
+</tr>
+<tr>
+<td><code>expect_in_range(val, min, max, msg)</code></td>
+<td>Bounds check</td>
+</tr>
+<tr>
+<td><code>expect_contains(tbl, value, msg)</code></td>
+<td>Table membership</td>
+</tr>
+<tr>
+<td><code>expect_match(str, pattern, msg)</code></td>
+<td>Lua string pattern match</td>
+</tr>
+<tr>
+<td><code>expect_length(tbl, n, msg)</code></td>
+<td><code>#tbl == n</code></td>
+</tr>
+<tr>
+<td><code>expect_deep_equal(expected, actual, msg)</code></td>
+<td>Recursive table equality</td>
+</tr>
+<tr>
+<td><code>measure(name, count, fn)</code></td>
+<td>Run fn, print <code>[PERF]</code> line, return <code>elapsed, ops_per_sec</code></td>
+</tr>
+<tr>
+<td><code>expect_canvas_pixel(surface, x, y, r, g, b, a, tol, msg)</code></td>
+<td>Pixel RGBA check</td>
+</tr>
+<tr>
+<td><code>test_summary()</code></td>
+<td><strong>Mandatory</strong> — must be the last call in every file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-test-rule">Integration Test Rule<a class="headerlink" href="#integration-test-rule" title="Permanent link">&para;</a></h3>
+<p>An integration test must exercise at least two distinct <code>lurek.*</code> module namespaces. Testing one module with complex data does not qualify.</p>
+<hr />
+<h2 id="lua-test-documentation-standard">Lua Test Documentation Standard<a class="headerlink" href="#lua-test-documentation-standard" title="Permanent link">&para;</a></h2>
+<p>Three comment layers — do not mix them:</p>
+<ol>
+<li><strong>File header</strong> — plain <code>-- ...</code> prose at top. Explains coverage and headless constraints. No <code>@description</code>.</li>
+<li><strong>Suite description</strong> — one <code>-- @describe &lt;text&gt;</code> line immediately above each <code>describe()</code> block.</li>
+<li><strong>Case description</strong> — optional plain comment lines above each <code>it()</code> block when needed for clarity.</li>
+</ol>
+<p><strong>Rules:</strong>
+- File header uses plain comments only — no <code>-- @description</code>, no <code>-- @category:</code>.
+- <code>-- @category: ...</code> markers are forbidden everywhere.
+- <code>test_summary()</code> must be the last non-empty line in every file.
+- <code>return test_summary()</code> is forbidden — use bare <code>test_summary()</code>.
+- Marker annotations belong on <code>it()</code> blocks and are folder-specific:
+    - <code>tests/lua/unit/</code> -&gt; <code>@covers</code>
+    - <code>tests/lua/security/</code> -&gt; <code>@security</code>
+    - <code>tests/lua/integration/</code> -&gt; <code>@integration</code>
+    - <code>tests/lua/stress/</code> -&gt; <code>@stress</code>
+    - <code>tests/lua/evidence/</code> -&gt; <code>@evidence</code>
+- Max two levels of nested <code>describe()</code>.</p>
+<p><strong>Standard template:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">-- tests/lua/unit/test_modulename.lua</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">-- Exercises lurek.modulename constructors, error handling, and edge cases.</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">-- Headless-safe: no window, GPU, or audio required.</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">-- @describe Groups namespace-level checks for lurek.modulename.</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nf">describe</span><span class="p">(</span><span class="s2">&quot;lurek.modulename&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="c1">-- @describe Covers constructor behavior and default object state.</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nf">describe</span><span class="p">(</span><span class="s2">&quot;new()&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="c1">-- @covers lurek.modulename.new</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="c1">-- Verifies new() returns a userdata object.</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="nf">it</span><span class="p">(</span><span class="s2">&quot;returns a userdata object&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">            </span><span class="kd">local</span><span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lurek</span><span class="p">.</span><span class="py">modulename</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">            </span><span class="nf">expect_not_nil</span><span class="p">(</span><span class="nv">value</span><span class="p">)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="nf">test_summary</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>Audit:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">python</span> <span class="n">tools</span><span class="p">/</span><span class="n">audit</span><span class="p">/</span><span class="n">lua_test_structure_audit</span><span class="p">.</span><span class="n">py</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">python</span> <span class="n">tools</span><span class="p">/</span><span class="n">audit</span><span class="p">/</span><span class="n">lua_test_structure_audit</span><span class="p">.</span><span class="n">py</span> <span class="p">-</span><span class="n">-fix</span>
+</code></pre></div></p>
+<hr />
+<h2 id="golden-tests">Golden Tests<a class="headerlink" href="#golden-tests" title="Permanent link">&para;</a></h2>
+<p>Golden tests compare evidence output against committed baseline samples.</p>
+<p><strong>Rules:</strong>
+1. <strong>Golden tests ONLY compare.</strong> They read an evidence file and a golden sample, then assert they match. No content creation.
+2. <strong>Evidence tests must run first.</strong> If the evidence file does not exist, the golden test fails with a clear message.
+3. <strong>Golden samples live in <code>tests/lua/golden/samples/&lt;module&gt;/</code></strong> — committed to git, human-reviewed.
+4. <strong>Golden tests must not call <code>lurek.*</code> APIs, <code>savePNG</code>, <code>saveWAV</code>, or write files.</strong> Content creation belongs in the evidence layer.
+5. <strong>Every golden test uses BDD structure</strong> and the <code>-- @golden</code> marker.
+6. Use <code>expect_golden_file_match()</code> for binary (PNG, WAV) or <code>expect_golden_text_match()</code> for text (normalises whitespace/line endings).</p>
+<p><strong>Directory structure:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>tests/lua/golden/
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── test_&lt;module&gt;_golden.lua          Golden test script
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>└── samples/                          Committed baseline files
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    ├── math/constants.txt
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    ├── physics/draw_debug.png
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    └── audio/sine_440hz.wav
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>tests/lua/evidence/output/            Generated at test run (git-ignored)
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>└── math/constants.txt
+</code></pre></div></p>
+<p><strong>Golden test template:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- @golden</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">-- @covers lurek.&lt;module&gt;.&lt;function&gt;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nf">describe</span><span class="p">(</span><span class="s2">&quot;golden: &lt;module&gt; &lt;description&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nf">it</span><span class="p">(</span><span class="s2">&quot;matches golden sample for &lt;artifact&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">evidence</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">evidence_output_dir</span><span class="p">(</span><span class="s2">&quot;&lt;module&gt;&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;&lt;filename&gt;&quot;</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span><span class="kd">local</span><span class="w"> </span><span class="nv">golden</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tests/lua/golden/samples/&lt;module&gt;/&lt;filename&gt;&quot;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span><span class="nf">expect_golden_file_match</span><span class="p">(</span><span class="nv">evidence</span><span class="p">,</span><span class="w"> </span><span class="nv">golden</span><span class="p">)</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kr">end</span><span class="p">)</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="nf">test_summary</span><span class="p">()</span>
+</code></pre></div></p>
+<hr />
+<h2 id="naming-conventions">Naming Conventions<a class="headerlink" href="#naming-conventions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th>Pattern</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rust test function</td>
+<td><code>&lt;module&gt;_&lt;what&gt;_&lt;expected&gt;</code></td>
+<td><code>vec2_add_returns_component_wise_sum</code></td>
+</tr>
+<tr>
+<td>Rust test binary</td>
+<td><code>&lt;module&gt;_tests</code></td>
+<td><code>math_tests</code></td>
+</tr>
+<tr>
+<td>Lua unit file</td>
+<td><code>test_&lt;module&gt;.lua</code></td>
+<td><code>test_math.lua</code></td>
+</tr>
+<tr>
+<td>Lua library file</td>
+<td><code>test_library_&lt;name&gt;.lua</code></td>
+<td><code>test_library_combat.lua</code></td>
+</tr>
+<tr>
+<td>Lua integration file</td>
+<td><code>test_&lt;modA&gt;_&lt;modB&gt;.lua</code></td>
+<td><code>test_physics_timer.lua</code></td>
+</tr>
+<tr>
+<td>Lua demo file</td>
+<td><code>test_&lt;name&gt;.lua</code></td>
+<td><code>test_globe_demo.lua</code></td>
+</tr>
+<tr>
+<td>Lua golden file</td>
+<td><code>test_&lt;module&gt;_golden.lua</code></td>
+<td><code>test_physics_golden.lua</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="float-comparison-rules">Float Comparison Rules<a class="headerlink" href="#float-comparison-rules" title="Permanent link">&para;</a></h2>
+<p>Never use <code>==</code> for floats. Use:</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Function</th>
+<th>Default tolerance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lua test</td>
+<td><code>expect_near(expected, actual, tol)</code></td>
+<td><code>1e-5</code></td>
+</tr>
+<tr>
+<td>Rust test</td>
+<td><code>assert!((a - b).abs() &lt; 1e-5)</code></td>
+<td>1e-5</td>
+</tr>
+<tr>
+<td>Physics positions</td>
+<td><code>1e-3</code> tolerance</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Render coordinates</td>
+<td><code>0.5</code> tolerance (half pixel)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c"># All tests</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">cargo</span> <span class="n">test</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c"># Single Rust binary</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">cargo</span> <span class="n">test</span> <span class="p">-</span><span class="n">-test</span> <span class="n">math_tests</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c"># Single Lua test</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">cargo</span> <span class="n">test</span> <span class="p">-</span><span class="n">-test</span> <span class="n">lua_tests</span> <span class="n">test_math</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c"># All demo screenshot tests (needs GPU + pre-built binary)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">cargo</span> <span class="n">test</span> <span class="p">-</span><span class="n">-test</span> <span class="n">demo_smoke_tests</span> <span class="p">--</span> <span class="p">-</span><span class="n">-include-ignored</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="c"># Parallel runner (CI)</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="n">python</span> <span class="n">tools</span><span class="p">/</span><span class="n">dev</span><span class="p">/</span><span class="n">parallel_cargo</span><span class="p">.</span><span class="n">py</span> <span class="n">test</span> <span class="n">rust</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="n">python</span> <span class="n">tools</span><span class="p">/</span><span class="n">dev</span><span class="p">/</span><span class="n">parallel_cargo</span><span class="p">.</span><span class="n">py</span> <span class="n">test</span> <span class="n">lua</span>
+</code></pre></div>
+<hr />
+<h2 id="quality-gates">Quality Gates<a class="headerlink" href="#quality-gates" title="Permanent link">&para;</a></h2>
+<p>Both gates must pass before every merge:</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Format check</td>
+<td><code>python tools/dev/parallel_cargo.py fmt check</code></td>
+</tr>
+<tr>
+<td>No clippy warnings</td>
+<td><code>python tools/dev/parallel_cargo.py clippy --deny-warnings</code></td>
+</tr>
+<tr>
+<td>Rust tests pass</td>
+<td><code>python tools/dev/parallel_cargo.py test rust</code></td>
+</tr>
+<tr>
+<td>Lua tests pass</td>
+<td><code>python tools/dev/parallel_cargo.py test lua</code></td>
+</tr>
+<tr>
+<td>Lua stubs stay fresh</td>
+<td><code>python tools/validate/validate_generated_lua_stubs.py</code></td>
+</tr>
+<tr>
+<td>Lua API strict marker coverage gate</td>
+<td><code>python tools/audit/lua_api_test_coverage.py --strict --threshold 50</code></td>
+</tr>
+<tr>
+<td>Lua API describe coverage gate</td>
+<td><code>python tools/audit/lua_api_test_coverage.py --strict --describe-threshold &lt;N&gt;</code></td>
+</tr>
+<tr>
+<td>(CAG changes)</td>
+<td><code>python tools/validate/cag_validate.py</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="test-coverage-tooling">Test Coverage Tooling<a class="headerlink" href="#test-coverage-tooling" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tools/audit/test_coverage.py</code></td>
+<td>Reports undercovered <code>lurek.*</code> surface (TST-01)</td>
+</tr>
+<tr>
+<td><code>tools/audit/lua_api_test_coverage.py</code></td>
+<td>Marker-precise Lua API coverage, orphan markers, strict and describe gates</td>
+</tr>
+<tr>
+<td><code>tools/audit/test_analytics.py --json</code></td>
+<td>Aggregated test analytics (category/module scoring)</td>
+</tr>
+<tr>
+<td><code>tools/audit/test_analytics.py --html</code></td>
+<td>Generates HTML dashboard in <code>logs/reports/test_analytics.html</code></td>
+</tr>
+<tr>
+<td><code>tools/audit/inline_test_audit.py</code></td>
+<td>Lists <code>#[cfg(test)]</code> in src/ (TST-02)</td>
+</tr>
+<tr>
+<td><code>tools/audit/thin_wrapper_audit.py</code></td>
+<td>Flags business logic in <code>lua_api/</code> (TST-03)</td>
+</tr>
+<tr>
+<td><code>tools/audit/thin_modrs_audit.py</code></td>
+<td>Flags definitions in <code>mod.rs</code> (TST-04)</td>
+</tr>
+<tr>
+<td><code>tools/audit/lua_test_structure_audit.py</code></td>
+<td>BDD documentation standard</td>
+</tr>
+<tr>
+<td><code>tools/audit/lua_evidence_golden_contract_audit.py</code></td>
+<td>Evidence/golden separation</td>
+</tr>
+</tbody>
+</table>
+<p>Coverage report artefacts:
+- <code>logs/data/lua_api_test_coverage.json</code>
+- <code>logs/reports/lua_api_test_coverage.md</code>
+- <code>logs/data/test_analytics.json</code>
+- <code>logs/reports/test_analytics.html</code></p>
+<p>CI workflow:
+- <code>.github/workflows/test-analytics.yml</code> runs quality gates, strict coverage, analytics, and uploads artefacts on Windows and Linux.</p>
+<hr />
+<h2 id="evidence-based-testing">Evidence-Based Testing<a class="headerlink" href="#evidence-based-testing" title="Permanent link">&para;</a></h2>
+<p>Evidence tests produce <strong>artefacts</strong> (images, text files, audio) from actual engine output. They are in <code>tests/lua/evidence/</code> and write to <code>tests/lua/evidence/output/</code> (git-ignored). Golden tests then compare those artefacts against committed samples in <code>tests/lua/golden/samples/</code>.</p>
+<p><strong>Two-step pattern:</strong>
+1. Evidence test runs, calls <code>lurek.*</code>, saves output to <code>output/&lt;module&gt;/</code>.
+2. Golden test reads saved output and committed sample, asserts they match.</p>
+<p>Never mix steps — an <code>it()</code> block must do either production or comparison, never both.</p>
+<hr />
+<h2 id="demo-tests">Demo Tests<a class="headerlink" href="#demo-tests" title="Permanent link">&para;</a></h2>
+<h3 id="headless-demo-tests-testsluademos">Headless Demo Tests (<code>tests/lua/demos/</code>)<a class="headerlink" href="#headless-demo-tests-testsluademos" title="Permanent link">&para;</a></h3>
+<p>Every folder in <code>content/games/</code> must have exactly one <code>test_&lt;name&gt;.lua</code> in <code>tests/lua/demos/</code>. Each test:
+- Loads the demo's <code>main.lua</code> via <code>dofile()</code> or static analysis
+- Verifies the demo initialises without error
+- Runs at least one frame cycle headlessly
+- Does NOT require GPU, audio, or window</p>
+<h3 id="screenshot-smoke-tests-testsdemo_smoke_testsrs">Screenshot Smoke Tests (<code>tests/demo_smoke_tests.rs</code>)<a class="headerlink" href="#screenshot-smoke-tests-testsdemo_smoke_testsrs" title="Permanent link">&para;</a></h3>
+<p>All functions in this file are <code>#[ignore]</code>. They spawn the real <code>lurek2d</code> binary with <code>--screenshot=&lt;path&gt; --screenshot-frames=180</code> and assert the output PNG is valid (exists, &gt; 2 KiB, PNG magic bytes <code>\x89PNG</code>). Require a pre-built binary and real display.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c"># Run one demo screenshot test</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">cargo</span> <span class="n">test</span> <span class="p">-</span><span class="n">-test</span> <span class="n">demo_smoke_tests</span> <span class="n">demo_smoke_globe_demo</span> <span class="p">--</span> <span class="p">-</span><span class="n">-include-ignored</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Lua demo test</th>
+<th>Screenshot test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runs headless?</td>
+<td>Yes</td>
+<td>No — needs GPU</td>
+</tr>
+<tr>
+<td>Runs in CI by default?</td>
+<td>Yes</td>
+<td>No (<code>#[ignore]</code>)</td>
+</tr>
+<tr>
+<td>Catches wrong callback names?</td>
+<td>Yes (static analysis)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Catches crash at frame 180?</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Verifies rendered output?</td>
+<td>No</td>
+<td>Yes (PNG magic + size)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Lurek2D/lurek_2d" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

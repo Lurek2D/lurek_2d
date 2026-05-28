@@ -11,6 +11,7 @@ use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, M
 use crate::network::host::{HostRole, NetworkEvent, NetworkHost, PeerStats};
 use crate::network::message::NetValue;
 use crate::network::net_thread::NetworkRuntime;
+use crate::network::{SseEvent, SseStream};
 use mlua::prelude::*;
 use rusty_enet::PeerID;
 use std::cell::RefCell;
@@ -826,6 +827,66 @@ impl LuaUserData for LuaNetworkRuntime {
         });
     }
 }
+/// Converts an `SseEvent` into a Lua table with optional `id`, `event`, and required `data` fields.
+fn sse_event_to_table<'lua>(lua: &'lua Lua, ev: &SseEvent) -> LuaResult<LuaTable<'lua>> {
+    let t = lua.create_table()?;
+    if let Some(ref id) = ev.id {
+        /// The 'id' field value exposed to Lua scripts.
+        t.set("id", id.as_str())?;
+    }
+    if let Some(ref event_type) = ev.event {
+        /// The 'event' field value exposed to Lua scripts.
+        t.set("event", event_type.as_str())?;
+    }
+    /// The 'data' field value exposed to Lua scripts.
+    t.set("data", ev.data.as_str())?;
+    Ok(t)
+}
+/// Lua userdata wrapping an `SseStream` with an optional stored callback.
+struct LuaSseStream {
+    inner: SseStream,
+    callback: Option<LuaRegistryKey>,
+}
+impl LuaUserData for LuaSseStream {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- next --
+        /// Polls for the next available event from the SSE stream (non-blocking).
+        /// Fires the stored callback with the event table when one is available, then returns it.
+        /// @return | table? | Event table `{ id?, event?, data }`, or nil when no event is ready.
+        methods.add_method("next", |lua, this, ()| match this.inner.next() {
+            None => Ok(LuaValue::Nil),
+            Some(ref ev) => {
+                let t = sse_event_to_table(lua, ev)?;
+                if let Some(ref key) = this.callback {
+                    let cb: LuaFunction = lua.registry_value(key)?;
+                    cb.call::<_, ()>(t.clone())?;
+                }
+                Ok(LuaValue::Table(t))
+            }
+        });
+        // -- close --
+        /// Signals the background reader thread to stop and closes the stream.
+        methods.add_method("close", |_, this, ()| {
+            this.inner.close();
+            Ok(())
+        });
+        // -- isOpen --
+        /// Returns true if the background reader thread is still connected and reading.
+        /// @return | boolean | True while the stream is open.
+        methods.add_method("isOpen", |_, this, ()| Ok(this.inner.is_open()));
+        // -- type --
+        /// Returns the Lua-visible type name for this SSE stream handle.
+        /// @return | string | The string `LSseStream`.
+        methods.add_method("type", |_, _, ()| Ok("LSseStream"));
+        // -- typeOf --
+        /// Returns whether this SSE stream handle matches a supported type name.
+        /// @param | name | string | Type name to compare against `LSseStream` and `Object`.
+        /// @return | boolean | True when the supplied type name matches this handle.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LSseStream" || name == "LObject")
+        });
+    }
+}
 /// Registers the `lurek.network` module.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
@@ -1277,6 +1338,41 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             /// The 'vy' field value exposed to Lua scripts.
             t.set("vy", out.vy)?;
             Ok(t)
+        })?,
+    )?;
+    // -- sseConnect --
+    /// Opens an SSE stream to `url` and returns an `LSseStream` handle.
+    /// The supplied `callback` is invoked each time `:next()` is called and an event is available.
+    /// Connection runs in a background thread; call `:next()` each frame to process events.
+    /// @param | url | string | SSE endpoint URL.
+    /// @param | callback | function | Called with each event table `{ id?, event?, data }`.
+    /// @return | LSseStream | Stream handle for polling or closing.
+    tbl.set(
+        "sseConnect",
+        lua.create_function(|lua, (url, callback): (String, LuaFunction)| {
+            let stream = SseStream::connect(&url).map_err(LuaError::external)?;
+            let key = lua.create_registry_value(callback)?;
+            Ok(LuaSseStream {
+                inner: stream,
+                callback: Some(key),
+            })
+        })?,
+    )?;
+    // -- sseCollect --
+    /// Blocking helper: collects up to `n` events from a fresh SSE connection or until `timeout_secs` elapses.
+    /// @param | url | string | SSE endpoint URL.
+    /// @param | n | integer | Maximum number of events to collect.
+    /// @param | timeout_secs | number? | Optional timeout in seconds; defaults to 5.
+    /// @return | table | Array of event tables `{ id?, event?, data }`.
+    tbl.set(
+        "sseCollect",
+        lua.create_function(|lua, (url, n, timeout_secs): (String, usize, Option<f64>)| {
+            let events = SseStream::collect(&url, n, timeout_secs.unwrap_or(5.0));
+            let arr = lua.create_table()?;
+            for (i, ev) in events.iter().enumerate() {
+                arr.set(i + 1, sse_event_to_table(lua, ev)?)?;
+            }
+            Ok(arr)
         })?,
     )?;
     /// Performs the 'network' operation.

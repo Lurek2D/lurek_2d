@@ -1253,4 +1253,155 @@ describe("unit: migrated from integration/test_input_camera.lua", function()
 
 end)
 
+-- @describe lurek.input extended action binding (NM-04)
+describe("lurek.input extended action binding (NM-04)", function()
+
+    -- @covers lurek.input.define
+    it("define stores bindings and category", function()
+        lurek.input.define("nm04_def", {"d", "right"}, "movement")
+        local bindings = lurek.input.getBindings()
+        expect_not_nil(bindings.nm04_def)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.define
+    it("define replaces prior definition", function()
+        lurek.input.bind("nm04_repl", "a")
+        lurek.input.define("nm04_repl", {"b"})
+        local bindings = lurek.input.getBindings()
+        expect_not_nil(bindings.nm04_repl)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.getAxis
+    it("getAxis returns a number for unknown action", function()
+        local v = lurek.input.getAxis("nm04_nosuch")
+        expect_type("number", v, "getAxis is number")
+    end)
+
+    -- @covers lurek.input.getAxis
+    it("getAxis returns 0 when action has no bindings held", function()
+        lurek.input.define("nm04_axis", {"right", "left"}, "")
+        local v = lurek.input.getAxis("nm04_axis")
+        expect_type("number", v, "getAxis is number")
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.getVector
+    it("getVector returns two numbers", function()
+        lurek.input.define("nm04_h", {"d", "a"}, "")
+        lurek.input.define("nm04_v", {"s", "w"}, "")
+        local h, v = lurek.input.getVector("nm04_h", "nm04_v")
+        expect_type("number", h, "getVector h is number")
+        expect_type("number", v, "getVector v is number")
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.reset
+    it("reset(name) removes one action", function()
+        lurek.input.bind("nm04_one", "o")
+        lurek.input.bind("nm04_two", "p")
+        lurek.input.reset("nm04_one")
+        local bindings = lurek.input.getBindings()
+        expect_nil(bindings.nm04_one)
+        expect_not_nil(bindings.nm04_two)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.reset
+    it("reset() with no arg clears all actions", function()
+        lurek.input.bind("nm04_all1", "1")
+        lurek.input.bind("nm04_all2", "2")
+        lurek.input.reset()
+        local bindings = lurek.input.getBindings()
+        expect_nil(bindings.nm04_all1)
+        expect_nil(bindings.nm04_all2)
+    end)
+
+    -- @covers lurek.input.getConflicts
+    it("getConflicts returns table", function()
+        lurek.input.bind("nm04_ca", "x")
+        lurek.input.bind("nm04_cb", "x")
+        local c = lurek.input.getConflicts()
+        expect_type("table", c, "getConflicts is table")
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.getConflicts
+    it("getConflicts reports shared binding", function()
+        lurek.input.bind("nm04_cx", "shared_key")
+        lurek.input.bind("nm04_cy", "shared_key")
+        local c = lurek.input.getConflicts()
+        expect_not_nil(c["shared_key"])
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.serializeBindings
+    it("serializeBindings returns JSON string", function()
+        lurek.input.bind("nm04_ser", "s")
+        local json = lurek.input.serializeBindings()
+        expect_type("string", json, "serializeBindings is string")
+        expect_true(#json > 0)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.serializeBindings
+    -- @covers lurek.input.deserializeBindings
+    it("deserializeBindings round-trips bindings", function()
+        lurek.input.define("nm04_rt", {"q", "e"}, "test_cat")
+        local json = lurek.input.serializeBindings()
+        lurek.input.reset()
+        local ok = lurek.input.deserializeBindings(json)
+        expect_true(ok)
+        local bindings = lurek.input.getBindings()
+        expect_not_nil(bindings.nm04_rt)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.getByCategory
+    it("getByCategory returns actions in category", function()
+        lurek.input.define("nm04_run", "lshift", "mv")
+        lurek.input.define("nm04_walk", "lctrl", "mv")
+        lurek.input.define("nm04_fire", "space", "combat")
+        local mv = lurek.input.getByCategory("mv")
+        expect_type("table", mv, "getByCategory is table")
+        expect_true(#mv == 2)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.getByCategory
+    it("getByCategory returns empty table for unknown category", function()
+        local r = lurek.input.getByCategory("no_such_cat")
+        expect_type("table", r, "result is table")
+        expect_true(#r == 0)
+    end)
+
+    -- @covers lurek.input.onRebind
+    it("onRebind callback is invoked on bind", function()
+        local fired = false
+        lurek.input.onRebind(function(action, keys)
+            if action == "nm04_rbtest" then fired = true end
+        end)
+        lurek.input.bind("nm04_rbtest", "z")
+        expect_true(fired)
+        lurek.input.reset()
+    end)
+
+    -- @covers lurek.input.onRebind
+    it("onRebind callback receives action name and keys table", function()
+        local got_action = nil
+        local got_keys = nil
+        lurek.input.onRebind(function(action, keys)
+            got_action = action
+            got_keys = keys
+        end)
+        lurek.input.bind("nm04_rbdata", "y")
+        expect_not_nil(got_action)
+        expect_not_nil(got_keys)
+        expect_type("table", got_keys, "keys is table")
+        lurek.input.reset()
+    end)
+
+end)
+
 test_summary()

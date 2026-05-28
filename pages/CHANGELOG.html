@@ -1,0 +1,3521 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Single-binary 2D Rust runtime for Lua game scripts">
+      
+      
+      
+        <link rel="canonical" href="https://lurek2d.github.io/lurek_2d/CHANGELOG.html">
+      
+      
+        <link rel="prev" href="modules/window.html">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Changelog - Lurek2D</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/lurek.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Lurek2D" class="md-header__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Lurek2D
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="index.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="architecture/philosophy.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="modules/agent.html" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Lua
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="CHANGELOG.html" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Lurek2D" class="md-nav__button md-logo" aria-label="Lurek2D" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    Lurek2D
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Lurek2D/lurek_2d" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Lurek2D/lurek_2d
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/philosophy.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Philosophy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="handbook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/engine-architecture.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/test-framework.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/cag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/rag-system.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="extension_plan.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VS Code Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/lua-api-file-standard.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua API Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="codding_standards.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="use_cases.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="positioning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Competition
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build_info.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lua
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Lua
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/agent.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ai.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/animation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Animation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/app.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/audio.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/automation.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/binary.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/camera.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/charts.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Charts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/color.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Color
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/compute.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/cursor.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dataframe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dataframe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/debugbridge.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Debug Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/devtools.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dev Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dialog.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/docs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/dsp.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DSP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ecs.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ECS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/effect.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Effect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/event.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/filesystem.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Filesystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/flownet.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Flownet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/font.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Font
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/globe.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Globe
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/grep.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grep
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/html.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/i18n.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    I18n
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/image.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/input.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Input
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/layout.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/learning.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/light.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Light
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/log.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mapblock.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapblock
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/math.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Math
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/midi.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Midi
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/minimap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Minimap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/mods.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/network.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/overlay.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/parallax.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parallax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/particle.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Particle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pathfind.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pathfind
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/patterns.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/physics.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/pipeline.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/procgen.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Procgen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/province.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Province
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/raycaster.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raycaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/render.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Render
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/repl.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/runtime.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/save.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Save
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/scene.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scene
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/serialize.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serialize
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/spine.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/sprite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/terminal.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/thread.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tilemap.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tilemap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/timer.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Timer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/tween.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/ui.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/validator.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/visibility.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/window.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Window
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="CHANGELOG.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unreleased
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unreleased
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<ul>
+<li>feat(input): NM-04 — add <code>lurek.input.define(name, bindings, category?)</code>, <code>lurek.input.getAxis(name)</code>, <code>lurek.input.getVector(hname, vname)</code>, <code>lurek.input.reset(name?)</code>, <code>lurek.input.getConflicts()</code>, <code>lurek.input.serializeBindings()</code>, <code>lurek.input.deserializeBindings(json)</code>, <code>lurek.input.getByCategory(cat)</code>, <code>lurek.input.onRebind(callback)</code> — extended action binding system; <code>ActionDef</code> business type in <code>src/input/action_def.rs</code>; existing <code>action_map</code> migrated from <code>HashMap&lt;String, Vec&lt;String&gt;&gt;</code> to <code>HashMap&lt;String, ActionDef&gt;</code>; JSON round-trip backed by <code>serde_json</code>.
+, <code>lurek.agent.complete()</code>, <code>lurek.agent.completeAsync()</code>, <code>lurek.agent.newChat()</code>, <code>lurek.agent.newTemplate()</code>, <code>lurek.agent.completeJson()</code>, <code>lurek.agent.embed()</code>, <code>lurek.agent.isAvailable()</code>, <code>lurek.agent.listModels()</code> — direct LLM API backed by <code>src/agent/chat.rs</code>; <code>GlobalLlmConfig</code> is a process-wide default set via <code>configure()</code>; <code>LAgentChat</code> is a stateful session with history; <code>LAgentTemplate</code> renders <code>{key}</code> placeholders.</li>
+<li>
+<p>feat(agent): add <code>lurek.agent.newWorkingMemory()</code>, <code>lurek.agent.newEpisodicMemory()</code>, <code>lurek.agent.newSemanticMemory()</code>, <code>lurek.agent.newAgentMemory()</code> — memory primitives for LLM agents backed by <code>src/agent/memory.rs</code>; <code>LWorkingMemory</code> is a bounded FIFO key-value store; <code>LEpisodicMemory</code> records tick-stamped events; <code>LSemanticMemory</code> is an unbounded fact store; <code>LAgentMemory</code> bundles all three with optional JSON persistence.</p>
+</li>
+<li>
+<p>feat(procgen): move <code>LCellular</code>/<code>newCellular</code>/<code>CELL_*</code> binding from <code>lurek.physics</code> to <code>lurek.procgen</code>; <code>CellularWorld</code> canonical home is now <code>src/procgen/cellular_world.rs</code>; <code>src/physics/cellular.rs</code> removed.</p>
+</li>
+<li>fix(procgen): correct module tier in <code>docs/specs/procgen.md</code> and <code>docs/specs/README.md</code> from <code>Foundations</code> to <code>Feature Systems</code>.</li>
+<li>docs(serialize): document <code>lurek.serialize</code> as a supported alias for <code>lurek.serial</code> in <code>docs/specs/serialize.md</code>.</li>
+<li>feat(render): add <code>lurek.render.newDepthSorter()</code> — canonical constructor for <code>LDepthSorter</code>; <code>lurek.scene.newDepthSorter</code> kept as deprecated alias.</li>
+<li>feat(network): add <code>LNetworkRuntime:httpJson(url, body, headers?)</code> — POST with automatic <code>Content-Type: application/json</code> / <code>Accept: application/json</code> headers.</li>
+<li>feat(network): add <code>LNetworkRuntime:httpStream(url, headers?, timeout_secs?)</code> — GET with <code>Accept: text/event-stream</code> for SSE/streaming responses.</li>
+<li>feat(learning): add <code>predict()</code> alias method on <code>LQLearner</code> (→ <code>chooseAction</code>), <code>LNeuralNet</code> (→ <code>forward</code>), and <code>LBandit</code> (→ <code>select</code>).</li>
+<li>
+<p>feat(learning): add <code>lurek.learning.wrap(model)</code> → <code>LModel</code> uniform wrapper exposing a single <code>predict(input)</code> method for any supported model type.</p>
+</li>
+<li>
+<p>docs(pipeline): redirect Lua API HTML output from <code>build/doc/lua-api</code> to <code>pages/lua-docs</code>; add <code>gen_rust_html_docs.py</code> publishing Rust HTML docs to <code>pages/rust-docs/</code>; <code>gen_all_docs.py</code> step 18 calls it with <code>--skip-cargo</code>; add <code>--skip-module-pages</code> flag to <code>gen_wiki.py</code>; <code>gen_all_docs.py</code> now always passes <code>--skip-module-pages</code> to wiki — 69 <code>Module-*.md</code> files removed from <code>docs/wiki/</code>; add <code>pages/index.html</code> landing page for GitHub Pages.</p>
+</li>
+<li>feat(agent): add <code>LAgent:setModel()</code>, <code>LAgent:setUrl()</code>, <code>LAgent:setTimeout()</code>, <code>LAgent:getName()</code>, <code>LAgent:getDescription()</code>, <code>LAgent:getModel()</code>, <code>LAgent:getUrl()</code>, <code>LAgent:getFormat()</code>, <code>LAgent:hasSkill()</code>, <code>LAgent:skillCount()</code>, <code>LAgent:listSkills()</code> — full getter/setter coverage for per-agent configuration and skill introspection.</li>
+<li>feat(agent): add <code>LAISystem:hasAgent()</code>, <code>LAISystem:agentCount()</code>, <code>LAISystem:hasInstruction()</code>, <code>LAISystem:instructionCount()</code>, <code>LAISystem:listInstructions()</code>, <code>LAISystem:hasSkill()</code>, <code>LAISystem:skillCount()</code> — introspection helpers for multi-agent orchestration state.</li>
+<li>feat(agent): add <code>LOllamaManager:baseUrl()</code>, <code>LOllamaManager:modelNames()</code> — inspect the configured base URL and list available model names without building the full model-info table.</li>
+<li>feat(agent): add <code>AgentError::message()</code>, <code>AgentResponse::is_ok()</code>, <code>AgentResponse::text()</code> — public convenience accessors for error and response types.</li>
+<li>feat(agent): add <code>AgentState::set_model()</code>, <code>AgentState::set_url()</code>, <code>AgentState::set_format()</code>, <code>AgentState::has_skill()</code>, <code>AgentState::skill_count()</code>, <code>AgentState::list_skills()</code> — mutation and inspection helpers.</li>
+<li>feat(agent): add <code>AISystemState::has_instruction()</code>, <code>AISystemState::instruction_count()</code>, <code>AISystemState::list_instructions()</code>, <code>AISystemState::has_system_skill()</code>, <code>AISystemState::system_skill_count()</code> — inspection helpers.</li>
+<li>feat(agent): add <code>OllamaManager::base_url()</code>, <code>OllamaManager::model_names()</code> — expose configured URL and model name list without a network call.</li>
+<li>fix(agent): mark <code>lurek.agent.newOllama</code> config param as optional (<code>table?</code>) so <code>newOllama()</code> with no args is valid.</li>
+<li>test(agent): add ~30 unit tests for all new helper methods across <code>LAgent</code>, <code>LAISystem</code>, and <code>LOllamaManager</code>.</li>
+<li>docs(agent): add all new methods to <code>content/examples/agent.lua</code>; agent example coverage 63/63 = 100%.</li>
+<li>docs(agent): update <code>docs/specs/agent.md</code> — add <code>LOllamaManager</code> Lua API section; extend Functions section with all new Rust helpers; sync Lua API reference with new getters/setters/introspection methods.</li>
+<li>feat(tools): add <code>tools/audit/module_docstring_audit.py</code> — LOC-proportional <code>//!</code> docstring coverage audit for all <code>src/**/*.rs</code> files; tiers: 1-30-&gt;1, 31-80-&gt;3, 81-200-&gt;4, 201-400-&gt;5, 401-800-&gt;6, 801-2000-&gt;8, 2001+-&gt;10 minimum lines; outputs <code>logs/data/module_docstring_audit.json</code>; <code>--check</code> flag for CI gate.</li>
+<li>feat(tools): add <code>tools/fix/module_docstring_fix.py</code> — auto-expand under-sized <code>//!</code> blocks using LOC-tier rules; for <code>lua_api/</code> files generates per-<code>LuaUserData</code>-type bullets; <code>--force</code> re-patches already-compliant files (repairs bad content); <code>--dry-run</code> and <code>--top N</code> flags.</li>
+<li>docs(src): expand and repair <code>//!</code> docstrings in all 697 <code>src/**/*.rs</code> files to meet LOC-tier minimums; <code>lua_api/</code> files now list each exposed Lua userdata type individually.</li>
+<li>feat(agent): add <code>lurek.agent.newOllama()</code> / <code>LOllamaManager</code> — full Ollama server lifecycle management from Lua: <code>isRunning()</code>, <code>version()</code>, <code>listModels()</code>, <code>hasModel(name)</code>, <code>start()</code>, <code>stop()</code>, <code>restart()</code>, <code>pullModel(name, callback)</code>, <code>deleteModel(name)</code>, <code>pendingCount()</code>, <code>update()</code>; backed by <code>src/agent/ollama.rs</code>.</li>
+<li>refactor(agent): remove duplicate <code>lua_value_to_json</code> from <code>agent_api.rs</code>; make <code>lua_to_json</code> in <code>lua_runtime.rs</code> <code>pub(crate)</code>, re-export via <code>mod.rs</code>, and reuse in all bindings (full table/array support vs. primitives-only).</li>
+<li>docs(agent): fix all Rust docstring anti-patterns in <code>types.rs</code>, <code>client.rs</code>, <code>state.rs</code>, <code>lua_runtime.rs</code> — remove <code># Fields</code> bullet lists duplicating per-field <code>///</code> comments, condense multi-line one-thought docs to one-liners, move <code>AgentError</code> doc before <code>#[derive]</code>, add <code>///</code> docs to all previously undocumented struct fields and private helpers.</li>
+<li>test(agent): expand <code>test_agent_core_unit.lua</code> from 4 tests to 43 — one dedicated test per public API method covering <code>LAgent</code>, <code>LAgentManager</code>, <code>LAISystem</code>, and <code>LOllamaManager</code>.</li>
+<li>docs(agent): update <code>content/examples/agent.lua</code> with 12 new <code>LOllamaManager</code> stubs; <code>agent</code> example coverage 43/43 = 100%.</li>
+<li>feat(agent): add <code>LAISystem</code> multi-agent orchestrator (<code>lurek.agent.newSystem</code>) with shared system prompt, named instruction blocks (manual include), keyword-gated system skills (auto-inject), per-agent description injection, <code>buildContext</code> preview, and system-routed <code>prompt</code>/<code>runAll</code>; add <code>AISystemState</code>/<code>SystemSkill</code> types in <code>state.rs</code>; add <code>LuaAISystemRuntime</code> in <code>lua_runtime.rs</code>; expose via <code>src/lua_api/agent_api.rs</code>.</li>
+<li>feat(agent): add <code>LAgent:cancel(id)</code>, <code>LAgent:pendingCount()</code>, <code>LAgent:clearSkills()</code>, <code>LAgent:setOption()</code>, <code>LAgent:setFormat()</code>, <code>LAgent:setMaxRetries()</code>, <code>LAgent:setContextSize()</code>, <code>LAgent:setTemperature()</code>, <code>LAgent:setName()</code>, <code>LAgent:setDescription()</code> methods; add <code>AgentClient::cancel()</code> and <code>AgentClient::in_flight_count()</code>.</li>
+<li>feat(agent): add automatic transient-error retry with exponential back-off (<code>max_retries</code> on <code>AgentState</code> and <code>AgentRequest</code>); add <code>AgentError::is_transient()</code>; add per-request <code>timeout_secs</code> forwarded to the HTTP client.</li>
+<li>feat(agent): add <code>AgentState::to_request_with_system()</code> for externally assembled system blocks; expose <code>name</code>/<code>description</code>/<code>max_retries</code>/<code>timeout_secs</code> fields and <code>set_*</code> helpers; add <code>AgentState::clear_skills()</code>.</li>
+<li>docs(agent): full example coverage in <code>content/examples/agent.lua</code>; 28 stubs covering all <code>LAgent</code>, <code>LAgentManager</code>, and <code>LAISystem</code> methods; regenerated <code>docs/api/lurek.lua</code>.</li>
+<li>docs(agent): update <code>docs/specs/agent.md</code> — Types, Functions, Lua API Reference, Notes sections.</li>
+<li>refactor(agent): move <code>lurek.agent</code> request, batching, and response runtime logic into <code>src/agent/</code>; keep <code>src/lua_api/agent_api.rs</code> as a thin wrapper and sync the agent spec/index docs.</li>
+<li>feat(math): add 10 RPG dice/roll methods to LRandomGenerator (roll, rollN, rollSum, rollKeepHighest, rollKeepLowest, rollAdvantage, rollDisadvantage, rollExploding, countSuccesses, chance)</li>
+<li>refactor(procgen): remove <code>NoiseGrid</code> render/image projection helpers so <code>procgen</code> stays a Foundations-only procedural data module.</li>
+<li>docs(event): deprecate <code>lurek.event.quit</code> as a backward-compatible alias for <code>lurek.event.exit(0)</code>.</li>
+<li>docs(ai,patterns): document the boundary between structural <code>lurek.patterns.newBehaviorTree</code> trees and runtime <code>lurek.ai.newBehaviorTree</code> execution.</li>
+<li>docs(validator,serialize): document the boundary between in-memory <code>lurek.serial.validate</code> schema checks and static <code>lurek.validator</code> file/project validation.</li>
+<li>docs(event,patterns): document the boundary between low-level <code>lurek.event</code> signals and multi-channel <code>lurek.patterns</code> event buses.</li>
+<li>docs(input): correct the input spec primary Lua namespace to <code>lurek.input</code> and document keyboard, mouse, gamepad, and touch subnamespaces.</li>
+<li>refactor(binary): breaking Lua API change: binary APIs now live only under <code>lurek.binary</code>; replace old binary calls on the former data namespace with matching <code>lurek.binary.*</code> calls. The old data alias is no longer registered, and <code>lurek.dataframe</code> is unchanged.</li>
+<li>docs(architecture): move binary entry-point documentation out of module specs and into <code>docs/architecture/binary-entry.md</code>.</li>
+<li>docs(extension): move the VS Code extension reference out of module specs and link it from the extension README.</li>
+<li>docs(specs): merge the duplicate <code>lua_api</code> runtime spec into <code>runtime.md</code> and remove the duplicate spec index entry.</li>
+<li>chore(cag): remove <code>## Inputs</code> section from all 12 agent files; drop <code>Inputs</code> from <code>AGENT_REQUIRED_SECTIONS</code> in <code>tools/validate/_cag_common.py</code>; redistribute saved tokens to Workflow, Success Metrics, and Anti-patterns.</li>
+<li>chore(cag): create <code>.github/agents/README.md</code> routing guide (ownership table, routing rules, boundary map); fixes W005 broken-reference warning in <code>copilot-instructions.md</code>.</li>
+<li>chore(cag): Lua-Designer � adds <code>content/examples/</code> ownership, explicit docstring + generator pipeline scope, example coverage workflow steps, and 4 new anti-patterns (hand-edit lurek.lua, @diagnostic disable, stale examples, @cast workarounds); adds <code>examples-management</code> as primary skill.</li>
+<li>chore(cag): Build-Engineer � expands scope to all <code>tools/</code> scripts (maintenance owner) and <code>.vscode/</code> workspace configuration; adds tool-maintenance and .vscode/-hygiene workflow steps; adds 3 new anti-patterns.</li>
+<li>chore(cag): Extension-Engineer � reframes as thin orchestrator of <code>tools/</code> scripts; removes <code>workspace settings</code> from scope (owned by Build-Engineer); adds 3 new anti-patterns (embed engine logic in TS, hand-parse src/, modify .vscode/).</li>
+<li>chore(cag): Content-Maker � removes <code>content/examples/</code> from scope (moved to Lua-Designer); updates description, scope, outputs, workflow, and anti-patterns accordingly.</li>
+<li>chore(cag): Architect � adds prior-attempt check to Solver mode workflow; adds anti-pattern for skipping Planner decomposition.</li>
+<li>chore(cag): Developer � adds anti-pattern for editing src/lua_api/ docstrings for API design purposes (route to Lua-Designer).</li>
+<li>chore(cag): Doc-Writer � clarifies tools/docs/ usage vs maintenance boundary (maintenance � Build-Engineer).</li>
+<li>
+<p>chore(cag): Tester � adds anti-pattern for bypassing Manager when returning security findings.</p>
+</li>
+<li>
+<p>fix(cag): restore the required <code>Inputs</code> section in four agent files so <code>python tools/validate/cag_validate.py --baseline</code> passes again.</p>
+</li>
+<li>fix(tools): restrict <code>tools/docs/gen_rust_api_data.py</code> and <code>tools/docs/gen_lua_api_data.py</code> to externally public Rust items only; <code>pub(crate)</code> and other restricted-visibility items no longer pollute generated API data or downstream Rust�Lua coverage audits.</li>
+<li>fix(tools): remove manual internal-module/internal-function allowlists from <code>tools/audit/gen_coverage_gaps.py</code>; derive Rust�Lua exposure from <code>src/lua_api/*.rs</code> registrations, <code>LuaUserData::add_methods</code>, macro path tokens, and same-module public helper call chains instead.</li>
+<li>fix(tools): teach <code>tools/audit/gen_coverage_gaps.py</code> about renamed DSP Lua wrappers so <code>normalize_file</code> and shared-chain helpers no longer appear as false Rust�Lua gaps.</li>
+<li>fix(api): eliminate remaining Rust�Lua coverage gaps by lowering internal helper visibility in globe/minimap/particle/pathfind/raycaster and adding thin Lua wrappers for <code>globe.loadFromTOMLFile</code>, <code>globe.raySphereIntersect</code>, <code>pathfind.findHpaPath</code>, <code>raycaster.applyLitShade</code>, <code>raycaster.extractMinimap</code>, and particle visualization helpers.</li>
+<li>fix(examples): remove duplicate example coverage stub ownership for mapblock script methods and chart series methods so <code>tools/audit/example_coverage.py</code> no longer reports cross-module stub collisions.</li>
+<li>feat(docs): expand <code>tools/docs/gen_docs_lua_html.py</code> into a folder-based Lua API browser under <code>build/doc/lua-api/</code> with callback and type index pages, module/type-filtered search, and example code blocks sourced from <code>content/examples/</code>.</li>
+<li>chore(cag): token-economy sweep � compress Scope/Inputs/Outputs to telegraphic phrases across all 12 agent files; remove anti-pattern entries duplicated from system prompt (doc-writer, lua-designer, content-maker); add Fast-Track routing and Handoff Packet template to manager; add loop-halt gate (3-iteration max) to manager anti-patterns; add cached-report check to verifier and tester workflows.</li>
+<li>perf(render): compute point-light 1-D shadow atlas rows on the GPU instead of raycasting every sample on the CPU.</li>
+<li>perf(render): reuse PostFx ping-pong textures and internal bind groups across frames when dimensions and format are unchanged.</li>
+<li>feat(render): add <code>lurek.render.drawBatch</code> as an explicit SpriteBatch alias for <code>lurek.render.draw(batch)</code>.</li>
+<li>refactor(audio,dsp): extract logic-heavy Lua registration closures into private helpers and return boolean success values for DSP offline file operations.</li>
+<li>fix(config): gate <code>lurek.dsp</code> registration with <code>modules.dsp</code> and keep <code>dsp</code> disabled when <code>audio</code> is disabled.</li>
+<li>test(dsp): move Rust-only DSP internals into <code>tests/rust/unit/dsp_tests.rs</code> and register the <code>dsp_tests</code> Cargo target.</li>
+<li>docs(audio,dsp): sync audio/DSP specs and add audit entry pages for <code>Audio-API</code> and <code>Dsp-API</code>.</li>
+<li>fix(examples): keep <code>thread.lua</code> promise chaining bounded and use supported offline DSP effect types in <code>audio.lua</code>.</li>
+<li>test(examples): allow <code>examples_load_test</code> to run a focused file subset with <code>LUREK_EXAMPLE_FILTER</code>.</li>
+<li>content(examples): delete orphan <code>handles.lua</code>, <code>system.lua</code>, and <code>ecs_complete.lua</code>; remove cross-module duplicate ownership blocks from <code>ai.lua</code>, <code>effect.lua</code>, <code>math.lua</code>, <code>tilemap.lua</code>, and <code>ui.lua</code> so examples stay aligned to their owning modules.</li>
+<li>fix(thread): replace <code>add_type_methods</code> on <code>LuaThreadHandle</code> with explicit <code>type</code>/<code>typeOf</code>/<code>__tostring</code> methods; correct <code>newThread</code> <code>@return</code> annotation from <code>LThreadHandle</code> to <code>LThread</code>; rename 4 <code>LThreadHandle:</code> stub markers in <code>content/examples/thread.lua</code> to <code>LThread:</code> and add <code>LThread:type</code>/<code>LThread:typeOf</code> stubs.</li>
+<li>fix(examples): add <code>lurek.scene.depth</code> and <code>lurek.scene.update</code> coverage stubs to <code>content/examples/scene.lua</code>.</li>
+<li>fix(settings): add <code>read_file</code> and <code>write_file</code> to <code>Lua.diagnostics.globals</code> in <code>.vscode/settings.json</code> to suppress false <code>undefined-global</code> warnings in test evidence files.</li>
+<li>fix(test): <code>tests/lua/unit/test_event_core_unit.lua</code> — access <code>dialog.newSequencer</code> via <code>rawget</code> guard to suppress <code>undefined-field</code> LuaLS warning for optional API.</li>
+<li>content(examples): remove same-file duplicate <code>--@api-stub:</code> markers from <code>math.lua</code>, <code>patterns.lua</code>, <code>pipeline.lua</code>, <code>scene.lua</code>, and <code>ui.lua</code>; fix <code>runtime.lua</code> header drift; rerun Lua API and example coverage refresh.</li>
+<li>refactor(audio): extract <code>src/dsp/</code> module from <code>src/audio/</code> — effects, offline processing, and visualizer now in dedicated module with <code>lurek.dsp</code> Lua API.</li>
+<li>refactor(audio): extract <code>src/midi/</code> module from <code>src/audio/</code> — MIDI player and SoundFont state now in dedicated module with <code>lurek.midi</code> Lua API.</li>
+<li>feat(dsp): add <code>src/lua_api/dsp_api.rs</code> providing <code>lurek.dsp</code> namespace (newEffectParams, processOffline, normalize, waveformToPng, spectrogramToPng).</li>
+<li>feat(midi): add <code>src/lua_api/midi_api.rs</code> providing <code>lurek.midi</code> namespace (newPlayer, loadSoundFont, hasSoundFont, clearSoundFont).</li>
+<li>docs(specs): add <code>docs/specs/dsp.md</code> and <code>docs/specs/midi.md</code>.</li>
+<li>test(dsp): add <code>tests/lua/unit/test_dsp_core_unit.lua</code>.</li>
+<li>test(midi): add <code>tests/lua/unit/test_midi_core_unit.lua</code>.</li>
+<li>feat(visibility): add <code>src/visibility/</code> module — universal fog-of-war system with per-player states, alliance groups, flags, costs, and events.</li>
+<li>docs(api): extend Lua API doc coverage from 91.3% to 100% — add 14 missing <code>///</code> doc comments in <code>globe_api.rs</code>, <code>grep_api.rs</code>, <code>layout_api.rs</code>, <code>math_api.rs</code>, <code>validator_api.rs</code>, <code>visibility_api.rs</code>.</li>
+<li>docs(rust): extend 148 short Rust <code>///</code> summaries to meet 25 visible-char minimum across <code>src/charts/</code>, <code>src/color/</code>, <code>src/cursor/</code>, <code>src/dialog/</code>, <code>src/font/</code>, <code>src/globe/</code>, <code>src/grep/</code>, <code>src/layout/</code>, <code>src/mapblock/</code>, <code>src/mods/</code>, <code>src/physics/</code>, <code>src/province/</code>, <code>src/raycaster/</code>, <code>src/render/</code>, <code>src/validator/</code>, <code>src/visibility/</code>.</li>
+<li>test(validator): add <code>LValidationEngine:run</code> and <code>LMapBlockConfig:removeSlot</code> Lua test cases; remove orphaned <code>@covers</code> markers in <code>tests/lua/unit/</code>.</li>
+<li>docs(specs): update <code>docs/specs/globe.md</code> — add <code>lurek.globe.MAX_REGIONS</code> and <code>lurek.globe.MAX_PROVINCES</code> module constants to Lua API Reference.</li>
+<li>feat(visibility): add <code>lurek.visibility</code> Lua API with VisibilityGrid userdata.</li>
+<li>docs(specs): add <code>docs/specs/visibility.md</code>.</li>
+<li>test(visibility): add <code>tests/lua/unit/test_visibility_core_unit.lua</code> (13 tests).</li>
+<li>refactor(effect): extract weather, atmosphere, screen effects, and transitions into <code>src/overlay/</code> module.</li>
+<li>feat(overlay): add <code>lurek.overlay</code> Lua API with Overlay controller and ScreenTransition userdata.</li>
+<li>docs(specs): add <code>docs/specs/overlay.md</code>.</li>
+<li>test(overlay): add <code>tests/lua/unit/test_overlay_core_unit.lua</code> (14 tests).</li>
+<li>refactor(ai): extract dialog/conversation system into <code>src/dialog/</code> module; <code>src/ai/dialogue.rs</code> deleted.</li>
+<li>feat(dialog): add <code>src/dialog/</code> module — dialog tree, conditions, state machine, speaker registry, events.</li>
+<li>feat(dialog): add <code>lurek.dialog</code> Lua API (newAI, newState, newSpeakerRegistry).</li>
+<li>docs(specs): add <code>docs/specs/dialog.md</code>.</li>
+<li>test(dialog): add <code>tests/lua/unit/test_dialog_core_unit.lua</code> (17 tests).</li>
+<li>feat(layout): add <code>src/layout/</code> module (Foundations tier) — Reingold-Tilford tree, Sugiyama DAG, Fruchterman-Reingold force-directed, grid snap.</li>
+<li>feat(layout): add <code>lurek.layout</code> Lua API (tree, dag, force, snapToGrid, centerInArea).</li>
+<li>docs(specs): add <code>docs/specs/layout.md</code>.</li>
+<li>test(layout): add <code>tests/lua/unit/test_layout_core_unit.lua</code> (8 tests).</li>
+<li>feat(province): add generic ProvinceProperties system (setProperty, getProperty, setAttr, getAttr, setFlag, hasFlag, clearProperties).</li>
+<li>refactor(province): remove hardcoded economy.rs from engine; economy logic moved to <code>library/province_economy/</code>.</li>
+<li>feat(library): add <code>library/province_economy/</code> — pure-Lua province economic simulation using generic properties.</li>
+<li>refactor(procgen): consolidate all noise generation into <code>src/procgen/noise.rs</code>; remove duplicate <code>src/math/noise_generator.rs</code> and <code>src/math/noise_functions.rs</code>.</li>
+<li>refactor(procgen): move <code>LuaNoiseGenerator</code> from <code>math_api.rs</code> to <code>procgen_api.rs</code>; Lua API now <code>lurek.procgen.newNoiseGenerator()</code>.</li>
+<li>refactor(math): remove noise from math module — noise is generation, not processing.</li>
+<li>refactor(easing): make <code>math/easing.rs</code> the single source of truth for easing curves; camera and scene modules now delegate.</li>
+<li>refactor(scene): delete <code>src/scene/easing.rs</code> (bounce_out now in math/easing.rs).</li>
+<li>refactor(tween): move <code>src/math/tween.rs</code> to <code>src/tween/interpolator.rs</code>; Tween/TweenValue now in tween module.</li>
+<li>refactor(ai): unify Blackboard — <code>patterns/blackboard.rs</code> is canonical (parent chain + revision tracking); <code>ai/blackboard.rs</code> re-exports.</li>
+<li>test(province): add <code>tests/lua/unit/test_province_properties_unit.lua</code> (10 tests).</li>
+<li>test(procgen): add <code>tests/lua/unit/test_procgen_noise_unit.lua</code> (12 tests).</li>
+<li>docs(quality): comprehensive quality sweep — expanded 422 short Lua API <code>///</code> docstrings to ≥30 visible characters (whitespace-stripped threshold); added struct-level <code>///</code> class descriptions for <code>LuaCursorManager</code>, <code>LuaCustomCursor</code>, <code>LuaAnimatedCursor</code>, <code>LuaGrepEngine</code>, <code>LuaFileFilter</code>, <code>LuaValidationEngine</code>.</li>
+<li>docs(quality): added 183→14 missing Rust <code>///</code> docstrings across cursor, ecs, flownet, globe, grep, mods, province, raycaster, validator, visibility modules (14 missing, below ≤20 threshold).</li>
+<li>docs(quality): created <code>logs/docs_overlay.json</code> (24 entries) providing function descriptions for cursor/font/grep/validator APIs that are unreachable by the doc scanner due to <code>{</code> block structure; extended <code>_apply_overlay</code> in <code>tools/docs/gen_lua_api_data.py</code> to also set <code>return_description</code> and <code>typed_params</code> from overlay.</li>
+<li>fix(tools): <code>tools/docs/gen_lib_docs.py</code> — library stub generator now always uses <code>library.{module}</code> prefix for function declarations (fixing <code>province_economy</code> stubs that were missing the prefix); normalises hyphens to underscores in module names (fixing <code>scene-objects</code>).</li>
+<li>fix(tools): <code>tools/validate/validate_generated_lua_stubs.py</code> — <code>_extract_library_expectations</code> now uses canonical <code>library.{normalised_name}</code> prefix matching <code>render_luacats</code> output.</li>
+<li>fix(tools): <code>tools/audit/example_coverage.py</code> — duplicate <code>--@api-stub:</code> markers (when a class is registered in two Rust API files) now produce a WARN instead of a hard exit-1.</li>
+<li>fix(tools): <code>tools/validate/validate_module_coverage.py</code> — added <code>SPEC_ALLOWLIST = {"vscode-extension"}</code> to skip false positive.</li>
+<li>fix(tools): <code>tools/docs/gen_lib_docs.py</code> — encoding fix (<code>errors="replace"</code>) for non-ASCII bytes in library files.</li>
+<li>test(lua): added 27 missing Lua API test files across ai, layout, camera, charts, color, cursor, font, glob, mapblock, overlay, parallax, procgen, spine, tilemap, timer modules.</li>
+<li>fix(api): <code>src/lua_api/effect_api.rs</code> — expanded 9 <code>LPostFxEffect</code> setter docstrings to ≥30 visible characters.</li>
+<li>fix(examples): added <code>--@api-stub:</code> coverage stubs to <code>content/examples/mapblock.lua</code> (14 stubs for LMapBlock/LMapGroup/LMapScript) and <code>content/examples/ui.lua</code> (3 stubs for LBarChart/LLineChart/LScatterPlot addSeries).</li>
+<li>test(learning): add <code>tests/lua/stress/test_learning_stress.lua</code> (5 stress tests).</li>
+<li>test(province): add <code>tests/lua/integration/test_province_integration.lua</code> (4 integration tests).</li>
+<li>feat(learning): extract <code>src/learning/</code> module from <code>src/ai/</code> — neural_net, neuroevolution, genetic, qlearner, bandit now live in dedicated module with <code>lurek.learning</code> Lua API.</li>
+<li>feat(learning): add <code>src/lua_api/learning_api.rs</code> providing <code>lurek.learning</code> namespace (newQLearner, newNeuralNet, newGeneticAlgorithm, newBandit, newNeuroevolution).</li>
+<li>refactor(ai): re-export learning types from <code>crate::ai</code> for backward compatibility; <code>lurek.ai.newNeuralNet</code> etc. continue to work.</li>
+<li>docs(specs): add <code>docs/specs/learning.md</code> module spec; update <code>docs/specs/ai.md</code> with cross-reference.</li>
+<li>
+<p>test(learning): add <code>tests/lua/unit/test_learning_core_unit.lua</code> with 10 constructor tests.</p>
+</li>
+<li>
+<p>feat(extension): add 4 new MCP tools — <code>getModuleInfo</code>, <code>inspectLuaFile</code>, <code>getTestCoverage</code>, <code>getProjectStructure</code> in <code>extension/vscode/src/mcp/tools.ts</code>.</p>
+</li>
+<li>feat(extension): add <code>checkMissingLoadCallback</code> diagnostic rule — warns when main.lua uses lurek.* without lurek.load().</li>
+<li>feat(extension): enhance <code>checkPerFrameAllocation</code> and <code>checkEntityNilAccess</code> diagnostic patterns.</li>
+<li>test(extension): add unit tests for diagnostics, completion, hover, apiData, and MCP tools (5 new test files, 60+ test cases).</li>
+<li>docs(specs): add <code>docs/specs/vscode-extension.md</code> — module spec for the VS Code extension (Edge/Integration tier).</li>
+<li>docs(wiki): add <code>docs/wiki/extension-features.md</code> — comprehensive feature reference for the extension.</li>
+<li>
+<p>docs(extension): add Lurek API Surface sections to 6 game-dev CAG agents.</p>
+</li>
+<li>
+<p>feat(library): add <code>library/input_action_map</code> — action mapping with multi-key binding, pressed/held/released queries, and axis helpers.</p>
+</li>
+<li>feat(library): add <code>library/audio_manager</code> — high-level audio manager with music crossfade, SFX pooling, volume groups, and mute/pause control.</li>
+<li>feat(library): add <code>library/camera_follow</code> — configurable camera follow with smoothing, deadzone, lookahead, bounds clamping, shake, and cutscene override.</li>
+<li>
+<p>feat(library): add <code>library/tween_chain</code> — chainable tween sequences with parallel groups, easing functions, looping, and progress tracking.</p>
+</li>
+<li>
+<p>refactor(graph): rename <code>src/graph/</code> to <code>src/flownet/</code>; Lua namespace <code>lurek.graph</code> → <code>lurek.flownet</code> (backward-compat alias preserved).</p>
+</li>
+<li>refactor(data): rename <code>src/data/</code> to <code>src/binary/</code>; Lua namespace <code>lurek.binary</code> → <code>lurek.binary</code> (backward-compat alias preserved).</li>
+<li>refactor(serial): rename <code>src/serial/</code> to <code>src/serialize/</code>; Lua namespace <code>lurek.serial</code> → <code>lurek.serialize</code> (backward-compat alias preserved).</li>
+<li>
+<p>refactor(math): move <code>sphere.rs</code> from <code>src/math/</code> to <code>src/globe/</code> (closer to its consumers).</p>
+</li>
+<li>
+<p>fix(test): <code>tests/lua/unit/test_dsp_core_unit.lua</code> — use <code>expect_near</code> for <code>p.p2 ≈ 0.7</code> (f32 round-trip gives <code>0.69999998807907</code>).</p>
+</li>
+<li>fix(test): <code>tests/lua/unit/test_ui_core_unit.lua</code> — allow ≤5 pixels in right-margin check for cartesian legend (line endpoint sub-pixel bleed); fix chart data types: series values must be numbers not strings.</li>
+<li>fix(test): <code>tests/lua/integration/test_tilemap_physics.lua</code> — align dynamic ball spawn at x=16 (directly over tile 1 centre) to avoid falling through 16 px gaps between adjacent default-sized static bodies.</li>
+<li>fix(ui): <code>src/ui/containers.rs</code> — layout container <code>align</code> default <code>"center"</code> → <code>"stretch"</code>, <code>justify</code> default <code>"center"</code> → <code>"start"</code> (CSS flexbox defaults).</li>
+<li>fix(api): <code>src/lua_api/thread_api.rs</code> — <code>newThread</code> <code>@return</code> type corrected from <code>LThread</code> to <code>LThreadHandle</code> (matches generated docs class name from struct <code>LuaThreadHandle</code>).</li>
+<li>docs(examples): <code>content/examples/dsp.lua</code> — add 11 missing <code>--@api-stub:</code> markers (<code>addEffectToBus</code>, <code>removeEffectFromBus</code>, <code>setEffectParam</code>, <code>analyzeFft</code>, <code>analyzePeak</code>, <code>analyzeRms</code>, <code>applyBandpass</code>, <code>applyGain</code>, <code>applyHighpass</code>, <code>applyLowpass</code>, <code>newSynthWave</code> added to audio.lua).</li>
+<li>docs(examples): <code>content/examples/thread.lua</code> — add 4 missing <code>--@api-stub:</code> markers (<code>LThreadHandle:start/wait/isRunning/getError</code>).</li>
+<li>docs(examples): <code>content/examples/learning.lua</code> — add <code>LQLearner:getEpisodeCount</code> stub.</li>
+<li>test(lua): all 248 Lua tests pass (0 failures); all 1534 Rust unit tests pass.</li>
+<li>quality: clippy clean (0 errors, 0 warnings); debug and release builds pass; example coverage 5178/5178 (100%); CAG validate 0 errors.</li>
+<li>refactor(math): move <code>rect_packing.rs</code> from <code>src/math/</code> to <code>src/image/</code> (texture atlas context).</li>
+<li>refactor(image): move <code>province_grid.rs</code> from <code>src/image/</code> to <code>src/province/</code> (domain context).</li>
+<li>
+<p>refactor(math): rename Lua function <code>lurek.math.voronoi</code> to <code>lurek.math.geometricVoronoi</code> (disambiguate from <code>lurek.procgen.voronoi</code>; old name preserved as alias).</p>
+</li>
+<li>
+<p>refactor(province): replace hardcoded <code>BorderClass</code> enum with generic <code>BorderType</code> (u8); border types now registered from Lua via <code>lurek.province.registerBorderType</code>.</p>
+</li>
+<li>refactor(province): replace hardcoded <code>ProvinceMapMode</code> enum with generic config-driven <code>MapModeConfig</code>; modes registered from Lua via <code>lurek.province.registerMapMode</code>/<code>setMapMode</code>.</li>
+<li>
+<p>refactor(globe): rename internal Province→Region, ProvinceGraph→RegionGraph to decouple globe from province semantics (backward-compat aliases preserved).</p>
+</li>
+<li>
+<p>refactor(province,globe,physics,flownet,ecs): convert raw ID type aliases to newtype structs (ProvinceId, RegionId, BodyId, NodeId, EdgeId, ItemId, EntityId) for type safety.</p>
+</li>
+<li>fix(flownet): add <code>add_edge_unchecked</code> for hot-path batch graph construction (skip endpoint validation).</li>
+<li>fix(physics): <code>Body::new</code> now requires explicit (x, y, w, h) dimensions; removed magic 32×32 default.</li>
+<li>fix(tween): log warning on unknown easing function name before falling back to linear.</li>
+<li>feat(dataframe): add parallel <code>parFilter</code> and <code>parGroupAgg</code> methods (rayon, auto-threshold at 10k rows).</li>
+<li>feat(flownet): add batch Lua API — <code>batchAddNodes</code>, <code>batchAddEdges</code>, <code>batchStep</code> for efficient bulk network construction.</li>
+<li>chore(render): feature-gate <code>obj-loader</code> module (default: enabled); add docs clarifying 2D projection purpose.</li>
+<li>
+<p>docs(devtools,debugbridge): add scope-boundary sections clarifying local vs remote ownership.</p>
+</li>
+<li>
+<p>feat(library): add <code>library/particle_presets</code> — 12 pre-configured particle presets (fire, smoke, explosion, etc.) with override and custom registration.</p>
+</li>
+<li>feat(library): add <code>library/window_config</code> — fluent window configuration builder with presets, serialization, and scaling mode helpers.</li>
+<li>feat(library): upgrade <code>library/sprite</code> — add <code>init.lua</code> with <code>AnimController</code> state machine re-exporting existing <code>SpriteAnimator</code>.</li>
+<li>test(library): add test files for all 7 new/upgraded library modules; register in <code>harness.rs</code>.</li>
+<li>test(font): add <code>lurek.font.loadBitmap</code> coverage tests (4 assertions) to <code>test_font_core_unit.lua</code>.</li>
+<li>test(physics): add 8 describe-based coverage blocks to <code>test_physics_core_unit.lua</code>.</li>
+<li>test(dataframe): add 8 describe-based coverage blocks to <code>test_dataframe_core_unit.lua</code>.</li>
+<li>test(graph): add 8 describe-based coverage blocks to <code>test_graph_core_unit.lua</code>.</li>
+<li>refactor(lua_api): make <code>patterns_api</code> always-on (remove incorrect <code>pipeline</code> gate; Foundations tier must not depend on Feature tier gate).</li>
+<li>refactor(lua_api): gate <code>province_api</code> by dedicated <code>modules.province</code> (was incorrectly gated by <code>modules.image</code>).</li>
+<li>refactor(config): remove vestigial <code>data</code> field from <code>ModulesConfig</code> (module is always-on, field was never checked).</li>
+<li>refactor(config): add <code>province: bool</code> field to <code>ModulesConfig</code> (default: true).</li>
+<li>docs(specs): add Registration sections to <code>data.md</code>, <code>dataframe.md</code>, <code>patterns.md</code>, <code>province.md</code>.</li>
+<li>
+<p>docs(specs): add Architecture Boundary sections to <code>raycaster.md</code>, <code>minimap.md</code>, <code>graph.md</code>, <code>image.md</code>.</p>
+</li>
+<li>
+<p>refactor(minimap): migrate <code>minimap_overlay.rs</code> from <code>src/raycaster/</code> to <code>src/minimap/raycaster_overlay.rs</code>; raycaster re-exports symbols for backward compatibility; update specs and imports.</p>
+</li>
+<li>
+<p>refactor(lua_api): introduce <code>LuaModule</code> trait and <code>ModuleEntry</code> registry in <code>src/lua_api/lua_module.rs</code>; refactor <code>register.rs</code> to use static <code>MODULES</code> slice with <code>always!</code>/<code>gated!</code> macros instead of 50+ explicit function calls.</p>
+</li>
+<li>docs(architecture): add <code>docs/architecture/lua-rust-boundary.md</code> — Lua-Rust boundary architecture covering module registration, state management, handle pattern, security sandbox, and testing strategy.</li>
+<li>test(lua_api): add <code>tests/lua/unit/test_lua_module_registration.lua</code> — unit tests for always-on modules, config-gated modules, namespace types, and security sandbox.</li>
+<li>feat(examples): add <code>content/examples/handles.lua</code> — demonstrates handle-based resource management pattern across sprite, physics, and camera modules.</li>
+<li>
+<p>docs(specs): update <code>docs/specs/lua_api.md</code> with Module Registration Architecture subsection.</p>
+</li>
+<li>
+<p>feat(color): add standalone <code>src/color/</code> module (Foundations tier) with <code>lurek.color.*</code> Lua API — Color struct, named constants, HSL/HSV/hex conversions, blending modes (lerp, multiply, screen, overlay, additive, alpha), CSS named palettes, retro palettes (PICO-8, Game Boy, NES), and gamma/linear transforms.</p>
+</li>
+<li>feat(font): add standalone <code>src/font/</code> module (Platform Services tier) with <code>lurek.font.*</code> Lua API — bitmap font atlas, glyph metrics, text measurement, word/character wrapping, text shaping with alignment, and font registry with named handles.</li>
+<li>feat(charts): add standalone <code>src/charts/</code> module (Feature Systems tier) with <code>lurek.charts.*</code> Lua API — five software-rasterized chart types (line, bar, scatter, pie, area) rendering to RGBA8 pixel buffers; configurable colors, margins, grid, legends; default 8-color palette.</li>
+<li>docs(specs): add <code>docs/specs/color.md</code>, <code>docs/specs/font.md</code>, <code>docs/specs/charts.md</code>; update README.md index (51 → 54 modules).</li>
+<li>test(color): add <code>tests/lua/unit/test_color_core_unit.lua</code> — 12 describe blocks covering constants, constructors, conversions, blending, utilities, palettes.</li>
+<li>test(font): add <code>tests/lua/unit/test_font_core_unit.lua</code> — 11 describe blocks covering constants, loading, measurement, wrapping, shaping, font methods.</li>
+<li>test(charts): add <code>tests/lua/unit/test_charts_core_unit.lua</code> — 9 describe blocks covering constructors, palette, and all chart type methods.</li>
+<li>refactor(color): delete <code>src/math/color.rs</code>; all 15 import sites migrated to <code>crate::color::Color</code>. Remove color functions from <code>lurek.math</code> API (hslToRgb, colorFromHex, colorToHsl, gammaToLinear, linearToGamma) — now in <code>lurek.color</code>.</li>
+<li>refactor(charts): delete <code>src/ui/chart.rs</code> and <code>src/ui/data_graph_renderer.rs</code>; all 20 <code>crate::ui::chart::*</code> paths in ui_api.rs migrated to <code>crate::charts::*</code>. Remove chart/graph types from <code>src/ui/mod.rs</code>.</li>
+<li>refactor(font): <code>src/font/</code> module owns CPU-side data layer; <code>src/render/font.rs</code> retains GPU font rendering and re-exports shared types from <code>crate::font</code>.</li>
+<li>
+<p>docs(specs): update <code>math.md</code> (remove color), <code>ui.md</code> (remove charts), <code>font.md</code> (clarify architecture).</p>
+</li>
+<li>
+<p>feat(animation): add <code>LAnimation:setImage(image)</code> and <code>LAnimStateMachine:setImage(image)</code>; make <code>:draw</code> polymorphic — <code>draw(x, y, opts?)</code> works when an image is pre-stored via <code>setImage</code>, <code>draw(image, x, y, opts?)</code> remains backward-compatible; raises a clear error when draw is called without a stored image; docs, examples, and tests updated.</p>
+</li>
+<li>feat(library): add <code>library/scene-objects</code> module — runtime-agnostic game-object container with <code>add</code>, <code>remove</code>, <code>clear</code>, <code>update</code> (insertion-order), <code>draw</code> (layer-sorted), <code>count</code>, <code>has</code>, <code>getByLayer</code>; 22 unit tests in <code>tests/lua/library/test_library_scene_objects.lua</code>; harness registration and library docs generated.</li>
+<li>feat(examples): add <code>content/examples/ecs_complete.lua</code> — full end-to-end headless ECS simulation covering <code>defineBlueprint</code>, <code>extendBlueprint</code>, <code>spawnBlueprint</code>, <code>addTag</code>, <code>addSystem</code>, <code>update</code>, <code>query</code>, <code>kill</code> across 10 simulation ticks.</li>
+<li>docs(filesystem): add Core Function Reference subsection with full signatures, param tables, return types, and examples for <code>read</code>, <code>write</code>, <code>exists</code>, <code>getDirectoryItems</code>, <code>mkdir</code>, and <code>remove</code></li>
+<li>docs(render): add LShader detail entries for <code>send(name, value)</code> and <code>hasUniform(name)</code> with param tables, type matrix, and usage example</li>
+<li>
+<p>docs(math): add Vec2 and Vec3 Construction and Usage subsection covering constructors, field access, method signature tables for all <code>LVec2</code> and <code>LVec3</code> methods, and example snippets</p>
+</li>
+<li>
+<p>feat(ui): add two-phase layout pass with minimum-size negotiation for auto-sizing widgets</p>
+</li>
+<li>feat(ui): add spatial focus navigation for gamepad/keyboard directional input</li>
+<li>feat(ui): add visible-range virtualization for ListBox and GUITable performance</li>
+<li>feat(ui): add resolution-independent scaling with base_resolution and scale_factor</li>
+<li>feat(ui): add scissor stack for proper nested scroll panel clipping</li>
+<li>feat(ui): add EasingFunction enum (10 curves) and Scale/Rotation/Color tween types</li>
+<li>
+<p>feat(ui): expose focusDirection, updateResolution, setBaseResolution, getScaleFactor, visibleRange, animateScale, animateRotation, animateColor Lua API</p>
+</li>
+<li>
+<p>docs(architecture): added an advanced feature surface classification note that keeps AI, compute, dataframe/SQL, globe, province, raycaster, UI, and HTML as intentional current surfaces while defining future gates for optionalization, extraction, or documentation de-emphasis.</p>
+</li>
+<li>
+<p>feat(animation): added <code>LAnimation:draw(image, x?, y?, opts?)</code> and <code>LAnimStateMachine:draw(image, x?, y?, opts?)</code> helpers that queue the current frame as an atlas draw command without advancing playback, including Lua coverage for active frames, inactive frames, stale images, non-image arguments, and invalid option tables.</p>
+</li>
+<li>
+<p>fix(app): <code>ErrorScreen::from_error</code> now uses first non-empty line as title, avoiding blank titles when error text starts with blank lines.</p>
+</li>
+<li>
+<p>feat(vscode): upgraded all 41 visual editor panels from guide-backed metadata to shared interactive webview editors with typed feature actions, clickable feature cards, workspace-specific state mutations for grids, graphs, tables, timelines, previews, and documents, live inspector/log/export previews, per-editor behavior profiles, and generated exports that include feature actions, action history, and serialized editor state.</p>
+</li>
+<li>
+<p>fix(data): <code>DataWriter</code> append-at-end writes now use <code>extend_from_slice</code> without zero-fill overwrite (seek past end still zero-fills gaps); <code>get_packed_size</code> correctly counts mixed format values in token order.</p>
+</li>
+<li>fix(dataframe): <code>rolling_mean</code> and <code>rolling_sum</code> now use O(N) sliding-window algorithms with numeric-count tracking; both operations ignore nil cells and return Nil when the current window has no numeric cells.</li>
+<li>
+<p>fix(runtime): <code>ErrorSnapshot::to_json</code> now uses serde_json serialization with correct control character escaping; recovery hint field serialized as <code>hint</code>.</p>
+</li>
+<li>
+<p>feat(vscode): rebuilt the visual editor panel system from scratch around concrete active <code>extension/vscode/src/editors/*Editor.ts</code> local specs plus a shared webview platform with 41 sidebar-launched panels; each concrete editor file now owns its guide-derived reference, use case, vision, eight feature bullets, toolbar, tools, inspector, bottom panel, and export settings while <code>catalog.ts</code> only aggregates local <code>*EditorSpec</code> constants; added the missing NavMesh, Skeleton Rigging, Visual Shader, Lighting Environment, GUI Theme, Network Topology, Global Autoload, Asset Manifest, Performance Profiler, and Project Export panels, synchronized command registration/sidebar/package manifest wiring, and added local-spec/manifest/sidebar/webview security tests plus updated extension panel documentation.</p>
+</li>
+<li>
+<p>feat(vscode): standardized UX across all webview editors by upgrading shared editor shell styles (<code>extension/vscode/src/editors/shared.ts</code>) with keyboard-focus visibility, responsive toolbar/status behavior, and consistent help styling; added global shortcut-help modal (<code>?</code>, <code>Shift+/</code>, <code>F1</code>) with automatic shortcut discovery from registered handlers and toolbar titles, injected a common help button in every editor toolbar, added a cross-editor Action Palette (<code>Ctrl+K</code>, <code>Ctrl+.</code>) that discovers runnable toolbar/tool/panel actions, improved keyboard routing to avoid triggering editor shortcuts while typing in form fields, normalized key parsing (<code>Space</code>, arrows, <code>Esc</code>), enabled automatic dirty-state marking for form edits (<code>input</code>/<code>select</code>/<code>textarea</code>), and added accessible icon buttons (<code>type="button"</code>, <code>aria-label</code>) for better screen-reader support and safer interactions; stage 3 panel upgrades added brush-size workflows and zoom/status telemetry in pixel/tile editors, quick tile/layer keyboard navigation in Tile Map, and Tileset slicing presets with arrow-key tile traversal plus editable auto-rule target tiles; stage 4 upgrades added node-focused graph workflows across Graph/Scene/Dialog/Quest editors (<code>Ctrl+D</code> duplicate, arrow-key nudging, selected-node status) and timeline productivity controls (fixed toolbar icon wiring, keyframe navigation with <code>J/L</code>, time stepping with <code>,/.</code>, and <code>K/Delete</code> keyframe edit shortcuts); plus global voxel-style visual pass with a high-contrast top configuration bar and automatic left action-rail fallback so every editor panel conforms to the same top-config + left-tools layout target; implemented Globe Editor as a unified geoscape workspace with in-panel 3D globe rendering and flat 2D map editing modes, shared tactical tool palette, layer list management, and Lua setup export.</p>
+</li>
+<li>
+<p>fix(vscode): unified snippets into one standard VS Code experience by routing <code>lurek.library.insertSnippet</code> to the built-in <code>editor.action.insertSnippet</code> picker and removing the extension-only custom snippet quick-pick flow; also updated <code>extension/vscode</code> build/watch scripts to always regenerate <code>data/snippets.json</code> from <code>content/snippets/*.lua</code> so extension snippets stay in sync with the single source of truth.</p>
+</li>
+<li>
+<p>feat(snippets): replaced mass-generated snippet source with handcrafted starter snippets for early workflows (<code>engine</code>/runtime, <code>input</code>, <code>render</code>, <code>ui</code>, <code>math</code>, <code>data</code>) under <code>content/snippets/</code>, each with explicit usage rationale and multi-API composition; retained deterministic VS Code JSON generation (<code>tools/snippets/gen_vscode_snippets.py</code> → <code>extension/vscode/data/snippets.json</code>), marker validation (<code>tools/validate/validate_snippets.py</code>), and module-level snippet coverage reporting (<code>tools/audit/snippet_coverage.py</code> → <code>logs/reports/snippet_coverage.md</code>), updated snippet tasks in <code>.vscode/tasks.json</code>, and synced prompt/docs guidance.</p>
+</li>
+<li>
+<p>feat(province): added <code>src/province/economy.rs</code> with a local-only province economy model (<code>population</code>/<code>food_stockpile</code>/<code>gold_stockpile</code>), monthly economy resolution helpers (food need, tax, growth, migration pressure), and daily physical shipment flow (upstream gold/downstream food) with in-transit delivery and origin-cargo launch validation; added focused coverage in <code>tests/rust/unit/province_economy_tests.rs</code>.</p>
+</li>
+<li>
+<p>feat(province): added per-pair border style overrides (<code>setBorderPairStyle</code>/<code>getBorderPairStyle</code>) with optional color, thickness, and semantic flags; extended province render options with strategic/tactical zoom mode controls and tactical road rendering between visible adjacent capitals.</p>
+</li>
+<li>feat(province): added province precompute modules <code>distance_field</code> (BFS distance-to-border map) and <code>border_index</code> (stable u16 border-pair index with optional thickness dilation), with rust unit coverage for border/inner distance and pair-id expansion behavior.</li>
+<li>feat(province): added <code>gpu_upload</code> helpers for province map texture creation and upload (<code>R32Uint</code> id map, <code>R16Uint</code> border index, <code>R8Unorm</code> distance field), including tested little-endian packers for integer texture payloads.</li>
+<li>feat(province): extended <code>gpu_bridge</code> with border-style storage-buffer records aligned to border-index pair ids, so per-pair style flags/thickness/color can be uploaded directly for province shader passes.</li>
+<li>
+<p>feat(render): added <code>province_map_pipeline</code> + <code>assets/shaders/province_map.wgsl</code> scaffold for fullscreen province shader rendering with bind groups for id/border-distance textures and storage buffers, plus uniform mapping for viewport and strategic/tactical mode.</p>
+</li>
+<li>
+<p>feat(province): completed visibility-driven province rendering contract: <code>visibility_state=0</code> now skips fill/border/capital/label, <code>visibility_state=1</code> renders gray discovered fill only, and borders render only when both adjacent provinces are fully visible (<code>&gt;=2</code>).</p>
+</li>
+<li>
+<p>fix(quality): removed redundant duplicate <code>typeOf</code> comparisons across Lua API userdata bindings and replaced one manual increment pattern with <code>+=</code> so <code>cargo clippy -- -D warnings</code> passes cleanly.</p>
+</li>
+<li>
+<p>feat(runtime): upgraded built-in CLI mode with true runtime hard reset (<code>:reset</code> now routes to <code>lurek.event.restart()</code> and app loop VM rebuild), multiline command continuation with readable continuation prompt, and automatic startup load of explicit <code>game_dir/main.lua</code> via REPL <code>:load</code> (including surfaced load errors in terminal output).</p>
+</li>
+<li>
+<p>fix(quality): closed Lua/docs/example coverage gaps by documenting missing Rust functions (<code>translate_gender</code>, <code>translate_plural</code>, <code>get_processor_count</code>), adding UI example coverage for <code>lurek.ui.loadLayoutGameFile</code>, covering remaining UI unit-test APIs (<code>focusNeighbor</code>, <code>getStyleToken</code>, <code>loadLayoutGameFile</code>, and <code>LUiWidget</code> text/focus/accessibility setters), and tightening <code>lurek.ui.getStyleToken</code> docs from <code>@return any</code> to typed overloads.</p>
+</li>
+<li>
+<p>fix(lua): dropped <code>RefCell</code> callback-store borrows before invoking Lua in <code>LDepthSorter:flush</code>, <code>LSignal:emit</code>, and <code>lurek.timer.tickRealTimers</code>, preventing <code>L060</code> panics when callbacks mutate the same dispatcher during execution.</p>
+</li>
+<li>
+<p>fix(vscode): Explorer <code>Run Game</code> now always launches repo-local Lurek through the workspace Cargo pipeline in Cargo workspaces, and no longer honors installed/system <code>lurek</code> paths there. Non-Cargo workspaces still use explicit <code>lurek.lurekPath</code> or <code>lurek.enginePath</code>.</p>
+</li>
+<li>
+<p>fix(games): improved readability in <code>apps/household_finance_lab</code> by switching to native non-scaled UI font defaults (<code>app/config.toml</code>: <code>font_size=20</code>, <code>title_font_size=24</code>; <code>conf.toml</code>: <code>default_font_size=20</code>, <code>default_font_bold=true</code>), wiring renderer font setup to config values instead of hardcoded 10px, removing custom widget style-class overrides, keeping <code>Widgets/API</code> native-only, and moving chart placement to TOML-defined slot widgets (<code>getRect()</code>-driven render anchors).</p>
+</li>
+<li>
+<p>fix(vscode): <code>Run Game</code> now disables PATH binary fallback and resolves the workspace root from the selected game path before launch, so menu runs use workspace-local engine binaries (<code>build/</code>/<code>target/</code>) or local cargo run path in Cargo workspaces.</p>
+</li>
+<li>
+<p>refactor(games): removed dynamic widget dispatch fallback from <code>apps/household_finance_lab/app/ui_controls_toml.lua</code> (<code>try_widget_method</code>, <code>widget[method_name]</code>, and <code>lurek.ui["..."]</code> access) and switched to explicit <code>L*</code> widget methods so Lua IntelliSense resolves calls directly from generated API stubs.</p>
+</li>
+<li>
+<p>refactor(games): tightened <code>apps/household_finance_lab</code> error handling by removing non-essential <code>pcall</code> wrappers around stable UI/window setup paths (<code>windowConfig</code>, <code>setActiveTab</code>, layout load via <code>loadLayoutGameFile</code>, render/ui font setup), leaving <code>pcall</code> only on true boundary operations (save restore, optional telemetry, file/JSON cache restore).</p>
+</li>
+<li>
+<p>fix(scene): prevented <code>lurek.scene</code> lifecycle callback panics caused by calling Lua while <code>SceneState</code> <code>RefCell</code> borrows were still active; scene callback dispatch now gathers tables/ids first, drops borrow scopes, then invokes Lua (<code>push/pop/switchTo/popTo/update/process/processPhysics/processLate/draw/render/renderUi/pushOverlay/pushPreloaded</code>). This removes <code>RefCell already borrowed</code> crashes that surfaced as <code>L060</code> with "panic in a function that cannot unwind".</p>
+</li>
+<li>
+<p>fix(games): hardened <code>apps/household_finance_lab</code> layout boot by guarding missing UI APIs on older runtimes (<code>lurek.ui.clear</code>, TabBar methods), pinned all app fonts to default size 10, disabled per-frame render scaling for this app, locked its window size to 1200x800, added app-level <code>conf.toml</code> render defaults (<code>default_font_size = 10</code>, <code>default_font_bold = false</code>), and aligned the app pipeline with built-in dataframe APIs.</p>
+</li>
+<li>fix(vscode): changed <code>Run Game</code> binary resolution so Cargo workspaces use only workspace-local engine outputs (<code>build/</code>/<code>target/</code>) or local <code>cargo run</code>; PATH-installed binaries are no longer used for repo runs.</li>
+<li>
+<p>refactor(games): reduced custom Lua in <code>apps/household_finance_lab</code> by moving all refresh-time SQL into external <code>sql/*.sql</code> query files and using built-in <code>LDatabase:queryParams</code>/<code>LDatabase:save</code> directly (removed inline SQL string building and compatibility query fallback logic).</p>
+</li>
+<li>
+<p>feat(ui): added <code>lurek.ui.loadLayoutGameFile(path)</code> for GameFS-resolved TOML UI loading, and updated <code>LUiWidget:findById</code> to return typed widget handles with widget-specific Lua methods (for event binding and value updates after TOML layout load).</p>
+</li>
+<li>refactor(games): migrated <code>apps/household_finance_lab</code> control shell from manual Lua widget construction to runtime TOML layout loading (<code>layouts/household_finance_lab_ui.toml</code>) with ID-based event/data binding.</li>
+<li>
+<p>feat(games): added engine-driven TOML layout renderer game at <code>content/games/tools/layout_toml_renderer</code> and removed the legacy Python preview renderer (<code>tools/ui/render_layout.py</code>), so layout PNG generation now runs through the Lurek2D runtime.</p>
+</li>
+<li>
+<p>feat(ui): added <code>lurek.ui.clear()</code> to reset retained UI state between layout loads while preserving the active theme, switched TOML layout screenshots to the engine's real <code>GuiContext::draw_to_image()</code> path instead of debug rectangles, and rewired GUI evidence rendering to sweep actual <code>content/layouts/*.toml</code> files through <code>loadLayoutFile</code> + <code>renderToImage</code>.</p>
+</li>
+<li>
+<p>feat(ui): added focus metadata and grouped traversal controls: <code>WidgetBase</code> now stores <code>focusable</code>, <code>tab_index</code>, <code>focus_group</code>, directional focus neighbors, and role/name accessibility metadata; Lua widget bindings gained <code>setFocusable</code>, <code>setTabIndex</code>, <code>setFocusGroup</code>, <code>setFocusNeighbor</code>, <code>setRole</code>, <code>setAriaName</code>; global <code>lurek.ui.focusNeighbor(direction)</code> now follows explicit directional links.</p>
+</li>
+<li>
+<p>refactor(ui): introduced fine-grained dirty flags in <code>GuiContext</code> (<code>layout_dirty</code>, <code>style_dirty</code>, <code>text_dirty</code>, <code>render_dirty</code>) and wired key mutators (<code>add_child</code>, <code>remove_child</code>, <code>set_default_theme</code>, <code>set_viewport</code>) plus <code>flush_cache()</code> reset semantics to support cheaper targeted invalidation.</p>
+</li>
+<li>
+<p>feat(ui): style tokens and extended widget state variants (Selected, Checked, Invalid, ReadOnly, Active, Expanded): added <code>ThemeToken</code> enum (<code>Color</code>/<code>Float</code>), <code>tokens</code> map on <code>Theme</code>, <code>Theme::get_token</code>, 9 default tokens in <code>default_dark()</code>, and <code>lurek.ui.getStyleToken(name)</code> Lua binding; added 6 new <code>WidgetState</code> variants with <code>parse_str</code>/<code>as_str</code> round-trip support.</p>
+</li>
+<li>
+<p>feat(ui): complete mouse filter Stop/Pass/Ignore routing and skip disabled/hidden widgets in hit-test: <code>hit_test</code> now returns only <code>MouseFilter::Stop</code> widgets as event targets, skipping <code>Pass</code> and <code>Ignore</code>; hidden (<code>!is_visible</code>) and disabled widgets are explicitly excluded; <code>mouse_moved</code> no longer sets hover state on <code>Ignore</code> widgets; <code>mouse_released</code> defensively clears any non-Stop widget that reaches <code>Pressed</code> state; updated <code>docs/specs/ui.md</code> with the full event routing contract.</p>
+</li>
+<li>feat(ui): text/label pipeline — wrap, clip, ellipsis, vertical alignment: added <code>TextVAlign</code> enum, <code>text_wrap</code>/<code>text_ellipsis</code>/<code>text_v_align</code> fields to <code>WidgetBase</code>, <code>layout_text</code> helper in <code>render.rs</code>, scissor clipping around all text emits, and <code>setTextWrap</code>/<code>setTextEllipsis</code>/<code>setTextVAlign</code> Lua methods on <code>LUiWidget</code>.</li>
+<li>feat(ui): render widgets using <code>computed_rect</code> absolute screen coordinates and sort children by <code>z_order</code> ascending so render position and hit-test region are always consistent. <strong>BREAKING:</strong> child widgets must use container-relative coordinates, not absolute screen offsets.</li>
+<li>chore(ui): fix spec Files section, float assertions, and audit test naming</li>
+<li>fix(ui): clamped Cartesian chart X-axis tick labels to the available plot width and spaced the <code>apps/household_finance_lab</code> retained top controls/status bar to remove visual overlap in 800x600 screenshots.</li>
+<li>fix(vscode): fixed Windows run commands in the VS Code extension by making Explorer <code>Play Game</code> honor <code>lurek.lurekPath</code>, launching installed binaries directly instead of sending quoted exe paths through PowerShell, and invoking <code>Run: Debug/Release (no rebuild)</code> with the PowerShell call operator.</li>
+<li>fix(ui): returned status values from <code>LTheme:setStyle</code> and retained UI data-binding updates, and added the <code>LUiWidget:setBindKey</code> plus <code>lurek.ui.updateBindings</code> compatibility bindings.</li>
+<li>fix(ui): made retained UI widget setters return stable booleans, normalized missing style classes to <code>""</code>, accepted both <code>renderToImage</code> argument orders, defaulted layouts to stretch alignment, and enforced text-input max length on direct <code>setText</code>.</li>
+<li>fix(image): expanded <code>ImageData::draw_label</code> from a tiny 3x5 glyph set to a readable 5x7 ASCII UI font with common punctuation, improving <code>lurek.ui.drawToImage</code> labels, buttons, tables, and chart text.</li>
+<li>feat(render): changed the engine startup render font default to built-in <code>font_10</code>, added <code>conf.toml</code> support for <code>[render].default_font_size</code> and <code>[render].default_font_bold</code>, exposed <code>lurek.render.setDefaultFont(size, bold?)</code>, and aligned built-in font helpers with bundled font labels (<code>8/10/12/16/20/24/30</code>) instead of internal cell heights.</li>
+<li>feat(render): replaced the old embedded bitmap fonts with Courier New atlas files <code>assets/fonts/font_*</code> and <code>fontb_*</code> at 7 sizes (8/10/12/16/20/24/30 pt), full Latin-1 coverage, and terminal-symbol aliases for box-drawing/block/arrow glyphs; added stable built-in font names, runtime TTF/OTF loading through <code>lurek.render.newFont(path, size)</code>, per-call font draw helpers (<code>printWithFont</code>, <code>printfWithFont</code>, <code>printRotatedWithFont</code>, <code>printRichWithFont</code>), working <code>setFontLineHeight</code>, and bold/default-font selection helpers.</li>
+<li>feat(ui): added global UI font selection through <code>lurek.ui.setFont/getFont/clearFont</code>, per-widget subtree overrides through <code>LUiWidget:setFont/clearFont</code>, widget-font lookup via <code>lurek.ui.getWidgetFont</code>, and font-aware text measurement for retained UI alignment and text-input cursor placement.</li>
+<li>fix(games): added explicit <code>LLabel</code> controls, smaller bitmap font sizing, integer dashboard scaling, render/frame timing display, and debounced SQL/DataFrame refreshes to <code>apps/household_finance_lab</code> so the top widgets are labeled, less crowded, and more responsive.</li>
+<li>fix(ui): reserved chart legend space outside plotted data for line, bar, scatter, area, and pie charts, including compact dashboard-sized images where legends previously covered series, bars, or pie wedges.</li>
+<li>fix(render): fixed light composite pass producing no visible effect — <code>composite_pipeline</code> was created with <code>TexVertex</code> stride (48 bytes) while the vertex buffer holds <code>LightVertex</code> data (52 bytes), causing every composite vertex to be read from a wrong buffer offset; replaced the <code>create_render_pipeline(GeometryKind::Texture, …)</code> call with an inline pipeline descriptor using <code>LightVertex</code> layout so the multiply-blend fullscreen quad covers the screen correctly.</li>
+<li>content(games): updated <code>test/light_min</code> to use explicit <code>light:setIntensity / setColor / setBlendMode / setFalloff / setShadowEnabled</code> method calls instead of the opts table, and lowered ambient to 0.06 to make the lit/unlit contrast dramatic once the composite pass is working.</li>
+<li>fix(games): corrected <code>showcase/light_demo</code> tween arg order for all three <code>tween_api.to()</code> calls (fields and duration were swapped), and fixed particle colors format from flat arrays to nested tables in both torch and glow particle systems.</li>
+<li>
+<p>fix(games): corrected <code>showcase/light_showcase</code> initial state from <code>STATE_SCREEN_1</code> to <code>STATE_TITLE</code> and fixed <code>STATE_TITLE</code> value from <code>"PLAYING"</code> to <code>"TITLE"</code> so the title screen is shown on launch and can navigate to each of the 8 technique screens.</p>
+</li>
+<li>
+<p>feat(dataframe): added SQL SELECT arithmetic expressions with <code>AS</code> aliases for columns, aggregate calls, and <code>LDatabase:queryParams</code> placeholders, letting <code>apps/household_finance_lab</code> compute metric ratios fully in SQL.</p>
+</li>
+<li>test(games): added app-local mouse interaction coverage to <code>apps/household_finance_lab</code> for tabs, combo boxes, sliders, switches, and buttons.</li>
+<li>refactor(games): removed duplicate Lua-drawn transaction table rows from <code>apps/household_finance_lab</code> so the transactions tab uses the retained <code>LGuiTable:setDataFrame</code> output.</li>
+<li>refactor(games): updated <code>apps/household_finance_lab</code> to use DataFrame CSV file loading, JSON database save/load caching, parameterized SQL filters, bulk UI table setters, and DataFrame-backed chart helpers instead of custom Lua parsing/cache/chart glue.</li>
+<li>feat(dataframe): added Rust-threaded <code>LDataFrameTask</code> async APIs for CSV/JSON file loads, dataframe SQL queries, and snapshot-based database SQL queries.</li>
+<li>feat(ui): added DataFrame-backed table and chart helper APIs for bulk-loading rows, point series, bar categories, pie segments, and area layers from <code>LDataFrame</code> values.</li>
+<li>fix(ui): added retained UI P1 interactions for text focus/edit changes, focused keyboard activation and arrow navigation, radio groups, tree rows, spin-box zones, accordions, scroll bars, dialog/window close controls, toolbar toggles, and color-picker clicks.</li>
+<li>fix(ui): routed retained widget mouse and wheel input through computed rectangles, enabling slider drag, tab selection, combo open/select, table row selection and sorting, and hover-based scroll panel routing.</li>
+<li>feat(dataframe): added value counts, missing reports, duplicate-row extraction, ISO date part helpers, and Rust-side positional SQL parameters for database queries.</li>
+<li>refactor(dataframe): moved GameFS-backed CSV/JSON/LVDF dataframe and JSON database file persistence out of Lua bindings into dataframe module helpers with a narrow GameFS storage adapter.</li>
+<li>feat(dataframe): added GameFS-backed CSV/JSON dataframe file loaders, dataframe CSV/JSON/LVDF file writers, and JSON database save/load APIs so apps can persist tabular caches without Lua-side file glue.</li>
+<li>content(games): resized <code>apps/household_finance_lab</code> to a native 800x600 layout so smoke screenshots are readable without downscaling, and corrected its screenshot path documentation.</li>
+<li>content(games): repaired <code>showcase/globe_demo</code> so it no longer opens to a blank HUD-only screen by adding a visible Lua-side globe fallback renderer, keyboard/gamepad camera controls, center-focus gamepad selection, and README updates that match the actual runtime behavior.</li>
+<li>content(games): fixed controller support in 14 games by routing movement, jump, menu, lane, pick, and cast actions through <code>lurek.input</code> action bindings, adding <code>gamepad:0:*</code> mappings for d-pad and face buttons, and refreshing all 133 packaged <code>.lurek</code> archives in <code>content/zips</code>.</li>
+<li>refactor(games): reworked <code>apps/household_finance_lab</code> around public <code>lurek.*</code> APIs by moving constants to TOML, deleting custom SQL/analytics/chart/state modules, running SQL through <code>LDatabase:query</code>, using <code>LDataFrame</code> methods for analytics, rendering charts through <code>lurek.ui</code> chart widgets, and saving UI snapshots through <code>lurek.save</code>.</li>
+<li>feat(games): added the <code>apps/household_finance_lab</code> business/data-science demo with deterministic household finance CSV generation, dataframe/database analytics, binary cache output, UI charts/tables, logs, and anomaly detection.</li>
+<li>content(games): added <code>lurek.automation.update(...)</code> to all 132 game process callbacks, created packaged <code>automation_smoke.toml</code> replays for <code>cannon_fodder</code>, <code>settlers_rise</code>, <code>sensible_soccer</code>, <code>star_voyage</code>, <code>worms_artillery</code>, <code>boulder_dash</code>, <code>giana_sisters</code>, and <code>alchemy</code>, and refreshed <code>content/zips</code> so every <code>.lurek</code> archive includes the latest game-side automation assets.</li>
+<li>content(games): fixed dead input paths in <code>cannon_fodder</code>, <code>settlers_rise</code>, <code>sensible_soccer</code>, <code>star_voyage</code>, <code>worms_artillery</code>, <code>boulder_dash</code>, <code>giana_sisters</code>, and <code>alchemy</code> by restoring <code>lurek.process(dt)</code> adapters or proper action bindings, and documented that all 132 games still need a shared <code>lurek.automation.update(dt)</code> hook for mass replay validation.</li>
+<li>chore(examples): added a canonical sequential <code>lurek2d</code> sweep flow for <code>content/examples/*.lua</code> via <code>tools/demos/smoke_sweep.py</code>, exposed it as VS Code tasks, and documented the difference between real engine example runs and test harnesses.</li>
+<li>chore(build): restored the missing <code>crates/lurek_schema</code> path dependency so Cargo commands work again, moved the <code>cargo-nextest</code> config to <code>.cargo/nextest.toml</code>, and documented which Rust/build config files must remain in their fixed toolchain locations.</li>
+<li>content(examples): normalized every <code>--@api-stub</code> teaching comment to a single long-form usage line, added missing coverage for <code>lurek.physics.attachShape</code>, and reduced the most overgrown <code>scene</code>, <code>window</code>, and <code>physics</code> blocks to smaller one-API examples.</li>
+<li>docs(api): renamed Lureksome to Lureksome, moved generated library API outputs to <code>docs/api/lureksome.{md,lua}</code>, removed the legacy library-doc output directory, and updated docs/wiki/tooling references.</li>
+<li>chore(tools): removed one-off migration and single-batch cleanup scripts from <code>tools/</code>, kept the reusable long-term generators, validators, audits, and fixers, rewrote <code>tools/README.md</code> as the canonical single-file tool registry, and synced <code>tools/fix/README.md</code> with the retained fixer set.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Lurek2D/lurek_2d" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.instant", "navigation.indexes", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
