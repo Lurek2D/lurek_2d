@@ -1,9 +1,8 @@
 //! Hex grid with configurable flat-top or pointy-top offset layout.
 //!
-//! - Per-cell blocked flags and movement cost for weighted pathfinding.
-//! - A* search returning shortest path between two hex cells.
-//! - Line-of-sight, field-of-view, and range-of-movement queries.
-//! - Cube-coordinate math for distance, interpolation, and rounding.
+//! - Data type: `HexGrid`.
+//! - Enum: `HexLayout`.
+//! - Implementations: `HexGrid`, `AStarNode`.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

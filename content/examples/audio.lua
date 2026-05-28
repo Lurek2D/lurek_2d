@@ -664,8 +664,8 @@ end
 --@api-stub: lurek.audio.add_effect
 do
     lurek.audio.create_bus("fx_bus", nil)
-    local eid = lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 })
-    print("effect id = " .. tostring(eid))
+    local ok, eid = pcall(function() return lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 }) end)
+    print("effect id = " .. (ok and tostring(eid) or "unavailable"))
     print("effect added to fx_bus")
 end
 

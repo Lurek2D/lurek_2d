@@ -222,7 +222,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local result = lurek.dsp.analyzeFft(sd, 64)
     print("lurek.dsp.analyzeFft bins=" .. tostring(#result))
 end
@@ -255,7 +255,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local peak = lurek.dsp.analyzePeak(sd)
     print("lurek.dsp.analyzePeak peak=" .. tostring(peak))
 end
@@ -288,7 +288,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local rms = lurek.dsp.analyzeRms(sd)
     print("lurek.dsp.analyzeRms rms=" .. tostring(rms))
 end
@@ -322,7 +322,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyBandpass(sd, 500.0, 2000.0)
     print("lurek.dsp.applyBandpass sampleCount=" .. tostring(sd:getSampleCount()))
 end
@@ -354,7 +354,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyGain(sd, 0.5)
     print("lurek.dsp.applyGain sampleCount=" .. tostring(sd:getSampleCount()))
 end
@@ -386,7 +386,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyHighpass(sd, 2000.0)
     print("lurek.dsp.applyHighpass sampleCount=" .. tostring(sd:getSampleCount()))
 end
@@ -418,7 +418,7 @@ Source: [dsp.lua](../blob/main/content/examples/dsp.lua)
 
 ```lua
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyLowpass(sd, 1000.0)
     print("lurek.dsp.applyLowpass sampleCount=" .. tostring(sd:getSampleCount()))
 end

@@ -1,9 +1,7 @@
 //! Map block generator configuration: grid dimensions, seed, and global assembly rules.
 //!
-//! - `MapBlockConfig` is deserialized from the `[mapblock]` section of a game TOML.
-//! - Controls output grid width/height, RNG seed, and whether to allow backtracking.
-//! - `retry_limit` caps backtrack iterations; exceeded limit falls back to a blank tile.
-//! - Seed 0 uses the current wall-clock time for non-deterministic generation.
+//! - Data types: `MapBlockConfig`, `SlotDef`.
+//! - Implementation: `MapBlockConfig`.
 
 /// Configuration defining which tile slots exist in a map block system.
 ///

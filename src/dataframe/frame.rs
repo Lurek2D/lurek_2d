@@ -1,15 +1,11 @@
 //! Core dataframe cell type and typed value representation
 //!
-//! - Columnar storage with named columns and row-major access
-//! - Column resolution by name or one-based index
-//! - Row and column CRUD operations including add, remove, and rename
-//! - DataFrame cloning, slicing, and row iteration
-//! - Database container for named table collections
-//! - Random data generation from typed column definitions
-//! - Arithmetic expression evaluation per row via `with_eval`
-//! - Pivot table construction with configurable aggregation
-//! - Rolling mean, rolling sum, and rank computations
-//! - Aggregation function enumeration and parsing
+//! - Data types: `DataFrame`, `DataFrameRowIter`, `Database`.
+//! - Enums: `CellValue`, `ColRef`, `AggFn`.
+//! - Implementations: `CellValue`, `std`, `DataFrameRowIter`, `DataFrame`, and 2 more.
+//! - Public methods: `is_nil`, `as_number`, `as_text`, `as_bool`, and 40 more.
+//! - Contains 48 method implementations.
+//! - Uses: `dataframe`.
 
 use crate::dataframe::rng::Xorshift64;
 use std::cmp::Ordering;

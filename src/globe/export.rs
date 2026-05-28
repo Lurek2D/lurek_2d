@@ -1,7 +1,6 @@
 //! Export globe region geometry to standard mesh formats.
 //!
-//! - Generate flat OBJ output with one named object per region polygon.
-//! - Vertex data uses (lon, lat) mapping onto a 2D plane at z=0.
+//! - Functions: `export_regions_to_obj`, `export_provinces_to_obj`.
 
 use crate::globe::registry::Globe;
 use std::fmt::Write;

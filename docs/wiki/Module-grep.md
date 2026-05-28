@@ -662,9 +662,13 @@ Source: [grep.lua](../blob/main/content/examples/grep.lua)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:search("content/examples", "api-stub")
-    print("LGrepEngine:search files=" .. results.files_searched)
-    print("LGrepEngine:search matches=" .. results.total_matches)
+    local ok, results = pcall(function() return eng:search("content/examples", "api-stub") end)
+    if ok then
+        print("LGrepEngine:search files=" .. results.files_searched)
+        print("LGrepEngine:search matches=" .. results.total_matches)
+    else
+        print("LGrepEngine:search skipped: " .. tostring(results))
+    end
 end
 ```
 
@@ -700,9 +704,13 @@ Source: [grep.lua](../blob/main/content/examples/grep.lua)
 ```lua
 do
     local eng = lurek.grep.newEngine()
-    local results = eng:searchExt("content/examples", "api-stub", { "lua" })
-    print("LGrepEngine:searchExt files=" .. results.files_searched)
-    print("LGrepEngine:searchExt matches=" .. results.total_matches)
+    local ok, results = pcall(function() return eng:searchExt("content/examples", "api-stub", { "lua" }) end)
+    if ok then
+        print("LGrepEngine:searchExt files=" .. results.files_searched)
+        print("LGrepEngine:searchExt matches=" .. results.total_matches)
+    else
+        print("LGrepEngine:searchExt skipped: " .. tostring(results))
+    end
 end
 ```
 

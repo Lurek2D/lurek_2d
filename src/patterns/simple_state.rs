@@ -1,7 +1,6 @@
 //! Named-state registry with at-most-one active state at a time.
 //!
-//! - Add, remove, query, and switch states; validates transitions against the known set.
-//! - Sorted enumeration and count helpers for introspection.
+//! - Data type: `SimpleState`.
 
 use std::collections::HashSet;
 

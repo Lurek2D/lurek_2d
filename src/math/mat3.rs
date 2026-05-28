@@ -1,8 +1,7 @@
 //! Row-major 3×3 matrix type for 2D affine transformations.
 //!
-//! - Factory constructors for identity, translation, rotation, scale, and shear.
-//! - Inverse computation with degenerate-determinant fallback.
-//! - Point transformation and matrix multiplication via `std::ops::Mul`.
+//! - Data type: `Mat3`.
+//! - Implementations: `Mat3`, `std`.
 
 use super::vec2::Vec2;
 

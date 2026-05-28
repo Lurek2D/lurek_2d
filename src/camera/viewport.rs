@@ -1,9 +1,7 @@
 //! Viewport scaling strategies for mapping a fixed game surface into variable window sizes.
 //!
-//! - ScaleMode selects Letterbox (aspect-preserving), Stretch, or PixelPerfect scaling.
-//! - Viewport struct holds computed scale factors and offsets after each window resize.
-//! - Bidirectional coordinate conversion between screen pixels and game-space units.
-//! - Recomputes transforms on resize without allocating new state.
+//! - Data type: `Viewport`.
+//! - Enum: `ScaleMode`.
 
 #[derive(Debug, Clone, PartialEq)]
 /// Selects how the game surface scales into a window surface.

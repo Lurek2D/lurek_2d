@@ -1,14 +1,8 @@
 //! Runtime behavior tree executor for AI agents with Lua callbacks.
 //!
-//! For structural BT building and inspection, see [`crate::patterns::behavior_tree`].
-//! This module adds Lua RegistryKey-driven actions, conditions, guards, and per-tick running state.
-//!
-//! - Behavior-tree node hierarchy with local runtime progress and last tick result.
-//! - Control-flow variants: selector, sequence, parallel, decorator, guard, and Lua leaves.
-//! - Subtree reset, node counting, status translation, and compact debug snapshots.
-//! - Running state per composite node enabling cross-tick resume from last active child.
-//! - Parallel policy configuration with independent success and failure thresholds.
-//! - Root node container used as the single-instance tree by the per-agent AI runtime.
+//! - Data types: `BehaviorTree`, `BtDebugState`.
+//! - Enums: `BTStatus`, `ParallelPolicy`, `BTNode`.
+//! - Implementations: `BTStatus`, `ParallelPolicy`, `BTNode`, `BehaviorTree`.
 
 use mlua::RegistryKey;
 /// Execution result produced by a behavior-tree node or whole tree.

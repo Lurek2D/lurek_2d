@@ -1,7 +1,7 @@
 //! Deterministic string-rewriting L-system with configurable axiom, production rules, and iteration depth.
 //!
-//! - Turtle-graphics interpreter converts generated strings into line segments for rendering.
-//! - Supports branching via stack-based `[`/`]` commands for tree and fractal geometry.
+//! - Data type: `LSystem`.
+//! - Implementation: `LSystem`.
 
 use std::collections::HashMap;
 

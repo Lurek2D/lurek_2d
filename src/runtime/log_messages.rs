@@ -1,12 +1,9 @@
 //! Stable, structured log message identifiers for all engine subsystems.
 //!
-//! - Each constant provides a short code (e.g. "L001") used as prefix in log output.
-//! - Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
-//! - Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
-//! - Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
-//! - Runtime log level control via set_log_level/get_log_level with atomic override.
-//! - log_msg! macro for consistent formatted log output with message lookup.
-//! - Codes are stable across versions for log parsing, alerting, and external tool integration.
+//! - Functions: `set_log_level`, `get_log_level`.
+//! - Constants: `L001_ENGINE_START`, `L002_ENGINE_STOP`, `L003_GAME_LOADED`, `L004_GAME_RESTART`, and 260 more.
+//! - See `docs/specs/runtime.md` for the module specification.
+//! - Part of the `runtime` subsystem.
 
 use std::sync::atomic::{AtomicU8, Ordering};
 static LOG_LEVEL_OVERRIDE: AtomicU8 = AtomicU8::new(0);

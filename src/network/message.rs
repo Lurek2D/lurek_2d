@@ -1,7 +1,6 @@
 //! Wire-format value type (`NetValue`) mirroring Lua's dynamic type system for cross-peer messaging.
 //!
-//! - MessagePack serialization and deserialization via `pack`/`unpack`.
-//! - Zero-allocation size estimation for budget checks before sending.
+//! - Enum: `NetValue`.
 
 use super::error::NetworkError;
 use serde::{Deserialize, Serialize};
@@ -42,7 +41,7 @@ pub fn estimate_size(value: &NetValue) -> usize {
         NetValue::Bool(_) => 1,
         NetValue::Integer(n) => {
             let n = *n;
-            if n >= -32 && n <= 127 { 1 }
+            if (-32..=127).contains(&n) { 1 }
             else if n >= i8::MIN as i64 && n <= i8::MAX as i64 { 2 }
             else if n >= i16::MIN as i64 && n <= i16::MAX as i64 { 3 }
             else if n >= i32::MIN as i64 && n <= i32::MAX as i64 { 5 }

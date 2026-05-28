@@ -1,7 +1,7 @@
 //! Two-bone inverse-kinematics constraint for skeleton animation.
 //!
-//! - Solves root and elbow rotations via law-of-cosines to reach a world-space target.
-//! - Supports configurable bend direction (positive or negative).
+//! - Data type: `IKConstraint`.
+//! - Implementation: `IKConstraint`.
 
 use super::bone::Bone;
 

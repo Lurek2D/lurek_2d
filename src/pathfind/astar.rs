@@ -1,9 +1,8 @@
 //! A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
 //!
-//! - Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
-//! - Early termination via `max_nodes` with partial-path fallback to closest reached cell.
-//! - Bresenham line-of-sight checks for walkability validation.
-//! - String-pull path smoothing that removes redundant waypoints.
+//! - Functions: `astar`, `line_of_sight`, `smooth_path`.
+//! - Implementation: `AStarNode`.
+//! - Contains 3 method implementations.
 
 use crate::runtime::log_messages::{AT01, AT02, AT03};
 

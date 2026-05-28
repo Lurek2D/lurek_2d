@@ -1,13 +1,16 @@
 //! Lurek2D engine library root: module declarations and re-exports.
 //!
-//! - Declares all engine sub-modules: `render`, `audio`, `physics`, `input`, etc.
-//! - Exposes `pub use` re-exports for the public API surface consumed by `main.rs`.
-//! - Feature flags (`lua54`, `luajit`) are gated here and propagate to sub-modules.
-//! - No business logic lives here; this file is a composition root only.
+//! - Functions: `lurek_run`, `build_builtin_cli_script`.
+//! - Sub-modules: `agent`, `ai`, `animation`, `app`, and 64 more.
+//! - Contains 1 method implementation.
+//! - Contains 1 `unsafe` block; see SAFETY comments.
+
 #![allow(unused_doc_comments)]
 #![allow(clippy::doc_lazy_continuation)]
 //! Core Lurek2D crate modules and the top-level runtime entry point.
 
+/// Exposes the LLM agent subsystem module.
+pub mod agent;
 /// Exposes the AI subsystem module.
 pub mod ai;
 /// Exposes the animation subsystem module.

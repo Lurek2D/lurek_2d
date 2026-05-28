@@ -1,13 +1,11 @@
 //! Build a complete `RaycasterScene` each frame from camera parameters, a DDA grid, and texture lookups.
 //!
-//! - Project floor and ceiling tiles as perspective-correct quads with per-tile lighting and UV mapping.
-//! - Generate lowered-floor pit geometry including depth-offset surfaces and side-wall extrusions.
-//! - Emit wall-face quads for every visible solid-cell boundary with roof-side thickness geometry.
-//! - Project billboard sprites to screen space with distance-based sizing and lighting.
-//! - Integrate ambient light, point-light contributions, distance shading, and roofed-ambient darkening.
-//! - Provide camera-space depth projection helpers (`camera_depth`, `project_ground_point`, `project_horizontal_plane`).
-//! - Snap projected coordinates to half-pixel boundaries to reduce sub-pixel jitter on floor/ceiling edges.
-//! - Supply UV-generation utilities for axis-aligned quads and world-space column strips.
+//! - Data types: `LoweredFloorCell`, `SceneBuildParams`, `WorldSprite`.
+//! - Type aliases: `TextureLookup`, `CellTextureLookup`.
+//! - Implementation: `RaycasterScene`.
+//! - Public method: `build`.
+//! - Contains 1 method implementation.
+//! - Uses: `color`, `math`, `raycaster`, `runtime`.
 
 use crate::color::Color;
 use crate::math::Vec2;

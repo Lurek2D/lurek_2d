@@ -606,13 +606,13 @@ end
 #### Definition
 
 ```lua
---- Requests engine shutdown with exit code zero.
+--- Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 lurek.event.quit = function() end
 ```
 
 #### Description
 
-Requests engine shutdown with exit code zero.
+Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 
 #### Example
 

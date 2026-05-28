@@ -1,7 +1,6 @@
 //! Submodule declarations for all visualization categories.
 //!
-//! - Wildcard re-exports providing a flat public API.
-//! - Shared facade helpers scoped to crate visibility.
+//! - Sub-modules: `animation`, `audio`, `camera`, `easing`, and 7 more.
 
 /// Animation visualizations. This module is publicly re-exported.
 pub mod animation;

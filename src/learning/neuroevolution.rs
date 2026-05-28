@@ -1,7 +1,6 @@
 //! Neuroevolution wrapper joining genetic algorithm with neural-network for population-based weight search.
 //!
-//! - Template layer specification for rebuilding networks from flat chromosome genes.
-//! - Orchestration logic mapping chromosomes to networks, recording fitness, and advancing evolution.
+//! - Data type: `Neuroevolution`.
 
 use crate::learning::{genetic::GeneticAlgorithm, neural_net::NeuralNet};
 /// GA-backed neural-network population manager.

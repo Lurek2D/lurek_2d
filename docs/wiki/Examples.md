@@ -14,6 +14,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 
 | File | Namespace | Description |
 |---|---|---|
+| [agent.lua](../blob/main/content/examples/agent.lua) | `lurek.agent` | API example |
 | [ai.lua](../blob/main/content/examples/ai.lua) | `lurek.ai` | API example |
 | [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | API example |
 | [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |

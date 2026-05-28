@@ -1,14 +1,9 @@
 //! Define the terminal widget type system: Label, Button, TextBox, List, Border, and Panel.
 //!
-//! - Provide `WidgetBase` for shared layout state: position, size, visibility, enabled flag, and tag.
-//! - Offer `BorderStyle` enum with single, double, and ASCII line-drawing variants.
-//! - Construct widgets from 1-based terminal coordinates with clamped dimensions.
-//! - Get and set display text for text-bearing widgets (Label, Button, TextBox).
-//! - Get and set foreground color for colored widgets (Label, Border).
-//! - Manipulate list contents: add, remove, clear items; track selection and scroll offset.
-//! - Enforce TextBox max-length constraints with automatic cursor clamping.
-//! - Expose border property accessors for style and title.
-//! - Provide type-checking predicates for widget kind discrimination.
+//! - Data types: `WidgetBase`, `Widget`.
+//! - Enums: `BorderStyle`, `WidgetKind`.
+//! - Implementations: `BorderStyle`, `WidgetBase`, `Widget`.
+//! - Public methods: `from_str_name`, `as_str`, `new`, `position_1based`, and 28 more.
 
 use super::cell::DEFAULT_FG;
 use super::terminal_state::{MAX_COLS, MAX_ROWS};

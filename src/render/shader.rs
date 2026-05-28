@@ -1,10 +1,8 @@
 //! Parse and validate user-supplied WGSL fragment shaders via naga.
 //!
-//! - Rewrite fragment entry points into plain helper functions for wrapper-pipeline injection.
-//! - Extract `@location` input slots (color, UV) and enforce vec type constraints.
-//! - Manage typed uniform values (`float`, `vec2`–`vec4`, `int`, `bool`) for per-frame GPU upload.
-//! - Provide deterministic ordered-uniform iteration for stable buffer layout.
-//! - Strip and consume WGSL `@attribute(...)` tokens during header rewriting.
+//! - Data type: `Shader`.
+//! - Enums: `ShaderFragmentInput`, `UniformValue`.
+//! - Implementation: `Shader`.
 
 use crate::log_msg;
 use crate::runtime::log_messages::SH01_SHADER_OK;

@@ -1,9 +1,8 @@
 //! Standard easing curves: quad, cubic, quart, sine, expo, elastic, bounce, back.
 //!
-//! - Each family provides in, out, and in-out variants mapping `t∈[0,1]→[0,1]`.
-//! - Boundary-clamped functions (expo, elastic) handle t≤0 and t≥1 explicitly.
-//! - Name-based lookup via `apply` and `resolve_easing_fn` for string-driven tween systems.
-//! - Linear passthrough for identity interpolation.
+//! - Functions: `linear`, `ease_in_quad`, `ease_out_quad`, `ease_in_out_quad`, and 24 more.
+//! - See `docs/specs/math.md` for the module specification.
+//! - Part of the `math` subsystem.
 
 use std::f32::consts::PI;
 

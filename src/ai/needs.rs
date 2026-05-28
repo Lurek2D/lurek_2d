@@ -1,8 +1,7 @@
 //! Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
 //!
-//! - Per-need decay, urgency scoring, satisfaction updates, and cooldown-aware advertisement scoring.
-//! - System-level operations for adding needs, time-based updates, and most-urgent drive selection.
-//! - Best-advertisement selection weighted by distance, cooldown, and need priority.
+//! - Data types: `Need`, `NeedAdvertisement`, `NeedSystem`.
+//! - Implementations: `Need`, `NeedAdvertisement`, `NeedSystem`.
 
 /// One tracked need with a normalized value.
 pub struct Need {

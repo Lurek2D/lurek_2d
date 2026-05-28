@@ -1,12 +1,9 @@
 //! Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
 //!
-//! - Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
-//! - HSVA/RGB colour picker, column-row data grid with sorting, static image display, numeric badge overlay.
-//! - TreeView uses a flat `Vec<TreeNode>` with index-based parent/child links; add, remove, expand, collapse, and depth queries are O(n) worst case.
-//! - Toolbar and MenuBar hold child indices into an external widget list; buttons support enabled/toggled states.
-//! - Dialog supports modal blocking, optional content slot, and footer action buttons.
-//! - CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
-//! - All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
+//! - Data types: `Toast`, `Separator`, `Spacer`, `TreeNode`, and 17 more.
+//! - Implementations: `Toast`, `Separator`, `Spacer`, `TreeNode`, and 14 more.
+//! - Public methods: `new`, `progress`, `is_expired`, `update`, and 47 more.
+//! - Contains 60 method implementations.
 
 use crate::dataframe::frame::{ColRef, DataFrame};
 use crate::ui::widget::{WidgetBase, WidgetType};

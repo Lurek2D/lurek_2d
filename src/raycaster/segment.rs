@@ -1,7 +1,6 @@
 //! 2D line segment representation for raycaster wall geometry.
 //!
-//! - Ray-vs-segment intersection test returning nearest hit point and index.
-//! - Used by the raycaster module to resolve wall hits from arbitrary origins.
+//! - Data type: `Segment`.
 
 /// An infinite-precision 2D line segment from `(x1, y1)` to `(x2, y2)`.
 #[derive(Debug, Clone)]

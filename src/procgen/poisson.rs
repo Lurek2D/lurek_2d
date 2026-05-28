@@ -1,7 +1,7 @@
 //! Poisson-disk sampling: generate evenly-spaced random 2D point distributions.
 //!
-//! - Uses Bridson's algorithm with grid acceleration for O(n) rejection.
-//! - Deterministic via seeded LCG; produces `(x, y)` pair vectors.
+//! - Function: `poisson_disk`.
+//! - See `docs/specs/procgen.md` for the module specification.
 
 use super::lcg::Lcg;
 

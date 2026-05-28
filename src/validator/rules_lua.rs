@@ -1,9 +1,7 @@
 //! Lua-defined custom validation rules registered via pattern and callback config.
 //!
-//! - `LuaPatternRule` wraps a Lua callback and a file-extension filter.
-//! - Called from `validation_engine` with `(path, content)` as string arguments.
-//! - Lua callback must return a table of `{line, severity, message}` entries.
-//! - Custom rules run in the same validator pass as built-in rules; no ordering guarantee.
+//! - Data type: `LuaPatternRule`.
+
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;
 use std::path::Path;

@@ -1,10 +1,8 @@
 //! Dijkstra shortest-path search over weighted directed graphs.
 //!
-//! - Item-type-aware pathfinding respecting edge filters and cooldowns.
-//! - Distance queries and bounded reachability flood-fill.
-//! - Neighbor discovery across active edges and bidirectional links.
-//! - Path reconstruction from predecessor maps into ordered node/edge lists.
-//! - Priority-queue state with min-cost ordering for traversal.
+//! - Data type: `PathResult`.
+//! - Implementations: `DijkstraState`, `Graph`.
+//! - Public methods: `find_path`, `find_path_for_item`, `get_distance`, `get_reachable`, and 1 more.
 
 use super::core::Graph;
 use std::cmp::Ordering;

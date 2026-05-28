@@ -1,7 +1,8 @@
 //! Dedicated fullscreen province-map GPU pipeline.
 //!
-//! - Binds province id texture, border index texture, distance field texture, and storage buffers.
-//! - Owns uniforms for viewport mapping and strategic/tactical mode selection.
+//! - Data types: `ProvinceMapUniforms`, `ProvinceMapPipeline`.
+//! - Implementations: `ProvinceMapUniforms`, `ProvinceMapPipeline`.
+//! - Public methods: `full_map`, `new`, `create_data_bind_group`, `update_uniforms`.
 
 use bytemuck::{Pod, Zeroable};
 use wgpu::util::DeviceExt;

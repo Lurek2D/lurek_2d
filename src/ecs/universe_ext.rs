@@ -1,10 +1,8 @@
 //! Extended Universe operations: advanced queries, bulk spawning, and state serialization.
 //!
-//! - query_not filters entities by required and excluded component sets.
-//! - query_multi invokes a callback with packed ids and multiple component values per entity.
-//! - spawn_bulk creates many entities from a single blueprint with optional per-entity overrides.
-//! - serialize_to_table / deserialize_from_table convert live universe state to and from Lua tables.
-//! - Serialization captures components, tags, layers, bitmap masks, and parent-child hierarchy.
+//! - Implementation: `Universe`.
+//! - Public methods: `query_not`, `query_multi`, `spawn_bulk`, `serialize_to_table`, and 1 more.
+//! - Contains 5 method implementations.
 
 use super::Universe;
 use crate::ecs::lua_table::deep_copy_table;

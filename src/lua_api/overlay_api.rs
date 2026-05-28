@@ -1,4 +1,9 @@
 //! `lurek.overlay` -- Lua bindings for the overlay system: weather, atmosphere, screen flash/shake/fade, transitions, and ambient controls.
+//!
+//! - Registers `lurek.overlay.*` functions and types via `register()`.
+//! - `LuaOverlay`: userdata type exposed to Lua.
+//! - Bridges 90 Lua-callable methods via `mlua`.
+//! - See `docs/specs/overlay.md` for the full API specification.
 
 use super::SharedState;
 use crate::overlay::{Overlay, ScreenTransition, TransitionKind, WeatherType};

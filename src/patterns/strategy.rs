@@ -1,7 +1,6 @@
 //! Named-strategy registry with id assignment and current-selection tracking.
 //!
-//! - Register, remove, query, and switch strategies by string name.
-//! - Provides id-based lookup for the active strategy.
+//! - Data type: `Strategy`.
 
 use std::collections::HashMap;
 #[derive(Debug, Default, Clone)]

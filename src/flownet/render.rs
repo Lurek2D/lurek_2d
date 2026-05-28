@@ -1,7 +1,6 @@
 //! Render a graph as a circular node-and-edge diagram via `RenderCommand` output.
 //!
-//! - Layout nodes evenly on a circle, draw edges as lines, color nodes by type.
-//! - Produce a self-contained command list suitable for the engine renderer.
+//! - Implementation: `Graph`.
 
 use crate::flownet::core::Graph;
 use crate::render::renderer::{DrawMode, RenderCommand};

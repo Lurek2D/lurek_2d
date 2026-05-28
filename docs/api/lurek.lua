@@ -222,6 +222,240 @@ function lurek.touchreleased(id, x, y, dx, dy, pressure) end
 ---@param length number Selection length
 function lurek.textedited(text, start, length) end
 
+---@class lurek.agent
+lurek.agent = {}
+
+--- Lua-side handle for an AISystem multi-agent orchestrator.
+---@class LAISystem
+LAISystem = {}
+
+--- Registers a named agent in the system.
+---@param name string Unique agent name used for routing.
+---@param agent LAgent The agent instance to register.
+---@return nil No value is returned.
+function LAISystem:addAgent(name, agent) end
+
+--- Adds a named instruction block the user can explicitly include per prompt.
+---@param key string Unique instruction identifier.
+---@param text string Instruction text injected into the system block.
+---@return nil No value is returned.
+function LAISystem:addInstruction(key, text) end
+
+--- Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
+---@param name string Skill identifier shown in the injected context.
+---@param keywords table String array of trigger keywords (case-insensitive match).
+---@param prompt string Instruction text appended when a keyword matches.
+---@return nil No value is returned.
+function LAISystem:addSkill(name, keywords, prompt) end
+
+--- Builds and returns the full context string that would be sent for a given prompt.
+---@param instruction string The prompt text used for keyword matching.
+---@param opts? table Optional table with `agent` (string) and `instructions` (table) keys.
+---@return string The assembled system context block.
+function LAISystem:buildContext(instruction, opts) end
+
+--- Returns a sorted list of all registered agent names.
+---@return table String array of agent names.
+function LAISystem:listAgents() end
+
+--- Sends a prompt to a named agent through the system, auto-injecting matching context.
+---@param agent_name string Name of the agent to query.
+---@param instruction string The task instruction for the agent.
+---@param callback function Function called with `(success, data, err_info)` when complete.
+---@param opts table Optional: `{ instructions = {"key1", ...} }` to include manually.
+---@return number Callback ID.
+function LAISystem:prompt(agent_name, instruction, callback, opts) end
+
+--- Removes a registered agent by name.
+---@param name string Agent name to remove.
+---@return boolean `true` if the agent was found and removed.
+function LAISystem:removeAgent(name) end
+
+--- Removes an instruction block by key.
+---@param key string Instruction key to remove.
+---@return boolean `true` if the instruction was found and removed.
+function LAISystem:removeInstruction(key) end
+
+--- Removes a system skill by name.
+---@param name string Skill name to remove.
+---@return boolean `true` if the skill was found and removed.
+function LAISystem:removeSkill(name) end
+
+--- Dispatches multiple named-agent tasks in parallel through the system.
+---@param tasks table List of `{ agent = string, instruction = string, instructions = table? }`.
+---@param callback function Function called with a results table when all tasks complete.
+---@return number Batch callback ID.
+function LAISystem:runAll(tasks, callback) end
+
+--- Polls the system's background client for completed requests and dispatches callbacks.
+---@return nil No value is returned.
+function LAISystem:update() end
+
+--- Lua-side handle for a single LLM Agent.
+---@class LAgent
+LAgent = {}
+
+--- Appends a named skill prompt to the agent's context block.
+---@param name string Unique skill identifier shown in the injected context.
+---@param prompt string Instruction text appended to the system block.
+---@return nil No value is returned.
+function LAgent:addSkill(name, prompt) end
+
+--- Cancels an in-flight or pending request by callback ID.
+---@param callback_id number ID returned by `prompt` or `promptBatch`.
+---@return nil No value is returned.
+function LAgent:cancel(callback_id) end
+
+--- Removes all registered skills from the agent's context.
+---@return nil No value is returned.
+function LAgent:clearSkills() end
+
+--- Evaluates a Lua code string inside the active VM.
+---@param code string The Lua code to execute.
+---@return boolean `true` on success, raises an error on failure.
+function LAgent:evalCode(code) end
+
+--- Returns the number of in-flight requests that have not yet completed.
+---@return number Number of pending requests.
+function LAgent:pendingCount() end
+
+--- Sends an instructional prompt to the LLM asynchronously.
+---@param instruction string The specific task instruction for the agent.
+---@param callback function Function called with `(success, data, err_info)` when complete.
+---@return number Callback ID used to cancel the request.
+function LAgent:prompt(instruction, callback) end
+
+--- Sends a batch of prompts to the LLM asynchronously.
+---@param instructions table Ordered list of instruction strings.
+---@param callback function Function called with a results table when all complete.
+---@return number Batch callback ID.
+function LAgent:promptBatch(instructions, callback) end
+
+--- Sets the token context window size forwarded to the LLM backend.
+---@param n number Context size in tokens (e.g. 4096).
+---@return nil No value is returned.
+function LAgent:setContextSize(n) end
+
+--- Sets the agent's role description injected after the system prompt when routed through an AISystem.
+---@param description string Role description text.
+---@return nil No value is returned.
+function LAgent:setDescription(description) end
+
+--- Changes the response format for future prompts.
+---@param format string One of `"json"`, `"csv"`, or `"text"`.
+---@return nil No value is returned.
+function LAgent:setFormat(format) end
+
+--- Sets the maximum retry count on transient network or timeout errors.
+---@param n number Number of retries (0 disables retry).
+---@return nil No value is returned.
+function LAgent:setMaxRetries(n) end
+
+--- Sets the agent's name identifier used when added to an AISystem.
+---@param name string Agent name.
+---@return nil No value is returned.
+function LAgent:setName(name) end
+
+--- Sets a single model option forwarded to the LLM backend.
+---@param key string Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`).
+---@param value any Option value forwarded as JSON.
+---@return nil No value is returned.
+function LAgent:setOption(key, value) end
+
+--- Sets the sampling temperature forwarded to the LLM backend.
+---@param t number Temperature value (e.g. 0.7). Higher = more random.
+---@return nil No value is returned.
+function LAgent:setTemperature(t) end
+
+--- Polls the background client for completed LLM requests and dispatches callbacks.
+---@return nil No value is returned.
+function LAgent:update() end
+
+--- Lua-side handle for managing multiple LLM Agents in parallel.
+---@class LAgentManager
+LAgentManager = {}
+
+--- Runs multiple agent tasks in parallel and calls a single callback when all finish.
+---@param tasks table List of `{ agent = LAgent, instruction = string }` tables.
+---@param callback function Function called with a results table when all tasks complete.
+---@return number Batch callback ID.
+function LAgentManager:runAll(tasks, callback) end
+
+--- Polls the manager's background client for completed tasks and dispatches callbacks.
+---@return nil No value is returned.
+function LAgentManager:update() end
+
+--- Lua-side handle for managing a local Ollama server lifecycle and models.
+---@class LOllamaManager
+LOllamaManager = {}
+
+--- Sends `DELETE /api/delete` to remove a model from local Ollama storage.
+---@param name string Model name to delete (e.g. `"llama3:latest"`).
+---@return boolean `true` if the request succeeded.
+function LOllamaManager:deleteModel(name) end
+
+--- Returns `true` if a model with the given name (or name prefix) is available locally.
+---@param name string Model name to check (e.g. `"llama3"` or `"llama3:latest"`).
+---@return boolean `true` if found locally.
+function LOllamaManager:hasModel(name) end
+
+--- Returns `true` if the Ollama HTTP server responds within 5 seconds.
+---@return boolean `true` if Ollama is reachable.
+function LOllamaManager:isRunning() end
+
+--- Returns a table of locally available models, each with `name` and `size_gb` fields.
+---@return table Array of `{ name = string, size_gb = number }` tables.
+function LOllamaManager:listModels() end
+
+--- Returns the number of in-flight model pull operations.
+---@return number Number of pending pulls.
+function LOllamaManager:pendingCount() end
+
+--- Dispatches an async model download; calls `callback(success, err_msg)` on completion.
+---@param name string Model name to download (e.g. `"llama3"`).
+---@param callback function Called with `(success, err_msg)` on completion.
+---@return number Callback ID used with `update()`.
+function LOllamaManager:pullModel(name, callback) end
+
+--- Stops then restarts the managed Ollama process. Returns `true` on success.
+---@return boolean `true` if the restart succeeded.
+function LOllamaManager:restart() end
+
+--- Spawns `ollama serve` as a managed child process. Returns `true` on success.
+---@return boolean `true` if the process started.
+function LOllamaManager:start() end
+
+--- Kills the Ollama process started by this manager. Returns `true` if it was running.
+---@return boolean `true` if the process was running under this manager.
+function LOllamaManager:stop() end
+
+--- Polls completed pull operations and dispatches registered callbacks.
+---@return nil No value is returned.
+function LOllamaManager:update() end
+
+--- Returns the Ollama version string, or an empty string if not running.
+---@return string Ollama version or `""`.
+function LOllamaManager:version() end
+
+--- Creates a new LLM Agent instance.
+---@param config table Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
+---@return LAgent A new agent object.
+lurek.agent.new = function(config) end
+
+--- Creates a new Agent Manager for batching multiple LLM agents over a shared client.
+---@return LAgentManager A new agent manager object.
+lurek.agent.newManager = function() end
+
+--- Creates an Ollama infrastructure manager for server lifecycle and model management.
+---@param config table Optional config with `url` (default `"http://127.0.0.1:11434"`).
+---@return LOllamaManager A new Ollama manager object.
+lurek.agent.newOllama = function(config) end
+
+--- Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
+---@param config table Config with `system_prompt` for the shared system context.
+---@return LAISystem A new AI system object.
+lurek.agent.newSystem = function(config) end
+
 ---@class lurek.ai
 lurek.ai = {}
 
@@ -12775,6 +13009,18 @@ function LHermite:typeOf(name) end
 ---@class LRandomGenerator
 LRandomGenerator = {}
 
+--- Returns true with the given probability (0.0 = never, 1.0 = always).
+---@param probability number Probability in range [0.0, 1.0].
+---@return boolean True when the random check passes.
+function LRandomGenerator:chance(probability) end
+
+--- Rolls N dice and counts how many results are >= the target number.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param target number Minimum value to count as a success.
+---@return number Number of successful dice.
+function LRandomGenerator:countSuccesses(count, sides, target) end
+
 --- Returns this generator seed. This method is available to Lua scripts.
 ---@return number Seed value.
 function LRandomGenerator:getSeed() end
@@ -12804,6 +13050,53 @@ function LRandomGenerator:randomInt(min, max) end
 ---@param mean? number Mean value (default 0.0).
 ---@return number Random normal value.
 function LRandomGenerator:randomNormal(stddev, mean) end
+
+--- Rolls a single die with the given number of sides.
+---@param sides number Number of sides (minimum 1).
+---@return number Result in range [1, sides].
+function LRandomGenerator:roll(sides) end
+
+--- Rolls two dice and returns the higher result (advantage mechanic).
+---@param sides number Number of sides per die.
+---@return number Higher of the two rolls.
+function LRandomGenerator:rollAdvantage(sides) end
+
+--- Rolls two dice and returns the lower result (disadvantage mechanic).
+---@param sides number Number of sides per die.
+---@return number Lower of the two rolls.
+function LRandomGenerator:rollDisadvantage(sides) end
+
+--- Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@return number Total sum including all explosion rerolls.
+function LRandomGenerator:rollExploding(count, sides) end
+
+--- Rolls N dice and returns the sum of the highest K results.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param keep number How many highest results to sum.
+---@return number Sum of the highest keep results.
+function LRandomGenerator:rollKeepHighest(count, sides, keep) end
+
+--- Rolls N dice and returns the sum of the lowest K results.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param keep number How many lowest results to sum.
+---@return number Sum of the lowest keep results.
+function LRandomGenerator:rollKeepLowest(count, sides, keep) end
+
+--- Rolls N dice with the given number of sides and returns all results.
+---@param count number Number of dice (clamped to [1, 1000]).
+---@param sides number Number of sides per die (minimum 1).
+---@return number[] Array of individual die results.
+function LRandomGenerator:rollN(count, sides) end
+
+--- Rolls N dice and returns the sum of all results.
+---@param count number Number of dice (clamped to [1, 1000]).
+---@param sides number Number of sides per die (minimum 1).
+---@return number Sum of all die results.
+function LRandomGenerator:rollSum(count, sides) end
 
 --- Resets this generator to a seed value.
 ---@param seed number Seed value.

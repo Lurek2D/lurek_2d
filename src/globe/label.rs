@@ -1,7 +1,7 @@
 //! Id-keyed label storage for globe map annotations.
 //!
-//! - Insert, remove, move, and toggle visibility of positioned text labels.
-//! - LOD-aware iteration filters labels by minimum detail tier.
+//! - Data type: `LabelStore`.
+//! - Implementation: `LabelStore`.
 
 use crate::globe::types::{Label, LabelStyle};
 use std::collections::HashMap;

@@ -1,10 +1,7 @@
 //! Percentile computation by linear interpolation over sorted values
 //!
-//! - Z-score standardization for numeric columns
-//! - Min-max normalization to arbitrary output range
-//! - Outlier detection via z-score threshold
-//! - Mode value computation across non-nil cells
-//! - Shannon entropy calculation over rendered cell distributions
+//! - Function: `percentile`.
+//! - Implementation: `DataFrame`.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 /// Compute percentile by linear interpolation over sorted values.

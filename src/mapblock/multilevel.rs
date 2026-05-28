@@ -1,9 +1,7 @@
 //! Multi-level map data structure with per-level block grid accessors.
 //!
-//! - `MultilevelMap` wraps `LayerStack` and exposes named-level access (floor, roof, etc.).
-//! - Level names are user-defined strings registered at generator init time.
-//! - Provides `get(level, x, y)` and `set(level, x, y, tile)` with bounds checking.
-//! - Serialized as a flat array of (level, x, y, tile) tuples in the save file.
+//! - Data types: `MultiLevelMap`, `LevelData`.
+//! - Implementations: `MultiLevelMap`, `LevelData`.
 
 use super::placement::PlacedBlock;
 

@@ -1,10 +1,8 @@
 //! Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
 //!
-//! - Vibration request queuing for delivery to the OS force-feedback driver.
-//! - SDL2-style GUID-based mapping store with file and string parsing.
-//! - Gilrs button/axis to SDL2 string conversion helpers.
-//! - Virtual D-pad synthesis from analog stick values with configurable deadzone.
-//! - Hat (D-pad) direction queries returning 8-way compass strings.
+//! - Data types: `GamepadVibrationRequest`, `GamepadState`, `GamepadMappings`.
+//! - Functions: `gilrs_button_to_string`, `gilrs_axis_to_string`, `virtual_dpad`.
+//! - Implementations: `GamepadState`, `GamepadMappings`.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GD01, GD02, GD03};

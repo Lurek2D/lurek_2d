@@ -387,6 +387,11 @@ fn lua_unit_ai_unit() {
 }
 
 #[test]
+fn lua_unit_agent_unit() {
+    run_lua_test("unit/test_agent_core_unit.lua");
+}
+
+#[test]
 fn lua_unit_animation_unit() {
     run_lua_test("unit/test_animation_core_unit.lua");
 }

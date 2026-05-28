@@ -1,10 +1,6 @@
 //! Text search engine for game content files.
 //!
-//! - Literal, regex, glob, and multi-pattern search.
-//! - Memory-mapped file reading for large files.
-//! - Parallel file search with rayon-style thread distribution.
-//! - Specialized JSON path search and log file parsing.
-//! - Streaming mode with callbacks for real-time results.
+//! - Sub-modules: `config`, `engine`, `filter`, `json_search`, and 6 more.
 
 /// Grep configuration: thread count, file size limits, and encoding settings.
 pub mod config;

@@ -1,8 +1,4 @@
 //! Locale detection, validation, and flat-table catalog loading from TOML/JSON.
-//!
-//! - Date and number formatting with locale-aware separators.
-//! - Template interpolation with named and pair-based placeholders.
-//! - Plural-form selection for English and Slavic language families.
 
 /// Locale catalog storage and flattening helpers.
 pub mod catalog;

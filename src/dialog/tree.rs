@@ -1,10 +1,8 @@
 //! Dialogue tree types: topics, branches, and the AI selector.
 //!
-//! - Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
-//! - Topic and branch records with optional gate keys and utility-score references.
-//! - Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
-//! - Independent gating against FSM state and behavior-tree status for adaptive selection.
-//! - Base weight combined with optional utility scores for flexible priority ranking.
+//! - Data types: `DialogueBranch`, `DialogueTopic`, `DialogueNode`, `DialogueAI`.
+//! - Implementations: `DialogueNode`, `DialogueAI`.
+//! - Public methods: `new`, `new`, `set_fsm_state`, `set_bt_status`, and 7 more.
 
 use std::collections::HashMap;
 

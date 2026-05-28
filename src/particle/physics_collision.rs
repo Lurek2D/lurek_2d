@@ -1,7 +1,4 @@
 //! Bounce particles off rapier colliders using AABB overlap probes.
-//!
-//! - Reflect velocity with a configurable restitution coefficient.
-//! - Operates per-frame on all live particles in a system.
 
 use crate::particle::ParticleSystem;
 use crate::physics::World;

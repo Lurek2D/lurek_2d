@@ -1,7 +1,6 @@
 //! Software rasterization of a raycaster scene into an `ImageData` pixel buffer.
 //!
-//! - Flat-shaded fills for ceilings, floors, walls, and sprites.
-//! - Back-to-front draw order for correct painter's-algorithm layering.
+//! - Implementation: `RaycasterScene`.
 
 use crate::image::ImageData;
 use crate::raycaster::scene::RaycasterScene;

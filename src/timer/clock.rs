@@ -1,7 +1,7 @@
 //! Per-frame clock that tracks delta time, total elapsed, FPS, and a rolling average delta.
 //!
-//! - FPS is measured over one-second windows; average delta uses a fixed-size ring buffer.
-//! - Designed for the runtime main loop — one `tick()` call per frame drives all counters.
+//! - Data type: `Clock`.
+//! - Implementation: `Clock`.
 
 use std::time::Instant;
 

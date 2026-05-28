@@ -1,9 +1,8 @@
 //! TOML-file-defined validation rules: loaded and compiled from disk at engine startup.
 //!
-//! - `load_rules_from_file` reads a `.toml` rule file and returns `Vec<Box<dyn ValidationRule>>`.
-//! - `load_rules_from_toml` parses the TOML `[[rule]]` array directly from a string.
-//! - Each rule entry specifies `pattern`, `severity`, `message`, and optional `extensions`.
-//! - Loaded rules are appended to the engine rule set before the first validation run.
+//! - Functions: `load_rules_from_toml`, `load_rules_from_file`.
+//! - See `docs/specs/validator.md` for the module specification.
+
 use super::report::Severity;
 use super::rules_lua::LuaPatternRule;
 use std::path::Path;

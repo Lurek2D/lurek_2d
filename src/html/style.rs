@@ -1,7 +1,7 @@
 //! CSS stylesheet parsing: split source text into selector/declaration blocks.
 //!
-//! - Declaration normalization: property validation, value extraction, warning collection.
-//! - Length unit resolution: convert px, %, and unitless values to pixel floats.
+//! - Data types: `CssRule`, `CssParseResult`.
+//! - Functions: `parse_stylesheets`, `parse_declarations`, `parse_length`.
 
 use crate::html::element::normalise_name;
 use std::collections::BTreeMap;

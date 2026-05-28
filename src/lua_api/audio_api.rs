@@ -1,4 +1,14 @@
 //! `lurek.audio` - Audio playback, mixing, spatial sound, MIDI, and DSP processing for 2D games.
+//!
+//! - Registers `lurek.audio.*` functions and types via `register()`.
+//! - `LuaSource`: userdata type exposed to Lua.
+//! - `LuaBus`: userdata type exposed to Lua.
+//! - `LuaMidiPlayer`: userdata type exposed to Lua.
+//! - `LuaSoundPool`: userdata type exposed to Lua.
+//! - `LuaDecoder`: userdata type exposed to Lua.
+//! - Bridges 205 Lua-callable methods via `mlua`.
+//! - See `docs/specs/audio.md` for the full API specification.
+
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
 use crate::audio::{Decoder, SourceType};

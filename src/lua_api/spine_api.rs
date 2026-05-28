@@ -1,4 +1,9 @@
 //! `lurek.spine` — Spine-like skeletal animation with bones, slots, attachments, IK constraints, and skin mixing.
+//!
+//! - Registers `lurek.spine.*` functions and types via `register()`.
+//! - `LuaSkeleton`: userdata type exposed to Lua.
+//! - `LuaSkeletonAnimation`: userdata type exposed to Lua.
+//! - Bridges 37 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::spine::ik::IKConstraint;

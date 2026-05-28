@@ -1,9 +1,8 @@
 //! Background file I/O via a dedicated worker thread and bounded request queue.
 //!
-//! - Non-blocking read and write requests returning opaque handles for polling.
-//! - Capacity-limited channel with graceful overflow reporting.
-//! - Thread-safe result storage consumed by callers through poll methods.
-//! - Automatic worker shutdown and join on drop.
+//! - Data types: `LoadHandle`, `AsyncLoader`.
+//! - Enums: `LoadResult`, `LoadStatus`, `WriteResult`, `WriteStatus`.
+//! - Implementation: `AsyncLoader`.
 
 use std::collections::HashMap;
 use std::path::PathBuf;

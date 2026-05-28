@@ -1,7 +1,7 @@
 //! Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
 //!
-//! - Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
-//! - Built-in easing catalog query used by tooling and Lua autocomplete.
+//! - Data type: `TweenState`.
+//! - Functions: `resolve_easing`, `builtin_easing_names`.
 
 use crate::math::easing;
 

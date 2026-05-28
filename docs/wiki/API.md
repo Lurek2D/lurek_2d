@@ -17,19 +17,20 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (7974 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28561 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8019 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (28677 lines)
 
 ## Coverage
 
-- 66 modules
-- 5214 functions and methods
+- 67 modules
+- 5233 functions and methods
 - 100.0% documented
 
 ## API Module Index
 
 | API | Functions | Types | Purpose |
 |---|---:|---:|---|
+| [lurek.agent](Module-agent) | 2 | 2 | lurek.agent -- Agent bindings for LLM and VM integration. |
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.audio](Module-audio) | 83 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |

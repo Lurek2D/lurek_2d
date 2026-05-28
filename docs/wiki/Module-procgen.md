@@ -155,8 +155,8 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 ### `render.rs`
 
 - Tileable Perlin noise grid generation and cell access.
-- Conversion to grayscale RGBA byte buffers and `ImageData`.
-- Batch render-command generation for grid visualization.
+- Conversion to flat grayscale RGBA byte buffers for higher-tier projection.
+- Does not create `RenderCommand`, `ImageData`, tilemap objects, or Lua userdata.
 
 ### `rooms.rs`
 

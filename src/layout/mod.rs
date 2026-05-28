@@ -1,12 +1,4 @@
 //! Generic graph/tree/DAG layout algorithms.
-//!
-//! Provides algorithms for positioning nodes in 2D space:
-//! - **Tree layout** — Reingold-Tilford algorithm for hierarchical trees
-//! - **DAG layout** — Sugiyama layered algorithm for directed acyclic graphs
-//! - **Force-directed** — Fruchterman-Reingold spring simulation for arbitrary graphs
-//! - **Grid alignment** — Post-processing snap-to-grid and centering
-//!
-//! Used by: pipeline visualization, dialog tree view, skill trees, node editors.
 
 /// Sugiyama layered layout algorithm for directed acyclic graphs (DAGs).
 pub mod dag;

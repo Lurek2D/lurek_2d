@@ -1,7 +1,6 @@
 //! Logical game viewport size queries and scale-mode staging.
 //!
-//! - Coordinate conversion between logical game space and physical screen pixels.
-//! - Viewport scale/offset snapshot via `ScaleInfo`.
+//! - Data type: `ScaleInfo`.
 
 use crate::runtime::shared_state::WindowState;
 /// Return the logical game viewport width in pixels.

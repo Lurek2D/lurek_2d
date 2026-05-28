@@ -9715,6 +9715,7 @@ No direct references were found in `content/games/**/main.lua`.
 
 ## 🔗 Related Modules
 
+- Previous: [agent](Module-agent)
 - Next: [animation](Module-animation)
 - [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
 - [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.

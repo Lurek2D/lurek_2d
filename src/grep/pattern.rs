@@ -1,10 +1,7 @@
 //! Pattern kinds: literal, regex, glob, fuzzy, and multi-literal match strategies.
 //!
-//! - `PatternKind` is the discriminant stored in `Matcher` to select dispatch logic.
-//! - `Literal` and `MultiLiteral` use Aho-Corasick for sub-linear multi-pattern search.
-//! - `Regex` wraps the `regex` crate; patterns are validated at construction time.
-//! - `Glob` converts shell-style `*`/`?` patterns to a regex and reuses the regex path.
-//! - `Fuzzy` uses Levenshtein distance with a configurable `max_edit_distance`.
+//! - Enum: `PatternKind`.
+
 /// Kind of search pattern: literal, regex, glob, fuzzy, or multi-literal.
 #[derive(Debug, Clone)]
 pub enum PatternKind {

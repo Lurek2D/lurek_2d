@@ -1,4 +1,8 @@
 //! `lurek.sprite` - Provides sprite batch rendering, sprite sheets, quad management, and texture atlas operations for efficient 2D rendering.
+//!
+//! - Registers `lurek.sprite.*` functions and types via `register()`.
+//! - `LuaSpriteSheet`: userdata type exposed to Lua.
+//! - `LuaSpriteAtlas`: userdata type exposed to Lua.
 
 use super::SharedState;
 use crate::math::Rect;

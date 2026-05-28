@@ -1,7 +1,7 @@
 //! Distance-from-border precompute for province pixels.
 //!
-//! - Multi-source BFS seeded from border pixels where neighboring province ids differ.
-//! - Produces a compact u8 field used by later shading or LOD passes.
+//! - Data type: `ProvinceDistanceField`.
+//! - Functions: `compute_distance_field`, `compute_distance_field_from_registry`.
 
 use crate::province::registry::ProvinceRegistry;
 

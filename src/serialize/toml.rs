@@ -1,7 +1,6 @@
 //! Parse TOML strings into engine-internal `SerialValue` trees.
 //!
-//! - Encode `SerialValue` back to TOML text for config persistence.
-//! - Bridge between the `toml` crate's value types and the serial layer.
+//! - Functions: `parse_toml`, `from_toml`, `encode_toml`, `to_toml`.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

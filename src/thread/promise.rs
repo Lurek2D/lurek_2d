@@ -1,7 +1,6 @@
 //! One-shot async computation that spawns a LuaThread and collects a single result.
 //!
-//! - Lifecycle tracking via PromiseState (Pending, Done, Error).
-//! - Result delivery through an internal named channel polled by the caller.
+//! - Data type: `Promise`.
 
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;

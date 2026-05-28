@@ -1,7 +1,7 @@
 //! Source-to-target color remapping via indexed palette lookup tables.
 //!
-//! - Hash-accelerated pixel matching for large palettes, linear scan for small ones.
-//! - In-place image rewrite and cyclic rotation of replacement colors.
+//! - Data type: `PaletteLUT`.
+//! - Implementation: `PaletteLUT`.
 
 use crate::color::Color;
 use std::collections::HashMap;

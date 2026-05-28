@@ -1,9 +1,8 @@
 //! Record and replay input sessions as sparse frame sequences.
 //!
-//! - Capture key/mouse events per frame; skip silent frames to save space.
-//! - Serialise recordings to versioned JSON envelopes for deterministic replay.
-//! - Provide stateful recorder with start/stop/load/playback cursor lifecycle.
-//! - Support both live recording and loaded-file playback in one struct.
+//! - Data types: `InputEvent`, `RecordedFrame`, `InputRecording`, `InputRecorder`.
+//! - Implementations: `InputRecording`, `InputRecorder`.
+//! - Public methods: `to_json`, `from_json`, `new`, `start_recording`, and 9 more.
 
 /// A single input event with a kind tag and a key/button name.
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq)]

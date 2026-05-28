@@ -1,9 +1,7 @@
 //! Multi-channel tween interpolator that drives values from start to target over a fixed duration.
 //!
-//! - Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
-//! - Each tween holds an independent clock, supports reset, seek, and completion query.
-//! - Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
-//! - Falls back to linear when an unknown easing name is provided.
+//! - Data types: `TweenValue`, `Tween`.
+//! - Implementation: `Tween`.
 
 use crate::math::easing;
 

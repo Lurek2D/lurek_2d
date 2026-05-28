@@ -1,4 +1,9 @@
 //! `lurek.parallax` -- Lua bindings for parallax layers, parallax sets, presets, automatic camera rendering, tiling, blend modes, and effect chains.
+//!
+//! - Registers `lurek.parallax.*` functions and types via `register()`.
+//! - `LuaParallaxLayer`: userdata type exposed to Lua.
+//! - `LuaParallaxSet`: userdata type exposed to Lua.
+//! - Bridges 51 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::lua_api::render_api::LuaImage;

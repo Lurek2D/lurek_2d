@@ -1,8 +1,7 @@
 //! Fixed-capacity circular buffer with oldest-overwrite FIFO semantics
 //!
-//! - Push, pop, peek, and index-based access with O(1) operations
-//! - Iteration and collection helpers from oldest to newest element
-//! - Copy-optimized collection for `Clone + Copy` element types
+//! - Data type: `RingBuffer`.
+//! - Implementation: `RingBuffer`.
 
 /// Hold circular queue storage with overwrite semantics.
 pub struct RingBuffer<T: Clone> {

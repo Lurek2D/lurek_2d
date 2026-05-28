@@ -26,7 +26,7 @@ end)
 describe("always-on module registration", function()
     local always_on = {
         "event", "sprite", "save", "docs", "log", "runtime",
-        "repl", "data", "mods", "serial", "dataframe", "light",
+        "repl", "binary", "mods", "serial", "dataframe", "light",
         "html", "math", "color"
     }
 
@@ -71,7 +71,7 @@ end)
 -- @describe module namespace types
 describe("module namespace types", function()
     local modules_to_check = {
-        "event", "sprite", "math", "color", "log", "data",
+        "event", "sprite", "math", "color", "log", "binary",
         "serial", "html", "timer", "physics", "animation",
         "audio", "input", "ecs"
     }

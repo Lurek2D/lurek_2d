@@ -1,7 +1,7 @@
 //! Bidirectional conversion between Lua tables and a typed serial value tree.
 //!
-//! - Supports null, bool, int, float, string, sequence, and map variants.
-//! - Detects array-like tables automatically and emits `Seq`; otherwise emits `Map`.
+//! - Enum: `SerialValue`.
+//! - Functions: `to_lua`, `from_lua`.
 
 use indexmap::IndexMap;
 use mlua::prelude::{Lua, LuaResult, LuaValue};

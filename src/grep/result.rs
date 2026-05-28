@@ -1,9 +1,7 @@
 //! Search result types: per-line matches, per-file matches, and totals.
 //!
-//! - `LineMatch` carries `line_number`, `content` string, and `positions` spans.
-//! - `FileMatch` groups `Vec<LineMatch>` under a `PathBuf` source path.
-//! - `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`.
-//! - All types are `Debug + Clone`; `GrepResult` implements `Display` for summary output.
+//! - Data types: `LineMatch`, `FileMatch`, `SearchResult`.
+
 use std::path::PathBuf;
 
 /// A single line that matched the search pattern, with position spans.

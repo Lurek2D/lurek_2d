@@ -1,7 +1,7 @@
 //! Render command generation from camera transform state.
 //!
-//! - Builds PushTransform/Translate/Rotate/Scale/PopTransform sequences for Camera and Camera2D.
-//! - Separates begin/end phases so callers can sandwich scene commands between transforms.
+//! - Implementations: `Camera`, `Camera2D`.
+//! - Public methods: `append_begin_render_commands`, `begin_render_commands`, `end_render_command`, `generate_render_commands`, and 4 more.
 
 use crate::camera::types::{Camera, Camera2D};
 use crate::render::renderer::RenderCommand;

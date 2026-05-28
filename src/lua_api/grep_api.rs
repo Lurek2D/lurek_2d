@@ -1,4 +1,9 @@
 //! `lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.
+//!
+//! - Registers `lurek.grep.*` functions and types via `register()`.
+//! - `LuaGrepEngine`: userdata type exposed to Lua.
+//! - `LuaFileFilter`: userdata type exposed to Lua.
+
 use super::SharedState;
 use crate::grep::{
     engine::GrepEngine, filter::FileFilter, json_search, log_search, GrepConfig,

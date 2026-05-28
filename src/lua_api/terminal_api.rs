@@ -1,4 +1,11 @@
 //! `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
+//!
+//! - Registers `lurek.terminal.*` functions and types via `register()`.
+//! - `LuaTerminal`: userdata type exposed to Lua.
+//! - `LuaWidget`: userdata type exposed to Lua.
+//! - Bridges 88 Lua-callable methods via `mlua`.
+//! - See `docs/specs/terminal.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};

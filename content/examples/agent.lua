@@ -1,0 +1,538 @@
+-- content/examples/agent.lua
+-- Run: cargo run -- content/examples/agent.lua
+
+--- Agent Module: LLM AI interaction — lurek.agent
+
+-- ─── lurek.agent.new ─────────────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.new
+do
+    local agent = lurek.agent.new({
+        url          = "http://localhost:11434/api/generate",
+        model        = "llama3",
+        system_prompt = "You are a helpful game AI.",
+        format       = "json",
+        name         = "helper",
+        description  = "Provides general assistance to the player.",
+        max_retries  = 2,
+        timeout      = 30,
+        options      = {
+            num_ctx     = 4096,
+            temperature = 0.7,
+            seed        = 42,
+        },
+    })
+    print("Agent created:", agent)
+end
+
+-- ─── lurek.agent.newManager ──────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newManager
+do
+    local manager = lurek.agent.newManager()
+    print("Manager created:", manager)
+end
+
+-- ─── lurek.agent.newSystem ───────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newSystem
+do
+    local system = lurek.agent.newSystem({
+        system_prompt = "You are a multi-agent game orchestrator. Respond concisely.",
+    })
+    print("AISystem created:", system)
+end
+
+-- ─── LAgent:setName ──────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setName
+do
+    local agent = lurek.agent.new({})
+    agent:setName("npc_writer")
+    print("Agent name set.")
+end
+
+-- ─── LAgent:setDescription ───────────────────────────────────────────────────
+
+--@api-stub: LAgent:setDescription
+do
+    local agent = lurek.agent.new({})
+    agent:setDescription("Specialises in writing NPC dialogue with emotional depth.")
+    print("Agent description set.")
+end
+
+-- ─── LAgent:addSkill ─────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:addSkill
+do
+    local agent = lurek.agent.new({})
+    agent:addSkill("location", "The player is currently in the Darkwood forest.")
+    agent:addSkill("time",     "It is midnight in the game world.")
+    print("Skills added to agent context.")
+end
+
+-- ─── LAgent:clearSkills ──────────────────────────────────────────────────────
+
+--@api-stub: LAgent:clearSkills
+do
+    local agent = lurek.agent.new({})
+    agent:addSkill("temp", "Some context.")
+    agent:clearSkills()
+    print("Agent skills cleared.")
+end
+
+-- ─── LAgent:setOption ────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setOption
+do
+    local agent = lurek.agent.new({})
+    agent:setOption("temperature", 0.4)
+    agent:setOption("seed", 1234)
+    print("Agent options set.")
+end
+
+-- ─── LAgent:setFormat ────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setFormat
+do
+    local agent = lurek.agent.new({})
+    agent:setFormat("text")
+    print("Agent format changed to text.")
+end
+
+-- ─── LAgent:setMaxRetries ────────────────────────────────────────────────────
+
+--@api-stub: LAgent:setMaxRetries
+do
+    local agent = lurek.agent.new({})
+    agent:setMaxRetries(3)
+    print("Agent max retries set to 3.")
+end
+
+-- ─── LAgent:setContextSize ───────────────────────────────────────────────────
+
+--@api-stub: LAgent:setContextSize
+do
+    local agent = lurek.agent.new({})
+    agent:setContextSize(8192)
+    print("Agent context window set to 8192 tokens.")
+end
+
+-- ─── LAgent:setTemperature ───────────────────────────────────────────────────
+
+--@api-stub: LAgent:setTemperature
+do
+    local agent = lurek.agent.new({})
+    agent:setTemperature(0.9)
+    print("Agent temperature set to 0.9.")
+end
+
+-- ─── LAgent:prompt ───────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:prompt
+do
+    local agent = lurek.agent.new({
+        url    = "http://localhost:11434/api/generate",
+        model  = "llama3",
+        format = "json",
+    })
+
+    -- Async — must call agent:update() in the game loop to receive callbacks.
+    local id = agent:prompt("Describe what the player sees when entering the forest.", function(success, data, err_info)
+        if success then
+            print("Response:", data.description or data.response)
+        else
+            print("Error [" .. err_info.code .. "]:", err_info.message)
+        end
+    end)
+    print("Prompt dispatched, id =", id)
+end
+
+-- ─── LAgent:promptBatch ──────────────────────────────────────────────────────
+
+--@api-stub: LAgent:promptBatch
+do
+    local agent = lurek.agent.new({
+        url    = "http://localhost:11434/api/generate",
+        model  = "llama3",
+        format = "json",
+    })
+
+    local id = agent:promptBatch({
+        "Describe the bridge.",
+        "Describe the engine room.",
+        "Describe the dungeon entrance.",
+    }, function(results)
+        for i, res in ipairs(results) do
+            if res.success then
+                print("Result " .. i .. ":", res.data.description)
+            else
+                print("Task " .. i .. " failed [" .. res.error.code .. "]:", res.error.message)
+            end
+        end
+    end)
+    print("Batch dispatched, id =", id)
+end
+
+-- ─── LAgent:cancel ───────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:cancel
+do
+    local agent = lurek.agent.new({
+        url = "http://localhost:11434/api/generate",
+        model = "llama3",
+    })
+    local id = agent:prompt("Long-running request.", function() end)
+    agent:cancel(id)
+    print("Request cancelled, id =", id)
+end
+
+-- ─── LAgent:pendingCount ─────────────────────────────────────────────────────
+
+--@api-stub: LAgent:pendingCount
+do
+    local agent = lurek.agent.new({})
+    local n = agent:pendingCount()
+    print("Pending in-flight requests:", n)
+end
+
+-- ─── LAgent:update ───────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:update
+do
+    local agent = lurek.agent.new({})
+    -- Called every frame in the game loop to deliver completed LLM responses.
+    agent:update()
+    print("Agent polled for responses.")
+end
+
+-- ─── LAgent:evalCode ─────────────────────────────────────────────────────────
+
+--@api-stub: LAgent:evalCode
+do
+    local agent = lurek.agent.new({})
+    local ok = agent:evalCode("local x = 1 + 1; print('eval result:', x)")
+    print("evalCode ok:", ok)
+end
+
+-- ─── LAgentManager:runAll ────────────────────────────────────────────────────
+
+--@api-stub: LAgentManager:runAll
+do
+    local manager = lurek.agent.newManager()
+
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+
+    local id = manager:runAll({
+        { agent = writer,   instruction = "Write a boss intro monologue." },
+        { agent = designer, instruction = "Design the boss arena layout."  },
+    }, function(results)
+        for i, res in ipairs(results) do
+            print("Task " .. i, res.success and tostring(res.data) or res.error.message)
+        end
+    end)
+    print("Manager batch dispatched, id =", id)
+end
+
+-- ─── LAgentManager:update ────────────────────────────────────────────────────
+
+--@api-stub: LAgentManager:update
+do
+    local manager = lurek.agent.newManager()
+    -- Called every frame in the game loop.
+    manager:update()
+    print("Manager polled for batch responses.")
+end
+
+-- ─── LAISystem:addAgent ──────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:addAgent
+do
+    local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
+
+    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    npc:setDescription("Writes NPC dialogue with emotional depth and regional accents.")
+
+    system:addAgent("npc_writer", npc)
+    print("Agent 'npc_writer' added to system.")
+end
+
+-- ─── LAISystem:removeAgent ───────────────────────────────────────────────────
+
+--@api-stub: LAISystem:removeAgent
+do
+    local system = lurek.agent.newSystem({})
+    local agent  = lurek.agent.new({})
+    system:addAgent("temp_agent", agent)
+    local removed = system:removeAgent("temp_agent")
+    print("Agent removed:", removed)
+end
+
+-- ─── LAISystem:listAgents ────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:listAgents
+do
+    local system = lurek.agent.newSystem({})
+    local a = lurek.agent.new({})
+    system:addAgent("writer",   a)
+    system:addAgent("designer", a)
+    local names = system:listAgents()
+    for _, name in ipairs(names) do
+        print("Registered agent:", name)
+    end
+end
+
+-- ─── LAISystem:addInstruction ────────────────────────────────────────────────
+
+--@api-stub: LAISystem:addInstruction
+do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction("art_style", "Use a 16-bit pixel art visual style. Palettes are limited to 16 colours per sprite.")
+    system:addInstruction("tone",      "Keep all responses concise and in present tense.")
+    print("Instructions added to system.")
+end
+
+-- ─── LAISystem:removeInstruction ─────────────────────────────────────────────
+
+--@api-stub: LAISystem:removeInstruction
+do
+    local system = lurek.agent.newSystem({})
+    system:addInstruction("debug_hint", "Temporary debug context.")
+    local removed = system:removeInstruction("debug_hint")
+    print("Instruction removed:", removed)
+end
+
+-- ─── LAISystem:addSkill ──────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:addSkill
+do
+    local system = lurek.agent.newSystem({})
+    -- Lurek auto-injects this skill when the user prompt contains any listed keyword.
+    system:addSkill(
+        "pixel_art_rules",
+        { "pixel art", "sprite", "texture", "tileset", "palette" },
+        "Pixel art must use orthographic projection and a maximum of 16 colours per tile."
+    )
+    system:addSkill(
+        "combat_rules",
+        { "combat", "attack", "damage", "enemy", "boss" },
+        "Combat uses turn-based resolution with action points (AP) per entity."
+    )
+    print("System skills added.")
+end
+
+-- ─── LAISystem:removeSkill ───────────────────────────────────────────────────
+
+--@api-stub: LAISystem:removeSkill
+do
+    local system = lurek.agent.newSystem({})
+    system:addSkill("temp_skill", { "test" }, "Temporary.")
+    local removed = system:removeSkill("temp_skill")
+    print("Skill removed:", removed)
+end
+
+-- ─── LAISystem:buildContext ──────────────────────────────────────────────────
+
+--@api-stub: LAISystem:buildContext
+do
+    local system = lurek.agent.newSystem({ system_prompt = "You are a game AI." })
+    system:addInstruction("art_style", "Use pixel art, 16 colours max.")
+    system:addSkill("combat_rules", { "combat", "attack" }, "Turn-based combat with AP.")
+
+    local npc = lurek.agent.new({})
+    npc:setDescription("NPC dialogue specialist.")
+    system:addAgent("npc_writer", npc)
+
+    -- Preview the full context that would be sent for this instruction.
+    local ctx = system:buildContext(
+        "Design an attack animation for the boss.",
+        { agent = "npc_writer", instructions = { "art_style" } }
+    )
+    print("Context preview:\n", ctx)
+end
+
+-- ─── LAISystem:prompt ────────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:prompt
+do
+    local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
+    system:addInstruction("art_style", "Use 16-bit pixel art.")
+    system:addSkill("pixel_art_rules", { "sprite", "texture" }, "Max 16 colours per tile.")
+
+    local designer = lurek.agent.new({
+        url    = "http://localhost:11434/api/generate",
+        model  = "llama3",
+        format = "json",
+    })
+    designer:setDescription("Visual design specialist focusing on sprites and environments.")
+    system:addAgent("designer", designer)
+
+    -- Keyword "sprite" triggers auto-injection of "pixel_art_rules".
+    -- "art_style" is explicitly included via opts.instructions.
+    local id = system:prompt(
+        "designer",
+        "Design a player sprite for the main character.",
+        function(success, data, err_info)
+            if success then
+                print("Design:", data.description)
+            else
+                print("Error:", err_info.message)
+            end
+        end,
+        { instructions = { "art_style" } }
+    )
+    print("System prompt dispatched, id =", id)
+end
+
+-- ─── LAISystem:runAll ────────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:runAll
+do
+    local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
+    system:addInstruction("art_style", "16-bit pixel art.")
+
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    writer:setDescription("Writes story and NPC dialogue.")
+    designer:setDescription("Designs levels and visual assets.")
+
+    system:addAgent("writer",   writer)
+    system:addAgent("designer", designer)
+
+    -- Each task specifies which agent to route to and which instructions to include.
+    local id = system:runAll({
+        { agent = "writer",   instruction = "Write boss intro text.", instructions = {} },
+        { agent = "designer", instruction = "Design the boss arena.", instructions = { "art_style" } },
+    }, function(results)
+        for i, res in ipairs(results) do
+            print("Task " .. i, res.success and tostring(res.data) or res.error.message)
+        end
+    end)
+    print("System runAll dispatched, id =", id)
+end
+
+-- ─── LAISystem:update ────────────────────────────────────────────────────────
+
+--@api-stub: LAISystem:update
+do
+    local system = lurek.agent.newSystem({})
+    -- Called every frame in the game loop.
+    system:update()
+    print("AISystem polled for responses.")
+end
+
+-- ─── lurek.agent.newOllama ───────────────────────────────────────────────────
+
+--@api-stub: lurek.agent.newOllama
+do
+    local ollama = lurek.agent.newOllama()
+    print("OllamaManager created, default URL http://127.0.0.1:11434")
+end
+
+-- ─── LOllamaManager:isRunning ────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:isRunning
+do
+    local ollama  = lurek.agent.newOllama()
+    local running = ollama:isRunning()
+    print("Ollama running:", running)
+end
+
+-- ─── LOllamaManager:version ──────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:version
+do
+    local ollama = lurek.agent.newOllama()
+    local v      = ollama:version()
+    print("Ollama version:", v)
+end
+
+-- ─── LOllamaManager:listModels ───────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:listModels
+do
+    local ollama = lurek.agent.newOllama()
+    local models = ollama:listModels()
+    for _, m in ipairs(models) do
+        print(m.name, string.format("%.1f GB", m.size_gb))
+    end
+end
+
+-- ─── LOllamaManager:hasModel ─────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:hasModel
+do
+    local ollama = lurek.agent.newOllama()
+    local found  = ollama:hasModel("llama3")
+    print("llama3 available:", found)
+end
+
+-- ─── LOllamaManager:start ────────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:start
+do
+    local ollama = lurek.agent.newOllama()
+    local ok     = ollama:start()
+    print("Ollama started:", ok)
+end
+
+-- ─── LOllamaManager:stop ─────────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:stop
+do
+    local ollama  = lurek.agent.newOllama()
+    local stopped = ollama:stop()
+    print("Ollama stopped:", stopped)
+end
+
+-- ─── LOllamaManager:restart ──────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:restart
+do
+    local ollama = lurek.agent.newOllama()
+    local ok     = ollama:restart()
+    print("Ollama restarted:", ok)
+end
+
+-- ─── LOllamaManager:pullModel ────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:pullModel
+do
+    local ollama = lurek.agent.newOllama()
+    local id     = ollama:pullModel("llama3", function(success, err_msg)
+        if success then
+            print("Model downloaded successfully.")
+        else
+            print("Pull failed:", err_msg)
+        end
+    end)
+    print("Pull started, callback id =", id)
+end
+
+-- ─── LOllamaManager:deleteModel ──────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:deleteModel
+do
+    local ollama = lurek.agent.newOllama()
+    local ok     = ollama:deleteModel("llama3:latest")
+    print("Model deleted:", ok)
+end
+
+-- ─── LOllamaManager:pendingCount ─────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:pendingCount
+do
+    local ollama = lurek.agent.newOllama()
+    local n      = ollama:pendingCount()
+    print("In-flight pulls:", n)
+end
+
+-- ─── LOllamaManager:update ───────────────────────────────────────────────────
+
+--@api-stub: LOllamaManager:update
+do
+    local ollama = lurek.agent.newOllama()
+    -- Dispatch pull callbacks that completed since the last frame.
+    ollama:update()
+end

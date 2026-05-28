@@ -1,9 +1,7 @@
 //! Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
 //!
-//! - Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
-//! - Mono downmix helper for multi-channel input files.
-//! - Heat-colour mapping from normalised magnitude to RGBA.
-//! - Parent directory auto-creation for output image paths.
+//! - Functions: `waveform_to_png`, `spectrogram_to_png`.
+//! - See `docs/specs/dsp.md` for the module specification.
 
 use image::{ImageBuffer, Rgba};
 use rodio::{Decoder, Source};

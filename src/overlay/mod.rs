@@ -1,12 +1,4 @@
 //! Screen-space overlay sub-system: ambient lighting, atmospheric effects, and scene transitions.
-//!
-//! - `ambient` — ambient colour driven by time-of-day for scene-wide lighting tint.
-//! - `atmosphere` — atmospheric overlays: clouds, fog layers, and lightning flashes.
-//! - `controller` — top-level overlay scheduler for weather, fades, haze, and screen burns.
-//! - `screen_effects` — short-lived screen-space flash, shake, and fade state.
-//! - `transition` — full-screen scene transition effects with configurable easing.
-//! - `water` — animated water distortion overlay for underwater and rain scenarios.
-//! - `weather` — particle-based weather simulation: rain, snow, hail, dust, leaves, and ash.
 
 /// Ambient color state derived from time-of-day settings.
 pub mod ambient;

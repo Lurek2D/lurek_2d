@@ -1,8 +1,7 @@
 //! Adaptive depth sorting for scene draw calls with four strategy tiers.
 //!
-//! - Selects unstable, stable, 8-bit radix, or rayon parallel sort by entry count and depth shape.
-//! - Radix path requires integral depths and ≥256 entries; parallel kicks in at 10k entries.
-//! - Each entry carries depth, callback index, and object-kind flag for draw dispatch.
+//! - Data types: `DepthEntry`, `DepthSorter`.
+//! - Implementation: `DepthSorter`.
 
 /// Minimum entry count that enables the 8-bit radix sort path over unstable sort.
 const RADIX_THRESHOLD: usize = 256;

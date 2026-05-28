@@ -1,10 +1,8 @@
 //! Vector operations (normalize, cross2d, outer product, dot via spatial)
 //!
-//! - 2D transformation matrices (rotation, affine, point transform)
-//! - Convolution kernels (Gaussian) and edge detection (Sobel)
-//! - Linear system solving via Gaussian elimination with partial pivoting
-//! - LU decomposition with row permutation and determinant sign tracking
-//! - Dominant eigenpair estimation via power iteration
+//! - Data type: `LuDecomp`.
+//! - Functions: `normalize_vec`, `cross2d`, `outer`, `rotate2d_matrix`, and 7 more.
+//! - Uses: `compute`.
 
 use crate::compute::array::{DataType, NdArray};
 use crate::compute::spatial;

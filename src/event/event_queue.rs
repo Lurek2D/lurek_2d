@@ -1,9 +1,8 @@
 //! Dual-priority FIFO event queue (high and normal) with priority-based polling.
 //!
-//! - Event payload types supporting string, number, boolean, nil, and shallow tables.
-//! - Condvar-based blocking wait with optional timeout for thread synchronization.
-//! - Lua value conversion utilities for copying event payloads across the Rust-Lua boundary.
-//! - Table key and value marshalling with shallow-copy semantics.
+//! - Data types: `Event`, `EventQueue`.
+//! - Enums: `EventPriority`, `EventTableKey`, `EventArg`.
+//! - Functions: `event_arg_to_lua_value`, `event_to_lua_multi`.
 
 use std::collections::VecDeque;
 use std::sync::{Condvar, Mutex};

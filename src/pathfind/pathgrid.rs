@@ -1,9 +1,8 @@
 //! Grid-based A* pathfinding with 8-directional movement and variable cell costs.
 //!
-//! - Bresenham line-of-sight checks for post-search path smoothing (string-pull).
-//! - World-space coordinate conversion: cell indices map to centres via configurable cell size.
-//! - Diagonal corner-cutting prevention to avoid clipping through blocked corners.
-//! - Octile distance heuristic for consistent and admissible cost estimation.
+//! - Data types: `Cell`, `PathGrid`.
+//! - Implementations: `Cell`, `AStarNode`, `PathGrid`.
+//! - Public methods: `new`, `in_bounds`, `set_walkable`, `is_walkable`, and 5 more.
 
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;

@@ -1,4 +1,8 @@
 //! `lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.
+//!
+//! - Registers `lurek.color.*` functions and types via `register()`.
+//! - Bridges 19 Lua-callable methods via `mlua`.
+//! - See `docs/specs/color.md` for the full API specification.
 
 use super::SharedState;
 use crate::color::{

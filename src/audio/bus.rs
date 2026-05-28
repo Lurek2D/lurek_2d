@@ -1,8 +1,7 @@
 //! Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
 //!
-//! - Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
-//! - Duck-target assignment enabling automatic cross-bus volume suppression.
-//! - Boundary clamping on volume, pitch, and duck volume values.
+//! - Data type: `Bus`.
+//! - Implementation: `Bus`.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{BU01, BU02, BU03};

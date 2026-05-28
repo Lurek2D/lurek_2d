@@ -1,6 +1,11 @@
 //! Lua API binding modules and shared runtime re-exports for building Lurek2D Lua VMs.
+//!
+//! - Registers `lurek.mod.*` functions and types via `register()`.
+//! - See `docs/specs/mod.md` for the full API specification.
 
 pub use crate::runtime::{ErrorInfo, FullscreenType, SharedState, WindowState};
+/// Exposes the `lurek.agent` binding module.
+pub mod agent_api;
 /// Exposes the `lurek.ai` binding module.
 pub mod ai_api;
 /// Exposes the `lurek.animation` binding module.

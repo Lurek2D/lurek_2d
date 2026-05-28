@@ -1,12 +1,9 @@
 //! Mod registry: register, unregister, and look up mods by id or capability.
 //!
-//! - Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
-//! - Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
-//! - Asset conflict detection: prevent two mods from declaring the same asset path.
-//! - Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
-//! - Folder scanning: discover mod directories on disk and batch-register valid entries.
-//! - Dependency validation: detect missing deps and circular dependency cycles.
-//! - Config schema: carry typed key/default triples from manifests for runtime config UI.
+//! - Data types: `ModInfo`, `ModManager`.
+//! - Implementations: `ModInfo`, `ModManager`.
+//! - Public methods: `new`, `from_parts`, `check_api_version`, `new`, and 19 more.
+//! - Contains 28 method implementations.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};

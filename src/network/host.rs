@@ -1,12 +1,9 @@
 //! ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
 //!
-//! - Host role classification (Server, Client, combined Host) for session routing.
-//! - Event-driven poll loop yielding Connect, Disconnect, and Receive events.
-//! - Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
-//! - Unicast and broadcast packet sending with reliable or unreliable delivery.
-//! - Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
-//! - Bandwidth and channel limit configuration at runtime.
-//! - Convenience constructors for common server and client bind patterns.
+//! - Data types: `NetworkHost`, `PeerStats`.
+//! - Enums: `HostRole`, `NetworkEvent`.
+//! - Implementation: `NetworkHost`.
+//! - Public methods: `new`, `service`, `connect`, `send`, and 27 more.
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;

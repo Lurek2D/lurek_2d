@@ -1,8 +1,4 @@
 //! Cross-thread messaging via typed MPMC channels for Lua VM isolation.
-//!
-//! - Fixed-size thread pool for CPU-bound background tasks.
-//! - Promise containers for single-value async results.
-//! - Worker harness owning secondary Lua VMs for parallel script execution.
 
 /// Typed MPMC channel built on `crossbeam`-style semantics for cross-thread messages.
 pub mod channel;

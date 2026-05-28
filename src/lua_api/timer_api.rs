@@ -1,4 +1,9 @@
 //! `lurek.timer` - Provides time management with delta time, fixed timestep, cooldowns, delays, intervals, and frame counting.
+//!
+//! - Registers `lurek.timer.*` functions and types via `register()`.
+//! - `LuaScheduler`: userdata type exposed to Lua.
+//! - Bridges 49 Lua-callable methods via `mlua`.
+//! - See `docs/specs/timer.md` for the full API specification.
 
 use super::SharedState;
 use crate::timer::Scheduler;

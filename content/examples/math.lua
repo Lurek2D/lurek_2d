@@ -296,26 +296,26 @@ end
 
 --@api-stub: lurek.math.polygonUnion
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonUnion(a, b)
     print("union vertices = " .. #result)
 end
 
 --@api-stub: lurek.math.polygonIntersection
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonIntersection(a, b)
-    print("intersection vertices = " .. #result / 2)
+    print("intersection vertices = " .. #result)
 end
 
 --@api-stub: lurek.math.polygonDifference
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonDifference(a, b)
-    print("difference vertices = " .. #result / 2)
+    print("difference vertices = " .. #result)
 end
 
 --@api-stub: lurek.math.triangulate
@@ -1283,6 +1283,76 @@ end
 do
     local rng = lurek.math.newRandomGenerator(77)
     print("typeOf = " .. tostring(rng:typeOf("LRandomGenerator")))
+end
+
+--@api-stub: LRandomGenerator:roll
+do
+    local rng = lurek.math.newRandomGenerator(1)
+    local d20 = rng:roll(20)
+    print("d20 = " .. d20)
+end
+
+--@api-stub: LRandomGenerator:rollN
+do
+    local rng = lurek.math.newRandomGenerator(2)
+    local dice = rng:rollN(3, 6)
+    print("3d6 = " .. dice[1] .. ", " .. dice[2] .. ", " .. dice[3])
+end
+
+--@api-stub: LRandomGenerator:rollSum
+do
+    local rng = lurek.math.newRandomGenerator(3)
+    local total = rng:rollSum(4, 6)
+    print("4d6 sum = " .. total)
+end
+
+--@api-stub: LRandomGenerator:rollKeepHighest
+do
+    local rng = lurek.math.newRandomGenerator(4)
+    local stat = rng:rollKeepHighest(4, 6, 3)
+    print("4d6 keep 3 highest = " .. stat)
+end
+
+--@api-stub: LRandomGenerator:rollKeepLowest
+do
+    local rng = lurek.math.newRandomGenerator(5)
+    local penalty = rng:rollKeepLowest(4, 6, 3)
+    print("4d6 keep 3 lowest = " .. penalty)
+end
+
+--@api-stub: LRandomGenerator:rollAdvantage
+do
+    local rng = lurek.math.newRandomGenerator(6)
+    local adv = rng:rollAdvantage(20)
+    print("d20 advantage = " .. adv)
+end
+
+--@api-stub: LRandomGenerator:rollDisadvantage
+do
+    local rng = lurek.math.newRandomGenerator(7)
+    local dis = rng:rollDisadvantage(20)
+    print("d20 disadvantage = " .. dis)
+end
+
+--@api-stub: LRandomGenerator:rollExploding
+do
+    local rng = lurek.math.newRandomGenerator(8)
+    local ex = rng:rollExploding(3, 6)
+    print("3d6 exploding = " .. ex)
+end
+
+--@api-stub: LRandomGenerator:countSuccesses
+do
+    local rng = lurek.math.newRandomGenerator(9)
+    local hits = rng:countSuccesses(5, 10, 7)
+    print("5d10 successes (7+) = " .. hits)
+end
+
+--@api-stub: LRandomGenerator:chance
+do
+    local rng = lurek.math.newRandomGenerator(10)
+    local crit = rng:chance(0.05)
+    print("critical hit (5%) = " .. tostring(crit))
 end
 
 --@api-stub: lurek.math.geometricVoronoi

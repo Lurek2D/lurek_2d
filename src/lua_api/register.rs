@@ -1,4 +1,8 @@
 //! Lua VM creation and `lurek.*` module registration entry point.
+//!
+//! - Registers `lurek.register.*` functions and types via `register()`.
+//! - Helper functions: `create_lua_vm`, `create_headless_vm`, `create_test_vm`.
+//! - See `docs/specs/register.md` for the full API specification.
 
 #[cfg(feature = "automation-plugin")]
 use super::automation_api;
@@ -10,7 +14,7 @@ use super::devtools_api;
 use super::flownet_api;
 use super::lua_module::ModuleEntry;
 use super::{
-    ai_api, animation_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
+    agent_api, ai_api, animation_api, audio_api, binary_api, camera_api, color_api, compute_api, cursor_api,
     dataframe_api, debugbridge_api, dialog_api, docs_api, dsp_api, ecs_api, effect_api, engine_api,
     event_api, filesystem_api, font_api, globe_api, grep_api, html_api, i18n_api, image_api,
     input_api, layout_api, learning_api, light_api, log_api, mapblock_api, math_api, midi_api,
@@ -54,6 +58,7 @@ macro_rules! gated {
 /// Always-on modules have `is_enabled` returning `true` unconditionally.
 static MODULES: &[ModuleEntry] = &[
     // ── Always-on core modules ──────────────────────────────────────────
+    always!(agent_api),
     always!(event_api),
     always!(sprite_api),
     always!(save_api),

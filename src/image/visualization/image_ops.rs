@@ -1,9 +1,7 @@
 //! Side-by-side labeled image comparison composite.
 //!
-//! - Pixel transform grid: original, inverted, grayscale, sepia columns.
-//! - HSV color wheel rendering from angle and distance.
-//! - Slot-based layout with automatic scaling and padding.
-//! - Label placement beneath each comparison slot.
+//! - Functions: `draw_image_comparison_to_image`, `draw_pixel_transform_grid_to_image`, `draw_color_wheel_to_image`.
+//! - Uses: `image`.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

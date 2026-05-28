@@ -1,10 +1,8 @@
 //! Fixed-size cellular automaton grid simulating falling sand, flowing water, rising gas, and spreading fire.
 //!
-//! - Material interaction rules: sand displaces water, fire consumes gas, gravity pulls solids down.
-//! - Alternating sweep direction each tick to reduce lateral bias in material flow.
-//! - RGBA image export with pluggable palette for rendering grid state to textures.
-//! - Compact byte serialization and deserialization for save/load of grid snapshots.
-//! - Geometric fill helpers (rect, circle) for painting materials into the grid.
+//! - Data type: `CellularWorld`.
+//! - Enum: `CellType`.
+//! - Function: `default_palette`.
 
 /// Cell material type used in `CellularWorld`.
 #[repr(u8)]

@@ -933,4 +933,5 @@ No direct references were found in `content/games/**/main.lua`.
 
 - Previous: [sprite](Module-sprite)
 - Next: [terminal](Module-terminal)
+- [agent](Module-agent) - lurek.agent -- Agent bindings for LLM and VM integration.
 - [engine](Module-engine) - lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.

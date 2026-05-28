@@ -1,4 +1,12 @@
 //! `lurek.dsp` - Digital signal processing: effects, offline batch processing, and audio visualization.
+//!
+//! - Registers `lurek.dsp.*` functions and types via `register()`.
+//! - Userdata types: `LuaLevelDetector`, `LuaSpectrumAnalyzer`, `LuaWaveform`.
+//! - Userdata types: `LuaAdsrEnvelope`, `LuaSynthesizer`, `LuaDspNode`.
+//! - Userdata type: `LuaDspGraph`.
+//! - Bridges 55 Lua-callable methods via `mlua`.
+//! - See `docs/specs/dsp.md` for the full API specification.
+
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
 use crate::dsp::analysis::{LevelDetector, SpectrumAnalyzer};

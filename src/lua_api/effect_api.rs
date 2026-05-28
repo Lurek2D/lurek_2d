@@ -1,4 +1,9 @@
 //! `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.
+//!
+//! - Registers `lurek.effect.*` functions and types via `register()`.
+//! - `LuaPostFxEffect`: userdata type exposed to Lua.
+//! - `LuaPostFxStack`: userdata type exposed to Lua.
+//! - `LuaImageEffect`: userdata type exposed to Lua.
 
 use super::SharedState;
 use crate::effect::{

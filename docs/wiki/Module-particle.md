@@ -241,12 +241,7 @@ Source: [particle.lua](../blob/main/content/examples/particle.lua)
 ```lua
 do
     local path = "logs/particle_example.toml"
-    local file = assert(io.open(path, "w"))
-    file:write("max_particles = 96\n")
-    file:write("emission_rate = 18.0\n")
-    file:write("lifetime_min = 0.2\n")
-    file:write("lifetime_max = 0.8\n")
-    file:close()
+    lurek.filesystem.write(path, "max_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
     local ps = lurek.particle.fromTOML(path)
     print("type = " .. ps:type())
@@ -382,12 +377,7 @@ Source: [particle.lua](../blob/main/content/examples/particle.lua)
 ```lua
 do
     local path = "logs/particle_example.toml"
-    local file = assert(io.open(path, "w"))
-    file:write("max_particles = 96\n")
-    file:write("emission_rate = 18.0\n")
-    file:write("lifetime_min = 0.2\n")
-    file:write("lifetime_max = 0.8\n")
-    file:close()
+    lurek.filesystem.write(path, "max_particles = 96\nemission_rate = 18.0\nlifetime_min = 0.2\nlifetime_max = 0.8\n")
 
     local ps = lurek.particle.fromTOML(path)
     print("type = " .. ps:type())

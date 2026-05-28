@@ -1,7 +1,6 @@
 //! Four-connected flood fill on a flat `u8` grid with threshold-based matching.
 //!
-//! - Return a binary mask of reachable cells from a seed coordinate.
-//! - Support both above-threshold and below-threshold fill modes.
+//! - Function: `flood_fill`.
 
 /// Flood-fill from `(sx, sy)` over `data` and return a flat mask where 1 = reached cell.
 ///

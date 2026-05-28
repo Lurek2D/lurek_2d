@@ -1,8 +1,8 @@
 //! Multi-series data graph renderer with viewport coordinate mapping.
 //!
-//! Supports line, scatter, and bar chart series. Provides world↔screen
-//! coordinate conversion and auto-range fitting for use in both runtime
-//! visualisation and editor panels.
+//! - Data type: `GraphRenderer`.
+//! - Enum: `SeriesData`.
+//! - Implementations: `SeriesData`, `GraphRenderer`.
 
 use crate::color::Color;
 

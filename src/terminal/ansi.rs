@@ -1,10 +1,8 @@
 //! ANSI escape sequence stripping and SGR attribute parsing.
 //!
-//! - Standard 8-color CGA and bright palette tables (codes 30–37, 90–97).
-//! - Xterm-256 color index decoding: cube (16–231) and grayscale (232–255).
-//! - 24-bit true-color RGB extraction from SGR 38/48 sub-code 2.
-//! - Span-based output splitting text into runs with shared fg/bg/bold state.
-//! - UTF-8 byte-level helpers for raw escape parsing without allocation.
+//! - Data types: `AnsiColor`, `AnsiSpan`.
+//! - Functions: `strip_ansi_codes`, `parse_ansi_spans`.
+//! - See `docs/specs/terminal.md` for the module specification.
 
 /// RGB color produced by ANSI color codes or xterm-256 palette lookup.
 #[derive(Debug, Clone, PartialEq)]

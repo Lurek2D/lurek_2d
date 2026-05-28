@@ -1,4 +1,11 @@
 //! `lurek.tween` - Provides value tweening with easing functions, sequences, parallel groups, and property animation for smooth game transitions.
+//!
+//! - Registers `lurek.tween.*` functions and types via `register()`.
+//! - `LuaTweenState`: userdata type exposed to Lua.
+//! - `LuaTween`: userdata type exposed to Lua.
+//! - `LuaTweenSequence`: userdata type exposed to Lua.
+//! - `LuaTweenParallel`: userdata type exposed to Lua.
+//! - `LuaSpring`: userdata type exposed to Lua.
 
 use super::SharedState;
 use crate::tween::{

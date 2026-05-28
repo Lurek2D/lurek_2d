@@ -1,9 +1,8 @@
 //! Spatial trigger zones with boundary containment (rect or circle).
 //!
-//! - Gravity overrides per zone: directional, point-attractor, repulsor, or zero-g.
-//! - Priority-based zone layering with bitmask filtering.
-//! - Damping overrides (linear and angular) for bodies inside a zone.
-//! - Enter/leave event tracking via diffing per-body zone sets each step.
+//! - Data types: `ZoneEvent`, `PhysicsZone`, `ZoneTracker`.
+//! - Enums: `ZoneGravityMode`, `ZoneBoundary`, `ZoneEventKind`.
+//! - Type aliases: `ZoneId`, `ZonePriority`.
 
 use std::collections::{HashMap, HashSet};
 

@@ -1,4 +1,9 @@
 //! `lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.
+//!
+//! - Registers `lurek.font.*` functions and types via `register()`.
+//! - `LuaFont`: userdata type exposed to Lua.
+//! - Helper function: `register_font_api`.
+//! - Bridges 19 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::render::font::{AVAILABLE_POINT_SIZES, Font};

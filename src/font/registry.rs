@@ -1,10 +1,7 @@
 //! Font registry: loads, caches, and resolves TTF/OTF and bitmap fonts by name.
 //!
-//! - `FontRegistry` maps `(name, FontStyle)` pairs to loaded `FontHandle` values.
-//! - Fonts are loaded on first request and cached; duplicates share the same handle.
-//! - `FontStyle` (Regular, Bold, Italic, BoldItalic) is independent of the file path.
-//! - File I/O is routed through `GameFS` — no direct filesystem access here.
-//! - A fallback font is always present; missing fonts degrade gracefully.
+//! - Data types: `FontHandle`, `FontRegistry`.
+//! - Enum: `FontStyle`.
 
 use std::collections::HashMap;
 

@@ -1,11 +1,9 @@
 //! Time-based and frame-based event scheduling with one-shot and repeating modes.
 //!
-//! - Named events with automatic deduplication on re-registration.
-//! - Global time-scale multiplier applied to wall-clock updates; clamped to safe range.
-//! - Per-event pause/resume, interval mutation, and remaining-time queries.
-//! - Swap-remove expiry during update to avoid O(n) shifts on large event lists.
-//! - Monotonic ID allocation for stable external references into the scheduler.
-//! - Integration point for `lurek.timer` Lua bindings via ID-keyed callback dispatch.
+//! - Data types: `ScheduledEvent`, `FrameEvent`, `Scheduler`.
+//! - Implementation: `Scheduler`.
+//! - Public methods: `new`, `after`, `after_named`, `every`, and 24 more.
+//! - Contains 29 method implementations.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};

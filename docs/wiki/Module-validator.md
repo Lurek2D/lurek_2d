@@ -197,7 +197,7 @@ Source: [validator.lua](../blob/main/content/examples/validator.lua)
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
-    print("lurek.validator.newEngine type=" .. eng:type())
+    print("lurek.validator.newEngine type=" .. type(eng))
     print("rule count=" .. eng:ruleCount())
 end
 ```
@@ -286,7 +286,7 @@ Source: [validator.lua](../blob/main/content/examples/validator.lua)
 ```lua
 do
     local eng = lurek.validator.newEngine("content/examples")
-    print("lurek.validator.newEngine type=" .. eng:type())
+    print("lurek.validator.newEngine type=" .. type(eng))
     print("rule count=" .. eng:ruleCount())
 end
 ```

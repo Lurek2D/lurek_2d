@@ -1,7 +1,6 @@
 //! Keyboard, mouse, gamepad, and touch input state aggregation.
 //!
-//! - Event constants for Lua callbacks (keypressed, mousemoved, etc.).
-//! - Combo gesture detection and input recording for replays.
+//! - Sub-modules: `combo`, `gamepad`, `keyboard`, `mouse`, and 3 more.
 
 /// Combo gesture detection and multi-step input sequences.
 pub mod combo;

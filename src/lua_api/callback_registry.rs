@@ -1,4 +1,6 @@
 //! Public types and helpers for the callback_registry module.
+//!
+//! - Registers `lurek.callback_registry.*` functions and types via `register()`.
 
 use mlua::prelude::*;
 use std::collections::HashMap;

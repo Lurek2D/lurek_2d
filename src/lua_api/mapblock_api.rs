@@ -1,8 +1,9 @@
 //! `lurek.mapblock` — Block-based map assembly system.
 //!
-//! Provides tools for building tile maps from composable blocks using
-//! scripted placement, Carcassonne-style neighbor constraints, multi-level
-//! support, and configurable tile slots.
+//! - Registers `lurek.mapblock.*` functions and types via `register()`.
+//! - Userdata types: `LuaMapBlockConfig`, `LuaMapBlock`, `LuaMapGroup`.
+//! - Userdata types: `LuaMapScript`, `LuaNeighborRules`, `LuaPlacementGrid`.
+//! - Userdata types: `LuaMapBlockGenerator`, `LuaMapBlockResult`, `LuaTilesetRef`.
 
 use super::SharedState;
 use crate::mapblock::{

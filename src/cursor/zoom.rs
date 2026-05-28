@@ -1,9 +1,7 @@
 //! Cursor magnifier lens: a configurable zoom window that follows the cursor.
 //!
-//! - `ZoomConfig` sets lens radius, magnification factor, and optional border style.
-//! - The lens is rendered as a post-process scissored blit after the main render pass.
-//! - Magnification clamps between 1.1× and 8.0× to avoid pixel smear at extremes.
-//! - Enabled/disabled via `lurek.cursor.set_zoom(config)` or the `[cursor]` TOML block.
+//! - Data type: `CursorZoom`.
+
 /// Cursor zoom/magnifier configuration.
 #[derive(Debug, Clone)]
 pub struct CursorZoom {

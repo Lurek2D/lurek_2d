@@ -1,7 +1,7 @@
 //! Weather particle simulation types and state management.
 //!
-//! - Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-//! - Tracks particle pool, wind parameters, and internal PRNG.
+//! - Data types: `WeatherParticle`, `WeatherState`.
+//! - Enum: `WeatherType`.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 /// Enumerates supported weather particle behaviors.

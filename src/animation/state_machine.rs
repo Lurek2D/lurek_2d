@@ -1,9 +1,8 @@
 //! Implements a named-state animation FSM driven by typed parameters and parsed conditions.
 //!
-//! - Registers states with clip bindings and transitions with string-based condition expressions.
-//! - Evaluates transition chains each frame and force-plays the target clip on state change.
-//! - Supports float, int, and bool parameters compared with standard relational operators.
-//! - Provides the condition parser and numeric comparison utilities used by transition evaluation.
+//! - Data types: `TransitionCondition`, `AnimTransition`, `AnimStateConfig`, `AnimStateMachine`.
+//! - Enums: `AnimParamValue`, `ConditionOp`, `ConditionValue`.
+//! - Functions: `compare_nums`, `parse_condition`.
 
 use super::controller::Animation;
 use std::collections::HashMap;

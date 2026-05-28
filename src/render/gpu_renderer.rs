@@ -1,16 +1,13 @@
 //! wgpu-based GPU renderer: vertex batching, draw-call encoding, pipeline caching, and frame presentation.
 //!
-//! - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
-//! - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
-//! - Off-screen canvas render targets with lazy depth/stencil attachment creation.
-//! - Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
-//! - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
-//! - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
-//! - Stencil write/test pipeline variants with configurable compare and operation modes.
-//! - Bitmap font fallback renderer and thick-line geometry generation utilities.
-//! - Frustum culling via 2-D AABB visibility test against the camera transform.
-//! - Automatic geometry buffer growth when frame vertex/index demand exceeds current capacity.
-//! - Texture upload, font atlas rebuild, and canvas lifecycle tied to slot-map resource pruning.
+//! - Data types: `RenderStats`, `GpuRenderer`.
+//! - Implementation: `GpuRenderer`.
+//! - Public methods: `new`, `resize`, `upload_texture`, `create_canvas`, and 1 more.
+//! - Contains 46 method implementations.
+//! - Uses: `log_msg`, `math`, `render`, `runtime`.
+//! - See `docs/specs/render.md` for the module specification.
+//! - Derives: `Copy`, `Clone`, `Pod`, `Zeroable`, `Debug`, and 4 more.
+//! - Part of the `render` subsystem.
 
 use crate::log_msg;
 use crate::math::{Mat3, Vec2};

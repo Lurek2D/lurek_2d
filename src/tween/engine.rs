@@ -1,10 +1,7 @@
 //! Tween engine: per-tick interpolation of numeric table fields on Lua objects.
 //!
-//! - `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
-//! - Each job targets a Lua registry key and a list of field names to animate.
-//! - Easing functions (linear, ease-in, ease-out, spring, bounce) are value-mapped.
-//! - `on_settle` callback fires once the job reaches its target value within epsilon.
-//! - Updated synchronously inside `lua_tick`; no background threads.
+//! - Data type: `TweenEngine`.
+//! - Implementation: `TweenEngine`.
 
 use crate::tween::handle::{LuaTween, LuaTweenParallel, LuaTweenSequence};
 use mlua::prelude::*;

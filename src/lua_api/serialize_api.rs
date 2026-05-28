@@ -1,4 +1,8 @@
 //! `lurek.serialize` — Data serialization and deserialization with JSON, TOML, CSV, XML, INI, and MessagePack encoding/decoding for game configuration, save data, and inter-system data exchange.
+//!
+//! - Registers `lurek.serialize.*` functions and types via `register()`.
+//! - Bridges 15 Lua-callable methods via `mlua`.
+//! - See `docs/specs/serialize.md` for the full API specification.
 
 use super::SharedState;
 use crate::serialize::{

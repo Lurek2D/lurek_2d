@@ -1,4 +1,7 @@
 //! `lurek.repl` -- Release-safe Lua REPL session bindings for interactive evaluation.
+//!
+//! - Registers `lurek.repl.*` functions and types via `register()`.
+//! - `LReplSession`: userdata type exposed to Lua.
 
 use crate::repl::ReplSession;
 use crate::runtime::SharedState;

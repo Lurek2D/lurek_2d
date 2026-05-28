@@ -1,7 +1,7 @@
 //! Entity snapshot capture and wire serialization for networked state.
 //!
-//! - Linear dead-reckoning prediction between ticks.
-//! - Server-authoritative reconciliation with configurable blend factor.
+//! - Data type: `EntitySnapshot`.
+//! - Functions: `predict_linear`, `reconcile`.
 
 use crate::network::message::NetValue;
 /// Point-in-time position and velocity snapshot for one networked entity.

@@ -1,9 +1,6 @@
 //! Visibility state enum: Hidden, Discovered, Visible, and custom extension levels.
 //!
-//! - `VisibilityState` has three built-in variants and reserves bits for game-defined levels.
-//! - `Hidden` = never seen; `Discovered` = seen but not currently in sight range; `Visible` = in range.
-//! - Ordered by ascending information: `Hidden < Discovered < Visible`.
-//! - Custom levels (e.g. `Remembered`) can be inserted between `Discovered` and `Visible`.
+//! - Enum: `VisibilityState`.
 
 /// Visibility state for a region from a specific player's perspective.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

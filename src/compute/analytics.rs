@@ -1,9 +1,8 @@
 //! Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d)
 //!
-//! - Histogram binning with configurable range and bin count
-//! - Percentile extraction with linear interpolation
-//! - Pairwise statistical measures (covariance, Pearson correlation)
-//! - Value normalization helpers (range scaling, z-score standardization)
+//! - Functions: `cumsum`, `diff`, `histogram`, `percentile`, and 6 more.
+//! - Uses: `compute`.
+//! - See `docs/specs/compute.md` for the module specification.
 
 use crate::compute::array::NdArray;
 

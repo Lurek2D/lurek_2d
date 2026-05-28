@@ -1,10 +1,9 @@
 //! Runtime configuration types parsed from `conf.toml` at engine startup.
 //!
-//! - Top-level `Config` struct with sections for window, renderer, modules, and performance.
-//! - Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
-//! - Dependency validation that auto-disables modules when prerequisites are off.
-//! - TOML merge logic: user overrides are layered on top of built-in defaults.
-//! - Serde-based serialization for round-trip configuration persistence.
+//! - Data types: `Config`, `RuntimeConfig`, `RenderConfig`, `WindowConfig`, and 5 more.
+//! - Implementations: `ModulesConfig`, `Config`.
+//! - Public methods: `apply_headless_profile`, `validate_and_fix`, `load`, `load_from_conf_toml`.
+//! - Contains 5 method implementations.
 
 #[allow(unused_imports)]
 use crate::log_msg;

@@ -1,4 +1,11 @@
 //! `lurek.pipeline` — Declarative task pipelines with dependency ordering, retry logic, branching, and async coroutine execution.
+//!
+//! - Registers `lurek.pipeline.*` functions and types via `register()`.
+//! - `LuaStep`: userdata type exposed to Lua.
+//! - `LuaPipeline`: userdata type exposed to Lua.
+//! - Helper functions: `pipeline_result_to_lua`, `cancel_remaining_steps`, `fire_step_callbacks`, `finalize_pipeline_result`.
+//! - Bridges 70 Lua-callable methods via `mlua`.
+//! - See `docs/specs/pipeline.md` for the full API specification.
 
 use super::SharedState;
 use crate::log_msg;

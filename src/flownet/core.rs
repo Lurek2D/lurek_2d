@@ -1,14 +1,9 @@
 //! Graph container managing nodes, edges, and items with id-based lookup.
 //!
-//! - Adjacency indexes for fast outgoing and incoming edge queries.
-//! - Node CRUD with cascade removal of connected edges and displaced items.
-//! - Edge CRUD with transit capacity, cooldown, and type filtering.
-//! - Item lifecycle: creation, node placement (with overflow policy), transit, and removal.
-//! - Subgraph extraction preserving topology and item positions.
-//! - Aggregate stats computation across nodes and edges.
-//! - Direction-based edge queries (in, out, both).
-//! - Simple circular-layout image rendering for debug preview.
-//! - JSON-like serialize and deserialize for persistence.
+//! - Data types: `GraphStats`, `Graph`.
+//! - Implementation: `Graph`.
+//! - Public methods: `new`, `outgoing_edge_ids_slice`, `incoming_edge_ids_slice`, `add_node`, and 26 more.
+//! - Contains 33 method implementations.
 
 use super::edge::Edge;
 use super::item::{GraphItem, ItemPosition};

@@ -1,4 +1,9 @@
 //! `lurek.system` - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+//!
+//! - Registers `lurek.system.*` functions and types via `register()`.
+//! - Bridges 28 Lua-callable methods via `mlua`.
+//! - See `docs/specs/system.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::log_msg;

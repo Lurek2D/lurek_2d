@@ -1,4 +1,13 @@
 //! `lurek.tilemap` - Provides tile-based map rendering with layers, animated tiles, auto-tiling, collision maps, and TMX/Tiled import.
+//!
+//! - Registers `lurek.tilemap.*` functions and types via `register()`.
+//! - Userdata types: `LuaTileSet`, `LuaTileMap`, `LuaAutoTileSheet`.
+//! - Userdata types: `LuaChunkMap`, `LuaLargeMapRenderer`, `LuaIsoMap`.
+//! - Userdata types: `LuaMapBlock`, `LuaMapGroup`, `LuaMapScript`.
+//! - Userdata type: `LuaMapGen`.
+//! - Bridges 190 Lua-callable methods via `mlua`.
+//! - See `docs/specs/tilemap.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::math::Rect;

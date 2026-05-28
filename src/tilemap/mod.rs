@@ -1,8 +1,6 @@
 //! Tile map storage, rendering, and chunk streaming for large worlds.
 //!
-//! - Supports orthogonal and isometric layouts with layered tiles.
-//! - Imports LDtk and Tiled TMX formats; procedural generation via MapGen.
-//! - Autotile rules, tile-space coordinates, and polygon-region maps.
+//! - Sub-modules: `autotile_sheet`, `chunk`, `coords`, `isomap`, and 9 more.
 
 /// Autotile sprite-sheet layout and rule matching.
 pub mod autotile_sheet;

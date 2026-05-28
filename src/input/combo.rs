@@ -1,7 +1,7 @@
 //! Multi-step key-press combo detection with per-step and total-sequence timeouts.
 //!
-//! - Stateful detector that advances, breaks, or completes on each key feed or timer tick.
-//! - Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+//! - Data types: `ComboStep`, `ComboDetector`.
+//! - Enum: `ComboProgress`.
 
 /// One required key press in a combo sequence with its maximum inter-step gap.
 #[derive(Clone, Debug, PartialEq)]

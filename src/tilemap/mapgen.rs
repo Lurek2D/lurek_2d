@@ -1,14 +1,11 @@
 //! Procedural tile-map generation driven by reusable block stamps and scripted steps.
 //!
-//! - `MapBlock` stores rectangular tile grids with edge side-IDs for neighbour matching.
-//! - `MapGroup` collects blocks and `MapScript`s into named generation palettes.
-//! - `ScriptStep` parameterises operations: fill, place, scatter, flood-fill, path drawing.
-//! - `MapGen` orchestrates generation using seeded LCG RNG, zones, orientation, and layer modes.
-//! - Supports single-region and multi-region world tiling with independent seeds per region.
-//! - Deterministic output: same seed + script always produces the same map.
-//! - Grid presets (`MapSize`) and horizontal zone bands constrain placement areas.
-//! - Orientation tags (top-down, side-view, isometric, hexagonal) stored for downstream renderers.
-//! - Layer modes control whether blocks share a unified layer or write independently.
+//! - Data types: `MapBlock`, `MapGroup`, `ScriptStep`, `MapScript`, and 2 more.
+//! - Enums: `Edge`, `StepType`, `MapOrientation`, `LayerMode`, and 1 more.
+//! - Implementations: `Edge`, `MapBlock`, `MapGroup`, `StepType`, and 5 more.
+//! - Public methods: `from_str`, `as_str`, `new`, `set_tile`, and 57 more.
+//! - Contains 68 method implementations.
+//! - Uses: `log_msg`, `runtime`.
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;

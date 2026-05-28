@@ -1,8 +1,7 @@
 //! Format detection, decoding, and encoding for the serial module.
 //!
-//! - Supports JSON, TOML, CSV, MsgPack, XML, and INI formats.
-//! - Provides auto-detection of text formats by content inspection.
-//! - Separates text-based and binary decode paths.
+//! - Data types: `DecodeOptions`, `EncodeOptions`.
+//! - Enums: `SerialFormat`, `EncodedValue`.
 
 use super::{
     from_csv, from_ini, from_json, from_toml, from_xml, to_csv, to_json, to_toml, CsvOptions,

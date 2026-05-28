@@ -1,9 +1,8 @@
 //! Ear-clipping triangulation for simple polygons and convexity testing.
 //!
-//! - Sutherland-Hodgman polygon clipping against arbitrary half-planes.
-//! - Boolean-style polygon operations: intersection, union, and difference.
-//! - Andrew monotone-chain convex hull and winding-order normalization.
-//! - Internal helpers for signed area, point-in-triangle, and cross-product sign tests.
+//! - Functions: `triangulate`, `is_convex`, `polygon_clip`, `polygon_intersection`, and 2 more.
+//! - Uses: `math`.
+//! - See `docs/specs/math.md` for the module specification.
 
 use crate::math::vec2::Vec2;
 

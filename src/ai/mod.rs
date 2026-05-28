@@ -1,8 +1,7 @@
 //! Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
 //!
-//! - Module-level export map for agent state, planners, blackboard, and command flow.
-//! - Learning helpers, perception, steering, and squad coordination re-exports.
-//! - Compact entry surface re-exporting runtime types for higher engine layers.
+//! - Sub-modules: `agent`, `behavior_tree`, `blackboard`, `command_queue`, and 19 more.
+//! - See `docs/specs/ai.md` for the module specification.
 
 /// Core agent type and decision model wiring.
 pub mod agent;

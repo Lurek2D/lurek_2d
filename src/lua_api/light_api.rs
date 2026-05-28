@@ -1,4 +1,11 @@
 //! `lurek.light` -- 2D lighting bindings for light handles, occluders, ambient color, shadows, masks, groups, flicker animation, transitions, cookies, normal-map hints, and renderer-facing lighting world state.
+//!
+//! - Registers `lurek.light.*` functions and types via `register()`.
+//! - `LuaLight`: userdata type exposed to Lua.
+//! - `LuaOccluder`: userdata type exposed to Lua.
+//! - Bridges 99 Lua-callable methods via `mlua`.
+//! - See `docs/specs/light.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::light::transition::LightTransition;

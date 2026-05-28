@@ -1,7 +1,6 @@
 //! Template string interpolation with `{name}` placeholder syntax.
 //!
-//! - Supports escaping via `{{` / `}}` and preserves unknown placeholders.
-//! - Provides both map-based and pair-based variable substitution.
+//! - Functions: `interpolate`, `interpolate_pairs`.
 
 use std::collections::HashMap;
 /// Replace `{name}` placeholders from a string map and keep unknown placeholders intact.

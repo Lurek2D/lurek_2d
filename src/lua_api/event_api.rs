@@ -1,4 +1,9 @@
 //! `lurek.event` -- Event queue and signal bindings for quit/restart requests, polling, waiting, immediate and deferred event pushes, priority delivery, optional history capture, and Lua callback signal dispatch.
+//!
+//! - Registers `lurek.event.*` functions and types via `register()`.
+//! - `LuaSignal`: userdata type exposed to Lua.
+//! - Bridges 29 Lua-callable methods via `mlua`.
+//! - See `docs/specs/event.md` for the full API specification.
 
 use super::SharedState;
 use crate::event::{event_arg_to_lua_value, event_to_lua_multi, EventArg, EventPriority, Signal};

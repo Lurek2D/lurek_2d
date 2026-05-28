@@ -1,8 +1,7 @@
 //! Provides `complete_prefix` for tab completion against a static pool and live Lua globals.
 //!
-//! - Static pool includes Lua keywords, built-in globals, standard libraries, colon commands, and all `lurek.*` sub-namespaces.
-//! - Dynamic branch resolves a dot-separated path through Lua globals and collects matching key names.
-//! - Output is sorted and deduplicated; callers pass `None` for the Lua handle when no VM is available.
+//! - Function: `complete_prefix`.
+//! - See `docs/specs/repl.md` for the module specification.
 
 use mlua::prelude::*;
 

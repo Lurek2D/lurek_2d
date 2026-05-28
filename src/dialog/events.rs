@@ -1,9 +1,4 @@
 //! Events emitted by the dialog tree engine during conversation playback.
-//!
-//! - `DialogEvent` variants: `NodeEntered`, `ChoiceMade`, `Finished`, `Interrupted`.
-//! - Pushed into the engine's event queue; consumed by game scripts each tick.
-//! - `NodeEntered` carries the node ID and speaker ID for UI presentation.
-//! - Cleared at the start of each tick after the Lua callback has processed them.
 
 /// Events emitted by the dialog system for script integration.
 #[derive(Debug, Clone)]

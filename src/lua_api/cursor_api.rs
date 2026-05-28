@@ -1,4 +1,10 @@
 //! `lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.
+//!
+//! - Registers `lurek.cursor.*` functions and types via `register()`.
+//! - `LuaCursorManager`: userdata type exposed to Lua.
+//! - `LuaCustomCursor`: userdata type exposed to Lua.
+//! - `LuaAnimatedCursor`: userdata type exposed to Lua.
+
 use super::SharedState;
 use crate::cursor::{
     AnimatedCursor, CursorContext, CursorManager, CursorTrail, CursorZoom,

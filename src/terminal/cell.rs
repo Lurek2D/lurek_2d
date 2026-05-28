@@ -1,7 +1,6 @@
 //! Single-cell data type for the terminal grid.
 //!
-//! - Default color and character constants.
-//! - `Default` trait wiring for blank cells.
+//! - Data type: `TCell`.
 
 /// Default foreground color: opaque white [r, g, b, a].
 pub(crate) const DEFAULT_FG: [f32; 4] = [1.0, 1.0, 1.0, 1.0];

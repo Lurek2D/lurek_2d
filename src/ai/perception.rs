@@ -1,8 +1,8 @@
 //! Perception model storing stimuli, sensor configuration, detection results, and awareness state.
 //!
-//! - Stimulus world for visual, auditory, and custom signals with insertion, decay, and removal.
-//! - Sensor-side logic testing visibility, hearing, detecting nearby stimuli, and updating awareness.
-//! - Custom detection range tracking and time-based stimulus expiration.
+//! - Data types: `Stimulus`, `DetectedStimulus`, `StimulusWorld`, `Sensor`.
+//! - Enum: `StimulusType`.
+//! - Implementations: `StimulusType`, `StimulusWorld`, `Sensor`.
 
 use std::collections::HashMap;
 /// Stimulus classification used by the sensor world.

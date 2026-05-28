@@ -6,7 +6,6 @@ SELECT
     SUM(debt_amount) AS debt,
     SUM(essential_amount) AS essential,
     SUM(asset_amount) AS assets,
-    SUM(income_amount - expense_amount - savings_amount) AS net_amount,
     SUM(savings_amount) / SUM(income_amount) AS savings_rate,
     SUM(debt_amount) / SUM(income_amount) AS debt_ratio,
     SUM(essential_amount) / SUM(expense_amount) AS essential_ratio,

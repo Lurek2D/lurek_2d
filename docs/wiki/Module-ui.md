@@ -12218,7 +12218,7 @@ do
     ti:setText("sample input")
     local txt = ti:getText()
     local th = lurek.ui.newTheme()
-    th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
+    th:setStyle("button", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
     print("text:", txt, "theme type:", t)
 end
@@ -12250,7 +12250,7 @@ do
     ti:setText("sample input")
     local txt = ti:getText()
     local th = lurek.ui.newTheme()
-    th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
+    th:setStyle("button", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
     print("text:", txt, "theme type:", t)
 end

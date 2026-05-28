@@ -1,9 +1,9 @@
 //! Owns the runtime animation player for frame-based clips.
 //!
-//! - Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
-//! - Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.
-//! - Advances playback with forward, reverse, and ping-pong modes, including looping, stopping, pausing, and speed scaling.
-//! - Exposes the current quad, event drain, crossfade blend state, and simple preview images for the active frame set.
+//! - Data type: `Animation`.
+//! - Implementation: `Animation`.
+//! - Public methods: `new`, `add_frame`, `add_frames_from_grid`, `add_frames_from_rects`, and 27 more.
+//! - Contains 37 method implementations.
 
 use super::clip::{AnimClip, ClipPlaybackMode};
 use super::event::AnimEvent;

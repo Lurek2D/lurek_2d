@@ -1,8 +1,7 @@
 //! Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
 //!
-//! - Monitor selection with fallback logic (current → primary → first available).
-//! - Window centering and cross-display movement helpers.
-//! - Startup monitor resolution for initial window placement.
+//! - Data type: `DisplayInfo`.
+//! - Functions: `get_displays`, `current_display_index`, `desktop_dimensions_for_display`, `display_name_for_display`, and 3 more.
 
 use winit::event_loop::ActiveEventLoop;
 use winit::monitor::MonitorHandle;

@@ -1,9 +1,7 @@
 //! Record hierarchical profiling zones with push/pop stack semantics
 //!
-//! - Compute total and self (exclusive) duration per zone
-//! - Capture per-frame zone trees into bounded rolling history
-//! - Retrieve frames by positive or negative index
-//! - Flatten nested zone trees for aggregate reporting
+//! - Data types: `ProfileZone`, `Profiler`.
+//! - Implementations: `ProfileZone`, `Profiler`.
 
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;

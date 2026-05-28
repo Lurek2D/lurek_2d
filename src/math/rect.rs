@@ -1,7 +1,7 @@
 //! Axis-aligned rectangle defined by top-left corner and size (y-down convention).
 //!
-//! - Containment, intersection, union, and bounding-box construction from point sets.
-//! - Center-based and corner-based constructors for layout and collision use cases.
+//! - Data type: `Rect`.
+//! - Implementation: `Rect`.
 
 use super::vec2::Vec2;
 

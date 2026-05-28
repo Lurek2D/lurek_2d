@@ -1,10 +1,8 @@
 //! Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
 //!
-//! - Layout engine supports vertical, horizontal, and grid stacking with spacing, alignment, and justification.
-//! - ScrollPanel provides viewport clipping with clamped 2D scroll offsets and configurable speed.
-//! - NinePatch implements resolution-independent 9-slice border rendering from pixel insets.
-//! - GUIWindow adds floating window semantics: title bar, close button, drag, and resize.
-//! - SplitPanel and DockPanel offer two-pane splitting and edge-based docking respectively.
+//! - Data types: `Panel`, `Layout`, `ScrollPanel`, `NinePatch`, and 3 more.
+//! - Enum: `LayoutDirection`.
+//! - Type alias: `NineSlice`.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Plain box container that groups children with an optional title and scroll flag.

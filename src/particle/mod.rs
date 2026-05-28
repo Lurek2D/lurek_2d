@@ -1,8 +1,6 @@
 //! Particle emitter lifecycle: spawn, simulate, and recycle pooled particles each frame.
 //!
-//! - Configurable emission shapes, rates, bursts, and per-particle property ranges (colour, size, alpha).
-//! - Physics collision response, trail ribbons, spawn-shape geometry, and preset constructors.
-//! - Render integration translating live particle state into batched draw commands.
+//! - Sub-modules: `config`, `emission`, `emitter`, `math`, and 7 more.
 
 /// Particle emitter configuration: shape, rate, lifetime, and per-particle property ranges.
 pub mod config;

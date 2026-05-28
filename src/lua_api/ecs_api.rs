@@ -1,4 +1,11 @@
 //! `lurek.ecs` -- Entity-component-system bindings for creating universes, managing entities and components, running Lua systems, querying tags and blueprints, serializing state, and tracking hierarchy and relation data.
+//!
+//! - Registers `lurek.ecs.*` functions and types via `register()`.
+//! - `LuaUniverse`: userdata type exposed to Lua.
+//! - Bridges 69 Lua-callable methods via `mlua`.
+//! - See `docs/specs/ecs.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::ecs::Universe;

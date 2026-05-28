@@ -1,4 +1,14 @@
 //! `lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs.
+//!
+//! - Registers `lurek.patterns.*` functions and types via `register()`.
+//! - Userdata types: `LuaEventBus`, `LuaObjectPool`, `LuaCommandStack`.
+//! - Userdata types: `LuaServiceLocator`, `LuaFactory`, `LuaSimpleState`.
+//! - Userdata types: `LuaBlackboard`, `LuaObserver`, `LuaThrottle`.
+//! - Userdata types: `LuaDebounce`, `LuaPriorityQueue`, `LuaRing`.
+//! - Userdata types: `LuaFunnel`, `LuaRelationshipManager`, `LuaMediator`.
+//! - Userdata types: `LuaStrategy`, `LuaStack`, `LuaQueue`.
+//! - Userdata types: `LuaList`, `LuaSet`, `LuaMap`.
+
 use crate::lua_api::lua_types::{add_type_methods, LurekType};
 use crate::runtime::SharedState;
 use mlua::prelude::*;

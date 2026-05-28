@@ -1,9 +1,4 @@
 //! Fog-of-war rendering configuration: intensity, colour, and render integration hints.
-//!
-//! - `FogRenderConfig` controls fog opacity for `Hidden` and `Discovered` states.
-//! - Fog is composited in the tilemap/world render pass as a per-tile colour multiply.
-//! - `FogColor` is an RGBA value applied to hidden tiles; discovered tiles use a lighter shade.
-//! - Config is hot-reloadable from `[visibility.fog]` TOML without a restart.
 
 /// Configuration for how fog is rendered visually.
 #[derive(Debug, Clone, Copy)]

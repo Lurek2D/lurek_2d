@@ -1,7 +1,6 @@
 //! Converts the current animation frame quad into a textured draw command.
 //!
-//! - Stores atlas reference, position, rotation, and scale in `AnimRenderParams`.
-//! - Provides a standalone `quad_to_draw_command` helper reusable outside the controller.
+//! - Data type: `AnimRenderParams`.
 
 use crate::animation::controller::Animation;
 use crate::math::Rect;

@@ -1,7 +1,6 @@
 //! Compose multiple globe views into a single frame via split viewports.
 //!
-//! - Emit render commands for each named globe with per-entry screen center overrides.
-//! - Iterate the registry, clone camera state, and collect draw output into one batch.
+//! - Data type: `SplitViewport`.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::registry::GlobeRegistry;

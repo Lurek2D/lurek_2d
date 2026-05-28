@@ -1,4 +1,9 @@
 //! `lurek.learning` - Lua bindings for machine learning and evolutionary computation algorithms.
+//!
+//! - Registers `lurek.learning.*` functions and types via `register()`.
+//! - Userdata types: `LuaQLearner`, `LuaNeuralNet`, `LuaGeneticAlgorithm`.
+//! - Userdata types: `LuaBandit`, `LuaNeuroevolution`.
+//! - Bridges 59 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::learning::{

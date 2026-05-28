@@ -1,10 +1,7 @@
 //! Bitmap font loader and glyph atlas builder for fixed-size sprite fonts.
 //!
-//! - Parses BMFont `.fnt` descriptor files (text and binary formats).
-//! - Builds a glyph atlas mapping codepoints to UV rectangles in a texture.
-//! - Kerning pairs are stored and applied during layout for tighter spacing.
-//! - Atlas textures are loaded through `GameFS` and cached in the font registry.
-//! - Used when the game explicitly requests a bitmap font over a TTF/OTF font.
+//! - Data types: `BitmapFontAtlas`, `BitmapFont`.
+//! - Implementation: `BitmapFont`.
 
 use crate::font::metrics::GlyphMetrics;
 

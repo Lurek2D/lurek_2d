@@ -1,9 +1,8 @@
 //! Load regions from TOML strings or files using a lightweight inline parser.
 //!
-//! - Load regions from PNG province-grid images with bounding-box extraction and adjacency detection.
-//! - Generate approximate region geometry from Voronoi seed points.
-//! - Convert between internal builder representations and the shared `Region` type.
-//! - Parse TOML primitives: u32 literals, float pairs, float-4 arrays, string key-value lines.
+//! - Functions: `load_from_toml_str`, `load_from_toml_file`, `load_from_png_file`, `generate_voronoi_provinces`.
+//! - Implementation: `TomlRegionBuilder`.
+//! - Contains 1 method implementation.
 
 use crate::globe::types::{Region, RegionId};
 use crate::province::province_grid::ProvinceGrid;

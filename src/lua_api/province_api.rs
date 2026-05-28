@@ -1,4 +1,11 @@
 //! `lurek.province` — Province-based strategic map system with grid regions, borders, ownership tracking, adjacency queries, and map-mode rendering.
+//!
+//! - Registers `lurek.province.*` functions and types via `register()`.
+//! - `LuaProvinceRegistry`: userdata type exposed to Lua.
+//! - Bridges 54 Lua-callable methods via `mlua`.
+//! - See `docs/specs/province.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::image::ProvinceGrid;

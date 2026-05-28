@@ -1,10 +1,8 @@
 //! Arbitrary-degree Bézier curve with dynamic control-point list.
 //!
-//! - Evaluation via Bernstein basis, clamped to `[0,1]`.
-//! - Sampling helpers for full curves, sub-segments, and arc-length walks.
-//! - First-derivative computation and tangent-angle extraction.
-//! - Geometric transforms: translate, rotate, scale relative to an origin.
-//! - Control-point CRUD with minimum-count safety.
+//! - Data type: `BezierCurve`.
+//! - Implementation: `BezierCurve`.
+//! - Public methods: `new`, `evaluate`, `render`, `render_segment`, and 13 more.
 
 use crate::math::vec2::Vec2;
 

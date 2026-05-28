@@ -1,7 +1,7 @@
 //! Squad-level coordination grouping named members under one leader with shared local memory.
 //!
-//! - Formation mode, spacing, and ordered membership determining relative placement.
-//! - Formation-position logic producing target offsets for line, column, wedge, and circle patterns.
+//! - Data type: `Squad`.
+//! - Enum: `FormationType`.
 
 use crate::ai::blackboard::Blackboard;
 /// Supported squad formation shapes.

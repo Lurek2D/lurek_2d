@@ -1,9 +1,8 @@
 //! Bidirectional A* search that expands from both start and goal simultaneously.
 //!
-//! - Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
-//! - Falls back to a partial forward path when the node budget is exhausted.
-//! - Respects NavGrid diagonal mode and per-cell movement cost.
-//! - Supports variable unit sizes for multi-tile pathfinding.
+//! - Function: `bidirectional_astar`.
+//! - Implementation: `BNode`.
+//! - Contains 3 method implementations.
 
 use crate::log_msg;
 use crate::pathfind::nav_grid::{DiagonalMode, NavGrid};

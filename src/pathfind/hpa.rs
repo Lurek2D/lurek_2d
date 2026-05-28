@@ -1,13 +1,9 @@
 //! Hierarchical Pathfinding A* (HPA*) over a chunked NavGrid abstraction.
 //!
-//! - Partition the grid into fixed-size chunks and detect entrance nodes at chunk boundaries.
-//! - Build an abstract graph of entrance-to-entrance edges with A*-computed costs.
-//! - Run abstract-level A* search using octile distance heuristic.
-//! - Refine abstract waypoints back into full grid-level paths via per-segment A*.
-//! - BFS-based reachability test over chunk connectivity without computing a full path.
-//! - Temporary start/goal insertion into the abstract graph for single queries.
-//! - Boundary scanning logic handles both horizontal and vertical chunk edges.
-//! - Supports variable unit sizes passed through to underlying A* refinement.
+//! - Data types: `AbstractEdge`, `AbstractNode`, `Chunk`, `AbstractGraph`.
+//! - Functions: `build_abstract`, `hpa_star`, `is_reachable`.
+//! - Implementation: `HpaNode`.
+//! - Contains 3 method implementations.
 
 use crate::runtime::log_messages::{HP01, HP02, HP03};
 

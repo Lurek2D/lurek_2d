@@ -1,7 +1,7 @@
 //! Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
 //!
-//! - Submit work items, collect results non-blocking, and join with optional timeout.
-//! - Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
+//! - Data type: `ThreadPool`.
+//! - Implementation: `ThreadPool`.
 
 use crate::thread::channel::{Channel, ChannelValue};
 use crate::thread::worker::LuaThread;

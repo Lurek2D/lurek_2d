@@ -1,4 +1,11 @@
 //! `lurek.pathfind` - Lua bindings for navigation grids, unit pathfinding, flow fields, path grids, hex grids, JPS grids, nav meshes, range maps, and tilemap-derived path data.
+//!
+//! - Registers `lurek.pathfind.*` functions and types via `register()`.
+//! - Userdata types: `LuaNavGrid`, `LuaUnitPathfinder`, `LuaFlowField`.
+//! - Userdata types: `LuaPathGrid`, `LuaAiFlowField`, `LuaHexGrid`.
+//! - Userdata types: `LuaJpsGrid`, `LuaNavMesh`.
+//! - Bridges 102 Lua-callable methods via `mlua`.
+//! - See `docs/specs/pathfind.md` for the full API specification.
 
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;

@@ -1,7 +1,6 @@
 //! Per-column depth storage for raycaster wall hits.
 //!
-//! - Used during sprite rendering to cull pixels that fall behind walls.
-//! - Cleared each frame, written during wall-casting, read during sprite-casting.
+//! - Data type: `DepthBuffer`.
 
 /// Per-column wall-hit depth used to cull sprite pixels that fall behind a wall.
 pub struct DepthBuffer {

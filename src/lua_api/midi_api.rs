@@ -1,4 +1,7 @@
 //! `lurek.midi` - MIDI playback and SoundFont management.
+//!
+//! - Registers `lurek.midi.*` functions and types via `register()`.
+
 use super::SharedState;
 use crate::lua_api::audio_api::LuaMidiPlayer;
 use crate::midi::MidiPlayer;

@@ -1,9 +1,4 @@
 //! Aggregate frame-time statistics and FPS percentile snapshots
-//!
-//! - Structured logging with severity filtering, file output, and history
-//! - Hierarchical profiler with zone stacking and per-frame capture
-//! - Interactive Lua REPL console with bounded command history
-//! - File-watcher polling and native notify integration for hot-reload
 
 /// Expose frame-time history collection and aggregate snapshot helpers.
 pub mod frame_stats;

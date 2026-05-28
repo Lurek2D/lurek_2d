@@ -1,7 +1,6 @@
 //! Parse INI text into a nested `SerialValue` map.
 //!
-//! - Support sections, key=value pairs, and comment lines.
-//! - Preserve insertion order via `IndexMap`.
+//! - Function: `from_ini`.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

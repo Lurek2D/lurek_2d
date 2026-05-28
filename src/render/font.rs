@@ -1,11 +1,9 @@
 //! Bitmap font atlas loading and runtime font rasterisation.
 //!
-//! This module provides:
-//! - Bundled Courier New bitmap atlases in regular and bold variants.
-//! - Latin-1 coverage for 0x20..=0xFF.
-//! - Terminal-symbol aliases for 0x80..=0x9F and direct Unicode lookups.
-//! - Runtime rasterisation of TTF/OTF fonts into the same atlas format.
-//! - Glyph metrics, text measurement, and word wrapping.
+//! - Data types: `GlyphInfo`, `Font`.
+//! - Implementation: `Font`.
+//! - Public methods: `builtin_slot_by_name`, `from_png_bytes`, `from_font_bytes`, `load_all_sizes`, and 15 more.
+//! - Contains 21 method implementations.
 
 // Re-export the CPU-side font types from the font module for backward compatibility.
 pub use crate::font::{TextMetrics, TextAlign, WordWrap, FontStyle};

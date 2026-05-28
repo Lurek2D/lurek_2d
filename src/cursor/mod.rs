@@ -1,11 +1,4 @@
 //! Cursor management system.
-//!
-//! - System cursors (arrow, crosshair, hand, etc.).
-//! - Custom image cursors with hotspot.
-//! - Animated cursors with frame sequences and pulsing.
-//! - Cursor trails (fade points, particles, lines).
-//! - Context-sensitive cursor switching.
-//! - Zoom/magnifier at cursor position.
 
 /// Animated cursor with frame sequences, timing, and pulse effects.
 pub mod animated_cursor;

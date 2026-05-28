@@ -1,7 +1,7 @@
 //! Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
 //!
-//! - Uniform integer, float, and Gaussian sampling primitives.
-//! - Seed persistence via string serialisation for deterministic replay.
+//! - Data type: `RandomGenerator`.
+//! - Implementation: `RandomGenerator`.
 
 use fastrand::Rng;
 
@@ -66,6 +66,84 @@ impl RandomGenerator {
             .map_err(|_| format!("Invalid state string: {}", state))?;
         self.set_seed(seed);
         Ok(())
+    }
+    /// Roll one N-sided die (1 to sides inclusive). Returns 1 when sides < 1.
+    pub fn roll(&mut self, sides: u32) -> i64 {
+        if sides < 1 {
+            return 1;
+        }
+        self.random_int(1, sides as i64)
+    }
+    /// Roll count N-sided dice. Returns vec of individual results.
+    /// count and sides are clamped to [1, 1000].
+    pub fn roll_n(&mut self, count: u32, sides: u32) -> Vec<i64> {
+        let count = count.clamp(1, 1000);
+        let sides = sides.max(1);
+        (0..count).map(|_| self.roll(sides)).collect()
+    }
+    /// Roll count N-sided dice and return their sum.
+    pub fn roll_sum(&mut self, count: u32, sides: u32) -> i64 {
+        self.roll_n(count, sides).iter().sum()
+    }
+    /// Roll count N-sided dice and sum the highest `keep` results.
+    /// keep is clamped to [1, count].
+    pub fn roll_keep_highest(&mut self, count: u32, sides: u32, keep: u32) -> i64 {
+        let mut results = self.roll_n(count, sides);
+        results.sort_unstable_by(|a, b| b.cmp(a));
+        let keep = (keep as usize).min(results.len()).max(1);
+        results[..keep].iter().sum()
+    }
+    /// Roll count N-sided dice and sum the lowest `keep` results.
+    /// keep is clamped to [1, count].
+    pub fn roll_keep_lowest(&mut self, count: u32, sides: u32, keep: u32) -> i64 {
+        let mut results = self.roll_n(count, sides);
+        results.sort_unstable();
+        let keep = (keep as usize).min(results.len()).max(1);
+        results[..keep].iter().sum()
+    }
+    /// Roll two N-sided dice and return the higher value (advantage).
+    pub fn roll_advantage(&mut self, sides: u32) -> i64 {
+        let a = self.roll(sides);
+        let b = self.roll(sides);
+        a.max(b)
+    }
+    /// Roll two N-sided dice and return the lower value (disadvantage).
+    pub fn roll_disadvantage(&mut self, sides: u32) -> i64 {
+        let a = self.roll(sides);
+        let b = self.roll(sides);
+        a.min(b)
+    }
+    /// Roll count N-sided exploding dice: when a die shows maximum, roll again and add.
+    /// Total reroll cap is 1000 to prevent infinite loops.
+    pub fn roll_exploding(&mut self, count: u32, sides: u32) -> i64 {
+        let count = count.clamp(1, 1000);
+        let sides = sides.max(1);
+        let max_val = sides as i64;
+        let mut total: i64 = 0;
+        let mut rerolls_remaining: u32 = 1000;
+        for _ in 0..count {
+            let mut val = self.roll(sides);
+            total += val;
+            while val == max_val && rerolls_remaining > 0 {
+                rerolls_remaining -= 1;
+                val = self.roll(sides);
+                total += val;
+            }
+        }
+        total
+    }
+    /// Roll count N-sided dice and count how many results are >= target.
+    pub fn count_successes(&mut self, count: u32, sides: u32, target: i64) -> u32 {
+        self.roll_n(count, sides)
+            .iter()
+            .filter(|&&v| v >= target)
+            .count() as u32
+    }
+    /// Return true with the given probability (0.0 = never, 1.0 = always).
+    /// probability is clamped to [0.0, 1.0].
+    pub fn chance(&mut self, probability: f64) -> bool {
+        let p = probability.clamp(0.0, 1.0);
+        self.random() < p
     }
 }
 /// Clone by constructing a new generator with the same stored seed.

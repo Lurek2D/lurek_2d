@@ -446,4 +446,5 @@ No direct references were found in `content/games/**/main.lua`.
 
 - Previous: [effect](Module-effect)
 - Next: [event](Module-event)
+- [agent](Module-agent) - lurek.agent -- Agent bindings for LLM and VM integration.
 - [system](Module-system) - lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.

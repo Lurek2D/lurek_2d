@@ -1,9 +1,7 @@
 //! Core runtime state for one AI actor: identity, motion, priority, and decision mode.
 //!
-//! - Per-agent links to AI subsystems: blackboard, FSM, behavior tree, steering, and sensing.
-//! - Optional emotion, needs, tags, and LOD data accessible through a single shared container.
-//! - DecisionModel enum routing agents to FSM, BT, steering, or custom Lua callbacks.
-//! - Single-call constructor initializing all fields to safe defaults with subsystem slots disconnected.
+//! - Data type: `Agent`.
+//! - Enum: `DecisionModel`.
 
 use crate::ai::blackboard::Blackboard;
 use crate::ai::emotion::EmotionModel;

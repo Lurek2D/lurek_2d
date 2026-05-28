@@ -1,7 +1,6 @@
 //! Reusable game-logic design patterns: state machines, behavior trees, event buses, and object pools.
 //!
-//! - Data structures for priority queues, graphs, tries, rings, and bidirectional maps.
-//! - Command stacking, observer subscriptions, throttling, and weighted random selection.
+//! - Sub-modules: `behavior_tree`, `bimap`, `blackboard`, `collections`, and 17 more.
 
 /// Behavior tree execution engine with composite and leaf nodes.
 pub mod behavior_tree;

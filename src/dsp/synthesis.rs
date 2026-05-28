@@ -1,4 +1,8 @@
 //! DSP synthesis helpers for procedural waveforms and envelopes.
+//!
+//! - Data types: `AdsrEnvelope`, `Synthesizer`.
+//! - Enum: `Waveform`.
+//! - Implementations: `Waveform`, `AdsrEnvelope`, `Synthesizer`.
 
 use crate::audio::sound_data::SoundData;
 

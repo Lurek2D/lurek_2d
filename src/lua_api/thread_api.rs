@@ -1,4 +1,9 @@
 //! `lurek.thread` - Provides multi-threaded Lua worker VMs with typed channel messaging for parallel game logic execution.
+//!
+//! - Registers `lurek.thread.*` functions and types via `register()`.
+//! - Userdata types: `LuaThreadHandle`, `LuaThreadPool`, `LuaPromise`.
+//! - Userdata type: `LuaChannel`.
+//! - Bridges 41 Lua-callable methods via `mlua`.
 
 use super::lua_types::{add_type_methods, LurekType};
 use super::SharedState;

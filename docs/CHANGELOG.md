@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+ - feat(tools): add `tools/audit/module_docstring_audit.py` — LOC-proportional `//!` docstring coverage audit for all `src/**/*.rs` files; tiers: 1-30->1, 31-80->3, 81-200->4, 201-400->5, 401-800->6, 801-2000->8, 2001+->10 minimum lines; outputs `logs/data/module_docstring_audit.json`; `--check` flag for CI gate.
+ - feat(tools): add `tools/fix/module_docstring_fix.py` — auto-expand under-sized `//!` blocks using LOC-tier rules; for `lua_api/` files generates per-`LuaUserData`-type bullets; `--force` re-patches already-compliant files (repairs bad content); `--dry-run` and `--top N` flags.
+ - docs(src): expand and repair `//!` docstrings in all 697 `src/**/*.rs` files to meet LOC-tier minimums; `lua_api/` files now list each exposed Lua userdata type individually.
+ - feat(agent): add `lurek.agent.newOllama()` / `LOllamaManager` — full Ollama server lifecycle management from Lua: `isRunning()`, `version()`, `listModels()`, `hasModel(name)`, `start()`, `stop()`, `restart()`, `pullModel(name, callback)`, `deleteModel(name)`, `pendingCount()`, `update()`; backed by `src/agent/ollama.rs`.
+ - refactor(agent): remove duplicate `lua_value_to_json` from `agent_api.rs`; make `lua_to_json` in `lua_runtime.rs` `pub(crate)`, re-export via `mod.rs`, and reuse in all bindings (full table/array support vs. primitives-only).
+ - docs(agent): fix all Rust docstring anti-patterns in `types.rs`, `client.rs`, `state.rs`, `lua_runtime.rs` — remove `# Fields` bullet lists duplicating per-field `///` comments, condense multi-line one-thought docs to one-liners, move `AgentError` doc before `#[derive]`, add `///` docs to all previously undocumented struct fields and private helpers.
+ - test(agent): expand `test_agent_core_unit.lua` from 4 tests to 43 — one dedicated test per public API method covering `LAgent`, `LAgentManager`, `LAISystem`, and `LOllamaManager`.
+ - docs(agent): update `content/examples/agent.lua` with 12 new `LOllamaManager` stubs; `agent` example coverage 43/43 = 100%.
+ - feat(agent): add `LAISystem` multi-agent orchestrator (`lurek.agent.newSystem`) with shared system prompt, named instruction blocks (manual include), keyword-gated system skills (auto-inject), per-agent description injection, `buildContext` preview, and system-routed `prompt`/`runAll`; add `AISystemState`/`SystemSkill` types in `state.rs`; add `LuaAISystemRuntime` in `lua_runtime.rs`; expose via `src/lua_api/agent_api.rs`.
+ - feat(agent): add `LAgent:cancel(id)`, `LAgent:pendingCount()`, `LAgent:clearSkills()`, `LAgent:setOption()`, `LAgent:setFormat()`, `LAgent:setMaxRetries()`, `LAgent:setContextSize()`, `LAgent:setTemperature()`, `LAgent:setName()`, `LAgent:setDescription()` methods; add `AgentClient::cancel()` and `AgentClient::in_flight_count()`.
+ - feat(agent): add automatic transient-error retry with exponential back-off (`max_retries` on `AgentState` and `AgentRequest`); add `AgentError::is_transient()`; add per-request `timeout_secs` forwarded to the HTTP client.
+ - feat(agent): add `AgentState::to_request_with_system()` for externally assembled system blocks; expose `name`/`description`/`max_retries`/`timeout_secs` fields and `set_*` helpers; add `AgentState::clear_skills()`.
+ - docs(agent): full example coverage in `content/examples/agent.lua`; 28 stubs covering all `LAgent`, `LAgentManager`, and `LAISystem` methods; regenerated `docs/api/lurek.lua`.
+ - docs(agent): update `docs/specs/agent.md` — Types, Functions, Lua API Reference, Notes sections.
+ - refactor(agent): move `lurek.agent` request, batching, and response runtime logic into `src/agent/`; keep `src/lua_api/agent_api.rs` as a thin wrapper and sync the agent spec/index docs.
+ - feat(math): add 10 RPG dice/roll methods to LRandomGenerator (roll, rollN, rollSum, rollKeepHighest, rollKeepLowest, rollAdvantage, rollDisadvantage, rollExploding, countSuccesses, chance)
  - refactor(procgen): remove `NoiseGrid` render/image projection helpers so `procgen` stays a Foundations-only procedural data module.
  - docs(event): deprecate `lurek.event.quit` as a backward-compatible alias for `lurek.event.exit(0)`.
  - docs(ai,patterns): document the boundary between structural `lurek.patterns.newBehaviorTree` trees and runtime `lurek.ai.newBehaviorTree` execution.

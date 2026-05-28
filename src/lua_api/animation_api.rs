@@ -1,4 +1,11 @@
 //! `lurek.animation` -- Animation bindings for sprite clips, state machines, blend layers, curves, sync groups, and Aseprite import helpers.
+//!
+//! - Registers `lurek.animation.*` functions and types via `register()`.
+//! - `LuaAnimation`: userdata type exposed to Lua.
+//! - `LuaAnimStateMachine`: userdata type exposed to Lua.
+//! - `LuaBlendLayerSet`: userdata type exposed to Lua.
+//! - `LuaAnimCurve`: userdata type exposed to Lua.
+//! - `LuaAnimSyncGroup`: userdata type exposed to Lua.
 
 use super::render_api::LuaImage;
 use super::SharedState;

@@ -1,4 +1,9 @@
 //! `lurek.validator` - Schema and constraint validation for Lua files, assets, imports, and custom rules.
+//!
+//! - Registers `lurek.validator.*` functions and types via `register()`.
+//! - `LuaValidationEngine`: userdata type exposed to Lua.
+//! - Bridges 12 Lua-callable methods via `mlua`.
+
 use super::SharedState;
 use crate::validator::{
     engine::ValidationEngine, report::Severity, rules_lua::LuaPatternRule, ValidatorConfig,

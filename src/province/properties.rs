@@ -1,9 +1,7 @@
 //! Province property storage: per-province key-value metadata and stat tables.
 //!
-//! - `ProvinceProperties` maps `ProvinceId → HashMap<String, PropertyValue>`.
-//! - `PropertyValue` is an enum covering `Int`, `Float`, `Bool`, and `Text` variants.
-//! - Properties are set from Lua via `lurek.province.set_property(id, key, value)`.
-//! - Serialized into the save file as a flat list for fast round-trip loading.
+//! - Data type: `ProvinceProperties`.
+//! - Implementation: `ProvinceProperties`.
 
 use std::collections::HashMap;
 

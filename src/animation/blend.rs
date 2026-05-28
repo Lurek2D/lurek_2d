@@ -1,8 +1,7 @@
 //! Defines blend masks and named blend layers for multi-clip animation mixing.
 //!
-//! - Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
-//! - Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.
-//! - Provides the layer data higher animation systems use to build partial-body or weighted blends.
+//! - Data types: `BlendMask`, `BlendLayer`, `BlendLayerSet`.
+//! - Implementations: `BlendMask`, `BlendLayer`, `BlendLayerSet`.
 
 /// Bone mask for restricting a blend layer to selected bones.
 #[derive(Debug, Clone, Default)]

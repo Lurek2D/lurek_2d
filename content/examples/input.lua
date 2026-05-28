@@ -431,8 +431,8 @@ end
 --@api-stub: lurek.input.isDown
 do
     -- isDown() returns true while any key is held; check inside an input event callback
-    local v = lurek.input.isDown()
-    print("isDown available = " .. tostring(type(lurek.input.isDown) == "function"))
+    local v = lurek.input.keyboard.isDown("a")
+    print("isDown available = " .. tostring(type(lurek.input.keyboard.isDown) == "function"))
     print("result type = " .. type(v))
 end
 

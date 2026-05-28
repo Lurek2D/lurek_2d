@@ -6252,7 +6252,7 @@ do
 
     local grid = map:toNavGrid(layer, { 1, 2 })
     print("nav grid rows = " .. #grid)
-    print("cell 1,1 walkable = " .. tostring(grid[1][1]))
+    print("cell 1,1 walkable = " .. tostring(grid[1] and grid[1][1]))
 end
 ```
 

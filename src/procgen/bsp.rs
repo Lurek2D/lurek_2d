@@ -1,9 +1,8 @@
 //! Binary Space Partition dungeon generator: recursive splitting, leaf room placement, corridor linking.
 //!
-//! - Configuration via `BspOpts`: grid size, recursion depth, minimum partition size, padding, seed.
-//! - Prefab stamping: round-robin placement of named template shapes centred in qualifying rooms.
-//! - Deterministic output driven by a seeded `Lcg` RNG for reproducible layouts.
-//! - Pure algorithm module with no rendering or tilemap dependency.
+//! - Data types: `BspRoom`, `BspDungeon`, `BspPrefabStamp`, `PlacedBspPrefab`, and 1 more.
+//! - Functions: `bsp_dungeon`, `bsp_dungeon_with_prefabs`.
+//! - Implementations: `BspOpts`, `Partition`.
 
 use crate::procgen::lcg::Lcg;
 

@@ -369,6 +369,98 @@ describe("math.newRandomGenerator", function()
         -- just verify it returns a valid number in [0,1)
         expect_true(v2 >= 0 and v2 < 1, "setState produces valid number")
     end)
+
+    -- @covers LRandomGenerator:roll
+    it("roll returns integer in [1, sides]", function()
+        local rng = lurek.math.newRandomGenerator(42)
+        for _ = 1, 20 do
+            local v = rng:roll(6)
+            expect_true(v >= 1 and v <= 6, "roll(6) out of range: " .. tostring(v))
+        end
+        local v1 = rng:roll(1)
+        expect_equal(1, v1)
+    end)
+
+    -- @covers LRandomGenerator:rollN
+    it("rollN returns array of correct length and range", function()
+        local rng = lurek.math.newRandomGenerator(7)
+        local results = rng:rollN(5, 8)
+        expect_equal(5, #results)
+        for _, v in ipairs(results) do
+            expect_true(v >= 1 and v <= 8, "rollN value out of range: " .. tostring(v))
+        end
+    end)
+
+    -- @covers LRandomGenerator:rollSum
+    it("rollSum returns sum of N dice", function()
+        local rng = lurek.math.newRandomGenerator(99)
+        local s = rng:rollSum(4, 6)
+        expect_true(s >= 4 and s <= 24, "rollSum(4,6) out of range: " .. tostring(s))
+    end)
+
+    -- @covers LRandomGenerator:rollKeepHighest
+    it("rollKeepHighest returns sum of K highest out of N", function()
+        local rng = lurek.math.newRandomGenerator(3)
+        local s = rng:rollKeepHighest(4, 6, 3)
+        expect_true(s >= 3 and s <= 18, "rollKeepHighest(4,6,3) out of range: " .. tostring(s))
+    end)
+
+    -- @covers LRandomGenerator:rollKeepLowest
+    it("rollKeepLowest returns sum of K lowest out of N", function()
+        local rng = lurek.math.newRandomGenerator(5)
+        local s = rng:rollKeepLowest(4, 6, 3)
+        expect_true(s >= 3 and s <= 18, "rollKeepLowest(4,6,3) out of range: " .. tostring(s))
+    end)
+
+    -- @covers LRandomGenerator:rollAdvantage
+    it("rollAdvantage returns max of two rolls", function()
+        local rng = lurek.math.newRandomGenerator(1)
+        for _ = 1, 20 do
+            local v = rng:rollAdvantage(20)
+            expect_true(v >= 1 and v <= 20, "rollAdvantage out of range: " .. tostring(v))
+        end
+    end)
+
+    -- @covers LRandomGenerator:rollDisadvantage
+    it("rollDisadvantage returns min of two rolls", function()
+        local rng = lurek.math.newRandomGenerator(2)
+        for _ = 1, 20 do
+            local v = rng:rollDisadvantage(20)
+            expect_true(v >= 1 and v <= 20, "rollDisadvantage out of range: " .. tostring(v))
+        end
+    end)
+
+    -- @covers LRandomGenerator:rollExploding
+    it("rollExploding returns sum >= count (minimum 1 per die)", function()
+        local rng = lurek.math.newRandomGenerator(11)
+        local s = rng:rollExploding(3, 6)
+        expect_true(s >= 3, "rollExploding sum less than count: " .. tostring(s))
+    end)
+
+    -- @covers LRandomGenerator:countSuccesses
+    it("countSuccesses returns count in [0, N]", function()
+        local rng = lurek.math.newRandomGenerator(123)
+        local n = rng:countSuccesses(10, 6, 5)
+        expect_true(n >= 0 and n <= 10, "countSuccesses out of range: " .. tostring(n))
+        local all = rng:countSuccesses(5, 6, 1)
+        expect_equal(5, all)
+        local none = rng:countSuccesses(5, 6, 7)
+        expect_equal(0, none)
+    end)
+
+    -- @covers LRandomGenerator:chance
+    it("chance returns boolean and respects probability boundaries", function()
+        local rng = lurek.math.newRandomGenerator(55)
+        local never = rng:chance(0.0)
+        expect_equal(false, never)
+        local always = rng:chance(1.0)
+        expect_equal(true, always)
+        local hits = 0
+        for _ = 1, 100 do
+            if rng:chance(0.5) then hits = hits + 1 end
+        end
+        expect_true(hits > 10 and hits < 90, "chance(0.5) distribution suspicious: " .. tostring(hits))
+    end)
 end)
 
 -- Transform

@@ -1,7 +1,4 @@
 //! Rasterisation of a single parallax layer into an `ImageData` bitmap.
-//!
-//! - Applies tint, opacity, and visibility when drawing.
-//! - Produces a solid-colour image sized to the requested dimensions.
 
 use super::layer::ParallaxLayer;
 use crate::image::ImageData;

@@ -1,8 +1,7 @@
 //! Colour blending helpers: linear interpolation and compositing operations.
 //!
-//! - `lerp_color` — interpolates two RGBA colours by factor `t` (clamped 0–1).
-//! - Used internally by tween, particle, and effect systems for smooth transitions.
-//! - All operations stay in `[u8; 4]` RGBA to avoid intermediate float allocations.
+//! - Functions: `lerp_color`, `multiply`, `screen`, `overlay`, and 2 more.
+//! - Contains 1 method implementation.
 
 use super::color_core::Color;
 

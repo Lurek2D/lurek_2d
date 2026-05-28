@@ -1,10 +1,8 @@
 //! Cursor trail effects: fading dot trails, connected line trails, and particle modes.
 //!
-//! - `TrailPoint` records position, timestamp, and current alpha for each trail node.
-//! - `TrailState` holds a ring buffer of `TrailPoint`s capped at `max_points`.
-//! - `TrailMode` selects: `Dots`, `Line`, `Particles` — each rendered differently.
-//! - Trail alpha decays linearly; the oldest points are culled when the buffer is full.
-//! - Updated each tick from the cursor manager; rendered in the overlay pass.
+//! - Data types: `TrailPoint`, `CursorTrail`.
+//! - Enum: `TrailMode`.
+
 use std::collections::VecDeque;
 
 /// A single point in the cursor trail.

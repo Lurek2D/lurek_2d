@@ -1,5 +1,3 @@
--- below query is generating totals for 1 row - fix it. We want totals for each row.
-
 SELECT
     COUNT(*),
     SUM(income_amount),

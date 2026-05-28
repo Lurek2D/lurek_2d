@@ -1,4 +1,11 @@
 //! `lurek.minimap` -- Lua bindings for grid minimaps, terrain colors, fog, object markers, overlays, layers, hover conversion, and render command output.
+//!
+//! - Registers `lurek.minimap.*` functions and types via `register()`.
+//! - `LuaMinimap`: userdata type exposed to Lua.
+//! - Bridges 87 Lua-callable methods via `mlua`.
+//! - See `docs/specs/minimap.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+//! - See `src/lua_api` for related modules (1).
 
 use super::camera_api::LuaCamera2D;
 use super::render_api::LuaImage;

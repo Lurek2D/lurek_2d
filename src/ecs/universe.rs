@@ -1,14 +1,11 @@
 //! Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
 //!
-//! - Component storage: set, get, has, remove, and name-list queries backed by Lua registry tables.
-//! - Archetype-style query acceleration via optional component-name index (`ecs-archetype` feature).
-//! - String tags with reverse index and bitmap tags with 63-bit fast masking.
-//! - Entity hierarchy: parent/child links, recursive deletion, and child enumeration.
-//! - Layer assignment and sorted entity retrieval for render ordering.
-//! - Blueprint templates: define, extend, spawn from template, and list operations.
-//! - System registration metadata: priorities, phases, names, and dependency lists.
-//! - Snapshot diff and dirty tracking for component add/remove notification streams.
-//! - Full universe reset via clear, draining all stores and recycling state.
+//! - Data types: `SnapshotDiff`, `Universe`.
+//! - Implementation: `Universe`.
+//! - Public methods: `new`, `get_system_store`, `pack_id`, `unpack_slot`, and 46 more.
+//! - Contains 58 method implementations.
+//! - Uses: `ecs`, `log_msg`, `runtime`.
+//! - See `docs/specs/ecs.md` for the module specification.
 
 use super::relationships::RelationshipManager;
 use crate::ecs::generational_id::GenerationalId;

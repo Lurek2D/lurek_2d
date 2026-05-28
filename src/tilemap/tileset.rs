@@ -1,9 +1,7 @@
 //! Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
 //!
-//! - Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
-//! - Collision metadata: per-tile solid flag storage and query.
-//! - Animation sequences: frame-based tile animations keyed by local ID.
-//! - Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+//! - Data types: `TileAnimFrame`, `TileSet`.
+//! - Implementation: `TileSet`.
 
 use crate::log_msg;
 use crate::math::Rect;

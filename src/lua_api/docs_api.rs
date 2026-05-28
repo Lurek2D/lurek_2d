@@ -1,4 +1,11 @@
 //! `lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.
+//!
+//! - Registers `lurek.docs.*` functions and types via `register()`.
+//! - `LuaSchema`: userdata type exposed to Lua.
+//! - `DocEntry`: userdata type exposed to Lua.
+//! - `ApiCatalog`: userdata type exposed to Lua.
+//! - `ValidationReport`: userdata type exposed to Lua.
+//! - `QualityReport`: userdata type exposed to Lua.
 
 use super::SharedState;
 use crate::docs;
@@ -866,9 +873,9 @@ pub fn register(
                 .map_err(|e| LuaError::RuntimeError(format!("failed to read {}: {}", path, e)))?;
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
-            let data_tbl: LuaTable = luna_tbl.get("data")?;
+            let data_tbl: LuaTable = luna_tbl.get("binary")?;
             let parse_fn: LuaFunction = data_tbl.get("parseToml")?;
-            let parsed: LuaTable = parse_fn.call(content)?;
+            let parsed: LuaTable = parse_fn.call::<_, LuaTable>(content)?;
             let mut entries = Vec::new();
             if let Ok(api_entries) = parsed.get::<_, LuaTable>("entries") {
                 for (_, et) in api_entries.pairs::<i64, LuaTable>().flatten() {
@@ -904,7 +911,7 @@ pub fn register(
                         if let Ok(content) = std::fs::read_to_string(&path) {
                             let globals = lua.globals();
                             let luna_tbl: LuaTable = globals.get("lurek")?;
-                            let data_tbl: LuaTable = luna_tbl.get("data")?;
+                            let data_tbl: LuaTable = luna_tbl.get("binary")?;
                             let parse_fn: LuaFunction = data_tbl.get("parseToml")?;
                             if let Ok(parsed) = parse_fn.call::<_, LuaTable>(content) {
                                 if let Ok(api_entries) = parsed.get::<_, LuaTable>("entries") {

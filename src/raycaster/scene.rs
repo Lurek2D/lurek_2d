@@ -1,7 +1,7 @@
 //! Scene geometry types emitted by the raycaster build pass and consumed by the renderer.
 //!
-//! - Quad primitives for walls, floors, ceilings, billboard sprites, and static meshes.
-//! - `RaycasterScene` collects all quads for one frame with depth and perspective-correct UV data.
+//! - Data types: `WallQuad`, `FloorQuad`, `CeilingQuad`, `BillboardSprite`, and 2 more.
+//! - Implementation: `RaycasterScene`.
 
 use crate::math::Vec2;
 use crate::render::mesh::Mesh;

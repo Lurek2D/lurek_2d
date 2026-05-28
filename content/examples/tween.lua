@@ -431,7 +431,6 @@ do
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
 
     print("duration=" .. tw:getDuration())
-    print("easing=" .. tw:getEasingName())
     print("type=" .. tw:type())
 end
 

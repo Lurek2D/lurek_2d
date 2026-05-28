@@ -185,7 +185,7 @@ Source: [visibility.lua](../blob/main/content/examples/visibility.lua)
 ```lua
 do
     local vg = lurek.visibility.new({ regions = 20 * 15, players = 4 })
-    print("lurek.visibility.new type=" .. vg:type())
+    print("lurek.visibility.new type=" .. type(vg))
     print("players=" .. vg:playerCount())
 end
 ```
@@ -208,7 +208,7 @@ Source: [visibility.lua](../blob/main/content/examples/visibility.lua)
 ```lua
 do
     local vg = lurek.visibility.new({ regions = 20 * 15, players = 4 })
-    print("lurek.visibility.new type=" .. vg:type())
+    print("lurek.visibility.new type=" .. type(vg))
     print("players=" .. vg:playerCount())
 end
 ```

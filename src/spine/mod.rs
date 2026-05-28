@@ -1,8 +1,4 @@
 //! Skeletal animation runtime: bones, slots, IK, timelines, and pose blending.
-//!
-//! - Hierarchical bone transforms with parent-relative computation.
-//! - Keyframe-driven animation clips with easing and interpolation.
-//! - Skeleton-level render assembly converting posed bones to draw commands.
 
 /// Bone transform hierarchy and parent-relative pose computation.
 pub mod bone;

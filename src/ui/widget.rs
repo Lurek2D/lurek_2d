@@ -1,10 +1,9 @@
 //! UI widget tree node: the fundamental layout and rendering unit of the UI system.
 //!
-//! - `Widget` holds layout properties (size, margin, padding), style, and child list.
-//! - Widgets are built from Lua tables or TOML layout files and owned by the UI tree.
-//! - Layout is computed in a single top-down pass; results are cached until dirty.
-//! - Render commands are emitted per-widget in tree order during the UI render phase.
-//! - Interaction (click, hover, focus) is dispatched in a second bottom-up hit-test pass.
+//! - Data types: `WidgetTransition`, `WidgetBase`.
+//! - Enums: `TextVAlign`, `WidgetState`, `MouseFilter`, `WidgetType`, and 2 more.
+//! - Implementations: `TextVAlign`, `WidgetState`, `MouseFilter`, `WidgetType`, and 3 more.
+//! - Public methods: `parse_str`, `as_str`, `parse_str`, `as_str`, and 16 more.
 
 use crate::runtime::resource_keys::FontKey;
 

@@ -1,8 +1,6 @@
 //! 2D lighting system with point, spot, and area light types supporting color, falloff, and flicker.
 //!
-//! - Shadow casting via occluder shapes with configurable filter quality.
-//! - Light world accumulator that processes all active lights and emits composited render commands.
-//! - Blend modes and attenuation curves for flexible intensity decay and compositing.
+//! - Sub-modules: `attenuation`, `blend_mode`, `falloff`, `flicker`, and 6 more.
 
 /// Attenuation curve definitions for light intensity decay.
 pub mod attenuation;

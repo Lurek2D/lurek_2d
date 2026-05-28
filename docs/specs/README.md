@@ -119,6 +119,7 @@ Game-domain services. Imports Foundations + Core Runtime + Platform Services.
 | `dialog`     | [dialog.md](dialog.md)         | Dialog/conversation engine: weighted topic/branch selection, state tracking, speaker registry.          | —               |
 | `learning`   | [learning.md](learning.md)     | Machine learning and evolutionary computation: neural nets, genetic algorithms, Q-learning, bandits.   | `TIER-1-PLUGIN` |
 | `animation`  | [animation.md](animation.md)   | Sprite animation: source-rect changes over time. Imports only `math`; headless-testable.               | —               |
+| `agent`      | [agent.md](agent.md)           | LLM agent runtime: async prompt dispatch, skill-context assembly, batch polling, and Lua callback delivery. | —            |
 | `automation` | [automation.md](automation.md) | Automated input simulation for headless tests, QA replay, recorded sessions.                           | —               |
 | `charts`     | [charts.md](charts.md)         | Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.            | `TIER-2-PLUGIN` |
 | `cursor`     | [cursor.md](cursor.md)         | Cursor management: system cursors, custom images, animated cursors, trails, context switching, zoom.   | —               |

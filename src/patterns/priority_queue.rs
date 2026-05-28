@@ -1,7 +1,7 @@
 //! Sorted priority queue with stable FIFO tie-breaking for equal priorities.
 //!
-//! - Push, pop, peek, and remove by id with O(n) insertion via partition point.
-//! - Each item carries an auto-assigned id, priority, label, and sequence number.
+//! - Data types: `PriorityItem`, `PriorityQueue`.
+//! - Implementation: `PriorityQueue`.
 
 /// A single entry in the queue with a stable tie-breaking sequence number.
 #[derive(Debug, Clone)]

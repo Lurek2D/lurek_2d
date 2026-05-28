@@ -1,10 +1,9 @@
 //! Virtual filesystem (GameFS) rooted at a game directory with read and write operations.
 //!
-//! - Overlay mount system that layers additional source directories under virtual prefixes.
-//! - Path-traversal rejection and save-directory write confinement for sandboxed access.
-//! - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
-//! - Recursive and flat directory listing with merged overlay results.
-//! - File handle creation, copy, move, and remove operations within the save boundary.
+//! - Data types: `FileInfo`, `MountLayer`, `GameFS`.
+//! - Enum: `FileType`.
+//! - Implementations: `FileType`, `GameFS`.
+//! - Public methods: `as_str`, `new`, `base_dir`, `read_string`, and 37 more.
 
 use crate::dataframe::file_io::DataFrameFileStore;
 use crate::filesystem::file_handle::{FileHandle, FileMode};

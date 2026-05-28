@@ -1,4 +1,11 @@
 //! `lurek.compute` -- Compute bindings for multidimensional arrays, numeric operations, reductions, spatial filters, analytics, linear algebra, FFT helpers, and parallel threshold tuning.
+//!
+//! - Registers `lurek.compute.*` functions and types via `register()`.
+//! - `LuaArray`: userdata type exposed to Lua.
+//! - Bridges 84 Lua-callable methods via `mlua`.
+//! - See `docs/specs/compute.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::compute::analytics;

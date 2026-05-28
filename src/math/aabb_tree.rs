@@ -1,13 +1,9 @@
 //! Dynamic AABB bounding-volume hierarchy for broad-phase 2D spatial queries.
 //!
-//! - Insertion, removal, and in-place update of axis-aligned bounding boxes keyed by numeric id.
-//! - Query primitives: rectangle overlap, point containment, circle overlap, and segment intersection.
-//! - Surface-area heuristic descent for high-quality sibling selection on insert.
-//! - Free-list node pool avoiding repeated allocation and fragmentation.
-//! - Incremental bottom-up refit keeping ancestor bounds tight after mutations.
-//! - Helper geometry routines: AABB area, merged bounds, box-box, box-circle, and box-segment tests.
-//! - Leaf-centric design mapping each entry id to a single leaf node for O(1) lookup.
-//! - Suitable for hundreds to low thousands of dynamic bodies at interactive frame rates.
+//! - Data types: `AabbEntry`, `AabbTree`.
+//! - Implementation: `AabbTree`.
+//! - Public methods: `new`, `insert`, `remove`, `query`, and 8 more.
+//! - Contains 16 method implementations.
 
 use std::collections::HashMap;
 

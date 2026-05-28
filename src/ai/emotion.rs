@@ -1,9 +1,7 @@
 //! Per-agent emotion state tracking named feelings as clamped scalars decaying toward rest.
 //!
-//! - Single-emotion rules for activation thresholds, direct setting, triggering, and decay.
-//! - Model-level add, replace, query, dominant-state lookup, update, and reset operations.
-//! - Value clamping to [0, 1] at the write boundary preventing out-of-range propagation.
-//! - Dominant emotion identification by filtering active entries and selecting highest value.
+//! - Data types: `Emotion`, `EmotionModel`.
+//! - Implementations: `Emotion`, `EmotionModel`.
 
 /// One named emotion tracked by `EmotionModel`.
 pub struct Emotion {

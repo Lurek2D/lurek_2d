@@ -1,4 +1,8 @@
 //! `lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms.
+//!
+//! - Registers `lurek.layout.*` functions and types via `register()`.
+//! - Bridges 5 Lua-callable methods via `mlua`.
+//! - See `docs/specs/layout.md` for the full API specification.
 
 use super::SharedState;
 use crate::layout::{

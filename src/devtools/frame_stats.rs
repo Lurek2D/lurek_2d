@@ -1,7 +1,7 @@
 //! Collect bounded rolling history of frame-delta samples
 //!
-//! - Compute aggregate metrics: FPS, average, min, max, and percentiles
-//! - Produce immutable snapshots summarizing recent frame performance
+//! - Data types: `FrameStats`, `FrameSnapshot`.
+//! - Implementations: `FrameStats`, `FrameSnapshot`.
 
 use std::collections::VecDeque;
 #[derive(Debug)]

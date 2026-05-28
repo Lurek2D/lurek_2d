@@ -1,8 +1,8 @@
 //! Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
 //!
-//! - Profile logic resolving effective trait values, advancing and removing expiring modifiers.
-//! - Interpolation toward other profiles with origin archetype tracking.
-//! - Archetype registry and deterministic hash helper for varied profiles with per-trait jitter.
+//! - Data types: `TraitModifier`, `TraitProfile`, `TraitArchetypes`.
+//! - Implementations: `TraitModifier`, `TraitProfile`, `TraitArchetypes`.
+//! - Public methods: `new`, `is_expired`, `tick`, `new`, and 17 more.
 
 use std::collections::HashMap;
 

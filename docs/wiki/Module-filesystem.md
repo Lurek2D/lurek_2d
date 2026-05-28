@@ -2229,8 +2229,8 @@ Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    local txt = zip:readFile("data/sample_hello.txt")
-    print("zip read bytes: " .. #txt)
+    local ok, txt = pcall(function() return zip:readFile("data/sample_hello.txt") end)
+    print("zip read bytes: " .. (ok and txt and tostring(#txt) or "unavailable"))
 end
 ```
 

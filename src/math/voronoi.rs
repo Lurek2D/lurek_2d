@@ -1,9 +1,7 @@
 //! Voronoi diagram generation from 2D point sets via Bowyer-Watson Delaunay triangulation.
 //!
-//! - Circumcenter and circumcircle predicates for incremental insertion.
-//! - Boundary-edge extraction and super-triangle cleanup.
-//! - CCW vertex sorting and deduplication to produce closed polygonal cells.
-//! - Input deduplication to handle coincident sites gracefully.
+//! - Data type: `VoronoiCell`.
+//! - Function: `voronoi_from_points`.
 
 use std::collections::HashMap;
 

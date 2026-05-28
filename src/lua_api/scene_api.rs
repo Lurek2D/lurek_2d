@@ -1,4 +1,11 @@
 //! `lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.
+//!
+//! - Registers `lurek.scene.*` functions and types via `register()`.
+//! - `LuaDepthSorter`: userdata type exposed to Lua.
+//! - Bridges 70 Lua-callable methods via `mlua`.
+//! - See `docs/specs/scene.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::scene::depth_sorter::DepthSorter;

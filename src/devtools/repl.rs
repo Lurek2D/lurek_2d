@@ -1,7 +1,6 @@
 //! Compatibility wrapper around the release-safe REPL core
 //!
-//! - Preserves the devtools `ReplConsole` API and bounded history behavior
-//! - Returns expression results, success markers, command text, or formatted error text
+//! - Data type: `ReplConsole`.
 
 use crate::repl::ReplSession;
 #[derive(Debug, Clone)]

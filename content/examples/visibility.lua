@@ -5,7 +5,7 @@
 --@api-stub: lurek.visibility.new
 do
     local vg = lurek.visibility.new({ regions = 20 * 15, players = 4 })
-    print("lurek.visibility.new type=" .. vg:type())
+    print("lurek.visibility.new type=" .. type(vg))
     print("players=" .. vg:playerCount())
 end
 

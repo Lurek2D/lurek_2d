@@ -1,13 +1,9 @@
 //! Owns `HtmlDocument`, the mutable tree that holds parsed elements, CSS state, and interaction focus.
 //!
-//! - Provides document construction from raw HTML with optional viewport size and initial CSS.
-//! - Manages CSS source accumulation, rule parsing, and per-element computed style resolution.
-//! - Implements a simple vertical block layout engine with dirty-flag tracking and viewport resize.
-//! - Exposes DOM query helpers: element-by-id, CSS selector matching, ancestor traversal.
-//! - Supports DOM mutation: set/append inner HTML, set text, remove elements, attribute and class ops.
-//! - Handles focus, hover, hit-testing, mouse/keyboard routing, and text input for form elements.
-//! - Produces `HtmlDrawCommand` vectors consumed by the renderer for box and text passes.
-//! - Includes inner/outer HTML serialization and document-order traversal utilities.
+//! - Data types: `HtmlDocumentOptions`, `HtmlDrawCommand`, `HtmlDocument`.
+//! - Implementations: `HtmlDocumentOptions`, `HtmlDocument`.
+//! - Public methods: `new`, `with_options`, `supports`, `generation`, and 41 more.
+//! - Contains 58 method implementations.
 
 use crate::html::element::{normalise_name, HtmlElement, HtmlElementId, HtmlRect};
 use crate::html::parser::{escape_attribute, escape_text, parse_into};

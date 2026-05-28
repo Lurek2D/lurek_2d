@@ -1,10 +1,7 @@
 //! Text shaping and word-wrap algorithms for multi-line layout.
 //!
-//! - `wrap_words` wraps at word boundaries to fit `max_width` in logical pixels.
-//! - `wrap_characters` wraps at character boundaries for CJK and monospace fonts.
-//! - `WordWrap` enum selects the strategy; `None` disables wrapping entirely.
-//! - Both functions return a `Vec<&str>` of lines; no allocation of the text itself.
-//! - Called by `measure_text` and the UI text widget before rasterisation.
+//! - Data types: `LineBreak`, `ShapedLine`, `ShapedText`.
+//! - Enums: `TextAlign`, `WordWrap`.
 
 use crate::font::bitmap_font::BitmapFont;
 use crate::font::metrics::char_advance;

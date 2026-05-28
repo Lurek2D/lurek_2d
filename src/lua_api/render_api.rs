@@ -1,4 +1,14 @@
 //! `lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management.
+//!
+//! - Registers `lurek.render.*` functions and types via `register()`.
+//! - Userdata types: `LuaImageData`, `LuaNineSlice`, `LuaImage`.
+//! - Userdata types: `LuaFont`, `LuaCanvas`, `LuaSpriteBatch`.
+//! - Userdata types: `LuaMesh`, `LuaShader`, `LuaQuad`.
+//! - Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`.
+//! - Bridges 217 Lua-callable methods via `mlua`.
+//! - See `docs/specs/render.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
+
 use super::SharedState;
 use crate::image::ImageData;
 use crate::image::Texture;

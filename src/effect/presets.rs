@@ -1,7 +1,7 @@
 //! Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
 //!
-//! - Preset construction with viewport-sized stack initialization.
-//! - Static name lookup for canonical preset identifiers.
+//! - Data type: `EffectPreset`.
+//! - Functions: `preset_names`, `build_preset`.
 
 use super::effect::PostFxEffect;
 use super::effect_type::PostFxEffectType;

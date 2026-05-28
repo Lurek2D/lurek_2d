@@ -1,7 +1,7 @@
 //! Shelf-first rectangle packing for texture atlas layout.
 //!
-//! - Configurable atlas dimensions and uniform pixel padding between rects.
-//! - Tracks occupancy ratio and returns placement coordinates in insertion order.
+//! - Data types: `PackedRect`, `RectPacker`.
+//! - Implementation: `RectPacker`.
 
 /// Placement result for a single packed rectangle.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,4 +1,9 @@
 //! `lurek.save` — Persistent game save/load system with named slots, schema versioning, auto-save, compression, and migration support.
+//!
+//! - Registers `lurek.save.*` functions and types via `register()`.
+//! - `LuaSaveManager`: userdata type exposed to Lua.
+//! - Bridges 28 Lua-callable methods via `mlua`.
+//! - See `docs/specs/save.md` for the full API specification.
 
 use super::SharedState;
 use crate::save::{

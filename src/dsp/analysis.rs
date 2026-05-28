@@ -1,7 +1,7 @@
 //! - Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.
-//! - `LevelDetector` accumulates sum-of-squares and peak per sample; exposes RMS, peak, clipping flag, and dBFS conversion.
-//! - `SpectrumAnalyzer` delegates to `SoundData::analyze_dft` with a bounded bin count clamped to 1–512.
-//! - Used by audio subsystem and Lua DSP bindings to inspect signal levels and spectrum before mixing.
+//!
+//! - Data types: `LevelDetector`, `SpectrumAnalyzer`.
+//! - Implementations: `LevelDetector`, `SpectrumAnalyzer`.
 
 use crate::audio::sound_data::SoundData;
 

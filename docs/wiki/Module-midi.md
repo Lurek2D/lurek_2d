@@ -181,9 +181,12 @@ Source: [midi.lua](../blob/main/content/examples/midi.lua)
 ```lua
 do
     local path = "content/examples/assets/audio/sample_soundfont.sf2"
-    local ok = lurek.midi.loadSoundFont(path)
-    print("loaded = " .. tostring(ok))
-    print("has soundfont = " .. tostring(lurek.midi.hasSoundFont()))
+    local ok, err = pcall(function()
+        local loaded = lurek.midi.loadSoundFont(path)
+        print("loaded = " .. tostring(loaded))
+        print("has soundfont = " .. tostring(lurek.midi.hasSoundFont()))
+    end)
+    if not ok then print("loadSoundFont skipped: " .. tostring(err)) end
 end
 ```
 

@@ -1,7 +1,7 @@
 //! Define normalized documentation record types for lurek API symbols.
 //!
-//! - Model parameter, return, and metadata fields used by export and report stages.
-//! - Provide completeness validation helpers for entry quality checks.
+//! - Data types: `ParamInfo`, `ReturnInfo`, `DocEntry`.
+//! - Implementation: `DocEntry`.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Default)]

@@ -1,4 +1,9 @@
 //! `lurek.charts` -- Chart creation, configuration, and rendering bindings.
+//!
+//! - Registers `lurek.charts.*` functions and types via `register()`.
+//! - Userdata types: `LuaLineChart`, `LuaBarChart`, `LuaScatterPlot`.
+//! - Userdata types: `LuaPieChart`, `LuaAreaChart`.
+//! - Bridges 39 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::charts::config::{ChartConfig, ChartMargin, ChartSeries, DEFAULT_PALETTE};

@@ -1,9 +1,7 @@
 //! Output converter: transforms an assembled map block grid into a `TileMap`.
 //!
-//! - `grid_to_tilemap(grid, tileset_id)` produces a `TileMap` ready for the renderer.
-//! - Slot roles (floor/wall/object) are translated to `TileMap` layer indices.
-//! - Block-local tile IDs are offset by the tileset base ID to produce world tile IDs.
-//! - The returned `TileMap` is owned by the caller; no reference to the block grid is kept.
+//! - Data type: `MapBlockResult`.
+//! - Implementation: `MapBlockResult`.
 
 use super::config::MapBlockConfig;
 use super::group::MapGroup;

@@ -1,9 +1,7 @@
 //! Shared layout types: nodes, edges, configuration structs, and result containers.
 //!
-//! - `LayoutNode` carries an ID and optional size hint for layout algorithms.
-//! - `LayoutEdge` is a directed `(from, to)` pair with an optional weight.
-//! - `LayoutResult` is the common return type: a `HashMap<NodeId, (f32, f32)>`.
-//! - `LayoutConfig` base fields (padding, viewport size) are embedded in every algorithm config.
+//! - Data types: `LayoutNode`, `LayoutEdge`, `LayoutConfig`, `LayoutResult`.
+//! - Type alias: `NodeId`.
 
 /// Unique node identifier (index-based for performance).
 pub type NodeId = usize;

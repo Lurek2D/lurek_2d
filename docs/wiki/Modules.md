@@ -56,7 +56,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 | [effect](Module-effect) | `lurek.effect` | Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes. |
 | [font](Module-font) | `lurek.font` | CPU-side font loading, glyph metrics, text measurement, and shaping for bitmap fonts. |
 | [image](Module-image) | `lurek.image` | CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode. |
-| [input](Module-input) | `lurek.input.keyboard` | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
+| [input](Module-input) | `lurek.input` | Per-frame keyboard / mouse / gamepad / touch state translated from winit events. |
 | [light](Module-light) | `lurek.light` | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [midi](Module-midi) | `lurek.midi` | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [physics](Module-physics) | `lurek.physics` | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
@@ -111,5 +111,6 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
+| [agent](Module-agent) | `lurek.agent` | lurek.agent -- Agent bindings for LLM and VM integration. |
 | [engine](Module-engine) | `lurek.engine` | lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts. |
 | [system](Module-system) | `lurek.system` | lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection. |

@@ -1,9 +1,6 @@
 //! Adjacency provider trait: defines the neighbor relationship between map regions.
 //!
-//! - `AdjacencyProvider` trait has one method: `neighbors(region_id) -> Vec<RegionId>`.
-//! - Grid-based maps implement it via 4-directional or 8-directional cell adjacency.
-//! - Province maps implement it via the province border index for irregular shapes.
-//! - Injected into the visibility grid at construction; swappable without engine changes.
+//! - Data type: `SimpleAdjacency`.
 
 /// Trait for providing neighbor information to the visibility system.
 /// Implementations can be grid-based, graph-based, or any custom topology.

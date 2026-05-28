@@ -1,7 +1,6 @@
 //! Circle primitive defined by center + radius, clamped non-negative on construction.
 //!
-//! - Point-containment, circle-circle intersection, and AABB queries.
-//! - Area and perimeter helpers using `std::f32::consts::PI`.
+//! - Data type: `Circle`.
 
 use super::vec2::Vec2;
 

@@ -1,9 +1,8 @@
 //! Pacing director translating accumulated tension into pressure phases and runtime multipliers.
 //!
-//! - Tunable thresholds and timers moving between buildup, peak, sustain, and relief phases.
-//! - Derived outputs for spawn pressure, loot pressure, ambient intensity, and state inspection.
-//! - Slower tension decay during peak and sustain phases to hold pressure before relief.
-//! - Per-phase spawn, loot, and ambient multipliers scaling downstream gameplay intensity.
+//! - Data types: `DirectorConfig`, `AIDirector`.
+//! - Enum: `DirectorPhase`.
+//! - Implementations: `DirectorPhase`, `DirectorConfig`, `AIDirector`.
 
 /// Director pacing phase. This item is part of the public API.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

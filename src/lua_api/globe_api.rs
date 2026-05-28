@@ -1,4 +1,11 @@
 //! `lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.
+//!
+//! - Registers `lurek.globe.*` functions and types via `register()`.
+//! - `LuaGlobe`: userdata type exposed to Lua.
+//! - `LuaGlobeRegistry`: userdata type exposed to Lua.
+//! - Bridges 83 Lua-callable methods via `mlua`.
+//! - See `docs/specs/globe.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;

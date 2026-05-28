@@ -1,7 +1,7 @@
 //! Render the composited terminal cell grid as a list of `RenderCommand` draw calls.
 //!
-//! - Rasterise the composited grid into an `ImageData` thumbnail for previews and tests.
-//! - Both paths include terminal widgets and map foreground/background colours to output.
+//! - Implementation: `Terminal`.
+//! - Public methods: `generate_render_commands`, `draw_to_image`.
 
 use super::terminal_state::Terminal;
 use crate::image::ImageData;

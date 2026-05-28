@@ -1,7 +1,7 @@
 //! Parse CSV text or streams into `SerialValue` sequences of maps or arrays.
 //!
-//! - Serialize `SerialValue` back to CSV with configurable delimiter and header behavior.
-//! - Support both header-keyed (map rows) and index-only (sequence rows) modes.
+//! - Data type: `CsvOptions`.
+//! - Functions: `from_csv`, `from_csv_reader`, `to_csv`.
 
 use super::lua_table::SerialValue;
 use indexmap::IndexMap;

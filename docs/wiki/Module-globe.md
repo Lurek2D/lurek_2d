@@ -513,12 +513,7 @@ Source: [globe.lua](../blob/main/content/examples/globe.lua)
 ```lua
 do
     local path = "logs/globe_example.toml"
-    local file = assert(io.open(path, "w"))
-    file:write("[[province]]\n")
-    file:write("id = 1\n")
-    file:write("centroid = [10.0, 20.0]\n")
-    file:write("vertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
-    file:close()
+    lurek.filesystem.write(path, "[[province]]\nid = 1\ncentroid = [10.0, 20.0]\nvertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
 
     local g = lurek.globe.loadFromTOMLFile("toml_file_globe", path, {})
     print("toml file globe provinces = " .. g:provinceCount())

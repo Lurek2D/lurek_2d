@@ -1,9 +1,7 @@
 //! Compute per-entry quality scores from completeness of description, params, and metadata.
 //!
-//! - Convert scores to letter grades for human-readable reporting.
-//! - Validate catalogs for missing, phantom, and incomplete entries.
-//! - Aggregate module-level and overall quality metrics from a catalog snapshot.
-//! - Support both catalog-based and standalone entry-based report construction.
+//! - Data types: `ValidationReport`, `QualityReport`.
+//! - Functions: `quality_score`, `quality_grade`.
 
 use crate::docs::catalog::Catalog;
 use crate::docs::entry::DocEntry;

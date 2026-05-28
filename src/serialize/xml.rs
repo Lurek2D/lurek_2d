@@ -1,7 +1,6 @@
 //! Parse XML strings into a SerialValue tree using roxmltree.
 //!
-//! - Recursively convert elements, attributes, text, and children into map/seq structures.
-//! - Provide a single `decode` entry point for the serial module.
+//! - Function: `decode`.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

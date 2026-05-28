@@ -1,10 +1,8 @@
 //! Define shared state and queue structures for the debug bridge protocol.
 //!
-//! - Hold pending request and response buffers for runtime-client communication.
-//! - Track rolling frame-time performance metrics with bounded sample windows.
-//! - Maintain bounded print history captured from runtime Lua output.
-//! - Manage session configuration: port, protocol version, capabilities, and nonce.
-//! - Provide broadcast queue for event delivery to all connected clients.
+//! - Data types: `PendingRequest`, `PendingResponse`, `PrintEntry`, `BridgeShared`.
+//! - Type alias: `SharedBridge`.
+//! - Implementation: `BridgeShared`.
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

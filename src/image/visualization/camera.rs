@@ -1,12 +1,9 @@
 //! Camera debug overlay with viewport rectangle and position crosshair.
 //!
-//! - Zoom level comparison panel across multiple scale factors.
-//! - Rotation preview grid with world-to-screen coordinate transforms.
-//! - Camera bounds display with labeled position list.
-//! - Follow and dead-zone trail visualization.
-//! - Shake displacement trail with center and moved-position markers.
-//! - Full-size camera debug wrapper for quick usage.
-//! - HSV color helpers for hue-based visual differentiation.
+//! - Functions: `draw_camera_debug_to_image`, `draw_camera_zoom_comparison_to_image`, `camera_rotation_to_image`, `camera_bounds_to_image`, and 7 more.
+//! - Uses: `camera`, `image`.
+//! - Part of the `image/visualization` subsystem.
+//! - See `src/image/visualization` for related modules (1).
 
 use super::hsv_to_rgb_viz;
 use crate::camera::Camera2D;

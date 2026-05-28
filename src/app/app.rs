@@ -1,14 +1,13 @@
 //! Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
 //!
-//! - Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
-//! - Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
-//! - Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
-//! - Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
-//! - Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
-//! - Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
-//! - Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
-//! - Boots the Lua VM, loads main.lua, fires `lurek.init()`, and enters the main game loop.
-//! - Provides `App` bootstrap wrapper that initializes logging and launches the event loop.
+//! - Data types: `LurekApp`, `App`, `AppRunOptions`.
+//! - Enum: `RunState`.
+//! - Functions: `recompute_viewport`, `splash_window_title`, `fit_contain_size`.
+//! - Implementations: `LurekApp`, `App`.
+//! - Public methods: `new`, `resolve_present_mode`, `init_lua`, `new`, and 1 more.
+//! - Contains 33 method implementations.
+//! - Uses: `event`, `filesystem`, `input`, `log_msg`, `lua_api`, and 3 more.
+//! - See `docs/specs/app.md` for the module specification.
 
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;

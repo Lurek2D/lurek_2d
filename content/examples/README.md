@@ -31,6 +31,7 @@ The sweep command is the canonical way to verify that every `content/examples/*.
 | File | Focus |
 |---|---|
 | `render.lua` | Drawing, images, text, meshes, render targets, and GPU-facing helpers |
+| `agent.lua` | LLM Agent integration, prompt querying and executing code |
 | `audio.lua` | Sources, playback, buses, filters, and sound data |
 | `input.lua` | Keyboard, mouse, and gamepad queries |
 | `physics.lua` | Bodies, shapes, raycasts, and collision helpers |

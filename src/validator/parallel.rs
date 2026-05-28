@@ -1,9 +1,8 @@
 //! Parallel file-tree runner: distributes validation rules across worker threads.
 //!
-//! - `validate_parallel(files, rules, config)` runs rules concurrently via Rayon.
-//! - `collect_lua_files` and `collect_files_with_ext` enumerate files before dispatch.
-//! - Each worker applies all rules to its file slice; results are merged with no locks.
-//! - Thread count is sourced from `ValidatorConfig`; 0 forces single-threaded mode.
+//! - Functions: `validate_parallel`, `collect_lua_files`, `collect_files_with_ext`.
+//! - See `docs/specs/validator.md` for the module specification.
+
 use super::report::ValidationReport;
 use super::rule::ValidationRule;
 use std::path::{Path, PathBuf};

@@ -1,7 +1,4 @@
 //! Scene stack with push/pop lifecycle and unique SceneId handles.
-//!
-//! - Depth-sorted entity ordering for layered draw calls.
-//! - Transition effects (fade, slide, wipe) with configurable easing curves.
 
 /// Depth-sorted entity ordering for scene draw calls.
 pub mod depth_sorter;

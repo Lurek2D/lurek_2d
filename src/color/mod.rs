@@ -1,8 +1,4 @@
 //! RGBA color types, palettes, blending, and color-space conversions.
-//! - Linear RGBA float color with named constants and brand palette.
-//! - Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
-//! - Predefined palettes: CSS named colors, retro consoles, game-dev common.
-//! - Blending modes: lerp, multiply, screen, overlay, additive.
 
 /// Core RGBA color type and color-space conversions.
 pub mod color_core;

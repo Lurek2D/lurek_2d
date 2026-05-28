@@ -1,7 +1,7 @@
 //! Billboard sprite registry for the raycaster subsystem.
 //!
-//! - Manages creation, removal, positioning, and visibility of world-space sprites.
-//! - Provides distance-sorted iteration for back-to-front rendering.
+//! - Data types: `WorldSprite`, `SpriteManager`.
+//! - Implementation: `SpriteManager`.
 
 /// A billboard sprite placed in world space with an associated texture and uniform scale.
 #[derive(Debug, Clone)]

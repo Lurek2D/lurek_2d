@@ -1,4 +1,11 @@
 //! `lurek.binary` -- Binary bindings for binary packing, compression, encoding, hashing, byte buffers, data views, TOML conversion, ring buffers, and structured writers.
+//!
+//! - Registers `lurek.binary.*` functions and types via `register()`.
+//! - `LuaRingBuffer`: userdata type exposed to Lua.
+//! - `LuaDataView`: userdata type exposed to Lua.
+//! - `LuaDataWriter`: userdata type exposed to Lua.
+//! - Bridges 72 Lua-callable methods via `mlua`.
+//! - See `docs/specs/binary.md` for the full API specification.
 
 use super::SharedState;
 use crate::binary::{

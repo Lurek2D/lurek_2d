@@ -1,4 +1,13 @@
 //! `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers.
+//!
+//! - Registers `lurek.math.*` functions and types via `register()`.
+//! - Userdata types: `LuaVec2`, `LuaVec3`, `LuaCatmullRom`.
+//! - Userdata types: `LuaHermite`, `LuaRandomGenerator`, `LuaTransform`.
+//! - Userdata types: `LuaBezierCurve`, `LuaTween`, `LuaSpatialHash`.
+//! - Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`.
+//! - Bridges 233 Lua-callable methods via `mlua`.
+//! - See `docs/specs/math.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::math::easing;
@@ -483,6 +492,100 @@ impl LuaUserData for LuaRandomGenerator {
         methods.add_method_mut("setState", |_, this, state: String| {
             this.inner.set_state(&state).map_err(LuaError::external)?;
             Ok(())
+        });
+        // -- roll --
+        /// Rolls a single die with the given number of sides.
+        /// @param | sides | integer | Number of sides (minimum 1).
+        /// @return | integer | Result in range [1, sides].
+        methods.add_method_mut("roll", |_, this, sides: u32| {
+            Ok(this.inner.roll(sides))
+        });
+        // -- rollN --
+        /// Rolls N dice with the given number of sides and returns all results.
+        /// @param | count | integer | Number of dice (clamped to [1, 1000]).
+        /// @param | sides | integer | Number of sides per die (minimum 1).
+        /// @return | integer[] | Array of individual die results.
+        methods.add_method_mut("rollN", |lua, this, (count, sides): (u32, u32)| {
+            let results = this.inner.roll_n(count, sides);
+            let tbl = lua.create_table()?;
+            for (i, v) in results.into_iter().enumerate() {
+                tbl.raw_set(i + 1, v)?;
+            }
+            Ok(tbl)
+        });
+        // -- rollSum --
+        /// Rolls N dice and returns the sum of all results.
+        /// @param | count | integer | Number of dice (clamped to [1, 1000]).
+        /// @param | sides | integer | Number of sides per die (minimum 1).
+        /// @return | integer | Sum of all die results.
+        methods.add_method_mut("rollSum", |_, this, (count, sides): (u32, u32)| {
+            Ok(this.inner.roll_sum(count, sides))
+        });
+        // -- rollKeepHighest --
+        /// Rolls N dice and returns the sum of the highest K results.
+        /// @param | count | integer | Number of dice to roll.
+        /// @param | sides | integer | Number of sides per die.
+        /// @param | keep | integer | How many highest results to sum.
+        /// @return | integer | Sum of the highest keep results.
+        methods.add_method_mut(
+            "rollKeepHighest",
+            |_, this, (count, sides, keep): (u32, u32, u32)| {
+                Ok(this.inner.roll_keep_highest(count, sides, keep))
+            },
+        );
+        // -- rollKeepLowest --
+        /// Rolls N dice and returns the sum of the lowest K results.
+        /// @param | count | integer | Number of dice to roll.
+        /// @param | sides | integer | Number of sides per die.
+        /// @param | keep | integer | How many lowest results to sum.
+        /// @return | integer | Sum of the lowest keep results.
+        methods.add_method_mut(
+            "rollKeepLowest",
+            |_, this, (count, sides, keep): (u32, u32, u32)| {
+                Ok(this.inner.roll_keep_lowest(count, sides, keep))
+            },
+        );
+        // -- rollAdvantage --
+        /// Rolls two dice and returns the higher result (advantage mechanic).
+        /// @param | sides | integer | Number of sides per die.
+        /// @return | integer | Higher of the two rolls.
+        methods.add_method_mut("rollAdvantage", |_, this, sides: u32| {
+            Ok(this.inner.roll_advantage(sides))
+        });
+        // -- rollDisadvantage --
+        /// Rolls two dice and returns the lower result (disadvantage mechanic).
+        /// @param | sides | integer | Number of sides per die.
+        /// @return | integer | Lower of the two rolls.
+        methods.add_method_mut("rollDisadvantage", |_, this, sides: u32| {
+            Ok(this.inner.roll_disadvantage(sides))
+        });
+        // -- rollExploding --
+        /// Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+        /// Rerolls are capped at 1000 total to prevent infinite loops.
+        /// @param | count | integer | Number of dice to roll.
+        /// @param | sides | integer | Number of sides per die.
+        /// @return | integer | Total sum including all explosion rerolls.
+        methods.add_method_mut("rollExploding", |_, this, (count, sides): (u32, u32)| {
+            Ok(this.inner.roll_exploding(count, sides))
+        });
+        // -- countSuccesses --
+        /// Rolls N dice and counts how many results are >= the target number.
+        /// @param | count | integer | Number of dice to roll.
+        /// @param | sides | integer | Number of sides per die.
+        /// @param | target | integer | Minimum value to count as a success.
+        /// @return | integer | Number of successful dice.
+        methods.add_method_mut(
+            "countSuccesses",
+            |_, this, (count, sides, target): (u32, u32, i64)| {
+                Ok(this.inner.count_successes(count, sides, target))
+            },
+        );
+        // -- chance --
+        /// Returns true with the given probability (0.0 = never, 1.0 = always).
+        /// @param | probability | number | Probability in range [0.0, 1.0].
+        /// @return | boolean | True when the random check passes.
+        methods.add_method_mut("chance", |_, this, probability: f64| {
+            Ok(this.inner.chance(probability))
         });
         // -- type --
         /// Returns the Lua-visible type name for this random generator handle.

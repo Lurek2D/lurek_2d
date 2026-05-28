@@ -1,4 +1,9 @@
 //! `lurek.automation` -- Automation bindings for loading simulator scripts, controlling playback, inspecting state, saving macros, and waiting on Lua predicates.
+//!
+//! - Registers `lurek.automation.*` functions and types via `register()`.
+//! - Bridges 32 Lua-callable methods via `mlua`.
+//! - See `docs/specs/automation.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::automation::{Action, Script, Simulator, Step};

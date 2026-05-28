@@ -1,4 +1,11 @@
 //! `lurek.filesystem` -- GameFS bindings for text, binary, JSON, directory, metadata, async IO, mount, ZIP archive, file handle, file data, watcher, path conversion, and script chunk loading operations available to Lua.
+//!
+//! - Registers `lurek.filesystem.*` functions and types via `register()`.
+//! - `LuaFileData`: userdata type exposed to Lua.
+//! - `LuaFileHandle`: userdata type exposed to Lua.
+//! - `LuaZipMount`: userdata type exposed to Lua.
+//! - Bridges 68 Lua-callable methods via `mlua`.
+//! - See `docs/specs/filesystem.md` for the full API specification.
 
 use super::SharedState;
 use crate::filesystem::watcher::FileWatcher;

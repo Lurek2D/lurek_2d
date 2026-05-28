@@ -1,9 +1,7 @@
 //! Custom image cursor built from RGBA pixel data with configurable hotspot offset.
 //!
-//! - `CustomCursor` stores width, height, hotspot `(x, y)`, and a flat RGBA `Vec<u8>`.
-//! - Pixel data is validated at construction; mismatched dimensions return an error.
-//! - Used directly or as frames inside `AnimatedCursor`.
-//! - Exposed to Lua scripts via `lurek.cursor.set_custom()`.
+//! - Data type: `CustomCursor`.
+
 /// A custom cursor from RGBA pixel data.
 #[derive(Debug, Clone)]
 pub struct CustomCursor {

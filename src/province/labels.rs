@@ -1,7 +1,4 @@
 //! Compute pixel-weighted centroids from province span data.
-//!
-//! - Map province IDs to their geometric center for label placement.
-//! - Accumulates pixel-weighted x/y sums across span rows and normalises per province area.
 
 use std::collections::HashMap;
 

@@ -1,4 +1,11 @@
 //! `lurek.raycaster` - Provides a pseudo-3D raycasting engine for first-person dungeon crawlers with textured walls, floors, and ceilings.
+//!
+//! - Registers `lurek.raycaster.*` functions and types via `register()`.
+//! - `LuaDoorManager`: userdata type exposed to Lua.
+//! - `LuaHeightMap`: userdata type exposed to Lua.
+//! - `LuaPointLight`: userdata type exposed to Lua.
+//! - `LuaRaycaster`: userdata type exposed to Lua.
+//! - `LuaSpriteManager`: userdata type exposed to Lua.
 
 use super::SharedState;
 #[cfg(feature = "obj-loader")]

@@ -1,4 +1,13 @@
 //! `lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.
+//!
+//! - Registers `lurek.dataframe.*` functions and types via `register()`.
+//! - `LuaGroupedFrame`: userdata type exposed to Lua.
+//! - `LuaDataFrameTask`: userdata type exposed to Lua.
+//! - `LuaDataFrame`: userdata type exposed to Lua.
+//! - `LuaLazyQuery`: userdata type exposed to Lua.
+//! - `LuaDatabase`: userdata type exposed to Lua.
+//! - `LuaVecFrame`: userdata type exposed to Lua.
+//! - Bridges 159 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::dataframe::file_io::{self, DataFrameFileError};

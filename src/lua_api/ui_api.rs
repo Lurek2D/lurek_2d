@@ -1,4 +1,13 @@
 //! `lurek.ui` - Provides immediate-mode and retained-mode UI widgets including buttons, sliders, text inputs, panels, and layout containers.
+//!
+//! - Registers `lurek.ui.*` functions and types via `register()`.
+//! - `LuaTheme`: userdata type exposed to Lua.
+//! - `LuaLineChart`: userdata type exposed to Lua.
+//! - `LuaBarChart`: userdata type exposed to Lua.
+//! - `LuaScatterPlot`: userdata type exposed to Lua.
+//! - `LuaPieChart`: userdata type exposed to Lua.
+//! - `LuaAreaChart`: userdata type exposed to Lua.
+//! - Bridges 429 Lua-callable methods via `mlua`.
 
 use super::dataframe_api::LuaDataFrame;
 use super::render_api::LuaFont;

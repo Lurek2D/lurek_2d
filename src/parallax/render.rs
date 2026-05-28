@@ -1,7 +1,6 @@
 //! Convert parallax layer state into flat `RenderCommand` lists for the renderer.
 //!
-//! - Tile position batches into draw-image sequences with color and blend pre-applied.
-//! - Bridge between the parallax camera math and the GPU submission pipeline.
+//! - Function: `batch_to_render_commands`.
 
 use crate::parallax::layer::{ParallaxDrawBatch, ParallaxLayer};
 use crate::render::renderer::RenderCommand;

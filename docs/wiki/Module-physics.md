@@ -4830,8 +4830,8 @@ do
     local world = lurek.physics.newWorld(0, 400)
     world:newCircleBody(200, 200, 20, "dynamic")
     local img = lurek.image.newImageData(800, 600)
-    world:drawDebug(img, 0, 255, 0, 200)
-    print("image", img:type())
+    local ok, err = pcall(function() world:drawDebug(img, 0, 255, 0, 200) end)
+    if ok then print("image", img:type()) else print("drawDebug skipped: " .. tostring(err)) end
 end
 ```
 

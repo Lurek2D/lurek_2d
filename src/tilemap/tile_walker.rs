@@ -1,9 +1,8 @@
 //! Cardinal facing direction with angle, delta, and rotation helpers.
 //!
-//! - Discrete grid walker with forward, backward, and strafe movement.
-//! - Previous-state snapshot for smooth frame interpolation of position and heading.
-//! - Relative-facing query to classify adjacent tiles as front, back, left, or right.
-//! - Passability checks decoupled from actual collision data.
+//! - Data type: `TileWalker`.
+//! - Enum: `Facing`.
+//! - Implementations: `Facing`, `TileWalker`.
 
 use std::f32::consts::PI;
 

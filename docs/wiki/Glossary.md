@@ -27,7 +27,9 @@ The glossary collects terms that appear across module and API pages.
 - `LAabbTree` ([lurek.math](Module-math)) - Lua-side wrapper for an AABB tree spatial index.
 - `LAccordion` ([lurek.ui](Module-ui)) - Adds accordion-specific methods to an accordion widget table.
 - `LAdsrEnvelope` ([lurek.dsp](Module-dsp)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
+- `LAgent` ([lurek.agent](Module-agent)) - Lua-side handle for a single LLM Agent.
 - `LAgent` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
+- `LAgentManager` ([lurek.agent](Module-agent)) - Lua-side handle for managing multiple LLM Agents in parallel.
 - `LAIBlackboard` ([lurek.ai](Module-ai)) - Lua handle for a typed AI blackboard storing local key-value facts.
 - `LAIDirector` ([lurek.ai](Module-ai)) - Lua handle for an AI director that tracks encounter tension and pacing factors.
 - `LAIFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for an AI flow field over a path grid.
@@ -142,5 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LLight` ([lurek.light](Module-light)) - Lua-side handle for a light stored in the shared light world.
 - `LLineChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a connected line series chart.
 - `LLineChart` ([lurek.ui](Module-ui)) - Lua-exposed line chart for data visualization.
-- `LList` ([lurek.patterns](Module-patterns)) - Lua-facing dynamic array list with indexed access, insertion, removal, and search.
-- `LListBox` ([lurek.ui](Module-ui)) - Adds list-box-specific methods to a list box widget table.

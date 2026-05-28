@@ -1,8 +1,7 @@
 //! Named image layers with opacity, visibility, and RGBA pixel data.
 //!
-//! - Layered image stack that composites layers front-to-back with alpha blending.
-//! - Layer manipulation: add, remove, reorder, swap, rename, set opacity/visibility.
-//! - Final merge produces a single `ImageData` using standard Porter-Duff over compositing.
+//! - Data types: `ImageLayer`, `LayeredImage`.
+//! - Implementations: `ImageLayer`, `LayeredImage`.
 
 use super::image_data::ImageData;
 /// A single named image layer with opacity, visibility, and pixel data.

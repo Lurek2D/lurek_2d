@@ -496,8 +496,37 @@ The module also excels in procedural generation and animation. It features a sop
 - `LRandomGenerator:setSeed`: Resets this generator to a seed value.
 - `LRandomGenerator:getState`: Returns this generator serialized state string.
 - `LRandomGenerator:setState`: Restores this generator from a serialized state string.
+- `LRandomGenerator:roll`: Rolls a single die with the given number of sides.
+- `LRandomGenerator:rollN`: Rolls N dice with the given number of sides and returns all results.
+- `LRandomGenerator:rollSum`: Rolls N dice and returns the sum of all results.
+- `LRandomGenerator:rollKeepHighest`: Rolls N dice and returns the sum of the highest K results.
+- `LRandomGenerator:rollKeepLowest`: Rolls N dice and returns the sum of the lowest K results.
+- `LRandomGenerator:rollAdvantage`: Rolls two dice and returns the higher result (advantage mechanic).
+- `LRandomGenerator:rollDisadvantage`: Rolls two dice and returns the lower result (disadvantage mechanic).
+- `LRandomGenerator:rollExploding`: Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+- `LRandomGenerator:countSuccesses`: Rolls N dice and counts how many results are >= the target number.
+- `LRandomGenerator:chance`: Returns true with the given probability (0.0 = never, 1.0 = always).
 - `LRandomGenerator:type`: Returns the Lua-visible type name for this random generator handle.
 - `LRandomGenerator:typeOf`: Returns whether this random generator handle matches a supported type name.
+
+### RPG Dice & Roll Mechanics
+
+`LRandomGenerator` includes dedicated methods for the most common RPG and simulation dice patterns:
+
+| Method | Description |
+|---|---|
+| `roll(sides)` | Roll 1dN, result in [1, sides] |
+| `rollN(count, sides)` | Roll count dice, return array of results |
+| `rollSum(count, sides)` | Roll count dice, return sum |
+| `rollKeepHighest(count, sides, keep)` | Roll N, sum the highest K (e.g. 4d6 drop lowest) |
+| `rollKeepLowest(count, sides, keep)` | Roll N, sum the lowest K |
+| `rollAdvantage(sides)` | Roll twice, take higher (D&D advantage) |
+| `rollDisadvantage(sides)` | Roll twice, take lower (D&D disadvantage) |
+| `rollExploding(count, sides)` | Exploding dice: reroll max, cap 1000 total rolls |
+| `countSuccesses(count, sides, target)` | Roll pool, count results >= target (Shadowrun/WoD style) |
+| `chance(probability)` | Return true with probability p ∈ [0.0, 1.0] |
+
+All methods are deterministic when the generator is seeded, making outcomes fully reproducible for save/replay. `rollN` input count is clamped to 1000; `rollExploding` rerolls are capped at 1000 total.
 
 ### `LRectPacker` Methods
 - `LRectPacker:pack`: Attempts to pack a rectangle and returns its placement coordinates.

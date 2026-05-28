@@ -1,7 +1,4 @@
 //! Formats per-frame timing data into compact single-line strings for logging.
-//!
-//! - Reads tick, update, render, and callback timings from `FrameProfile`.
-//! - Output format: `tick=Xms update=Xms render=Xms cb=Xms` for tracing frame budget.
 
 use crate::runtime::FrameProfile;
 /// Format one `FrameProfile` sample as a compact single-line timing string.

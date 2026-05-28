@@ -1,8 +1,6 @@
 //! Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
 //!
-//! - Flow fields and influence maps for group movement and tactical queries.
-//! - Navigation grids, hex grids, isometric grids, and navmesh support.
-//! - Async thread-pool dispatch for off-thread path computation.
+//! - Sub-modules: `ai_flow_field`, `astar`, `async_pool`, `bidir`, and 15 more.
 
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;

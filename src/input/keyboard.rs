@@ -1,12 +1,8 @@
 //! Per-frame keyboard state machine tracking logical keys, physical scan-codes, and frame deltas.
 //!
-//! - Modifier bitmask flags (Shift, Ctrl, Alt, Meta) updated each event.
-//! - OS key-repeat and text-input (IME) buffer toggling.
-//! - Bidirectional mapping between logical key names and physical scan-code names.
-//! - Winit-to-Lurek translation for both logical `Key` and physical `KeyCode` enums.
-//! - Frame lifecycle: `begin_frame` clears deltas, events accumulate, queries read snapshot.
-//! - Scan-code layer allows layout-independent bindings for WASD-style controls.
-//! - Text-input buffer collects composed characters for chat and text fields.
+//! - Data type: `KeyboardState`.
+//! - Functions: `get_scancode_from_key`, `get_key_from_scancode`, `winit_key_to_string`, `winit_scancode_to_string`.
+//! - Implementation: `KeyboardState`.
 
 use std::collections::HashSet;
 

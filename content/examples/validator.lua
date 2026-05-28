@@ -11,7 +11,7 @@
 --@api-stub: lurek.validator.newEngine
 do
     local eng = lurek.validator.newEngine("content/examples")
-    print("lurek.validator.newEngine type=" .. eng:type())
+    print("lurek.validator.newEngine type=" .. type(eng))
     print("rule count=" .. eng:ruleCount())
 end
 

@@ -1,9 +1,9 @@
 //! Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
 //!
-//! - Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-//! - Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
-//! - Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
-//! - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
+//! - Data types: `Button`, `Label`, `TextInput`, `CheckBox`, and 9 more.
+//! - Implementations: `Button`, `Label`, `TextInput`, `CheckBox`, and 9 more.
+//! - Public methods: `new`, `new`, `new`, `set_text`, and 35 more.
+//! - Contains 46 method implementations.
 
 use crate::ui::widget::{WidgetBase, WidgetType};
 /// Clickable push button with a text label.

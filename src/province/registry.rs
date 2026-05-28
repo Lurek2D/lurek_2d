@@ -1,13 +1,9 @@
 //! Central province registry: owns pixel grid, span runs, adjacency graph, and per-province records.
 //!
-//! - Builds from a ProvinceGrid or PNG colour-map; computes spans, bounding boxes, and centroids.
-//! - Provides fast lookup by pixel coordinate, province id, or bounding box.
-//! - Manages mutable province style (political colour, terrain, fog, visibility, border style).
-//! - Stores capital positions, label anchor lines, and label text per province.
-//! - Tracks adjacency via ProvinceGraph and exposes neighbour and pair queries.
-//! - Maintains a monotonic revision counter and ordered change log for incremental sync.
-//! - Supports border class overrides keyed by normalised province pair.
-//! - Stores arbitrary string key-value attributes per province via set_attr.
+//! - Data types: `ProvinceRecord`, `ProvinceRegistry`.
+//! - Implementation: `ProvinceRegistry`.
+//! - Public methods: `new`, `from_grid`, `from_png`, `width`, and 37 more.
+//! - Contains 44 method implementations.
 
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;

@@ -1,9 +1,8 @@
 //! 2D convolution with zero-padded boundary handling
 //!
-//! - Binary morphology operators (dilate, erode) using Manhattan radius
-//! - Flood fill with 4-connected BFS propagation
-//! - Sub-region extraction and insertion for 2D arrays
-//! - Matrix multiplication and 1D dot product
+//! - Functions: `convolve2d`, `dilate`, `erode`, `flood_fill`, and 4 more.
+//! - Uses: `compute`.
+//! - See `docs/specs/compute.md` for the module specification.
 
 use crate::compute::array::{DataType, NdArray};
 use std::collections::VecDeque;

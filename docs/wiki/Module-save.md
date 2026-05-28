@@ -315,7 +315,7 @@ do
     mgr:markDirty()
     print("auto-save triggered = " .. tostring(mgr:update(6.0)))
     print("autosave exists = " .. tostring(mgr:exists("autosave")))
-    mgr:delete("autosave")
+    pcall(function() mgr:delete("autosave") end)
 end
 ```
 

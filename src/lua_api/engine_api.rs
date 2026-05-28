@@ -1,4 +1,8 @@
 //! `lurek.engine` -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
+//!
+//! - Registers `lurek.engine.*` functions and types via `register()`.
+//! - Bridges 13 Lua-callable methods via `mlua`.
+//! - See `docs/specs/engine.md` for the full API specification.
 
 use super::SharedState;
 use crate::app::frame_profile::format_frame_profile_line;

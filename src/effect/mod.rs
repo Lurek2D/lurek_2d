@@ -1,9 +1,6 @@
 //! Visual effect sub-system: particle effects, screen-space post-processing, and shakes.
 //!
-//! - Orchestrates `particle`, `tween`, `dsp` integrations for composite effects.
-//! - All effects are data-driven: configured from Lua tables, not hard-coded structs.
-//! - Effects are lifetime-managed; expired effects are removed at the start of each tick.
-//! - No GPU work is performed here — effect data is converted to `RenderCommand`s.
+//! - Sub-modules: `draw`, `effect`, `effect_type`, `image_effect`, and 3 more.
 
 /// Debug image rendering for post-effect stacks.
 pub mod draw;

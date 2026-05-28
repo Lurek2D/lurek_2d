@@ -1,4 +1,11 @@
 //! `lurek.html` -- HTML document bindings for markup and CSS loading, layout, rendering into engine draw commands, DOM element selection and mutation, input forwarding, event listeners, and feature support checks.
+//!
+//! - Registers `lurek.html.*` functions and types via `register()`.
+//! - `LuaHtmlDocument`: userdata type exposed to Lua.
+//! - `LuaHtmlElement`: userdata type exposed to Lua.
+//! - Bridges 60 Lua-callable methods via `mlua`.
+//! - See `docs/specs/html.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::html::{parse_css_color_rgba, HtmlDocument, HtmlDocumentOptions, HtmlElementId};

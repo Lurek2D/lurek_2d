@@ -1,9 +1,7 @@
 //! Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
 //!
-//! - Great-circle distance (Haversine) and arc interpolation between two geo-points.
-//! - Ray-sphere intersection returning the nearest positive hit distance.
-//! - Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
-//! - Matrix-vector and matrix-matrix multiplication for globe-view transforms.
+//! - Data type: `Mat3x3`.
+//! - Functions: `lat_lon_to_unit`, `unit_to_lat_lon`, `great_circle_distance`, `great_circle_path`, and 4 more.
 
 use crate::math::Vec3;
 

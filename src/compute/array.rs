@@ -1,9 +1,8 @@
 //! Dense n-dimensional array container with typed storage (float32, float64, int32)
 //!
-//! - Shape validation, stride computation, and flat-index addressing
-//! - Constructors for zeros, ones, range, and from-slice initialization
-//! - Element access by flat index or multidimensional coordinates
-//! - Utility iterators, fill, map, and display formatting
+//! - Data type: `NdArray`.
+//! - Enum: `DataType`.
+//! - Implementations: `DataType`, `NdArray`.
 
 /// Defines maximum allowed number of elements for safe allocations.
 const MAX_ELEMENTS: usize = 268_435_456;

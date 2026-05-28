@@ -1,9 +1,8 @@
 //! Relationship type definitions with named level labels and validated defaults.
 //!
-//! - Pairwise relationship records storing numeric affinity and per-type level state.
-//! - Canonical entity-pair ordering for symmetric, order-independent lookups.
-//! - Directed named links between entities for one-way associations.
-//! - Query helpers: filter by entity, check existence, iterate all relations.
+//! - Data types: `RelationType`, `Relationship`, `RelationshipManager`.
+//! - Implementations: `RelationType`, `Relationship`, `RelationshipManager`.
+//! - Public methods: `new`, `has_level`, `new`, `define_type`, and 18 more.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{RL01, RL02, RL03};

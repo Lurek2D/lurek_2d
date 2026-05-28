@@ -1,8 +1,6 @@
 //! Undirected adjacency graph storing sorted neighbour lists per province.
 //!
-//! - Rebuild from raw id pairs with dedup and self-loop filtering.
-//! - Binary-search-based neighbour lookup and adjacency queries.
-//! - Extraction of all province ids and unique adjacency pairs.
+//! - Data type: `ProvinceGraph`.
 
 use crate::province::types::ProvinceId;
 use std::collections::{HashMap, HashSet};

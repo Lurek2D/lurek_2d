@@ -1029,7 +1029,7 @@ Source: [camera.lua](../blob/main/content/examples/camera.lua)
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
-    local mn, mx = cam:getZoomConstraints()
+    local _, mn, _, mx = cam:getZoomConstraints()
     print("zoom range = " .. mn .. " to " .. mx)
 end
 ```

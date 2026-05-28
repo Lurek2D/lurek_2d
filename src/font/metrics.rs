@@ -1,9 +1,7 @@
 //! Font metrics and multi-line text measurement utilities.
 //!
-//! - `measure_text` splits on `\n` and returns a `TextMetrics` with width/height.
-//! - `measure_line` operates on a single line and accounts for kerning pairs.
-//! - Line height includes ascender, descender, and the configurable line-gap.
-//! - Results are in logical pixels; caller must apply DPI scale if needed.
+//! - Data types: `GlyphMetrics`, `LineMetrics`, `TextMetrics`.
+//! - Functions: `measure_text`, `measure_line`, `char_advance`.
 
 use crate::font::bitmap_font::BitmapFont;
 

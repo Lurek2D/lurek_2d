@@ -1,10 +1,8 @@
 //! Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
 //!
-//! - Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
-//! - Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
-//! - Run-length row merging to minimise body count per chunk.
-//! - Compact bitpacked serialisation and deserialisation for save/load.
-//! - Debris spawning and column-collapse utilities for destructible terrain effects.
+//! - Data types: `ChunkId`, `TerrainMap`.
+//! - Implementation: `TerrainMap`.
+//! - Public methods: `new`, `set_cell`, `get_cell`, `fill_circle`, and 11 more.
 
 use super::body::{Body, BodyType};
 use super::world::World;

@@ -1,7 +1,6 @@
 //! 64-bit linear congruential generator (LCG) for deterministic pseudo-random number output.
 //!
-//! - Provides seeded construction, raw `u64` stepping, and uniform `f32` sampling.
-//! - Used as the shared RNG primitive across all `procgen` subsystems.
+//! - Data type: `Lcg`.
 
 /// 64-bit LCG RNG seeded deterministically; used throughout `procgen` for reproducible results.
 pub struct Lcg {

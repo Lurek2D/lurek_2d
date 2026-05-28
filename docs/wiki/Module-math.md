@@ -221,7 +221,7 @@ The module also excels in procedural generation and animation. It features a sop
 - `LCatmullRom` (7 methods) - Lua-side wrapper for a Catmull-Rom spline.
 - `LCircle` (10 methods) - Lua-side wrapper for a circle primitive.
 - `LHermite` (3 methods) - Lua-side wrapper for a Hermite spline.
-- `LRandomGenerator` (10 methods) - Lua-side wrapper for a deterministic random generator.
+- `LRandomGenerator` (20 methods) - Lua-side wrapper for a deterministic random generator.
 - `LRectPacker` (4 methods) - Lua-side wrapper for a rectangle packer.
 - `LSpatialHash` (11 methods) - Lua-side wrapper for a spatial hash index.
 - `LTransform` (14 methods) - Lua-side wrapper for a 2D transform matrix.
@@ -236,7 +236,7 @@ The module also excels in procedural generation and animation. It features a sop
 - Source spec: [docs/specs/math.md](../blob/main/docs/specs/math.md)
 - Module-level functions: 90
 - Lua-visible types: 12
-- Total type methods: 130
+- Total type methods: 140
 
 
 [⬆ back to top](#table-of-contents)
@@ -2721,10 +2721,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonDifference(a, b)
-    print("difference vertices = " .. #result / 2)
+    print("difference vertices = " .. #result)
 end
 ```
 
@@ -2757,10 +2757,10 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonIntersection(a, b)
-    print("intersection vertices = " .. #result / 2)
+    print("intersection vertices = " .. #result)
 end
 ```
 
@@ -2793,8 +2793,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x=0,y=0}, {x=10,y=0}, {x=10,y=10}, {x=0,y=10}}
+    local b = {{x=5,y=5}, {x=15,y=5}, {x=15,y=15}, {x=5,y=15}}
     local result = lurek.math.polygonUnion(a, b)
     print("union vertices = " .. #result)
 end
@@ -5177,6 +5177,76 @@ end
 
 ### LRandomGenerator Methods
 
+#### LRandomGenerator:chance
+
+#### Definition
+
+```lua
+--- Returns true with the given probability (0.0 = never, 1.0 = always).
+---@param probability number Probability in range [0.0, 1.0].
+---@return boolean True when the random check passes.
+function LRandomGenerator:chance(probability) end
+```
+
+#### Description
+
+Returns true with the given probability (0.0 = never, 1.0 = always).
+
+Parameters:
+
+- `probability` (`number`, required): Probability in range [0.0, 1.0].
+
+Returns: `boolean` - True when the random check passes.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(10)
+    local crit = rng:chance(0.05)
+    print("critical hit (5%) = " .. tostring(crit))
+end
+```
+
+#### LRandomGenerator:countSuccesses
+
+#### Definition
+
+```lua
+--- Rolls N dice and counts how many results are >= the target number.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param target number Minimum value to count as a success.
+---@return number Number of successful dice.
+function LRandomGenerator:countSuccesses(count, sides, target) end
+```
+
+#### Description
+
+Rolls N dice and counts how many results are >= the target number.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice to roll.
+- `sides` (`integer`, required): Number of sides per die.
+- `target` (`integer`, required): Minimum value to count as a success.
+
+Returns: `integer` - Number of successful dice.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(9)
+    local hits = rng:countSuccesses(5, 10, 7)
+    print("5d10 successes (7+) = " .. hits)
+end
+```
+
 #### LRandomGenerator:getSeed
 
 #### Definition
@@ -5357,6 +5427,284 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 do
     local rng = lurek.math.newRandomGenerator(100)
     print("normal = " .. rng:randomNormal(1.0, 0.0))
+end
+```
+
+#### LRandomGenerator:roll
+
+#### Definition
+
+```lua
+--- Rolls a single die with the given number of sides.
+---@param sides number Number of sides (minimum 1).
+---@return number Result in range [1, sides].
+function LRandomGenerator:roll(sides) end
+```
+
+#### Description
+
+Rolls a single die with the given number of sides.
+
+Parameters:
+
+- `sides` (`integer`, required): Number of sides (minimum 1).
+
+Returns: `integer` - Result in range [1, sides].
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(1)
+    local d20 = rng:roll(20)
+    print("d20 = " .. d20)
+end
+```
+
+#### LRandomGenerator:rollAdvantage
+
+#### Definition
+
+```lua
+--- Rolls two dice and returns the higher result (advantage mechanic).
+---@param sides number Number of sides per die.
+---@return number Higher of the two rolls.
+function LRandomGenerator:rollAdvantage(sides) end
+```
+
+#### Description
+
+Rolls two dice and returns the higher result (advantage mechanic).
+
+Parameters:
+
+- `sides` (`integer`, required): Number of sides per die.
+
+Returns: `integer` - Higher of the two rolls.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(6)
+    local adv = rng:rollAdvantage(20)
+    print("d20 advantage = " .. adv)
+end
+```
+
+#### LRandomGenerator:rollDisadvantage
+
+#### Definition
+
+```lua
+--- Rolls two dice and returns the lower result (disadvantage mechanic).
+---@param sides number Number of sides per die.
+---@return number Lower of the two rolls.
+function LRandomGenerator:rollDisadvantage(sides) end
+```
+
+#### Description
+
+Rolls two dice and returns the lower result (disadvantage mechanic).
+
+Parameters:
+
+- `sides` (`integer`, required): Number of sides per die.
+
+Returns: `integer` - Lower of the two rolls.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(7)
+    local dis = rng:rollDisadvantage(20)
+    print("d20 disadvantage = " .. dis)
+end
+```
+
+#### LRandomGenerator:rollExploding
+
+#### Definition
+
+```lua
+--- Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@return number Total sum including all explosion rerolls.
+function LRandomGenerator:rollExploding(count, sides) end
+```
+
+#### Description
+
+Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice to roll.
+- `sides` (`integer`, required): Number of sides per die.
+
+Returns: `integer` - Total sum including all explosion rerolls.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(8)
+    local ex = rng:rollExploding(3, 6)
+    print("3d6 exploding = " .. ex)
+end
+```
+
+#### LRandomGenerator:rollKeepHighest
+
+#### Definition
+
+```lua
+--- Rolls N dice and returns the sum of the highest K results.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param keep number How many highest results to sum.
+---@return number Sum of the highest keep results.
+function LRandomGenerator:rollKeepHighest(count, sides, keep) end
+```
+
+#### Description
+
+Rolls N dice and returns the sum of the highest K results.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice to roll.
+- `sides` (`integer`, required): Number of sides per die.
+- `keep` (`integer`, required): How many highest results to sum.
+
+Returns: `integer` - Sum of the highest keep results.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(4)
+    local stat = rng:rollKeepHighest(4, 6, 3)
+    print("4d6 keep 3 highest = " .. stat)
+end
+```
+
+#### LRandomGenerator:rollKeepLowest
+
+#### Definition
+
+```lua
+--- Rolls N dice and returns the sum of the lowest K results.
+---@param count number Number of dice to roll.
+---@param sides number Number of sides per die.
+---@param keep number How many lowest results to sum.
+---@return number Sum of the lowest keep results.
+function LRandomGenerator:rollKeepLowest(count, sides, keep) end
+```
+
+#### Description
+
+Rolls N dice and returns the sum of the lowest K results.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice to roll.
+- `sides` (`integer`, required): Number of sides per die.
+- `keep` (`integer`, required): How many lowest results to sum.
+
+Returns: `integer` - Sum of the lowest keep results.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(5)
+    local penalty = rng:rollKeepLowest(4, 6, 3)
+    print("4d6 keep 3 lowest = " .. penalty)
+end
+```
+
+#### LRandomGenerator:rollN
+
+#### Definition
+
+```lua
+--- Rolls N dice with the given number of sides and returns all results.
+---@param count number Number of dice (clamped to [1, 1000]).
+---@param sides number Number of sides per die (minimum 1).
+---@return number[] Array of individual die results.
+function LRandomGenerator:rollN(count, sides) end
+```
+
+#### Description
+
+Rolls N dice with the given number of sides and returns all results.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice (clamped to [1, 1000]).
+- `sides` (`integer`, required): Number of sides per die (minimum 1).
+
+Returns: `integer[]` - Array of individual die results.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(2)
+    local dice = rng:rollN(3, 6)
+    print("3d6 = " .. dice[1] .. ", " .. dice[2] .. ", " .. dice[3])
+end
+```
+
+#### LRandomGenerator:rollSum
+
+#### Definition
+
+```lua
+--- Rolls N dice and returns the sum of all results.
+---@param count number Number of dice (clamped to [1, 1000]).
+---@param sides number Number of sides per die (minimum 1).
+---@return number Sum of all die results.
+function LRandomGenerator:rollSum(count, sides) end
+```
+
+#### Description
+
+Rolls N dice and returns the sum of all results.
+
+Parameters:
+
+- `count` (`integer`, required): Number of dice (clamped to [1, 1000]).
+- `sides` (`integer`, required): Number of sides per die (minimum 1).
+
+Returns: `integer` - Sum of all die results.
+
+#### Example
+
+Source: [math.lua](../blob/main/content/examples/math.lua)
+
+```lua
+do
+    local rng = lurek.math.newRandomGenerator(3)
+    local total = rng:rollSum(4, 6)
+    print("4d6 sum = " .. total)
 end
 ```
 

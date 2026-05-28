@@ -334,7 +334,7 @@ local function metric_view_from_aliases(row)
         debt = num(row.debt),
         essential = num(row.essential),
         assets = num(row.assets),
-        net = num(row.net_amount),
+        net = num(row.income) - num(row.expense) - num(row.savings),
         savings_rate = num(row.savings_rate),
         debt_ratio = num(row.debt_ratio),
         essential_ratio = num(row.essential_ratio),

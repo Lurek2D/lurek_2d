@@ -1,7 +1,7 @@
 //! Accumulated 2D affine transform backed by a 3×3 matrix.
 //!
-//! - Chainable translate, rotate, scale, and shear mutations.
-//! - Forward and inverse point mapping plus SRT decomposition.
+//! - Data type: `Transform`.
+//! - Implementation: `Transform`.
 
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;

@@ -1,9 +1,8 @@
 //! Animated cursor: frame sequences with per-frame timing and pulse scale effects.
 //!
-//! - `AnimatedCursor` holds a `Vec<CustomCursor>` of frames and an index.
-//! - `PulseConfig` drives a sine-based scale animation independent of frame advance.
-//! - Frame advance is time-driven; `duration_ms` per frame is set at construction.
-//! - Used by `CursorState::Animated` and updated each tick in the cursor manager.
+//! - Data types: `PulseConfig`, `CursorFrame`, `AnimatedCursor`.
+//! - Implementations: `PulseConfig`, `AnimatedCursor`.
+
 use super::custom_cursor::CustomCursor;
 
 /// Configuration for pulsing scale animation.

@@ -1,4 +1,11 @@
 //! `lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, and world graphs.
+//!
+//! - Registers `lurek.procgen.*` functions and types via `register()`.
+//! - `LuaBiomeClassifier`: userdata type exposed to Lua.
+//! - `LuaNoiseGenerator`: userdata type exposed to Lua.
+//! - Bridges 53 Lua-callable methods via `mlua`.
+//! - See `docs/specs/procgen.md` for the full API specification.
+//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::procgen::biome::{BiomeClassifier, BiomeRules, BiomeType};

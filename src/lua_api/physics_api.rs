@@ -1,4 +1,13 @@
 //! `lurek.physics` â€” 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+//!
+//! - Registers `lurek.physics.*` functions and types via `register()`.
+//! - `LuaWorld`: userdata type exposed to Lua.
+//! - `LuaZone`: userdata type exposed to Lua.
+//! - `LuaTerrain`: userdata type exposed to Lua.
+//! - `LuaCellular`: userdata type exposed to Lua.
+//! - `LuaBody`: userdata type exposed to Lua.
+//! - `LuaPhysicsShape`: userdata type exposed to Lua.
+//! - Bridges 205 Lua-callable methods via `mlua`.
 
 use super::SharedState;
 use crate::math::Vec2;

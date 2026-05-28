@@ -1,14 +1,9 @@
 //! Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
 //!
-//! - `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
-//! - `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
-//! - `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
-//! - Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
-//! - `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
-//! - `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
-//! - Comb-buffer sizing derived from sample rate and effect type at construction time.
-//! - Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
-//! - LFO-driven modulated delay for flanger and phaser with depth and rate controls.
+//! - Data types: `AtomicParam`, `EffectParams`, `ActiveEffect`, `SharedEffectGraph`, and 1 more.
+//! - Enum: `EffectType`.
+//! - Functions: `add_effect_to_shared_chain`, `remove_effect_from_shared_chain`, `set_shared_chain_effect_param`.
+//! - Implementations: `AtomicParam`, `EffectParams`, `ActiveEffect`, `SharedEffectGraph`.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{DP01, DP02, DP03};

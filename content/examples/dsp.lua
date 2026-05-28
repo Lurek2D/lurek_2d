@@ -73,49 +73,49 @@ end
 
 --@api-stub: lurek.dsp.analyzeFft
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local result = lurek.dsp.analyzeFft(sd, 64)
     print("lurek.dsp.analyzeFft bins=" .. tostring(#result))
 end
 
 --@api-stub: lurek.dsp.analyzePeak
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local peak = lurek.dsp.analyzePeak(sd)
     print("lurek.dsp.analyzePeak peak=" .. tostring(peak))
 end
 
 --@api-stub: lurek.dsp.analyzeRms
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     local rms = lurek.dsp.analyzeRms(sd)
     print("lurek.dsp.analyzeRms rms=" .. tostring(rms))
 end
 
 --@api-stub: lurek.dsp.applyBandpass
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyBandpass(sd, 500.0, 2000.0)
     print("lurek.dsp.applyBandpass sampleCount=" .. tostring(sd:getSampleCount()))
 end
 
 --@api-stub: lurek.dsp.applyGain
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyGain(sd, 0.5)
     print("lurek.dsp.applyGain sampleCount=" .. tostring(sd:getSampleCount()))
 end
 
 --@api-stub: lurek.dsp.applyHighpass
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyHighpass(sd, 2000.0)
     print("lurek.dsp.applyHighpass sampleCount=" .. tostring(sd:getSampleCount()))
 end
 
 --@api-stub: lurek.dsp.applyLowpass
 do
-    local sd = lurek.audio.newSynthWave("sine", 440, 0.1, 44100, 0.8)
+    local sd = lurek.dsp.newSynthWave("sine", 440, 0.1, 44100, 0.8)
     lurek.dsp.applyLowpass(sd, 1000.0)
     print("lurek.dsp.applyLowpass sampleCount=" .. tostring(sd:getSampleCount()))
 end

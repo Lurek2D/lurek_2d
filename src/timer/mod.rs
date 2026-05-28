@@ -1,7 +1,4 @@
 //! Time tracking, fixed-step accumulation, and frame-independent scheduling.
-//!
-//! - Provides a high-resolution clock, scaled delta, and sleep utilities.
-//! - Exposes a tick-based scheduler for deferred and repeating callbacks.
 
 /// Exposes the accumulator module.
 pub(crate) mod accumulator;

@@ -1,8 +1,7 @@
 //! MessagePack binary encoding and decoding for SerialValue trees.
 //!
-//! - Intermediate MsgValue enum bridging SerialValue to rmp_serde.
-//! - Size estimation for pre-allocated encode buffers.
-//! - JSON-compatible encode/decode path via serde_json::Value.
+//! - Enum: `MsgValue`.
+//! - Functions: `encode`, `decode`, `encode_json`, `decode_json`.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

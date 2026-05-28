@@ -1,7 +1,6 @@
 //! Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512)
 //!
-//! - CRC32 checksum for fast integrity checks
-//! - Hex-encoded string output for all digest algorithms
+//! - Enum: `HashAlgorithm`.
 
 use md5::Digest;
 use sha1;

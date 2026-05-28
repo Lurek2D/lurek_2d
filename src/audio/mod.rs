@@ -1,7 +1,6 @@
 //! Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.
 //!
-//! - Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `SoundPool`.
-//! - DSP effects are in `crate::dsp`; MIDI playback is in `crate::midi`.
+//! - Sub-modules: `bus`, `decoder`, `mixer`, `source`, and 3 more.
 
 /// `Bus` struct: named per-channel volume/pitch routing with effect chain and duck target.
 pub mod bus;

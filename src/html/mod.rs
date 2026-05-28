@@ -1,7 +1,4 @@
 //! HTML document tree with element storage, layout rectangles, and draw-command generation.
-//!
-//! - CSS rule parsing, selector matching, and color normalization.
-//! - Tag parsing and entity escaping for inline HTML content.
 
 /// CSS color parsing helpers for HTML style handling.
 pub mod color;

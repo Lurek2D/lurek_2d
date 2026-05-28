@@ -8,6 +8,9 @@
 
 ## Table of Contents
 
+- [lurek.agent](#lurekagent)
+  - [LAgent](#lagent)
+  - [LAgentManager](#lagentmanager)
 - [lurek.ai](#lurekai)
   - [LAgent](#lagent)
   - [LAIBlackboard](#laiblackboard)
@@ -347,6 +350,32 @@
 - [lurek.window](#lurekwindow)
 
 Compact index of all functions and methods. Parameter details and examples live on the per-module `Module-<module>` pages.
+
+## lurek.agent
+
+[Module page](Module-agent)
+
+```lua
+lurek.agent.new(config: table) -> LAgent -- Creates a new LLM Agent instance. The configuration table must specify at least the endpoint URL, model, fo...
+lurek.agent.newManager() -> LAgentManager -- Creates a new Agent Manager for batching and handling multiple LLM agents across a shared thread pool.
+```
+
+### LAgent
+
+```lua
+LAgent:addSkill(name: string, prompt: string) -- Adds a skill to the agent's context.
+LAgent:evalCode(code: string) -> boolean -- Evaluates Lua code securely within the VM.
+LAgent:prompt(instruction: string, callback: function) -> integer -- Sends an instructional prompt to the LLM asynchronously.
+LAgent:promptBatch(instructions: table, callback: function) -> integer -- Sends a batch of prompts to the LLM asynchronously.
+LAgent:update() -- Polls the background client for completed LLM requests.
+```
+
+### LAgentManager
+
+```lua
+LAgentManager:runAll(tasks: table, callback: function) -> integer -- Runs multiple agent tasks in parallel.
+LAgentManager:update() -- Polls the manager's background client for completed tasks.
+```
 
 ## lurek.ai
 
@@ -2370,7 +2399,7 @@ lurek.event.push(name: string, ...: any) -- Pushes a normal-priority event into 
 lurek.event.pushDeferred(name: string, ...: any) -- Adds a normal-priority event to the deferred buffer instead of the live queue.
 lurek.event.pushDeferredPriority(name: string, priority: string, ...: any) -- Adds an event with explicit priority to the deferred buffer.
 lurek.event.pushPriority(name: string, priority: string, ...: any) -- Pushes an event with explicit priority into the shared event queue and optional history.
-lurek.event.quit() -- Requests engine shutdown with exit code zero.
+lurek.event.quit() -- Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 lurek.event.restart() -- Requests a full engine restart cycle from the runtime.
 lurek.event.wait([timeout]: number) -> boolean -- Waits for the next queued event and returns success, name, and argument table.
 ```
@@ -3707,12 +3736,22 @@ LHermite:typeOf(name: string) -> boolean -- Returns whether this spline handle m
 ### LRandomGenerator
 
 ```lua
+LRandomGenerator:chance(probability: number) -> boolean -- Returns true with the given probability (0.0 = never, 1.0 = always).
+LRandomGenerator:countSuccesses(count: integer, sides: integer, target: integer) -> integer -- Rolls N dice and counts how many results are >= the target number.
 LRandomGenerator:getSeed() -> integer -- Returns this generator seed. This method is available to Lua scripts.
 LRandomGenerator:getState() -> string -- Returns this generator serialized state string.
 LRandomGenerator:random() -> number -- Returns a random floating-point value from the generator.
 LRandomGenerator:randomFloat(min: number, max: number) -> number -- Returns a random floating-point value in a range.
 LRandomGenerator:randomInt(min: integer, max: integer) -> integer -- Returns a random integer in a range.
 LRandomGenerator:randomNormal([stddev]: number, [mean]: number) -> number -- Returns a normally distributed random value.
+LRandomGenerator:roll(sides: integer) -> integer -- Rolls a single die with the given number of sides.
+LRandomGenerator:rollAdvantage(sides: integer) -> integer -- Rolls two dice and returns the higher result (advantage mechanic).
+LRandomGenerator:rollDisadvantage(sides: integer) -> integer -- Rolls two dice and returns the lower result (disadvantage mechanic).
+LRandomGenerator:rollExploding(count: integer, sides: integer) -> integer -- Rolls N exploding dice: when a die shows its maximum value, roll again and add.
+LRandomGenerator:rollKeepHighest(count: integer, sides: integer, keep: integer) -> integer -- Rolls N dice and returns the sum of the highest K results.
+LRandomGenerator:rollKeepLowest(count: integer, sides: integer, keep: integer) -> integer -- Rolls N dice and returns the sum of the lowest K results.
+LRandomGenerator:rollN(count: integer, sides: integer) -> integer[] -- Rolls N dice with the given number of sides and returns all results.
+LRandomGenerator:rollSum(count: integer, sides: integer) -> integer -- Rolls N dice and returns the sum of all results.
 LRandomGenerator:setSeed(seed: integer) -- Resets this generator to a seed value.
 LRandomGenerator:setState(state: string) -- Restores this generator from a serialized state string.
 LRandomGenerator:type() -> string -- Returns the Lua-visible type name for this random generator handle.

@@ -1,34 +1,11 @@
 //! OBJ model loader for 2D projection.
 //!
-//! Loads Wavefront .obj files and projects 3D geometry into 2D for use with
-//! the raycaster and globe rendering systems. This is NOT a 3D rendering
-//! pipeline — models are reduced to 2D projections (orthographic or perspective)
-//! for display in the 2D engine.
-//!
-//! ## Feature Gate
-//!
-//! This module is gated behind the `obj-loader` feature (enabled by default).
-//! Disable it to reduce binary size if your game doesn't use 3D model loading:
-//!
-//! ```toml
-//! [dependencies]
-//! lurek2d = { version = "...", default-features = false, features = [...] }
-//! ```
-//!
-//! ## Capabilities
-//!
-//! - Wavefront OBJ and MTL file loading via a built-in hand parser.
-//! - Triangulated face model with per-vertex position, UV, and normal indices.
-//! - Named materials carrying diffuse colour and optional texture path.
-//! - CPU software rasteriser producing `ImageData` thumbnails with back-face culling, Z-buffer, and key lighting.
-//! - Perspective projection of OBJ models into engine `Mesh` geometry for GPU rendering.
-//! - Instance projection with Y-axis rotation, uniform scale, and depth output for scene sorting.
-//! - Local `Vec3`/`Vec2` types for self-contained 3-D math without engine-wide dependencies.
-//! - `ObjCamera` helper packing position, lookat target, and FOV for projection calls.
-//! - `ObjLoader` stateless parser facade with both file-based and in-memory entry points.
-//! - MTL parsing extracting `newmtl`, `Kd`, and `map_Kd` into a flat material list.
-//! - OBJ face-vertex index resolver handling 1-based and negative (relative) indices.
-//! - Edge-function barycentric rasterisation for the CPU renderer path.
+//! - Data types: `Vec3`, `Vec2`, `ObjFace`, `ObjMaterial`, and 3 more.
+//! - Enum: `ObjError`.
+//! - Implementations: `std`, `From`, `Vec3`, `ObjModel`, and 2 more.
+//! - Public methods: `new`, `dot`, `len`, `normalise`, and 15 more.
+//! - Contains 27 method implementations.
+//! - Uses: `image`, `render`, `runtime`.
 
 use crate::image::ImageData;
 use crate::render::mesh::{Mesh, MeshDrawMode, MeshVertex};

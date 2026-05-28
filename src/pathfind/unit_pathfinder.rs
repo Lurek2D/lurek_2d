@@ -1,10 +1,8 @@
 //! Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
 //!
-//! - Full A* path search with optional string-pull smoothing for shorter results.
-//! - Partial-path expansion with configurable node budget for real-time budgets.
-//! - BFS reachability test and nearest-walkable-cell search within a radius.
-//! - LRU path cache with configurable max size and manual invalidation.
-//! - Octile heuristic and Bresenham line-of-sight utility helpers.
+//! - Data types: `Waypoint`, `UnitPathfinder`.
+//! - Implementation: `UnitPathfinder`.
+//! - Public methods: `new`, `find_path`, `find_path_smooth`, `get_path_length`, and 12 more.
 
 use crate::runtime::log_messages::{UP01, UP02, UP03};
 
