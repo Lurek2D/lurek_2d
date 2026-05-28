@@ -58,7 +58,7 @@ describe("data + compute integration", function()
     -- @integration LArray:sum
     -- @integration lurek.serial.toJson
     it("serial round-trip preserves compute config", function()
-        -- lurek.data.compress is not available headless; test serial round-trip instead
+        -- lurek.binary.compress is not available headless; test serial round-trip instead
         local payload = {
             buffers  = { { name = "positions", size = 1024 }, { name = "normals", size = 1024 } },
             dispatch = { x = 64, y = 1, z = 1 },

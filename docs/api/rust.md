@@ -768,7 +768,7 @@ pub mod ring_buffer  // Fixed-capacity ring buffer with overwrite-on-full FIFO s
 
 ### `binary::bin_pack`
 
-> Token-based binary packing and unpacking using whitespace-separated format strings  - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes - Coercion helpers that convert between BinValue variants at write time - Length-prefixed and null-terminated string support for wire protocols - Padding tokens for alignment and fixed-layout binary structures - Bounds-checked reads with descriptive underflow error messages - Static size measurement for formats without variable-width tokens - ByteData output for zero-copy integration with the data module pipeline
+> Token-based binary packing and unpacking using whitespace-separated format strings  - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes - Coercion helpers that convert between BinValue variants at write time - Length-prefixed and null-terminated string support for wire protocols - Padding tokens for alignment and fixed-layout binary structures - Bounds-checked reads with descriptive underflow error messages - Static size measurement for formats without variable-width tokens - ByteData output for zero-copy integration with the binary module pipeline
 
 *[src/binary/bin_pack.rs](src/binary/bin_pack.rs) — 3/3 documented (100%)*
 
@@ -851,7 +851,7 @@ pub fn hash()  // Hash bytes with selected algorithm and return hex digest.
 
 ### `binary::pack`
 
-> Python struct-style format-string packing and unpacking  - Single-character format tokens for integers, floats, strings, and padding - Endian switching via '<' (little) and '>' (big) prefix characters - Length-prefixed ('s') and null-terminated ('z') string support - Coercion helpers that widen numeric PackValue variants at write time - Bounds-checked reads with per-token underflow error messages - Static and dynamic packed-size calculation for buffer pre-allocation - ByteData output for integration with the data module pipeline
+> Python struct-style format-string packing and unpacking  - Single-character format tokens for integers, floats, strings, and padding - Endian switching via '<' (little) and '>' (big) prefix characters - Length-prefixed ('s') and null-terminated ('z') string support - Coercion helpers that widen numeric PackValue variants at write time - Bounds-checked reads with per-token underflow error messages - Static and dynamic packed-size calculation for buffer pre-allocation - ByteData output for integration with the binary module pipeline
 
 *[src/binary/pack.rs](src/binary/pack.rs) — 4/4 documented (100%)*
 

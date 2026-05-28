@@ -1,4 +1,4 @@
-﻿function lurek.init()
+function lurek.init()
     local files = lurek.filesystem.listRecursive('content/layouts')
     local rendered = 0
     for _, rel in ipairs(files) do
@@ -6,7 +6,7 @@
             local path = 'content/layouts/' .. rel
             local out = path:gsub('%.toml$', '.png')
             local text = lurek.filesystem.read(path)
-            local parsed = lurek.data.parseToml(text)
+            local parsed = lurek.binary.parseToml(text)
             local w, h = 1280, 720
             if parsed.resolution and #parsed.resolution >= 2 then
                 w = math.max(1, math.floor(parsed.resolution[1]))

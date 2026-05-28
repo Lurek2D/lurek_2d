@@ -1777,7 +1777,7 @@ lurek.signal.push( name : string, ... : any )  -- Pushes a normal-priority event
 lurek.signal.pushDeferred( name : string, ... : any )  -- Adds a normal-priority event to the deferred buffer instead of the live queue
 lurek.signal.pushDeferredPriority( name : string, priority : string, ... : any )  -- Adds an event with explicit priority to the deferred buffer
 lurek.signal.pushPriority( name : string, priority : string, ... : any )  -- Pushes an event with explicit priority into the shared event queue and optional history
-lurek.signal.quit()  -- Requests engine shutdown with exit code zero
+lurek.signal.quit()  -- Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero
 lurek.signal.restart()  -- Requests a full engine restart cycle from the runtime
 lurek.signal.wait( timeout : number? ) -> boolean  -- Waits for the next queued event and returns success, name, and argument table
 ```
@@ -1790,7 +1790,7 @@ Lua-side signal object storing subscriptions and Lua callback registry keys.
 LSignal:clear( name : string ) -> integer  -- Removes all callbacks registered for one exact signal event name
 LSignal:clearAll() -> integer  -- Removes every callback from this signal object
 LSignal:connect( name : string, func : function ) -> integer  -- Registers a callback for an exact name or wildcard signal pattern
-LSignal:emit( name : string, ... : any )  -- Emits a signal event and invokes matching callbacks with the remaining arguments
+LSignal:emit( name : string, ... : any ) -> nil  -- Emits a signal event and invokes matching callbacks with the remaining arguments
 LSignal:getCount( name : string ) -> integer  -- Returns the callback count for one exact signal event name
 LSignal:getTotalCount() -> integer  -- Returns the total callback count across all signal event names
 LSignal:once( name : string, callback : function ) -> integer  -- Registers a callback that is removed after its next matching emission

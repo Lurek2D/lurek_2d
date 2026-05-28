@@ -3,26 +3,26 @@
 
 -- @describe serial stress: base64 throughput
 describe("serial stress: base64 throughput", function()
-    -- @stress lurek.data.decode
-    -- @stress lurek.data.encode
+    -- @stress lurek.binary.decode
+    -- @stress lurek.binary.encode
     it("1000 base64 encode-decode cycles", function()
         local input = string.rep("Stress test payload for serialization. ", 10)
         local decoded_last = nil
 
         for i = 1, 1000 do
-            local encoded = lurek.data.encode("base64", input)
-            decoded_last = lurek.data.decode("base64", encoded)
+            local encoded = lurek.binary.encode("base64", input)
+            decoded_last = lurek.binary.decode("base64", encoded)
         end
         expect_equal(input, decoded_last)
     end)
 
-    -- @stress lurek.data.decode
-    -- @stress lurek.data.encode
+    -- @stress lurek.binary.decode
+    -- @stress lurek.binary.encode
     it("increasing payload sizes", function()
         for size = 1, 10 do
             local payload = string.rep("X", size * 100)
-            local encoded = lurek.data.encode("base64", payload)
-            local decoded = lurek.data.decode("base64", encoded)
+            local encoded = lurek.binary.encode("base64", payload)
+            local decoded = lurek.binary.decode("base64", encoded)
             expect_equal(payload, decoded, "size " .. (size * 100) .. " round-trip")
         end
     end)
@@ -48,14 +48,14 @@ describe("serial stress: data encode throughput", function()
         expect_type("table", out)
     end)
 
-    -- @stress lurek.data.compress
-    -- @stress lurek.data.decompress
+    -- @stress lurek.binary.compress
+    -- @stress lurek.binary.decompress
     it("100 compression cycles on 10KB data", function()
         local input = string.rep("ABCDEFGHIJ", 1000)  -- 10KB
         local decompressed_last = nil
         for i = 1, 100 do
-            local compressed = lurek.data.compress("deflate", input)
-            decompressed_last = lurek.data.decompress("deflate", compressed)
+            local compressed = lurek.binary.compress("deflate", input)
+            decompressed_last = lurek.binary.decompress("deflate", compressed)
         end
         expect_equal(input, decompressed_last)
     end)

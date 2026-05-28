@@ -68,68 +68,66 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 
 ### `bus.rs`
 
-- Audio routing channel providing signal grouping and transformation controls.
-- Provides centralized volume, pitch, and pause controls for groups of assigned audio sources.
-- Maintains shared effect processing chains to apply DSP transformations efficiently across multiple inputs.
-- Implements ducking behaviors allowing one bus to automatically suppress the volume of another based on target thresholds.
-- Designed to safely receive runtime updates from scripting environments while being read lock-free by the audio thread.
+- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
+- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
+- Duck-target assignment enabling automatic cross-bus volume suppression.
+- Boundary clamping on volume, pitch, and duck volume values.
 
 ### `decoder.rs`
 
-- Audio file decoding capabilities translating compressed formats into raw PCM data.
-- Provides in-memory decoding for standard audio formats including WAV, OGG, MP3, and FLAC.
-- Decodes entire files into contiguous sample buffers to guarantee fast random-access seeking without I/O blocking.
-- Supports chunk-based stream iteration with configurable buffer sizes for progressive consumption by the audio backend.
-- Exposes precise duration and position measurements based on underlying channel count and sample rates.
+- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
+- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
+- Chunked iteration with configurable `buffer_size` for streaming consumption.
+- Duration and position queries derived from sample rate and channel count.
+- Seekable flag always true since the entire file is held in memory.
 
 ### `facade.rs`
 
-- Hardware audio device enumeration and selection interface.
-- Provides capabilities to query available system audio output devices.
-- Exposes functions to select and activate specific playback hardware endpoints.
-- Currently implements default device fallback behavior pending deeper platform integration.
+- Stub device enumeration and selection for the audio output backend.
+- Always reports a single "Default" device until platform-specific enumeration is added.
+- Validates device name against the available list on set.
 
 ### `mixer.rs`
 
-- Central audio mixing registry for managing playback streams and spatial state.
-- Manages hardware output stream ownership with graceful fallbacks when audio hardware is unavailable.
-- Tracks full playback lifecycle for individual sound sources including pause, resume, seek, and release.
-- Propagates parameters such as volume, pitch, pan, looping, and filters hierarchically through routing buses.
-- Manages queueable push-buffer sources designed for continuous procedural stream delivery.
-- Calculates spatial audio positioning incorporating listener orientation, velocity, doppler scaling, and distance attenuation models.
-- Implements peak metering across individual sources, group buses, and the master output channel.
-- Differentiates dynamically between fully decoded static caches and on-demand stream strategies.
+- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
+- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
+- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
+- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
+- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
+- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
+- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
+- Peak metering: per-source, per-bus average, and master peak tracking.
+- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
+- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
 
 ### `mod.rs`
 
-- Subsystem for audio playback, spatialization, and hardware integration.
-- Provides centralized registries for mixing multiple concurrent sound streams.
-- Manages audio routing groups, continuous procedural buffers, and one-shot polyphonic voice pools.
-- Encapsulates decoding implementations for various compressed file formats.
-- Acts as the primary bridge between the engine architecture and the underlying Rodio audio backend.
+- Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.
+- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `SoundPool`.
+- DSP effects are in `crate::dsp`; MIDI playback is in `crate::midi`.
 
 ### `pool.rs`
 
-- Polyphonic voice pooling capabilities for managing repeated one-shot sound effects.
-- Implements round-robin allocation strategies across preloaded audio voices to minimize trigger latency.
-- Pre-allocates fixed counts of identical sources to prevent mid-frame decoding overhead during intense playback events.
-- Groups pool-level properties like volume multipliers and bus assignments to be applied collectively.
-- Automatically validates and recovers from degenerate states such as empty voice lists.
+- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
+- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
+- Per-pool volume multiplier and optional bus routing assignment.
+- Validity check ensuring at least one voice is available.
 
 ### `sound_data.rs`
 
-- In-memory audio sample buffering and raw waveform representation capabilities.
-- Provides contiguous block storage for decoded PCM sample data mapped into floating-point format.
-- Retains essential decoding metadata including sample rates, bit depths, and channel topologies.
-- Defers all advanced synthesis and signal manipulation directly to dedicated digital signal processing algorithms.
-- Serves as the primary bridge layer between offline decoders, generator functions, and the runtime streaming backend.
+- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
+- File decode via rodio, silent-buffer allocation, and Lua argument factory.
+- WAV encoding to byte vector for save/export.
+- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
+- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
+- Waveform drawing into `ImageData` for visual feedback.
+- Duration, sample count, and channel count queries.
 
 ### `source.rs`
 
-- Data structures defining physical characteristics of audio emitters.
-- Provides containers to hold three-dimensional coordinates and orientation vectors for positional audio calculations.
-- Groups basic metadata required to uniquely identify and serialize sound assets.
-- Supplies sane fallback defaults assuming origins and neutral orientations to prevent spatial calculation errors.
+- `SpatialState` 3D position, velocity, and orientation for positional audio.
+- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
+- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
 
 [⬆ back to top](#table-of-contents)
 

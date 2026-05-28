@@ -1,26 +1,36 @@
-﻿# Changelog
+# Changelog
 
 ## Unreleased
 
+ - refactor(procgen): remove `NoiseGrid` render/image projection helpers so `procgen` stays a Foundations-only procedural data module.
+ - docs(event): deprecate `lurek.event.quit` as a backward-compatible alias for `lurek.event.exit(0)`.
+ - docs(ai,patterns): document the boundary between structural `lurek.patterns.newBehaviorTree` trees and runtime `lurek.ai.newBehaviorTree` execution.
+ - docs(validator,serialize): document the boundary between in-memory `lurek.serial.validate` schema checks and static `lurek.validator` file/project validation.
+ - docs(event,patterns): document the boundary between low-level `lurek.event` signals and multi-channel `lurek.patterns` event buses.
+ - docs(input): correct the input spec primary Lua namespace to `lurek.input` and document keyboard, mouse, gamepad, and touch subnamespaces.
+ - refactor(binary): breaking Lua API change: binary APIs now live only under `lurek.binary`; replace old binary calls on the former data namespace with matching `lurek.binary.*` calls. The old data alias is no longer registered, and `lurek.dataframe` is unchanged.
+ - docs(architecture): move binary entry-point documentation out of module specs and into `docs/architecture/binary-entry.md`.
+ - docs(extension): move the VS Code extension reference out of module specs and link it from the extension README.
+ - docs(specs): merge the duplicate `lua_api` runtime spec into `runtime.md` and remove the duplicate spec index entry.
  - chore(cag): remove `## Inputs` section from all 12 agent files; drop `Inputs` from `AGENT_REQUIRED_SECTIONS` in `tools/validate/_cag_common.py`; redistribute saved tokens to Workflow, Success Metrics, and Anti-patterns.
  - chore(cag): create `.github/agents/README.md` routing guide (ownership table, routing rules, boundary map); fixes W005 broken-reference warning in `copilot-instructions.md`.
- - chore(cag): Lua-Designer — adds `content/examples/` ownership, explicit docstring + generator pipeline scope, example coverage workflow steps, and 4 new anti-patterns (hand-edit lurek.lua, @diagnostic disable, stale examples, @cast workarounds); adds `examples-management` as primary skill.
- - chore(cag): Build-Engineer — expands scope to all `tools/` scripts (maintenance owner) and `.vscode/` workspace configuration; adds tool-maintenance and .vscode/-hygiene workflow steps; adds 3 new anti-patterns.
- - chore(cag): Extension-Engineer — reframes as thin orchestrator of `tools/` scripts; removes `workspace settings` from scope (owned by Build-Engineer); adds 3 new anti-patterns (embed engine logic in TS, hand-parse src/, modify .vscode/).
- - chore(cag): Content-Maker — removes `content/examples/` from scope (moved to Lua-Designer); updates description, scope, outputs, workflow, and anti-patterns accordingly.
- - chore(cag): Architect — adds prior-attempt check to Solver mode workflow; adds anti-pattern for skipping Planner decomposition.
- - chore(cag): Developer — adds anti-pattern for editing src/lua_api/ docstrings for API design purposes (route to Lua-Designer).
- - chore(cag): Doc-Writer — clarifies tools/docs/ usage vs maintenance boundary (maintenance → Build-Engineer).
- - chore(cag): Tester — adds anti-pattern for bypassing Manager when returning security findings.
+ - chore(cag): Lua-Designer � adds `content/examples/` ownership, explicit docstring + generator pipeline scope, example coverage workflow steps, and 4 new anti-patterns (hand-edit lurek.lua, @diagnostic disable, stale examples, @cast workarounds); adds `examples-management` as primary skill.
+ - chore(cag): Build-Engineer � expands scope to all `tools/` scripts (maintenance owner) and `.vscode/` workspace configuration; adds tool-maintenance and .vscode/-hygiene workflow steps; adds 3 new anti-patterns.
+ - chore(cag): Extension-Engineer � reframes as thin orchestrator of `tools/` scripts; removes `workspace settings` from scope (owned by Build-Engineer); adds 3 new anti-patterns (embed engine logic in TS, hand-parse src/, modify .vscode/).
+ - chore(cag): Content-Maker � removes `content/examples/` from scope (moved to Lua-Designer); updates description, scope, outputs, workflow, and anti-patterns accordingly.
+ - chore(cag): Architect � adds prior-attempt check to Solver mode workflow; adds anti-pattern for skipping Planner decomposition.
+ - chore(cag): Developer � adds anti-pattern for editing src/lua_api/ docstrings for API design purposes (route to Lua-Designer).
+ - chore(cag): Doc-Writer � clarifies tools/docs/ usage vs maintenance boundary (maintenance � Build-Engineer).
+ - chore(cag): Tester � adds anti-pattern for bypassing Manager when returning security findings.
 
  - fix(cag): restore the required `Inputs` section in four agent files so `python tools/validate/cag_validate.py --baseline` passes again.
- - fix(tools): restrict `tools/docs/gen_rust_api_data.py` and `tools/docs/gen_lua_api_data.py` to externally public Rust items only; `pub(crate)` and other restricted-visibility items no longer pollute generated API data or downstream Rust→Lua coverage audits.
- - fix(tools): remove manual internal-module/internal-function allowlists from `tools/audit/gen_coverage_gaps.py`; derive Rust→Lua exposure from `src/lua_api/*.rs` registrations, `LuaUserData::add_methods`, macro path tokens, and same-module public helper call chains instead.
- - fix(tools): teach `tools/audit/gen_coverage_gaps.py` about renamed DSP Lua wrappers so `normalize_file` and shared-chain helpers no longer appear as false Rust→Lua gaps.
- - fix(api): eliminate remaining Rust→Lua coverage gaps by lowering internal helper visibility in globe/minimap/particle/pathfind/raycaster and adding thin Lua wrappers for `globe.loadFromTOMLFile`, `globe.raySphereIntersect`, `pathfind.findHpaPath`, `raycaster.applyLitShade`, `raycaster.extractMinimap`, and particle visualization helpers.
+ - fix(tools): restrict `tools/docs/gen_rust_api_data.py` and `tools/docs/gen_lua_api_data.py` to externally public Rust items only; `pub(crate)` and other restricted-visibility items no longer pollute generated API data or downstream Rust�Lua coverage audits.
+ - fix(tools): remove manual internal-module/internal-function allowlists from `tools/audit/gen_coverage_gaps.py`; derive Rust�Lua exposure from `src/lua_api/*.rs` registrations, `LuaUserData::add_methods`, macro path tokens, and same-module public helper call chains instead.
+ - fix(tools): teach `tools/audit/gen_coverage_gaps.py` about renamed DSP Lua wrappers so `normalize_file` and shared-chain helpers no longer appear as false Rust�Lua gaps.
+ - fix(api): eliminate remaining Rust�Lua coverage gaps by lowering internal helper visibility in globe/minimap/particle/pathfind/raycaster and adding thin Lua wrappers for `globe.loadFromTOMLFile`, `globe.raySphereIntersect`, `pathfind.findHpaPath`, `raycaster.applyLitShade`, `raycaster.extractMinimap`, and particle visualization helpers.
  - fix(examples): remove duplicate example coverage stub ownership for mapblock script methods and chart series methods so `tools/audit/example_coverage.py` no longer reports cross-module stub collisions.
  - feat(docs): expand `tools/docs/gen_docs_lua_html.py` into a folder-based Lua API browser under `build/doc/lua-api/` with callback and type index pages, module/type-filtered search, and example code blocks sourced from `content/examples/`.
- - chore(cag): token-economy sweep — compress Scope/Inputs/Outputs to telegraphic phrases across all 12 agent files; remove anti-pattern entries duplicated from system prompt (doc-writer, lua-designer, content-maker); add Fast-Track routing and Handoff Packet template to manager; add loop-halt gate (3-iteration max) to manager anti-patterns; add cached-report check to verifier and tester workflows.
+ - chore(cag): token-economy sweep � compress Scope/Inputs/Outputs to telegraphic phrases across all 12 agent files; remove anti-pattern entries duplicated from system prompt (doc-writer, lua-designer, content-maker); add Fast-Track routing and Handoff Packet template to manager; add loop-halt gate (3-iteration max) to manager anti-patterns; add cached-report check to verifier and tester workflows.
  - perf(render): compute point-light 1-D shadow atlas rows on the GPU instead of raycasting every sample on the CPU.
  - perf(render): reuse PostFx ping-pong textures and internal bind groups across frames when dimensions and format are unchanged.
  - feat(render): add `lurek.render.drawBatch` as an explicit SpriteBatch alias for `lurek.render.draw(batch)`.
@@ -34,20 +44,20 @@
  - fix(thread): replace `add_type_methods` on `LuaThreadHandle` with explicit `type`/`typeOf`/`__tostring` methods; correct `newThread` `@return` annotation from `LThreadHandle` to `LThread`; rename 4 `LThreadHandle:` stub markers in `content/examples/thread.lua` to `LThread:` and add `LThread:type`/`LThread:typeOf` stubs.
  - fix(examples): add `lurek.scene.depth` and `lurek.scene.update` coverage stubs to `content/examples/scene.lua`.
  - fix(settings): add `read_file` and `write_file` to `Lua.diagnostics.globals` in `.vscode/settings.json` to suppress false `undefined-global` warnings in test evidence files.
- - fix(test): `tests/lua/unit/test_event_core_unit.lua` â€” access `dialog.newSequencer` via `rawget` guard to suppress `undefined-field` LuaLS warning for optional API.
+ - fix(test): `tests/lua/unit/test_event_core_unit.lua` — access `dialog.newSequencer` via `rawget` guard to suppress `undefined-field` LuaLS warning for optional API.
  - content(examples): remove same-file duplicate `--@api-stub:` markers from `math.lua`, `patterns.lua`, `pipeline.lua`, `scene.lua`, and `ui.lua`; fix `runtime.lua` header drift; rerun Lua API and example coverage refresh.
- - refactor(audio): extract `src/dsp/` module from `src/audio/` â€” effects, offline processing, and visualizer now in dedicated module with `lurek.dsp` Lua API.
- - refactor(audio): extract `src/midi/` module from `src/audio/` â€” MIDI player and SoundFont state now in dedicated module with `lurek.midi` Lua API.
+ - refactor(audio): extract `src/dsp/` module from `src/audio/` — effects, offline processing, and visualizer now in dedicated module with `lurek.dsp` Lua API.
+ - refactor(audio): extract `src/midi/` module from `src/audio/` — MIDI player and SoundFont state now in dedicated module with `lurek.midi` Lua API.
  - feat(dsp): add `src/lua_api/dsp_api.rs` providing `lurek.dsp` namespace (newEffectParams, processOffline, normalize, waveformToPng, spectrogramToPng).
  - feat(midi): add `src/lua_api/midi_api.rs` providing `lurek.midi` namespace (newPlayer, loadSoundFont, hasSoundFont, clearSoundFont).
  - docs(specs): add `docs/specs/dsp.md` and `docs/specs/midi.md`.
  - test(dsp): add `tests/lua/unit/test_dsp_core_unit.lua`.
  - test(midi): add `tests/lua/unit/test_midi_core_unit.lua`.
- - feat(visibility): add `src/visibility/` module â€” universal fog-of-war system with per-player states, alliance groups, flags, costs, and events.
- - docs(api): extend Lua API doc coverage from 91.3% to 100% â€” add 14 missing `///` doc comments in `globe_api.rs`, `grep_api.rs`, `layout_api.rs`, `math_api.rs`, `validator_api.rs`, `visibility_api.rs`.
+ - feat(visibility): add `src/visibility/` module — universal fog-of-war system with per-player states, alliance groups, flags, costs, and events.
+ - docs(api): extend Lua API doc coverage from 91.3% to 100% — add 14 missing `///` doc comments in `globe_api.rs`, `grep_api.rs`, `layout_api.rs`, `math_api.rs`, `validator_api.rs`, `visibility_api.rs`.
  - docs(rust): extend 148 short Rust `///` summaries to meet 25 visible-char minimum across `src/charts/`, `src/color/`, `src/cursor/`, `src/dialog/`, `src/font/`, `src/globe/`, `src/grep/`, `src/layout/`, `src/mapblock/`, `src/mods/`, `src/physics/`, `src/province/`, `src/raycaster/`, `src/render/`, `src/validator/`, `src/visibility/`.
  - test(validator): add `LValidationEngine:run` and `LMapBlockConfig:removeSlot` Lua test cases; remove orphaned `@covers` markers in `tests/lua/unit/`.
- - docs(specs): update `docs/specs/globe.md` â€” add `lurek.globe.MAX_REGIONS` and `lurek.globe.MAX_PROVINCES` module constants to Lua API Reference.
+ - docs(specs): update `docs/specs/globe.md` — add `lurek.globe.MAX_REGIONS` and `lurek.globe.MAX_PROVINCES` module constants to Lua API Reference.
  - feat(visibility): add `lurek.visibility` Lua API with VisibilityGrid userdata.
  - docs(specs): add `docs/specs/visibility.md`.
  - test(visibility): add `tests/lua/unit/test_visibility_core_unit.lua` (13 tests).
@@ -56,71 +66,71 @@
  - docs(specs): add `docs/specs/overlay.md`.
  - test(overlay): add `tests/lua/unit/test_overlay_core_unit.lua` (14 tests).
  - refactor(ai): extract dialog/conversation system into `src/dialog/` module; `src/ai/dialogue.rs` deleted.
- - feat(dialog): add `src/dialog/` module â€” dialog tree, conditions, state machine, speaker registry, events.
+ - feat(dialog): add `src/dialog/` module — dialog tree, conditions, state machine, speaker registry, events.
  - feat(dialog): add `lurek.dialog` Lua API (newAI, newState, newSpeakerRegistry).
  - docs(specs): add `docs/specs/dialog.md`.
  - test(dialog): add `tests/lua/unit/test_dialog_core_unit.lua` (17 tests).
- - feat(layout): add `src/layout/` module (Foundations tier) â€” Reingold-Tilford tree, Sugiyama DAG, Fruchterman-Reingold force-directed, grid snap.
+ - feat(layout): add `src/layout/` module (Foundations tier) — Reingold-Tilford tree, Sugiyama DAG, Fruchterman-Reingold force-directed, grid snap.
  - feat(layout): add `lurek.layout` Lua API (tree, dag, force, snapToGrid, centerInArea).
  - docs(specs): add `docs/specs/layout.md`.
  - test(layout): add `tests/lua/unit/test_layout_core_unit.lua` (8 tests).
  - feat(province): add generic ProvinceProperties system (setProperty, getProperty, setAttr, getAttr, setFlag, hasFlag, clearProperties).
  - refactor(province): remove hardcoded economy.rs from engine; economy logic moved to `library/province_economy/`.
- - feat(library): add `library/province_economy/` â€” pure-Lua province economic simulation using generic properties.
+ - feat(library): add `library/province_economy/` — pure-Lua province economic simulation using generic properties.
  - refactor(procgen): consolidate all noise generation into `src/procgen/noise.rs`; remove duplicate `src/math/noise_generator.rs` and `src/math/noise_functions.rs`.
  - refactor(procgen): move `LuaNoiseGenerator` from `math_api.rs` to `procgen_api.rs`; Lua API now `lurek.procgen.newNoiseGenerator()`.
- - refactor(math): remove noise from math module â€” noise is generation, not processing.
+ - refactor(math): remove noise from math module — noise is generation, not processing.
  - refactor(easing): make `math/easing.rs` the single source of truth for easing curves; camera and scene modules now delegate.
  - refactor(scene): delete `src/scene/easing.rs` (bounce_out now in math/easing.rs).
  - refactor(tween): move `src/math/tween.rs` to `src/tween/interpolator.rs`; Tween/TweenValue now in tween module.
- - refactor(ai): unify Blackboard â€” `patterns/blackboard.rs` is canonical (parent chain + revision tracking); `ai/blackboard.rs` re-exports.
+ - refactor(ai): unify Blackboard — `patterns/blackboard.rs` is canonical (parent chain + revision tracking); `ai/blackboard.rs` re-exports.
  - test(province): add `tests/lua/unit/test_province_properties_unit.lua` (10 tests).
  - test(procgen): add `tests/lua/unit/test_procgen_noise_unit.lua` (12 tests).
- - docs(quality): comprehensive quality sweep â€” expanded 422 short Lua API `///` docstrings to â‰Ą30 visible characters (whitespace-stripped threshold); added struct-level `///` class descriptions for `LuaCursorManager`, `LuaCustomCursor`, `LuaAnimatedCursor`, `LuaGrepEngine`, `LuaFileFilter`, `LuaValidationEngine`.
- - docs(quality): added 183â†’14 missing Rust `///` docstrings across cursor, ecs, flownet, globe, grep, mods, province, raycaster, validator, visibility modules (14 missing, below â‰¤20 threshold).
+ - docs(quality): comprehensive quality sweep — expanded 422 short Lua API `///` docstrings to ≥30 visible characters (whitespace-stripped threshold); added struct-level `///` class descriptions for `LuaCursorManager`, `LuaCustomCursor`, `LuaAnimatedCursor`, `LuaGrepEngine`, `LuaFileFilter`, `LuaValidationEngine`.
+ - docs(quality): added 183→14 missing Rust `///` docstrings across cursor, ecs, flownet, globe, grep, mods, province, raycaster, validator, visibility modules (14 missing, below ≤20 threshold).
  - docs(quality): created `logs/docs_overlay.json` (24 entries) providing function descriptions for cursor/font/grep/validator APIs that are unreachable by the doc scanner due to `{` block structure; extended `_apply_overlay` in `tools/docs/gen_lua_api_data.py` to also set `return_description` and `typed_params` from overlay.
- - fix(tools): `tools/docs/gen_lib_docs.py` â€” library stub generator now always uses `library.{module}` prefix for function declarations (fixing `province_economy` stubs that were missing the prefix); normalises hyphens to underscores in module names (fixing `scene-objects`).
- - fix(tools): `tools/validate/validate_generated_lua_stubs.py` â€” `_extract_library_expectations` now uses canonical `library.{normalised_name}` prefix matching `render_luacats` output.
- - fix(tools): `tools/audit/example_coverage.py` â€” duplicate `--@api-stub:` markers (when a class is registered in two Rust API files) now produce a WARN instead of a hard exit-1.
- - fix(tools): `tools/validate/validate_module_coverage.py` â€” added `SPEC_ALLOWLIST = {"vscode-extension"}` to skip false positive.
- - fix(tools): `tools/docs/gen_lib_docs.py` â€” encoding fix (`errors="replace"`) for non-ASCII bytes in library files.
+ - fix(tools): `tools/docs/gen_lib_docs.py` — library stub generator now always uses `library.{module}` prefix for function declarations (fixing `province_economy` stubs that were missing the prefix); normalises hyphens to underscores in module names (fixing `scene-objects`).
+ - fix(tools): `tools/validate/validate_generated_lua_stubs.py` — `_extract_library_expectations` now uses canonical `library.{normalised_name}` prefix matching `render_luacats` output.
+ - fix(tools): `tools/audit/example_coverage.py` — duplicate `--@api-stub:` markers (when a class is registered in two Rust API files) now produce a WARN instead of a hard exit-1.
+ - fix(tools): `tools/validate/validate_module_coverage.py` — added `SPEC_ALLOWLIST = {"vscode-extension"}` to skip false positive.
+ - fix(tools): `tools/docs/gen_lib_docs.py` — encoding fix (`errors="replace"`) for non-ASCII bytes in library files.
  - test(lua): added 27 missing Lua API test files across ai, layout, camera, charts, color, cursor, font, glob, mapblock, overlay, parallax, procgen, spine, tilemap, timer modules.
- - fix(api): `src/lua_api/effect_api.rs` â€” expanded 9 `LPostFxEffect` setter docstrings to â‰Ą30 visible characters.
+ - fix(api): `src/lua_api/effect_api.rs` — expanded 9 `LPostFxEffect` setter docstrings to ≥30 visible characters.
  - fix(examples): added `--@api-stub:` coverage stubs to `content/examples/mapblock.lua` (14 stubs for LMapBlock/LMapGroup/LMapScript) and `content/examples/ui.lua` (3 stubs for LBarChart/LLineChart/LScatterPlot addSeries).
  - test(learning): add `tests/lua/stress/test_learning_stress.lua` (5 stress tests).
  - test(province): add `tests/lua/integration/test_province_integration.lua` (4 integration tests).
- - feat(learning): extract `src/learning/` module from `src/ai/` â€” neural_net, neuroevolution, genetic, qlearner, bandit now live in dedicated module with `lurek.learning` Lua API.
+ - feat(learning): extract `src/learning/` module from `src/ai/` — neural_net, neuroevolution, genetic, qlearner, bandit now live in dedicated module with `lurek.learning` Lua API.
  - feat(learning): add `src/lua_api/learning_api.rs` providing `lurek.learning` namespace (newQLearner, newNeuralNet, newGeneticAlgorithm, newBandit, newNeuroevolution).
  - refactor(ai): re-export learning types from `crate::ai` for backward compatibility; `lurek.ai.newNeuralNet` etc. continue to work.
  - docs(specs): add `docs/specs/learning.md` module spec; update `docs/specs/ai.md` with cross-reference.
  - test(learning): add `tests/lua/unit/test_learning_core_unit.lua` with 10 constructor tests.
 
- - feat(extension): add 4 new MCP tools â€” `getModuleInfo`, `inspectLuaFile`, `getTestCoverage`, `getProjectStructure` in `extension/vscode/src/mcp/tools.ts`.
- - feat(extension): add `checkMissingLoadCallback` diagnostic rule â€” warns when main.lua uses lurek.* without lurek.load().
+ - feat(extension): add 4 new MCP tools — `getModuleInfo`, `inspectLuaFile`, `getTestCoverage`, `getProjectStructure` in `extension/vscode/src/mcp/tools.ts`.
+ - feat(extension): add `checkMissingLoadCallback` diagnostic rule — warns when main.lua uses lurek.* without lurek.load().
  - feat(extension): enhance `checkPerFrameAllocation` and `checkEntityNilAccess` diagnostic patterns.
  - test(extension): add unit tests for diagnostics, completion, hover, apiData, and MCP tools (5 new test files, 60+ test cases).
- - docs(specs): add `docs/specs/vscode-extension.md` â€” module spec for the VS Code extension (Edge/Integration tier).
- - docs(wiki): add `docs/wiki/extension-features.md` â€” comprehensive feature reference for the extension.
+ - docs(specs): add `docs/specs/vscode-extension.md` — module spec for the VS Code extension (Edge/Integration tier).
+ - docs(wiki): add `docs/wiki/extension-features.md` — comprehensive feature reference for the extension.
  - docs(extension): add Lurek API Surface sections to 6 game-dev CAG agents.
 
- - feat(library): add `library/input_action_map` â€” action mapping with multi-key binding, pressed/held/released queries, and axis helpers.
- - feat(library): add `library/audio_manager` â€” high-level audio manager with music crossfade, SFX pooling, volume groups, and mute/pause control.
- - feat(library): add `library/camera_follow` â€” configurable camera follow with smoothing, deadzone, lookahead, bounds clamping, shake, and cutscene override.
- - feat(library): add `library/tween_chain` â€” chainable tween sequences with parallel groups, easing functions, looping, and progress tracking.
+ - feat(library): add `library/input_action_map` — action mapping with multi-key binding, pressed/held/released queries, and axis helpers.
+ - feat(library): add `library/audio_manager` — high-level audio manager with music crossfade, SFX pooling, volume groups, and mute/pause control.
+ - feat(library): add `library/camera_follow` — configurable camera follow with smoothing, deadzone, lookahead, bounds clamping, shake, and cutscene override.
+ - feat(library): add `library/tween_chain` — chainable tween sequences with parallel groups, easing functions, looping, and progress tracking.
 
- - refactor(graph): rename `src/graph/` to `src/flownet/`; Lua namespace `lurek.graph` â†’ `lurek.flownet` (backward-compat alias preserved).
- - refactor(data): rename `src/data/` to `src/binary/`; Lua namespace `lurek.data` â†’ `lurek.binary` (backward-compat alias preserved).
- - refactor(serial): rename `src/serial/` to `src/serialize/`; Lua namespace `lurek.serial` â†’ `lurek.serialize` (backward-compat alias preserved).
+ - refactor(graph): rename `src/graph/` to `src/flownet/`; Lua namespace `lurek.graph` → `lurek.flownet` (backward-compat alias preserved).
+ - refactor(data): rename `src/data/` to `src/binary/`; Lua namespace `lurek.binary` → `lurek.binary` (backward-compat alias preserved).
+ - refactor(serial): rename `src/serial/` to `src/serialize/`; Lua namespace `lurek.serial` → `lurek.serialize` (backward-compat alias preserved).
  - refactor(math): move `sphere.rs` from `src/math/` to `src/globe/` (closer to its consumers).
 
- - fix(test): `tests/lua/unit/test_dsp_core_unit.lua` â€” use `expect_near` for `p.p2 â‰ 0.7` (f32 round-trip gives `0.69999998807907`).
- - fix(test): `tests/lua/unit/test_ui_core_unit.lua` â€” allow â‰¤5 pixels in right-margin check for cartesian legend (line endpoint sub-pixel bleed); fix chart data types: series values must be numbers not strings.
- - fix(test): `tests/lua/integration/test_tilemap_physics.lua` â€” align dynamic ball spawn at x=16 (directly over tile 1 centre) to avoid falling through 16 px gaps between adjacent default-sized static bodies.
- - fix(ui): `src/ui/containers.rs` â€” layout container `align` default `"center"` â†’ `"stretch"`, `justify` default `"center"` â†’ `"start"` (CSS flexbox defaults).
- - fix(api): `src/lua_api/thread_api.rs` â€” `newThread` `@return` type corrected from `LThread` to `LThreadHandle` (matches generated docs class name from struct `LuaThreadHandle`).
- - docs(examples): `content/examples/dsp.lua` â€” add 11 missing `--@api-stub:` markers (`addEffectToBus`, `removeEffectFromBus`, `setEffectParam`, `analyzeFft`, `analyzePeak`, `analyzeRms`, `applyBandpass`, `applyGain`, `applyHighpass`, `applyLowpass`, `newSynthWave` added to audio.lua).
- - docs(examples): `content/examples/thread.lua` â€” add 4 missing `--@api-stub:` markers (`LThreadHandle:start/wait/isRunning/getError`).
- - docs(examples): `content/examples/learning.lua` â€” add `LQLearner:getEpisodeCount` stub.
+ - fix(test): `tests/lua/unit/test_dsp_core_unit.lua` — use `expect_near` for `p.p2 ≈ 0.7` (f32 round-trip gives `0.69999998807907`).
+ - fix(test): `tests/lua/unit/test_ui_core_unit.lua` — allow ≤5 pixels in right-margin check for cartesian legend (line endpoint sub-pixel bleed); fix chart data types: series values must be numbers not strings.
+ - fix(test): `tests/lua/integration/test_tilemap_physics.lua` — align dynamic ball spawn at x=16 (directly over tile 1 centre) to avoid falling through 16 px gaps between adjacent default-sized static bodies.
+ - fix(ui): `src/ui/containers.rs` — layout container `align` default `"center"` → `"stretch"`, `justify` default `"center"` → `"start"` (CSS flexbox defaults).
+ - fix(api): `src/lua_api/thread_api.rs` — `newThread` `@return` type corrected from `LThread` to `LThreadHandle` (matches generated docs class name from struct `LuaThreadHandle`).
+ - docs(examples): `content/examples/dsp.lua` — add 11 missing `--@api-stub:` markers (`addEffectToBus`, `removeEffectFromBus`, `setEffectParam`, `analyzeFft`, `analyzePeak`, `analyzeRms`, `applyBandpass`, `applyGain`, `applyHighpass`, `applyLowpass`, `newSynthWave` added to audio.lua).
+ - docs(examples): `content/examples/thread.lua` — add 4 missing `--@api-stub:` markers (`LThreadHandle:start/wait/isRunning/getError`).
+ - docs(examples): `content/examples/learning.lua` — add `LQLearner:getEpisodeCount` stub.
  - test(lua): all 248 Lua tests pass (0 failures); all 1534 Rust unit tests pass.
  - quality: clippy clean (0 errors, 0 warnings); debug and release builds pass; example coverage 5178/5178 (100%); CAG validate 0 errors.
  - refactor(math): move `rect_packing.rs` from `src/math/` to `src/image/` (texture atlas context).
@@ -129,20 +139,20 @@
 
  - refactor(province): replace hardcoded `BorderClass` enum with generic `BorderType` (u8); border types now registered from Lua via `lurek.province.registerBorderType`.
  - refactor(province): replace hardcoded `ProvinceMapMode` enum with generic config-driven `MapModeConfig`; modes registered from Lua via `lurek.province.registerMapMode`/`setMapMode`.
- - refactor(globe): rename internal Provinceâ†’Region, ProvinceGraphâ†’RegionGraph to decouple globe from province semantics (backward-compat aliases preserved).
+ - refactor(globe): rename internal Province→Region, ProvinceGraph→RegionGraph to decouple globe from province semantics (backward-compat aliases preserved).
 
  - refactor(province,globe,physics,flownet,ecs): convert raw ID type aliases to newtype structs (ProvinceId, RegionId, BodyId, NodeId, EdgeId, ItemId, EntityId) for type safety.
  - fix(flownet): add `add_edge_unchecked` for hot-path batch graph construction (skip endpoint validation).
- - fix(physics): `Body::new` now requires explicit (x, y, w, h) dimensions; removed magic 32Ă—32 default.
+ - fix(physics): `Body::new` now requires explicit (x, y, w, h) dimensions; removed magic 32×32 default.
  - fix(tween): log warning on unknown easing function name before falling back to linear.
  - feat(dataframe): add parallel `parFilter` and `parGroupAgg` methods (rayon, auto-threshold at 10k rows).
- - feat(flownet): add batch Lua API â€” `batchAddNodes`, `batchAddEdges`, `batchStep` for efficient bulk network construction.
+ - feat(flownet): add batch Lua API — `batchAddNodes`, `batchAddEdges`, `batchStep` for efficient bulk network construction.
  - chore(render): feature-gate `obj-loader` module (default: enabled); add docs clarifying 2D projection purpose.
  - docs(devtools,debugbridge): add scope-boundary sections clarifying local vs remote ownership.
 
- - feat(library): add `library/particle_presets` â€” 12 pre-configured particle presets (fire, smoke, explosion, etc.) with override and custom registration.
- - feat(library): add `library/window_config` â€” fluent window configuration builder with presets, serialization, and scaling mode helpers.
- - feat(library): upgrade `library/sprite` â€” add `init.lua` with `AnimController` state machine re-exporting existing `SpriteAnimator`.
+ - feat(library): add `library/particle_presets` — 12 pre-configured particle presets (fire, smoke, explosion, etc.) with override and custom registration.
+ - feat(library): add `library/window_config` — fluent window configuration builder with presets, serialization, and scaling mode helpers.
+ - feat(library): upgrade `library/sprite` — add `init.lua` with `AnimController` state machine re-exporting existing `SpriteAnimator`.
  - test(library): add test files for all 7 new/upgraded library modules; register in `harness.rs`.
  - test(font): add `lurek.font.loadBitmap` coverage tests (4 assertions) to `test_font_core_unit.lua`.
  - test(physics): add 8 describe-based coverage blocks to `test_physics_core_unit.lua`.
@@ -158,26 +168,26 @@
  - refactor(minimap): migrate `minimap_overlay.rs` from `src/raycaster/` to `src/minimap/raycaster_overlay.rs`; raycaster re-exports symbols for backward compatibility; update specs and imports.
 
  - refactor(lua_api): introduce `LuaModule` trait and `ModuleEntry` registry in `src/lua_api/lua_module.rs`; refactor `register.rs` to use static `MODULES` slice with `always!`/`gated!` macros instead of 50+ explicit function calls.
- - docs(architecture): add `docs/architecture/lua-rust-boundary.md` â€” Lua-Rust boundary architecture covering module registration, state management, handle pattern, security sandbox, and testing strategy.
- - test(lua_api): add `tests/lua/unit/test_lua_module_registration.lua` â€” unit tests for always-on modules, config-gated modules, namespace types, and security sandbox.
- - feat(examples): add `content/examples/handles.lua` â€” demonstrates handle-based resource management pattern across sprite, physics, and camera modules.
+ - docs(architecture): add `docs/architecture/lua-rust-boundary.md` — Lua-Rust boundary architecture covering module registration, state management, handle pattern, security sandbox, and testing strategy.
+ - test(lua_api): add `tests/lua/unit/test_lua_module_registration.lua` — unit tests for always-on modules, config-gated modules, namespace types, and security sandbox.
+ - feat(examples): add `content/examples/handles.lua` — demonstrates handle-based resource management pattern across sprite, physics, and camera modules.
  - docs(specs): update `docs/specs/lua_api.md` with Module Registration Architecture subsection.
 
- - feat(color): add standalone `src/color/` module (Foundations tier) with `lurek.color.*` Lua API â€” Color struct, named constants, HSL/HSV/hex conversions, blending modes (lerp, multiply, screen, overlay, additive, alpha), CSS named palettes, retro palettes (PICO-8, Game Boy, NES), and gamma/linear transforms.
- - feat(font): add standalone `src/font/` module (Platform Services tier) with `lurek.font.*` Lua API â€” bitmap font atlas, glyph metrics, text measurement, word/character wrapping, text shaping with alignment, and font registry with named handles.
- - feat(charts): add standalone `src/charts/` module (Feature Systems tier) with `lurek.charts.*` Lua API â€” five software-rasterized chart types (line, bar, scatter, pie, area) rendering to RGBA8 pixel buffers; configurable colors, margins, grid, legends; default 8-color palette.
- - docs(specs): add `docs/specs/color.md`, `docs/specs/font.md`, `docs/specs/charts.md`; update README.md index (51 â†’ 54 modules).
- - test(color): add `tests/lua/unit/test_color_core_unit.lua` â€” 12 describe blocks covering constants, constructors, conversions, blending, utilities, palettes.
- - test(font): add `tests/lua/unit/test_font_core_unit.lua` â€” 11 describe blocks covering constants, loading, measurement, wrapping, shaping, font methods.
- - test(charts): add `tests/lua/unit/test_charts_core_unit.lua` â€” 9 describe blocks covering constructors, palette, and all chart type methods.
- - refactor(color): delete `src/math/color.rs`; all 15 import sites migrated to `crate::color::Color`. Remove color functions from `lurek.math` API (hslToRgb, colorFromHex, colorToHsl, gammaToLinear, linearToGamma) â€” now in `lurek.color`.
+ - feat(color): add standalone `src/color/` module (Foundations tier) with `lurek.color.*` Lua API — Color struct, named constants, HSL/HSV/hex conversions, blending modes (lerp, multiply, screen, overlay, additive, alpha), CSS named palettes, retro palettes (PICO-8, Game Boy, NES), and gamma/linear transforms.
+ - feat(font): add standalone `src/font/` module (Platform Services tier) with `lurek.font.*` Lua API — bitmap font atlas, glyph metrics, text measurement, word/character wrapping, text shaping with alignment, and font registry with named handles.
+ - feat(charts): add standalone `src/charts/` module (Feature Systems tier) with `lurek.charts.*` Lua API — five software-rasterized chart types (line, bar, scatter, pie, area) rendering to RGBA8 pixel buffers; configurable colors, margins, grid, legends; default 8-color palette.
+ - docs(specs): add `docs/specs/color.md`, `docs/specs/font.md`, `docs/specs/charts.md`; update README.md index (51 → 54 modules).
+ - test(color): add `tests/lua/unit/test_color_core_unit.lua` — 12 describe blocks covering constants, constructors, conversions, blending, utilities, palettes.
+ - test(font): add `tests/lua/unit/test_font_core_unit.lua` — 11 describe blocks covering constants, loading, measurement, wrapping, shaping, font methods.
+ - test(charts): add `tests/lua/unit/test_charts_core_unit.lua` — 9 describe blocks covering constructors, palette, and all chart type methods.
+ - refactor(color): delete `src/math/color.rs`; all 15 import sites migrated to `crate::color::Color`. Remove color functions from `lurek.math` API (hslToRgb, colorFromHex, colorToHsl, gammaToLinear, linearToGamma) — now in `lurek.color`.
  - refactor(charts): delete `src/ui/chart.rs` and `src/ui/data_graph_renderer.rs`; all 20 `crate::ui::chart::*` paths in ui_api.rs migrated to `crate::charts::*`. Remove chart/graph types from `src/ui/mod.rs`.
  - refactor(font): `src/font/` module owns CPU-side data layer; `src/render/font.rs` retains GPU font rendering and re-exports shared types from `crate::font`.
  - docs(specs): update `math.md` (remove color), `ui.md` (remove charts), `font.md` (clarify architecture).
 
- - feat(animation): add `LAnimation:setImage(image)` and `LAnimStateMachine:setImage(image)`; make `:draw` polymorphic â€” `draw(x, y, opts?)` works when an image is pre-stored via `setImage`, `draw(image, x, y, opts?)` remains backward-compatible; raises a clear error when draw is called without a stored image; docs, examples, and tests updated.
- - feat(library): add `library/scene-objects` module â€” runtime-agnostic game-object container with `add`, `remove`, `clear`, `update` (insertion-order), `draw` (layer-sorted), `count`, `has`, `getByLayer`; 22 unit tests in `tests/lua/library/test_library_scene_objects.lua`; harness registration and library docs generated.
- - feat(examples): add `content/examples/ecs_complete.lua` â€” full end-to-end headless ECS simulation covering `defineBlueprint`, `extendBlueprint`, `spawnBlueprint`, `addTag`, `addSystem`, `update`, `query`, `kill` across 10 simulation ticks.
+ - feat(animation): add `LAnimation:setImage(image)` and `LAnimStateMachine:setImage(image)`; make `:draw` polymorphic — `draw(x, y, opts?)` works when an image is pre-stored via `setImage`, `draw(image, x, y, opts?)` remains backward-compatible; raises a clear error when draw is called without a stored image; docs, examples, and tests updated.
+ - feat(library): add `library/scene-objects` module — runtime-agnostic game-object container with `add`, `remove`, `clear`, `update` (insertion-order), `draw` (layer-sorted), `count`, `has`, `getByLayer`; 22 unit tests in `tests/lua/library/test_library_scene_objects.lua`; harness registration and library docs generated.
+ - feat(examples): add `content/examples/ecs_complete.lua` — full end-to-end headless ECS simulation covering `defineBlueprint`, `extendBlueprint`, `spawnBlueprint`, `addTag`, `addSystem`, `update`, `query`, `kill` across 10 simulation ticks.
  - docs(filesystem): add Core Function Reference subsection with full signatures, param tables, return types, and examples for `read`, `write`, `exists`, `getDirectoryItems`, `mkdir`, and `remove`
  - docs(render): add LShader detail entries for `send(name, value)` and `hasUniform(name)` with param tables, type matrix, and usage example
  - docs(math): add Vec2 and Vec3 Construction and Usage subsection covering constructors, field access, method signature tables for all `LVec2` and `LVec3` methods, and example snippets
@@ -211,7 +221,7 @@
  - fix(vscode): unified snippets into one standard VS Code experience by routing `lurek.library.insertSnippet` to the built-in `editor.action.insertSnippet` picker and removing the extension-only custom snippet quick-pick flow; also updated `extension/vscode` build/watch scripts to always regenerate `data/snippets.json` from `content/snippets/*.lua` so extension snippets stay in sync with the single source of truth.
 
 
- - feat(snippets): replaced mass-generated snippet source with handcrafted starter snippets for early workflows (`engine`/runtime, `input`, `render`, `ui`, `math`, `data`) under `content/snippets/`, each with explicit usage rationale and multi-API composition; retained deterministic VS Code JSON generation (`tools/snippets/gen_vscode_snippets.py` â†’ `extension/vscode/data/snippets.json`), marker validation (`tools/validate/validate_snippets.py`), and module-level snippet coverage reporting (`tools/audit/snippet_coverage.py` â†’ `logs/reports/snippet_coverage.md`), updated snippet tasks in `.vscode/tasks.json`, and synced prompt/docs guidance.
+ - feat(snippets): replaced mass-generated snippet source with handcrafted starter snippets for early workflows (`engine`/runtime, `input`, `render`, `ui`, `math`, `data`) under `content/snippets/`, each with explicit usage rationale and multi-API composition; retained deterministic VS Code JSON generation (`tools/snippets/gen_vscode_snippets.py` → `extension/vscode/data/snippets.json`), marker validation (`tools/validate/validate_snippets.py`), and module-level snippet coverage reporting (`tools/audit/snippet_coverage.py` → `logs/reports/snippet_coverage.md`), updated snippet tasks in `.vscode/tasks.json`, and synced prompt/docs guidance.
 
 
  - feat(province): added `src/province/economy.rs` with a local-only province economy model (`population`/`food_stockpile`/`gold_stockpile`), monthly economy resolution helpers (food need, tax, growth, migration pressure), and daily physical shipment flow (upstream gold/downstream food) with in-transit delivery and origin-cargo launch validation; added focused coverage in `tests/rust/unit/province_economy_tests.rs`.
@@ -259,7 +269,7 @@
 - feat(ui): style tokens and extended widget state variants (Selected, Checked, Invalid, ReadOnly, Active, Expanded): added `ThemeToken` enum (`Color`/`Float`), `tokens` map on `Theme`, `Theme::get_token`, 9 default tokens in `default_dark()`, and `lurek.ui.getStyleToken(name)` Lua binding; added 6 new `WidgetState` variants with `parse_str`/`as_str` round-trip support.
 
 - feat(ui): complete mouse filter Stop/Pass/Ignore routing and skip disabled/hidden widgets in hit-test: `hit_test` now returns only `MouseFilter::Stop` widgets as event targets, skipping `Pass` and `Ignore`; hidden (`!is_visible`) and disabled widgets are explicitly excluded; `mouse_moved` no longer sets hover state on `Ignore` widgets; `mouse_released` defensively clears any non-Stop widget that reaches `Pressed` state; updated `docs/specs/ui.md` with the full event routing contract.
-- feat(ui): text/label pipeline â€” wrap, clip, ellipsis, vertical alignment: added `TextVAlign` enum, `text_wrap`/`text_ellipsis`/`text_v_align` fields to `WidgetBase`, `layout_text` helper in `render.rs`, scissor clipping around all text emits, and `setTextWrap`/`setTextEllipsis`/`setTextVAlign` Lua methods on `LUiWidget`.
+- feat(ui): text/label pipeline — wrap, clip, ellipsis, vertical alignment: added `TextVAlign` enum, `text_wrap`/`text_ellipsis`/`text_v_align` fields to `WidgetBase`, `layout_text` helper in `render.rs`, scissor clipping around all text emits, and `setTextWrap`/`setTextEllipsis`/`setTextVAlign` Lua methods on `LUiWidget`.
 - feat(ui): render widgets using `computed_rect` absolute screen coordinates and sort children by `z_order` ascending so render position and hit-test region are always consistent. **BREAKING:** child widgets must use container-relative coordinates, not absolute screen offsets.
 - chore(ui): fix spec Files section, float assertions, and audit test naming
 - fix(ui): clamped Cartesian chart X-axis tick labels to the available plot width and spaced the `apps/household_finance_lab` retained top controls/status bar to remove visual overlap in 800x600 screenshots.
@@ -272,7 +282,7 @@
 - feat(ui): added global UI font selection through `lurek.ui.setFont/getFont/clearFont`, per-widget subtree overrides through `LUiWidget:setFont/clearFont`, widget-font lookup via `lurek.ui.getWidgetFont`, and font-aware text measurement for retained UI alignment and text-input cursor placement.
 - fix(games): added explicit `LLabel` controls, smaller bitmap font sizing, integer dashboard scaling, render/frame timing display, and debounced SQL/DataFrame refreshes to `apps/household_finance_lab` so the top widgets are labeled, less crowded, and more responsive.
 - fix(ui): reserved chart legend space outside plotted data for line, bar, scatter, area, and pie charts, including compact dashboard-sized images where legends previously covered series, bars, or pie wedges.
-- fix(render): fixed light composite pass producing no visible effect â€” `composite_pipeline` was created with `TexVertex` stride (48 bytes) while the vertex buffer holds `LightVertex` data (52 bytes), causing every composite vertex to be read from a wrong buffer offset; replaced the `create_render_pipeline(GeometryKind::Texture, â€¦)` call with an inline pipeline descriptor using `LightVertex` layout so the multiply-blend fullscreen quad covers the screen correctly.
+- fix(render): fixed light composite pass producing no visible effect — `composite_pipeline` was created with `TexVertex` stride (48 bytes) while the vertex buffer holds `LightVertex` data (52 bytes), causing every composite vertex to be read from a wrong buffer offset; replaced the `create_render_pipeline(GeometryKind::Texture, …)` call with an inline pipeline descriptor using `LightVertex` layout so the multiply-blend fullscreen quad covers the screen correctly.
 - content(games): updated `test/light_min` to use explicit `light:setIntensity / setColor / setBlendMode / setFalloff / setShadowEnabled` method calls instead of the opts table, and lowered ambient to 0.06 to make the lit/unlit contrast dramatic once the composite pass is working.
 - fix(games): corrected `showcase/light_demo` tween arg order for all three `tween_api.to()` calls (fields and duration were swapped), and fixed particle colors format from flat arrays to nested tables in both torch and glow particle systems.
 - fix(games): corrected `showcase/light_showcase` initial state from `STATE_SCREEN_1` to `STATE_TITLE` and fixed `STATE_TITLE` value from `"PLAYING"` to `"TITLE"` so the title screen is shown on launch and can navigate to each of the 8 technique screens.

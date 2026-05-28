@@ -21,6 +21,14 @@ Three built-in rule types cover the most common correctness checks. The `ApiComp
 
 Beyond built-in rules, the engine supports extensibility in two directions. TOML rule files (loaded via `load_rules_from_file`) specify `[[rule]]` arrays with pattern, severity, message, and optional file-extension filter — ideal for project-specific naming conventions or forbidden API patterns. Lua callbacks registered via `lurek.validator.add_rule` inject `LuaPatternRule` adapters, letting game teams write script-side rules without recompiling. Results are collected into a `ValidationReport` containing `Vec<Violation>` with file path, line number, severity, and an optional suggestion string. The `lurek.validator.*` API exposes engine creation, rule registration, single-file and tree-wide validation runs, and report display.
 
+## Boundaries
+
+`lurek.validator` validates Lua and project files with static rules. It checks source text, asset references, import targets, API module names, and custom file patterns, returning structured file-based violations.
+
+Use `lurek.serial.validate` when the caller needs to validate in-memory data, configuration, or save tables against a schema. That path belongs to the serialization data pipeline and validates `SerialValue` trees, not project files.
+
+`lurek.validator` and `lurek.serial.validate` do not share a backend. They should not be merged or routed through each other without a separate Lua API-design decision.
+
 ## Source Documentation
 
 ### `api_check.rs`

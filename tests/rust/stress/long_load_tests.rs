@@ -29,8 +29,8 @@ mod long_load_tests {
             for i = 1, 20000 do
                 local x = i * 0.001
                 acc = acc + lurek.math.sin(x) + lurek.math.cos(x)
-                local b = lurek.data.pack("<f", x)
-                local y = lurek.data.unpack("<f", b)
+                local b = lurek.binary.pack("<f", x)
+                local y = lurek.binary.unpack("<f", b)
                 if i % 5000 == 0 then
                     assert(type(y) == "number")
                 end

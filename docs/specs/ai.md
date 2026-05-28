@@ -25,6 +25,27 @@ The module also integrates a suite of machine learning and adaptive systems via 
 
 Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store, while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
 
+## Boundaries
+
+`lurek.ai.newBehaviorTree` creates an AI runtime behavior tree. Use it when a tree owns Lua callback-backed action, condition, or guard nodes and needs per-tick status for agent decision logic. The Rust implementation in `src/ai/behavior_tree.rs` points to `crate::patterns::behavior_tree` for structural behavior-tree building and adds Lua `RegistryKey`-driven actions, conditions, guards, and running state that resumes across ticks.
+
+`lurek.patterns.newBehaviorTree` is the Foundations-tier behavior-tree structure surface. Use it to build, inspect, or tick reusable tree shapes outside the AI agent runtime. It owns generic node IDs, child links, root selection, and structural tree operations; it does not own AIWorld agents, agent decision models, AI blackboards, or AI-specific guard/action/condition node handles.
+
+## Dependencies
+
+```text
+Feature Systems
+	lurek.ai.newBehaviorTree
+		-> src/ai/behavior_tree.rs
+			 -> structural BT concepts from crate::patterns::behavior_tree
+
+Foundations
+	lurek.patterns.newBehaviorTree
+		-> src/patterns/behavior_tree.rs
+```
+
+`ai` may depend on `patterns` for behavior-tree structure. `patterns` must stay independent of `ai` so the Foundations tier remains reusable by non-AI game logic.
+
 ## Source Documentation
 
 ### `agent.rs`

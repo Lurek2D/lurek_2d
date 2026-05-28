@@ -44,7 +44,7 @@ end
 
 local _win ---@type any
 _win = (type(lurek) == "table") and lurek.window or nil
-local _json = (type(lurek) == "table") and lurek.data or nil
+local _json = (type(lurek) == "table") and (lurek.serial or lurek.serialize) or nil
 
 -- ── WindowConfig class ────────────────────────────────────────────────────────
 
@@ -363,7 +363,7 @@ function WindowConfig:deserialize(data)
 end
 
 --- Serialize configuration to a JSON string.
---- Uses lurek.data.toJson if available; otherwise falls back to a simple encoder.
+--- Uses lurek.serial.toJson if available; otherwise falls back to a simple encoder.
 --- @treturn string JSON representation of the configuration.
 function WindowConfig:toJson()
     local data = self:serialize()

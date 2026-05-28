@@ -211,6 +211,16 @@ fn lua_integration_compute_dataframe() {
 }
 
 #[test]
+fn lua_integration_binary_compute() {
+    run_lua_test("integration/test_binary_compute.lua");
+}
+
+#[test]
+fn lua_integration_binary_filesystem() {
+    run_lua_test("integration/test_binary_filesystem.lua");
+}
+
+#[test]
 fn lua_integration_save_ecs() {
     run_lua_test("integration/test_save_ecs.lua");
 }
@@ -394,6 +404,11 @@ fn lua_unit_automation_unit() {
 #[test]
 fn lua_unit_battle_unit() {
     run_lua_test("unit/test_battle_core_unit.lua");
+}
+
+#[test]
+fn lua_unit_binary_unit() {
+    run_lua_test("unit/test_binary_core_unit.lua");
 }
 
 #[test]
@@ -976,6 +991,11 @@ fn lua_golden_compute_golden() {
 }
 
 #[test]
+fn lua_golden_binary_golden() {
+    run_lua_test("golden/test_binary_golden.lua");
+}
+
+#[test]
 fn lua_golden_dataframe_golden() {
     run_lua_test("golden/test_dataframe_golden.lua");
 }
@@ -1055,6 +1075,11 @@ fn lua_stress_camera_stress() {
 #[test]
 fn lua_stress_compute_stress() {
     run_lua_test("stress/test_compute_stress.lua");
+}
+
+#[test]
+fn lua_stress_binary_stress() {
+    run_lua_test("stress/test_binary_stress.lua");
 }
 
 #[test]

@@ -1805,7 +1805,7 @@ end
 
 ## 🔗 Related Modules
 
-- Previous: [vscode-extension](Module-vscode-extension)
+- Previous: [visibility](Module-visibility)
 - [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
 - [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
 - [dsp](Module-dsp) - Digital signal processing: real-time effects chains, offline batch processing, audio visualization.

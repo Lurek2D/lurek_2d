@@ -2,16 +2,16 @@
 -- @describe integration: ui + i18n + data
 
 describe("integration: ui + i18n + data", function()
-    -- @integration lurek.data.pack
-    -- @integration lurek.data.unpack
+    -- @integration lurek.binary.pack
+    -- @integration lurek.binary.unpack
     -- @integration lurek.i18n.loadTable
     -- @integration lurek.i18n.setLanguage
     -- @integration lurek.i18n.t
     -- @integration lurek.ui.loadLayout
     it("builds a localized UI label from serialized bytes", function()
         local src = "Hello"
-        local packed = lurek.data.pack("s", src)
-        local title = lurek.data.unpack("s", packed)
+        local packed = lurek.binary.pack("s", src)
+        local title = lurek.binary.unpack("s", packed)
         expect_equal("Hello", title, "packed text should roundtrip")
 
         lurek.i18n.loadTable("en", { ui_title = title })

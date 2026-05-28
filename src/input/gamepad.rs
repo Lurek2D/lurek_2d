@@ -202,7 +202,7 @@ impl GamepadState {
 }
 
 /// Map a gilrs `Button` variant to its SDL2-style string name used in mappings.
-pub(crate) fn gilrs_button_to_string(button: gilrs::Button) -> &'static str {
+pub fn gilrs_button_to_string(button: gilrs::Button) -> &'static str {
     match button {
         gilrs::Button::South => "a",
         gilrs::Button::East => "b",
@@ -224,7 +224,7 @@ pub(crate) fn gilrs_button_to_string(button: gilrs::Button) -> &'static str {
 }
 
 /// Map a gilrs `Axis` variant to its SDL2-style string name used in mappings.
-pub(crate) fn gilrs_axis_to_string(axis: gilrs::Axis) -> &'static str {
+pub fn gilrs_axis_to_string(axis: gilrs::Axis) -> &'static str {
     match axis {
         gilrs::Axis::LeftStickX => "leftx",
         gilrs::Axis::LeftStickY => "lefty",

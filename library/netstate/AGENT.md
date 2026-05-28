@@ -99,7 +99,7 @@ Logging:
   `lurek.timer.Scheduler:after(...)` to drive a retry.
 - **`:hashState()` is not a cryptographic hash** â€” it is a deterministic
   FNV-1a digest sufficient for desync detection. Will delegate to
-  `lurek.data.hash` once that P4 lift candidate lands.
+  `lurek.binary.hash` once that P4 lift candidate lands.
 - **Wire format is MessagePack**, not JSON. Do not mix `:toJson()` payloads
   on the same channel.
 

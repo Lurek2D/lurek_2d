@@ -1133,28 +1133,28 @@ lurek.automation.waitUntil(predicate: function, timeout: number) -- Suspends aut
 [Module page](Module-binary)
 
 ```lua
-lurek.data.compress(format_str: string, raw_data: string, [level]: integer) -> string -- Compresses a binary string using a named compression format.
-lurek.data.compressChunks(format_str: string, chunks: any, [level]: integer) -> string -- Compresses a string or table of strings as a chunked byte stream.
-lurek.data.crc32(raw_data: string) -> integer -- Computes CRC32 for a binary string.
-lurek.data.decode(format_str: string, encoded: string) -> string -- Decodes a string using a named text encoding format.
-lurek.data.decompress(format_str: string, compressed: string) -> string -- Decompresses a binary string using a named compression format.
-lurek.data.decompressChunks(format_str: string, chunks: any) -> string -- Decompresses a string or table of strings as a chunked byte stream.
-lurek.data.encode(format_str: string, raw_data: string) -> string -- Encodes a binary string using a named text encoding format.
-lurek.data.encodeToml(tbl: table) -> string -- Encodes a Lua table into a TOML document string.
-lurek.data.fromMsgPack(bytes: string) -> LuaValue -- Decodes a structured binary interchange payload back into Lua values.
-lurek.data.getPackedSize(fmt: string, ...: any) -> integer -- Computes the packed byte size for values and a format string.
-lurek.data.hash(algo_str: string, raw_data: string) -> string -- Hashes a binary string with a named algorithm.
-lurek.data.newByteData(value: any) -> LByteData -- Creates ByteData from a size or string.
-lurek.data.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDataView -- Creates a DataView over a binary string slice.
-lurek.data.newRingBuffer(capacity: integer) -> LRingBuffer -- Creates a fixed-capacity ring buffer for Lua values.
-lurek.data.newWriter() -> LDataWriter -- Creates an empty binary data writer.
-lurek.data.pack(fmt: string, ...: any) -> string -- Packs Lua values into a binary string using a format string.
-lurek.data.parseToml(text: string) -> table -- Parses TOML text into Lua tables and scalar values.
-lurek.data.read(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Reads binary values from a byte string using a format string.
-lurek.data.size(fmt: string) -> integer -- Measures fixed byte size for a binary format string.
-lurek.data.toMsgPack(value: any) -> string -- Encodes a Lua value into the current structured binary interchange payload.
-lurek.data.unpack(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Unpacks values from a binary string using a format string.
-lurek.data.write(fmt: string, ...: any) -> string -- Writes binary values into a byte string using a format string.
+lurek.binary.compress(format_str: string, raw_data: string, [level]: integer) -> string -- Compresses a binary string using a named compression format.
+lurek.binary.compressChunks(format_str: string, chunks: any, [level]: integer) -> string -- Compresses a string or table of strings as a chunked byte stream.
+lurek.binary.crc32(raw_data: string) -> integer -- Computes CRC32 for a binary string.
+lurek.binary.decode(format_str: string, encoded: string) -> string -- Decodes a string using a named text encoding format.
+lurek.binary.decompress(format_str: string, compressed: string) -> string -- Decompresses a binary string using a named compression format.
+lurek.binary.decompressChunks(format_str: string, chunks: any) -> string -- Decompresses a string or table of strings as a chunked byte stream.
+lurek.binary.encode(format_str: string, raw_data: string) -> string -- Encodes a binary string using a named text encoding format.
+lurek.binary.encodeToml(tbl: table) -> string -- Encodes a Lua table into a TOML document string.
+lurek.binary.fromMsgPack(bytes: string) -> LuaValue -- Decodes a structured binary interchange payload back into Lua values.
+lurek.binary.getPackedSize(fmt: string, ...: any) -> integer -- Computes the packed byte size for values and a format string.
+lurek.binary.hash(algo_str: string, raw_data: string) -> string -- Hashes a binary string with a named algorithm.
+lurek.binary.newByteData(value: any) -> LByteData -- Creates ByteData from a size or string.
+lurek.binary.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDataView -- Creates a DataView over a binary string slice.
+lurek.binary.newRingBuffer(capacity: integer) -> LRingBuffer -- Creates a fixed-capacity ring buffer for Lua values.
+lurek.binary.newWriter() -> LDataWriter -- Creates an empty binary data writer.
+lurek.binary.pack(fmt: string, ...: any) -> string -- Packs Lua values into a binary string using a format string.
+lurek.binary.parseToml(text: string) -> table -- Parses TOML text into Lua tables and scalar values.
+lurek.binary.read(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Reads binary values from a byte string using a format string.
+lurek.binary.size(fmt: string) -> integer -- Measures fixed byte size for a binary format string.
+lurek.binary.toMsgPack(value: any) -> string -- Encodes a Lua value into the current structured binary interchange payload.
+lurek.binary.unpack(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Unpacks values from a binary string using a format string.
+lurek.binary.write(fmt: string, ...: any) -> string -- Writes binary values into a byte string using a format string.
 ```
 
 ### LByteData

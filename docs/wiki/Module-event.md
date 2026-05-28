@@ -915,6 +915,7 @@ end
 --- Emits a signal event and invokes matching callbacks with the remaining arguments.
 ---@param name string Signal event name to emit.
 ---@param ... any Additional arguments passed to matching callbacks.
+---@return nil Fires callbacks synchronously; no value is returned.
 function LSignal:emit(name, ...) end
 ```
 
@@ -926,6 +927,8 @@ Parameters:
 
 - `name` (`string`, required): Signal event name to emit.
 - `...` (`any`, required): Additional arguments passed to matching callbacks.
+
+Returns: - Fires callbacks synchronously; no value is returned.
 
 #### Example
 

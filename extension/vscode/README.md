@@ -8,6 +8,8 @@ Lurek2D is a 2D game engine written in Rust that loads and executes Lua game scr
 
 > **Works alongside sumneko.lua (Lua Language Server)** — this extension adds only Lurek-unique features (engine API diagnostics, factory-type inference, callback markers, asset path completion). General Lua features (completion, hover, signature help, symbol outline, find references, rename, formatting, folding, LuaCATS) are handled by sumneko.lua to avoid duplication.
 
+Detailed extension architecture and file inventory: [docs/vscode-extension.md](docs/vscode-extension.md).
+
 ## Features
 
 ### Lurek-Specific IntelliSense (what this extension adds)

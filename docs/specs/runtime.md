@@ -8,8 +8,8 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/runtime/`
-- Lua API path(s): None direct
-- Primary Lua namespace: `lurek.runtime`
+- Lua API path(s): `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, `src/lua_api/register.rs`
+- Primary Lua namespace: lurek.runtime
 - Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
 - Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
 
@@ -19,7 +19,15 @@ As a Core Runtime tier component, it defines the essential shared state, engine 
 
 Configuration is driven by the `Config` struct, which parses the `conf.toml` file at startup. It dictates window settings, renderer preferences, performance caps (like Lua callback timeouts), and feature-toggles (`ModulesConfig`) that selectively load or auto-disable engine subsystems based on prerequisites. The runtime actively supports hot-reloading for many configuration values, allowing live tweaks to target FPS, physics ticks, log levels, and viewport settings without restarting the game. The module also robustly handles different startup modes (`gui`, `tui`, `headless`, `cli`), with the headless path specifically designed for script automation and CI testing without requiring window or audio contexts.
 
-Error handling is unified under `EngineError`, an exhaustive enum that categorizes failures across all domains (IO, Lua, GPU, audio, network, physics) with stable, machine-readable codes (e.g., `E1001`) and actionable recovery hints. Complementing this is a comprehensive log message catalog driven by an embedded TOML file. It provides structured, consistent diagnostic output (using codes like `L001` or `G012`) via the `log_msg!` macro. To ensure safe and efficient resource management across the engine, the module defines strongly-typed `slotmap` keys (`TextureKey`, `FontKey`, etc.) that act as lightweight, generationally-checked handles suitable for storage within Lua userdata. Though rarely invoked directly by game scripts, the `runtime` module's infrastructure makes Lurek2D's execution stable, configurable, and deterministic.
+Error handling is unified under `EngineError`, an exhaustive enum that categorizes failures across all domains (IO, Lua, GPU, audio, network, physics) with stable, machine-readable codes (e.g., `E1001`) and actionable recovery hints. Complementing this is a comprehensive log message catalog driven by an embedded TOML file. It provides structured, consistent diagnostic output (using codes like `L001` or `G012`) via the `log_msg!` macro. To ensure safe and efficient resource management across the engine, the module defines strongly-typed `slotmap` keys (`TextureKey`, `FontKey`, etc.) that act as lightweight, generationally-checked handles suitable for storage within Lua userdata. Though most of the infrastructure is consumed through higher-level modules, the canonical runtime Lua surface is `lurek.runtime`.
+
+### Lua API Bridge and Registration
+
+The old `lua_api` spec duplicated this runtime namespace. Its relevant contract now lives here: `src/lua_api/` is the Edge/Integration bridge that creates sandboxed Lua VMs, installs the sealed `lurek` global, and registers every enabled `lurek.*` namespace against the runtime `SharedState`.
+
+Module registration is trait-based. Each binding file implements a `register(lua, lurek, state)` entry point, and `src/lua_api/register.rs` walks the static `MODULES` slice using `always!` and `gated!` entries. Feature-gated modules that cannot appear in that static slice are registered after the standard pass. Binding files remain translation-only: they parse Lua values, borrow `SharedState`, call domain modules, and convert results back to Lua without owning business logic.
+
+For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.md](../architecture/lua-rust-boundary.md).
 
 ## Source Documentation
 
@@ -204,7 +212,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 - `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
 - `input`: Imports or references `input` from `src/input/`.
 - `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: Imports or references `src/lua_api/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
 - `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
 - `parallax`: Imports or references `parallax` from `src/parallax/`.
 - `particle`: Imports or references `particle` from `src/particle/`.
@@ -221,7 +229,7 @@ Error handling is unified under `EngineError`, an exhaustive enum that categoriz
 
 - Keep this module reference synchronized with `src/runtime/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
-- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
+- This spec is the canonical owner for `lurek.runtime`; do not keep a separate `docs/specs/lua_api.md` entry for the same Lua surface.
 - **conf.toml only (updated 2026-04-21)**: `conf.lua` support has been removed. `Config::load` tries `conf.toml` and returns `Config::default()` if absent. `load_from_conf_lua`, `build_config_table`, and `read_config_table` have been deleted. Configuration is TOML-only.
 - **Hot-reload (updated 2026-05-22)**: `app` now watches `conf.toml` and applies mutable settings live (target fps, physics tick, fixed update tick, log level, window title, viewport scale mode, built-in default render font size, built-in default render font bold flag) while incrementing a runtime config revision counter. Explicit runtime font overrides remain active until the game changes them again.
 - **Hot-reload programmatic trigger (updated 2026-05-12)**: `lurek.runtime.reloadConfig()` sets `SharedState::pending_config_reload`; the app loop consumes this flag and calls `FileWatcher::force_changed()` before the normal `poll_config_hot_reload` path, enabling Lua-triggered reloads without requiring a file change on disk.

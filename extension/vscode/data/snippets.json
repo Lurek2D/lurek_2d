@@ -4,7 +4,7 @@
     "description": "Use for network packet construction and binary save-data blobs. pack serialises Lua values using a format string; unpack reverses it. crc32 detects corruption on receive before you call unpack.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "-- pack: uint16, float, null-terminated string",
       "local payload  = d.pack(\">Hfz\", 1042, 3.14, \"hero\")",
       "local crc      = d.crc32(payload)",
@@ -20,7 +20,7 @@
     "description": "Use to serialise a homogeneous array of fixed-size records (vectors, transform matrices, physics states) into one compact binary blob. getPackedSize verifies expected sizes without doing a full pack.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local FMT = \">fff\"   -- 3x big-endian float = 12 bytes",
       "local vecs = { {1.0, 2.5, -3.0}, {0.5, 0.0, 1.5}, {-1.0, 4.2, 0.0} }",
       "local blob = \"\"",
@@ -36,7 +36,7 @@
     "description": "Use newWriter when building a binary payload incrementally (message framing, file chunk headers). Typed methods writeU8/writeU16LE/writeF32LE are safer than raw pack for variable-length record construction.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "local w = d.newWriter()",
       "w:writeU8(0x7F)        -- version byte",
       "w:writeU16LE(1024)     -- payload length hint",
@@ -56,7 +56,7 @@
     "description": "Use DataView to inspect a binary blob received from a file or network without copying it. Reads typed values at arbitrary byte offsets — useful for parsing file-format headers or network message envelopes.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "-- simulate a 12-byte header: magic(4), version(2), data_len(4)",
       "local header = d.pack(\">IHI\", 0x4C524B32, 1, 4096)",
       "local view   = d.newDataView(header)",
@@ -72,7 +72,7 @@
     "description": "Use LByteData for in-place byte manipulation: simple ciphers, checksum accumulation, or binary patching. newByteData(str) copies bytes in; getByte/setByte let you iterate and modify individual bytes.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local KEY = 0x5A",
       "local msg = \"secret_level_data\"",
       "local bd  = d.newByteData(msg)",
@@ -95,7 +95,7 @@
     "description": "Use hash() to derive a compact, reproducible lookup key from an asset path or chunk content. Use \"sha256\" for integrity checks; \"xxh64\" for fast non-security cache keys (~4x faster).",
     "scope": "lua",
     "body": [
-      "local ${1:d}    = lurek.data",
+      "local ${1:d}    = lurek.binary",
       "local path = \"content/games/mymod/map01.toml\"",
       "local secure_key = d.hash(\"sha256\", path)",
       "print(\"sha256=\" .. secure_key)",
@@ -109,7 +109,7 @@
     "description": "Use to protect save files and transmitted blobs from silent corruption. Append the CRC to the blob on write; recompute and compare on load before parsing the payload.",
     "scope": "lua",
     "body": [
-      "local ${1:d}    = lurek.data",
+      "local ${1:d}    = lurek.binary",
       "local save = d.encodeToml({ player = { level = 5, gold = 300 } })",
       "local crc  = d.crc32(save)",
       "-- write: append CRC as 4 bytes",
@@ -128,7 +128,7 @@
     "description": "Use to embed binary data in JSON strings, URLs, or text protocols. encode(\"base64\") produces the RFC 4648 string; decode(\"base64\") reverses it back to raw bytes.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local raw = d.pack(\">HH\", 0xDEAD, 0xBEEF)",
       "local b64 = d.encode(\"base64\", raw)",
       "print(\"base64=\" .. b64)",
@@ -143,7 +143,7 @@
     "description": "Use zlib compression on save blobs to reduce file-system write size. Level 6 balances speed and ratio for structured config data; verify round-trip before writing with the assert check below.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local payload    = d.encodeToml({ world = { map = \"dungeon_01\", seed = 42 } })",
       "local compressed = d.compress(\"zlib\", payload, 6)",
       "print(string.format(\"original=%d  compressed=%d  ratio=%.2f\",",
@@ -160,7 +160,7 @@
     "description": "Use compressChunks for streaming serialisation of large maps or level sections split into tiles. Pass a table of binary strings to avoid allocating one giant concatenated blob before compression.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "local sections = {",
       "    d.pack(\">Hff\", 1, 100.0, 200.0),",
       "    d.pack(\">Hff\", 2, 300.0,  50.0),",
@@ -179,7 +179,7 @@
     "description": "Use at startup to load a TOML config, apply defaults for optional keys, and validate required fields. Fail fast with a clear error rather than silently propagating nil values into game logic.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "local toml_str = [[",
       "[audio]",
       "volume = 0.8",
@@ -198,7 +198,7 @@
     "description": "Use to apply partial preference updates without rewriting the whole config. parseToml -> mutate the table -> encodeToml preserves all other keys and structure.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local raw = [[",
       "[player]",
       "name = \"Hero\"",
@@ -220,7 +220,7 @@
     "description": "Use to load and validate a game manifest (name, version, entry point) during boot. Centralise all schema checks here so the game loop never receives unvalidated manifest data.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "local manifest_toml = [[",
       "name    = \"Dungeon Explorer\"",
       "version = \"1.2.0\"",
@@ -240,7 +240,7 @@
     "description": "Use as a bounded event queue for combat log messages, input history, or debug entries. The buffer overwrites the oldest entry when full — no manual eviction code required.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local buf = d.newRingBuffer(8)",
       "",
       "buf:push({ type = \"damage\", amount = 15 })",
@@ -261,7 +261,7 @@
     "description": "Use a ring buffer to compute a rolling average of frame times, damage-per-second, or sensor readings. toTable() yields the current window as a plain Lua array for sum/count without a separate counter.",
     "scope": "lua",
     "body": [
-      "local ${1:d}   = lurek.data",
+      "local ${1:d}   = lurek.binary",
       "local WIN = 30",
       "local fps_buf = d.newRingBuffer(WIN)",
       "",
@@ -282,7 +282,7 @@
     "description": "Use toMsgPack / fromMsgPack for compact structured serialisation of game state snapshots passed between Lua VMs via Channel, or written as save slot blobs. Smaller than TOML; more type-safe than raw pack.",
     "scope": "lua",
     "body": [
-      "local ${1:d} = lurek.data",
+      "local ${1:d} = lurek.binary",
       "local state = {",
       "    player = { name = \"Hero\", hp = 80, level = 5 },",
       "    round  = 3,",

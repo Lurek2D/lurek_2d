@@ -1175,7 +1175,7 @@ end
 ## 🔗 Related Modules
 
 - Previous: [audio](Module-audio)
-- Next: [bin](Module-bin)
+- Next: [binary](Module-binary)
 - [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
 - [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
 - [charts](Module-charts) - Software-rasterized chart renderers (line, bar, scatter, pie, area) to RGBA8 pixel buffers.

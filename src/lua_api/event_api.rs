@@ -269,6 +269,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             )),
         }
     }
+
+    fn request_exit(state: &Rc<RefCell<SharedState>>, code: i32) {
+        let mut st = state.borrow_mut();
+        st.quit_requested = true;
+        st.exit_code = code;
+    }
+
     let s = state.clone();
     // -- exit --
     /// Requests engine shutdown with an optional process exit code.
@@ -276,9 +283,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "exit",
         lua.create_function(move |_, code: Option<i32>| {
-            let mut st = s.borrow_mut();
-            st.quit_requested = true;
-            st.exit_code = code.unwrap_or(0);
+            request_exit(&s, code.unwrap_or(0));
             Ok(())
         })?,
     )?;
@@ -377,13 +382,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- quit --
-    /// Requests engine shutdown with exit code zero.
+    /// Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
     tbl.set(
         "quit",
         lua.create_function(move |_, ()| {
-            let mut st = s.borrow_mut();
-            st.quit_requested = true;
-            st.exit_code = 0;
+            request_exit(&s, 0);
             Ok(())
         })?,
     )?;

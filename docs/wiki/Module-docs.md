@@ -3005,8 +3005,5 @@ No direct references were found in `content/games/**/main.lua`.
 - Previous: [dialog](Module-dialog)
 - Next: [dsp](Module-dsp)
 - [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [bin](Module-bin) - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
 - [debugbridge](Module-debugbridge) - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
 - [devtools](Module-devtools) - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
-- [lua_api](Module-lua_api) - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
-- [vscode-extension](Module-vscode-extension) - VS Code extension: language providers, 41 visual editors, DAP debugger, MCP server, game-dev CAG agents.

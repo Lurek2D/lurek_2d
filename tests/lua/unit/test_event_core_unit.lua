@@ -1129,4 +1129,14 @@ describe("unit: migrated from integration/test_timer_event.lua", function()
 
 end)
 
+-- @describe lurek.event.quit
+describe("lurek.event.quit", function()
+  -- @covers lurek.event.quit
+  it("exists and calls without error as the deprecated exit-zero alias", function()
+    expect_equal("function", type(lurek.event.quit))
+    local ok, err = pcall(function() lurek.event.quit() end)
+    expect_equal(true, ok, err)
+  end)
+end)
+
 test_summary()

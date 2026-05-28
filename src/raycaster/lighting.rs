@@ -84,7 +84,7 @@ pub fn compute_lighting(
     [r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0)]
 }
 /// Multiply `base_shade` by each channel of `light_color`; return clamped `[r, g, b]`.
-pub(crate) fn apply_lit_shade(base_shade: f32, light_color: [f32; 3]) -> [f32; 3] {
+pub fn apply_lit_shade(base_shade: f32, light_color: [f32; 3]) -> [f32; 3] {
     [
         (base_shade * light_color[0]).clamp(0.0, 1.0),
         (base_shade * light_color[1]).clamp(0.0, 1.0),

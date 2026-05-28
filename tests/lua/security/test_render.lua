@@ -118,38 +118,38 @@ end)
 
 -- @describe fuzz: wrong types to data module
 describe("fuzz: wrong types to data module", function()
-    -- @security lurek.data.encode
-    it("lurek.data.encode rejects nil format", function()
+    -- @security lurek.binary.encode
+    it("lurek.binary.encode rejects nil format", function()
         expect_error(function()
-            lurek.data.encode(NIL, BAD_TABLE)
+            lurek.binary.encode(NIL, BAD_TABLE)
         end)
     end)
 
-    -- @security lurek.data.decode
-    it("lurek.data.decode rejects nil format", function()
+    -- @security lurek.binary.decode
+    it("lurek.binary.decode rejects nil format", function()
         expect_error(function()
-            lurek.data.decode(NIL, "{}")
+            lurek.binary.decode(NIL, "{}")
         end)
     end)
 
-    -- @security lurek.data.decode
-    it("lurek.data.decode rejects malformed JSON", function()
+    -- @security lurek.binary.decode
+    it("lurek.binary.decode rejects malformed JSON", function()
         expect_error(function()
-            lurek.data.decode("json", "{{{{not json!!!")
+            lurek.binary.decode("json", "{{{{not json!!!")
         end)
     end)
 
-    -- @security lurek.data.compress
-    it("lurek.data.compress rejects nil", function()
+    -- @security lurek.binary.compress
+    it("lurek.binary.compress rejects nil", function()
         expect_error(function()
-            lurek.data.compress("deflate", NIL)
+            lurek.binary.compress("deflate", NIL)
         end)
     end)
 
-    -- @security lurek.data.decompress
-    it("lurek.data.decompress rejects garbage", function()
+    -- @security lurek.binary.decompress
+    it("lurek.binary.decompress rejects garbage", function()
         expect_error(function()
-            lurek.data.decompress("deflate", "not compressed data at all!!")
+            lurek.binary.decompress("deflate", "not compressed data at all!!")
         end)
     end)
 end)
@@ -543,18 +543,18 @@ end)
 
 -- @describe fuzz: P0 modules nil type extreme
 describe("fuzz: P0 modules nil type extreme", function()
-    -- @security lurek.data.compress
-    -- @security lurek.data.decompress
+    -- @security lurek.binary.compress
+    -- @security lurek.binary.decompress
     -- @security lurek.physics.newWorld
     -- @security lurek.serial.fromJson
     -- @security lurek.image.newImageData
     it("rejects hostile payloads across P0 modules without panic", function()
         expect_error(function()
-            lurek.data.compress("deflate", NIL)
+            lurek.binary.compress("deflate", NIL)
         end)
 
         expect_error(function()
-            lurek.data.decompress("deflate", string.rep("x", 4096))
+            lurek.binary.decompress("deflate", string.rep("x", 4096))
         end)
 
         expect_error(function()

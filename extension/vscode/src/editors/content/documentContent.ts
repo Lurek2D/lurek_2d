@@ -847,8 +847,8 @@ export function tilemapScriptContent(): EditorContent {
     sound: 'lurek.audio.play("sfx/interact.ogg")\\n',
     dialog: 'lurek.ui.showDialog({\\n  text = "Hello, traveler!",\\n  speaker = "NPC"\\n})\\n',
     teleport: 'lurek.tilemap.teleportPlayer(targetX, targetY)\\n',
-    setflag: 'lurek.data.setFlag("quest_started", true)\\n',
-    checkflag: 'if lurek.data.getFlag("quest_started") then\\n  -- flag is set\\nend\\n'
+    setflag: 'game_flags = game_flags or {}\ngame_flags.quest_started = true\n',
+    checkflag: 'game_flags = game_flags or {}\nif game_flags.quest_started then\n  -- flag is set\nend\n'
   };
 
   document.querySelectorAll('.snippet-btn').forEach(btn => {

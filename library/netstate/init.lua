@@ -25,7 +25,7 @@
 --
 -- **Hash helper**: `:hashState()` is a deterministic FNV-1a digest of all
 -- replicated keys/values; useful for desync detection. When a future
--- `lurek.data.hash` lift lands (P4 candidate), this should delegate.
+-- `lurek.binary.hash` lift lands (P4 candidate), this should delegate.
 --
 -- **Limitation**: `requestFullState()` has no built-in timeout. If the authority
 -- never responds, the client will not receive a snapshot. Callers should
@@ -676,13 +676,13 @@ end
 --- Useful for desync detection between authority and clients (compare digests
 --- after a sync round; mismatch indicates state divergence).
 ---
---- TODO(P4 lift): when `lurek.data.hash` lands in the engine (P4 lift candidate),
+--- TODO(P4 lift): when `lurek.binary.hash` lands in the engine (P4 lift candidate),
 --- this method should delegate to it for the inner string-hashing step.  Until
 --- then a small inline FNV-1a implementation keeps the library self-contained
 --- and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
 ---
 --- @treturn number  32-bit unsigned hash of the sorted (key, value) pairs.
---- @see lurek.data.hash
+--- @see lurek.binary.hash
 function NetState:hashState()
     local keys = {}
     for k in pairs(self._state) do keys[#keys + 1] = k end

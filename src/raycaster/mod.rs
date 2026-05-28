@@ -55,7 +55,7 @@ pub use doors::{Door, DoorDirection, DoorManager, DoorState};
 pub use grid_motion::{dir4_delta, try_move, GridMoveAction};
 pub use heightmap::HeightMap;
 pub use level_render::{compute_hole_visibility, LevelRenderConfig, TileHighlight};
-pub use lighting::{compute_lighting, PointLight};
+pub use lighting::{apply_lit_shade, compute_lighting, PointLight};
 pub use multilevel::{MultiLevelGrid, RaycasterLevel};
 pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;

@@ -1,4 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for binary internals that are not exposed as `lurek.data.*`.
+//! INTERNAL ONLY: Rust-only tests for binary internals that are not exposed as `lurek.binary.*`.
 
 // ── ring_buffer ───────────────────────────────────────────────────────────────
 

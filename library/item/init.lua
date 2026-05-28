@@ -1,4 +1,4 @@
---- Lurek2D item system — type catalog, items, stacks, pools, history, and analysis.
+--- Lurek2D item system - type catalog, items, stacks, pools, history, and analysis.
 --
 -- A pure-Lua replacement for the former `lurek.item` Rust binding.
 -- Provides a type registry, Item objects with tags/stats/meta/owner, capacity-aware
@@ -273,9 +273,9 @@ function M.newItem(type_name)
 
     -- -- Clone -------------------------------------------------------------
 
-    --- Deep-copy this item instance (stats, tags, meta, counters, slot, name — NOT owner).
+    --- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner).
     -- @treturn table new Item
-    -- TODO(P4 lift): replace with `lurek.data.deepCopy(it)` once that helper
+    -- TODO(P4 lift): replace with a shared deepCopy helper once that helper
     -- ships (P4 lift candidate). The local fallback below preserves identical
     -- behaviour and is safe on both LuaJIT and Lua 5.4.
     function it:clone()

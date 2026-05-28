@@ -42,7 +42,7 @@
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Foundations
-**Namespace:** `lurek.data`
+**Namespace:** `lurek.binary`
 
 ## 🎯 Purpose
 
@@ -58,7 +58,7 @@ At the center of the module is `ByteData`, an owned, resizable byte vector equip
 
 The module supports an extensive array of compression codecs—LZ4, Zstd, Deflate, and Gzip—accessible via the `CompressFormat` enum. These codecs are exposed through full-buffer, streaming, and chunked APIs. For integrity checks and cryptography, the `HashAlgorithm` enum gives access to industry-standard hashes such as MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3. The `EncodeFormat` helpers seamlessly handle conversion of binary payloads to and from Base64, Hex, and URL-safe text formats.
 
-A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.data.*` namespace, allowing script developers to efficiently process arbitrary binary data.
+A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.binary.*` namespace, allowing script developers to efficiently process arbitrary binary data.
 
 [⬆ back to top](#table-of-contents)
 
@@ -73,7 +73,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Padding tokens for alignment and fixed-layout binary structures
 - Bounds-checked reads with descriptive underflow error messages
 - Static size measurement for formats without variable-width tokens
-- ByteData output for zero-copy integration with the data module pipeline
+- ByteData output for zero-copy integration with the binary module pipeline
 
 ### `byte_data.rs`
 
@@ -131,7 +131,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Coercion helpers that widen numeric PackValue variants at write time
 - Bounds-checked reads with per-token underflow error messages
 - Static and dynamic packed-size calculation for buffer pre-allocation
-- ByteData output for integration with the data module pipeline
+- ByteData output for integration with the binary module pipeline
 
 ### `ring_buffer.rs`
 
@@ -165,7 +165,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 
 ### Module-Level Functions
 
-#### lurek.data.compress
+#### lurek.binary.compress
 
 #### Definition
 
@@ -175,7 +175,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 ---@param raw_data string Raw binary data to compress.
 ---@param level? number Optional compression level; defaults to 6.
 ---@return string Compressed binary byte string.
-lurek.data.compress = function(format_str, raw_data, level) end
+lurek.binary.compress = function(format_str, raw_data, level) end
 ```
 
 #### Description
@@ -197,13 +197,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local raw = string.rep("hello", 100)
-    local compressed = lurek.data.compress("deflate", raw)
+    local compressed = lurek.binary.compress("deflate", raw)
     print("raw len = " .. #raw)
     print("compressed len = " .. #compressed)
 end
 ```
 
-#### lurek.data.compressChunks
+#### lurek.binary.compressChunks
 
 #### Definition
 
@@ -213,7 +213,7 @@ end
 ---@param chunks any Binary string or array table of binary strings.
 ---@param level? number Optional compression level; defaults to 6.
 ---@return string Compressed binary byte string.
-lurek.data.compressChunks = function(format_str, chunks, level) end
+lurek.binary.compressChunks = function(format_str, chunks, level) end
 ```
 
 #### Description
@@ -235,13 +235,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local chunks = {"chunk1", "chunk2", "chunk3"}
-    local compressed = lurek.data.compressChunks("deflate", chunks)
+    local compressed = lurek.binary.compressChunks("deflate", chunks)
     print("chunk count = " .. #chunks)
     print("chunks compressed len = " .. #compressed)
 end
 ```
 
-#### lurek.data.crc32
+#### lurek.binary.crc32
 
 #### Definition
 
@@ -249,7 +249,7 @@ end
 --- Computes CRC32 for a binary string.
 ---@param raw_data string Raw binary data to checksum.
 ---@return number CRC32 checksum value.
-lurek.data.crc32 = function(raw_data) end
+lurek.binary.crc32 = function(raw_data) end
 ```
 
 #### Description
@@ -268,13 +268,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local crc = lurek.data.crc32("test data")
+    local crc = lurek.binary.crc32("test data")
     print("crc32 = " .. crc)
     print("crc32 type = " .. type(crc))
 end
 ```
 
-#### lurek.data.decode
+#### lurek.binary.decode
 
 #### Definition
 
@@ -283,7 +283,7 @@ end
 ---@param format_str string Encoding format name.
 ---@param encoded string Encoded string to decode.
 ---@return string Decoded binary byte string.
-lurek.data.decode = function(format_str, encoded) end
+lurek.binary.decode = function(format_str, encoded) end
 ```
 
 #### Description
@@ -303,13 +303,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local encoded = lurek.data.encode("base64", "Hello")
-    local decoded = lurek.data.decode("base64", encoded)
+    local encoded = lurek.binary.encode("base64", "Hello")
+    local decoded = lurek.binary.decode("base64", encoded)
     print("decoded = " .. decoded)
 end
 ```
 
-#### lurek.data.decompress
+#### lurek.binary.decompress
 
 #### Definition
 
@@ -318,7 +318,7 @@ end
 ---@param format_str string Compression format name.
 ---@param compressed string Compressed binary data.
 ---@return string Decompressed binary byte string.
-lurek.data.decompress = function(format_str, compressed) end
+lurek.binary.decompress = function(format_str, compressed) end
 ```
 
 #### Description
@@ -339,14 +339,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local raw = string.rep("world", 100)
-    local compressed = lurek.data.compress("deflate", raw)
-    local restored = lurek.data.decompress("deflate", compressed)
+    local compressed = lurek.binary.compress("deflate", raw)
+    local restored = lurek.binary.decompress("deflate", compressed)
     print("restored len = " .. #restored)
     print("restored matches = " .. tostring(restored == raw))
 end
 ```
 
-#### lurek.data.decompressChunks
+#### lurek.binary.decompressChunks
 
 #### Definition
 
@@ -355,7 +355,7 @@ end
 ---@param format_str string Compression format name.
 ---@param chunks any Binary string or array table of binary strings.
 ---@return string Decompressed binary byte string.
-lurek.data.decompressChunks = function(format_str, chunks) end
+lurek.binary.decompressChunks = function(format_str, chunks) end
 ```
 
 #### Description
@@ -376,14 +376,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local chunks = {"aaaa", "bbbb", "cccc"}
-    local compressed = lurek.data.compressChunks("deflate", chunks)
-    local restored = lurek.data.decompressChunks("deflate", compressed)
+    local compressed = lurek.binary.compressChunks("deflate", chunks)
+    local restored = lurek.binary.decompressChunks("deflate", compressed)
     print("decompressed chunks len = " .. #restored)
     print("restored preview = " .. restored:sub(1, 8))
 end
 ```
 
-#### lurek.data.encode
+#### lurek.binary.encode
 
 #### Definition
 
@@ -392,7 +392,7 @@ end
 ---@param format_str string Encoding format name.
 ---@param raw_data string Raw binary data to encode.
 ---@return string Encoded string.
-lurek.data.encode = function(format_str, raw_data) end
+lurek.binary.encode = function(format_str, raw_data) end
 ```
 
 #### Description
@@ -412,12 +412,12 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local encoded = lurek.data.encode("base64", "Hello, World!")
+    local encoded = lurek.binary.encode("base64", "Hello, World!")
     print("base64 = " .. encoded)
 end
 ```
 
-#### lurek.data.encodeToml
+#### lurek.binary.encodeToml
 
 #### Definition
 
@@ -425,7 +425,7 @@ end
 --- Encodes a Lua table into a TOML document string.
 ---@param tbl table Lua table to encode as TOML.
 ---@return string TOML document text.
-lurek.data.encodeToml = function(tbl) end
+lurek.binary.encodeToml = function(tbl) end
 ```
 
 #### Description
@@ -445,13 +445,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local t = {title = "My Game", version = "1.0"}
-    local text = lurek.data.encodeToml(t)
+    local text = lurek.binary.encodeToml(t)
     print("toml len = " .. #text)
     print("toml preview = " .. text:sub(1, 20))
 end
 ```
 
-#### lurek.data.fromMsgPack
+#### lurek.binary.fromMsgPack
 
 #### Definition
 
@@ -459,7 +459,7 @@ end
 --- Decodes a structured binary interchange payload back into Lua values.
 ---@param bytes string Encoded binary payload.
 ---@return LuaValue Decoded Lua value.
-lurek.data.fromMsgPack = function(bytes) end
+lurek.binary.fromMsgPack = function(bytes) end
 ```
 
 #### Description
@@ -479,14 +479,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local payload = {score = 100, name = "test"}
-    local bytes = lurek.data.toMsgPack(payload)
-    local decoded = lurek.data.fromMsgPack(bytes)
+    local bytes = lurek.binary.toMsgPack(payload)
+    local decoded = lurek.binary.fromMsgPack(bytes)
     print("decoded score = " .. decoded.score)
     print("decoded name = " .. decoded.name)
 end
 ```
 
-#### lurek.data.getPackedSize
+#### lurek.binary.getPackedSize
 
 #### Definition
 
@@ -495,7 +495,7 @@ end
 ---@param fmt string Binary pack format string.
 ---@param ... any Values measured according to the format.
 ---@return number Packed byte size.
-lurek.data.getPackedSize = function(fmt, ...) end
+lurek.binary.getPackedSize = function(fmt, ...) end
 ```
 
 #### Description
@@ -515,14 +515,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local sz = lurek.data.getPackedSize("BHI", 0, 0, 0)
-    local packed = lurek.data.pack("BHI", 0, 0, 0)
+    local sz = lurek.binary.getPackedSize("BHI", 0, 0, 0)
+    local packed = lurek.binary.pack("BHI", 0, 0, 0)
     print("packed size = " .. sz)
     print("matches packed len = " .. tostring(sz == #packed))
 end
 ```
 
-#### lurek.data.hash
+#### lurek.binary.hash
 
 #### Definition
 
@@ -531,7 +531,7 @@ end
 ---@param algo_str string Hash algorithm name.
 ---@param raw_data string Raw binary data to hash.
 ---@return string Hash digest string.
-lurek.data.hash = function(algo_str, raw_data) end
+lurek.binary.hash = function(algo_str, raw_data) end
 ```
 
 #### Description
@@ -551,13 +551,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local digest = lurek.data.hash("sha256", "secret data")
+    local digest = lurek.binary.hash("sha256", "secret data")
     print("sha256 = " .. digest)
     print("digest length = " .. #digest)
 end
 ```
 
-#### lurek.data.newByteData
+#### lurek.binary.newByteData
 
 #### Definition
 
@@ -565,7 +565,7 @@ end
 --- Creates ByteData from a size or string.
 ---@param value any Integer size for zeroed bytes, or string used as initial bytes.
 ---@return LByteData New LByteData userdata.
-lurek.data.newByteData = function(value) end
+lurek.binary.newByteData = function(value) end
 ```
 
 #### Description
@@ -584,13 +584,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(16)
+    local bd = lurek.binary.newByteData(16)
     print("bytedata size = " .. bd:getSize())
     print("first byte = " .. bd:getByte(0))
 end
 ```
 
-#### lurek.data.newDataView
+#### lurek.binary.newDataView
 
 #### Definition
 
@@ -600,7 +600,7 @@ end
 ---@param offset? number Optional zero-based start offset; defaults to zero.
 ---@param size? number Optional view size in bytes; defaults to the remaining bytes.
 ---@return LDataView New data view handle.
-lurek.data.newDataView = function(raw, offset, size) end
+lurek.binary.newDataView = function(raw, offset, size) end
 ```
 
 #### Description
@@ -621,14 +621,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("<II", 42, 99)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("<II", 42, 99)
+    local view = lurek.binary.newDataView(raw)
     print("view size = " .. view:getSize())
     print("first value = " .. view:getUInt32(0))
 end
 ```
 
-#### lurek.data.newRingBuffer
+#### lurek.binary.newRingBuffer
 
 #### Definition
 
@@ -636,7 +636,7 @@ end
 --- Creates a fixed-capacity ring buffer for Lua values.
 ---@param capacity number Maximum value count; must be greater than zero.
 ---@return LRingBuffer New ring buffer handle.
-lurek.data.newRingBuffer = function(capacity) end
+lurek.binary.newRingBuffer = function(capacity) end
 ```
 
 #### Description
@@ -655,20 +655,20 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(8)
+    local rb = lurek.binary.newRingBuffer(8)
     print("ring capacity = " .. rb:capacity())
     print("ring empty = " .. tostring(rb:isEmpty()))
 end
 ```
 
-#### lurek.data.newWriter
+#### lurek.binary.newWriter
 
 #### Definition
 
 ```lua
 --- Creates an empty binary data writer.
 ---@return LDataWriter New data writer handle.
-lurek.data.newWriter = function() end
+lurek.binary.newWriter = function() end
 ```
 
 #### Description
@@ -683,13 +683,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("writer created = " .. tostring(w ~= nil))
     print("writer type = " .. w:type())
 end
 ```
 
-#### lurek.data.pack
+#### lurek.binary.pack
 
 #### Definition
 
@@ -698,7 +698,7 @@ end
 ---@param fmt string Binary pack format string.
 ---@param ... any Values to pack according to the format.
 ---@return string Packed binary byte string.
-lurek.data.pack = function(fmt, ...) end
+lurek.binary.pack = function(fmt, ...) end
 ```
 
 #### Description
@@ -718,13 +718,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local packed = lurek.data.pack("BHI", 255, 1000, 123456)
+    local packed = lurek.binary.pack("BHI", 255, 1000, 123456)
     print("packed len = " .. #packed)
     print("first byte = " .. string.byte(packed, 1))
 end
 ```
 
-#### lurek.data.parseToml
+#### lurek.binary.parseToml
 
 #### Definition
 
@@ -732,7 +732,7 @@ end
 --- Parses TOML text into Lua tables and scalar values.
 ---@param text string TOML document text.
 ---@return table Lua representation of the TOML document.
-lurek.data.parseToml = function(text) end
+lurek.binary.parseToml = function(text) end
 ```
 
 #### Description
@@ -752,13 +752,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local toml_text = "[player]\nname = \"Hero\"\nlevel = 5"
-    local t = lurek.data.parseToml(toml_text)
+    local t = lurek.binary.parseToml(toml_text)
     print("player name = " .. t.player.name)
     print("player level = " .. tostring(t.player.level))
 end
 ```
 
-#### lurek.data.read
+#### lurek.binary.read
 
 #### Definition
 
@@ -768,7 +768,7 @@ end
 ---@param raw string Binary byte string to read.
 ---@param offset? number Optional zero-based byte offset; defaults to zero.
 ---@return LuaValue Values read from the byte string.
-lurek.data.read = function(fmt, raw, offset) end
+lurek.binary.read = function(fmt, raw, offset) end
 ```
 
 #### Description
@@ -789,13 +789,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bytes = lurek.data.write("u32", 42)
-    local val = lurek.data.read("u32", bytes)
+    local bytes = lurek.binary.write("u32", 42)
+    local val = lurek.binary.read("u32", bytes)
     print("read val = " .. val)
 end
 ```
 
-#### lurek.data.size
+#### lurek.binary.size
 
 #### Definition
 
@@ -803,7 +803,7 @@ end
 --- Measures fixed byte size for a binary format string.
 ---@param fmt string Binary format string to measure.
 ---@return number Fixed byte size for the format.
-lurek.data.size = function(fmt) end
+lurek.binary.size = function(fmt) end
 ```
 
 #### Description
@@ -822,14 +822,14 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local sz = lurek.data.size("u32")
-    local bytes = lurek.data.write("u32", 7)
+    local sz = lurek.binary.size("u32")
+    local bytes = lurek.binary.write("u32", 7)
     print("format size = " .. sz)
     print("matches write len = " .. tostring(sz == #bytes))
 end
 ```
 
-#### lurek.data.toMsgPack
+#### lurek.binary.toMsgPack
 
 #### Definition
 
@@ -837,7 +837,7 @@ end
 --- Encodes a Lua value into the current structured binary interchange payload.
 ---@param value any Lua value to encode through the serial table converter.
 ---@return string Encoded binary payload.
-lurek.data.toMsgPack = function(value) end
+lurek.binary.toMsgPack = function(value) end
 ```
 
 #### Description
@@ -857,13 +857,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 ```lua
 do
     local payload = {score = 100, name = "test"}
-    local bytes = lurek.data.toMsgPack(payload)
+    local bytes = lurek.binary.toMsgPack(payload)
     print("msgpack len = " .. #bytes)
     print("first byte = " .. string.byte(bytes, 1))
 end
 ```
 
-#### lurek.data.unpack
+#### lurek.binary.unpack
 
 #### Definition
 
@@ -873,7 +873,7 @@ end
 ---@param raw string Binary byte string to unpack.
 ---@param offset? number Optional zero-based byte offset; defaults to zero.
 ---@return LuaValue Unpacked values followed by the next byte offset.
-lurek.data.unpack = function(fmt, raw, offset) end
+lurek.binary.unpack = function(fmt, raw, offset) end
 ```
 
 #### Description
@@ -894,13 +894,13 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local packed = lurek.data.pack("BHI", 255, 1000, 123456)
-    local b, h, i = lurek.data.unpack("BHI", packed)
+    local packed = lurek.binary.pack("BHI", 255, 1000, 123456)
+    local b, h, i = lurek.binary.unpack("BHI", packed)
     print("unpacked: " .. b .. ", " .. h .. ", " .. i)
 end
 ```
 
-#### lurek.data.write
+#### lurek.binary.write
 
 #### Definition
 
@@ -909,7 +909,7 @@ end
 ---@param fmt string Binary writer format string.
 ---@param ... any Values to write according to the format.
 ---@return string Binary byte string containing written values.
-lurek.data.write = function(fmt, ...) end
+lurek.binary.write = function(fmt, ...) end
 ```
 
 #### Description
@@ -929,9 +929,9 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bytes = lurek.data.write("u32", 42)
+    local bytes = lurek.binary.write("u32", 42)
     print("write len = " .. #bytes)
-    print("read back = " .. lurek.data.read("u32", bytes))
+    print("read back = " .. lurek.binary.read("u32", bytes))
 end
 ```
 
@@ -952,7 +952,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(16)
+    local bd = lurek.binary.newByteData(16)
     print("bytedata size = " .. bd:getSize())
     print("first byte = " .. bd:getByte(0))
 end
@@ -970,8 +970,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("<II", 42, 99)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("<II", 42, 99)
+    local view = lurek.binary.newDataView(raw)
     print("view size = " .. view:getSize())
     print("first value = " .. view:getUInt32(0))
 end
@@ -989,7 +989,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("writer created = " .. tostring(w ~= nil))
     print("writer type = " .. w:type())
 end
@@ -1007,7 +1007,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(8)
+    local rb = lurek.binary.newRingBuffer(8)
     print("ring capacity = " .. rb:capacity())
     print("ring empty = " .. tostring(rb:isEmpty()))
 end
@@ -1042,7 +1042,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData("test")
+    local bd = lurek.binary.newByteData("test")
     local copy = bd:clone()
     copy:setByte(0, 88)
     print("original[0] = " .. bd:getByte(0) .. " copy[0] = " .. copy:getByte(0))
@@ -1078,7 +1078,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(1)
+    local bd = lurek.binary.newByteData(1)
     bd:setByte(0, 0x80)
     print("bit7 = " .. tostring(bd:getBit(0, 7)))
     print("bit0 = " .. tostring(bd:getBit(0, 0)))
@@ -1112,7 +1112,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData("ABC")
+    local bd = lurek.binary.newByteData("ABC")
     print("byte[0] = " .. bd:getByte(0))
 end
 ```
@@ -1139,7 +1139,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(32)
+    local bd = lurek.binary.newByteData(32)
     print("size = " .. bd:getSize())
 end
 ```
@@ -1166,7 +1166,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData("Hello")
+    local bd = lurek.binary.newByteData("Hello")
     print("str = " .. bd:getString())
     print("size = " .. bd:getSize())
 end
@@ -1203,7 +1203,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(2)
+    local bd = lurek.binary.newByteData(2)
     bd:setByte(0, 0xFF)
     bd:setByte(1, 0x0F)
     local val = bd:readBits(0, 0, 12)
@@ -1239,7 +1239,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(1)
+    local bd = lurek.binary.newByteData(1)
     bd:setBit(0, 0, true)
     bd:setBit(0, 7, true)
     print("byte = " .. bd:getByte(0))
@@ -1273,7 +1273,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(4)
+    local bd = lurek.binary.newByteData(4)
     bd:setByte(0, 255)
     print("byte[0] = " .. bd:getByte(0))
 end
@@ -1301,7 +1301,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(1)
+    local bd = lurek.binary.newByteData(1)
     print("type = " .. bd:type())
 end
 ```
@@ -1333,7 +1333,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local bd = lurek.data.newByteData(1)
+    local bd = lurek.binary.newByteData(1)
     print("is LByteData = " .. tostring(bd:typeOf("LByteData")))
 end
 ```
@@ -1367,8 +1367,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("d", 2.718281828)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("d", 2.718281828)
+    local view = lurek.binary.newDataView(raw)
     print("f64[0] = " .. view:getDouble(0))
 end
 ```
@@ -1400,8 +1400,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("f", 3.14)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("f", 3.14)
+    local view = lurek.binary.newDataView(raw)
     print("f32[0] = " .. view:getFloat(0))
     print("view size = " .. view:getSize())
 end
@@ -1434,8 +1434,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("h", -1000)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("h", -1000)
+    local view = lurek.binary.newDataView(raw)
     print("i16[0] = " .. view:getInt16(0))
 end
 ```
@@ -1467,8 +1467,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("<i", -100000)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("<i", -100000)
+    local view = lurek.binary.newDataView(raw)
     print("i32[0] = " .. view:getInt32(0))
 end
 ```
@@ -1500,8 +1500,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("b", -42)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("b", -42)
+    local view = lurek.binary.newDataView(raw)
     print("i8[0] = " .. view:getInt8(0))
 end
 ```
@@ -1528,8 +1528,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("<III", 1, 2, 3)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("<III", 1, 2, 3)
+    local view = lurek.binary.newDataView(raw)
     print("view size = " .. view:getSize())
     print("last value = " .. view:getUInt32(8))
 end
@@ -1562,8 +1562,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("H", 65000)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("H", 65000)
+    local view = lurek.binary.newDataView(raw)
     print("u16[0] = " .. view:getUInt16(0))
 end
 ```
@@ -1595,8 +1595,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("<I", 3000000)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("<I", 3000000)
+    local view = lurek.binary.newDataView(raw)
     print("u32[0] = " .. view:getUInt32(0))
 end
 ```
@@ -1628,8 +1628,8 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local raw = lurek.data.pack("BBBB", 10, 20, 30, 40)
-    local view = lurek.data.newDataView(raw)
+    local raw = lurek.binary.pack("BBBB", 10, 20, 30, 40)
+    local view = lurek.binary.newDataView(raw)
     print("u8[0] = " .. view:getUInt8(0))
     print("u8[1] = " .. view:getUInt8(1))
 end
@@ -1657,7 +1657,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local view = lurek.data.newDataView("abc")
+    local view = lurek.binary.newDataView("abc")
     print("type = " .. view:type())
 end
 ```
@@ -1689,7 +1689,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local view = lurek.data.newDataView("abc")
+    local view = lurek.binary.newDataView("abc")
     print("is LDataView = " .. tostring(view:typeOf("LDataView")))
 end
 ```
@@ -1718,7 +1718,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU16LE(100)
     w:writeU16LE(200)
     print("writer len = " .. w:len())
@@ -1749,7 +1749,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU32LE(0)
     w:seek(0)
     w:writeU32LE(42)
@@ -1759,7 +1759,7 @@ end
 
 --@api-stub: LDataWriter:tell
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU8(1)
     w:writeU8(2)
     print("cursor at = " .. w:tell())
@@ -1767,7 +1767,7 @@ end
 
 --@api-stub: LDataWriter:len
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU16LE(100)
     w:writeU16LE(200)
     print("writer len = " .. w:len())
@@ -1775,7 +1775,7 @@ end
 
 --@api-stub: LDataWriter:toBytes
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU8(65)
     w:writeU8(66)
     local bytes = w:toBytes()
@@ -1785,13 +1785,13 @@ end
 
 --@api-stub: LDataWriter:type
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("type = " .. w:type())
 end
 
 --@api-stub: LDataWriter:typeOf
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("is LDataWriter = " .. tostring(w:typeOf("LDataWriter")))
 end
 
@@ -1820,7 +1820,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU8(1)
     w:writeU8(2)
     print("cursor at = " .. w:tell())
@@ -1849,7 +1849,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU8(65)
     w:writeU8(66)
     local bytes = w:toBytes()
@@ -1880,7 +1880,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("type = " .. w:type())
 end
 ```
@@ -1912,7 +1912,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     print("is LDataWriter = " .. tostring(w:typeOf("LDataWriter")))
 end
 ```
@@ -1941,7 +1941,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeBytes("\x00\x01\x02\x03")
     print("after writeBytes len = " .. w:len())
 end
@@ -1971,7 +1971,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeF32LE(3.14)
     print("after writeF32LE len = " .. w:len())
 end
@@ -2001,7 +2001,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeF64LE(2.718281828)
     print("after writeF64LE len = " .. w:len())
 end
@@ -2031,7 +2031,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeI16LE(-500)
     print("after writeI16LE len = " .. w:len())
 end
@@ -2061,7 +2061,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeI32LE(-99999)
     print("after writeI32LE len = " .. w:len())
 end
@@ -2091,7 +2091,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeI8(-128)
     print("after writeI8 len = " .. w:len())
 end
@@ -2121,7 +2121,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeString("Hello!")
     print("after writeString len = " .. w:len())
 end
@@ -2151,7 +2151,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU16BE(1000)
     print("after writeU16BE len = " .. w:len())
 end
@@ -2181,7 +2181,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU16LE(1000)
     print("after writeU16LE len = " .. w:len())
 end
@@ -2211,7 +2211,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU32LE(123456)
     print("after writeU32LE len = " .. w:len())
 end
@@ -2241,7 +2241,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local w = lurek.data.newWriter()
+    local w = lurek.binary.newWriter()
     w:writeU8(255)
     print("after writeU8 len = " .. w:len())
     print("first byte = " .. string.byte(w:toBytes(), 1))
@@ -2272,7 +2272,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(5)
+    local rb = lurek.binary.newRingBuffer(5)
     print("capacity = " .. rb:capacity())
 end
 ```
@@ -2296,7 +2296,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     rb:push(1)
     rb:push(2)
     rb:clear()
@@ -2326,7 +2326,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     print("empty = " .. tostring(rb:isEmpty()))
     rb:push("value")
     print("empty after push = " .. tostring(rb:isEmpty()))
@@ -2355,7 +2355,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(2)
+    local rb = lurek.binary.newRingBuffer(2)
     rb:push("a")
     rb:push("b")
     print("full = " .. tostring(rb:isFull()))
@@ -2385,7 +2385,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(10)
+    local rb = lurek.binary.newRingBuffer(10)
     rb:push(1)
     rb:push(2)
     print("len = " .. rb:len())
@@ -2415,7 +2415,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     rb:push("first")
     rb:push("second")
     print("peek = " .. rb:peek())
@@ -2444,7 +2444,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     rb:push("old")
     rb:push("new")
     print("newest = " .. rb:peekNewest())
@@ -2473,7 +2473,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
     rb:push(20)
     local oldest = rb:pop()
@@ -2508,7 +2508,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(3)
+    local rb = lurek.binary.newRingBuffer(3)
     rb:push("a")
     rb:push("b")
     local evicted = rb:push("d")
@@ -2539,7 +2539,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     rb:push(10)
     rb:push(20)
     local t = rb:toTable()
@@ -2570,7 +2570,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     print("type = " .. rb:type())
 end
 ```
@@ -2602,7 +2602,7 @@ Source: [binary.lua](../blob/main/content/examples/binary.lua)
 
 ```lua
 do
-    local rb = lurek.data.newRingBuffer(4)
+    local rb = lurek.binary.newRingBuffer(4)
     print("is LRingBuffer = " .. tostring(rb:typeOf("LRingBuffer")))
 end
 ```
@@ -2612,7 +2612,7 @@ end
 
 ## 💡 Examples
 
-No module-specific example file was found.
+- [binary.lua](../blob/main/content/examples/binary.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 
@@ -2624,7 +2624,7 @@ No direct references were found in `content/games/**/main.lua`.
 
 ## 🔗 Related Modules
 
-- Previous: [bin](Module-bin)
+- Previous: [automation](Module-automation)
 - Next: [camera](Module-camera)
 - [color](Module-color) - RGBA color primitives with color-space conversions, blending modes, and predefined palettes.
 - [compute](Module-compute) - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.

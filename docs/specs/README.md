@@ -39,13 +39,13 @@ Regen workflow:
 - `python tools/validate/validate_module_coverage.py` — ensures every top-level `src/` module still has a matching spec file.
 - `python tools/audit/doc_coverage.py` — flags missing / undersized manual prose.
 
-> **Do not hand-edit the auto sections.** Edits there are silently overwritten on the next regen. If an auto section is wrong, fix the source (Rust docstrings or `src/lua_api/<module>_api.rs` annotations) and rerun the generator.
+> **Do not hand-edit the auto sections.** Edits there are silently overwritten on the next regen. If an auto section is wrong, fix the source annotations and rerun the generator.
 
 ---
 
 ## Module index
 
-51 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md § Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
+56 module specs, grouped by the five-tier dependency model from [docs/architecture/engine-architecture.md § Module Group Diagram](../architecture/engine-architecture.md#module-group-diagram) (the same five tiers listed in the [Repository Layout](../../.github/copilot-instructions.md#repository-layout) section of the system prompt).
 
 **Plugin tier** column reflects the P1 evaluation matrix in `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` § 5. Values:
 
@@ -152,14 +152,11 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG — 
 | Module        | Spec                             | Purpose                                                                                         | Plugin tier |
 | ------------- | -------------------------------- | ----------------------------------------------------------------------------------------------- | ----------- |
 | `app`         | [app.md](app.md)                 | Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.         | —           |
-| `bin`         | [bin.md](bin.md)                 | Alternative `main()`-bearing binaries built alongside the primary `lurek2d` executable.         | —           |
 | `debugbridge` | [debugbridge.md](debugbridge.md) | TCP debug bridge (`127.0.0.1`, JSON-over-TCP) for the VS Code extension and MCP server.         | —           |
 | `devtools`    | [devtools.md](devtools.md)       | In-process logger, frame profiler, rolling stats, hot-reload file watcher (`lurek.devtools.*`). | —           |
 | `docs`        | [docs.md](docs.md)               | In-engine API documentation catalog and lightweight schema validation for structured game data. | —           |
-| `lua_api`     | [lua_api.md](lua_api.md)         | Lua scripting bridge: collects every `lurek.*` sub-API and seals the sandboxed `lurek` global.  | —           |
-| `vscode-extension` | [vscode-extension.md](vscode-extension.md) | VS Code extension: language providers, 41 visual editors, DAP debugger, MCP server, game-dev CAG agents. | — |
 
-> Total module specs: **59** — one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
+> Total module specs: **56** — one row per `*.md` file in `docs/specs/` excluding `README.md` and `SPEC_TEMPLATE.md`. The `pipeline` module is listed once (under Feature Systems) per the canonical group assignment in `engine-architecture.md`.
 
 ---
 

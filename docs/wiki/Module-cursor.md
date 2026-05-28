@@ -48,9 +48,11 @@ Cursor management: system cursors, custom images, animated cursors, trails, cont
 
 ## 📋 Summary
 
-The `cursor` module is documented from the current source tree and existing module reference data.
+The `cursor` module provides complete cursor lifecycle management for Lurek2D games. At its foundation, the `CursorManager` centralizes all cursor state: it can display native OS system cursors (arrow, crosshair, hand, IBeam, and resize variants), custom RGBA image cursors with configurable hotspot offsets, or smooth animated frame sequences built from `AnimatedCursor`. Each animated cursor supports per-frame durations and an independent sine-driven `PulseConfig` scale animation, creating subtle breathing or emphasis effects without additional scripting.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Context-sensitive switching is a first-class feature. Developers register `ContextRule` mappings from named string contexts (e.g., `"dialog"`, `"combat"`, `"menu"`) to specific cursor states. Activating a context via `setContext` instantly swaps to the registered cursor, allowing the cursor to always reflect the current game interaction mode without polling game state from the rendering layer.
+
+The module also provides two post-process visual effects layered on top of the hardware cursor. The `CursorTrail` records a ring buffer of recent cursor positions (`TrailPoint`), each with linearly decaying alpha, and renders them in one of three modes: fading dots, connected line segments, or particle clusters. The `CursorZoom` lens composites a configurable magnifying glass (1.1× to 8.0×) around the cursor position as a post-process scissored blit, useful for map editors or accessibility features. All cursor behavior — visibility, hardware lock for FPS-style grabs, trail, zoom, and context rules — is fully accessible via the `lurek.cursor.*` Lua API.
 
 [⬆ back to top](#table-of-contents)
 

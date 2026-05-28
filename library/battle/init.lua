@@ -1,4 +1,4 @@
-﻿-- @module library.battle
+-- @module library.battle
 --- @status full
 --- Pure-Lua turn-based battle system with combatants, actions,
 --- status effects, initiative, damage types, and combat resolution.
@@ -16,7 +16,7 @@ local M = {}
 --- metatables preserved; self-referential cycles return the same clone for
 --- repeat visits, preventing the infinite recursion that previously crashed
 --- `Combatant`/`CombatBattle` clone paths when callers attached cyclic metadata.
--- TODO(P4 lift): replace with lurek.data.deepCopy when available.
+-- TODO(P4 lift): replace with a shared deepCopy helper when available.
 local function deep_copy(t, seen)
     if type(t) ~= "table" then return t end
     seen = seen or {}

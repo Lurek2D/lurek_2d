@@ -21,6 +21,12 @@ Event payloads are encapsulated within an `Event` struct containing a `Vec<Event
 
 Beyond the global queue, the module implements a robust publish-subscribe pattern via the `Signal` type. `Signal` serves as a typed pub-sub dispatcher where subscribers register Lua closures that execute synchronously upon emission (`emit()`). It uniquely supports glob-style wildcard subscriptions (`*`, `?`), allowing flexible pattern matching alongside exact-name callbacks. To support tooling and debug replay, global event history can be optionally enabled (`enableHistory`) with a bounded retention capacity. The entire suite of functionality, including engine lifecycle commands like `quit` and `restart`, is exposed natively to scripts via the `lurek.event.*` API.
 
+## Boundaries
+
+`lurek.event.newSignal` creates an `LSignal`, a low-level single-signal dispatcher for isolated callback sets. Use it when one owner needs exact-name or wildcard callbacks through `LSignal:register`, `LSignal:connect`, `LSignal:once`, `LSignal:registerWithFilter`, and `LSignal:emit`.
+
+Use `lurek.patterns.newEventBus` when the caller needs one multi-channel pub-sub broker for many named events. `LEventBus` dispatches with `LEventBus:emit`, not `publish`, and adds broker-level listener ordering and one-shot subscription semantics.
+
 ## Source Documentation
 
 ### `event_queue.rs`
@@ -91,7 +97,7 @@ Beyond the global queue, the module implements a robust publish-subscribe patter
 - `lurek.event.pump`: Pumps the shared event queue without removing events for Lua.
 - `lurek.event.wait`: Waits for the next queued event and returns success, name, and argument table.
 - `lurek.event.restart`: Requests a full engine restart cycle from the runtime.
-- `lurek.event.quit`: Requests engine shutdown with exit code zero.
+- `lurek.event.quit`: Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 - `lurek.event.pushDeferred`: Adds a normal-priority event to the deferred buffer instead of the live queue.
 - `lurek.event.pushDeferredPriority`: Adds an event with explicit priority to the deferred buffer.
 - `lurek.event.flushDeferred`: Moves all deferred events into the shared event queue and clears the deferred buffer.

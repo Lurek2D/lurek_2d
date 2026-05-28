@@ -268,7 +268,7 @@ fn lua_table_to_toml_value(value: &LuaValue) -> LuaResult<toml::Value> {
         )),
     }
 }
-/// Registers the `lurek.data` API table with the Lua VM.
+/// Registers the `lurek.binary` API table with the Lua VM.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     // -- pack --
@@ -343,8 +343,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "decompress",
         lua.create_function(|lua, (format_str, compressed): (String, LuaString)| {
             let format = CompressFormat::parse_str(&format_str).map_err(LuaError::RuntimeError)?;
-            let result =
-                binary::decompress(compressed.as_bytes(), format).map_err(LuaError::RuntimeError)?;
+            let result = binary::decompress(compressed.as_bytes(), format)
+                .map_err(LuaError::RuntimeError)?;
             lua.create_string(&result)
         })?,
     )?;
@@ -590,9 +590,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
     /// Performs the 'binary' operation.
-    luna.set("binary", tbl.clone())?;
-    /// Backward-compatible alias so existing `lurek.data` scripts still work.
-    luna.set("data", tbl)?;
+    luna.set("binary", tbl)?;
     Ok(())
 }
 /// Converts a serial Lua-table value into JSON for binary payload encoding.
@@ -915,14 +913,14 @@ impl mlua::UserData for ByteData {
             |_, this, (byte_offset, bit_offset, value): (usize, u8, bool)| {
                 if byte_offset >= this.len() {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.data: setBit byte_offset {} out of range (size={})",
+                        "lurek.binary: setBit byte_offset {} out of range (size={})",
                         byte_offset,
                         this.len()
                     )));
                 }
                 if bit_offset > 7 {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.data: setBit bit_offset {} out of range [0..7]",
+                        "lurek.binary: setBit bit_offset {} out of range [0..7]",
                         bit_offset
                     )));
                 }
@@ -946,14 +944,14 @@ impl mlua::UserData for ByteData {
             |_, this, (byte_offset, bit_offset): (usize, u8)| {
                 if byte_offset >= this.len() {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.data: getBit byte_offset {} out of range (size={})",
+                        "lurek.binary: getBit byte_offset {} out of range (size={})",
                         byte_offset,
                         this.len()
                     )));
                 }
                 if bit_offset > 7 {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.data: getBit bit_offset {} out of range [0..7]",
+                        "lurek.binary: getBit bit_offset {} out of range [0..7]",
                         bit_offset
                     )));
                 }
@@ -972,7 +970,7 @@ impl mlua::UserData for ByteData {
             |_, this, (byte_offset, bit_offset, count): (usize, u8, u8)| {
                 if count == 0 || count > 32 {
                     return Err(LuaError::RuntimeError(format!(
-                        "lurek.data: readBits count {} out of range [1..32]",
+                        "lurek.binary: readBits count {} out of range [1..32]",
                         count
                     )));
                 }
@@ -983,7 +981,7 @@ impl mlua::UserData for ByteData {
                     let bit = (total_bit % 8) as u8;
                     if b >= this.len() {
                         return Err(LuaError::RuntimeError(format!(
-                            "lurek.data: readBits reads beyond buffer end (size={})",
+                            "lurek.binary: readBits reads beyond buffer end (size={})",
                             this.len()
                         )));
                     }

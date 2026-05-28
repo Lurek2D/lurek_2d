@@ -26,7 +26,7 @@ pub mod namegen;
 pub mod noise;
 /// Poisson disk point sampler. This module is publicly re-exported.
 pub mod poisson;
-/// Noise-grid rendering helpers.
+/// Tileable sampled noise-grid helpers.
 pub mod render;
 /// Random-room scatter dungeon generator.
 pub mod rooms;

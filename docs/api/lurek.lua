@@ -3357,127 +3357,127 @@ function LRingBuffer:typeOf(name) end
 ---@param raw_data string Raw binary data to compress.
 ---@param level? number Optional compression level; defaults to 6.
 ---@return string Compressed binary byte string.
-lurek.data.compress = function(format_str, raw_data, level) end
+lurek.binary.compress = function(format_str, raw_data, level) end
 
 --- Compresses a string or table of strings as a chunked byte stream.
 ---@param format_str string Compression format name.
 ---@param chunks any Binary string or array table of binary strings.
 ---@param level? number Optional compression level; defaults to 6.
 ---@return string Compressed binary byte string.
-lurek.data.compressChunks = function(format_str, chunks, level) end
+lurek.binary.compressChunks = function(format_str, chunks, level) end
 
 --- Computes CRC32 for a binary string.
 ---@param raw_data string Raw binary data to checksum.
 ---@return number CRC32 checksum value.
-lurek.data.crc32 = function(raw_data) end
+lurek.binary.crc32 = function(raw_data) end
 
 --- Decodes a string using a named text encoding format.
 ---@param format_str string Encoding format name.
 ---@param encoded string Encoded string to decode.
 ---@return string Decoded binary byte string.
-lurek.data.decode = function(format_str, encoded) end
+lurek.binary.decode = function(format_str, encoded) end
 
 --- Decompresses a binary string using a named compression format.
 ---@param format_str string Compression format name.
 ---@param compressed string Compressed binary data.
 ---@return string Decompressed binary byte string.
-lurek.data.decompress = function(format_str, compressed) end
+lurek.binary.decompress = function(format_str, compressed) end
 
 --- Decompresses a string or table of strings as a chunked byte stream.
 ---@param format_str string Compression format name.
 ---@param chunks any Binary string or array table of binary strings.
 ---@return string Decompressed binary byte string.
-lurek.data.decompressChunks = function(format_str, chunks) end
+lurek.binary.decompressChunks = function(format_str, chunks) end
 
 --- Encodes a binary string using a named text encoding format.
 ---@param format_str string Encoding format name.
 ---@param raw_data string Raw binary data to encode.
 ---@return string Encoded string.
-lurek.data.encode = function(format_str, raw_data) end
+lurek.binary.encode = function(format_str, raw_data) end
 
 --- Encodes a Lua table into a TOML document string.
 ---@param tbl table Lua table to encode as TOML.
 ---@return string TOML document text.
-lurek.data.encodeToml = function(tbl) end
+lurek.binary.encodeToml = function(tbl) end
 
 --- Decodes a structured binary interchange payload back into Lua values.
 ---@param bytes string Encoded binary payload.
 ---@return LuaValue Decoded Lua value.
-lurek.data.fromMsgPack = function(bytes) end
+lurek.binary.fromMsgPack = function(bytes) end
 
 --- Computes the packed byte size for values and a format string.
 ---@param fmt string Binary pack format string.
 ---@param ... any Values measured according to the format.
 ---@return number Packed byte size.
-lurek.data.getPackedSize = function(fmt, ...) end
+lurek.binary.getPackedSize = function(fmt, ...) end
 
 --- Hashes a binary string with a named algorithm.
 ---@param algo_str string Hash algorithm name.
 ---@param raw_data string Raw binary data to hash.
 ---@return string Hash digest string.
-lurek.data.hash = function(algo_str, raw_data) end
+lurek.binary.hash = function(algo_str, raw_data) end
 
 --- Creates ByteData from a size or string.
 ---@param value any Integer size for zeroed bytes, or string used as initial bytes.
 ---@return LByteData New LByteData userdata.
-lurek.data.newByteData = function(value) end
+lurek.binary.newByteData = function(value) end
 
 --- Creates a DataView over a binary string slice.
 ---@param raw string Binary byte string backing the view.
 ---@param offset? number Optional zero-based start offset; defaults to zero.
 ---@param size? number Optional view size in bytes; defaults to the remaining bytes.
 ---@return LDataView New data view handle.
-lurek.data.newDataView = function(raw, offset, size) end
+lurek.binary.newDataView = function(raw, offset, size) end
 
 --- Creates a fixed-capacity ring buffer for Lua values.
 ---@param capacity number Maximum value count; must be greater than zero.
 ---@return LRingBuffer New ring buffer handle.
-lurek.data.newRingBuffer = function(capacity) end
+lurek.binary.newRingBuffer = function(capacity) end
 
 --- Creates an empty binary data writer.
 ---@return LDataWriter New data writer handle.
-lurek.data.newWriter = function() end
+lurek.binary.newWriter = function() end
 
 --- Packs Lua values into a binary string using a format string.
 ---@param fmt string Binary pack format string.
 ---@param ... any Values to pack according to the format.
 ---@return string Packed binary byte string.
-lurek.data.pack = function(fmt, ...) end
+lurek.binary.pack = function(fmt, ...) end
 
 --- Parses TOML text into Lua tables and scalar values.
 ---@param text string TOML document text.
 ---@return table Lua representation of the TOML document.
-lurek.data.parseToml = function(text) end
+lurek.binary.parseToml = function(text) end
 
 --- Reads binary values from a byte string using a format string.
 ---@param fmt string Binary reader format string.
 ---@param raw string Binary byte string to read.
 ---@param offset? number Optional zero-based byte offset; defaults to zero.
 ---@return LuaValue Values read from the byte string.
-lurek.data.read = function(fmt, raw, offset) end
+lurek.binary.read = function(fmt, raw, offset) end
 
 --- Measures fixed byte size for a binary format string.
 ---@param fmt string Binary format string to measure.
 ---@return number Fixed byte size for the format.
-lurek.data.size = function(fmt) end
+lurek.binary.size = function(fmt) end
 
 --- Encodes a Lua value into the current structured binary interchange payload.
 ---@param value any Lua value to encode through the serial table converter.
 ---@return string Encoded binary payload.
-lurek.data.toMsgPack = function(value) end
+lurek.binary.toMsgPack = function(value) end
 
 --- Unpacks values from a binary string using a format string.
 ---@param fmt string Binary unpack format string.
 ---@param raw string Binary byte string to unpack.
 ---@param offset? number Optional zero-based byte offset; defaults to zero.
 ---@return LuaValue Unpacked values followed by the next byte offset.
-lurek.data.unpack = function(fmt, raw, offset) end
+lurek.binary.unpack = function(fmt, raw, offset) end
 
 --- Writes binary values into a byte string using a format string.
 ---@param fmt string Binary writer format string.
 ---@param ... any Values to write according to the format.
 ---@return string Binary byte string containing written values.
-lurek.data.write = function(fmt, ...) end
+lurek.binary.write = function(fmt, ...) end
 
 ---@class lurek.camera
 lurek.camera = {}
@@ -8045,7 +8045,7 @@ lurek.event.pushDeferredPriority = function(name, priority, ...) end
 ---@param ... any Additional event arguments.
 lurek.event.pushPriority = function(name, priority, ...) end
 
---- Requests engine shutdown with exit code zero.
+--- Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 lurek.event.quit = function() end
 
 --- Requests a full engine restart cycle from the runtime.

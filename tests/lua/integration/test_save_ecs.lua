@@ -33,7 +33,7 @@ describe("integration: TOML config for entities", function()
     -- @integration LUniverse:getEntityCount
     -- @integration LUniverse:set
     -- @integration LUniverse:spawn
-    -- @integration lurek.data.parseToml
+    -- @integration lurek.binary.parseToml
     -- @integration lurek.ecs.newUniverse
     it("entity blueprints from TOML", function()
         local toml_str = [[
@@ -53,7 +53,7 @@ describe("integration: TOML config for entities", function()
             name = "Dragon"
         ]]
 
-        local config = lurek.data.parseToml(toml_str)
+        local config = lurek.binary.parseToml(toml_str)
 
         local universe = lurek.ecs.newUniverse()
 

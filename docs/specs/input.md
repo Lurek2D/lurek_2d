@@ -9,7 +9,8 @@
 - Module group: `Platform Services`
 - Source path: `src/input/`
 - Lua API path(s): `src/lua_api/input_api.rs`
-- Primary Lua namespace: `lurek.input.keyboard`
+- Primary Lua namespace: `lurek.input`
+- Lua subnamespaces: `lurek.input.keyboard`, `lurek.input.mouse`, `lurek.input.gamepad`, `lurek.input.touch`
 - Rust test path(s): tests/rust/unit/input_tests.rs
 - Lua test path(s): tests/lua/unit/test_input.lua, tests/lua/integration/test_input_camera.lua
 
@@ -209,7 +210,9 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 ## Lua API Reference
 
 - Binding path(s): `src/lua_api/input_api.rs`
-- Namespace: `lurek.input.keyboard`
+- Namespace: `lurek.input`
+- Subnamespaces: `keyboard`, `mouse`, `gamepad`, `touch`
+- Root functions on `lurek.input` provide action mappings, combo creation, input recording, and playback helpers.
 
 ### Module Functions
 - `lurek.input.keyboard.isDown`: Returns whether any of the supplied key names are currently held down.

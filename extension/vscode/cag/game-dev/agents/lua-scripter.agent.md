@@ -39,7 +39,7 @@ Key modules for scripting logic:
 - `lurek.event` — publish/subscribe: `lurek.event.on(name, fn)`, `lurek.event.emit(name, ...)`
 - `lurek.timer` — scheduling: `lurek.timer.after(delay, fn)`, `lurek.timer.every(interval, fn)`
 - `lurek.ecs` — entities: `lurek.ecs.entity()`, `ecs:add(component, data)`, `lurek.ecs.system(filter, fn)`
-- `lurek.data` — persistence: `lurek.data.save(key, table)`, `lurek.data.load(key)`
+- `lurek.save` — persistence helpers; use module-specific serializers before writing data
 - `lurek.thread` — workers: `lurek.thread.new(script)`, `channel:push(msg)`, `channel:pop()`
 
 ```lua

@@ -38,7 +38,7 @@ APIs relevant to architecture decisions:
 - `lurek.ecs` — decoupled systems: `lurek.ecs.system(filter, update_fn)`, component-based data flow
 - `lurek.event` — inter-system communication: `lurek.event.on(name, fn)`, `lurek.event.emit(name, ...)`
 - `lurek.thread` — parallelism: `lurek.thread.new(script)` for isolated worker VMs
-- `lurek.data` — state persistence boundaries: `lurek.data.save(key, table)`
+- `lurek.save` — state persistence boundaries; serialize data before writing it
 
 ```lua
 -- Decoupled systems communicating via events

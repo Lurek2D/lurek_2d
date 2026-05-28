@@ -1,4 +1,4 @@
---- Lurek2D inventory system — containers, weighted bags, slots, item stacks, equip slots, and item sets.
+--- Lurek2D inventory system - containers, weighted bags, slots, item stacks, equip slots, and item sets.
 --
 -- A pure-Lua replacement for the former `lurek.inventory` Rust binding.
 -- Provides ItemStack, Container (fixed/unlimited/expandable), InvItem with tags,
@@ -18,7 +18,7 @@
 -- @see lurek.serialize.fromJson         restore inventory snapshots
 -- @see lurek.save.SaveManager   register inventory state via a SaveManager collector
 -- @see lurek.patterns.newEventBus   optional change-event bus from `inv:getEventBus()`
--- @see lurek.data.deepCopy          P4 lift candidate — `item:clone()` will delegate when available
+-- @see deepCopy helper                P4 lift candidate - `item:clone()` can delegate when available
 
 local M = {}
 
@@ -27,14 +27,6 @@ local _bus_factory
 if type(lurek) == "table" and type(lurek.patterns) == "table"
    and type(lurek.patterns.newEventBus) == "function" then
     _bus_factory = lurek.patterns.newEventBus
-end
-
---- Optional `lurek.data.deepCopy` reference (resolved once). Currently unused
---- but reserved for the P4 lift that will replace per-method `clone()` bodies.
-local _data_deep_copy
-if type(lurek) == "table" and type(lurek.data) == "table"
-   and type(lurek.data.deepCopy) == "function" then
-    _data_deep_copy = lurek.data.deepCopy
 end
 
 --- Optional engine logger. Uses lurek.log when running inside the engine,
@@ -151,10 +143,9 @@ function M.newItem(type_name)
     function item:getProperty(key) return _props[key] end
 
     --- Deep-copy this item definition.
-    -- TODO(P4 lift): once `lurek.data.deepCopy` ships, replace the manual
-    -- field-by-field rebuild below with `_data_deep_copy(item)` so that
+    -- TODO(P4 lift): once a shared deepCopy helper ships, replace the manual
+    -- field-by-field rebuild below so that
     -- arbitrary user-attached fields are preserved automatically.
-    -- @see lurek.data.deepCopy
     -- @treturn table copy of InvItem
     function item:clone()
         local c = M.newItem(type_name)
@@ -908,7 +899,7 @@ function M.newInventory()
                 end
             end
         end
-        -- No free slot — undo the split
+        -- No free slot - undo the split
         st:add(quantity)
         return false
     end

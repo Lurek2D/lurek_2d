@@ -6,91 +6,91 @@
 
 -- @describe validation: corrupted TOML
 describe("validation: corrupted TOML", function()
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects empty string", function()
         -- Empty TOML should parse as empty table, not crash
         expect_no_error(function()
-            local result = lurek.data.parseToml("")
+            local result = lurek.binary.parseToml("")
         end)
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects incomplete key-value", function()
         expect_error(function()
-            lurek.data.parseToml("key = ")
+            lurek.binary.parseToml("key = ")
         end, "incomplete key-value should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects unclosed string", function()
         expect_error(function()
-            lurek.data.parseToml('name = "unclosed')
+            lurek.binary.parseToml('name = "unclosed')
         end, "unclosed string should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects unclosed table header", function()
         expect_error(function()
-            lurek.data.parseToml("[section\nkey = 1")
+            lurek.binary.parseToml("[section\nkey = 1")
         end, "unclosed table header should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects duplicate keys", function()
         expect_error(function()
-            lurek.data.parseToml("key = 1\nkey = 2")
+            lurek.binary.parseToml("key = 1\nkey = 2")
         end, "duplicate keys should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects invalid number format", function()
         expect_error(function()
-            lurek.data.parseToml("num = 12.34.56")
+            lurek.binary.parseToml("num = 12.34.56")
         end, "invalid number should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects binary garbage", function()
         expect_error(function()
-            lurek.data.parseToml("\x00\x01\x02\xFF\xFE")
+            lurek.binary.parseToml("\x00\x01\x02\xFF\xFE")
         end, "binary garbage should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("rejects deeply nested invalid TOML", function()
         expect_error(function()
-            lurek.data.parseToml("[a]\n[a.b]\n[a.b.c]\nkey = [[[invalid]]]")
+            lurek.binary.parseToml("[a]\n[a.b]\n[a.b.c]\nkey = [[[invalid]]]")
         end, "deeply nested invalid syntax should error")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("handles very long key names", function()
         local long_key = string.rep("k", 10000)
         expect_no_error(function()
-            lurek.data.parseToml(long_key .. ' = "value"')
+            lurek.binary.parseToml(long_key .. ' = "value"')
         end, "long key name should not crash")
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("handles very long values", function()
         local long_val = string.rep("v", 50000)
         expect_no_error(function()
-            lurek.data.parseToml('key = "' .. long_val .. '"')
+            lurek.binary.parseToml('key = "' .. long_val .. '"')
         end, "long value should not crash")
     end)
 end)
 
 -- @describe validation: TOML edge cases
 describe("validation: TOML edge cases", function()
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("parses valid minimal TOML", function()
         expect_no_error(function()
-            local result = lurek.data.parseToml('x = 1')
+            local result = lurek.binary.parseToml('x = 1')
             expect_not_nil(result, "minimal TOML parsed")
         end)
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("parses TOML with mixed types", function()
         expect_no_error(function()
             local toml_str = [[
@@ -101,31 +101,31 @@ describe("validation: TOML edge cases", function()
                 bool = true
                 array = [1, 2, 3]
             ]]
-            local result = lurek.data.parseToml(toml_str)
+            local result = lurek.binary.parseToml(toml_str)
             expect_not_nil(result, "mixed type TOML parsed")
         end)
     end)
 
-    -- @security lurek.data.encodeToml
+    -- @security lurek.binary.encodeToml
     it("encodeToml rejects non-table input", function()
         -- encodeToml should only accept table values
         local bad_input = "not a table" ---@type any
         expect_error(function()
-            lurek.data.encodeToml(bad_input)
+            lurek.binary.encodeToml(bad_input)
         end, "string input should error")
     end)
 
-    -- @security lurek.data.encodeToml
+    -- @security lurek.binary.encodeToml
     it("encodeToml rejects function values", function()
         expect_error(function()
-            lurek.data.encodeToml({ cb = function() end })
+            lurek.binary.encodeToml({ cb = function() end })
         end)
     end)
 
-    -- @security lurek.data.parseToml
+    -- @security lurek.binary.parseToml
     it("parseToml rejects malformed quoted key payload", function()
         expect_error(function()
-            lurek.data.parseToml('["../../escape" = "x"')
+            lurek.binary.parseToml('["../../escape" = "x"')
         end)
     end)
 end)

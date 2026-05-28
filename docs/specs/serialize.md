@@ -21,6 +21,14 @@ Each format codec is highly specialized to handle the nuances of its specific sp
 
 Beyond simple format translation, the module includes a powerful schema validation system. Developers can define typed constraints to validate `SerialValue` trees against expected shapes, enforcing required fields, numeric ranges, and string lengths before the data reaches game logic. Additionally, the schema system can apply default values to automatically fill missing fields, ensuring backwards compatibility with older save files or partial configurations. Coupled with seamless bi-directional conversion between `SerialValue` and the Lua runtime, the `lurek.serial.*` API equips developers with an extremely versatile and reliable data pipeline for config loading, state persistence, and external tool integration.
 
+## Boundaries
+
+`lurek.serial.validate` validates in-memory data, configuration, or save tables against a schema. It operates inside the serialization data pipeline by converting Lua values to `SerialValue` trees, then checking type constraints, required fields, ranges, string lengths, nested fields, and array item rules.
+
+Use `lurek.validator` when the caller needs to validate Lua or project files with static rules. That path checks source text, asset references, import targets, API module names, and custom file patterns, returning structured file-based violations.
+
+`lurek.serial.validate` and `lurek.validator` do not share a backend. They should not be merged or routed through each other without a separate Lua API-design decision.
+
 ## Source Documentation
 
 ### `codec.rs`

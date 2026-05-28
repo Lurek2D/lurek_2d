@@ -819,23 +819,23 @@ gravity_x = 0.0
 gravity_y = 9.8
 max_bodies = 1000
 ]]
-        local parsed = lurek.data.parseToml(input)
-        local encoded = lurek.data.encodeToml(parsed)
+        local parsed = lurek.binary.parseToml(input)
+        local encoded = lurek.binary.encodeToml(parsed)
         write_text(migrated_path("data", "toml_roundtrip.toml"), encoded)
     end)
 
     -- @evidence file
     it("writes migrated Rust encode evidence", function()
-        write_text(migrated_path("encode", "base64_encode.txt"), lurek.data.encode("base64", "Lurek2D rocks!"))
-        write_text(migrated_path("encode", "hex_encode.txt"), lurek.data.encode("hex", "Lurek2D rocks!"))
+        write_text(migrated_path("encode", "base64_encode.txt"), lurek.binary.encode("base64", "Lurek2D rocks!"))
+        write_text(migrated_path("encode", "hex_encode.txt"), lurek.binary.encode("hex", "Lurek2D rocks!"))
     end)
 
     -- @evidence file
     it("writes migrated Rust hash evidence", function()
-        write_text(migrated_path("hash", "md5_hello.txt"), lurek.data.hash("md5", "Hello, Lurek2D!"))
-        write_text(migrated_path("hash", "sha1_engine.txt"), lurek.data.hash("sha1", "Lurek2D engine test vector"))
-        write_text(migrated_path("hash", "sha256_hello.txt"), lurek.data.hash("sha256", "Hello, Lurek2D!"))
-        write_text(migrated_path("hash", "sha512_engine.txt"), lurek.data.hash("sha512", "Lurek2D engine test vector"))
+        write_text(migrated_path("hash", "md5_hello.txt"), lurek.binary.hash("md5", "Hello, Lurek2D!"))
+        write_text(migrated_path("hash", "sha1_engine.txt"), lurek.binary.hash("sha1", "Lurek2D engine test vector"))
+        write_text(migrated_path("hash", "sha256_hello.txt"), lurek.binary.hash("sha256", "Hello, Lurek2D!"))
+        write_text(migrated_path("hash", "sha512_engine.txt"), lurek.binary.hash("sha512", "Lurek2D engine test vector"))
     end)
 
 end)

@@ -4,7 +4,7 @@
 //!
 //! This Rust file keeps only the stricter internal invariants and helper-level
 //! coverage that are not directly asserted through the Lua surface, such as
-//! bounds checks, renderer helpers, and lower-level noise utilities.
+//! bounds checks, pure noise-grid helpers, and lower-level noise utilities.
 
 use lurek2d::procgen::*;
 
@@ -30,7 +30,10 @@ mod heightmap_tests {
             ..Default::default()
         });
         for &v in &hm.cells {
-            assert!((0.0..=1.0).contains(&v), "post-erosion value out of [0,1]: {v}");
+            assert!(
+                (0.0..=1.0).contains(&v),
+                "post-erosion value out of [0,1]: {v}"
+            );
         }
     }
 
@@ -248,10 +251,19 @@ mod rooms_tests {
     }
 }
 
-// ── render (NoiseGrid) ───────────────────────────────────────────────
+// ── noise grid ───────────────────────────────────────────────────────
 
-mod render_tests {
+mod noise_grid_tests {
     use super::*;
+
+    #[test]
+    fn from_perlin_dimensions_and_range() {
+        let grid = NoiseGrid::from_perlin(4, 3, 0.1);
+        assert_eq!(grid.width, 4);
+        assert_eq!(grid.height, 3);
+        assert_eq!(grid.cells.len(), 12);
+        assert!(grid.cells.iter().all(|v| (0.0..=1.0).contains(v)));
+    }
 
     #[test]
     fn to_rgba_bytes_length() {
@@ -267,31 +279,6 @@ mod render_tests {
             cells: Vec::new(),
         };
         assert!(grid.to_rgba_bytes().is_empty());
-    }
-
-    #[test]
-    fn generate_render_commands_count() {
-        let grid = NoiseGrid::from_perlin(4, 4, 0.1);
-        // 16 cells × 2 commands each (SetColor + Rectangle)
-        assert_eq!(grid.generate_render_commands(8.0).len(), 32);
-    }
-
-    #[test]
-    fn draw_to_image_correct_dimensions() {
-        let grid = NoiseGrid::from_perlin(8, 6, 0.1);
-        let img = grid.draw_to_image();
-        assert_eq!(img.width(), 8);
-        assert_eq!(img.height(), 6);
-    }
-
-    #[test]
-    fn empty_grid_returns_no_commands() {
-        let grid = NoiseGrid {
-            width: 0,
-            height: 0,
-            cells: Vec::new(),
-        };
-        assert!(grid.generate_render_commands(8.0).is_empty());
     }
 }
 
@@ -320,7 +307,10 @@ mod noise_tests {
     fn perlin2d_value_range() {
         for i in 0..100 {
             let v = perlin2d(i as f32 * 0.37, i as f32 * 0.53, 0);
-            assert!((-1.5..=1.5).contains(&v), "perlin2d out of expected range: {v}");
+            assert!(
+                (-1.5..=1.5).contains(&v),
+                "perlin2d out of expected range: {v}"
+            );
         }
     }
 

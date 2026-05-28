@@ -26,7 +26,7 @@ pub use codec::{
     decode_bytes, decode_text, detect_format, encode, DecodeOptions, EncodeOptions, EncodedValue,
     SerialFormat,
 };
-pub use csv::{from_csv, to_csv, CsvOptions};
+pub use csv::{from_csv, from_csv_reader, to_csv, CsvOptions};
 pub use ini::from_ini;
 pub use json::{from_json, to_json};
 pub use lua_table::SerialValue;

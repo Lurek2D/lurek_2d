@@ -577,8 +577,5 @@ No direct references were found in `content/games/**/main.lua`.
 - Previous: [dataframe](Module-dataframe)
 - Next: [devtools](Module-devtools)
 - [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [bin](Module-bin) - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
 - [devtools](Module-devtools) - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
 - [docs](Module-docs) - In-engine API documentation catalog and lightweight schema validation for structured game data.
-- [lua_api](Module-lua_api) - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
-- [vscode-extension](Module-vscode-extension) - VS Code extension: language providers, 41 visual editors, DAP debugger, MCP server, game-dev CAG agents.

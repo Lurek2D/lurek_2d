@@ -79,7 +79,7 @@ const STATIC_COMPLETIONS: &[&str] = &[
     "lurek.automation",
     "lurek.camera",
     "lurek.compute",
-    "lurek.data",
+    "lurek.binary",
     "lurek.dataframe",
     "lurek.debugbridge",
     "lurek.devtools",

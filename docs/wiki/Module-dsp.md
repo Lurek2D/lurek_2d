@@ -73,68 +73,60 @@ The `audio` module's bus system references `dsp::SharedEffectGraph` and `dsp::Dy
 
 ### `analysis.rs`
 
-- Audio signal analysis capabilities including real-time volume tracking and frequency spectrum algorithms.
-- Provides real-time volume tracking and Fast Fourier Transform algorithms for signal processing.
-- Volume tracking implements exponential decay for peak detection and accumulates squared values for root-mean-square calculations over time.
-- Frequency analysis utilizes a Fast Fourier Transform with a Cooley-Tukey algorithm, applying a Hann window to smooth the input and using a pre-calculated bit-reversal table for performance.
-- Designed to process raw float samples directly from the audio thread or offline buffers, avoiding heap allocations in hot paths.
-- Used primarily by the Lua bindings to expose visualizer data to scripts and by offline processing functions to measure audio characteristics.
+- Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.
+- `LevelDetector` accumulates sum-of-squares and peak per sample; exposes RMS, peak, clipping flag, and dBFS conversion.
+- `SpectrumAnalyzer` delegates to `SoundData::analyze_dft` with a bounded bin count clamped to 1–512.
+- Used by audio subsystem and Lua DSP bindings to inspect signal levels and spectrum before mixing.
 
 ### `effects.rs`
 
-- Lock-free audio effect processing chains and digital signal processing algorithms.
-- Provides lock-free parameter sharing between the audio thread and external bindings via atomic bit-casting.
-- Groups DSP algorithms covering biquad filters, reverbs, delays, modulation, distortion, and dynamic range compression.
-- Shared parameter blocks use named string-dispatch to set type-specific values without runtime allocations.
-- Per-source processing maintains independent biquad delay elements, circular comb buffers, LFO phases, and envelope states.
-- Implements sample-by-sample processing algorithms applying clamped parameter reads directly in the hot audio thread.
-- Encapsulates effect graphs inside thread-safe lists shared between configuration writers and playback readers.
-- Integrates with the audio playback pipeline by wrapping upstream sample sources and processing frames synchronously.
-- Comb-buffer sizes and biquad coefficients are pre-calculated and cached based on sample rates to minimize CPU overhead.
-- Handles degenerate paths by falling back to dry signal output or clamping extreme values without panicking.
+- Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
+- `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
+- `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
+- `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
+- Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
+- `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
+- `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
+- Comb-buffer sizing derived from sample rate and effect type at construction time.
+- Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
+- LFO-driven modulated delay for flanger and phaser with depth and rate controls.
 
 ### `graph.rs`
 
-- Dynamic DSP signal graph capabilities for routing and mixing audio streams.
-- Provides directed acyclic graph structures to manage dynamic audio routing paths.
-- Implements topological sorting to process audio nodes in dependency order during playback.
-- Separates node processing into generators, filters, and mixers to maintain predictable flow.
-- Designed to run synchronously on the audio thread with minimal lock contention or allocation.
-- Used to construct complex effect chains and routing topologies without modifying underlying sources.
+- DSP processing graph: nodes connected by typed audio-rate and control-rate edges.
+- `DspGraph` owns a topologically sorted list of `DspNode` processing units.
+- Edges carry either audio frames (f32 interleaved) or scalar control signals.
+- Evaluated once per audio buffer in the rodio callback on the audio thread.
+- Graph mutation (add/remove node, patch edge) is performed from the game thread
+- via a lock-free command queue consumed at the start of each audio callback.
 
 ### `mod.rs`
 
-- Core digital signal processing subsystem for audio manipulation and analysis.
-- Groups all real-time audio filters, analysis tools, procedural synthesis generators, and graph routing structures.
-- Centralizes offline processing and visualization capabilities.
-- Avoids direct coupling with platform I/O, focusing exclusively on pure mathematical signal transformation.
+- Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.
+- Provides a per-source processing graph evaluated on the audio thread.
+- Node types include: gain, pan, low-pass/high-pass filters, reverb, and delay.
+- Graph topology changes are sent via a lock-free command queue to avoid blocking.
+- Re-exported to Lua via `lurek.audio.dsp.*` through `audio_api.rs`.
 
 ### `offline.rs`
 
-- Offline audio processing capabilities for modifying files without real-time playback.
-- Provides peak normalisation processing to scale audio amplitudes to a configurable target level.
-- Decodes waveform data into floating-point format and encodes processed results back to 16-bit PCM streams.
-- Applies complete effect chains sequentially over the entire audio buffer before writing to disk.
-- Automatically ensures parent directory structures exist for output paths prior to writing.
-- Interacts directly with file system APIs and decoder utilities to facilitate batch processing from scripts.
+- Offline audio processing: apply DSP effect chains to files without real-time playback.
+- Peak normalisation with configurable target level.
+- WAV file decode to f32 and encode back to 16-bit PCM via rodio.
+- `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
+- Parent directory auto-creation for output paths.
 
 ### `synthesis.rs`
 
-- Audio synthesis capabilities for generating procedural waveforms and shaping signal amplitudes.
-- Provides primitive waveform oscillators including sine, square, sawtooth, triangle, and white noise generation.
-- Integrates ADSR (Attack, Decay, Sustain, Release) envelope generators for dynamic amplitude shaping over time.
-- Implements mathematical wave generation formulas optimized for synchronous processing within the audio loop.
-- Evaluates phase and state progression locally to avoid external synchronization overhead during real-time playback.
-- Typically utilized by dynamic signal sources to create procedural sound effects without relying on loaded assets.
+- DSP synthesis helpers for procedural waveforms and envelopes.
 
 ### `visualizer.rs`
 
-- Graphical visualization capabilities for rendering audio characteristics into image formats.
-- Provides offline tools to convert decoded audio files directly into standard PNG image representations.
-- Implements amplitude waveform plotting that maps peak minimum and maximum values into graphical vertical bars.
-- Generates frequency spectrograms using Hann-windowed discrete Fourier transforms mapped into heatmap color palettes.
-- Automatically handles multi-channel audio by applying a mono downmix prior to visual analysis.
-- Designed to be invoked by offline scripts or tooling interfaces rather than real-time rendering pipelines.
+- Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
+- Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
+- Mono downmix helper for multi-channel input files.
+- Heat-colour mapping from normalised magnitude to RGBA.
+- Parent directory auto-creation for output image paths.
 
 [⬆ back to top](#table-of-contents)
 

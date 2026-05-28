@@ -21,6 +21,16 @@ To facilitate decoupled communication across systems, the module provides a robu
 
 The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
 
+## Boundaries
+
+`lurek.patterns.newEventBus` creates an `LEventBus`, a multi-channel pub-sub broker for routing many named events through one local coordination object. Use it when listener priority, one-shot subscriptions, and broker-level listener management matter; dispatch uses `LEventBus:emit`, not `publish`.
+
+Use `lurek.event.newSignal` when the caller only needs a low-level single-signal dispatcher. `LSignal` owns one isolated callback registry and supports exact-name or wildcard callbacks through `LSignal:register`, `LSignal:connect`, and `LSignal:emit`.
+
+`lurek.patterns.newBehaviorTree` owns reusable behavior-tree structure: ID-addressed nodes, composites, decorators, leaves by name, child links, root selection, and generic local tick state. Use it when the tree shape itself is the shared design-pattern primitive or when custom game logic wants to inspect or orchestrate a tree outside an AI agent.
+
+Use `lurek.ai.newBehaviorTree` when the tree is part of AI runtime execution. The AI surface owns Lua callback-backed action, condition, and guard nodes, last-status/debug state, and agent-decision behavior. `ai` can build on the structural behavior-tree concepts from `patterns`; `patterns` must not import from or depend on `ai`.
+
 ## Source Documentation
 
 ### `behavior_tree.rs`

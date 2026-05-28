@@ -6,7 +6,7 @@
 //! - Coercion helpers that widen numeric PackValue variants at write time
 //! - Bounds-checked reads with per-token underflow error messages
 //! - Static and dynamic packed-size calculation for buffer pre-allocation
-//! - ByteData output for integration with the data module pipeline
+//! - ByteData output for integration with the binary module pipeline
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

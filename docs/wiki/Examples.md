@@ -18,12 +18,12 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | API example |
 | [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |
 | [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | API example |
+| [binary.lua](../blob/main/content/examples/binary.lua) | `lurek.binary` | API example |
 | [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | API example |
 | [charts.lua](../blob/main/content/examples/charts.lua) | `lurek.charts` | API example |
 | [color.lua](../blob/main/content/examples/color.lua) | `lurek.color` | API example |
 | [compute.lua](../blob/main/content/examples/compute.lua) | `lurek.compute` | API example |
 | [cursor.lua](../blob/main/content/examples/cursor.lua) | `lurek.cursor` | API example |
-| [binary.lua](../blob/main/content/examples/binary.lua) | `lurek.data` | API example |
 | [dataframe.lua](../blob/main/content/examples/dataframe.lua) | `lurek.dataframe` | API example |
 | [debugbridge.lua](../blob/main/content/examples/debugbridge.lua) | `lurek.debugbridge` | API example |
 | [devtools.lua](../blob/main/content/examples/devtools.lua) | `lurek.devtools` | API example |

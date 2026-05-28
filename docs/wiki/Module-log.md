@@ -682,7 +682,7 @@ No direct references were found in `content/games/**/main.lua`.
 ## 🔗 Related Modules
 
 - Previous: [light](Module-light)
-- Next: [lua_api](Module-lua_api)
+- Next: [mapblock](Module-mapblock)
 - [binary](Module-binary) - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
 - [color](Module-color) - RGBA color primitives with color-space conversions, blending modes, and predefined palettes.
 - [compute](Module-compute) - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.

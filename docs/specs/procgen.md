@@ -100,8 +100,8 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 
 ### `render.rs`
 - Tileable Perlin noise grid generation and cell access.
-- Conversion to grayscale RGBA byte buffers and `ImageData`.
-- Batch render-command generation for grid visualization.
+- Conversion to flat grayscale RGBA byte buffers for higher-tier projection.
+- Does not create `RenderCommand`, `ImageData`, tilemap objects, or Lua userdata.
 
 ### `rooms.rs`
 - Random room placement with overlap rejection and configurable size ranges.
@@ -149,7 +149,7 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `FractalType` (`enum`, `noise.rs`): Fractal type for multi-octave noise.
 - `MapGenOptions` (`struct`, `noise.rs`): Options for 2D noise map generation.
 - `NoiseGenerator` (`struct`, `noise.rs`): Seeded procedural noise generator.
-- `NoiseGrid` (`struct`, `render.rs`): Sampled noise buffer that can be exported as render commands or a CPU image.
+- `NoiseGrid` (`struct`, `render.rs`): Sampled noise buffer that can be exported as flat grayscale RGBA bytes.
 - `Room` (`struct`, `rooms.rs`): A placed room in the dungeon.
 - `RoomsOpts` (`struct`, `rooms.rs`): Options for rooms-and-corridors generation.
 - `RoomsDungeon` (`struct`, `rooms.rs`): The result of rooms-and-corridors generation.
@@ -225,8 +225,6 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `poisson_disk` (`poisson.rs`): Generates Poisson disk sample points using Bridson's algorithm.
 - `NoiseGrid::from_perlin` (`render.rs`): Build a tileable Perlin noise grid at the given `scale`; scale is clamped to >= 1e-6.
 - `NoiseGrid::to_rgba_bytes` (`render.rs`): Convert the cell grid to a flat grayscale RGBA byte buffer at 4 bytes per cell.
-- `NoiseGrid::generate_render_commands` (`render.rs`): Generate `SetColor` + `Rectangle` render commands for each cell at `cell_size` pixels; returns an empty vec for empty grids.
-- `NoiseGrid::draw_to_image` (`render.rs`): Render the grid into a new `ImageData` as grayscale RGBA pixels.
 - `rooms_dungeon` (`rooms.rs`): Generate a rooms-and-corridors dungeon.
 - `rooms_dungeon_with_prefabs` (`rooms.rs`): Generate a rooms dungeon, centre-stamp `prefabs` (round-robin) in each room, and return `(dungeon, placements)`.
 - `voronoi_diagram` (`voronoi.rs`): Generates a Voronoi diagram over a `width × height` grid for the given seed points.
@@ -306,8 +304,7 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 
 ## References
 
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Foundations.`` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from ``Foundations.`` into `Platform Services`.
+- No direct references to higher-tier render, image, tilemap, Lua API, or platform-service modules. `procgen` remains a Foundations module that returns plain data for higher-tier projection.
 
 ## Notes
 

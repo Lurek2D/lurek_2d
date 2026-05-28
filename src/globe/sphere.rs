@@ -110,7 +110,7 @@ pub fn great_circle_path(
 }
 
 /// Return the smallest positive intersection `t` for a ray from `origin` in `dir` with sphere of `radius`.
-pub(crate) fn ray_sphere_intersect(origin: Vec3, dir: Vec3, radius: f32) -> Option<f32> {
+pub fn ray_sphere_intersect(origin: Vec3, dir: Vec3, radius: f32) -> Option<f32> {
     let a = dir.dot(dir);
     if a <= 1e-20 {
         return None;
@@ -146,7 +146,7 @@ pub(crate) fn rot_x(angle_deg: f32) -> Mat3x3 {
 }
 
 /// Return a rotation matrix for `angle_deg` degrees around the Y axis.
-pub(crate) fn rot_y(angle_deg: f32) -> Mat3x3 {
+pub fn rot_y(angle_deg: f32) -> Mat3x3 {
     let r = angle_deg.to_radians();
     let (c, s) = (r.cos(), r.sin());
     Mat3x3::from_cols([c, 0.0, -s], [0.0, 1.0, 0.0], [s, 0.0, c])

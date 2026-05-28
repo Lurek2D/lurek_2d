@@ -6,7 +6,7 @@
 //! - Padding tokens for alignment and fixed-layout binary structures
 //! - Bounds-checked reads with descriptive underflow error messages
 //! - Static size measurement for formats without variable-width tokens
-//! - ByteData output for zero-copy integration with the data module pipeline
+//! - ByteData output for zero-copy integration with the binary module pipeline
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]
@@ -101,7 +101,7 @@ fn parse_format(fmt: &str) -> Result<(Endian, Vec<Token>), String> {
             "str" => tokens.push(Token::Str),
             "cstr" => tokens.push(Token::CStr),
             "pad" => tokens.push(Token::Pad),
-            other => return Err(format!("lurek.data: unknown format token '{other}'")),
+            other => return Err(format!("lurek.binary: unknown format token '{other}'")),
         }
     }
     Ok((endian, tokens))
@@ -366,7 +366,7 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
                 }
                 if pos >= data.len() {
                     return Err(format!(
-                        "lurek.data read 'cstr': null terminator not found starting at offset {start}"
+                        "lurek.binary read 'cstr': null terminator not found starting at offset {start}"
                     ));
                 }
                 let s = String::from_utf8_lossy(&data[start..pos]).into_owned();
@@ -387,18 +387,14 @@ pub(crate) fn measure_size(format: &str) -> Result<usize, String> {
             Token::U16 | Token::I16 => size += 2,
             Token::U32 | Token::I32 | Token::F32 => size += 4,
             Token::U64 | Token::I64 | Token::F64 => size += 8,
-            Token::Str => {
-                return Err(
-                    "lurek.data size: 'str' token has variable length; cannot compute static size"
-                        .to_string(),
-                )
-            }
-            Token::CStr => {
-                return Err(
-                    "lurek.data size: 'cstr' token has variable length; cannot compute static size"
-                        .to_string(),
-                )
-            }
+            Token::Str => return Err(
+                "lurek.binary size: 'str' token has variable length; cannot compute static size"
+                    .to_string(),
+            ),
+            Token::CStr => return Err(
+                "lurek.binary size: 'cstr' token has variable length; cannot compute static size"
+                    .to_string(),
+            ),
         }
     }
     Ok(size)
@@ -407,7 +403,7 @@ pub(crate) fn measure_size(format: &str) -> Result<usize, String> {
 fn check_bounds(data: &[u8], pos: usize, count: usize, token: &str) -> Result<(), String> {
     if pos + count > data.len() {
         Err(format!(
-            "lurek.data read '{token}': buffer underflow at offset {pos} (need {count}, have {})",
+            "lurek.binary read '{token}': buffer underflow at offset {pos} (need {count}, have {})",
             data.len()
         ))
     } else {
@@ -442,10 +438,10 @@ fn coerce_u64(values: &[BinValue], idx: usize, token: &str) -> Result<u64, Strin
         Some(BinValue::F64(v)) => Ok(*v as u64),
         Some(BinValue::Bool(b)) => Ok(if *b { 1 } else { 0 }),
         Some(_) => Err(format!(
-            "lurek.data write '{token}': expected integer at value index {idx}"
+            "lurek.binary write '{token}': expected integer at value index {idx}"
         )),
         None => Err(format!(
-            "lurek.data write '{token}': not enough values (expected index {idx})"
+            "lurek.binary write '{token}': not enough values (expected index {idx})"
         )),
     }
 }
@@ -464,10 +460,10 @@ fn coerce_i64(values: &[BinValue], idx: usize, token: &str) -> Result<i64, Strin
         Some(BinValue::F64(v)) => Ok(*v as i64),
         Some(BinValue::Bool(b)) => Ok(if *b { 1 } else { 0 }),
         Some(_) => Err(format!(
-            "lurek.data write '{token}': expected integer at value index {idx}"
+            "lurek.binary write '{token}': expected integer at value index {idx}"
         )),
         None => Err(format!(
-            "lurek.data write '{token}': not enough values (expected index {idx})"
+            "lurek.binary write '{token}': not enough values (expected index {idx})"
         )),
     }
 }
@@ -486,10 +482,10 @@ fn coerce_f64(values: &[BinValue], idx: usize, token: &str) -> Result<f64, Strin
         Some(BinValue::F64(v)) => Ok(*v),
         Some(BinValue::Bool(b)) => Ok(if *b { 1.0 } else { 0.0 }),
         Some(_) => Err(format!(
-            "lurek.data write '{token}': expected numeric at value index {idx}"
+            "lurek.binary write '{token}': expected numeric at value index {idx}"
         )),
         None => Err(format!(
-            "lurek.data write '{token}': not enough values (expected index {idx})"
+            "lurek.binary write '{token}': not enough values (expected index {idx})"
         )),
     }
 }
@@ -500,10 +496,10 @@ fn coerce_bool(values: &[BinValue], idx: usize, token: &str) -> Result<bool, Str
         Some(BinValue::U8(v)) => Ok(*v != 0),
         Some(BinValue::I64(v)) => Ok(*v != 0),
         Some(_) => Err(format!(
-            "lurek.data write '{token}': expected bool at value index {idx}"
+            "lurek.binary write '{token}': expected bool at value index {idx}"
         )),
         None => Err(format!(
-            "lurek.data write '{token}': not enough values (expected index {idx})"
+            "lurek.binary write '{token}': not enough values (expected index {idx})"
         )),
     }
 }
@@ -512,13 +508,13 @@ fn coerce_str(values: &[BinValue], idx: usize, token: &str) -> Result<String, St
     match values.get(idx) {
         Some(BinValue::Str(s)) => Ok(s.clone()),
         Some(BinValue::Bytes(b)) => String::from_utf8(b.clone()).map_err(|e| {
-            format!("lurek.data write '{token}': bytes at index {idx} are not valid UTF-8: {e}")
+            format!("lurek.binary write '{token}': bytes at index {idx} are not valid UTF-8: {e}")
         }),
         Some(_) => Err(format!(
-            "lurek.data write '{token}': expected string at value index {idx}"
+            "lurek.binary write '{token}': expected string at value index {idx}"
         )),
         None => Err(format!(
-            "lurek.data write '{token}': not enough values (expected index {idx})"
+            "lurek.binary write '{token}': not enough values (expected index {idx})"
         )),
     }
 }

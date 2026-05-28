@@ -79,6 +79,10 @@ AudioManager:update( dt : number )  -- Updates fade states. Call once per frame.
 
 ## `library.battle` {#battle}
 
+> Pure-Lua turn-based battle system with combatants, actions,
+status effects, initiative, damage types, and combat resolution.
+Port of the Rust src/battle/ module.
+
 *96 functions documented, 4 classes*
 
 ```lua
@@ -1238,7 +1242,7 @@ ActionMap:clear(  )  -- Remove all actions and bindings from this map.
 
 ## `library.inventory` {#inventory}
 
-> Lurek2D inventory system � containers, weighted bags, slots, item stacks, equip slots, and item sets.
+> Lurek2D inventory system - containers, weighted bags, slots, item stacks, equip slots, and item sets.
 
 A pure-Lua replacement for the former `lurek.inventory` Rust binding.
 Provides ItemStack, Container (fixed/unlimited/expandable), InvItem with tags,
@@ -1280,7 +1284,7 @@ item:removeTag( tag : string ) -> boolean  -- Remove a tag. Returns true if tag 
 item:getTags(  ) -> table  -- Return all tag names as an array.
 item:setProperty( key : string, val : any )  -- Set a generic property.
 item:getProperty( key : string ) -> any  -- Get a generic property.
-item:clone(  ) -> table  -- Deep-copy this item definition. TODO(P4 lift): once `lurek.data.deepCopy` ships, replace the manual field-by-field rebuild below with `_data_deep_copy(item)` so that arbitrary user-attached fields are preserved automatically.
+item:clone(  ) -> table  -- Deep-copy this item definition. TODO(P4 lift): once a shared deepCopy helper ships, replace the manual field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
 ```
 
 ### `stack`
@@ -1381,7 +1385,7 @@ inv:swap( container_a : string, slot_a : number, container_b : string, slot_b : 
 
 ## `library.item` {#item}
 
-> Lurek2D item system � type catalog, items, stacks, pools, history, and analysis.
+> Lurek2D item system - type catalog, items, stacks, pools, history, and analysis.
 
 A pure-Lua replacement for the former `lurek.item` Rust binding.
 Provides a type registry, Item objects with tags/stats/meta/owner, capacity-aware
@@ -1454,7 +1458,7 @@ it:setCounter( key : string, val : number )  -- Set a named integer counter.
 it:addCounter( key : string, delta : number ) -> number  -- Add delta to a named counter and return the new value.
 it:removeCounter( key : string )  -- Remove a named counter entry.
 it:getCounters(  ) -> table  -- Return all counters as a shallow copy.
-it:clone(  ) -> table  -- Deep-copy this item instance (stats, tags, meta, counters, slot, name � NOT owner). TODO(P4 lift): replace with `lurek.data.deepCopy(it)` once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
+it:clone(  ) -> table  -- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). TODO(P4 lift): replace with a shared deepCopy helper once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
 ```
 
 ### `stack`
@@ -1832,7 +1836,7 @@ to disk for inspection), pair `:getAll()` with `lurek.serial.toJson`.
 
 **Hash helper**: `:hashState()` is a deterministic FNV-1a digest of all
 replicated keys/values; useful for desync detection. When a future
-`lurek.data.hash` lift lands (P4 candidate), this should delegate.
+`lurek.binary.hash` lift lands (P4 candidate), this should delegate.
 
 **Limitation**: `requestFullState()` has no built-in timeout. If the authority
 never responds, the client will not receive a snapshot. Callers should
@@ -1874,7 +1878,7 @@ NetState:isTurn( peer_id : number ) -> boolean  -- Check if it is a specific pee
 NetState:sync(  )  -- Broadcast all dirty state to connected peers. Call once per frame after all `set()` calls (e.g. at end of `lurek.process(dt)`). Requires a valid host; no-op if host is nil or instance is not authority.
 NetState:poll(  ) -> table  -- Process incoming state updates from the network. Call once per frame. Requires a valid host; returns empty table if host is nil.
 NetState:_markDirty( key : string )  -- Mark a key as dirty, respecting the maxDirtyKeys limit.
-NetState:hashState(  ) -> number  -- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.data.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
+NetState:hashState(  ) -> number  -- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.binary.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
 NetState:toJson(  ) -> string|nil  -- Serialise the current state to a JSON string via `lurek.serial.toJson`. Suitable for human-readable persistence (NOT for the wire — use the normal `:sync()` MessagePack path for peer-to-peer traffic). Returns nil if `lurek.serial` is unavailable in this runtime.
 NetState:requestFullState(  ) -> boolean  -- Request a full state snapshot from the authority. Useful when a client joins mid-game. **Limitation**: This method has no built-in timeout. If the authority never responds, the client will not receive a snapshot. Callers should implement their own timer-based retry, e.g.: ns:requestFullState() local deadline = lurek.timer.getTime() + 5.0 -- In process loop: if lurek.timer.getTime() > deadline then retry or invoke --   ns:onFullStateTimeout callback
 ```
@@ -2653,7 +2657,7 @@ WindowConfig:getActualSize(  ) -> number, number  -- Get the actual current wind
 WindowConfig:getScaleFactor(  ) -> number  -- Get the current scale factor (actual size / game size).
 WindowConfig:serialize(  ) -> table  -- Serialize the configuration to a plain table for persistence.
 WindowConfig:deserialize( data : table ) -> WindowConfig  -- Restore configuration from a previously serialized table.
-WindowConfig:toJson(  ) -> string  -- Serialize configuration to a JSON string. Uses lurek.data.toJson if available; otherwise falls back to a simple encoder.
+WindowConfig:toJson(  ) -> string  -- Serialize configuration to a JSON string. Uses lurek.serial.toJson if available; otherwise falls back to a simple encoder.
 ```
 
 ---

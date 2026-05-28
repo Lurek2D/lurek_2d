@@ -452,21 +452,6 @@ export const FACTORY_TYPES: Record<string, TypeInfo> = {
       { name: "type", sig: ":type()", desc: "Returns 'LScene'" },
     ],
   },
-  // ── data types ────────────────────────────────────────────
-  "lurek.data.newStore": {
-    typeName: "LDataStore",
-    methods: [
-      { name: "get", sig: ":get(key)", desc: "Get value by key" },
-      { name: "set", sig: ":set(key, value)", desc: "Set a key-value pair" },
-      { name: "delete", sig: ":delete(key)", desc: "Delete a key" },
-      { name: "has", sig: ":has(key)", desc: "Returns true if key exists" },
-      { name: "keys", sig: ":keys()", desc: "Returns all keys" },
-      { name: "values", sig: ":values()", desc: "Returns all values" },
-      { name: "clear", sig: ":clear()", desc: "Remove all entries" },
-      { name: "size", sig: ":size()", desc: "Returns number of entries" },
-      { name: "type", sig: ":type()", desc: "Returns 'LDataStore'" },
-    ],
-  },
   // ── event types ───────────────────────────────────────────
   "lurek.event.on": {
     typeName: "LEventHandle",

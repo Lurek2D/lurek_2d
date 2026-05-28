@@ -116,7 +116,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
 - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
 - Off-screen canvas render targets with lazy depth/stencil attachment creation.
-- Additive point-light accumulation pass with a GPU-computed 1-D shadow-map atlas and composite blend.
+- Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
 - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
 - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
 - Stencil write/test pipeline variants with configurable compare and operation modes.
@@ -177,7 +177,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
 - 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
 - Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
-- Cached ping-pong intermediate textures and bind groups for multi-pass compositing without per-frame internal resource allocation when size and format are unchanged.
+- Ping-pong intermediate textures for multi-pass compositing without extra allocations.
 - Named parameter map → 16-float uniform packing for effect configuration.
 - Runtime registration of custom WGSL fragment shaders under user-chosen names.
 - Auto-uniform injection of time, frame count, and resolution into the last four slots.

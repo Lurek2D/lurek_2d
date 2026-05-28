@@ -38,9 +38,11 @@ Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space.
 
 ## 📋 Summary
 
-Generic graph/tree/DAG layout algorithms for positioning nodes in 2D space. Pure algorithmic module with no engine runtime dependencies.
+The `layout` module offers four complementary 2D graph layout algorithms with no engine runtime dependencies, making it usable from any scripting context. `layout_tree` implements the Reingold-Tilford algorithm for compact hierarchical tree layout, packing sibling subtrees as tightly as possible with configurable horizontal and vertical node separation. Both top-down and left-to-right orientations are supported via `TreeConfig`. `layout_dag` applies the multi-phase Sugiyama layered layout to directed acyclic graphs — cycle removal, layer assignment, crossing minimization, and coordinate assignment — producing readable hierarchical diagrams for tech trees, build-dependency graphs, and quest dependency views.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+For general undirected graphs where hierarchy is not meaningful, `layout_force` runs the Fruchterman-Reingold spring simulation. Nodes repel each other while edges attract; a cooling schedule reduces displacement each iteration until convergence. `ForceConfig` exposes temperature, cooling rate, repulsion constant, and maximum iterations. Seeding is deterministic given the same integer seed, producing reproducible node editor layouts.
+
+All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` coordinates in logical pixels. Two post-processing utilities compose cleanly with any layout output: `snap_to_grid` rounds positions to a configurable cell size, and `center_in_area` translates the entire layout to fill a target viewport rectangle. The full algorithm suite is exposed via the `lurek.layout.*` Lua API, targeting pipeline visualization, dialog tree views, skill trees, and org charts.
 
 [⬆ back to top](#table-of-contents)
 

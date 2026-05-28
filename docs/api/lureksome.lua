@@ -4268,7 +4268,7 @@ function item:setProperty(key, val) end
 ---@return any
 function item:getProperty(key) end
 
---- Deep-copy this item definition. TODO(P4 lift): once `lurek.data.deepCopy` ships, replace the manual field-by-field rebuild below with `_data_deep_copy(item)` so that arbitrary user-attached fields are preserved automatically.
+--- Deep-copy this item definition. TODO(P4 lift): once a shared deepCopy helper ships, replace the manual field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
 ---@return table
 function item:clone() end
 
@@ -4781,7 +4781,7 @@ function it:removeCounter(key) end
 ---@return table
 function it:getCounters() end
 
---- Deep-copy this item instance (stats, tags, meta, counters, slot, name � NOT owner). TODO(P4 lift): replace with `lurek.data.deepCopy(it)` once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
+--- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). TODO(P4 lift): replace with a shared deepCopy helper once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
 ---@return table
 function it:clone() end
 
@@ -5872,7 +5872,7 @@ function NetState:poll() end
 ---@return nil
 function NetState:_markDirty(key) end
 
---- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.data.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
+--- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.binary.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
 ---@return number
 function NetState:hashState() end
 
@@ -7779,7 +7779,7 @@ function WindowConfig:serialize() end
 ---@return WindowConfig
 function WindowConfig:deserialize(data) end
 
---- Serialize configuration to a JSON string. Uses lurek.data.toJson if available; otherwise falls back to a simple encoder.
+--- Serialize configuration to a JSON string. Uses lurek.serial.toJson if available; otherwise falls back to a simple encoder.
 ---@return string
 function WindowConfig:toJson() end
 

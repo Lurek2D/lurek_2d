@@ -159,7 +159,7 @@ pub fn reveal_cells_from_rays(
 }
 /// Render a `view_radius`-tile minimap pixel grid centered on the player; return `(pixels, width, height)`.
 #[allow(clippy::too_many_arguments)]
-pub(crate) fn extract_minimap(
+pub fn extract_minimap(
     raycaster: &Raycaster2D,
     player_x: f32,
     player_y: f32,
@@ -216,7 +216,7 @@ pub(crate) fn extract_minimap(
 }
 /// Draw a filled circle with a forward-direction line at `(center_x, center_y)` into a raw RGBA pixel slice.
 #[allow(clippy::too_many_arguments)]
-fn draw_player_arrow(
+pub fn draw_player_arrow(
     pixels: &mut [u8],
     img_width: u32,
     center_x: u32,

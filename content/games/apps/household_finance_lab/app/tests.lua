@@ -60,7 +60,7 @@ function Tests.build_pipeline(ctx)
 end
 
 function Tests.check_config(root, C)
-    local parsed = lurek.data.parseToml(lurek.filesystem.read(root .. "app/config.toml"))
+    local parsed = lurek.binary.parseToml(lurek.filesystem.read(root .. "app/config.toml"))
     return parsed.window.width == C.WIDTH and parsed.paths.csv_path == C.CSV_PATH
 end
 

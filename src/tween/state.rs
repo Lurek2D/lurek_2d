@@ -74,7 +74,7 @@ impl TweenState {
 }
 
 /// Resolve an easing name string to a function pointer; return `None` for unknown names.
-pub(crate) fn resolve_easing(name: &str) -> Option<fn(f32) -> f32> {
+pub fn resolve_easing(name: &str) -> Option<fn(f32) -> f32> {
     easing::resolve_easing_fn(name)
 }
 

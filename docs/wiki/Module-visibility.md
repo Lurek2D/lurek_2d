@@ -45,9 +45,13 @@ Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, cons
 
 ## 📋 Summary
 
-Universal visibility system for fog-of-war, discovery, and line-of-sight. Provides a generic, geometry-agnostic visibility layer that can be attached to any region-based system (tilemap, province map, globe, custom grids). Part of the Platform Services tier — no dependencies on globe, province, or tilemap modules.
+The `visibility` module provides a universal fog-of-war and discovery layer that can be attached to any region-based map without coupling to a specific map module. The foundational abstraction is the `AdjacencyProvider` trait: callers implement a single `neighbors(region_id)` method to describe neighbor relationships. Grid maps inject 4- or 8-directional adjacency; province maps use their border index; custom systems supply arbitrary neighbor lists. This injection point is the only geometry dependency.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Per-region state is stored in the `VisibilityGrid`, a compact `(faction_id, region_id)` map tracking three built-in `VisibilityState` levels: `Hidden` (never seen), `Discovered` (seen at least once, currently out of range), and `Visible` (currently in sight range). Custom intermediate levels can be defined for richer game-state models. Multiple factions are supported simultaneously; the `PlayerOwnership` tracker groups allies so that shared-vision alliances propagate reveals automatically.
+
+Discovery semantics are controlled per region via `VisibilityCost`: a movement-point cost gates reveal progression, and a required-flag mask (`VisibilityFlags`, a `u32` bitfield with 24 game-defined bits) can block reveal until the player possesses a specific capability. When regions transition between states, the grid queues `VisibilityEvent` entries (`RegionRevealed`, `RegionDiscovered`, `RegionHidden`) that are drained to Lua each tick — providing clean hooks for map-reveal animations, narrator cues, and scripted responses.
+
+Rendering integration is handled via `FogRenderConfig`, which supplies per-state fog opacity values and RGBA tint colors composited as per-tile multiply in the world render pass. The full grid state serializes compactly (2 bits per region per faction) into the save file. The `lurek.visibility.*` Lua API exposes grid construction, reveal/hide calls, state queries, event draining, cost and flag mutation, faction grouping, and fog configuration.
 
 [⬆ back to top](#table-of-contents)
 
@@ -719,7 +723,7 @@ No direct references were found in `content/games/**/main.lua`.
 ## 🔗 Related Modules
 
 - Previous: [validator](Module-validator)
-- Next: [vscode-extension](Module-vscode-extension)
+- Next: [window](Module-window)
 - [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
 - [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
 - [dsp](Module-dsp) - Digital signal processing: real-time effects chains, offline batch processing, audio visualization.

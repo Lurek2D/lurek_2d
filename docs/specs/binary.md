@@ -9,7 +9,7 @@
 - Module group: `Foundations`
 - Source path: `src/binary/`
 - Lua API path(s): `src/lua_api/binary_api.rs`
-- Primary Lua namespace: `lurek.data`
+- Primary Lua namespace: `lurek.binary`
 - Rust test path(s): tests/rust/unit/binary_tests.rs; tests/rust/stress/binary_stress_tests.rs; inline tests in src/binary/byte_data.rs, src/binary/encode.rs, src/binary/hash.rs
 - Lua test path(s): tests/lua/unit/test_binary_core_unit.lua; tests/lua/stress/test_binary_stress.lua; tests/lua/integration/test_binary_filesystem.lua; tests/lua/integration/test_binary_compute.lua; tests/lua/golden/test_binary_golden.lua
 
@@ -21,7 +21,7 @@ At the center of the module is `ByteData`, an owned, resizable byte vector equip
 
 The module supports an extensive array of compression codecs—LZ4, Zstd, Deflate, and Gzip—accessible via the `CompressFormat` enum. These codecs are exposed through full-buffer, streaming, and chunked APIs. For integrity checks and cryptography, the `HashAlgorithm` enum gives access to industry-standard hashes such as MD5, SHA-1, SHA-256, SHA-512, CRC32, xxHash, and BLAKE3. The `EncodeFormat` helpers seamlessly handle conversion of binary payloads to and from Base64, Hex, and URL-safe text formats.
 
-A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.data.*` namespace, allowing script developers to efficiently process arbitrary binary data.
+A major feature of the module is its `pack` and `unpack` functions, which utilize Python `struct`-style format strings. These utilities translate between dynamically typed inputs (or Lua tables) and strongly typed binary layouts, natively handling endian switching, padding, and both length-prefixed and null-terminated strings. Additionally, the `RingBuffer` type provides a fixed-capacity circular buffer with oldest-overwrite FIFO semantics, ideal for streaming data pipelines or rolling logs. The entire toolset is deeply integrated with the Lua runtime through the `lurek.binary.*` namespace, allowing script developers to efficiently process arbitrary binary data.
 
 ## Source Documentation
 
@@ -33,7 +33,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Padding tokens for alignment and fixed-layout binary structures
 - Bounds-checked reads with descriptive underflow error messages
 - Static size measurement for formats without variable-width tokens
-- ByteData output for zero-copy integration with the data module pipeline
+- ByteData output for zero-copy integration with the binary module pipeline
 
 ### `byte_data.rs`
 - Owned mutable byte buffer with indexed read and write access
@@ -83,7 +83,7 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - Coercion helpers that widen numeric PackValue variants at write time
 - Bounds-checked reads with per-token underflow error messages
 - Static and dynamic packed-size calculation for buffer pre-allocation
-- ByteData output for integration with the data module pipeline
+- ByteData output for integration with the binary module pipeline
 
 ### `ring_buffer.rs`
 - Fixed-capacity circular buffer with oldest-overwrite FIFO semantics
@@ -183,34 +183,38 @@ A major feature of the module is its `pack` and `unpack` functions, which utiliz
 - `RingBuffer::to_refs` (`ring_buffer.rs`): Collect references into Vec from oldest to newest.
 - `RingBuffer::collect_copy` (`ring_buffer.rs`): Copy elements into Vec from oldest to newest.
 
+## Migration
+
+Breaking Lua API change: binary APIs now live only under `lurek.binary`. Replace old binary calls such as `.pack`, `.hash`, `.newByteData`, and `.parseToml` on the former data namespace with the matching `lurek.binary.*` call. The old data alias is no longer registered. `lurek.dataframe` is unchanged.
+
 ## Lua API Reference
 
 - Binding path(s): `src/lua_api/binary_api.rs`
-- Namespace: `lurek.data`
+- Namespace: `lurek.binary`
 
 ### Module Functions
-- `lurek.data.pack`: Packs Lua values into a binary string using a format string.
-- `lurek.data.unpack`: Unpacks values from a binary string using a format string.
-- `lurek.data.getPackedSize`: Computes the packed byte size for values and a format string.
-- `lurek.data.compress`: Compresses a binary string using a named compression format.
-- `lurek.data.decompress`: Decompresses a binary string using a named compression format.
-- `lurek.data.compressChunks`: Compresses a string or table of strings as a chunked byte stream.
-- `lurek.data.decompressChunks`: Decompresses a string or table of strings as a chunked byte stream.
-- `lurek.data.encode`: Encodes a binary string using a named text encoding format.
-- `lurek.data.decode`: Decodes a string using a named text encoding format.
-- `lurek.data.hash`: Hashes a binary string with a named algorithm.
-- `lurek.data.crc32`: Computes CRC32 for a binary string.
-- `lurek.data.newByteData`: Creates ByteData from a size or string.
-- `lurek.data.newDataView`: Creates a DataView over a binary string slice.
-- `lurek.data.write`: Writes binary values into a byte string using a format string.
-- `lurek.data.read`: Reads binary values from a byte string using a format string.
-- `lurek.data.size`: Measures fixed byte size for a binary format string.
-- `lurek.data.parseToml`: Parses TOML text into Lua tables and scalar values.
-- `lurek.data.encodeToml`: Encodes a Lua table into a TOML document string.
-- `lurek.data.newRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
-- `lurek.data.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
-- `lurek.data.fromMsgPack`: Decodes a structured binary interchange payload back into Lua values.
-- `lurek.data.newWriter`: Creates an empty binary data writer.
+- `lurek.binary.pack`: Packs Lua values into a binary string using a format string.
+- `lurek.binary.unpack`: Unpacks values from a binary string using a format string.
+- `lurek.binary.getPackedSize`: Computes the packed byte size for values and a format string.
+- `lurek.binary.compress`: Compresses a binary string using a named compression format.
+- `lurek.binary.decompress`: Decompresses a binary string using a named compression format.
+- `lurek.binary.compressChunks`: Compresses a string or table of strings as a chunked byte stream.
+- `lurek.binary.decompressChunks`: Decompresses a string or table of strings as a chunked byte stream.
+- `lurek.binary.encode`: Encodes a binary string using a named text encoding format.
+- `lurek.binary.decode`: Decodes a string using a named text encoding format.
+- `lurek.binary.hash`: Hashes a binary string with a named algorithm.
+- `lurek.binary.crc32`: Computes CRC32 for a binary string.
+- `lurek.binary.newByteData`: Creates ByteData from a size or string.
+- `lurek.binary.newDataView`: Creates a DataView over a binary string slice.
+- `lurek.binary.write`: Writes binary values into a byte string using a format string.
+- `lurek.binary.read`: Reads binary values from a byte string using a format string.
+- `lurek.binary.size`: Measures fixed byte size for a binary format string.
+- `lurek.binary.parseToml`: Parses TOML text into Lua tables and scalar values.
+- `lurek.binary.encodeToml`: Encodes a Lua table into a TOML document string.
+- `lurek.binary.newRingBuffer`: Creates a fixed-capacity ring buffer for Lua values.
+- `lurek.binary.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
+- `lurek.binary.fromMsgPack`: Decodes a structured binary interchange payload back into Lua values.
+- `lurek.binary.newWriter`: Creates an empty binary data writer.
 
 ### `LByteData` Methods
 - `LByteData:getSize`: Returns the byte buffer length in bytes.

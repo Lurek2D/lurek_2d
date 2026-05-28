@@ -139,7 +139,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ### `chart.rs`
 
-- Re-export charts for UI module compatibility.
+- Compatibility re-exports for chart types under `lurek2d::ui::chart`.
 
 ### `containers.rs`
 
@@ -174,10 +174,10 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ### `data_graph_renderer.rs`
 
-- Multi-series data graph renderer for line, scatter, and bar data.
-- Provides viewport management, coordinate transforms, auto-range, and cursor
-- support. Does not write GPU commands directly — callers convert `SeriesEntry`
-- values to draw calls as needed.
+- Multi-series data graph renderer with viewport coordinate mapping.
+- Supports line, scatter, and bar chart series. Provides world↔screen
+- coordinate conversion and auto-range fitting for use in both runtime
+- visualisation and editor panels.
 
 ### `extras.rs`
 

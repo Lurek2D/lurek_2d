@@ -5,7 +5,7 @@ High score table with persistence, sorted display, new high score highlight, and
 ## Key Concepts
 
 - **Score table**: Array of entries with name, score, and date. Sorted descending by score.
-- **Persistence**: Save to file via `lurek.data.encodeToml` / `lurek.filesystem.write`.
+- **Persistence**: Save to file via `lurek.binary.encodeToml` / `lurek.filesystem.write`.
 - **Max entries**: Keep top N scores (e.g., 10). Drop lowest when inserting a new high score.
 - **New high score detection**: After game over, check if the score qualifies. Highlight the new entry.
 - **Reset**: Clear the leaderboard via a debug command or settings menu.
@@ -20,14 +20,14 @@ local function load_leaderboard()
     local path = "saves/leaderboard.toml"
     if lurek.filesystem.exists(path) then
         local content = lurek.filesystem.read(path)
-        local data = lurek.data.decodeToml(content)
+        local data = lurek.binary.parseToml(content)
         leaderboard = data.scores or {}
     end
 end
 
 local function save_leaderboard()
     local data = { scores = leaderboard }
-    local toml = lurek.data.encodeToml(data)
+    local toml = lurek.binary.encodeToml(data)
     lurek.filesystem.write("saves/leaderboard.toml", toml)
 end
 ```
