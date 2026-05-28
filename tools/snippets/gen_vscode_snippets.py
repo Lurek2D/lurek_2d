@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build extensions/vscode/data/snippets.json from content/snippets/*.lua."""
+"""Build extension/vscode/data/snippets.json from content/snippets/*.lua."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from snippet_catalog import parse_dir
 
 ROOT = Path(__file__).resolve().parents[2]
 SNIPPETS_DIR = ROOT / "content" / "snippets"
-OUT_FILE = ROOT / "extensions" / "vscode" / "data" / "snippets.json"
+OUT_FILE = ROOT / "extension" / "vscode" / "data" / "snippets.json"
 TOKEN_RE = re.compile(r"\bSNIP_(\d+)_([A-Za-z0-9_]+)\b")
 
 

@@ -17,6 +17,7 @@
 
 -- ── Game-wide constants ───────────────────────────────────────────────────
 
+
 local SCREEN_W, SCREEN_H = 960, 540
 local GRAVITY             = 600
 local PLAYER_SPEED        = 120
@@ -324,7 +325,7 @@ function lurek.init()
     app_ui.press_space = ui_root:findById("press_space")
     app_ui.game_over_press_space = ui_root:findById("game_over_press_space")
     app_ui.win_press_space = ui_root:findById("win_press_space")
-    
+
     local function transition_from_space()
         if state == STATE.TITLE then
             reset_game()
@@ -335,7 +336,7 @@ function lurek.init()
             state = STATE.TITLE
         end
     end
-    
+
     if app_ui.press_space then app_ui.press_space:setOnClick(transition_from_space) end
     if app_ui.game_over_press_space then app_ui.game_over_press_space:setOnClick(transition_from_space) end
     if app_ui.win_press_space then app_ui.win_press_space:setOnClick(transition_from_space) end

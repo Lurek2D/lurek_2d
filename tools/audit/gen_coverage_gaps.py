@@ -36,260 +36,343 @@ RUST_INPUT = WORKSPACE_ROOT / "logs" / "data" / "rust_api_data.json"
 LUA_INPUT = WORKSPACE_ROOT / "logs" / "data" / "lua_api_data.json"
 OUTPUT_FILE = WORKSPACE_ROOT / "logs" / "reports" / "coverage_gaps.md"
 
-# Rust modules that are deliberately not exposed to Lua (engine internals, CLI, etc.)
-_INTERNAL_MODULES = {
-    "main", "lib", "root",
-    # Engine internals
-    "engine::app", "engine::error_screen", "engine::debug_overlay",
-    "engine::resource_keys", "engine::config",
-    "engine::log_messages", "engine::messages",
-    # Internal Rust→Lua conversion helpers (never user-visible)
-    "serial::lua_table", "thread::channel",
-    "event::event_queue",
-    # Internal domain helpers not in the Lua surface
-    "savegame::save_data", "savegame::save_manager", "image::visualization::animation", "image::visualization::audio", "image::visualization::camera", "image::visualization::easing", "image::visualization::facade", "image::visualization::geometry", "image::visualization::graph", "image::visualization::image_ops", "image::visualization::noise", "image::visualization::procgen", "image::visualization::ui", "globe::draw", "globe::lighting", "globe::loader", "globe::projection", "log::facade", "math::sphere", "particle::visualization", "app::app", "filesystem::zip_mount",
-    "data::bin_pack", "data::pack", "data::toml_convert",
-    "entity::universe",
-    # Internal platform/engine converters
-    "input::keyboard", "input::gamepad",
-    # Internal particle sub-helpers
-    "particle::emission", "particle::math",
-    # Low-level raycaster sub-helpers (wrapped by higher-level Lua API)
-    "raycaster::lighting",
-    "raycaster::projection", "raycaster::segment", "raycaster::visibility",
-    # Internal tilemap helpers (coords exposed via higher-level tilemap API)
-    "tilemap::coords", "tilemap::tmx",
-    # Window sub-modules (wrapped by lurek.window)
-    "window::management", "window::viewport",
-    # DataFrame/serial internal format helpers
-    "dataframe::serial", "dataframe::sql",
-    "serial::csv", "serial::json", "serial::toml", "serial::yaml",
-    # Pathfinding internal algorithms (wrapped by lurek.pathfind)
-    "pathfinding::astar", "pathfinding::graph_path", "pathfinding::hpa",
-    # Procgen internal algorithms (wrapped by lurek.procgen)
-    "procgen::cellular", "procgen::flood_fill", "procgen::noise_ext",
-    "procgen::poisson", "procgen::voronoi",
-    # Math sub-modules exposed via renamed Lua bindings
-    # (e.g. simplex_noise_2d → lurek.math.simplex2d, polygon functions → lurek.math.*)
-    "math::noise_functions",
-    # Compute ops/spatial are exposed as Array instance methods (via dispatch_arith! and add_method),
-    # not as free lurek.compute.* functions — they are fully accessible to Lua via array:method()
-    "compute::ops",
-    "compute::spatial",
-    # Debug bridge internals (TCP server internals, not Lua-exposed)
-    "debugbridge::server", "debugbridge::bridge",
-    # Engine docs quality scoring (internal engine tooling)
-    "docs::report",
-    # Image serialization helper (internal; save is handled by lurek.image.save)
-    "image::serial",
-    "image::visualization",
-    # Localization internal helpers (wrapped by lurek.i18n.*)
-    "localization::interpolation", "localization::plural",
-    "i18n::interpolation", "i18n::plural",
-    # Log internal enabled_for check (not Lua-exposed)
-    "log",
-    # Tween state internal helpers (wrapped by lurek.tween.*)
-    "tween::state",
-    # Additional internal modules
-    "animation::render",
-    "app::error_screen",
-    "ecs::universe",
-    "math::color",
-    "parallax::render",
-    "pathfind::astar",
-    "pathfind::graph_path",
-    "pathfind::hpa",
-    "save::save_data",
-    "save::save_manager",
-    # Aseprite JSON parser — called internally by lurek.animation.loadAnimation
-    "animation::aseprite",
-    # compute::analytics functions are exposed as Array instance methods (Array:histogram() etc.)
-    "compute::analytics",
-    # effect::presets — internal helper; presets accessible through lurek.effect API
-    "effect::presets",
-    # Network transport layer — called from network runtime thread, not Lua surface
-    "network::http",
-    "network::message",
-    # physics::cellular palette — internal color helper for cellular automaton rendering
-    "physics::cellular",
-    # procgen noise primitives — already wrapped as lurek.procgen.noiseMap / noiseMapParallel
-    "procgen::noise",
-    # procgen world_graph — already wrapped as lurek.procgen.worldGraph
-    "procgen::world_graph",
-    # graph_nav — A* / Dijkstra on Graph structs; LuaGraph is private in graph_api,
-    # graph traversal should use lurek.graph node/edge iteration
-    "pathfind::graph_nav",
-    # wgpu uniform mapping — internal GPU pipeline helper
-    "render::postfx_pipeline",
-    # Engine message resolution — internal human-readable error lookup
-    "runtime::messages",
-    # Sprite atlas JSON parser — called internally by lurek.render loadSplineAtlas
-    "sprite::atlas",
-    # LDtk file format parser — called internally by lurek.tilemap.loadLdtk
-    "tilemap::ldtk",
-    # FFT algorithm helpers — next_power_of_two, fft, ifft, fft_magnitude are called
-    # inside lurek.compute.fft / .ifft / .fftMagnitude closures in compute_api.rs
-    "compute::fft",
-    # Linear algebra algorithm helpers — eigenvalue_power is called inside
-    # lurek.compute.eigenvalues in compute_api.rs; not a standalone Lua API
-    "compute::linalg",
-    # Voronoi algorithm — voronoi_from_points is called inside lurek.math.voronoi
-    # in math_api.rs (re-exported via crate::math::voronoi_from_points)
-    "math::voronoi",
-    # Lobby UDP broadcast helper — broadcast_lobby is called inside lurek.network.createLobby
-    # and discover_lobbies in network_api.rs; not a standalone Lua function
-    "network::lobby",
-    # Bidirectional A★ algorithm — bidirectional_astar is called inside
-    # lurek.pathfind.findPathBidirectional in pathfind_api.rs
-    "pathfind::bidir",
-    # Collision geometry primitives — test_point_aabb is an internal AABB check
-    # used inside physics_api.rs closures; not exposed as a standalone Lua function
-    "physics::collision_helpers",
-    # ANSI escape code helpers — parse_ansi_spans and strip_ansi_codes are called
-    # inside lurek.terminal.stripAnsi / .parseAnsi in terminal_api.rs
-    "terminal::ansi",
-    # Widget tree builder helpers — load_layout_def / load_layout_toml are called
-    # inside lurek.ui.loadLayout / .loadLayoutToml closures in ui_api.rs
-    "ui::layout_loader",
-    # html sub-modules are pub(crate) engine internals; exposed to Lua only via
-    # lurek.html.newDocument / loadDocument (html_api.rs) — never as free functions
-    "html::element",
-    "html::parser",
-    "html::selector",
-    "html::style",
-    # Animation state-machine internals — compare_nums / parse_condition are private
-    # helpers used by the Lua-facing state machine transition evaluator
-    "animation::state_machine",
-    # i18n date/locale primitives — days_to_ymd, locale_separators, month_name_tables
-    # are called inside lurek.i18n.* closures in i18n_api.rs; not standalone Lua fns
-    "i18n::format",
-    # Particle render helper — expand_particle_commands is called inside the render
-    # loop in particle_api.rs; not exposed as a standalone lurek.particle function
-    "particle::render",
-    # Terminal syntax highlighter — highlight_spans is called inside
-    # lurek.terminal.highlight in terminal_api.rs; not a standalone Lua function
-    "terminal::highlighter",
-    # Province integration/helpers are internal Rust building blocks used by
-    # higher-level Lua APIs (lurek.province / minimap / globe adapters).
-    "globe::province_adapter",
-    "minimap::province_adapter",
-    "province::borders",
-    "province::gpu_bridge",
-    "province::labels",
-    "province::map_modes",
-    "province::render",
-    "province::view_transform",
-    "raycaster::grid_motion",
-    # App startup/profiling internals — not part of the Lua surface
-    "app::frame_profile",
-    "app::lua_callbacks",
-    "app::splash_screen",
-    # Devtools / REPL internals — displayed in devtools UI, not callable from Lua
-    "devtools::lua_display",
-    "repl::completer",
-    "repl::value",
-    # ECS internal table helpers (ecs::universe_ext::deep_copy_table is in
-    # _INTERNAL_FUNCTIONS above; ecs::lua_table is the same helper under a different path)
-    "ecs::lua_table",
-    # Filesystem OS-level helpers — exposed only through lurek.filesystem API
-    "filesystem::watcher",
-    # Globe internal pipeline helpers — exposed through lurek.globe / lurek.province
-    "globe::composition",
-    "globe::export",
-    "globe::sync",
-    # HTML internal color parser — used by html_api.rs, not a standalone Lua function
-    "html::color",
-    # i18n catalog-level helpers — wrapped by lurek.i18n.* in i18n_api.rs
-    "i18n::catalog",
-    # Image low-level pixel processing — called inside lurek.image / render pipeline
-    "image::texture",
-    # Math easing resolver — called inside tween/scene closures; not a Lua function
-    "math::easing",
-    # Network relay ticket encoder/decoder — called inside lurek.network closures
-    "network::relay",
-    # Parallax internal helpers — exposed only through lurek.parallax layer API
-    "parallax::presets",
-    "parallax::tile_iter",
-    # Particle internal helpers — called inside lurek.particle API closures
-    "particle::physics_collision",
-    "particle::presets",
-    # Procgen color/biome byte-conversion helpers — called inside lurek.procgen closures
-    "procgen::biome",
-    "procgen::color",
-    # Runtime entry points — called by main(); not Lua-callable
-    "runtime::headless",
-    # Scene easing primitives — used by scene transition system internally
-    "scene::easing",
-    # Serial msgpack helpers — called inside lurek.serial closures (serialize::csv etc already listed)
-    "serialize::msgpack",
-    # Timer sub-module accumulator — called inside the timer update loop; not Lua-exposed
-    "timer::accumulator",
-    # Binary packing/compression helpers — internal serialization utilities
-    "binary::bin_pack",
-    "binary::compress",
-    # Chart rasterization helpers — internal pixel buffer utilities used by chart renderers
-    "charts::render_utils",
-    # Color math helpers — called inside lurek.color API closures in color_api.rs
-    "color::blend",
-    "color::color_core",
-    # DataFrame file I/O — called inside lurek.dataframe closures in dataframe_api.rs
-    "dataframe::file_io",
-    # Font internals — called inside lurek.font rendering pipeline, not Lua-exposed
-    "font::metrics",
-    "font::shaping",
-    # Globe sphere math — internal geometry helpers used by globe_api.rs
-    "globe::sphere",
-    # Grep sub-module helpers — called inside LuaGrepEngine methods in grep_api.rs
-    "grep::json_search",
-    "grep::log_search",
-    # Layout algorithm entry points — called inside lurek.layout API closures
-    "layout::dag",
-    "layout::force",
-    "layout::tree",
-    # Mapblock internal helpers — called inside lurek.mapblock API, not standalone Lua
-    "mapblock::constraints",
-    "mapblock::placement",
-    # Minimap raycaster overlay helpers — called inside lurek.minimap render pipeline
-    "minimap::raycaster_overlay",
-    # Mod loader internal — called inside lurek.mods lifecycle methods
-    "mods::mod_loader",
-    # Province GPU helpers — called inside province render pipeline, not Lua-exposed
-    "province::border_index",
-    "province::distance_field",
-    "province::gpu_upload",
-    # Raycaster level render helper — called inside raycaster render loop internally
-    "raycaster::level_render",
-    # Runtime OS query — called inside engine startup; not part of Lua surface
-    "runtime::os",
-    # Serialize codec/CSV/lua_table helpers — internal conversion utilities
-    "serialize::codec",
-    "serialize::csv",
-    "serialize::lua_table",
-    # UI scissor helpers — called inside UI render pipeline, not Lua-exposed
-    "ui::render",
-    # Validator internal helpers — called inside ValidationEngine, not Lua-callable
-    "validator::parallel",
-    "validator::rules_toml",
-}
-
-# Rust functions that are intentionally internal even when their module has
-# other Lua-facing functionality.
-_INTERNAL_FUNCTIONS = {
-    ("data::compress", "compress_stream"),
-    ("data::compress", "decompress_stream"),
-    ("ecs::universe_ext", "deep_copy_table"),
-    ("serial::codec", "decode_text"),
-    ("serial::codec", "decode_bytes"),
-    ("window::event_loop", "current_display_index"),
-    ("window::event_loop", "desktop_dimensions_for_display"),
-    ("window::event_loop", "display_name_for_display"),
-    ("window::event_loop", "move_window_to_display"),
-    ("window::event_loop", "select_startup_monitor"),
-    ("window::event_loop", "center_window_on_monitor"),
-}
-
 # Minimum description length to be considered "documented"
 _MIN_DESC_LENGTH = 25
+
+SRC_LUA_API_DIR = WORKSPACE_ROOT / "src" / "lua_api"
+_RUST_USE_RE = re.compile(r"use\s+crate::(.*?);", re.DOTALL)
+_PRIVATE_FN_RE = re.compile(r"(?m)^fn\s+(\w+)\b[^\{]*\{")
+_PUBLIC_FN_RE = re.compile(r"(?m)^pub(?:\([^)]*\))?\s+fn\s+(\w+)\b[^\{]*\{")
+_SET_BLOCK_START_RE = re.compile(r"\.set\(\s*\"")
+_ADD_METHODS_RE = re.compile(r"fn\s+add_methods\b")
+_CALL_TOKEN_RE = re.compile(r"(?<!\.)\b(crate::[A-Za-z_][A-Za-z0-9_:]*|[A-Za-z_][A-Za-z0-9_]*)\s*\(")
+_PATH_TOKEN_RE = re.compile(r"(?<!\.)\bcrate::[A-Za-z_][A-Za-z0-9_:]*|(?<!\.)\b[A-Za-z_][A-Za-z0-9_]*::[A-Za-z_][A-Za-z0-9_:]*")
+_RUST_KEYWORDS = {
+    "if", "for", "while", "loop", "match", "return", "Ok", "Err", "Some", "None",
+}
+
+
+def _split_top_level(text: str, delimiter: str = ",") -> list[str]:
+    parts: list[str] = []
+    current: list[str] = []
+    depth = 0
+    for char in text:
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth = max(0, depth - 1)
+        if char == delimiter and depth == 0:
+            part = "".join(current).strip()
+            if part:
+                parts.append(part)
+            current = []
+            continue
+        current.append(char)
+    part = "".join(current).strip()
+    if part:
+        parts.append(part)
+    return parts
+
+
+def _expand_use_tree(expr: str, imports: dict[str, str], prefix: str = "") -> None:
+    expr = re.sub(r"\s+", " ", expr.strip())
+    if not expr:
+        return
+    if "{" not in expr:
+        target = f"{prefix}::{expr}" if prefix else expr
+        alias_match = re.match(r"(.+?)\s+as\s+(\w+)$", target)
+        if alias_match:
+            target = alias_match.group(1).strip()
+            local_name = alias_match.group(2).strip()
+        else:
+            local_name = target.split("::")[-1]
+        if local_name != "*":
+            imports[local_name] = target
+        return
+
+    prefix_part, remainder = expr.split("{", 1)
+    new_prefix = prefix_part.rstrip(": ")
+    if prefix:
+        new_prefix = f"{prefix}::{new_prefix}" if new_prefix else prefix
+    inner = remainder.rsplit("}", 1)[0]
+    for part in _split_top_level(inner):
+        _expand_use_tree(part, imports, new_prefix)
+
+
+def _collect_imports(source: str) -> dict[str, str]:
+    imports: dict[str, str] = {}
+    for match in _RUST_USE_RE.finditer(source):
+        _expand_use_tree(match.group(1), imports)
+    return imports
+
+
+def _extract_block(source: str, start_index: int, open_char: str, close_char: str) -> tuple[str, int]:
+    depth = 0
+    end_index = start_index
+    for end_index in range(start_index, len(source)):
+        char = source[end_index]
+        if char == open_char:
+            depth += 1
+        elif char == close_char:
+            depth -= 1
+            if depth == 0:
+                return source[start_index + 1:end_index], end_index
+    return "", len(source)
+
+
+def _extract_create_function_arg(block: str) -> str:
+    marker = "create_function"
+    marker_index = block.find(marker)
+    if marker_index == -1:
+        return ""
+    paren_index = block.find("(", marker_index)
+    if paren_index == -1:
+        return ""
+    inner, _ = _extract_block(block, paren_index, "(", ")")
+    return inner.strip()
+
+
+def _normalize_rust_path(path: str) -> tuple[str, str] | None:
+    cleaned = path.strip()
+    if cleaned.startswith("crate::"):
+        cleaned = cleaned[len("crate::"):]
+    if "::" not in cleaned:
+        return None
+    module, name = cleaned.rsplit("::", 1)
+    return module, name
+
+
+def _collect_call_targets(expr: str, imports: dict[str, str]) -> set[str]:
+    targets: set[str] = set()
+    for match in _CALL_TOKEN_RE.finditer(expr):
+        token = match.group(1)
+        if token in _RUST_KEYWORDS:
+            continue
+        if token.startswith("crate::"):
+            targets.add(token)
+            continue
+        resolved = imports.get(token)
+        if resolved:
+            targets.add(resolved)
+            continue
+        targets.add(token)
+    for match in _PATH_TOKEN_RE.finditer(expr):
+        token = match.group(0)
+        if token in _RUST_KEYWORDS:
+            continue
+        targets.add(token)
+    return targets
+
+
+def _collect_private_fn_bodies(source: str) -> dict[str, str]:
+    bodies: dict[str, str] = {}
+    for match in _PRIVATE_FN_RE.finditer(source):
+        fn_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index == -1:
+            continue
+        body, _ = _extract_block(source, brace_index, "{", "}")
+        bodies[fn_name] = body
+    return bodies
+
+
+def _collect_public_fn_bodies(source: str) -> dict[str, str]:
+    bodies: dict[str, str] = {}
+    for match in _PUBLIC_FN_RE.finditer(source):
+        fn_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index == -1:
+            continue
+        body, _ = _extract_block(source, brace_index, "{", "}")
+        bodies[fn_name] = body
+    return bodies
+
+
+def _collect_set_blocks(source: str) -> list[tuple[str, str]]:
+    blocks: list[tuple[str, str]] = []
+    scan_index = 0
+    while True:
+        match = _SET_BLOCK_START_RE.search(source, scan_index)
+        if not match:
+            break
+        line_start = source.rfind("\n", 0, match.start()) + 1
+        open_paren = source.find("(", match.start())
+        if open_paren == -1:
+            break
+        block_inner, close_paren = _extract_block(source, open_paren, "(", ")")
+        block = source[line_start:close_paren + 1]
+        name_match = re.search(r'\.set\(\s*"([^"]+)"', block)
+        if name_match and "create_function" in block:
+            blocks.append((name_match.group(1), block))
+        scan_index = close_paren + 1
+    return blocks
+
+
+def _collect_add_methods_blocks(source: str) -> list[str]:
+    blocks: list[str] = []
+    for match in _ADD_METHODS_RE.finditer(source):
+        brace_index = source.find("{", match.end())
+        if brace_index == -1:
+            continue
+        block, _ = _extract_block(source, brace_index, "{", "}")
+        blocks.append(block)
+    return blocks
+
+
+def _resolve_public_targets(
+    target: str,
+    helper_calls: dict[str, set[str]],
+    public_fn_keys: set[tuple[str, str]],
+    public_fn_names: dict[str, set[tuple[str, str]]],
+    memo: dict[str, set[tuple[str, str]]],
+    stack: set[str],
+) -> set[tuple[str, str]]:
+    if target in memo:
+        return memo[target]
+    if target in stack:
+        return set()
+
+    if target in helper_calls:
+        stack.add(target)
+        resolved: set[tuple[str, str]] = set()
+        for nested_target in helper_calls[target]:
+            resolved.update(
+                _resolve_public_targets(
+                    nested_target,
+                    helper_calls,
+                    public_fn_keys,
+                    public_fn_names,
+                    memo,
+                    stack,
+                )
+            )
+        stack.remove(target)
+        memo[target] = resolved
+        return resolved
+
+    rust_key = _normalize_rust_path(target)
+    resolved: set[tuple[str, str]] = set()
+    if rust_key in public_fn_keys:
+        resolved = {rust_key}
+    elif rust_key:
+        name_matches = public_fn_names.get(rust_key[1], set())
+        if len(name_matches) == 1:
+            resolved = set(name_matches)
+    memo[target] = resolved
+    return resolved
+
+
+def _collect_lua_exposed_rust_fns(public_fn_keys: set[tuple[str, str]]) -> set[tuple[str, str]]:
+    exposed: set[tuple[str, str]] = set()
+    if not SRC_LUA_API_DIR.exists():
+        return exposed
+
+    public_fn_names: dict[str, set[tuple[str, str]]] = {}
+    for rust_key in public_fn_keys:
+        public_fn_names.setdefault(rust_key[1], set()).add(rust_key)
+
+    for api_file in sorted(SRC_LUA_API_DIR.glob("*_api.rs")):
+        try:
+            source = api_file.read_text(encoding="utf-8")
+        except OSError:
+            continue
+
+        imports = _collect_imports(source)
+        helper_bodies = _collect_private_fn_bodies(source)
+        helper_calls = {
+            fn_name: _collect_call_targets(body, imports)
+            for fn_name, body in helper_bodies.items()
+        }
+        memo: dict[str, set[tuple[str, str]]] = {}
+
+        for _, block in _collect_set_blocks(source):
+            create_function_arg = _extract_create_function_arg(block)
+            if not create_function_arg:
+                continue
+            direct_targets = _collect_call_targets(create_function_arg, imports)
+            for target in direct_targets:
+                exposed.update(
+                    _resolve_public_targets(
+                        target,
+                        helper_calls,
+                        public_fn_keys,
+                        public_fn_names,
+                        memo,
+                        set(),
+                    )
+                )
+
+        for block in _collect_add_methods_blocks(source):
+            direct_targets = _collect_call_targets(block, imports)
+            for target in direct_targets:
+                exposed.update(
+                    _resolve_public_targets(
+                        target,
+                        helper_calls,
+                        public_fn_keys,
+                        public_fn_names,
+                        memo,
+                        set(),
+                    )
+                )
+
+    return exposed
+
+
+def _collect_candidate_rust_modules(exposed_rust_fns: set[tuple[str, str]]) -> set[str]:
+    return {module for module, _ in exposed_rust_fns}
+
+
+def _collect_public_helper_fns(
+    rust_data: dict,
+    directly_exposed_rust_fns: set[tuple[str, str]],
+) -> set[tuple[str, str]]:
+    helpers: set[tuple[str, str]] = set()
+    modules = rust_data["rust_api"]["modules"]
+
+    for mod_path, mod_data in modules.items():
+        public_names = {
+            item["name"]
+            for item in mod_data.get("items", [])
+            if item.get("kind") == "fn"
+        }
+        if not public_names:
+            continue
+
+        source_file = mod_data.get("source_file")
+        if not source_file:
+            continue
+
+        source_path = WORKSPACE_ROOT / source_file
+        try:
+            source = source_path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+
+        call_graph: dict[str, set[str]] = {}
+        for fn_name, body in _collect_public_fn_bodies(source).items():
+            callees: set[str] = set()
+            for target in _collect_call_targets(body, {}):
+                rust_key = _normalize_rust_path(target)
+                if rust_key and rust_key[0] == mod_path and rust_key[1] in public_names:
+                    callees.add(rust_key[1])
+                    continue
+                if target in public_names:
+                    callees.add(target)
+            call_graph[fn_name] = callees
+
+        stack = [name for module, name in directly_exposed_rust_fns if module == mod_path]
+        seen: set[str] = set(stack)
+        while stack:
+            caller = stack.pop()
+            for callee in call_graph.get(caller, set()):
+                if callee in seen:
+                    continue
+                seen.add(callee)
+                stack.append(callee)
+                helpers.add((mod_path, callee))
+
+    return helpers
 
 
 def _collect_lua_names(lua_data: dict) -> set[str]:
@@ -312,16 +395,14 @@ def _collect_lua_names(lua_data: dict) -> set[str]:
     return names
 
 
-def _rust_public_fns(rust_data: dict) -> list[dict]:
-    """Return all public Rust function items from all non-internal modules."""
+def _rust_public_fns(rust_data: dict, candidate_modules: set[str] | None = None) -> list[dict]:
+    """Return public Rust function items, optionally narrowed to Lua-reachable modules."""
     results = []
     for mod_path, mod_data in rust_data["rust_api"]["modules"].items():
-        if mod_path in _INTERNAL_MODULES:
+        if candidate_modules is not None and mod_path not in candidate_modules:
             continue
         for item in mod_data.get("items", []):
             if item.get("kind") == "fn":
-                if (mod_path, item["name"]) in _INTERNAL_FUNCTIONS:
-                    continue
                 results.append({
                     "module": mod_path,
                     "name": item["name"],
@@ -336,8 +417,6 @@ def _rust_undocumented(rust_data: dict) -> list[dict]:
     """Return all Rust public items with missing/short docstrings."""
     results = []
     for mod_path, mod_data in sorted(rust_data["rust_api"]["modules"].items()):
-        if mod_path in _INTERNAL_MODULES:
-            continue
         for item in mod_data.get("items", []):
             desc = (item.get("description", "") or "").strip()
             if len(desc) < _MIN_DESC_LENGTH:
@@ -409,7 +488,12 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
     # fall back to treating the whole dict as the modules map for older formats.
     lua_modules = lua_data.get("lua_api", {}).get("modules", lua_data)
     lua_names = _collect_lua_names(lua_modules)
-    rust_fns = _rust_public_fns(rust_data)
+    all_rust_fns = _rust_public_fns(rust_data)
+    public_fn_keys = {(item["module"], item["name"]) for item in all_rust_fns}
+    exposed_rust_fns = _collect_lua_exposed_rust_fns(public_fn_keys)
+    candidate_modules = _collect_candidate_rust_modules(exposed_rust_fns)
+    rust_fns = _rust_public_fns(rust_data, candidate_modules)
+    helper_rust_fns = _collect_public_helper_fns(rust_data, exposed_rust_fns)
     rust_bad_docs = _rust_undocumented(rust_data)
     lua_bad_docs = _lua_undocumented(lua_modules)
 
@@ -417,6 +501,10 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
     # Matching: try exact substring, then underscore-stripped (camelCase), then ease_ prefix stripped
     unexposed: list[dict] = []
     for item in rust_fns:
+        if (item["module"], item["name"]) in exposed_rust_fns:
+            continue
+        if (item["module"], item["name"]) in helper_rust_fns:
+            continue
         fn_name_lower = item["name"].lower()
         mod_lower = item["module"].split("::")[-1].lower()
         # Normalize by removing underscores (handles snake_case vs camelCase)
@@ -539,7 +627,7 @@ def generate_report(rust_data: dict, lua_data: dict) -> str:
     lines.append("Then run: `python tools/gen_lua_api_data.py`")
     lines.append("")
     lines.append("**Rust→Lua gaps:** If the function should be in Lua, add a binding in `src/lua_api/`.")
-    lines.append("If it's intentionally internal, add its module to `_INTERNAL_MODULES` in this script.")
+    lines.append("If this is a false positive, make the binding traceable from `src/lua_api/*.rs` instead of adding a manual exception.")
     lines.append("")
     lines.append("*Re-generate this file: `python tools/gen_coverage_gaps.py`*")
 

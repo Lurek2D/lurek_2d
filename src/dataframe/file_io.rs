@@ -88,17 +88,6 @@ where
     serial::from_json(&json).map_err(DataFrameFileError::Format)
 }
 
-/// Read LVDF bytes from storage, parse them, and return a dataframe.
-pub fn read_binary_dataframe<S>(store: &S, path: &str) -> DataFrameFileResult<DataFrame, S::Error>
-where
-    S: DataFrameFileStore + ?Sized,
-{
-    let bytes = store
-        .read_bytes(path)
-        .map_err(DataFrameFileError::Storage)?;
-    serial::from_binary(&bytes).map_err(DataFrameFileError::Format)
-}
-
 /// Serialize a dataframe to CSV and write it through storage.
 pub fn write_csv_dataframe<S>(
     store: &S,

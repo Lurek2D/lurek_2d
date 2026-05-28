@@ -26,61 +26,59 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 ## Source Documentation
 
 ### `bus.rs`
-- Audio routing channel providing signal grouping and transformation controls.
-- Provides centralized volume, pitch, and pause controls for groups of assigned audio sources.
-- Maintains shared effect processing chains to apply DSP transformations efficiently across multiple inputs.
-- Implements ducking behaviors allowing one bus to automatically suppress the volume of another based on target thresholds.
-- Designed to safely receive runtime updates from scripting environments while being read lock-free by the audio thread.
+- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
+- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
+- Duck-target assignment enabling automatic cross-bus volume suppression.
+- Boundary clamping on volume, pitch, and duck volume values.
 
 ### `decoder.rs`
-- Audio file decoding capabilities translating compressed formats into raw PCM data.
-- Provides in-memory decoding for standard audio formats including WAV, OGG, MP3, and FLAC.
-- Decodes entire files into contiguous sample buffers to guarantee fast random-access seeking without I/O blocking.
-- Supports chunk-based stream iteration with configurable buffer sizes for progressive consumption by the audio backend.
-- Exposes precise duration and position measurements based on underlying channel count and sample rates.
+- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
+- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
+- Chunked iteration with configurable `buffer_size` for streaming consumption.
+- Duration and position queries derived from sample rate and channel count.
+- Seekable flag always true since the entire file is held in memory.
 
 ### `facade.rs`
-- Hardware audio device enumeration and selection interface.
-- Provides capabilities to query available system audio output devices.
-- Exposes functions to select and activate specific playback hardware endpoints.
-- Currently implements default device fallback behavior pending deeper platform integration.
+- Stub device enumeration and selection for the audio output backend.
+- Always reports a single "Default" device until platform-specific enumeration is added.
+- Validates device name against the available list on set.
 
 ### `mixer.rs`
-- Central audio mixing registry for managing playback streams and spatial state.
-- Manages hardware output stream ownership with graceful fallbacks when audio hardware is unavailable.
-- Tracks full playback lifecycle for individual sound sources including pause, resume, seek, and release.
-- Propagates parameters such as volume, pitch, pan, looping, and filters hierarchically through routing buses.
-- Manages queueable push-buffer sources designed for continuous procedural stream delivery.
-- Calculates spatial audio positioning incorporating listener orientation, velocity, doppler scaling, and distance attenuation models.
-- Implements peak metering across individual sources, group buses, and the master output channel.
-- Differentiates dynamically between fully decoded static caches and on-demand stream strategies.
+- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
+- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
+- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
+- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
+- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
+- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
+- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
+- Peak metering: per-source, per-bus average, and master peak tracking.
+- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
+- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
 
 ### `mod.rs`
-- Subsystem for audio playback, spatialization, and hardware integration.
-- Provides centralized registries for mixing multiple concurrent sound streams.
-- Manages audio routing groups, continuous procedural buffers, and one-shot polyphonic voice pools.
-- Encapsulates decoding implementations for various compressed file formats.
-- Acts as the primary bridge between the engine architecture and the underlying Rodio audio backend.
+- Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.
+- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `SoundPool`.
+- DSP effects are in `crate::dsp`; MIDI playback is in `crate::midi`.
 
 ### `pool.rs`
-- Polyphonic voice pooling capabilities for managing repeated one-shot sound effects.
-- Implements round-robin allocation strategies across preloaded audio voices to minimize trigger latency.
-- Pre-allocates fixed counts of identical sources to prevent mid-frame decoding overhead during intense playback events.
-- Groups pool-level properties like volume multipliers and bus assignments to be applied collectively.
-- Automatically validates and recovers from degenerate states such as empty voice lists.
+- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
+- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
+- Per-pool volume multiplier and optional bus routing assignment.
+- Validity check ensuring at least one voice is available.
 
 ### `sound_data.rs`
-- In-memory audio sample buffering and raw waveform representation capabilities.
-- Provides contiguous block storage for decoded PCM sample data mapped into floating-point format.
-- Retains essential decoding metadata including sample rates, bit depths, and channel topologies.
-- Defers all advanced synthesis and signal manipulation directly to dedicated digital signal processing algorithms.
-- Serves as the primary bridge layer between offline decoders, generator functions, and the runtime streaming backend.
+- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
+- File decode via rodio, silent-buffer allocation, and Lua argument factory.
+- WAV encoding to byte vector for save/export.
+- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
+- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
+- Waveform drawing into `ImageData` for visual feedback.
+- Duration, sample count, and channel count queries.
 
 ### `source.rs`
-- Data structures defining physical characteristics of audio emitters.
-- Provides containers to hold three-dimensional coordinates and orientation vectors for positional audio calculations.
-- Groups basic metadata required to uniquely identify and serialize sound assets.
-- Supplies sane fallback defaults assuming origins and neutral orientations to prevent spatial calculation errors.
+- `SpatialState` 3D position, velocity, and orientation for positional audio.
+- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
+- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
 
 ## Types
 
@@ -106,8 +104,6 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `Bus::pause` (`bus.rs`): Pause all sources on this bus; no-op if already paused.
 - `Bus::resume` (`bus.rs`): Resume all sources on this bus; no-op if already playing.
 - `Bus::is_paused` (`bus.rs`): Return `true` when this bus is paused.
-- `Bus::add_effect` (`bus.rs`): Append a DSP effect of `effect_type_str` with initial parameter `p1_val` to the chain; returns the new effect ID.
-- `Bus::remove_effect` (`bus.rs`): Remove the DSP effect with `effect_id` from the chain; error if not found.
 - `Bus::set_duck_target` (`bus.rs`): Set the duck target bus name and duck volume; volume is clamped to 0.0..=1.0.
 - `Bus::clear_duck_target` (`bus.rs`): Remove configured duck target from this bus.
 - `Decoder::from_file` (`decoder.rs`): Open and fully decode `path` using rodio; `buffer_size` sets the chunk size for `decode()`.
@@ -218,31 +214,35 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `SoundPool::next_voice` (`pool.rs`): Return next voice key in round-robin order and advance the cursor.
 - `SoundPool::all_keys` (`pool.rs`): Return all voice keys managed by this pool.
 - `SoundPool::is_valid` (`pool.rs`): Return `true` when the pool contains at least one voice key.
-- `SoundData::new` (`sound_data.rs`): Allocates an empty buffer of silence.
-- `SoundData::from_samples` (`sound_data.rs`): Creates an instance based on existing samples.
-- `SoundData::from_lua_args` (`sound_data.rs`): Creates a buffer by loading a file or allocating an empty one via delegation.
-- `SoundData::from_file` (`sound_data.rs`): Decodes an external WAV/OGG/MP3 file into a vector of f32 samples.
-- `SoundData::get_sample` (`sound_data.rs`): Gets a single sample at the specified index.
-- `SoundData::samples` (`sound_data.rs`): Returns a slice of the internal sample buffer.
-- `SoundData::set_sample` (`sound_data.rs`): Sets a sample at the specified index, returning true if successful.
-- `SoundData::sample_count` (`sound_data.rs`): Returns the number of sample frames (samples per channel).
-- `SoundData::sample_rate` (`sound_data.rs`): Returns the sample rate of the audio data.
-- `SoundData::channel_count` (`sound_data.rs`): Returns the number of channels in the audio data.
-- `SoundData::bit_depth` (`sound_data.rs`): Returns the bit depth of the audio data.
-- `SoundData::duration` (`sound_data.rs`): Returns the total duration of the audio data in seconds.
-- `SoundData::sine_wave` (`sound_data.rs`): Generates a sine wave using the dsp::synthesis module.
-- `SoundData::square_wave` (`sound_data.rs`): Generates a square wave using the dsp::synthesis module.
-- `SoundData::sawtooth_wave` (`sound_data.rs`): Generates a sawtooth wave using the dsp::synthesis module.
-- `SoundData::triangle_wave` (`sound_data.rs`): Generates a triangle wave using the dsp::synthesis module.
-- `SoundData::white_noise` (`sound_data.rs`): Generates white noise using the dsp::synthesis module.
-- `SoundData::generate_synth` (`sound_data.rs`): Generates an advanced instrument based on an oscillator and an ADSR envelope.
-- `SoundData::encode_wav` (`sound_data.rs`): Exports the buffer to a WAV format.
-- `SoundData::apply_lowpass` (`sound_data.rs`): Apply one-pole low-pass filter in place using DSP module.
-- `SoundData::apply_highpass` (`sound_data.rs`): Apply one-pole high-pass filter in place using DSP module.
-- `SoundData::apply_bandpass` (`sound_data.rs`): Apply simple band-pass by chaining highpass then lowpass.
+- `SoundData::new` (`sound_data.rs`): Allocate silent audio buffer with `sample_count` frames and `channels` interleaved channels.
+- `SoundData::from_samples` (`sound_data.rs`): Construct from an existing interleaved sample vector.
+- `SoundData::from_lua_args` (`sound_data.rs`): Build `SoundData` from Lua arguments: load file when `path` is set, otherwise allocate silent buffer.
+- `SoundData::from_file` (`sound_data.rs`): Decode audio file at `path` into f32 interleaved samples.
+- `SoundData::get_sample` (`sound_data.rs`): Return sample value at `index`, or `None` when out of bounds.
+- `SoundData::samples` (`sound_data.rs`): Return all interleaved samples as a shared slice.
+- `SoundData::set_sample` (`sound_data.rs`): Set sample at `index` to `value` (clamped to [-1,1]); return `false` if index is invalid.
+- `SoundData::sample_count` (`sound_data.rs`): Return number of frames (samples per channel), not raw interleaved element count.
+- `SoundData::sample_rate` (`sound_data.rs`): Return sample rate in Hz.
+- `SoundData::channel_count` (`sound_data.rs`): Return channel count.
+- `SoundData::bit_depth` (`sound_data.rs`): Return logical bit depth metadata.
+- `SoundData::duration` (`sound_data.rs`): Return duration in seconds.
+- `SoundData::as_samples` (`sound_data.rs`): Return interleaved sample slice.
+- `SoundData::encode_wav` (`sound_data.rs`): Encode current samples as an in-memory 16-bit PCM WAV byte vector.
+- `SoundData::sine_wave` (`sound_data.rs`): Generate mono sine-wave `SoundData` at `freq` Hz for `duration` seconds.
+- `SoundData::square_wave` (`sound_data.rs`): Generate mono square-wave `SoundData` at `freq` Hz for `duration` seconds.
+- `SoundData::sawtooth_wave` (`sound_data.rs`): Generate mono sawtooth-wave `SoundData` at `freq` Hz for `duration` seconds.
+- `SoundData::triangle_wave` (`sound_data.rs`): Generate mono triangle-wave `SoundData` at `freq` Hz for `duration` seconds.
+- `SoundData::white_noise` (`sound_data.rs`): Generate mono white-noise `SoundData` using deterministic LCG seeded by `seed`.
+- `SoundData::draw_waveform` (`sound_data.rs`): Draw waveform envelope into `img` as vertical min/max bars in RGBA colour `(r,g,b,a)`.
+- `SoundData::apply_lowpass` (`sound_data.rs`): Apply one-pole low-pass filter in place with cutoff `cutoff_hz`.
+- `SoundData::apply_highpass` (`sound_data.rs`): Apply one-pole high-pass filter in place with cutoff `cutoff_hz`.
+- `SoundData::apply_bandpass` (`sound_data.rs`): Apply simple band-pass by chaining `apply_highpass(low_hz)` then `apply_lowpass(high_hz)`.
 - `SoundData::apply_gain` (`sound_data.rs`): Multiply all samples by `gain` and clamp to [-1.0, 1.0].
 - `SoundData::mix_into` (`sound_data.rs`): Mix `other` into `self` sample-by-sample, extending length if needed and clamping output to [-1,1].
-- `SoundData::draw_waveform` (`sound_data.rs`): Draw waveform envelope into `img` as vertical min/max bars in RGBA colour `(r,g,b,a)`.
+- `SoundData::analyze_rms` (`sound_data.rs`): Returns the RMS (root-mean-square) amplitude of the sound data.
+- `SoundData::analyze_peak` (`sound_data.rs`): Returns the peak (maximum absolute) amplitude of the sound data.
+- `SoundData::analyze_dft` (`sound_data.rs`): Performs a bounded DFT and returns `size` (frequency, magnitude) pairs.
+- `SoundData::apply_adsr` (`sound_data.rs`): Apply ADSR amplitude envelope in place.
 - `AudioSource::new` (`source.rs`): Create a new source descriptor with volume=1.0 and looping disabled.
 
 ## Lua API Reference
@@ -324,12 +324,6 @@ Beyond standard PCM playback, the module natively supports MIDI file playback vi
 - `lurek.audio.setPlaybackDevice`: Sets the active audio playback device by name.
 - `lurek.audio.create_bus`: Creates a named audio bus, optionally parented to another bus.
 - `lurek.audio.set_bus_volume`: Sets the volume of a named audio bus.
-- `lurek.audio.newSineWave`: Generates a sine wave as a `SoundData` buffer.
-- `lurek.audio.newSquareWave`: Generates a square wave as a `SoundData` buffer.
-- `lurek.audio.newSawtoothWave`: Generates a sawtooth wave as a `SoundData` buffer.
-- `lurek.audio.newTriangleWave`: Generates a triangle wave as a `SoundData` buffer.
-- `lurek.audio.newSynthWave`: Generates a synthesized wave with ADSR envelope as a `SoundData` buffer.
-- `lurek.audio.newWhiteNoise`: Generates white noise as a `SoundData` buffer using a deterministic seed.
 - `lurek.audio.mixInto`: Mixes the samples of `src` into `dest` in-place (both must have the same format).
 - `lurek.audio.saveWAV`: Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 - `lurek.audio.setStereoWidth`: Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).

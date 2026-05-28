@@ -2,7 +2,7 @@
 
 use super::SharedState;
 use crate::effect::{
-    presets::build_preset, ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
+    presets::{build_preset, preset_names}, ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
 use mlua::prelude::*;
@@ -679,6 +679,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getEffectTypes",
         lua.create_function(|_, ()| Ok(PostFxEffectType::built_in_names()))?,
+    )?;
+    // -- getPresetNames --
+    /// Returns all built-in post-processing preset names.
+    /// @return | string[] | Built-in preset name strings.
+    tbl.set(
+        "getPresetNames",
+        lua.create_function(|_, ()| Ok(preset_names()))?,
     )?;
     // -- newImageEffect --
     /// Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.

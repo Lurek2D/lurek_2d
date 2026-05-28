@@ -17,7 +17,7 @@ function findExtensionRoot(): string {
     path.resolve(__dirname, "../../.."),
     path.resolve(__dirname, "../.."),
     process.cwd(),
-    path.join(process.cwd(), "extensions", "vscode"),
+    path.join(process.cwd(), "extension", "vscode"),
   ];
 
   for (const candidate of candidates) {
@@ -27,7 +27,7 @@ function findExtensionRoot(): string {
     if (manifest.name === "lurek2d-toolkit") return candidate;
   }
 
-  throw new Error(`Unable to locate extensions/vscode from ${process.cwd()}.`);
+  throw new Error(`Unable to locate extension/vscode from ${process.cwd()}.`);
 }
 
 const EXTENSION_ROOT = findExtensionRoot();

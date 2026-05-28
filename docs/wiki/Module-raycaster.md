@@ -242,7 +242,7 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - `LDoorManager` (8 methods) - Lua-visible door manager that controls sliding doors within a raycaster map.
 - `LHeightMap` (6 methods) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
 - `LPointLight` (8 methods) - Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
-- `LRaycaster` (36 methods) - Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
+- `LRaycaster` (37 methods) - Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 - `LSpriteManager` (8 methods) - Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
 
 [⬆ back to top](#table-of-contents)
@@ -250,9 +250,9 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 ## 📖 API Overview
 
 - Source spec: [docs/specs/raycaster.md](../blob/main/docs/specs/raycaster.md)
-- Module-level functions: 8
+- Module-level functions: 9
 - Lua-visible types: 5
-- Total type methods: 66
+- Total type methods: 67
 
 
 [⬆ back to top](#table-of-contents)
@@ -260,6 +260,47 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 ## ⚙️ Module Functions
 
 ### Module-Level Functions
+
+#### lurek.raycaster.applyLitShade
+
+#### Definition
+
+```lua
+--- Applies an RGB light color to a scalar shade value.
+---@param baseShade number Base shade multiplier.
+---@param r number Red light channel.
+---@param g number Green light channel.
+---@param b number Blue light channel.
+---@return number a Shaded red channel.
+---@return number b Shaded green channel.
+---@return number c Shaded blue channel.
+lurek.raycaster.applyLitShade = function(baseShade, r, g, b) end
+```
+
+#### Description
+
+Applies an RGB light color to a scalar shade value.
+
+Parameters:
+
+- `baseShade` (`number`, required): Base shade multiplier.
+- `r` (`number`, required): Red light channel.
+- `g` (`number`, required): Green light channel.
+- `b` (`number`, required): Blue light channel.
+
+Returns: `number` - Shaded red channel.
+
+#### Example
+
+Source: [raycaster.lua](../blob/main/content/examples/raycaster.lua)
+
+```lua
+do
+    local r, g, b = lurek.raycaster.applyLitShade(0.5, 1.0, 0.8, 0.6)
+    print("lit shade = " .. r .. "," .. g .. "," .. b)
+    print("red positive = " .. tostring(r > 0))
+end
+```
 
 #### lurek.raycaster.distanceShade
 
@@ -2169,6 +2210,51 @@ do
 
     print("width = " .. img:getWidth())
     print("height = " .. img:getHeight())
+end
+```
+
+#### LRaycaster:extractMinimap
+
+#### Definition
+
+```lua
+--- Extracts a pixel minimap image centered on the player from this raycaster map.
+---@param playerX number Player x position in world space.
+---@param playerY number Player y position in world space.
+---@param playerAngle number Player facing angle in radians.
+---@param viewRadius number Visible tile radius around the player.
+---@param cellSize number Pixel size of each minimap cell.
+---@return LImageData Image data containing the extracted minimap.
+function LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize) end
+```
+
+#### Description
+
+Extracts a pixel minimap image centered on the player from this raycaster map.
+
+Parameters:
+
+- `playerX` (`number`, required): Player x position in world space.
+- `playerY` (`number`, required): Player y position in world space.
+- `playerAngle` (`number`, required): Player facing angle in radians.
+- `viewRadius` (`integer`, required): Visible tile radius around the player.
+- `cellSize` (`integer`, required): Pixel size of each minimap cell.
+
+Returns: `LImageData` - Image data containing the extracted minimap.
+
+#### Example
+
+Source: [raycaster.lua](../blob/main/content/examples/raycaster.lua)
+
+```lua
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    map:setCell(1, 0, 1)
+    map:setCell(0, 1, 1)
+    local image = map:extractMinimap(4.0, 4.0, 0.0, 3, 4)
+    print("minimap type = " .. image:type())
+    print("minimap width = " .. image:getWidth())
 end
 ```
 

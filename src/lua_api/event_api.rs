@@ -39,6 +39,7 @@ impl LuaUserData for LuaSignal {
         /// Emits a signal event and invokes matching callbacks with the remaining arguments.
         /// @param | name | string | Signal event name to emit.
         /// @param | ... | any | Additional arguments passed to matching callbacks.
+        /// @return | nil | Fires callbacks synchronously; no value is returned.
         methods.add_method("emit", |lua, this, args: LuaMultiValue| {
             struct PendingSignalCall<'lua> {
                 handle: u64,

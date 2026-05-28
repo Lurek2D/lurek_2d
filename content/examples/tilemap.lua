@@ -1172,7 +1172,7 @@ do
     print("height in segments = " .. block:getHeightInSegments())
 end
 
---@api-stub: LMapBlock:setTile
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setTile(1, 1, 1, 5)
@@ -1181,28 +1181,28 @@ do
     print("tile (1,2,2) = " .. tostring(block:getTile(1, 2, 2)))
 end
 
---@api-stub: LMapBlock:setName
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setName("room_corner")
     print("name = " .. tostring(block:getName()))
 end
 
---@api-stub: LMapBlock:setWeight
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setWeight(3.0)
     print("weight = " .. tostring(block:getWeight()))
 end
 
---@api-stub: LMapBlock:getName
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local block = lurek.tilemap.newMapBlock(3, 3)
     block:setName("entry")
     print("getName = " .. tostring(block:getName()))
 end
 
---@api-stub: LMapBlock:getTile
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local block = lurek.tilemap.newMapBlock(3, 3)
     block:setTile(1, 2, 2, 9)
@@ -1553,7 +1553,7 @@ do
     print("getDimensions:", w, h)
 end
 
---@api-stub: LMapBlock:getHeight
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
     local height = mb:getHeight()
@@ -1567,7 +1567,7 @@ do
     print("heightInSegments:", hs)
 end
 
---@api-stub: LMapBlock:getLayerCount
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
     local lc = mb:getLayerCount()
@@ -1581,7 +1581,7 @@ do
     print("segmentSize:", ss)
 end
 
---@api-stub: LMapBlock:getWidth
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
     local w = mb:getWidth()
@@ -1628,7 +1628,7 @@ do
     print("LMapGen typeOf:", ok)
 end
 
---@api-stub: LMapGroup:addBlock
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local group = lurek.tilemap.newMapGroup("dungeon")
     local block = lurek.tilemap.newMapBlock(8, 8, 1, 2)
@@ -1636,7 +1636,7 @@ do
     print("block count = " .. tostring(group:getBlockCount()))
 end
 
---@api-stub: LMapGroup:addScript
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local group = lurek.tilemap.newMapGroup("forest")
     local script = lurek.tilemap.newMapScript()
@@ -1645,7 +1645,7 @@ do
     print("script count = " .. tostring(group:getScriptCount()))
 end
 
---@api-stub: LMapGroup:getBlockCount
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local group = lurek.tilemap.newMapGroup("rooms")
     group:addBlock(lurek.tilemap.newMapBlock(4, 4))
@@ -1653,7 +1653,7 @@ do
     print("getBlockCount = " .. tostring(group:getBlockCount()))
 end
 
---@api-stub: LMapGroup:getName
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local group = lurek.tilemap.newMapGroup("boss_rooms")
     print("getName = " .. tostring(group:getName()))
@@ -1693,7 +1693,7 @@ do
     print("LMapGroup typeOf:", ok)
 end
 
---@api-stub: LMapScript:addStep
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local script = lurek.tilemap.newMapScript()
     script:addStep({type = "fill", gid = 1})
@@ -1724,7 +1724,7 @@ do
     print("LMapScript typeOf:", ok)
 end
 
---@api-stub: LMapScript:getStepCount
+-- Duplicate coverage lives in content/examples/mapblock.lua.
 do
     local script = lurek.tilemap.newMapScript()
     script:addStep({ type = "fill", gid = 1 })

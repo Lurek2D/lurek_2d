@@ -19,6 +19,7 @@ struct LuaGrepEngine {
 
 impl LuaUserData for LuaGrepEngine {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- search --
         /// Search a directory for a literal pattern.
         /// @param | path | string | Directory to search.
         /// @param | pattern | string | Text pattern to find.
@@ -29,6 +30,7 @@ impl LuaUserData for LuaGrepEngine {
             result_to_table(lua, &result)
         });
 
+        // -- searchExt --
         /// Search with file extension filter.
         /// @param | path | string | Directory to search.
         /// @param | pattern | string | Text pattern.
@@ -41,6 +43,7 @@ impl LuaUserData for LuaGrepEngine {
             result_to_table(lua, &result)
         });
 
+        // -- multiSearch --
         /// Search with multiple patterns simultaneously.
         /// @param | path | string | Directory to search.
         /// @param | patterns | table | Array of literal patterns.
@@ -51,6 +54,7 @@ impl LuaUserData for LuaGrepEngine {
             result_to_table(lua, &result)
         });
 
+        // -- count --
         /// Count total matches without returning line details.
         /// @param | path | string | Directory to search.
         /// @param | pattern | string | Text pattern.
@@ -60,6 +64,7 @@ impl LuaUserData for LuaGrepEngine {
             Ok(this.inner.borrow().count(&PathBuf::from(&path), &pattern, &filter))
         });
 
+        // -- searchFiles --
         /// Search a specific provided list of files for text matches.
         /// @param | files | table | Array of file paths.
         /// @param | pattern | string | Text pattern.
@@ -83,6 +88,7 @@ struct LuaFileFilter {
 
 impl LuaUserData for LuaFileFilter {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addExtension --
         /// Add allowed file extensions — Lua userdata object exposed by the engine.
         /// @param | ext | string | Extension (without dot).
         methods.add_method("addExtension", |_, this, ext: String| {
@@ -90,6 +96,7 @@ impl LuaUserData for LuaFileFilter {
             Ok(())
         });
 
+        // -- excludeExtension --
         /// Add excluded file extension for this object.
         /// @param | ext | string | Extension to exclude.
         methods.add_method("excludeExtension", |_, this, ext: String| {
@@ -97,6 +104,7 @@ impl LuaUserData for LuaFileFilter {
             Ok(())
         });
 
+        // -- excludePattern --
         /// Add path pattern to exclude for this object.
         /// @param | pattern | string | Substring to exclude in file paths.
         methods.add_method("excludePattern", |_, this, pattern: String| {
@@ -104,6 +112,7 @@ impl LuaUserData for LuaFileFilter {
             Ok(())
         });
 
+        // -- setIncludeHidden --
         /// Set whether hidden files are included.
         /// @param | include | boolean | Include hidden files.
         methods.add_method("setIncludeHidden", |_, this, include: bool| {

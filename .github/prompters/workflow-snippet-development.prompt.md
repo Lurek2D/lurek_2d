@@ -40,7 +40,7 @@ description: "Run a full snippet-development workflow with module-level coverage
 - Writing API one-liners that are not useful building blocks.
 - Auto-generating large snippet batches without manual rationale.
 - Shipping snippet markers without placeholders for user parameters.
-- Updating `extensions/vscode/data/snippets.json` manually instead of using the generator.
+- Updating `extension/vscode/data/snippets.json` manually instead of using the generator.
 - Closing without running both validator and coverage audit.
 
 ## Example Invocation

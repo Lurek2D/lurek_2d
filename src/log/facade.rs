@@ -37,17 +37,3 @@ pub fn get_level() -> String {
     log_messages::get_log_level().to_string()
 }
 
-/// Return `true` if the global log filter allows messages at `level`; returns `false` for unknown strings.
-pub fn enabled_for(level: &str) -> bool {
-    use log::LevelFilter;
-    let filter = match level.to_lowercase().as_str() {
-        "error" => LevelFilter::Error,
-        "warn" | "warning" => LevelFilter::Warn,
-        "info" => LevelFilter::Info,
-        "debug" => LevelFilter::Debug,
-        "trace" => LevelFilter::Trace,
-        "off" | "none" => return false,
-        _ => return false,
-    };
-    ::log::max_level() >= filter
-}

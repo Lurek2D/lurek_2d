@@ -62,6 +62,7 @@ struct LuaMapBlockResult {
 
 impl LuaUserData for LuaMapBlockConfig {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addSlot --
         /// Add a slot definition — Lua userdata object exposed by the engine.
         /// @param | name | string | Slot name.
         /// @param | required | boolean | Whether this slot is required.
@@ -71,6 +72,7 @@ impl LuaUserData for LuaMapBlockConfig {
             Ok(())
         });
 
+        // -- removeSlot --
         /// Remove a slot by name for this object.
         /// @param | name | string | Slot name to remove.
         /// @return | boolean | True if removed.
@@ -78,12 +80,14 @@ impl LuaUserData for LuaMapBlockConfig {
             Ok(this.inner.borrow_mut().remove_slot(&name))
         });
 
+        // -- getSlotCount --
         /// Get the number of slots for this object.
         /// @return | integer | Slot count.
         methods.add_method("getSlotCount", |_, this, ()| {
             Ok(this.inner.borrow().slot_count())
         });
 
+        // -- setMaxLayers --
         /// Set maximum layers per block for this object.
         /// @param | max | integer | Max layers (1-10).
         methods.add_method_mut("setMaxLayers", |_, this, max: u32| {
@@ -91,6 +95,7 @@ impl LuaUserData for LuaMapBlockConfig {
             Ok(())
         });
 
+        // -- setDefaultSegmentSize --
         /// Set default segment size for this object.
         /// @param | size | integer | Segment size in tiles.
         methods.add_method_mut("setDefaultSegmentSize", |_, this, size: u32| {
@@ -102,6 +107,7 @@ impl LuaUserData for LuaMapBlockConfig {
 
 impl LuaUserData for LuaMapBlock {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setTile --
         /// Set a tile slot value — Lua userdata object exposed by the engine.
         /// @param | layer | integer | Layer index (0-based).
         /// @param | x | integer | Tile X position.
@@ -114,6 +120,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- getTile --
         /// Get the tile GID at a specified row and column position.
         /// @param | layer | integer | Layer index.
         /// @param | x | integer | Tile X.
@@ -124,6 +131,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(this.inner.borrow().get_tile(layer, x, y, slot))
         });
 
+        // -- setEdge --
         /// Set edge type for a side and segment.
         /// @param | edge | string | Edge direction: "north", "east", "south", "west".
         /// @param | segment | integer | Segment index along the edge.
@@ -140,6 +148,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- setName --
         /// Set the map block's display or lookup name string value.
         /// @param | name | string | Block name.
         methods.add_method_mut("setName", |_, this, name: String| {
@@ -147,12 +156,14 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- getName --
         /// Get the map block's display or lookup name string value.
         /// @return | string | Block name.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.inner.borrow().get_name().to_string())
         });
 
+        // -- setWeight --
         /// Set block weight for random selection.
         /// @param | weight | number | Weight value (higher = more likely).
         methods.add_method_mut("setWeight", |_, this, weight: f32| {
@@ -160,6 +171,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- setEdgeOnly --
         /// Set whether block must be on map edge.
         /// @param | edge_only | boolean | True if edge-only.
         methods.add_method_mut("setEdgeOnly", |_, this, edge_only: bool| {
@@ -167,6 +179,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- setInteriorOnly --
         /// Set whether block must be in interior.
         /// @param | interior_only | boolean | True if interior-only.
         methods.add_method_mut("setInteriorOnly", |_, this, interior_only: bool| {
@@ -174,6 +187,7 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- setLevelSpan --
         /// Set multi-level span for this object.
         /// @param | levels | integer | Number of levels this block spans.
         methods.add_method_mut("setLevelSpan", |_, this, levels: u32| {
@@ -181,18 +195,21 @@ impl LuaUserData for LuaMapBlock {
             Ok(())
         });
 
+        // -- getWidth --
         /// Get the block width measured in tile grid units.
         /// @return | integer | Block width.
         methods.add_method("getWidth", |_, this, ()| {
             Ok(this.inner.borrow().get_width())
         });
 
+        // -- getHeight --
         /// Get height in tiles for this object.
         /// @return | integer | Block height.
         methods.add_method("getHeight", |_, this, ()| {
             Ok(this.inner.borrow().get_height())
         });
 
+        // -- getLayerCount --
         /// Get the number of tile layers in this map block.
         /// @return | integer | Number of layers.
         methods.add_method("getLayerCount", |_, this, ()| {
@@ -203,6 +220,7 @@ impl LuaUserData for LuaMapBlock {
 
 impl LuaUserData for LuaMapGroup {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addBlock --
         /// Add a block to this group for this object.
         /// @param | block | MapBlock | Block to add.
         methods.add_method_mut("addBlock", |_, this, block: LuaAnyUserData| {
@@ -211,18 +229,21 @@ impl LuaUserData for LuaMapGroup {
             Ok(())
         });
 
+        // -- getBlockCount --
         /// Get the number of blocks for this object.
         /// @return | integer | Block count.
         methods.add_method("getBlockCount", |_, this, ()| {
             Ok(this.inner.borrow().block_count())
         });
 
+        // -- getName --
         /// Get the display name of this map group object.
         /// @return | string | Group name.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.inner.borrow().name().to_string())
         });
 
+        // -- addScript --
         /// Add a script to this group for this object.
         /// @param | script | MapScript | Script to add.
         methods.add_method_mut("addScript", |_, this, script: LuaAnyUserData| {
@@ -235,6 +256,7 @@ impl LuaUserData for LuaMapGroup {
 
 impl LuaUserData for LuaMapScript {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addStep --
         /// Add a generation step — Lua userdata object exposed by the engine.
         /// @param | step_type | string | Step type name.
         /// @param | opts | table | Step configuration options.
@@ -316,18 +338,21 @@ impl LuaUserData for LuaMapScript {
             Ok(())
         });
 
+        // -- getStepCount --
         /// Get the number of steps for this object.
         /// @return | integer | Step count.
         methods.add_method("getStepCount", |_, this, ()| {
             Ok(this.inner.borrow().step_count())
         });
 
+        // -- clear --
         /// Clear all queued script steps from this map script.
         methods.add_method_mut("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             Ok(())
         });
 
+        // -- getName --
         /// Get the script name for this object.
         /// @return | string | Script name.
         methods.add_method("getName", |_, this, ()| {
@@ -338,6 +363,7 @@ impl LuaUserData for LuaMapScript {
 
 impl LuaUserData for LuaNeighborRules {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addCompatible --
         /// Add bidirectional compatibility between two edge types.
         /// @param | type_a | integer | First edge type.
         /// @param | type_b | integer | Second edge type.
@@ -346,6 +372,7 @@ impl LuaUserData for LuaNeighborRules {
             Ok(())
         });
 
+        // -- addCompatibleOneWay --
         /// Add one-way compatibility for this object.
         /// @param | type_a | integer | Source edge type.
         /// @param | type_b | integer | Target edge type.
@@ -354,6 +381,7 @@ impl LuaUserData for LuaNeighborRules {
             Ok(())
         });
 
+        // -- isCompatible --
         /// Check if two edge types are compatible.
         /// @param | type_a | integer | First edge type.
         /// @param | type_b | integer | Second edge type.
@@ -362,6 +390,7 @@ impl LuaUserData for LuaNeighborRules {
             Ok(this.inner.borrow().is_compatible(a, b))
         });
 
+        // -- clear --
         /// Clear all neighbor placement rules from this rule set.
         methods.add_method_mut("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -372,6 +401,7 @@ impl LuaUserData for LuaNeighborRules {
 
 impl LuaUserData for LuaPlacementGrid {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addPosition --
         /// Add a position to the grid — Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -380,6 +410,7 @@ impl LuaUserData for LuaPlacementGrid {
             Ok(())
         });
 
+        // -- isAvailable --
         /// Check whether a placement grid position is currently available.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -388,12 +419,14 @@ impl LuaUserData for LuaPlacementGrid {
             Ok(this.inner.borrow().is_available(x, y))
         });
 
+        // -- getAvailableCount --
         /// Get available position count for this object.
         /// @return | integer | Number of available positions.
         methods.add_method("getAvailableCount", |_, this, ()| {
             Ok(this.inner.borrow().available_count())
         });
 
+        // -- clear --
         /// Clear all positions and placed blocks.
         methods.add_method_mut("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -404,6 +437,7 @@ impl LuaUserData for LuaPlacementGrid {
 
 impl LuaUserData for LuaMapBlockGenerator {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setRectShape --
         /// Set rectangular map shape — Lua userdata object exposed by the engine.
         /// @param | width | integer | Grid width.
         /// @param | height | integer | Grid height.
@@ -412,6 +446,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setShape --
         /// Set the generator map shape using a list of tile positions.
         /// @param | positions | table | Array of {x, y} positions.
         methods.add_method_mut("setShape", |_, this, positions: LuaTable| {
@@ -426,6 +461,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setOrientation --
         /// Set rendering orientation for this object.
         /// @param | orientation | string | "topdown" or "isometric".
         methods.add_method_mut("setOrientation", |_, this, orientation: String| {
@@ -435,6 +471,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setMaxLevels --
         /// Set the number of vertical levels or storeys to generate.
         /// @param | levels | integer | Max levels (1-10).
         methods.add_method_mut("setMaxLevels", |_, this, levels: u32| {
@@ -442,6 +479,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setRules --
         /// Set neighbor matching rules for this object.
         /// @param | rules | NeighborRules | Rules object.
         methods.add_method_mut("setRules", |_, this, rules: LuaAnyUserData| {
@@ -450,6 +488,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setSeed --
         /// Set RNG seed for deterministic generation.
         /// @param | seed | integer | Seed value.
         methods.add_method_mut("setSeed", |_, this, seed: u64| {
@@ -457,6 +496,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- setTileSize --
         /// Set tile pixel dimensions for this object.
         /// @param | w | integer | Pixel width.
         /// @param | h | integer | Pixel height.
@@ -465,6 +505,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- addGroup --
         /// Add a named block group definition to this map generator.
         /// @param | group | MapGroup | Group of blocks.
         methods.add_method_mut("addGroup", |_, this, group: LuaAnyUserData| {
@@ -473,6 +514,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             Ok(())
         });
 
+        // -- generate --
         /// Generate map using a script for this object.
         /// @param | script | MapScript | Script to execute.
         /// @return | MapBlockResult | Generation result.
@@ -484,6 +526,7 @@ impl LuaUserData for LuaMapBlockGenerator {
             })
         });
 
+        // -- getLastPlacedCount --
         /// Get last placement count for this object.
         /// @return | integer | Blocks placed in last generation.
         methods.add_method("getLastPlacedCount", |_, this, ()| {
@@ -494,22 +537,27 @@ impl LuaUserData for LuaMapBlockGenerator {
 
 impl LuaUserData for LuaMapBlockResult {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getWidth --
         /// Get total width in tiles for this object.
         /// @return | integer | Width.
         methods.add_method("getWidth", |_, this, ()| Ok(this.inner.width));
 
+        // -- getHeight --
         /// Get total height in tiles — Lua userdata object exposed by the engine.
         /// @return | integer | Height.
         methods.add_method("getHeight", |_, this, ()| Ok(this.inner.height));
 
+        // -- getLevelCount --
         /// Get number of levels for this object.
         /// @return | integer | Level count.
         methods.add_method("getLevelCount", |_, this, ()| Ok(this.inner.level_count));
 
+        // -- getLayerCount --
         /// Get number of layers for this object.
         /// @return | integer | Layer count.
         methods.add_method("getLayerCount", |_, this, ()| Ok(this.inner.layer_count));
 
+        // -- getGid --
         /// Get tile GID at position for this object.
         /// @param | level | integer | Level index.
         /// @param | layer | integer | Layer index.
@@ -521,10 +569,12 @@ impl LuaUserData for LuaMapBlockResult {
             Ok(this.inner.get_gid(level, layer, x, y, slot))
         });
 
+        // -- getBlocksPlaced --
         /// Get number of blocks placed for this object.
         /// @return | integer | Blocks placed.
         methods.add_method("getBlocksPlaced", |_, this, ()| Ok(this.inner.blocks_placed));
 
+        // -- isEmpty --
         /// Check if result is empty for this object.
         /// @return | boolean | True if no blocks placed.
         methods.add_method("isEmpty", |_, this, ()| Ok(this.inner.is_empty()));
@@ -533,16 +583,19 @@ impl LuaUserData for LuaMapBlockResult {
 
 impl LuaUserData for LuaTilesetRef {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
         /// Get the numeric tileset ID for this tileset reference.
         /// @return | integer | Tileset ID.
         methods.add_method("getId", |_, this, ()| Ok(this.inner.borrow().id()));
 
+        // -- getName --
         /// Get tileset name — Lua userdata object exposed by the engine.
         /// @return | string | Tileset name.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.inner.borrow().name().to_string())
         });
 
+        // -- setImagePath --
         /// Set the image file path for this tileset reference.
         /// @param | path | string | Image file path.
         methods.add_method_mut("setImagePath", |_, this, path: String| {

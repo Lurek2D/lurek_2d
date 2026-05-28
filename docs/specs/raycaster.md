@@ -312,6 +312,7 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - `lurek.raycaster.newMap`: Creates a new raycaster map (alias for `new`).
 - `lurek.raycaster.projectColumn`: Computes the projected wall-column height for a given distance, FOV, and screen height.
 - `lurek.raycaster.distanceShade`: Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
+- `lurek.raycaster.applyLitShade`: Applies an RGB light color to a scalar shade value.
 - `lurek.raycaster.newDoorManager`: Creates a new door manager for tracking and animating sliding doors.
 - `lurek.raycaster.newHeightMap`: Creates a new height map for variable floor/ceiling heights across the grid.
 - `lurek.raycaster.newPointLight`: Creates a new point light with position, color, radius, and intensity.
@@ -368,6 +369,7 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - `LRaycaster:revealCellsFromRays`: Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
 - `LRaycaster:computeTileLight`: Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 - `LRaycaster:buildMinimapWindow`: Generates a grid of minimap tile samples around a center point with lighting info.
+- `LRaycaster:extractMinimap`: Extracts a pixel minimap image centered on the player from this raycaster map.
 - `LRaycaster:setWallAlpha`: Sets the transparency for a specific wall tile type, enabling see-through walls.
 - `LRaycaster:getWallAlpha`: Returns the current transparency value for a wall tile type.
 - `LRaycaster:castRayMulti`: Casts a single ray that passes through transparent walls, returning multiple hits.

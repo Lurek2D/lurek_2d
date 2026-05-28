@@ -98,7 +98,7 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - `GameApiRegistry::type_names` (`api_registry.rs`): List all registered type names.
 - `GameApiRegistry::validate_instance` (`api_registry.rs`): Validate a set of field values against a type schema.
 - `GameApiRegistry::type_count` (`api_registry.rs`): Return the total number of registered API type schemas.
-- `FieldType::from_str` (`api_schema.rs`): Parse a `FieldType` from a string name; supports `?` optional and `[]` array suffixes.
+- `FieldType::from_name` (`api_schema.rs`): Parse a `FieldType` from a string name; supports `?` optional and `[]` array suffixes.
 - `FieldType::as_str` (`api_schema.rs`): Return the canonical string representation of this field type.
 - `FieldDef::new` (`api_schema.rs`): Create a required field definition with the given name and type.
 - `FieldDef::optional` (`api_schema.rs`): Mark this field as optional (not required).
@@ -139,7 +139,7 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - `ModManager::process_reload_queue` (`mod_manager.rs`): Re-parse manifests for all queued mods and re-register them; return the ids that succeeded.
 - `ModManager::validate_dependencies` (`mod_manager.rs`): Return the ids of dependencies declared by any mod that are not themselves registered.
 - `ModManager::has_circular_dependencies` (`mod_manager.rs`): Return true when the registered mods contain a dependency cycle.
-- `HookPoint::from_str` (`mod_sandbox.rs`): Parse a `HookPoint` from a string name, supporting `on_event:`, `on_create:`, and `on_destroy:` prefixes.
+- `HookPoint::from_name` (`mod_sandbox.rs`): Parse a `HookPoint` from a string name, supporting `on_event:`, `on_create:`, and `on_destroy:` prefixes.
 - `HookPoint::as_str` (`mod_sandbox.rs`): Return the canonical string representation of this hook point.
 - `ModSandbox::new` (`mod_sandbox.rs`): Create a default sandbox (restrictive).
 - `ModSandbox::permissive` (`mod_sandbox.rs`): Create a permissive sandbox (for trusted mods).

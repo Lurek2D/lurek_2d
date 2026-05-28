@@ -211,9 +211,8 @@ fn register_modules(
         flownet_api::register(lua, lurek, state.clone())?;
     }
 
-    // charts_api uses a different signature (no state parameter).
     #[cfg(feature = "ui-charts")]
-    charts_api::register(lua, lurek)?;
+    charts_api::register(lua, lurek, state.clone())?;
 
     Ok(())
 }

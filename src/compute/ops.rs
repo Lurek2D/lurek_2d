@@ -701,7 +701,7 @@ pub fn div_inplace(a: &mut NdArray, b: &NdArray) -> Result<(), String> {
     elementwise_binary_inplace(a, b, |x, y| x / y)
 }
 /// Clone array and return independent copy.
-pub fn clone_array(a: &NdArray) -> NdArray {
+pub(crate) fn clone_array(a: &NdArray) -> NdArray {
     a.clone()
 }
 /// Compute bitwise AND and return int32 output array.

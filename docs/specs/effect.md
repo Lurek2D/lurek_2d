@@ -149,6 +149,7 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - `lurek.effect.newPresetStack`: Creates a named preset post-processing stack with optional dimensions.
 - `lurek.effect.newPass`: Creates a custom post-processing pass from an existing shader id.
 - `lurek.effect.getEffectTypes`: Returns all built-in post-processing effect type names.
+- `lurek.effect.getPresetNames`: Returns all built-in post-processing preset names.
 - `lurek.effect.newImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
 - `lurek.effect.setShaderErrorDisplay`: Enables or disables renderer shader error display overlays.
 - `lurek.effect.getShaderErrorDisplay`: Returns whether renderer shader error display overlays are enabled.

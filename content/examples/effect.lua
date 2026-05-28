@@ -41,6 +41,13 @@ do
     print("available types = " .. #types)
 end
 
+--@api-stub: lurek.effect.getPresetNames
+do
+    local names = lurek.effect.getPresetNames()
+    print("preset count = " .. #names)
+    print("first preset = " .. tostring(names[1]))
+end
+
 --@api-stub: lurek.effect.newImageEffect
 do
     local ie = lurek.effect.newImageEffect()

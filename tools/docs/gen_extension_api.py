@@ -1,12 +1,12 @@
 """
 gen_extension_api.py -- Convert logs/data/lua_api_data.json to
-extensions/vscode/data/lurek-api.json for the VS Code IntelliSense extension.
+extension/vscode/data/lurek-api.json for the VS Code IntelliSense extension.
 
 Input:
     logs/data/lua_api_data.json   (produced by gen_lua_api_data.py, step 2 of gen_all_docs.py)
 
 Output:
-    extensions/vscode/data/lurek-api.json
+    extension/vscode/data/lurek-api.json
 
 Run this script whenever the Lurek API changes, or let gen_all_docs.py call it automatically:
     python tools/docs/gen_extension_api.py
@@ -262,12 +262,12 @@ Examples:
   python tools/docs/gen_extension_api.py --help
 """
     parser = argparse.ArgumentParser(
-        description="Convert logs/data/lua_api_data.json -> extensions/vscode/data/lurek-api.json.",
+        description="Convert logs/data/lua_api_data.json -> extension/vscode/data/lurek-api.json.",
         epilog=epilog,
         formatter_class=RawDescriptionHelpFormatter
     )
     parser.add_argument("--input",   default=os.path.join(repo_root, "logs", "data", "lua_api_data.json"))
-    parser.add_argument("--output",  default=os.path.join(repo_root, "extensions", "vscode", "data", "lurek-api.json"))
+    parser.add_argument("--output",  default=os.path.join(repo_root, "extension", "vscode", "data", "lurek-api.json"))
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 

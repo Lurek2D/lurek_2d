@@ -9,11 +9,11 @@ pub mod event_loop;
 pub mod management;
 /// Virtual viewport scaling: logical-to-pixel mapping and scale-mode selection.
 pub mod viewport;
-pub use event_loop::{
+pub(crate) use event_loop::{
     center_window_on_monitor, current_display_index, desktop_dimensions_for_display,
-    display_name_for_display, get_displays, move_window_to_display, select_startup_monitor,
-    DisplayInfo,
+    display_name_for_display, move_window_to_display, select_startup_monitor,
 };
+pub use event_loop::{get_displays, DisplayInfo};
 pub use management::{
     close, flash, from_dpi_pixels, get_dpi_scale, get_fullscreen, get_fullscreen_type_str,
     get_mode, get_pixel_dimensions, get_position, get_vsync, has_focus, has_mouse_focus,

@@ -289,6 +289,13 @@ do
     print("far = " .. string.format("%.2f", far))
 end
 
+--@api-stub: lurek.raycaster.applyLitShade
+do
+    local r, g, b = lurek.raycaster.applyLitShade(0.5, 1.0, 0.8, 0.6)
+    print("lit shade = " .. r .. "," .. g .. "," .. b)
+    print("red positive = " .. tostring(r > 0))
+end
+
 --@api-stub: lurek.raycaster.projectColumn
 do
     local height, top, bottom = lurek.raycaster.projectColumn(5.0, math.pi / 3, 200)
@@ -625,6 +632,17 @@ do
         print("first cell = " .. cells[1].x .. "," .. cells[1].y)
         print("first luma = " .. string.format("%.2f", cells[1].luma))
     end
+end
+
+--@api-stub: LRaycaster:extractMinimap
+do
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    map:setCell(1, 0, 1)
+    map:setCell(0, 1, 1)
+    local image = map:extractMinimap(4.0, 4.0, 0.0, 3, 4)
+    print("minimap type = " .. image:type())
+    print("minimap width = " .. image:getWidth())
 end
 
 --@api-stub: LRaycaster:projectSprite

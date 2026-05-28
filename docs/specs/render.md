@@ -52,7 +52,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Flat-color and textured geometry paths with per-frame vertex/index buffer management.
 - User WGSL shader compilation, uniform upload, and per-pipeline-key caching.
 - Off-screen canvas render targets with lazy depth/stencil attachment creation.
-- Additive point-light accumulation pass with a GPU-computed 1-D shadow-map atlas and composite blend.
+- Additive point-light accumulation pass with 1-D shadow-map atlas and composite blend.
 - Post-processing pipeline integration, screenshot readback, and per-frame render statistics.
 - Tessellation helpers for rectangles, rounded rects, ellipses, arcs, triangles, and polygons.
 - Stencil write/test pipeline variants with configurable compare and operation modes.
@@ -108,7 +108,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
 - 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
 - Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
-- Cached ping-pong intermediate textures and bind groups for multi-pass compositing without per-frame internal resource allocation when size and format are unchanged.
+- Ping-pong intermediate textures for multi-pass compositing without extra allocations.
 - Named parameter map → 16-float uniform packing for effect configuration.
 - Runtime registration of custom WGSL fragment shaders under user-chosen names.
 - Auto-uniform injection of time, frame count, and resolution into the last four slots.
@@ -267,7 +267,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `PostFxTexture::new` (`postfx_pipeline.rs`): Allocate a new `PostFxTexture` of `width`x`height` in `format` on `device`.
 - `PostFxPipeline::new` (`postfx_pipeline.rs`): Build all built-in effect pipelines and shared GPU resources for `surface_format`.
 - `PostFxPipeline::register_custom` (`postfx_pipeline.rs`): Compile and register a custom WGSL fragment shader under `name` for use in `PostFxPass`.
-- `PostFxPipeline::apply` (`postfx_pipeline.rs`): Execute all enabled `passes` in sequence using cached ping-pong textures and internal bind groups; write final result to `target_view`.
+- `PostFxPipeline::apply` (`postfx_pipeline.rs`): Execute all enabled `passes` in sequence using ping-pong textures; write final result to `target_view`.
 - `ProvinceMapUniforms::full_map` (`province_map_pipeline.rs`): Create default uniforms matching a full-map viewport.
 - `ProvinceMapPipeline::new` (`province_map_pipeline.rs`): Create province map render pipeline and uniform resources.
 - `ProvinceMapPipeline::create_data_bind_group` (`province_map_pipeline.rs`): Create bind group for province map textures and storage buffers.
@@ -304,7 +304,7 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `lurek.render.arc`: Draws a filled or outlined circular arc segment.
 - `lurek.render.points`: Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 - `lurek.render.draw`: Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
-- `lurek.render.drawBatch`: Draws a SpriteBatch through the same DrawBatch queue path used by `lurek.render.draw(batch)`.
+- `lurek.render.drawBatch`: Draws a SpriteBatch using the same queued DrawBatch command as lurek.render.draw(batch).
 - `lurek.render.drawq`: Draws a sub-region of an image defined by a Quad, with optional transform.
 - `lurek.render.drawMany`: Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
 - `lurek.render.printRotated`: Draws text centered and rotated around its midpoint.

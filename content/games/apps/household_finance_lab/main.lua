@@ -30,6 +30,8 @@ local function time_seconds()
     return os.clock()
 end
 
+--- updates all data in the UI
+-- @param ctx table: the app context
 local function refresh(ctx)
     local started = time_seconds()
     ctx.filters = ctx.Controls.read_filters(ctx)
@@ -48,6 +50,8 @@ local function refresh(ctx)
     ctx.pending_refresh = false
 end
 
+-- Schedules a refresh after a debounce period
+-- @param ctx table: the app context
 local function schedule_refresh(ctx)
     ctx.pending_refresh = true
     ctx.refresh_due = (ctx.clock or 0) + REFRESH_DEBOUNCE_SEC
@@ -55,10 +59,17 @@ local function schedule_refresh(ctx)
     ctx.status = "Filters changed; SQL refresh queued"
 end
 
+--- converts screen coordinates to virtual coordinates
+-- @param ctx table: the app context
+-- @param x number: the screen x coordinate
+-- @param y number: the screen y coordinate
+-- @return number: the virtual x coordinate
+-- @return number: the virtual y coordinate
 local function screen_to_virtual(ctx, x, y)
     return x, y
 end
 
+-- Sets default window configuration
 local function apply_window_defaults()
     lurek.window.windowConfig({
         width = 1200,
@@ -67,6 +78,8 @@ local function apply_window_defaults()
     })
 end
 
+-- saves widget state through lurek.save
+-- @param ctx table: the app context
 local function save_state(ctx)
     if not ctx.save_manager then return end
     ctx.save_manager:setSummary("Household Finance Lab widgets")
@@ -76,6 +89,8 @@ local function save_state(ctx)
     ctx.status = "Saved widget snapshot"
 end
 
+-- setup save manager
+-- @param ctx table: the app context
 local function setup_save(ctx)
     local manager = lurek.save.newSaveManager()
     manager:setSchemaVersion(1)
@@ -94,6 +109,8 @@ local function setup_save(ctx)
     end
 end
 
+-- wire up the global actions available to the application
+-- @param ctx table: the app context
 local function wire_actions(ctx)
     ctx.actions = {
         regenerate = function()
@@ -117,6 +134,9 @@ local function wire_actions(ctx)
     }
 end
 
+-- Create app context
+-- @param mods table: the modules to load
+-- @return table: the app context
 local function make_context(mods)
     local C = mods.Config.load("app/config.toml")
     local ctx = {
@@ -139,6 +159,8 @@ local function make_context(mods)
     return ctx
 end
 
+-- Load all modules
+-- @return table: the loaded modules
 local function load_modules()
     return {
         Config = load_app_module("app/config.lua"),
@@ -150,22 +172,30 @@ local function load_modules()
     }
 end
 
+-- Called by Lurek when the app is initialized
 function lurek.init()
     apply_window_defaults()
     local mods = load_modules()
     local ctx = make_context(mods)
     app.ctx = ctx
 
+    -- Initialize UI
     ctx.UIRender.setup(ctx)
+    -- Initialize controls
     ctx.Controls.setup(ctx)
+    -- Setup save manager
     setup_save(ctx)
+    -- Load data
     ctx.Pipeline.load(ctx, { prefer_cache = true })
+    -- Load test report
     load_test_report(ctx)
     refresh(ctx)
     ctx.Pipeline.log(ctx, "info", "Household Finance Lab ready")
     app.ready = true
 end
 
+-- Called by Lurek during the update loop
+-- @param dt number: the time delta since the last update
 function lurek.process(dt)
     if not app.ready then return end
     local ctx = app.ctx

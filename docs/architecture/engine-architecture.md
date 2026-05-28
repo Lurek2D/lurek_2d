@@ -1,4 +1,4 @@
-# Lurek2D — Engine Architecture
+﻿# Lurek2D â€” Engine Architecture
 
 ## TL;DR
 
@@ -6,7 +6,7 @@
 
 
 
-Companion documents: [philosophy.md](philosophy.md) · [render-command-architecture.md](render-command-architecture.md) · [test-framework.md](test-framework.md)
+Companion documents: [philosophy.md](philosophy.md) Â· [render-command-architecture.md](render-command-architecture.md) Â· [test-framework.md](test-framework.md)
 
 `philosophy.md` defines *why* and *what constraints*. This document defines *how the engine is structured*. `render-command-architecture.md` defines the rendering pipeline in detail. All four documents must remain in sync.
 
@@ -45,11 +45,11 @@ Lurek2D is a 2D game engine written in Rust that loads and executes Lua game scr
 
 Key design principles (from [philosophy.md](philosophy.md)):
 
-- Runtime only — no embedded visual editor (A-01)
-- Desktop only — Windows / Linux / macOS (A-02)
-- 2D graphics only — no 3D scene graph (A-03)
+- Runtime only â€” no embedded visual editor (A-01)
+- Desktop only â€” Windows / Linux / macOS (A-02)
+- 2D graphics only â€” no 3D scene graph (A-03)
 - LuaJIT scripting (B-01), wgpu 22 rendering (B-02)
-- Module import graph is always a DAG — no cycles (Zen Rule 1)
+- Module import graph is always a DAG â€” no cycles (Zen Rule 1)
 - Lua bindings are thin and one-directional (Zen Rule 12)
 - Every public item has a doc comment (Zen Rule 15)
 
@@ -57,16 +57,16 @@ Key design principles (from [philosophy.md](philosophy.md)):
 
 ## Module Group Model
 
-Lurek2D organises Rust source into five responsibility groups. The binding invariant is **no cycles, ever** — the module import graph must be a DAG (T-03). Same-group imports are allowed when stable and acyclic (Zen Rule 6).
+Lurek2D organises Rust source into five responsibility groups. The binding invariant is **no cycles, ever** â€” the module import graph must be a DAG (T-03). Same-group imports are allowed when stable and acyclic (Zen Rule 6).
 
 ```mermaid
 graph TD
-    E["EDGE / INTEGRATION<br/>app · lua_api · devtools · debugbridge · docs · pipeline · bin"]
-    F["FEATURE SYSTEMS<br/>ecs · scene · animation · tween · particle · tilemap · parallax<br/>minimap · raycaster · ui · terminal · ai · pathfind · save · mods<br/>i18n · automation · sprite · spine"]
-    P["PLATFORM SERVICES<br/>render · audio · physics · input · image · window · camera · light · effect"]
-    C["CORE RUNTIME<br/>runtime · event · timer · thread · network · filesystem"]
-    B["FOUNDATIONS<br/>math · log · data · serial · compute · dataframe · graph · procgen · patterns"]
-    L["Lureksome library/<br/>Pure-Lua libraries — public lurek.* API only"]
+    E["EDGE / INTEGRATION<br/>app Â· lua_api Â· devtools Â· debugbridge Â· docs Â· pipeline Â· bin"]
+    F["FEATURE SYSTEMS<br/>ecs Â· scene Â· animation Â· tween Â· particle Â· tilemap Â· parallax<br/>minimap Â· raycaster Â· ui Â· terminal Â· ai Â· pathfind Â· save Â· mods<br/>i18n Â· automation Â· sprite Â· spine"]
+    P["PLATFORM SERVICES<br/>render Â· audio Â· physics Â· input Â· image Â· window Â· camera Â· light Â· effect"]
+    C["CORE RUNTIME<br/>runtime Â· event Â· timer Â· thread Â· network Â· filesystem"]
+    B["FOUNDATIONS<br/>math Â· log Â· data Â· serial Â· compute Â· dataframe Â· graph Â· procgen Â· patterns"]
+    L["Lureksome library/<br/>Pure-Lua libraries â€” public lurek.* API only"]
 
     E --> F
     E --> P
@@ -90,7 +90,7 @@ graph TD
 | **Edge/Integration** | Composition root (`app`), scripting bridge (`lua_api`), devtools | Everything below | (top of the DAG) |
 | **Lureksome** | Pure-Lua gameplay libraries | Public `lurek.*` API only | Rust engine internals |
 
-The binding dependency constraints **T-01 through T-08** are defined in [philosophy.md § Active Module Group Constraints](philosophy.md#active-module-group-constraints). Consult `philosophy.md` directly — this document does not restate them.
+The binding dependency constraints **T-01 through T-08** are defined in [philosophy.md Â§ Active Module Group Constraints](philosophy.md#active-module-group-constraints). Consult `philosophy.md` directly â€” this document does not restate them.
 
 ---
 
@@ -175,7 +175,7 @@ The binding dependency constraints **T-01 through T-08** are defined in [philoso
 
 Pure-Lua gameplay libraries, each consuming only public `lurek.*` APIs:
 
-`battle` · `cardgame` · `combat` · `crafting` · `dialog` · `doll` · `economy` · `inventory` · `item` · `province_map` · `quest` · `stats`
+`battle` Â· `cardgame` Â· `combat` Â· `crafting` Â· `dialog` Â· `doll` Â· `economy` Â· `inventory` Â· `item` Â· `province_map` Â· `quest` Â· `stats`
 
 ---
 
@@ -187,7 +187,7 @@ Every `src/<module>/` directory follows a standard internal structure. This is a
 
 | File | Purpose | Rule |
 |------|---------|------|
-| `mod.rs` | Module declaration + re-exports | Thin only: `pub mod`, `pub use`, `//!` doc comment. No functions, no struct definitions, no logic. Target: ≤ 30 lines. |
+| `mod.rs` | Module declaration + re-exports | Thin only: `pub mod`, `pub use`, `//!` doc comment. No functions, no struct definitions, no logic. Target: â‰¤ 30 lines. |
 
 ### Standard Optional Files
 
@@ -195,16 +195,16 @@ Use these names when needed. Do not invent alternatives (`helpers.rs`, `utils.rs
 
 | File | Purpose | When to Use |
 |------|---------|-------------|
-| `<primary>.rs` | Main logic — algorithms, state, methods | Always, unless `mod.rs` alone is sufficient. Named after the module's primary concept (e.g. `emitter.rs`, `dda.rs`). |
+| `<primary>.rs` | Main logic â€” algorithms, state, methods | Always, unless `mod.rs` alone is sufficient. Named after the module's primary concept (e.g. `emitter.rs`, `dda.rs`). |
 | `types.rs` | Public data types (structs, enums, traits) | When the module exports 5+ public types. |
 | `draw.rs` | `draw_to_image()` debug/test CPU pixel utilities | Only for modules that need CPU-side pixel rendering for testing or evidence. Not the production render path. |
 | `builder.rs` | Builder pattern for complex construction | When a primary type has 5+ fields with defaults. |
 
 ### Key Rules
 
-1. `mod.rs` is a switchboard, not a workshop — only `pub mod`, `pub use`, `//!` doc.
-2. No `impl LuaUserData` in domain modules — all Lua bindings live in `src/lua_api/`.
-3. No `use wgpu::*` in domain modules — only `src/render/gpu_renderer.rs` and `src/render/shader.rs` touch wgpu.
+1. `mod.rs` is a switchboard, not a workshop â€” only `pub mod`, `pub use`, `//!` doc.
+2. No `impl LuaUserData` in domain modules â€” all Lua bindings live in `src/lua_api/`.
+3. No `use wgpu::*` in domain modules â€” only `src/render/gpu_renderer.rs` and `src/render/shader.rs` touch wgpu.
 4. Every `pub` item has a `///` doc comment (constraint Q-05).
 5. Private helpers tested inline in the source file where the helper is defined.
 6. Integration and contract tests live in `tests/`.
@@ -216,7 +216,7 @@ Use these names when needed. Do not invent alternatives (`helpers.rs`, `utils.rs
 | Fat `mod.rs` (functions, structs, > 30 lines) | Move to `<primary>.rs`, keep `mod.rs` as re-export |
 | Business logic in `lua_api` (> 10 lines per method) | Extract to domain module, call from `lua_api` |
 | `impl LuaUserData` in `src/<module>/` | Move to `src/lua_api/<module>_api.rs` |
-| Missing docstrings | Add `///` — violation of Q-05 |
+| Missing docstrings | Add `///` â€” violation of Q-05 |
 | `use wgpu::*` in non-render module | Domain modules are GPU-free (Zen Rules 3, 9) |
 | Invented file names (`helpers.rs`, `utils.rs`) | Use standard names: `types.rs`, `draw.rs`, `builder.rs` |
 
@@ -230,8 +230,8 @@ flowchart TD
     B --> C["conf.toml preferred; conf.lua legacy fallback<br/>Returns: Config struct"]
     C --> D["App::new(config)"]
     D --> E[winit: create window]
-    D --> F[wgpu: request adapter → device → surface → GpuRenderer]
-    D --> G[rodio: create OutputStream → AudioMixer]
+    D --> F[wgpu: request adapter â†’ device â†’ surface â†’ GpuRenderer]
+    D --> G[rodio: create OutputStream â†’ AudioMixer]
     D --> H[GameFS: mount game directory and sandbox]
     D --> I[SharedState: initialise all resource pools]
     E & F & G & H & I --> J[create_lua_vm]
@@ -249,27 +249,27 @@ flowchart TD
 - No GPU draw calls before `GpuRenderer` is fully initialised
 - No Lua execution before all `lurek.*` modules are registered
 - `conf.toml` is read first; if absent, `conf.lua` runs in a temporary sandboxed Lua VM
-- If neither config file is present, defaults apply (800×600 window, all modules enabled)
+- If neither config file is present, defaults apply (800Ă—600 window, all modules enabled)
 - If no game directory is provided, the engine shows the splash screen
 
 ---
 
 ## Game Loop and Frame Model
 
-Every frame follows a fixed callback sequence. All callbacks are optional — an empty `main.lua` is a valid game.
+Every frame follows a fixed callback sequence. All callbacks are optional â€” an empty `main.lua` is a valid game.
 
 ```mermaid
 flowchart TD
-    A[FRAME START] --> B[Input polling<br/>winit events → InputState]
+    A[FRAME START] --> B[Input polling<br/>winit events â†’ InputState]
     B --> C[lurek.keypressed / keyreleased / mousepressed /<br/>mousereleased / mousemoved / wheelmoved / textinput]
     C --> D["lurek.process(dt)<br/>Game logic, animation updates, AI ticks"]
-    D --> E["lurek.process_physics(dt) — fixed timestep<br/>Physics stepping, collision response<br/>May fire multiple times per frame"]
+    D --> E["lurek.process_physics(dt) â€” fixed timestep<br/>Physics stepping, collision response<br/>May fire multiple times per frame"]
     E --> F["lurek.process_late(dt)<br/>Post-physics logic: camera follow, constraints"]
     F --> G["lurek.draw()<br/>Push RenderCommands for WORLD layer"]
     G --> H["lurek.draw_ui()<br/>Push RenderCommands for UI layer"]
     H --> I[Auto-collect from domain modules<br/>particle, tilemap, ui, etc.]
     I --> J["GpuRenderer::render_frame<br/>Single GPU submission point"]
-    J --> K["lurek.resize / lurek.focus — on-demand events"]
+    J --> K["lurek.resize / lurek.focus â€” on-demand events"]
     K --> L[FRAME END]
 ```
 
@@ -299,9 +299,9 @@ Every callback is optional. The engine checks whether the Lua global function ex
 | `lurek.textinput` | `(text)` | On text entry | Text input (IME-aware) |
 | `lurek.resize` | `(w, h)` | On window resize | Layout recalculation |
 | `lurek.focus` | `(focused)` | On focus change | Pause/resume |
-| `lurek.quit` | `() → bool` | On close request | Return `true` to cancel quit |
+| `lurek.quit` | `() â†’ bool` | On close request | Return `true` to cancel quit |
 
-Callback ordering within a frame: input callbacks → `process(dt)` → `process_physics(dt)` → `process_late(dt)` → `draw()` → `draw_ui()`. Resize and focus callbacks fire between frames when the relevant winit event occurs.
+Callback ordering within a frame: input callbacks â†’ `process(dt)` â†’ `process_physics(dt)` â†’ `process_late(dt)` â†’ `draw()` â†’ `draw_ui()`. Resize and focus callbacks fire between frames when the relevant winit event occurs.
 
 ---
 
@@ -320,7 +320,7 @@ All engine state is centralised in a single `SharedState` struct, shared between
 - Rendering data (CPU side): `camera`, `lights`, `occluders`, `postfx_stack`
 - Game filesystem: `game_fs: GameFS`
 
-**Borrow rules:** Never hold a borrow across a Lua callback invocation — this will panic due to re-entrant borrowing.
+**Borrow rules:** Never hold a borrow across a Lua callback invocation â€” this will panic due to re-entrant borrowing.
 
 ---
 
@@ -338,7 +338,7 @@ All engine resources (textures, fonts, meshes, canvases, shaders, sprite batches
 | `SpriteBatchKey` | Batched sprite collection | `SharedState::sprite_batches` |
 | `ParticleKey` | Particle emitter system | `SharedState::particles` |
 
-**Resource lifecycle:** Create → Lua loads via API → stored in SlotMap → key returned to Lua. Use → key passed to draw functions → `RenderCommand` stores key → renderer resolves at draw time. Destroy → Lua drops key → SlotMap slot freed, GPU resource released next frame.
+**Resource lifecycle:** Create â†’ Lua loads via API â†’ stored in SlotMap â†’ key returned to Lua. Use â†’ key passed to draw functions â†’ `RenderCommand` stores key â†’ renderer resolves at draw time. Destroy â†’ Lua drops key â†’ SlotMap slot freed, GPU resource released next frame.
 
 **Stale key safety:** SlotMap keys include a generation counter. If a key is used after its resource was freed, the SlotMap returns `None` rather than a dangling reference. The engine logs a warning and skips the draw call.
 
@@ -348,16 +348,16 @@ All engine resources (textures, fonts, meshes, canvases, shaders, sprite batches
 
 The rendering pipeline is defined in full detail in [render-command-architecture.md](render-command-architecture.md).
 
-**Summary — Three-Layer Model:**
+**Summary â€” Three-Layer Model:**
 
-1. **Layer 1 — CPU Domain Modules**: Prepare data and push `RenderCommand` variants into a queue. No GPU calls.
-2. **Layer 2 — App Coordinator** (`src/app/`): Orchestrates the frame — polls input, runs callbacks, collects commands, passes everything to the renderer.
-3. **Layer 3 — GPU Renderer** (`src/render/gpu_renderer.rs`): The only code that issues wgpu draw calls. Receives `Vec<RenderCommand>` plus structured data (lights, post-FX) and produces the frame.
+1. **Layer 1 â€” CPU Domain Modules**: Prepare data and push `RenderCommand` variants into a queue. No GPU calls.
+2. **Layer 2 â€” App Coordinator** (`src/app/`): Orchestrates the frame â€” polls input, runs callbacks, collects commands, passes everything to the renderer.
+3. **Layer 3 â€” GPU Renderer** (`src/render/gpu_renderer.rs`): The only code that issues wgpu draw calls. Receives `Vec<RenderCommand>` plus structured data (lights, post-FX) and produces the frame.
 
 Key facts:
 - `RenderCommand` is a flat enum with 46+ variants (draw primitives, transform stack, batching, stencil, post-FX, etc.)
-- GPU code is confined to `src/render/gpu_renderer.rs` and `src/render/shader.rs` — no other module imports wgpu
-- Light data (`Light2D`, `Occluder`) and post-FX data (`PostFxEffect`) flow as structured data alongside the command list — they are not `RenderCommand` variants
+- GPU code is confined to `src/render/gpu_renderer.rs` and `src/render/shader.rs` â€” no other module imports wgpu
+- Light data (`Light2D`, `Occluder`) and post-FX data (`PostFxEffect`) flow as structured data alongside the command list â€” they are not `RenderCommand` variants
 - `camera/`, `effect/`, `light/` are top-level CPU domain modules, not subdirectories of `src/render/`
 
 ---
@@ -366,11 +366,11 @@ Key facts:
 
 **Design rules (from Zen Rule 12, constraints C-01 through C-06):**
 
-- All bindings under `lurek.*` — no bare globals (C-01)
+- All bindings under `lurek.*` â€” no bare globals (C-01)
 - One register function per module with a standard signature (C-02)
-- Sensible defaults — never require params a beginner always passes the same value (C-03)
-- All callbacks optional — empty `main.lua` is valid (C-04)
-- Synchronous from Lua's perspective — async work in Rust threads via `Channel` (C-05)
+- Sensible defaults â€” never require params a beginner always passes the same value (C-03)
+- All callbacks optional â€” empty `main.lua` is valid (C-04)
+- Synchronous from Lua's perspective â€” async work in Rust threads via `Channel` (C-05)
 - Callback names must not shadow API module keys (C-06)
 
 **File organisation:**
@@ -390,13 +390,13 @@ Key facts:
 
 ## Input Pipeline
 
-Input events arrive from winit and are routed through `InputState`. The `InputState` stores current-frame and previous-frame state for every key and mouse button — enabling `isDown()`, `isPressed()` (just pressed this frame), and `isReleased()` queries from Lua. Gamepad input uses the same pattern: poll → update state → fire callbacks.
+Input events arrive from winit and are routed through `InputState`. The `InputState` stores current-frame and previous-frame state for every key and mouse button â€” enabling `isDown()`, `isPressed()` (just pressed this frame), and `isReleased()` queries from Lua. Gamepad input uses the same pattern: poll â†’ update state â†’ fire callbacks.
 
 ```mermaid
 flowchart LR
-    W[winit Event] --> K[KeyboardInput → InputState.keys]
-    W --> M[MouseInput → InputState.mouse_buttons]
-    W --> P[CursorMoved → InputState.mouse_position]
+    W[winit Event] --> K[KeyboardInput â†’ InputState.keys]
+    W --> M[MouseInput â†’ InputState.mouse_buttons]
+    W --> P[CursorMoved â†’ InputState.mouse_position]
     W --> S[MouseWheel]
     W --> T[ReceivedCharacter]
     K --> LK[lurek.keypressed / keyreleased]
@@ -417,15 +417,15 @@ flowchart LR
     L["Lua: lurek.audio.play(path)"] --> A[audio_api]
     A --> M["AudioMixer::play(path)"]
     M --> FS[GameFS resolves path]
-    FS --> D[rodio Decoder → PCM samples]
+    FS --> D[rodio Decoder â†’ PCM samples]
     D --> B[Route to AudioBus: master / music / sfx]
     B --> S[rodio Sink plays through OutputStream]
 ```
 
 **Key concepts:**
 - **AudioBus**: Named output channel (master, music, sfx, voice). Each has independent volume. Master bus applies final gain.
-- **Static source**: Fully decoded in memory — for short SFX.
-- **Streaming source**: Decoded on-the-fly — for music and ambient audio.
+- **Static source**: Fully decoded in memory â€” for short SFX.
+- **Streaming source**: Decoded on-the-fly â€” for music and ambient audio.
 - Volume, pitch, and pan are per-source controls, composited with bus volume.
 
 ---
@@ -438,11 +438,11 @@ Physics runs through rapier2d at a fixed timestep with collision events surfaced
 flowchart LR
     L["Lua: lurek.physics.newBody(type, x, y)"] --> A[physics_api]
     A --> W["PhysicsWorld::create_body()"]
-    W --> R[rapier2d: RigidBodyBuilder + ColliderBuilder → RigidBodySet]
+    W --> R[rapier2d: RigidBodyBuilder + ColliderBuilder â†’ RigidBodySet]
     F["lurek.process_physics(dt)"] --> S["PhysicsWorld::step(dt)"]
     S --> E[Collision events collected]
     E --> C[Fire Lua collision callbacks]
-    C --> PL["lurek.process_late(dt) — read updated positions"]
+    C --> PL["lurek.process_late(dt) â€” read updated positions"]
 ```
 
 **Key concepts:**
@@ -460,16 +460,16 @@ flowchart LR
 flowchart TD
     M["Main Thread (LuaJIT VM + engine loop)"]
     M --> T["lurek.thread.spawn(worker.lua, channel)<br/>Creates new OS thread with its own LuaJIT VM<br/>Worker VM: limited lurek.* API (no GPU, audio, input)"]
-    M --> C["lurek.thread.channel() → Channel userdata<br/>channel:push(value) / channel:pop() → value or nil"]
+    M --> C["lurek.thread.channel() â†’ Channel userdata<br/>channel:push(value) / channel:pop() â†’ value or nil"]
     T <-->|Channel MPMC| C
 ```
 
 **Rules (from B-04):**
-- LuaJIT VMs are single-threaded — never share VM state across threads
+- LuaJIT VMs are single-threaded â€” never share VM state across threads
 - Worker VMs get their own fresh `Lua::new()` with limited API surface
 - `Channel` is the only communication mechanism between VMs
 - Values sent through Channel must be Lua-serialisable (no userdata, no functions)
-- Main thread polls channels during `process(dt)` — no blocking
+- Main thread polls channels during `process(dt)` â€” no blocking
 
 ---
 
@@ -478,14 +478,14 @@ flowchart TD
 All file operations go through `GameFS`, never raw filesystem access.
 
 **Mount structure:**
-- `/game/` — game directory (where `main.lua` lives)
-- `/engine/` — engine embedded assets (splash, fonts)
-- `/save/` — per-game save directory
-- `/temp/` — temporary files (cleared on exit)
+- `/game/` â€” game directory (where `main.lua` lives)
+- `/engine/` â€” engine embedded assets (splash, fonts)
+- `/save/` â€” per-game save directory
+- `/temp/` â€” temporary files (cleared on exit)
 
 **Security (path traversal guards):**
-- All paths are normalised and validated — `../` traversal is rejected
-- Writes are restricted to `/save/` and `/temp/` — game code cannot write to `/game/` or `/engine/`
+- All paths are normalised and validated â€” `../` traversal is rejected
+- Writes are restricted to `/save/` and `/temp/` â€” game code cannot write to `/game/` or `/engine/`
 - Symlinks are not followed outside the sandbox
 
 ---
@@ -509,13 +509,13 @@ Scale mode is set via `conf.toml` or `lurek.camera.setScaleMode()`.
 
 ## Configuration System
 
-**conf.toml** (preferred) or **conf.lua** (legacy) is read at engine startup. It drives window setup, module enablement, render settings, and physics parameters. If neither is found, defaults apply: 800×600 window, all modules enabled, 60 FPS target.
+**conf.toml** (preferred) or **conf.lua** (legacy) is read at engine startup. It drives window setup, module enablement, render settings, and physics parameters. If neither is found, defaults apply: 800Ă—600 window, all modules enabled, 60 FPS target.
 
 Configuration fields:
-- `window` — title, width, height, fullscreen, vsync, resizable, min_size
-- `modules` — boolean flags for optional subsystems (physics, audio, network, etc.)
-- `render` — MSAA samples, max texture size, target FPS
-- `physics` — gravity, fixed timestep, iterations
+- `window` â€” title, width, height, fullscreen, vsync, resizable, min_size
+- `modules` â€” boolean flags for optional subsystems (physics, audio, network, etc.)
+- `render` â€” MSAA samples, max texture size, target FPS
+- `physics` â€” gravity, fixed timestep, iterations
 
 **Format rule (B-05):** TOML for human-authored config and project manifests. JSON for external interop. No YAML.
 
@@ -524,34 +524,34 @@ Configuration fields:
 ## Error Handling
 
 **Error types** defined in `src/runtime/`:
-- `Lua(mlua::Error)` — Lua runtime error
-- `Render(wgpu::Error)` — GPU/wgpu error
-- `Audio(rodio::Error)` — audio playback error
-- `Physics(String)` — physics engine error
-- `Io(std::io::Error)` — file I/O error
-- `Config(String)` — configuration error
-- `Asset(String)` — asset loading error
+- `Lua(mlua::Error)` â€” Lua runtime error
+- `Render(wgpu::Error)` â€” GPU/wgpu error
+- `Audio(rodio::Error)` â€” audio playback error
+- `Physics(String)` â€” physics engine error
+- `Io(std::io::Error)` â€” file I/O error
+- `Config(String)` â€” configuration error
+- `Asset(String)` â€” asset loading error
 
 **Error flow:**
 1. Domain modules return `Result<T, EngineError>` or domain-specific errors
 2. `lua_api` converts to `LuaError` at the boundary
 3. Lua scripts receive error as a Lua error (pcall-catchable)
-4. Uncaught Lua errors are logged and the frame continues — the engine does not crash on a single Lua error
+4. Uncaught Lua errors are logged and the frame continues â€” the engine does not crash on a single Lua error
 
-**Rules:** Never `panic!` in engine code — convert to `Result` or log + skip. Never `unwrap()` on fallible operations. Every `unsafe` block requires a `// SAFETY:` comment. Error messages must include the failing path, key, or value.
+**Rules:** Never `panic!` in engine code â€” convert to `Result` or log + skip. Never `unwrap()` on fallible operations. Every `unsafe` block requires a `// SAFETY:` comment. Error messages must include the failing path, key, or value.
 
 ---
 
 ## Quality Gates
 
-Binding constraints from [philosophy.md](philosophy.md) § Quality Gate Constraints:
+Binding constraints from [philosophy.md](philosophy.md) Â§ Quality Gate Constraints:
 
 | ID | Gate | Command |
 |----|------|---------|
 | **Q-01** | All tests pass | `cargo test` |
 | **Q-02** | No clippy warnings | `cargo clippy -- -D warnings` |
-| **Q-03** | New public Rust API → integration test | Manual review |
-| **Q-04** | New `lurek.*` function → Lua BDD test | Manual review |
+| **Q-03** | New public Rust API â†’ integration test | Manual review |
+| **Q-04** | New `lurek.*` function â†’ Lua BDD test | Manual review |
 | **Q-05** | No undocumented public items | `python tools/docs/collect_docs.py --report-missing` |
 
 Both `cargo test` and `cargo clippy -- -D warnings` must pass before every merge.
@@ -562,7 +562,7 @@ Both `cargo test` and `cargo clippy -- -D warnings` must pass before every merge
 
 | Component | Crate | Version | Purpose |
 |-----------|-------|---------|---------|
-| Language | Rust | stable ≥ 1.78 | Engine implementation |
+| Language | Rust | stable â‰Ą 1.78 | Engine implementation |
 | Scripting | mlua | 0.9 | LuaJIT binding (primary), Lua 5.4 fallback |
 | Rendering | wgpu | 22 | GPU abstraction (Vulkan / DX12 / Metal) |
 | Windowing | winit | 0.30 | Window creation and event loop |
@@ -575,8 +575,8 @@ Both `cargo test` and `cargo clippy -- -D warnings` must pass before every merge
 
 | Flag | Effect |
 |------|--------|
-| `lua-jit` (default) | Link LuaJIT via mlua — primary runtime |
-| `lua54` | Link Lua 5.4 via mlua — non-shipping CI fallback |
+| `lua-jit` (default) | Link LuaJIT via mlua â€” primary runtime |
+| `lua54` | Link Lua 5.4 via mlua â€” non-shipping CI fallback |
 
 ---
 
@@ -584,32 +584,33 @@ Both `cargo test` and `cargo clippy -- -D warnings` must pass before every merge
 
 ```
 lurek2d/
-├── src/                    Rust source — all five module groups
-│   ├── lib.rs              Crate root
-│   ├── main.rs             Binary entry point
-│   ├── <module>/           One directory per module
-│   └── lua_api/            Scripting bridge (one <module>_api.rs per module)
-├── content/
-│   ├── examples/           Single-file API usage scripts (documentation only)
-│   ├── games/              Playable game demos (must all pass CI)
-│   ├── layouts/            TOML UI layout files
-│   ├── plugins/            Plugin examples
-│   ├── snippets/           VS Code snippet sources
-│   └── zips/               Zipped assets and examples
-├── tests/
-│   ├── rust/               Rust tests (unit, stress, golden, config, security, ext)
-│   └── lua/                Lua BDD tests (unit, integration, content, stress, security)
-├── docs/
-│   ├── architecture/       Architecture documentation
-│   ├── specs/              One <module>.md per src/<module>/
-│   ├── api/                Generated API references (never edit by hand)
-│   └── CHANGELOG.md        Version history
-├── library/                Lureksome — pure-Lua standard libraries
-├── tools/                  CLI scripts (docs, audit, fix, validate, dist)
-├── assets/                 Engine assets (splash, icon, fonts)
-├── extensions/vscode/      VS Code extension (MCP, IntelliSense, webview)
-├── .github/                CAG layer (agents, skills, prompts, system prompt)
-├── work/                   Session folders (current + archive)
-├── Cargo.toml              Crate manifest
-└── build.rs                Build script (asset watching)
+â”śâ”€â”€ src/                    Rust source â€” all five module groups
+â”‚   â”śâ”€â”€ lib.rs              Crate root
+â”‚   â”śâ”€â”€ main.rs             Binary entry point
+â”‚   â”śâ”€â”€ <module>/           One directory per module
+â”‚   â””â”€â”€ lua_api/            Scripting bridge (one <module>_api.rs per module)
+â”śâ”€â”€ content/
+â”‚   â”śâ”€â”€ examples/           Single-file API usage scripts (documentation only)
+â”‚   â”śâ”€â”€ games/              Playable game demos (must all pass CI)
+â”‚   â”śâ”€â”€ layouts/            TOML UI layout files
+â”‚   â”śâ”€â”€ plugins/            Plugin examples
+â”‚   â”śâ”€â”€ snippets/           VS Code snippet sources
+â”‚   â””â”€â”€ zips/               Zipped assets and examples
+â”śâ”€â”€ tests/
+â”‚   â”śâ”€â”€ rust/               Rust tests (unit, stress, golden, config, security, ext)
+â”‚   â””â”€â”€ lua/                Lua BDD tests (unit, integration, content, stress, security)
+â”śâ”€â”€ docs/
+â”‚   â”śâ”€â”€ architecture/       Architecture documentation
+â”‚   â”śâ”€â”€ specs/              One <module>.md per src/<module>/
+â”‚   â”śâ”€â”€ api/                Generated API references (never edit by hand)
+â”‚   â””â”€â”€ CHANGELOG.md        Version history
+â”śâ”€â”€ library/                Lureksome â€” pure-Lua standard libraries
+â”śâ”€â”€ tools/                  CLI scripts (docs, audit, fix, validate, dist)
+â”śâ”€â”€ assets/                 Engine assets (splash, icon, fonts)
+â”śâ”€â”€ extension/vscode/      VS Code extension (MCP, IntelliSense, webview)
+â”śâ”€â”€ .github/                CAG layer (agents, skills, prompts, system prompt)
+â”śâ”€â”€ work/                   Session folders (current + archive)
+â”śâ”€â”€ Cargo.toml              Crate manifest
+â””â”€â”€ build.rs                Build script (asset watching)
 ```
+

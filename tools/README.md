@@ -73,6 +73,7 @@
 
 - **`docs/collect_docs.py`**: collect_docs.py — Lurek2D rich structured API documentation collector.
 - **`docs/gen_docs_lua.py`**: gen_docs_lua.py -- Generate Lua API reference from logs/data/lua_api_data.json.
+- **`docs/gen_docs_lua_html.py`**: gen_docs_lua_html.py — Generate a folder-based static HTML browser for the Lua API under build/doc/lua-api/ with examples, callback index, and type index.
 - **`docs/gen_docs_rust.py`**: gen_docs_rust.py — Generate compact inline Rust API reference from logs/data/rust_api_data.json.
 - **`docs/gen_engine_docs.py`**: gen_engine_docs.py — Generate per-module documentation for Lurek2D Rust engine source.
 - **`docs/gen_extension_api.py`**: gen_extension_api.py -- Convert logs/data/lua_api_data.json to
@@ -126,7 +127,7 @@
 
 ## snippets
 
-- **`snippets/gen_vscode_snippets.py`**: Build extensions/vscode/data/snippets.json from content/snippets/*.lua.
+- **`snippets/gen_vscode_snippets.py`**: Build extension/vscode/data/snippets.json from content/snippets/*.lua.
 - **`snippets/snippet_catalog.py`**: Shared parser for content/snippets/*.lua marker blocks.
 
 ## ui

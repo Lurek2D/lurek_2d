@@ -1,4 +1,4 @@
-# Lurek2D — Competitive Positioning
+﻿# Lurek2D â€” Competitive Positioning
 
 > **Audience:** Product, marketing, and technical leads.
 > **Goal:** Establish where Lurek2D sits against popular 2D-capable engines, and why the AI-first, API-only model is a distinct and defensible position.
@@ -11,7 +11,7 @@
 > It replaces the visual editor with a massive, fully documented, fully tested API surface that an AI agent (or a human) can use correctly from day one.
 
 Traditional game engines were designed for humans clicking through GUIs.
-Lurek2D is designed so that an AI coding agent can write a complete, working game — correctly, on the first try — because:
+Lurek2D is designed so that an AI coding agent can write a complete, working game â€” correctly, on the first try â€” because:
 
 1. **Every reusable behaviour is a pre-built, tested API block.** 5 000+ `lurek.*` functions covering render, audio, physics, AI, UI, tilemap, particle, procgen, pathfinding, ECS, networking, data, and more.
 2. **100% API documentation coverage is a hard quality gate.** `cargo clippy` and `collect_docs.py` reject any merge that leaves a public function undocumented.
@@ -28,27 +28,27 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 |---|--------|-----------------|--------------|
 | 1 | **Godot 4** | GDScript / C# / C++ | Full visual editor |
 | 2 | **GameMaker Studio 2** | GML / YOYO | Full visual editor + drag-and-drop |
-| 3 | **Love2D** | Lua | No editor — pure code |
-| 4 | **Corona SDK / Solar2D** | Lua | No editor — pure code |
+| 3 | **Love2D** | Lua | No editor â€” pure code |
+| 4 | **Corona SDK / Solar2D** | Lua | No editor â€” pure code |
 | 5 | **Defold** | Lua | Full visual editor |
-| 6 | **HaxeFlixel** | Haxe | No editor — pure code |
-| 7 | **MonoGame** | C# | No editor — pure code |
-| 8 | **Pygame** | Python | No editor — pure code |
+| 6 | **HaxeFlixel** | Haxe | No editor â€” pure code |
+| 7 | **MonoGame** | C# | No editor â€” pure code |
+| 8 | **Pygame** | Python | No editor â€” pure code |
 | 9 | **Bevy** | Rust | No editor (ECS only) |
 | 10 | **Unity (2D mode)** | C# | Full visual editor |
-| — | **Lurek2D** | Lua (Rust core) | No visual editor — VS Code + API |
+| â€” | **Lurek2D** | Lua (Rust core) | No visual editor â€” VS Code + API |
 
 ---
 
 ### 15 Evaluation Areas
 
-#### Area 1 — API Surface Size and Breadth
+#### Area 1 â€” API Surface Size and Breadth
 
 *How many ready-made, tested building blocks exist?*
 
 | Engine | Assessment |
 |--------|-----------|
-| Godot 4 | Very large — but spread across GDScript classes, C# bindings, and editor nodes. Hard to enumerate. |
+| Godot 4 | Very large â€” but spread across GDScript classes, C# bindings, and editor nodes. Hard to enumerate. |
 | GameMaker 2 | Large built-in runtime, but locked to the GM toolchain. |
 | Love2D | Small intentional surface (~300 functions). You build everything on top. |
 | Corona / Solar2D | Medium. Good 2D basics, weak simulation/data. |
@@ -57,14 +57,14 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | MonoGame | Medium-low. Thin XNA wrapper. You write most subsystems. |
 | Pygame | Low-medium. Thin SDL2 wrapper. You write everything game-logic. |
 | Bevy | Growing Rust ECS. Very little built-in game logic. |
-| Unity 2D | Massive — but scattered across packages, Asset Store, C# namespaces, and editor magic. |
+| Unity 2D | Massive â€” but scattered across packages, Asset Store, C# namespaces, and editor magic. |
 | **Lurek2D** | **5 000+ documented `lurek.*` functions across 70+ modules** (render, audio, physics, AI, ECS, UI, tilemap, particle, pathfinding, procgen, networking, dataframe, compute, globe, raycaster, and more). Single consistent namespace. |
 
 **Lurek2D verdict:** Largest coherent, single-namespace API of any pure-code 2D runtime. Comparable to Unity in breadth, but code-only and fully enumerable.
 
 ---
 
-#### Area 2 — Documentation Completeness and Machine-Readability
+#### Area 2 â€” Documentation Completeness and Machine-Readability
 
 *Can an AI agent use the API correctly from docs alone, without trial and error?*
 
@@ -80,13 +80,13 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Pygame | Python docstrings. Inconsistent completeness. |
 | Bevy | Rust `rustdoc`. High completeness for a young project. |
 | Unity 2D | Massive. Inconsistent. Some methods have minimal descriptions. |
-| **Lurek2D** | **100% coverage enforced by quality gate.** `collect_docs.py --report-missing` fails CI if any `pub` item lacks a `///` doc comment. `docs/api/lurek.md` and `docs/api/lurek.lua` are generated from source — always in sync. |
+| **Lurek2D** | **100% coverage enforced by quality gate.** `collect_docs.py --report-missing` fails CI if any `pub` item lacks a `///` doc comment. `docs/api/lurek.md` and `docs/api/lurek.lua` are generated from source â€” always in sync. |
 
 **Lurek2D verdict:** Only engine where 100% documentation is a hard, automated, non-bypassable gate. AI agents read the generated reference and use functions correctly on first attempt.
 
 ---
 
-#### Area 3 — AI-First Tooling and Workflow
+#### Area 3 â€” AI-First Tooling and Workflow
 
 *Is the engine designed for AI coding agents as first-class users?*
 
@@ -97,13 +97,13 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Love2D | Simple enough that AI can write correct Love2D. But no structured support. |
 | Defold | No AI-native layer. |
 | Others | None were designed with AI agents as primary users. |
-| **Lurek2D** | **AI-first by design.** The CAG system (Context Augmented Guidance) provides a full agent roster, skill bundles, prompt templates, and retrieval corpus. VS Code extension ships IntelliSense from generated type stubs. Local AI agent workflows are documented in `extensions/vscode/cag/game-dev/`. The philosophy doc states: "Could a Copilot agent use this API correctly without a clarifying question? If not, redesign." |
+| **Lurek2D** | **AI-first by design.** The CAG system (Context Augmented Guidance) provides a full agent roster, skill bundles, prompt templates, and retrieval corpus. VS Code extension ships IntelliSense from generated type stubs. Local AI agent workflows are documented in `extension/vscode/cag/game-dev/`. The philosophy doc states: "Could a Copilot agent use this API correctly without a clarifying question? If not, redesign." |
 
 **Lurek2D verdict:** The only 2D engine whose architecture document names AI agents as first-class users and enforces AI-verifiability as a design constraint.
 
 ---
 
-#### Area 4 — Code-Only Workflow (No GUI Required)
+#### Area 4 â€” Code-Only Workflow (No GUI Required)
 
 *Can a developer or AI agent build a complete game without touching a visual editor?*
 
@@ -111,27 +111,27 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 |--------|-----------|
 | Godot 4 | Possible in theory via `.tscn` text files, but scene graph design without the editor is painful. |
 | GameMaker 2 | No. The IDE is mandatory for most workflows. |
-| Love2D | Yes — 100% code. But you assemble everything from scratch. |
-| Corona / Solar2D | Yes — code only. |
-| Defold | Partial — editor is strongly encouraged for scene composition. |
-| HaxeFlixel | Yes — code only. |
-| MonoGame | Yes — code only. |
-| Pygame | Yes — code only. |
-| Bevy | Yes — Rust ECS, code only. |
+| Love2D | Yes â€” 100% code. But you assemble everything from scratch. |
+| Corona / Solar2D | Yes â€” code only. |
+| Defold | Partial â€” editor is strongly encouraged for scene composition. |
+| HaxeFlixel | Yes â€” code only. |
+| MonoGame | Yes â€” code only. |
+| Pygame | Yes â€” code only. |
+| Bevy | Yes â€” Rust ECS, code only. |
 | Unity 2D | No. Scene graphs require the editor. Script-only workflows lose most Unity value. |
-| **Lurek2D** | **Yes — fully code-only by design constraint (A-01).** A single `main.lua` is a valid complete game. VS Code is tooling, not the engine. |
+| **Lurek2D** | **Yes â€” fully code-only by design constraint (A-01).** A single `main.lua` is a valid complete game. VS Code is tooling, not the engine. |
 
 **Lurek2D verdict:** Full code-only workflow is a binding constraint, not an afterthought. AI agents never need a visual editor step.
 
 ---
 
-#### Area 5 — Scripting Ergonomics for Non-Engine Developers
+#### Area 5 â€” Scripting Ergonomics for Non-Engine Developers
 
 *How easy is it to write game logic without knowing engine internals?*
 
 | Engine | Assessment |
 |--------|-----------|
-| Godot 4 | GDScript is friendly. But you must understand scenes, nodes, signals — editor-centric mental model. |
+| Godot 4 | GDScript is friendly. But you must understand scenes, nodes, signals â€” editor-centric mental model. |
 | GameMaker 2 | GML is approachable. But tied to the GM IDE. |
 | Love2D | Clean Lua. No built-in patterns. You choose all architecture. |
 | Corona / Solar2D | Lua with a thin event model. Approachable. |
@@ -141,19 +141,19 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Pygame | Python is friendly but slow for anything complex. |
 | Bevy | Rust ECS is powerful but steep. High expertise required. |
 | Unity 2D | C# is clean but the engine API surface is enormous and inconsistent. |
-| **Lurek2D** | **Lua with a consistent single-namespace API.** No scenes, no nodes, no message buses to understand. Call `lurek.render.sprite(...)`, `lurek.physics.body(...)`, `lurek.audio.play(...)`. Every callback (`init`, `process`, `draw`) is optional — an empty `main.lua` is valid. |
+| **Lurek2D** | **Lua with a consistent single-namespace API.** No scenes, no nodes, no message buses to understand. Call `lurek.render.sprite(...)`, `lurek.physics.body(...)`, `lurek.audio.play(...)`. Every callback (`init`, `process`, `draw`) is optional â€” an empty `main.lua` is valid. |
 
 **Lurek2D verdict:** Lowest time-to-first-working-game. The API surface replaces architectural decisions. A developer (or AI) calls functions, not designs systems.
 
 ---
 
-#### Area 6 — Engine Binary Size and Distribution Simplicity
+#### Area 6 â€” Engine Binary Size and Distribution Simplicity
 
 *How simple is it to ship a game?*
 
 | Engine | Assessment |
 |--------|-----------|
-| Godot 4 | Export templates are ~60–100 MB. Editor separate. |
+| Godot 4 | Export templates are ~60â€“100 MB. Editor separate. |
 | GameMaker 2 | Proprietary export. IDE required to build. |
 | Love2D | Runtime ~10 MB. Game is a `.love` zip. Clean. |
 | Corona / Solar2D | Simulator required for build. |
@@ -161,15 +161,15 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | HaxeFlixel | Haxe compiler + runtime. Moderate. |
 | MonoGame | .NET runtime dependency. |
 | Pygame | Python runtime dependency. |
-| Bevy | Rust binary — can be very small. No scripting overhead. |
-| Unity 2D | Build output ~30–80 MB minimum. IL2CPP pipelines are complex. |
-| **Lurek2D** | **Single binary. Proposed constraint A-05: core binary ≤ 10 MB stripped.** Game is a folder of `.lua` files + assets. No build step for game content. Instant iteration. |
+| Bevy | Rust binary â€” can be very small. No scripting overhead. |
+| Unity 2D | Build output ~30â€“80 MB minimum. IL2CPP pipelines are complex. |
+| **Lurek2D** | **Single binary. Proposed constraint A-05: core binary â‰¤ 10 MB stripped.** Game is a folder of `.lua` files + assets. No build step for game content. Instant iteration. |
 
 **Lurek2D verdict:** One binary, one folder, zero build pipeline for game content. Closest competitor is Love2D, but Lurek2D ships a much larger built-in API surface.
 
 ---
 
-#### Area 7 — Learning Curve for New Developers
+#### Area 7 â€” Learning Curve for New Developers
 
 *Time from install to first working game.*
 
@@ -179,7 +179,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | GameMaker 2 | Low-medium. Drag-drop helps beginners. Paid license. |
 | Love2D | Low for Lua speakers. No structure means decisions quickly accumulate. |
 | Defold | Medium-high. Message-passing Lua model is unusual. |
-| Unity 2D | High. Scene graph, prefabs, packages, asset pipeline — months to mastery. |
+| Unity 2D | High. Scene graph, prefabs, packages, asset pipeline â€” months to mastery. |
 | Bevy | High. Rust + ECS = expert territory. |
 | **Lurek2D** | **Low for anyone who can read examples.** Philosophy: "one afternoon to learn." API docs + working examples cover every function. The AI copilot path is the intended first workflow. |
 
@@ -187,9 +187,9 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 8 — Performance Baseline (Desktop 2D)
+#### Area 8 â€” Performance Baseline (Desktop 2D)
 
-*60 FPS at 1080p on integrated GPU — achievable without expert tuning?*
+*60 FPS at 1080p on integrated GPU â€” achievable without expert tuning?*
 
 | Engine | Assessment |
 |--------|-----------|
@@ -205,7 +205,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 9 — Test, Evidence, and Example Coverage
+#### Area 9 â€” Test, Evidence, and Example Coverage
 
 *How much validated, working code exists to ground AI generation?*
 
@@ -222,7 +222,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 10 — Vibe-Coding Risk (AI Slop Rate)
+#### Area 10 â€” Vibe-Coding Risk (AI Slop Rate)
 
 *How likely is an AI agent to produce plausible-looking but broken code?*
 
@@ -230,7 +230,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 |--------|-----------|
 | Godot 4 | High slop risk. GDScript and scene graph both have many implicit conventions. |
 | Unity 2D | Very high slop risk. Unity's API surface is enormous, inconsistent across versions, and relies on editor magic (prefabs, Inspector, lifecycle) that AI cannot "see". |
-| Love2D | Low-medium. Small API = less to get wrong. But game architecture is freestyle — AI fills gaps with invented patterns. |
+| Love2D | Low-medium. Small API = less to get wrong. But game architecture is freestyle â€” AI fills gaps with invented patterns. |
 | Pygame | Medium. Python surface is known but game architecture is invented from scratch every time. |
 | Bevy | Medium-high. Rust + ECS has steep typing requirements. AI misses borrow checker subtleties. |
 | **Lurek2D** | **Minimum slop rate by design.** The massive API surface means most game behaviours are already implemented and tested inside the engine. AI writes Lua that calls proven, documented blocks. It does not invent new subsystems. Pure Lua logic (rules, state machines, game-specific math) is where AI works, not in engine plumbing. |
@@ -239,7 +239,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 11 — Modding and Extensibility
+#### Area 11 â€” Modding and Extensibility
 
 *Can users extend or mod the engine without touching Rust?*
 
@@ -251,11 +251,11 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Defold | Lua scripts. Extensions via native extensions (complex). |
 | **Lurek2D** | **`library/` (Lureksome):** pure-Lua reusable modules on top of `lurek.*`. **`lurek.mods.*`:** mod hook system. **Pure Lua extension path requires zero Rust.** Plugins proposed for optional subsystems (see `docs/architecture/plugins.md`). |
 
-**Lurek2D verdict:** Pure-Lua modding is a first-class path. The `library/` layer ships dozens of reusable game-logic modules. Mods are Lua scripts — AI can write them.
+**Lurek2D verdict:** Pure-Lua modding is a first-class path. The `library/` layer ships dozens of reusable game-logic modules. Mods are Lua scripts â€” AI can write them.
 
 ---
 
-#### Area 12 — Simulation, Data, and Non-Game Use Cases
+#### Area 12 â€” Simulation, Data, and Non-Game Use Cases
 
 *Can the runtime serve compute-heavy or simulation workloads beyond traditional games?*
 
@@ -263,7 +263,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 |--------|-----------|
 | Godot 4 | Not designed for it. Some community workarounds. |
 | GameMaker 2 | No. Game-focused only. |
-| Love2D | Possible but painful — no built-in data structures. |
+| Love2D | Possible but painful â€” no built-in data structures. |
 | Pygame | Used for simulations. Python data ecosystem helps. |
 | Bevy | Growing ECS-based simulation support. |
 | **Lurek2D** | **`lurek.dataframe.*`, `lurek.compute.*`, `lurek.procgen.*`, `lurek.graph.*`, `lurek.globe.*`, `lurek.province.*`, `lurek.patterns.*`, `lurek.learning.*`, `lurek.flownet.*`.** Non-game use cases (digital twins, local data tools, simulation sandboxes) are first-class in the API surface. |
@@ -272,9 +272,9 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 13 — Community Tooling and Ecosystem
+#### Area 13 â€” Community Tooling and Ecosystem
 
-*Plugins, assets, forums, tutorials — how rich is the ecosystem?*
+*Plugins, assets, forums, tutorials â€” how rich is the ecosystem?*
 
 | Engine | Assessment |
 |--------|-----------|
@@ -287,7 +287,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 14 — Open Source Licensing and Commercial Use
+#### Area 14 â€” Open Source Licensing and Commercial Use
 
 *Is the engine free, and can you ship commercial games without royalties?*
 
@@ -309,7 +309,7 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 
 ---
 
-#### Area 15 — Platform Reach
+#### Area 15 â€” Platform Reach
 
 *Which platforms can you target?*
 
@@ -323,33 +323,33 @@ Lurek2D is designed so that an AI coding agent can write a complete, working gam
 | Unity 2D | All platforms including Console + Mobile + VR. |
 | **Lurek2D** | **Desktop only (Windows / Linux / macOS, x86_64 + ARM). Binding constraint A-02.** No mobile, no WASM. |
 
-**Lurek2D verdict:** Narrower than Unity or Godot by design. Desktop-only is a deliberate scope decision, not a limitation — it allows the engine to maintain a small, reliable binary and tight GPU/OS assumptions (B-03).
+**Lurek2D verdict:** Narrower than Unity or Godot by design. Desktop-only is a deliberate scope decision, not a limitation â€” it allows the engine to maintain a small, reliable binary and tight GPU/OS assumptions (B-03).
 
 ---
 
 ## 3. Summary Scorecard
 
-Legend: ★★★ best-in-class · ★★ competitive · ★ acceptable · — weak/not applicable
+Legend: â…â…â… best-in-class Â· â…â… competitive Â· â… acceptable Â· â€” weak/not applicable
 
 | Area | Godot 4 | GameMaker 2 | Love2D | Unity 2D | Lurek2D |
 |------|---------|-------------|--------|----------|---------|
-| 1. API surface breadth | ★★ | ★★ | ★ | ★★★ | ★★★ |
-| 2. Docs completeness / machine-readable | ★★ | ★ | ★★ | ★★ | ★★★ |
-| 3. AI-first tooling | ★ | — | ★ | ★ | ★★★ |
-| 4. Code-only workflow | ★ | — | ★★★ | — | ★★★ |
-| 5. Scripting ergonomics | ★★★ | ★★★ | ★★ | ★★ | ★★★ |
-| 6. Binary size / ship simplicity | ★★ | ★ | ★★★ | ★ | ★★★ |
-| 7. Learning curve | ★★ | ★★★ | ★★ | ★ | ★★★ |
-| 8. Performance baseline | ★★ | ★★★ | ★★ | ★★★ | ★★★ |
-| 9. Test + evidence coverage | ★★ | ★ | ★ | ★★ | ★★★ |
-| 10. Vibe-coding / AI slop risk ↓ | ★★ | ★ | ★★ | ★ | ★★★ |
-| 11. Modding / extensibility | ★★ | ★ | ★★★ | ★★ | ★★ |
-| 12. Simulation / data capabilities | ★ | — | ★ | ★ | ★★★ |
-| 13. Community / ecosystem | ★★★ | ★★ | ★★ | ★★★ | ★ |
-| 14. Open source / licensing | ★★★ | — | ★★★ | — | ★★★ |
-| 15. Platform reach | ★★★ | ★★★ | ★★ | ★★★ | ★★ |
+| 1. API surface breadth | â…â… | â…â… | â… | â…â…â… | â…â…â… |
+| 2. Docs completeness / machine-readable | â…â… | â… | â…â… | â…â… | â…â…â… |
+| 3. AI-first tooling | â… | â€” | â… | â… | â…â…â… |
+| 4. Code-only workflow | â… | â€” | â…â…â… | â€” | â…â…â… |
+| 5. Scripting ergonomics | â…â…â… | â…â…â… | â…â… | â…â… | â…â…â… |
+| 6. Binary size / ship simplicity | â…â… | â… | â…â…â… | â… | â…â…â… |
+| 7. Learning curve | â…â… | â…â…â… | â…â… | â… | â…â…â… |
+| 8. Performance baseline | â…â… | â…â…â… | â…â… | â…â…â… | â…â…â… |
+| 9. Test + evidence coverage | â…â… | â… | â… | â…â… | â…â…â… |
+| 10. Vibe-coding / AI slop risk â†“ | â…â… | â… | â…â… | â… | â…â…â… |
+| 11. Modding / extensibility | â…â… | â… | â…â…â… | â…â… | â…â… |
+| 12. Simulation / data capabilities | â… | â€” | â… | â… | â…â…â… |
+| 13. Community / ecosystem | â…â…â… | â…â… | â…â… | â…â…â… | â… |
+| 14. Open source / licensing | â…â…â… | â€” | â…â…â… | â€” | â…â…â… |
+| 15. Platform reach | â…â…â… | â…â…â… | â…â… | â…â…â… | â…â… |
 
-> Lurek2D leads in 9 of 15 areas. Its single structural weakness is ecosystem/community size — expected for an early project and offset by the AI-assisted workflow layer.
+> Lurek2D leads in 9 of 15 areas. Its single structural weakness is ecosystem/community size â€” expected for an early project and offset by the AI-assisted workflow layer.
 
 ---
 
@@ -363,13 +363,13 @@ Both solve the same core problem: you should not have to implement a physics sol
 | | GameMaker | Lurek2D |
 |--|-----------|---------|
 | How you access blocks | GUI + GML | `lurek.*` Lua calls |
-| AI can use? | No — GUI is opaque | Yes — API is 100% documented |
-| Tests for each block? | No | Yes — every function |
+| AI can use? | No â€” GUI is opaque | Yes â€” API is 100% documented |
+| Tests for each block? | No | Yes â€” every function |
 | Add your own blocks? | Extensions (complex) | Pure Lua library/ or Rust plugin |
 | Editor required? | Yes | No |
-| Works in CI/headless? | Limited | Yes — Lua-first test harness |
+| Works in CI/headless? | Limited | Yes â€” Lua-first test harness |
 
-The Lurek2D model removes the only part AI cannot see: the visual editor. Everything else — the building blocks — is exposed as a clean, tested, documented Lua API.
+The Lurek2D model removes the only part AI cannot see: the visual editor. Everything else â€” the building blocks â€” is exposed as a clean, tested, documented Lua API.
 
 ---
 
@@ -377,7 +377,7 @@ The Lurek2D model removes the only part AI cannot see: the visual editor. Everyt
 
 > **Lurek2D: Game development for the agent-assisted era.**
 >
-> Where other engines ship a visual editor, Lurek2D ships 5 000+ documented, tested API building blocks. Your `main.lua` wires them together. An AI agent reads the docs, sees the example, and writes correct game code — the first time.
+> Where other engines ship a visual editor, Lurek2D ships 5 000+ documented, tested API building blocks. Your `main.lua` wires them together. An AI agent reads the docs, sees the example, and writes correct game code â€” the first time.
 >
 > One binary. One Lua file. Zero IDE ceremony. Maximum API surface. Minimum AI slop.
 
@@ -389,12 +389,13 @@ The Lurek2D model removes the only part AI cannot see: the visual editor. Everyt
 |---------|-------------|
 | AI-assisted game developer | The API is the context window. 5 000+ functions, all documented, all tested. AI slop eliminated at the source. |
 | Indie solo developer | Fast path from idea to playable. No editor to learn. Examples for everything. MIT licensed. |
-| Game jam participant | `main.lua` + API reference + examples → working game in hours, not days. |
-| Simulation / tool builder | `dataframe`, `compute`, `procgen`, `globe`, `province` — no other 2D runtime offers this. |
+| Game jam participant | `main.lua` + API reference + examples â†’ working game in hours, not days. |
+| Simulation / tool builder | `dataframe`, `compute`, `procgen`, `globe`, `province` â€” no other 2D runtime offers this. |
 | Engine developer | Rust core, clean 5-tier architecture, no cycles, documented spec per module. Easy to extend. |
-| Educator / student | Engine architecture, test placement, doc standards — all visible. The whole system is a teaching artifact. |
+| Educator / student | Engine architecture, test placement, doc standards â€” all visible. The whole system is a teaching artifact. |
 
 ---
 
-*Generated by Architect agent — skill_enterprise-architecture + skill_solution-options loaded.*
+*Generated by Architect agent â€” skill_enterprise-architecture + skill_solution-options loaded.*
 *Source references: `docs/architecture/philosophy.md`, `README.md`, `src/lua_api/` (71 modules), `content/examples/` (67 example files).*
+

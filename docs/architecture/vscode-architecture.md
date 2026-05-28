@@ -1,8 +1,8 @@
-# Lurek2D — VS Code Extension Architecture
+﻿# Lurek2D â€” VS Code Extension Architecture
 
 ## TL;DR
 
-The VS Code extension in `extensions/vscode/` is the optional developer-experience layer for Lurek2D. It is not part of the engine binary. It provides Lua tooling, build/run/test commands, debug bridge integration, AI/MCP tools, and 41 interactive visual editor panels.
+The VS Code extension in `extension/vscode/` is the optional developer-experience layer for Lurek2D. It is not part of the engine binary. It provides Lua tooling, build/run/test commands, debug bridge integration, AI/MCP tools, and 41 interactive visual editor panels.
 
 ## Identity and activation
 
@@ -12,8 +12,8 @@ The VS Code extension in `extensions/vscode/` is the optional developer-experien
 | Display name | Lurek2D Toolkit |
 | Version | `1.0.0` |
 | VS Code engine | `^1.90.0` |
-| Active entry point | `extensions/vscode/src/extension.ts` |
-| Bundle output | `extensions/vscode/dist/extension.js` |
+| Active entry point | `extension/vscode/src/extension.ts` |
+| Bundle output | `extension/vscode/dist/extension.js` |
 
 Activation remains lazy:
 
@@ -63,12 +63,12 @@ Every editor spec also exposes eight typed feature actions. `src/editors/editorF
 
 Workspace-specific runtime behavior:
 
-- `grid` — editable cell maps for tile maps, tilesets, navmeshes, voxel slices, provinces, and other spatial tools.
-- `node` — stateful visual graphs with nodes, links, grouping, validation, simulation, and arrangement actions.
-- `table` — editable data grids with rows, columns, filters, formulas, metrics, and validation actions.
-- `timeline` — tracks, keyframes, playhead, easing, event markers, and play/pause state.
-- `preview` — generated samples, overlays, sliders, simulation state, metrics, and snapshots.
-- `document` — editable generated source with search, copy, insert, validation, style, and export actions.
+- `grid` â€” editable cell maps for tile maps, tilesets, navmeshes, voxel slices, provinces, and other spatial tools.
+- `node` â€” stateful visual graphs with nodes, links, grouping, validation, simulation, and arrangement actions.
+- `table` â€” editable data grids with rows, columns, filters, formulas, metrics, and validation actions.
+- `timeline` â€” tracks, keyframes, playhead, easing, event markers, and play/pause state.
+- `preview` â€” generated samples, overlays, sliders, simulation state, metrics, and snapshots.
+- `document` â€” editable generated source with search, copy, insert, validation, style, and export actions.
 
 ## Editor catalog and local specs
 
@@ -141,9 +141,9 @@ The task intentionally keeps the existing sidebar/command launch model. File-bas
 
 Extension-side checks:
 
-- `npm run build` — regenerates extension data and bundles `dist/extension.js`.
-- `npm test` — launches the VS Code test host and runs test suites.
-- `npm run package` — validates manifest/package shape with VSCE.
+- `npm run build` â€” regenerates extension data and bundles `dist/extension.js`.
+- `npm test` â€” launches the VS Code test host and runs test suites.
+- `npm run package` â€” validates manifest/package shape with VSCE.
 
 Editor-specific tests verify:
 
@@ -163,3 +163,4 @@ Editor-specific tests verify:
 - The extension is optional. Engine runtime behavior must not depend on it.
 - Extension code must not import Rust types.
 - Generated API/snippet data must be regenerated through the configured scripts, not hand-edited.
+

@@ -3,6 +3,7 @@
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;
 use super::SharedState;
+use crate::image::ImageData;
 use crate::particle::visualization as particle_vis;
 use crate::particle::{physics_collision, presets as particle_presets};
 use crate::particle::{
@@ -1029,6 +1030,71 @@ impl LuaUserData for LuaParticleSystem {
             let img = particle_vis::draw_to_image(ps, w, h);
             Ok(img)
         });
+        // -- drawExplosionToImage --
+        /// Draws particles as an explosion preview image.
+        /// @param | w | integer | Image width.
+        /// @param | h | integer | Image height.
+        /// @return | LImageData | Image data containing the explosion preview.
+        methods.add_method("drawExplosionToImage", |_, this, (w, h): (u32, u32)| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            Ok(particle_vis::draw_explosion_to_image(ps, w, h))
+        });
+        // -- drawRainToImage --
+        /// Draws particles as a rain preview image.
+        /// @param | w | integer | Image width.
+        /// @param | h | integer | Image height.
+        /// @return | LImageData | Image data containing the rain preview.
+        methods.add_method("drawRainToImage", |_, this, (w, h): (u32, u32)| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            Ok(particle_vis::draw_rain_to_image(ps, w, h))
+        });
+        // -- drawSparkTrailToImage --
+        /// Draws particles as a spark-trail preview image.
+        /// @param | w | integer | Image width.
+        /// @param | h | integer | Image height.
+        /// @return | LImageData | Image data containing the spark preview.
+        methods.add_method("drawSparkTrailToImage", |_, this, (w, h): (u32, u32)| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            Ok(particle_vis::draw_spark_trail_to_image(ps, w, h))
+        });
+        // -- drawOverImage --
+        /// Draws particles over an existing image and returns a composited copy.
+        /// @param | image | LImageData | Background image data handle.
+        /// @return | LImageData | Image data containing the composited result.
+        methods.add_method("drawOverImage", |_, this, image: LuaAnyUserData| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            let background = image.borrow::<ImageData>()?;
+            Ok(particle_vis::draw_over_image(ps, background.clone()))
+        });
+        // -- paintOnto --
+        /// Paints live particles directly onto an existing image in place.
+        /// @param | image | LImageData | Target image data handle.
+        methods.add_method("paintOnto", |_, this, image: LuaAnyUserData| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            let mut target = image.borrow_mut::<ImageData>()?;
+            particle_vis::paint_onto(ps, &mut target);
+            Ok(())
+        });
         // -- warmUp --
         /// Advances the system by a warm-up duration.
         /// @param | seconds | number | Warm-up duration in seconds.
@@ -1476,6 +1542,33 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
                 collision_probe_radius: 1.0,
                 collision_restitution: 0.6,
             })
+        })?,
+    )?;
+    // -- drawLifecycleToImage --
+    /// Draws a lifecycle chart image from `(step, count)` snapshot tables.
+    /// @param | snapshots | table | Array of snapshot tables or `{step, count}` arrays.
+    /// @param | max_particles | integer | Maximum particle count for chart scaling.
+    /// @param | w | integer | Image width.
+    /// @param | h | integer | Image height.
+    /// @return | LImageData | Image data containing the lifecycle chart.
+    tbl.set(
+        "drawLifecycleToImage",
+        lua.create_function(|_, (snapshots, max_particles, w, h): (LuaTable, u32, u32, u32)| {
+            let mut snapshot_pairs = Vec::new();
+            for pair in snapshots.sequence_values::<LuaTable>() {
+                let entry = pair?;
+                let step = entry.get::<_, Option<u32>>("step")?.unwrap_or(entry.get(1)?);
+                let count = entry
+                    .get::<_, Option<u32>>("count")?
+                    .unwrap_or(entry.get(2)?);
+                snapshot_pairs.push((step, count as usize));
+            }
+            Ok(particle_vis::draw_lifecycle_to_image(
+                &snapshot_pairs,
+                max_particles as usize,
+                w,
+                h,
+            ))
         })?,
     )?;
     /// Particle system method names also exposed as module-level forwarding functions.

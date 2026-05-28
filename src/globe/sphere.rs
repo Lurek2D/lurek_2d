@@ -110,7 +110,7 @@ pub fn great_circle_path(
 }
 
 /// Return the smallest positive intersection `t` for a ray from `origin` in `dir` with sphere of `radius`.
-pub fn ray_sphere_intersect(origin: Vec3, dir: Vec3, radius: f32) -> Option<f32> {
+pub(crate) fn ray_sphere_intersect(origin: Vec3, dir: Vec3, radius: f32) -> Option<f32> {
     let a = dir.dot(dir);
     if a <= 1e-20 {
         return None;
@@ -134,27 +134,21 @@ pub fn ray_sphere_intersect(origin: Vec3, dir: Vec3, radius: f32) -> Option<f32>
 }
 
 /// Return a rotation matrix representing axial tilt (alias for `rot_x`).
-pub fn axial_tilt_mat(angle_deg: f32) -> Mat3x3 {
+pub(crate) fn axial_tilt_mat(angle_deg: f32) -> Mat3x3 {
     rot_x(angle_deg)
 }
 
 /// Return a rotation matrix for `angle_deg` degrees around the X axis.
-pub fn rot_x(angle_deg: f32) -> Mat3x3 {
+pub(crate) fn rot_x(angle_deg: f32) -> Mat3x3 {
     let r = angle_deg.to_radians();
     let (c, s) = (r.cos(), r.sin());
     Mat3x3::from_cols([1.0, 0.0, 0.0], [0.0, c, s], [0.0, -s, c])
 }
 
 /// Return a rotation matrix for `angle_deg` degrees around the Y axis.
-pub fn rot_y(angle_deg: f32) -> Mat3x3 {
+pub(crate) fn rot_y(angle_deg: f32) -> Mat3x3 {
     let r = angle_deg.to_radians();
     let (c, s) = (r.cos(), r.sin());
     Mat3x3::from_cols([c, 0.0, -s], [0.0, 1.0, 0.0], [s, 0.0, c])
 }
 
-/// Return a rotation matrix for `angle_deg` degrees around the Z axis.
-pub fn rot_z(angle_deg: f32) -> Mat3x3 {
-    let r = angle_deg.to_radians();
-    let (c, s) = (r.cos(), r.sin());
-    Mat3x3::from_cols([c, s, 0.0], [-s, c, 0.0], [0.0, 0.0, 1.0])
-}

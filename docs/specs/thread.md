@@ -142,13 +142,11 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `LPromise:getError`: Returns the error message from the promise, if it terminated with an error.
 - `LPromise:chain`: Creates a new promise that runs the given code with the parent promise's result as its first argument.
 
-### `LThread` Methods
-- `LThread:type`: Returns the type name of this object.
-- `LThread:typeOf`: Checks whether this object matches the given type name.
-- `LThread:start`: Launches the worker thread, executing the Lua code string supplied at creation time.
-- `LThread:wait`: Blocks the calling thread until the worker thread finishes execution.
-- `LThread:isRunning`: Checks whether the worker thread is still executing.
-- `LThread:getError`: Returns the error message from the worker thread, if it terminated with an error.
+### `LThreadHandle` Methods
+- `LThreadHandle:start`: Launches the worker thread, executing the Lua code string supplied at creation time.
+- `LThreadHandle:wait`: Blocks the calling thread until the worker thread finishes execution.
+- `LThreadHandle:isRunning`: Checks whether the worker thread is still executing.
+- `LThreadHandle:getError`: Returns the error message from the worker thread, if it terminated with an error.
 
 ### `LThreadPool` Methods
 - `LThreadPool:type`: Returns the type name of this object.

@@ -56,6 +56,20 @@ do
     print("toml globe provinces = " .. g:provinceCount())
 end
 
+--@api-stub: lurek.globe.loadFromTOMLFile
+do
+    local path = "logs/globe_example.toml"
+    local file = assert(io.open(path, "w"))
+    file:write("[[province]]\n")
+    file:write("id = 1\n")
+    file:write("centroid = [10.0, 20.0]\n")
+    file:write("vertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
+    file:close()
+
+    local g = lurek.globe.loadFromTOMLFile("toml_file_globe", path, {})
+    print("toml file globe provinces = " .. g:provinceCount())
+end
+
 --@api-stub: lurek.globe.loadFromPNG
 do
     local g = lurek.globe.loadFromPNG("png_globe", "assets/textures/province_map.png")
@@ -81,6 +95,13 @@ end
 do
     local v = lurek.globe.latLonToUnit(0, 0)
     print("unit vec = " .. v[1] .. "," .. v[2] .. "," .. v[3])
+end
+
+--@api-stub: lurek.globe.raySphereIntersect
+do
+    local t = lurek.globe.raySphereIntersect(0.0, 0.0, -2.0, 0.0, 0.0, 1.0, 1.0)
+    print("hit distance = " .. tostring(t))
+    print("ray hits sphere = " .. tostring(t ~= nil))
 end
 
 --- Globe Module Part 2: LGlobe methods (camera, provinces, markers, layers, fog)

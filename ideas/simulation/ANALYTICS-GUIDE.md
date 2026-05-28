@@ -1,36 +1,36 @@
-# Block Simulator w Lurek2D - analityka before/after
+﻿# Block Simulator w Lurek2D - analityka before/after
 
-Ten dokument przepisuje pierwotny pomysł analityki pod Lurek2D. Analityka jest warstwą po runie: Rustowy `src/blocksim` emituje monitor samples i event log, a Lua oraz `lurek.dataframe` liczą KPI i raporty.
+Ten dokument przepisuje pierwotny pomysĹ‚ analityki pod Lurek2D. Analityka jest warstwÄ… po runie: Rustowy `src/blocksim` emituje monitor samples i event log, a Lua oraz `lurek.dataframe` liczÄ… KPI i raporty.
 
 ## Decyzja architektoniczna
 
-Analityka jest procesem po symulacji. Nie modyfikuje tick loop, nie zmienia stanu bloków i nie jest częścią renderowania. Czyta próbki monitorów, liczy KPI, porównuje baseline z wariantem anomalii i zapisuje raport.
+Analityka jest procesem po symulacji. Nie modyfikuje tick loop, nie zmienia stanu blokĂłw i nie jest czÄ™Ĺ›ciÄ… renderowania. Czyta prĂłbki monitorĂłw, liczy KPI, porĂłwnuje baseline z wariantem anomalii i zapisuje raport.
 
-Docelowy podział:
+Docelowy podziaĹ‚:
 
-| Warstwa | Odpowiedzialność |
+| Warstwa | OdpowiedzialnoĹ›Ä‡ |
 |---|---|
-| Lua `library/blocksim/analytics.lua` | definicje KPI, reguły porównań, interpretacja wyników, składanie raportu |
-| Lua `content/games/block_sim/` | scenariusze, ekrany dashboardu, komendy użytkownika |
+| Lua `library/blocksim/analytics.lua` | definicje KPI, reguĹ‚y porĂłwnaĹ„, interpretacja wynikĂłw, skĹ‚adanie raportu |
+| Lua `content/games/block_sim/` | scenariusze, ekrany dashboardu, komendy uĹĽytkownika |
 | Rust `lurek.dataframe` | statystyki, rolling windows, percent change, z-score, korelacje |
-| Rust `lurek.serial` | JSON/TOML import-export raportów i konfiguracji |
+| Rust `lurek.serial` | JSON/TOML import-export raportĂłw i konfiguracji |
 | Rust `lurek.filesystem` | zapis `save/sim_runs/*_monitors.jsonl` i `*_analytics.json` |
-| Rust `lurek.thread` | opcjonalne liczenie raportu poza główną klatką |
-| Rust `lurek.debugbridge` | wysyłka raportów i próbek do rozszerzenia VS Code |
-| `extensions/vscode` | panel porównania runów, wykresy, szybkie uruchamianie baseline/comparison |
+| Rust `lurek.thread` | opcjonalne liczenie raportu poza gĹ‚ĂłwnÄ… klatkÄ… |
+| Rust `lurek.debugbridge` | wysyĹ‚ka raportĂłw i prĂłbek do rozszerzenia VS Code |
+| `extension/vscode` | panel porĂłwnania runĂłw, wykresy, szybkie uruchamianie baseline/comparison |
 
-Nie używać YAML. Konfiguracje czysto danych powinny być TOML. Scenariusze, które zawierają funkcje, callbacki albo niestandardowe formuły, powinny być Lua modules zwracającymi tabele.
+Nie uĹĽywaÄ‡ YAML. Konfiguracje czysto danych powinny byÄ‡ TOML. Scenariusze, ktĂłre zawierajÄ… funkcje, callbacki albo niestandardowe formuĹ‚y, powinny byÄ‡ Lua modules zwracajÄ…cymi tabele.
 
 ## Pipeline w Lurek
 
-1. `lurek.init()` ładuje scenariusz i tworzy dwa runy: baseline i comparison.
-2. `lurek.process(dt)` krokuje symulację. Dla szybkiego trybu używa akumulatora logicznych ticków, nie czasu klatki.
-3. Monitor engine zapisuje próbki w strukturze Lua i opcjonalnie do pliku przez `lurek.filesystem.write` albo append przez `lurek.filesystem.append`.
-4. Po zakończeniu obu runów `SimAnalytics.comparePair(baseline, comparison, config)` liczy KPI.
+1. `lurek.init()` Ĺ‚aduje scenariusz i tworzy dwa runy: baseline i comparison.
+2. `lurek.process(dt)` krokuje symulacjÄ™. Dla szybkiego trybu uĹĽywa akumulatora logicznych tickĂłw, nie czasu klatki.
+3. Monitor engine zapisuje prĂłbki w strukturze Lua i opcjonalnie do pliku przez `lurek.filesystem.write` albo append przez `lurek.filesystem.append`.
+4. Po zakoĹ„czeniu obu runĂłw `SimAnalytics.comparePair(baseline, comparison, config)` liczy KPI.
 5. Wynik idzie do `lurek.serial.toJson(report, true)` i `lurek.filesystem.writeJson(path, json)`.
-6. `lurek.draw_ui()` pokazuje raport w UI, a `lurek.debugbridge.broadcast("sim.analytics", json)` wysyła go do VS Code.
+6. `lurek.draw_ui()` pokazuje raport w UI, a `lurek.debugbridge.broadcast("sim.analytics", json)` wysyĹ‚a go do VS Code.
 
-Przykład Lua-first:
+PrzykĹ‚ad Lua-first:
 
 ```lua
 local Sim = require("library.blocksim")
@@ -81,31 +81,31 @@ return {
 }
 ```
 
-Jeżeli scenariusz ma być edytowany jako plik danych, użyć TOML i `lurek.serial.fromToml`. JSON zostaje formatem raportów i integracji z narzędziami.
+JeĹĽeli scenariusz ma byÄ‡ edytowany jako plik danych, uĹĽyÄ‡ TOML i `lurek.serial.fromToml`. JSON zostaje formatem raportĂłw i integracji z narzÄ™dziami.
 
 ## KPI w Lurek
 
 | KPI | Implementacja |
 |---|---|
-| throughput, latency, error rate, utilization | Lua liczy z próbek monitorów; `lurek.dataframe` liczy `mean`, `median`, `stddev`, `p95` |
-| cost per item, revenue per tick, cost of quality | Lua składa wartości z monitorów value; `LDataFrame:sum`, `:groupAgg`, `:withPctChange` pomagają w raportach |
-| bottleneck score, flow efficiency, cascade depth | Lua używa stanu grafu i historii queue depth; Rust powinien dać szybkie snapshoty grafu |
-| recovery time, anomaly impact, resilience score | Lua jako reguły domenowe, bo wagi i tolerancje są częścią gry/scenariusza |
-| signal propagation delay | Wymaga próbek sygnałów; najlepiej w Rustowym monitorze, jeżeli symulacja urośnie |
+| throughput, latency, error rate, utilization | Lua liczy z prĂłbek monitorĂłw; `lurek.dataframe` liczy `mean`, `median`, `stddev`, `p95` |
+| cost per item, revenue per tick, cost of quality | Lua skĹ‚ada wartoĹ›ci z monitorĂłw value; `LDataFrame:sum`, `:groupAgg`, `:withPctChange` pomagajÄ… w raportach |
+| bottleneck score, flow efficiency, cascade depth | Lua uĹĽywa stanu grafu i historii queue depth; Rust powinien daÄ‡ szybkie snapshoty grafu |
+| recovery time, anomaly impact, resilience score | Lua jako reguĹ‚y domenowe, bo wagi i tolerancje sÄ… czÄ™Ĺ›ciÄ… gry/scenariusza |
+| signal propagation delay | Wymaga prĂłbek sygnaĹ‚Ăłw; najlepiej w Rustowym monitorze, jeĹĽeli symulacja uroĹ›nie |
 
-`lurek.dataframe` już ma dobre minimum: `fromTable`, `describe`, `mean`, `median`, `stddev`, `variance`, `corr`, `withRollingMean`, `withPctChange`, `zscoreCol`, `query`, `toJSON`. To wystarcza do pierwszej wersji analityki bez DuckDB.
+`lurek.dataframe` juĹĽ ma dobre minimum: `fromTable`, `describe`, `mean`, `median`, `stddev`, `variance`, `corr`, `withRollingMean`, `withPctChange`, `zscoreCol`, `query`, `toJSON`. To wystarcza do pierwszej wersji analityki bez DuckDB.
 
-## Porównanie baseline/comparison
+## PorĂłwnanie baseline/comparison
 
-Walidacja pary musi być binarna:
+Walidacja pary musi byÄ‡ binarna:
 
-- ten sam graf logiczny: te same bloki, krawędzie, typy itemów i monitory,
+- ten sam graf logiczny: te same bloki, krawÄ™dzie, typy itemĂłw i monitory,
 - ten sam seed RNG,
 - ten sam tick count,
-- baseline ma wyłączone anomalie,
-- comparison ma włączony wybrany zestaw anomalii.
+- baseline ma wyĹ‚Ä…czone anomalie,
+- comparison ma wĹ‚Ä…czony wybrany zestaw anomalii.
 
-Brakuje wygodnego silnikowego API do hashowania definicji scenariusza. W Lua można zacząć od `lurek.serial.toJson(def, false)` i `lurek.data.hash` jeśli funkcja hash jest dostępna, ale docelowo warto dodać:
+Brakuje wygodnego silnikowego API do hashowania definicji scenariusza. W Lua moĹĽna zaczÄ…Ä‡ od `lurek.serial.toJson(def, false)` i `lurek.data.hash` jeĹ›li funkcja hash jest dostÄ™pna, ale docelowo warto dodaÄ‡:
 
 ```lua
 lurek.sim.hashScenario(def) -> string
@@ -114,20 +114,20 @@ lurek.sim.validateRunPair(base_snapshot, comparison_snapshot) -> boolean, string
 
 ## Detekcja anomalii
 
-Reguły detekcji są post-processingiem nad monitorami:
+ReguĹ‚y detekcji sÄ… post-processingiem nad monitorami:
 
-| Reguła | Lurek implementacja |
+| ReguĹ‚a | Lurek implementacja |
 |---|---|
-| threshold | parser prostych warunków w Lua |
+| threshold | parser prostych warunkĂłw w Lua |
 | trend | `LDataFrame:withRollingMean`, regresja liniowa w Lua albo Rust helper |
-| correlation | `LDataFrame:corr` dla dwóch kolumn |
-| overlap with injected anomalies | Lua porównuje zakresy ticków i taguje `correlated_anomalies` |
+| correlation | `LDataFrame:corr` dla dwĂłch kolumn |
+| overlap with injected anomalies | Lua porĂłwnuje zakresy tickĂłw i taguje `correlated_anomalies` |
 
-Pierwsza wersja nie potrzebuje osobnego endpointu HTTP. Lurek runtime zapisuje raport i wysyła event przez debug bridge. Rozszerzenie VS Code może to odebrać.
+Pierwsza wersja nie potrzebuje osobnego endpointu HTTP. Lurek runtime zapisuje raport i wysyĹ‚a event przez debug bridge. Rozszerzenie VS Code moĹĽe to odebraÄ‡.
 
 ## Format raportu
 
-Raport powinien pozostać JSON, bo to jest zewnętrzna integracja i łatwy format dla VS Code:
+Raport powinien pozostaÄ‡ JSON, bo to jest zewnÄ™trzna integracja i Ĺ‚atwy format dla VS Code:
 
 ```json
 {
@@ -142,38 +142,39 @@ Raport powinien pozostać JSON, bo to jest zewnętrzna integracja i łatwy forma
 }
 ```
 
-Do zapisu użyć:
+Do zapisu uĹĽyÄ‡:
 
 - `lurek.serial.toJson(report, true)`,
 - `lurek.filesystem.writeJson("sim_runs/<id>_analytics.json", json)`,
-- `lurek.debugbridge.broadcast("sim.analytics", json)` dla narzędzi.
+- `lurek.debugbridge.broadcast("sim.analytics", json)` dla narzÄ™dzi.
 
 ## Braki w Lurek API
 
-Priorytetowe braki, jeżeli projekt ma być produkcyjny:
+Priorytetowe braki, jeĹĽeli projekt ma byÄ‡ produkcyjny:
 
 1. `lurek.sim` jako publiczny bridge do Rustowego `src/blocksim`: sim handle, block state, item queues, monitor sample, event log.
 2. Stabilny `RunSnapshot` z `scenario_hash`, `monitor_hash`, `seed`, `tick_count`.
-3. Helpery statystyczne dla percentyli i Welch t-test. Część da się zrobić przez `lurek.dataframe`, ale t-test i p-value powinny być Rustowe.
-4. API append JSONL: dzisiaj można użyć `lurek.filesystem.append`, ale wygodne byłoby `lurek.serial.writeJsonLine(path, table)`.
-5. `lurek.debugbridge.broadcast` ma surowy JSON string; dla symulacji warto dodać konwencję eventów `sim.monitor`, `sim.analytics`, `sim.state`.
+3. Helpery statystyczne dla percentyli i Welch t-test. CzÄ™Ĺ›Ä‡ da siÄ™ zrobiÄ‡ przez `lurek.dataframe`, ale t-test i p-value powinny byÄ‡ Rustowe.
+4. API append JSONL: dzisiaj moĹĽna uĹĽyÄ‡ `lurek.filesystem.append`, ale wygodne byĹ‚oby `lurek.serial.writeJsonLine(path, table)`.
+5. `lurek.debugbridge.broadcast` ma surowy JSON string; dla symulacji warto dodaÄ‡ konwencjÄ™ eventĂłw `sim.monitor`, `sim.analytics`, `sim.state`.
 
 ## VS Code extension
 
 Dodatki do rozszerzenia:
 
-- komenda `Lurek2D: Run Simulation Pair`, która uruchamia baseline i comparison,
-- webview `Simulation Analytics` z tabelą KPI, timeline i wykresami,
-- podgląd `*_analytics.json` jako raport zamiast zwykłego JSON,
-- walidator scenariuszy Lua/TOML: brak monitora dla KPI, zły target, mismatch baseline/comparison,
+- komenda `Lurek2D: Run Simulation Pair`, ktĂłra uruchamia baseline i comparison,
+- webview `Simulation Analytics` z tabelÄ… KPI, timeline i wykresami,
+- podglÄ…d `*_analytics.json` jako raport zamiast zwykĹ‚ego JSON,
+- walidator scenariuszy Lua/TOML: brak monitora dla KPI, zĹ‚y target, mismatch baseline/comparison,
 - snippets dla KPI i detection rules,
-- debug bridge client dla eventów `sim.analytics` i `sim.monitor`.
+- debug bridge client dla eventĂłw `sim.analytics` i `sim.monitor`.
 
-Ważne: rozszerzenie jest warstwą developerską. Silnik i gra muszą działać bez niego.
+WaĹĽne: rozszerzenie jest warstwÄ… developerskÄ…. Silnik i gra muszÄ… dziaĹ‚aÄ‡ bez niego.
 
 ## Testy
 
 - Lua tests dla `library/blocksim/analytics.lua`: percent change, absolute change, ratio, z-score, effect size, recovery time.
-- Rust tests dotyczą kernelowych monitor samples i event logu w `src/blocksim`; KPI pozostaje poza tick loop.
-- Demo smoke test może być ignorowany i robić screenshot dashboardu.
-- Generated docs aktualizować tylko wtedy, gdy dodamy publiczne `lurek.sim.*` API.
+- Rust tests dotyczÄ… kernelowych monitor samples i event logu w `src/blocksim`; KPI pozostaje poza tick loop.
+- Demo smoke test moĹĽe byÄ‡ ignorowany i robiÄ‡ screenshot dashboardu.
+- Generated docs aktualizowaÄ‡ tylko wtedy, gdy dodamy publiczne `lurek.sim.*` API.
+

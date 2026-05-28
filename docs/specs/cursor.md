@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-
+- The `cursor` module manages OS cursor state, custom image cursors, animated frame sequences, context-sensitive switching, visual trail effects, and a magnifying zoom lens for Lurek2D games.
 
 ## General Info
 
@@ -15,9 +15,11 @@
 
 ## Summary
 
-The `cursor` module is documented from the current source tree and existing module reference data.
+The `cursor` module provides complete cursor lifecycle management for Lurek2D games. At its foundation, the `CursorManager` centralizes all cursor state: it can display native OS system cursors (arrow, crosshair, hand, IBeam, and resize variants), custom RGBA image cursors with configurable hotspot offsets, or smooth animated frame sequences built from `AnimatedCursor`. Each animated cursor supports per-frame durations and an independent sine-driven `PulseConfig` scale animation, creating subtle breathing or emphasis effects without additional scripting.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Context-sensitive switching is a first-class feature. Developers register `ContextRule` mappings from named string contexts (e.g., `"dialog"`, `"combat"`, `"menu"`) to specific cursor states. Activating a context via `setContext` instantly swaps to the registered cursor, allowing the cursor to always reflect the current game interaction mode without polling game state from the rendering layer.
+
+The module also provides two post-process visual effects layered on top of the hardware cursor. The `CursorTrail` records a ring buffer of recent cursor positions (`TrailPoint`), each with linearly decaying alpha, and renders them in one of three modes: fading dots, connected line segments, or particle clusters. The `CursorZoom` lens composites a configurable magnifying glass (1.1× to 8.0×) around the cursor position as a post-process scissored blit, useful for map editors or accessibility features. All cursor behavior — visibility, hardware lock for FPS-style grabs, trail, zoom, and context rules — is fully accessible via the `lurek.cursor.*` Lua API.
 
 ## Source Documentation
 
@@ -109,7 +111,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `AnimatedCursor::frame_count` (`animated_cursor.rs`): Return the total number of frames in the animation.
 - `AnimatedCursor::current_index` (`animated_cursor.rs`): Return the zero-based index of the currently active frame.
 - `AnimatedCursor::is_looping` (`animated_cursor.rs`): Return `true` if the animation restarts from frame 0 after the last frame.
-- `CursorContext::from_str` (`context.rs`): Parse a `CursorContext` variant from a lowercase string name.
+- `CursorContext::from_name` (`context.rs`): Parse a `CursorContext` variant from a lowercase string name.
 - `CursorContext::as_str` (`context.rs`): Return the canonical string representation of this context.
 - `CursorManager::new` (`context.rs`): Create a new `CursorManager` with default system arrow cursor and no rules.
 - `CursorManager::set_system` (`context.rs`): Switch the active cursor to an OS system cursor shape.
@@ -137,7 +139,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `CustomCursor::get_pixel` (`custom_cursor.rs`): Return the RGBA value at `(x, y)`, or `None` if the coordinates are out of bounds.
 - `CustomCursor::pixels` (`custom_cursor.rs`): Return the full flat RGBA pixel buffer (width × height × 4 bytes).
 - `CustomCursor::size` (`custom_cursor.rs`): Return the cursor image dimensions as `(width, height)` in pixels.
-- `SystemCursor::from_str` (`system_cursor.rs`): Parse a `SystemCursor` variant from a string name; returns `None` for unknown names.
+- `SystemCursor::from_name` (`system_cursor.rs`): Parse a `SystemCursor` variant from a string name; returns `None` for unknown names.
 - `SystemCursor::as_str` (`system_cursor.rs`): Return the canonical OS string identifier for this cursor shape.
 - `CursorTrail::new` (`trail.rs`): Create a new cursor trail with the given render mode and default settings.
 - `CursorTrail::update` (`trail.rs`): Tick the trail: age existing points, remove expired ones, and append a new point if the cursor moved far enough.

@@ -1,38 +1,38 @@
-# vscode-extension
+﻿# vscode-extension
 
 ## TL;DR
 
-- The VS Code extension ("Lurek2D Toolkit") is the official developer-experience layer for the Lurek2D engine, providing language intelligence, visual editors, build/debug tooling, and AI-powered game-dev agents — all optional and external to the engine binary.
+- The VS Code extension ("Lurek2D Toolkit") is the official developer-experience layer for the Lurek2D engine, providing language intelligence, visual editors, build/debug tooling, and AI-powered game-dev agents â€” all optional and external to the engine binary.
 
 ## General Info
 
 - Module group: `Edge/Integration`
-- Source path: `extensions/vscode/`
+- Source path: `extension/vscode/`
 - Lua API path(s): None direct (consumes generated `data/lurek-api.json` and `docs/api/lurek.lua`)
 - Primary Lua namespace: None (tooling layer; not part of the runtime)
-- Test path(s): `extensions/vscode/src/test/unit/`, `extensions/vscode/src/test/suite/`
-- Package manifest: `extensions/vscode/package.json`
-- Build output: `extensions/vscode/dist/extension.js` (esbuild), `extensions/vscode/lurek2d-toolkit-<version>.vsix`
+- Test path(s): `extension/vscode/src/test/unit/`, `extension/vscode/src/test/suite/`
+- Package manifest: `extension/vscode/package.json`
+- Build output: `extension/vscode/dist/extension.js` (esbuild), `extension/vscode/lurek2d-toolkit-<version>.vsix`
 
 ## Summary
 
 The Lurek2D Toolkit is a VS Code extension that complements the sumneko.lua language server with Lurek-specific intelligence and tooling. It activates when it detects a `main.lua` or `Cargo.toml` in the workspace and provides:
 
-- **Language providers** that add Lurek-aware diagnostics, definition jumping, inlay hints, code actions, semantic token highlighting, asset path resolution, type inference for factory objects, CodeLens markers, and LuaJIT-specific hints — layered on top of (not duplicating) sumneko.lua.
+- **Language providers** that add Lurek-aware diagnostics, definition jumping, inlay hints, code actions, semantic token highlighting, asset path resolution, type inference for factory objects, CodeLens markers, and LuaJIT-specific hints â€” layered on top of (not duplicating) sumneko.lua.
 - **41 visual editor panels** implemented as webview panels with CSP: tilemap, particle, dialog, pixel art, scene flow, entity, AI behavior tree, animation state machine, audio mixer, colour palette, shader preview, font preview, and many more.
 - **140+ commands** spanning run/stop, scaffold, test, package, debug, refactor, reference, CAG agent management, and editor launching.
 - **9 shared services** (ApiData, ApiDocs, DebugBridge, LuaParser, LurekProcess, ParallelCargo, RAG, StatusBar, SymbolIndex) that back the commands and providers.
 - **Debug adapter (DAP)** for Lua step-debugging with breakpoints, call-stack inspection, variable inspection, and expression evaluation.
 - **MCP server** exposing tools for AI agents: query API, run tests, list examples, run example.
-- **12 game-dev CAG agents, 26 skills, 15 prompts** bundled under `extensions/vscode/cag/game-dev/` for AI-assisted game development workflows.
+- **12 game-dev CAG agents, 26 skills, 15 prompts** bundled under `extension/vscode/cag/game-dev/` for AI-assisted game development workflows.
 
-The extension is an opt-in developer layer (constraint A-01) — the engine binary has no dependency on it.
+The extension is an opt-in developer layer (constraint A-01) â€” the engine binary has no dependency on it.
 
 ## Files
 
 ### Root
 
-- `package.json`: Extension manifest — commands, activation events, views, configuration, debug adapter contribution.
+- `package.json`: Extension manifest â€” commands, activation events, views, configuration, debug adapter contribution.
 - `tsconfig.json`: TypeScript configuration.
 - `esbuild.config.mjs`: Bundle configuration producing `dist/extension.js`.
 - `language-configuration.json`: Lua bracket, comment, and folding markers.
@@ -61,8 +61,8 @@ The extension is an opt-in developer layer (constraint A-01) — the engine bina
 
 | Provider            | VS Code capability                                       |
 | ------------------- | -------------------------------------------------------- |
-| `completion.ts`     | (Deferred to sumneko.lua — not registered)               |
-| `hover.ts`          | (Deferred to sumneko.lua — not registered)               |
+| `completion.ts`     | (Deferred to sumneko.lua â€” not registered)               |
+| `hover.ts`          | (Deferred to sumneko.lua â€” not registered)               |
 | `definition.ts`     | Go-to-definition for `lurek.*` symbols                   |
 | `references.ts`     | (Deferred to sumneko.lua)                                |
 | `rename.ts`         | (Deferred to sumneko.lua)                                |
@@ -141,9 +141,9 @@ Generated data files consumed by providers at runtime:
 
 Bundled CAG layer for AI-assisted game development:
 
-- `agents/` — 12 game-dev agents (animator, audio-designer, game-architect, game-tester, gameplay-designer, level-designer, lua-scripter, narrative-writer, optimizer, ui-designer, visual-artist, plus README).
-- `skills/` — 26 domain skills (animation-state-machine, audio-manager, camera-system, combat-system, crafting-system, dialogue-system, etc.).
-- `prompts/` — 15 task prompts (add-animation, add-audio, add-enemy, new-game, game-jam-kickstart, optimize-performance, etc.).
+- `agents/` â€” 12 game-dev agents (animator, audio-designer, game-architect, game-tester, gameplay-designer, level-designer, lua-scripter, narrative-writer, optimizer, ui-designer, visual-artist, plus README).
+- `skills/` â€” 26 domain skills (animation-state-machine, audio-manager, camera-system, combat-system, crafting-system, dialogue-system, etc.).
+- `prompts/` â€” 15 task prompts (add-animation, add-audio, add-enemy, new-game, game-jam-kickstart, optimize-performance, etc.).
 
 ## Architecture
 
@@ -165,7 +165,7 @@ The extension activates lazily on:
 
 - **Complement, not compete**: sumneko.lua owns general Lua intelligence (completion, hover, formatting, folding, rename, symbols). This extension registers only Lurek-specific providers.
 - **CSP-secured webviews**: All editor panels use `Content-Security-Policy` headers restricting scripts and styles to inline or extension-local sources.
-- **Deferred render**: Visual editors use `postMessage` for VS Code ↔ webview communication; no direct DOM access from the extension host.
+- **Deferred render**: Visual editors use `postMessage` for VS Code â†” webview communication; no direct DOM access from the extension host.
 - **No engine dependency**: The extension never imports engine Rust code. It consumes generated JSON data and communicates with a running engine only via the TCP debug bridge.
 
 ## Dependencies
@@ -199,12 +199,12 @@ The extension contributes settings under `lurek2d.*` (defined in `package.json` 
 
 ## Testing
 
-### Existing tests (`extensions/vscode/src/test/unit/`)
+### Existing tests (`extension/vscode/src/test/unit/`)
 
-- `commandRegistration.test.ts` — verifies all contributed commands are registered.
-- `editorCatalog.test.ts` — verifies editor catalog integrity.
-- `luaParser.test.ts` — parser correctness.
-- `typeInference.test.ts` — factory type inference rules.
+- `commandRegistration.test.ts` â€” verifies all contributed commands are registered.
+- `editorCatalog.test.ts` â€” verifies editor catalog integrity.
+- `luaParser.test.ts` â€” parser correctness.
+- `typeInference.test.ts` â€” factory type inference rules.
 
 ### Coverage gaps
 
@@ -215,16 +215,17 @@ The extension contributes settings under `lurek2d.*` (defined in `package.json` 
 
 ## Notes
 
-- Build the extension with: `cd extensions/vscode && npm install && npm run package` → produces `.vsix`.
+- Build the extension with: `cd extension/vscode && npm install && npm run package` â†’ produces `.vsix`.
 - The extension does not ship inside the engine binary; it is distributed as a separate `.vsix` artifact alongside the portable ZIP and installer.
 - The game-dev CAG agents in `cag/game-dev/` are installed into the user's workspace via the `lurek.cag.install` command.
 - `tools/gen_all_docs.py` must be run after any `src/lua_api/` change to keep `data/lurek-api.json` fresh.
 
 ## References
 
-- [extensions/vscode/README.md](../../extensions/vscode/README.md)
-- [extensions/vscode/package.json](../../extensions/vscode/package.json)
-- [docs/architecture/philosophy.md](../architecture/philosophy.md) — constraint A-01 (no embedded editor)
-- [docs/specs/debugbridge.md](debugbridge.md) — engine-side TCP bridge spec
-- [tools/snippets/gen_vscode_snippets.py](../../tools/snippets/gen_vscode_snippets.py) — snippet generator
-- [tools/gen_all_docs.py](../../tools/gen_all_docs.py) — API data generator
+- [extension/vscode/README.md](../../extension/vscode/README.md)
+- [extension/vscode/package.json](../../extension/vscode/package.json)
+- [docs/architecture/philosophy.md](../architecture/philosophy.md) â€” constraint A-01 (no embedded editor)
+- [docs/specs/debugbridge.md](debugbridge.md) â€” engine-side TCP bridge spec
+- [tools/snippets/gen_vscode_snippets.py](../../tools/snippets/gen_vscode_snippets.py) â€” snippet generator
+- [tools/gen_all_docs.py](../../tools/gen_all_docs.py) â€” API data generator
+

@@ -313,12 +313,14 @@ fn helper_new_synth_wave(
 /// Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
 impl LuaUserData for LuaLevelDetector {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- process_sample --
         /// Processes one audio sample and updates detector statistics incrementally.
         /// @param | sample | number | Input sample value in the range [-1.0, 1.0].
         methods.add_method_mut("process_sample", |_, this, sample: f32| {
             this.inner.borrow_mut().process_sample(sample);
             Ok(())
         });
+        // -- process --
         /// Processes all samples in a sound buffer and returns aggregate level statistics.
         /// @param | sound_data_ud | LSoundData | Sound buffer to analyze.
         /// @return | table | Table with `rms`, `peak`, and `clipping` fields.
@@ -333,16 +335,20 @@ impl LuaUserData for LuaLevelDetector {
             result.set("clipping", clipping)?;
             Ok(result)
         });
+        // -- get_rms --
         /// Returns the current RMS level accumulated by the detector.
         /// @return | number | RMS amplitude in linear scale.
         methods.add_method("get_rms", |_, this, ()| Ok(this.inner.borrow().get_rms()));
+        // -- get_peak --
         /// Returns the current peak level accumulated by the detector.
         /// @return | number | Peak absolute amplitude in linear scale.
         methods.add_method("get_peak", |_, this, ()| Ok(this.inner.borrow().get_peak()));
+        // -- to_db --
         /// Converts a linear amplitude value to decibels full scale.
         /// @param | value | number | Linear amplitude value to convert.
         /// @return | number | Converted dBFS value.
         methods.add_method("to_db", |_, _, value: f32| Ok(LevelDetector::to_db(value)));
+        // -- reset --
         /// Resets detector state so a new measurement window can begin.
         methods.add_method_mut("reset", |_, this, ()| {
             this.inner.borrow_mut().reset();
@@ -354,12 +360,14 @@ impl LuaUserData for LuaLevelDetector {
 /// Lua-visible spectral analyzer that computes bounded frequency bins from sound buffers.
 impl LuaUserData for LuaSpectrumAnalyzer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setSize --
         /// Sets the frequency-bin count used by subsequent spectrum analysis calls.
         /// @param | size | integer | Requested number of bins (bounded internally).
         methods.add_method_mut("setSize", |_, this, size: usize| {
             this.inner.borrow_mut().set_size(size);
             Ok(())
         });
+        // -- analyze --
         /// Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
         /// @param | sound_data_ud | LSoundData | Sound buffer to analyze.
         /// @return | table | Array with `frequency` and `magnitude` fields per bin.
@@ -383,6 +391,7 @@ impl LuaUserData for LuaSpectrumAnalyzer {
 /// Lua-visible procedural waveform descriptor used for repeated SoundData rendering.
 impl LuaUserData for LuaWaveform {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- render --
         /// Renders this waveform to a new SoundData buffer.
         /// @param | freq | number | Frequency in Hertz.
         /// @param | duration | number | Duration in seconds.
@@ -392,6 +401,7 @@ impl LuaUserData for LuaWaveform {
         methods.add_method("render", |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
             Ok(this.inner.render(freq, duration, sample_rate, amplitude))
         });
+        // -- type --
         /// Returns the waveform identifier string.
         /// @return | string | One of `sine`, `square`, `sawtooth`, `triangle`, or `white_noise`.
         methods.add_method("type", |_, this, ()| Ok(this.inner.as_str()));
@@ -401,22 +411,27 @@ impl LuaUserData for LuaWaveform {
 /// Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 impl LuaUserData for LuaAdsrEnvelope {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- trigger_on --
         /// Starts the envelope attack phase for this ADSR object.
         methods.add_method_mut("trigger_on", |_, this, ()| {
             this.inner.borrow_mut().trigger_on();
             Ok(())
         });
+        // -- trigger_off --
         /// Starts the envelope release phase.
         methods.add_method_mut("trigger_off", |_, this, ()| {
             this.inner.borrow_mut().trigger_off();
             Ok(())
         });
+        // -- next_sample --
         /// Advances the envelope and returns the next gain sample.
         /// @return | number | Current envelope gain after stepping.
         methods.add_method_mut("next_sample", |_, this, ()| Ok(this.inner.borrow_mut().next_sample()));
+        // -- is_idle --
         /// Returns whether the envelope has fully completed and is idle.
         /// @return | boolean | True when the envelope is idle.
         methods.add_method("is_idle", |_, this, ()| Ok(this.inner.borrow().is_idle()));
+        // -- apply --
         /// Applies this ADSR envelope across an entire sound buffer in place.
         /// @param | sound_data_ud | LSoundData | Sound buffer to shape in-place.
         methods.add_method("apply", |_, this, sound_data_ud: LuaAnyUserData| {
@@ -432,6 +447,7 @@ impl LuaUserData for LuaAdsrEnvelope {
 /// Lua-visible synthesizer that combines waveform selection and optional ADSR shaping.
 impl LuaUserData for LuaSynthesizer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setWaveform --
         /// Sets the oscillator waveform using a kind string or waveform object.
         /// @param | value | any | Waveform kind string or LWaveform instance.
         methods.add_method_mut("setWaveform", |_, this, value: LuaValue| {
@@ -453,6 +469,7 @@ impl LuaUserData for LuaSynthesizer {
             this.inner.borrow_mut().set_waveform(waveform);
             Ok(())
         });
+        // -- setEnvelope --
         /// Attaches an ADSR envelope used by future render calls.
         /// @param | envelope_ud | LAdsrEnvelope | Envelope object copied into the synthesizer.
         methods.add_method_mut("setEnvelope", |_, this, envelope_ud: LuaAnyUserData| {
@@ -465,6 +482,7 @@ impl LuaUserData for LuaSynthesizer {
             this.inner.borrow_mut().set_envelope(envelope);
             Ok(())
         });
+        // -- render --
         /// Renders a SoundData buffer using current synthesizer settings.
         /// @param | freq | number | Frequency in Hertz.
         /// @param | duration | number | Duration in seconds.
@@ -474,6 +492,7 @@ impl LuaUserData for LuaSynthesizer {
         methods.add_method("render", |_, this, (freq, duration, sample_rate, amplitude): (f32, f32, u32, f32)| {
             Ok(this.inner.borrow().generate(freq, duration, sample_rate, amplitude))
         });
+        // -- generate --
         /// Generates a SoundData buffer; alias of `render` for compatibility.
         /// @param | freq | number | Frequency in Hertz.
         /// @param | duration | number | Duration in seconds.
@@ -489,6 +508,7 @@ impl LuaUserData for LuaSynthesizer {
 /// Lua-visible DSP graph node carrying type and simple numeric parameters.
 impl LuaUserData for LuaDspNode {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setParam --
         /// Sets one named numeric parameter on the node.
         /// @param | name | string | Parameter name such as `cutoff`, `low`, `high`, or `gain`.
         /// @param | value | number | New parameter value.
@@ -498,6 +518,7 @@ impl LuaUserData for LuaDspNode {
                 .set_param(&name, value)
                 .map_err(LuaError::RuntimeError)
         });
+        // -- getParam --
         /// Returns one named numeric parameter from the node.
         /// @param | name | string | Parameter name to fetch.
         /// @return | number | Current parameter value.
@@ -507,6 +528,7 @@ impl LuaUserData for LuaDspNode {
                 .get_param(&name)
                 .ok_or_else(|| LuaError::RuntimeError(format!("unknown parameter: {}", name)))
         });
+        // -- type --
         /// Returns the node type string used by this node.
         /// @return | string | Node kind used by this DSP node.
         methods.add_method("type", |_, this, ()| Ok(this.inner.borrow().node_type().as_str()));
@@ -516,6 +538,7 @@ impl LuaUserData for LuaDspNode {
 /// Lua-visible DSP graph that stores nodes, edges, and offline processing order.
 impl LuaUserData for LuaDspGraph {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addNode --
         /// Adds a DSP node object to the graph and returns its stable node ID.
         /// @param | node_ud | LDspNode | Node object to add to this graph.
         /// @return | integer | Stable node identifier for connect and disconnect calls.
@@ -528,6 +551,7 @@ impl LuaUserData for LuaDspGraph {
                 .clone();
             Ok(this.inner.borrow_mut().add_node(node))
         });
+        // -- connect --
         /// Connects two node IDs in this graph object.
         /// @param | from | integer | Source node ID.
         /// @param | to | integer | Destination node ID.
@@ -536,6 +560,7 @@ impl LuaUserData for LuaDspGraph {
         methods.add_method_mut("connect", |_, this, (from, to, _options): (NodeId, NodeId, Option<LuaTable>)| {
             Ok(this.inner.borrow_mut().connect(from, to))
         });
+        // -- disconnect --
         /// Removes a connection between two node IDs.
         /// @param | from | integer | Source node ID.
         /// @param | to | integer | Destination node ID.
@@ -543,6 +568,7 @@ impl LuaUserData for LuaDspGraph {
         methods.add_method_mut("disconnect", |_, this, (from, to): (NodeId, NodeId)| {
             Ok(this.inner.borrow_mut().disconnect(from, to))
         });
+        // -- process --
         /// Processes a sound buffer through the graph and returns transformed data.
         /// @param | sound_data_ud | LSoundData | Input sound buffer.
         /// @return | LSoundData | Processed sound buffer output.
@@ -552,6 +578,7 @@ impl LuaUserData for LuaDspGraph {
             })?;
             Ok(this.inner.borrow().process(&sound_data))
         });
+        // -- clear --
         /// Clears all graph nodes and edges from this graph.
         methods.add_method_mut("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
@@ -664,6 +691,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
         "analyzePeak",
         lua.create_function(|_, sd_ud| helper_analyze_peak(sd_ud))?,
     )?;
+    // -- analyzeFft --
     /// Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
     /// Uses a bounded DFT; at most 4096 samples and 512 bins are processed.
     /// @param | sd | LSoundData | The sound data to analyze.

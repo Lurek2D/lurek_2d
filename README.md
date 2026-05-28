@@ -50,7 +50,7 @@ These links are for people extending the Rust engine, bindings, tooling, docs, t
 | Specs index | [docs/specs/README.md](docs/specs/README.md) | Canonical module-by-module contract list. |
 | Build, onboarding, and contribution | [docs/handbook.md](docs/handbook.md) · [CONTRIBUTING.md](CONTRIBUTING.md) | First setup, quality gates, contribution rules, and engine workflow. |
 | Tests and quality gates | [tests/README.md](tests/README.md) · [docs/architecture/test-framework.md](docs/architecture/test-framework.md) | Rust/Lua test model and the Lua-first placement rules. |
-| AI-assisted engine work in practice | [extensions/vscode/README.md](extensions/vscode/README.md) · [.github/agents/README.md](.github/agents/README.md) | Extension capabilities, local AI workflow, and the engine-side agent roster. |
+| AI-assisted engine work in practice | [extension/vscode/README.md](extension/vscode/README.md) · [.github/agents/README.md](.github/agents/README.md) | Extension capabilities, local AI workflow, and the engine-side agent roster. |
 
 ## For Game Developers
 
@@ -66,8 +66,8 @@ These links are for people making Lua games with Lurek, not changing engine inte
 | Examples | [content/examples/README.md](content/examples/README.md) · [Examples wiki](https://github.com/LurekDude/lurek_2d/wiki/Examples) | Single-file examples and example-browser view. |
 | Reference games and demos | [content/games/README.md](content/games/README.md) · [Reference Games wiki](https://github.com/LurekDude/lurek_2d/wiki/Reference-Games) | Larger playable projects and demo-style samples. |
 | Pure-Lua libraries | [docs/api/lureksome.lua](docs/api/lureksome.lua) · [Lureksome wiki](https://github.com/LurekDude/lurek_2d/wiki/Lureksome) | Reusable pure-Lua gameplay modules built on top of `lurek.*`. |
-| VS Code + IntelliSense | [extensions/vscode/README.md](extensions/vscode/README.md) | IntelliSense, run/debug flow, asset helpers, and extension-side tooling. |
-| AI-assisted game development | [extensions/vscode/cag/game-dev/README.md](extensions/vscode/cag/game-dev/README.md) | Local AI workflow layer for people making games with Lurek. |
+| VS Code + IntelliSense | [extension/vscode/README.md](extension/vscode/README.md) | IntelliSense, run/debug flow, asset helpers, and extension-side tooling. |
+| AI-assisted game development | [extension/vscode/cag/game-dev/README.md](extension/vscode/cag/game-dev/README.md) | Local AI workflow layer for people making games with Lurek. |
 
 ## Ways To Work With Lurek
 
@@ -76,7 +76,7 @@ Lurek does not force one workflow. You can mix engine work, Lua game work, VS Co
 | Workflow | What it looks like | Main links |
 |---|---|---|
 | Engine only | Rust + Cargo + docs, no extension required | [docs/handbook.md](docs/handbook.md) · [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) |
-| Engine + VS Code | Engine work with tasks, debug bridge, editor tooling, and extension integration | [extensions/vscode/README.md](extensions/vscode/README.md) · [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) |
+| Engine + VS Code | Engine work with tasks, debug bridge, editor tooling, and extension integration | [extension/vscode/README.md](extension/vscode/README.md) · [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) |
 | Engine + local AI | Main repo CAG, local agents, prompts, validators, and MCP-assisted workflow | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) · [.github/agents/README.md](.github/agents/README.md) |
 | Lua game scripts only | `main.lua`, `conf.lua`, `assets/`, examples, and the public `lurek.*` API | [docs/api/lurek.md](docs/api/lurek.md) · [Getting Started](https://github.com/LurekDude/lurek_2d/wiki/Getting-Started) |
 
@@ -89,9 +89,9 @@ The diagram below shows how Local AI, VS Code, the Lurek CLI, engine builds, app
 </p>
 
 > **Full detail:** Read the highly detailed [AI Ecosystem Deep Dive](https://github.com/LurekDude/lurek_2d/wiki/AI-Ecosystem) on our Wiki. It contains workflow explanations, component breakdowns, and real-world execution examples (like applying Mod Templates for Digital Twins or utilizing the CLI for headless agent testing).
-| Lua game scripts + VS Code IntelliSense | Lua authoring with hover docs, completions, commands, and debug flow | [extensions/vscode/README.md](extensions/vscode/README.md) |
-| Lua game scripts + local AI | Game-dev CAG layer for agents, prompts, templates, and task workflows | [extensions/vscode/cag/game-dev/README.md](extensions/vscode/cag/game-dev/README.md) |
-| Built-in editors and tools | Tilemap, particle, audio, UI, preview, and other extension webviews | [extensions/vscode/README.md](extensions/vscode/README.md) |
+| Lua game scripts + VS Code IntelliSense | Lua authoring with hover docs, completions, commands, and debug flow | [extension/vscode/README.md](extension/vscode/README.md) |
+| Lua game scripts + local AI | Game-dev CAG layer for agents, prompts, templates, and task workflows | [extension/vscode/cag/game-dev/README.md](extension/vscode/cag/game-dev/README.md) |
+| Built-in editors and tools | Tilemap, particle, audio, UI, preview, and other extension webviews | [extension/vscode/README.md](extension/vscode/README.md) |
 | Pure-Lua libraries (Lureksome) | Reusable Lua modules in `library/`, built without touching engine Rust code | [docs/api/lureksome.lua](docs/api/lureksome.lua) · [tests/lua/library/README.md](tests/lua/library/README.md) |
 
 ## Use Cases
@@ -129,6 +129,7 @@ If you want to contribute to the future shape of Lurek, start from an idea, turn
 ---
 
 [Contributing](CONTRIBUTING.md) - [Security](SECURITY.md) - [License](LICENSE)
+
 
 
 

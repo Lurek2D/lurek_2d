@@ -186,7 +186,6 @@ The module also features a robust rendering pipeline that composites these layer
 - `build_minimap_tile_window` (`raycaster_overlay.rs`): Returns sampled minimap tile records around a world-space center.
 - `reveal_cells_from_rays` (`raycaster_overlay.rs`): Traces multiple rays and returns unique crossed grid cells.
 - `extract_minimap` (`raycaster_overlay.rs`): Extracts a top-down minimap from a Raycaster2D grid.
-- `draw_player_arrow` (`raycaster_overlay.rs`): Renders a simple directional arrow for the player on the minimap.
 - `Minimap::generate_render_commands` (`render.rs`): Build the full ordered `RenderCommand` list for this minimap at screen origin `(screen_x, screen_y)`.
 - `ColorMode::parse_mode` (`types.rs`): Parse `"terrain"` or `"political"` to a `ColorMode`; returns `None` on unknown strings.
 - `ColorMode::as_str` (`types.rs`): Return the canonical string name for this colour mode.

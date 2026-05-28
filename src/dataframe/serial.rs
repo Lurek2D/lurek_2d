@@ -670,7 +670,7 @@ impl DataFrame {
 }
 use crate::dataframe::frame::Database;
 /// Parse Database JSON produced by `Database::to_json`.
-pub fn database_from_json(s: &str) -> Result<Database, String> {
+pub(crate) fn database_from_json(s: &str) -> Result<Database, String> {
     let trimmed = s.trim();
     if trimmed.is_empty() || trimmed == "{}" {
         return Ok(Database::new());

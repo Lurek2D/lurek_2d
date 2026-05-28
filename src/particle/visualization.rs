@@ -61,7 +61,7 @@ pub fn draw_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData 
     img
 }
 /// Render live particles from `ps` as a glowing explosion on a new `width x height` image.
-pub fn draw_explosion_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
+pub(crate) fn draw_explosion_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
     let mut img = ImageData::new(width, height);
     img.fill(10, 8, 15, 255);
     for p in &ps.particles {
@@ -76,7 +76,7 @@ pub fn draw_explosion_to_image(ps: &ParticleSystem, width: u32, height: u32) -> 
     img
 }
 /// Render live particles from `ps` as vertical rain streaks on a new `width x height` image.
-pub fn draw_rain_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
+pub(crate) fn draw_rain_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
     let mut img = ImageData::new(width, height);
     img.fill(30, 35, 50, 255);
     for p in &ps.particles {
@@ -97,7 +97,7 @@ pub fn draw_rain_to_image(ps: &ParticleSystem, width: u32, height: u32) -> Image
     img
 }
 /// Render live particles from `ps` as spark trails on a new `width x height` image.
-pub fn draw_spark_trail_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
+pub(crate) fn draw_spark_trail_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData {
     let mut img = ImageData::new(width, height);
     img.fill(10, 8, 12, 255);
     for p in &ps.particles {
@@ -121,7 +121,7 @@ pub fn draw_spark_trail_to_image(ps: &ParticleSystem, width: u32, height: u32) -
     img
 }
 /// Composite live particles from `ps` as orange dots over an existing `bg` image and return the result.
-pub fn draw_over_image(ps: &ParticleSystem, mut bg: ImageData) -> ImageData {
+pub(crate) fn draw_over_image(ps: &ParticleSystem, mut bg: ImageData) -> ImageData {
     let w = bg.width() as i32;
     let h = bg.height() as i32;
     for p in &ps.particles {
@@ -165,7 +165,7 @@ pub fn draw_over_image(ps: &ParticleSystem, mut bg: ImageData) -> ImageData {
     bg
 }
 /// Paint live particles from `ps` directly onto `img` in-place as single-pixel glowing dots.
-pub fn paint_onto(ps: &ParticleSystem, img: &mut ImageData) {
+pub(crate) fn paint_onto(ps: &ParticleSystem, img: &mut ImageData) {
     let w = img.width() as i32;
     let h = img.height() as i32;
     for p in &ps.particles {
@@ -185,7 +185,7 @@ pub fn paint_onto(ps: &ParticleSystem, img: &mut ImageData) {
     }
 }
 /// Render a bar-chart lifecycle diagram from `snapshots` of `(step, count)` pairs onto a new image.
-pub fn draw_lifecycle_to_image(
+pub(crate) fn draw_lifecycle_to_image(
     snapshots: &[(u32, usize)],
     max_particles: usize,
     width: u32,

@@ -39,7 +39,7 @@ pub use bidir::bidirectional_astar;
 pub use flow_field::FlowField;
 pub use graph_path::{find_province_path, province_reachable, ProvinceCostFn, ProvincePath};
 pub use grid::Grid;
-pub use hpa::{build_abstract, hpa_star, is_reachable as hpa_is_reachable, AbstractGraph};
+pub use hpa::{build_abstract, is_reachable as hpa_is_reachable, AbstractGraph};
 pub use influence_map::InfluenceMap;
 pub use nav_grid::{DiagonalMode, NavGrid};
 pub use navmesh::NavMesh;

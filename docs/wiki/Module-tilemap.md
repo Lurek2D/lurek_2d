@@ -3556,13 +3556,13 @@ Returns: `integer` - Height.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
-    local height = mb:getHeight()
-    print("getHeight:", height)
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
+    print("getHeight=" .. block:getHeight())
 end
 ```
 
@@ -3612,13 +3612,13 @@ Returns: `integer` - Layer count.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
-    local lc = mb:getLayerCount()
-    print("layerCount:", lc)
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(4, 3, 2, cfg)
+    print("getLayerCount=" .. block:getLayerCount())
 end
 ```
 
@@ -3640,13 +3640,14 @@ Returns: `string` - Block name.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local block = lurek.tilemap.newMapBlock(3, 3)
-    block:setName("entry")
-    print("getName = " .. tostring(block:getName()))
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setName("room_a")
+    print("getName=" .. block:getName())
 end
 ```
 
@@ -3742,13 +3743,16 @@ Returns: `integer` - Global tile ID.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local block = lurek.tilemap.newMapBlock(3, 3)
-    block:setTile(1, 2, 2, 9)
-    print("getTile = " .. tostring(block:getTile(1, 2, 2)))
+    local cfg = lurek.mapblock.newEmptyConfig()
+    cfg:addSlot("floor", true, 0)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setTile(0, 1, 1, 0, 1, 9)
+    local tile = block:getTile(0, 1, 1, 0)
+    print("getTile value=" .. tostring(tile))
 end
 ```
 
@@ -3798,13 +3802,13 @@ Returns: `integer` - Width.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
-    local w = mb:getWidth()
-    print("width:", w)
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(4, 3, 1, cfg)
+    print("getWidth=" .. block:getWidth())
 end
 ```
 
@@ -3856,13 +3860,14 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. tostring(block:getName()))
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setName("corridor")
+    print("setName=" .. block:getName())
 end
 ```
 
@@ -3928,15 +3933,15 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. tostring(block:getTile(1, 1, 1)))
-    print("tile (1,2,2) = " .. tostring(block:getTile(1, 2, 2)))
+    local cfg = lurek.mapblock.newEmptyConfig()
+    cfg:addSlot("wall", true, 0)
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    block:setTile(0, 1, 1, 0, 1, 5)
+    print("setTile value=" .. tostring(block:getTile(0, 1, 1, 0)))
 end
 ```
 
@@ -3960,13 +3965,14 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local block = lurek.tilemap.newMapBlock(4, 4)
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
     block:setWeight(3.0)
-    print("weight = " .. tostring(block:getWeight()))
+    print("setWeight ok")
 end
 ```
 
@@ -4160,14 +4166,15 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local group = lurek.tilemap.newMapGroup("dungeon")
-    local block = lurek.tilemap.newMapBlock(8, 8, 1, 2)
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    local group = lurek.mapblock.newGroup("rooms")
     group:addBlock(block)
-    print("block count = " .. tostring(group:getBlockCount()))
+    print("addBlock count=" .. group:getBlockCount())
 end
 ```
 
@@ -4191,15 +4198,15 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local group = lurek.tilemap.newMapGroup("forest")
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({ type = "fill", gid = 1 })
+    local script = lurek.mapblock.newScript("rooms_pass")
+    script:addStep("fill_rect", { x = 0, y = 0, width = 1, height = 1, tile_id = 1, slot = 0, layer = 0 })
+    local group = lurek.mapblock.newGroup("rooms")
     group:addScript(script)
-    print("script count = " .. tostring(group:getScriptCount()))
+    print("addScript group=" .. group:getName())
 end
 ```
 
@@ -4221,14 +4228,15 @@ Returns: `integer` - Block count.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local group = lurek.tilemap.newMapGroup("rooms")
-    group:addBlock(lurek.tilemap.newMapBlock(4, 4))
-    group:addBlock(lurek.tilemap.newMapBlock(6, 6))
-    print("getBlockCount = " .. tostring(group:getBlockCount()))
+    local cfg = lurek.mapblock.newConfig()
+    local block = lurek.mapblock.newBlock(2, 2, 1, cfg)
+    local group = lurek.mapblock.newGroup("rooms")
+    group:addBlock(block)
+    print("getBlockCount=" .. group:getBlockCount())
 end
 ```
 
@@ -4250,12 +4258,12 @@ Returns: `string` - Group name.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local group = lurek.tilemap.newMapGroup("boss_rooms")
-    print("getName = " .. tostring(group:getName()))
+    local group = lurek.mapblock.newGroup("dungeon_rooms")
+    print("getName=" .. group:getName())
 end
 ```
 
@@ -4406,14 +4414,13 @@ Parameters:
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({type = "fill", gid = 1})
-    script:addStep({type = "rect", x = 1, y = 1, w = 4, h = 4, gid = 2})
-    print("stepCount:", script:getStepCount())
+    local script = lurek.mapblock.newScript("block_fill")
+    script:addStep("fill_rect", { x = 1, y = 1, width = 2, height = 2, tile_id = 5, slot = 0, layer = 0 })
+    print("addStep count=" .. script:getStepCount())
 end
 ```
 
@@ -4435,14 +4442,14 @@ Returns: `integer` - Step count.
 
 #### Example
 
-Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
+Source: [mapblock.lua](../blob/main/content/examples/mapblock.lua)
 
 ```lua
 do
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({ type = "fill", gid = 1 })
-    script:addStep({ type = "rect", x = 1, y = 1, w = 2, h = 2, gid = 2 })
-    print("getStepCount = " .. tostring(script:getStepCount()))
+    local script = lurek.mapblock.newScript("multi_step")
+    script:addStep("fill_rect", { x = 0, y = 0, width = 2, height = 2, tile_id = 1, slot = 0, layer = 0 })
+    script:addStep("fill_edges", { tile_id = 2, slot = 0, layer = 0 })
+    print("getStepCount=" .. script:getStepCount())
 end
 ```
 

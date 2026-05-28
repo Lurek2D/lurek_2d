@@ -15,7 +15,7 @@ agent: "Manager"
 1. Load [skill: agent-routing](../skills/agent-routing/SKILL.md) and [skill: documentation](../skills/documentation/SKILL.md) before acting.
 2. Map the request to a primary domain: Rust engine code, Lua API design, Lua scripting/content, CAG layer, build/CI, documentation, roadmap/planning, testing, or performance analysis.
 3. From `docs/architecture/cag-system.md § 4.1`, identify the owning agent for that domain.
-4. List every `agent: "<owner>"` prompt in `.github/prompts/` whose `description` overlaps the request. Do not invent names — only list files that exist.
+4. List every `agent: "<owner>"` prompt in `.github/prompters/` whose `description` overlaps the request. Do not invent names — only list files that exist.
 5. Score candidates: prefer the narrowest-scope prompt over a workflow-level prompt when the request is a single well-scoped task. State the score reason in one sentence per candidate.
 6. Return: (a) the best prompt filename, (b) its agent, (c) the skills it loads, and (d) a filled-in invocation line using real values from the request — no placeholders. If no prompt matches, state that explicitly and name the agent to route to directly.
 
@@ -29,7 +29,7 @@ agent: "Manager"
 ## Anti-patterns
 - Listing multiple prompts without choosing one.
 - Choosing a workflow-level prompt when a targeted single-task prompt exists.
-- Inventing prompt filenames that do not exist in `.github/prompts/`.
+- Inventing prompt filenames that do not exist in `.github/prompters/`.
 - Skipping the agent-to-domain mapping step and guessing from description alone.
 
 ## Example Invocation

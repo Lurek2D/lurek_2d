@@ -64,7 +64,7 @@ impl QLearner {
         }
         best_idx
     }
-    /// Apply a Bellman update: Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a]).
+    /// Apply a Bellman update: `Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a])`.
     pub fn learn(&mut self, state: usize, action: usize, reward: f64, next_state: usize) {
         if state >= self.state_count
             || action >= self.action_count

@@ -67,6 +67,7 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'animation':   'animation.lua',
     'audio':       'audio.lua',
     'automation':  'automation.lua',
+    'charts':      'charts.lua',
     'binary':      'binary.lua',    # lurek.data API, example file matches src/ folder
     'camera':      'camera.lua',
     'compute':     'compute.lua',
@@ -80,12 +81,14 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'event':       'event.lua',
     'filesystem':  'filesystem.lua',
     'flownet':     'flownet.lua',   # lurek.graph API, example file matches src/ folder
+    'globe':       'globe.lua',
     'i18n':        'i18n.lua',
     'image':       'image.lua',
     'input':       'input.lua',
     'light':       'light.lua',
     'log':         'log.lua',
     'math':        'math.lua',
+    'mapblock':    'mapblock.lua',
     'minimap':     'minimap.lua',
     'mods':        'mods.lua',
     'network':     'network.lua',
@@ -120,6 +123,7 @@ NAMESPACE_MAP: dict[str, str] = {
     'animation':   'animation',
     'audio':       'audio',
     'automation':  'automation',
+    'charts':      'charts',
     'binary':      'data',        # src/binary/ -> lurek.data
     'camera':      'camera',
     'compute':     'compute',
@@ -133,12 +137,14 @@ NAMESPACE_MAP: dict[str, str] = {
     'event':       'event',
     'filesystem':  'filesystem',
     'flownet':     'graph',       # src/flownet/ -> lurek.graph
+    'globe':       'globe',
     'i18n':        'i18n',
     'image':       'image',
     'input':       'input',
     'light':       'light',
     'log':         'log',
     'math':        'math',
+    'mapblock':    'mapblock',
     'minimap':     'minimap',
     'mods':        'mods',
     'network':     'network',
@@ -170,6 +176,9 @@ NAMESPACE_MAP: dict[str, str] = {
 # live in one canonical module file to avoid exact duplicate --@api-stub markers.
 CANONICAL_API_MODULE: dict[str, str] = {
     'LBehaviorTree:setRoot': 'patterns',
+    'LBarChart:addSeries': 'charts',
+    'LLineChart:addSeries': 'charts',
+    'LScatterPlot:addSeries': 'charts',
     'LTween:getDuration': 'tween',
     'LTween:getEasingName': 'tween',
     'LTween:type': 'tween',
@@ -183,6 +192,20 @@ CANONICAL_API_MODULE: dict[str, str] = {
     'LImageData:resize': 'image',
     'LImageData:type': 'image',
     'LImageData:typeOf': 'image',
+    'LMapBlock:getHeight': 'mapblock',
+    'LMapBlock:getLayerCount': 'mapblock',
+    'LMapBlock:getName': 'mapblock',
+    'LMapBlock:getTile': 'mapblock',
+    'LMapBlock:getWidth': 'mapblock',
+    'LMapBlock:setName': 'mapblock',
+    'LMapBlock:setTile': 'mapblock',
+    'LMapBlock:setWeight': 'mapblock',
+    'LMapGroup:addBlock': 'mapblock',
+    'LMapGroup:addScript': 'mapblock',
+    'LMapGroup:getBlockCount': 'mapblock',
+    'LMapGroup:getName': 'mapblock',
+    'LMapScript:addStep': 'mapblock',
+    'LMapScript:getStepCount': 'mapblock',
 }
 
 
@@ -469,17 +492,15 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, Modu
     module_data_cache: dict[str, dict] = {}
     for e in entries:
         canonical_module = CANONICAL_API_MODULE.get(e.api_name)
-        if canonical_module is not None and e.module != canonical_module:
-            continue
-
-        key = e.module
+        key = canonical_module or e.module
+        example_file = MODULE_TO_EXAMPLE.get(key, key + '.lua')
         if key not in bk:
             bk[key] = ModuleCov(
                 key=key,
-                example_file=e.example_file,
+                example_file=example_file,
                 namespace=NAMESPACE_MAP.get(key, key),
             )
-            module_data = collect_module_data(texts, key, e.example_file)
+            module_data = collect_module_data(texts, key, example_file)
             module_data_cache[key] = module_data
             bk[key].example_files = module_data['files']
             bk[key].line_count = module_data['lines']

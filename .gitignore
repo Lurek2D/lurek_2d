@@ -1,4 +1,5 @@
 # Build artifacts
+
 /build/
 /target/
 /dist/
@@ -29,11 +30,13 @@
 **/*.pyo
 
 # VS Code extension — build outputs and generated files
-extensions/vscode/node_modules/
-extensions/vscode/dist/
-extensions/vscode/src/generated/
-extensions/vscode/*.vsix
+extension/vscode/node_modules/
+extension/vscode/dist/
+extension/vscode/src/generated/
+extension/vscode/*.vsix
+extension/vscode/.vscode-test/
+extension/vscode/node_modules/
 
 # Transient test output logs and scratch directories
-extensions/vscode/.vscode-test/
+extension/vscode/.vscode-test/
 tools/rag/rag_index.db

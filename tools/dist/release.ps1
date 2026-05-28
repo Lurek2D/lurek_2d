@@ -136,13 +136,13 @@ try {
     }
 
     # ── Step 6: VS Code extension ─────────────────────────────────────────────
-    $ExtVersionRaw = (Get-Content (Join-Path $WorkspaceRoot 'extensions/vscode/package.json') | ConvertFrom-Json).version
+    $ExtVersionRaw = (Get-Content (Join-Path $WorkspaceRoot 'extension/vscode/package.json') | ConvertFrom-Json).version
     $VsixName = "lurek2d-toolkit-$ExtVersionRaw.vsix"
-    $VsixPath = Join-Path $WorkspaceRoot "extensions/vscode/$VsixName"
+    $VsixPath = Join-Path $WorkspaceRoot "extension/vscode/$VsixName"
     if (-not $SkipExtension) {
         Write-Step "Step 5/6 — VS Code extension"
         if (Get-Command npm -ErrorAction SilentlyContinue) {
-            Push-Location (Join-Path $WorkspaceRoot 'extensions/vscode')
+            Push-Location (Join-Path $WorkspaceRoot 'extension/vscode')
             try {
                 Write-Host "  Installing npm dependencies..."
                 Invoke-Checked npm @('install', '--prefer-offline')

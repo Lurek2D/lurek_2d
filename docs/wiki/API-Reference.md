@@ -2244,6 +2244,7 @@ LUniverse:updatePhase(phase: string, dt: number) -- Runs registered systems assi
 
 ```lua
 lurek.effect.getEffectTypes() -> string[] -- Returns all built-in post-processing effect type names.
+lurek.effect.getPresetNames() -> string[] -- Returns all built-in post-processing preset names.
 lurek.effect.getShaderErrorDisplay() -> boolean -- Returns whether renderer shader error display overlays are enabled.
 lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect -- Creates a custom post-processing effect that references an existing shader id.
 lurek.effect.newEffect(type_name: string) -> LPostFxEffect -- Creates a built-in post-processing effect by type name.
@@ -2681,7 +2682,9 @@ lurek.globe.greatCirclePath(la: number, lo: number, lb: number, lo2: number, n: 
 lurek.globe.latLonToUnit(lat: number, lon: number) -> table -- Converts latitude and longitude to a unit-sphere 3D vector table.
 lurek.globe.loadFromPNG(name: string, png_path: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from a PNG file.
 lurek.globe.loadFromTOML(name: string, toml_src: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from TOML source text.
+lurek.globe.loadFromTOMLFile(name: string, path: string, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from a TOML file path.
 lurek.globe.new(name: string, [spec_tbl]: table) -> LGlobe -- Creates a named globe with optional specification fields in the module registry.
+lurek.globe.raySphereIntersect(ox: number, oy: number, oz: number, dx: number, dy: number, dz: number, radius: number) -> number -- Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 lurek.globe.remove(name: string) -> boolean -- Removes a globe from the registry by name.
 ```
 
@@ -4265,6 +4268,7 @@ LParallaxSet:update(dt: number) -- Updates all layers in this parallax set.
 [Module page](Module-particle)
 
 ```lua
+lurek.particle.drawLifecycleToImage(snapshots: table, max_particles: integer, w: integer, h: integer) -> LImageData -- Draws a lifecycle chart image from `(step, count)` snapshot tables.
 lurek.particle.fromTOML(path: string) -> LParticleSystem -- Creates a particle system from a TOML config file.
 lurek.particle.newPreset(name: string) -> LParticleSystem -- Creates a particle system from a named preset.
 lurek.particle.newSystem([config]: table) -> LParticleSystem -- Creates a particle system from an optional config table.
@@ -4282,6 +4286,10 @@ LParticleSystem:clearBounds() -- Clears collision bounds on this object.
 LParticleSystem:clearCollidesWithPhysics() -- Disables particle collision against a physics world.
 LParticleSystem:clone() -> LParticleSystem -- Clones this particle system configuration into a new system handle.
 LParticleSystem:count() -> integer -- Returns the current particle count.
+LParticleSystem:drawExplosionToImage(w: integer, h: integer) -> LImageData -- Draws particles as an explosion preview image.
+LParticleSystem:drawOverImage(image: LImageData) -> LImageData -- Draws particles over an existing image and returns a composited copy.
+LParticleSystem:drawRainToImage(w: integer, h: integer) -> LImageData -- Draws particles as a rain preview image.
+LParticleSystem:drawSparkTrailToImage(w: integer, h: integer) -> LImageData -- Draws particles as a spark-trail preview image.
 LParticleSystem:drawToImage(w: integer, h: integer) -> LImageData -- Draws particles to image data. This method is available to Lua scripts.
 LParticleSystem:emit(count: integer) -- Emits particles immediately. This method is available to Lua scripts.
 LParticleSystem:getAttractorCount() -> integer -- Returns attractor count. This method is available to Lua scripts.
@@ -4318,6 +4326,7 @@ LParticleSystem:isFull() -> boolean -- Returns whether the particle system has r
 LParticleSystem:isPaused() -> boolean -- Returns whether the particle system is paused.
 LParticleSystem:isStopped() -> boolean -- Returns whether the particle system is stopped or missing.
 LParticleSystem:moveTo(x: number, y: number) -- Moves the particle emitter. This method is available to Lua scripts.
+LParticleSystem:paintOnto(image: LImageData) -- Paints live particles directly onto an existing image in place.
 LParticleSystem:pause() -- Pauses particle emission and updates.
 LParticleSystem:release() -> boolean -- Releases the particle system from shared storage.
 LParticleSystem:render([ox]: number, [oy]: number) -- Enqueues particle render commands with an optional offset.
@@ -4460,6 +4469,7 @@ LJpsGrid:typeOf(name: string) -> boolean -- Returns whether this JPS grid handle
 LNavGrid:clearDirty() -- Clears all dirty region markers from the grid.
 LNavGrid:fill(cost: integer) -- Fills the entire grid with a uniform movement cost.
 LNavGrid:fillRect(x: integer, y: integer, w: integer, h: integer, cost: integer) -- Fills a one-based rectangular area with a movement cost.
+LNavGrid:findHpaPath(sx: integer, sy: integer, gx: integer, gy: integer, [unit_size]: integer) -> table -- Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
 LNavGrid:getChunkSize() -> integer -- Returns the hierarchical chunk size in cells.
 LNavGrid:getCost(x: integer, y: integer) -> integer -- Returns movement cost at a one-based grid cell.
 LNavGrid:getDiagonalMode() -> string -- Returns the current diagonal movement mode name.
@@ -5364,6 +5374,7 @@ LProvinceRegistry:typeOf(name: string) -> boolean -- Checks whether this object 
 [Module page](Module-raycaster)
 
 ```lua
+lurek.raycaster.applyLitShade(baseShade: number, r: number, g: number, b: number) -> number -- Applies an RGB light color to a scalar shade value.
 lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 lurek.raycaster.new(w: integer, h: integer) -> LRaycaster -- Creates a new raycaster map with the given grid dimensions.
 lurek.raycaster.newDoorManager() -> LDoorManager -- Creates a new door manager for tracking and animating sliding doors.
@@ -5428,6 +5439,7 @@ LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numR
 LRaycaster:drawLineOfSight(ax: number, ay: number, bx: number, by: number, scale: integer) -> LImageData -- Renders a debug image showing the line-of-sight ray between two world points.
 LRaycaster:drawTopDown(px: number, py: number, angle: number, scale: integer) -> LImageData -- Renders a top-down debug view of the map with the player's position and direction.
 LRaycaster:drawView(px: number, py: number, angle: number, fov: number, w: integer, h: integer, maxDist: number) -> LImageData -- Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
+LRaycaster:extractMinimap(playerX: number, playerY: number, playerAngle: number, viewRadius: integer, cellSize: integer) -> LImageData -- Extracts a pixel minimap image centered on the player from this raycaster map.
 LRaycaster:getCeilingTextureCell(x: integer, y: integer) -> integer -- Returns the raw texture id assigned to this ceiling cell, or nil if none.
 LRaycaster:getCell(x: integer, y: integer) -> integer -- Returns the wall type value at a grid cell.
 LRaycaster:getFloorTextureCell(x: integer, y: integer) -> integer -- Returns the raw texture id assigned to this floor cell, or nil if none.

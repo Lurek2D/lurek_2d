@@ -313,7 +313,7 @@ fn path_cost_f32(path: &[(u32, u32)]) -> f32 {
     cost
 }
 /// Run HPA\* on `abstract_graph`, returning a refined grid-level path from `start` to `goal`.
-pub fn hpa_star(
+pub(crate) fn hpa_star(
     grid: &NavGrid,
     abstract_graph: &AbstractGraph,
     start: (u32, u32),

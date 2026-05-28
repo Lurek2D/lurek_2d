@@ -83,32 +83,253 @@
       {
         "command": "lurek.scaffold.project",
         "title": "Create New Project",
+        "category": "Lurek2D",
         "icon": "$(new-folder)"
       },
       {
         "command": "lurek.scaffold.file",
         "title": "Create New File",
+        "category": "Lurek2D",
         "icon": "$(new-file)"
+      },
+      {
+        "command": "lurek.scaffold.mod",
+        "title": "Create New Mod from Template",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.runGame",
         "title": "Run Game",
+        "category": "Lurek2D",
         "icon": "$(play)"
       },
       {
         "command": "lurek.stopGame",
         "title": "Stop Game",
+        "category": "Lurek2D",
         "icon": "$(debug-stop)"
       },
       {
         "command": "lurek.runWithArgs",
         "title": "Run Game with Arguments",
+        "category": "Lurek2D",
         "icon": "$(terminal)"
       },
       {
         "command": "lurek.runExample",
         "title": "Run Example",
+        "category": "Lurek2D",
         "icon": "$(file-code)"
+      },
+      {
+        "command": "lurek.run.debugNoRebuild",
+        "title": "Run: Debug (no rebuild)",
+        "category": "Lurek2D",
+        "icon": "$(play)"
+      },
+      {
+        "command": "lurek.run.releaseNoRebuild",
+        "title": "Run: Release (no rebuild)",
+        "category": "Lurek2D",
+        "icon": "$(play)"
+      },
+      {
+        "command": "lurek.run.debugPickDemo",
+        "title": "Run: Debug \u2014 Pick Demo",
+        "category": "Lurek2D",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "lurek.run.releasePickDemo",
+        "title": "Run: Release \u2014 Pick Demo",
+        "category": "Lurek2D",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "lurek.build.debug",
+        "title": "Build: Debug",
+        "category": "Lurek2D",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "lurek.build.release",
+        "title": "Build: Release",
+        "category": "Lurek2D",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "lurek.build.dist",
+        "title": "Build: Distribution Package",
+        "category": "Lurek2D",
+        "icon": "$(package)"
+      },
+      {
+        "command": "lurek.build.check",
+        "title": "Build: Check (type-check only)",
+        "category": "Lurek2D",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "lurek.test.all",
+        "title": "Test: Run All Tests",
+        "category": "Lurek2D",
+        "icon": "$(testing-run-all-icon)"
+      },
+      {
+        "command": "lurek.test.rust.all",
+        "title": "Test: Run All Rust Tests",
+        "category": "Lurek2D",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "lurek.test.rust.parallel",
+        "title": "Test: Run Rust Tests (parallel)",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.lua.all",
+        "title": "Test: Run All Lua Tests",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.lua.golden",
+        "title": "Test: Run Lua Golden Snapshot Tests",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.runCurrent",
+        "title": "Test: Run Current Lua Test File",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.runAll",
+        "title": "Test: Run All Lua Tests in Project",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.coverage",
+        "title": "Test: Analyze Lua Test Coverage",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.generateForFile",
+        "title": "Test: Generate Tests for Current File",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.generateForFunction",
+        "title": "Test: Generate Tests for Selected Function",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.test.target.math",
+        "title": "Test: Run math Module Tests",
+        "category": "Lurek2D",
+        "icon": "$(symbol-numeric)"
+      },
+      {
+        "command": "lurek.test.target.physics",
+        "title": "Test: Run physics Module Tests",
+        "category": "Lurek2D",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "lurek.test.target.graphics",
+        "title": "Test: Run graphics Module Tests",
+        "category": "Lurek2D",
+        "icon": "$(symbol-color)"
+      },
+      {
+        "command": "lurek.test.target.audio",
+        "title": "Test: Run audio Module Tests",
+        "category": "Lurek2D",
+        "icon": "$(unmute)"
+      },
+      {
+        "command": "lurek.test.target.input",
+        "title": "Test: Run input Module Tests",
+        "category": "Lurek2D",
+        "icon": "$(keyboard)"
+      },
+      {
+        "command": "lurek.debug.runAndConnect",
+        "title": "Debug: Launch Game and Connect Bridge",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.connect",
+        "title": "Debug: Connect to Running Engine",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.disconnect",
+        "title": "Debug: Disconnect from Engine",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.evaluate",
+        "title": "Debug: Evaluate Lua Expression",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.hotReload",
+        "title": "Debug: Hot Reload Active Lua File",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.showStats",
+        "title": "Debug: Show Engine Stats",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.inspect",
+        "title": "Debug: Inspect Lua Object",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.openWatchers",
+        "title": "Debug: Open Watchers Panel",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.openInspector",
+        "title": "Debug: Open Variable Inspector",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.openCallStack",
+        "title": "Debug: Open Call Stack Panel",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.callStack",
+        "title": "Debug: Show Lua Call Stack",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.performance",
+        "title": "Debug: Open Live Performance Monitor",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.screenshot",
+        "title": "Debug: Take Screenshot from Engine",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.status",
+        "title": "Debug: Show Bridge Connection Status",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.printHistory",
+        "title": "Debug: Show Output History",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.debug.addWatch",
+        "title": "Debug: Add Selection to Watchers",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.editor.testRunner",
@@ -316,206 +537,364 @@
         "category": "Lurek2D Editor"
       },
       {
-        "command": "lurek.debug.runAndConnect",
-        "title": "Debug Run and Connect"
-      },
-      {
-        "command": "lurek.debug.connect",
-        "title": "Debug Connect"
-      },
-      {
-        "command": "lurek.debug.disconnect",
-        "title": "Debug Disconnect"
-      },
-      {
-        "command": "lurek.debug.evaluate",
-        "title": "Debug Evaluate Lua"
-      },
-      {
-        "command": "lurek.debug.openWatchers",
-        "title": "Open Watchers Panel"
-      },
-      {
-        "command": "lurek.debug.openInspector",
-        "title": "Open Variable Inspector"
-      },
-      {
-        "command": "lurek.debug.openCallStack",
-        "title": "Open Call Stack"
-      },
-      {
-        "command": "lurek.debug.performance",
-        "title": "Open Live Performance"
-      },
-      {
-        "command": "lurek.debug.screenshot",
-        "title": "Take Debug Screenshot"
-      },
-      {
-        "command": "lurek.debug.status",
-        "title": "Show Debug Status"
-      },
-      {
-        "command": "lurek.browseApi",
-        "title": "Browse API"
-      },
-      {
-        "command": "lurek.openApiDocs",
-        "title": "Open API Docs"
-      },
-      {
-        "command": "lurek.openWiki",
-        "title": "Open Wiki"
-      },
-      {
-        "command": "lurek.depGraph",
-        "title": "Open Dependency Graph"
-      },
-      {
-        "command": "lurek.depList",
-        "title": "Open Dependency List"
-      },
-      {
-        "command": "lurek.apiCoverage",
-        "title": "Run API Coverage"
-      },
-      {
-        "command": "lurek.test.all",
-        "title": "Run All Tests",
-        "icon": "$(testing-run-all-icon)"
-      },
-      {
-        "command": "lurek.test.lua.all",
-        "title": "Run Lua Tests"
-      },
-      {
-        "command": "lurek.test.lua.golden",
-        "title": "Run Golden Tests"
-      },
-      {
-        "command": "lurek.test.generateForFile",
-        "title": "Generate Tests for File"
-      },
-      {
-        "command": "lurek.package.zip",
-        "title": "Package Zip"
-      },
-      {
-        "command": "lurek.package.windows",
-        "title": "Package for Windows"
-      },
-      {
-        "command": "lurek.package.linux",
-        "title": "Package for Linux"
-      },
-      {
-        "command": "lurek.library.browse",
-        "title": "Browse Pattern Library"
-      },
-      {
-        "command": "lurek.library.insertSnippet",
-        "title": "Insert Pattern Library Snippet"
-      },
-      {
-        "command": "lurek.library.newPattern",
-        "title": "Save Selection as Pattern"
-      },
-      {
         "command": "lurek.assets.refresh",
-        "title": "Refresh Assets",
+        "title": "Assets: Refresh",
+        "category": "Lurek2D",
         "icon": "$(refresh)"
       },
       {
         "command": "lurek.assets.openPanel",
-        "title": "Open Asset Explorer"
+        "title": "Assets: Open Explorer",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.assets.findMissing",
-        "title": "Find Missing Assets"
+        "title": "Assets: Find Missing Files",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.assets.insertPath",
-        "title": "Insert Asset Path"
+        "title": "Assets: Insert Path at Cursor",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.depGraph",
+        "title": "Deps: Open Dependency Graph",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.depList",
+        "title": "Deps: List Module Dependencies",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.deps.showGraph",
-        "title": "Show Module Graph"
+        "title": "Deps: Open Module Graph",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.deps.findCircular",
-        "title": "Find Circular Dependencies"
+        "title": "Deps: Find Circular Dependencies",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.deps.findOrphans",
-        "title": "Show Orphan Modules"
+        "title": "Deps: Find Orphan Modules",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.perf.openDashboard",
-        "title": "Open Performance Dashboard"
-      },
-      {
-        "command": "lurek.runtime.openMonitor",
-        "title": "Open System Monitor"
-      },
-      {
-        "command": "lurek.api.usageReport",
-        "title": "Open API Usage Report"
+        "title": "Perf: Open Performance Dashboard",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.perf.openHotReload",
-        "title": "Open Hot Reload History"
+        "title": "Perf: Open Hot-Reload File Watcher",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.perf.clearHistory",
-        "title": "Clear Performance History"
+        "title": "Perf: Clear Performance History",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.runtime.openMonitor",
+        "title": "Perf: Open System Monitor",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.browseApi",
+        "title": "Browse lurek.* API Reference",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.openApiDocs",
+        "title": "Open API Documentation",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.openWiki",
+        "title": "Open Project Wiki",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.apiCoverage",
+        "title": "Check API Example Coverage",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.api.usageReport",
+        "title": "Open API Usage Report",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.api.quickInsert",
+        "title": "Quick Insert lurek.* API Snippet",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.quality.gate",
+        "title": "Quality: Full Gate (pre-push)",
+        "category": "Lurek2D",
+        "icon": "$(pass)"
+      },
+      {
+        "command": "lurek.quality.clippy",
+        "title": "Quality: Clippy (strict)",
+        "category": "Lurek2D",
+        "icon": "$(search)"
+      },
+      {
+        "command": "lurek.quality.fmtApply",
+        "title": "Quality: Apply Rust Formatting",
+        "category": "Lurek2D",
+        "icon": "$(symbol-ruler)"
+      },
+      {
+        "command": "lurek.quality.fmtCheck",
+        "title": "Quality: Check Rust Formatting",
+        "category": "Lurek2D",
+        "icon": "$(symbol-ruler)"
+      },
+      {
+        "command": "lurek.docs.fullPipeline",
+        "title": "Docs: Run Full Pipeline",
+        "category": "Lurek2D",
+        "icon": "$(book)"
+      },
+      {
+        "command": "lurek.docs.luaBrowser",
+        "title": "Docs: Build Lua API Browser",
+        "category": "Lurek2D",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "lurek.docs.rustBrowser",
+        "title": "Docs: Open Rust Docs in Browser",
+        "category": "Lurek2D",
+        "icon": "$(browser)"
+      },
+      {
+        "command": "lurek.docs.libraryApi",
+        "title": "Docs: Generate Library API",
+        "category": "Lurek2D",
+        "icon": "$(library)"
+      },
+      {
+        "command": "lurek.docs.validateLuaStubs",
+        "title": "Docs: Validate Generated Lua Stubs",
+        "category": "Lurek2D",
+        "icon": "$(verified)"
+      },
+      {
+        "command": "lurek.package.zip",
+        "title": "Package: Zip Archive",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.package.windows",
+        "title": "Package: Windows Build",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.package.linux",
+        "title": "Package: Linux Build",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.dist.repackage",
+        "title": "Dist: Repackage (skip build)",
+        "category": "Lurek2D",
+        "icon": "$(file-zip)"
+      },
+      {
+        "command": "lurek.dist.installWindows",
+        "title": "Dist: Install to Windows",
+        "category": "Lurek2D",
+        "icon": "$(desktop-download)"
+      },
+      {
+        "command": "lurek.audit.qualityReport",
+        "title": "Audit: Generate Quality Report",
+        "category": "Lurek2D",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "lurek.audit.testCoverage",
+        "title": "Audit: Check Test Coverage",
+        "category": "Lurek2D",
+        "icon": "$(graph-line)"
+      },
+      {
+        "command": "lurek.audit.docCoverage",
+        "title": "Audit: Check Doc Coverage",
+        "category": "Lurek2D",
+        "icon": "$(book)"
+      },
+      {
+        "command": "lurek.audit.exampleCoverage",
+        "title": "Audit: Check Example Coverage",
+        "category": "Lurek2D",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "lurek.audit.luaTestCoverage",
+        "title": "Audit: Check Lua API Test Coverage",
+        "category": "Lurek2D",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "lurek.audit.luaSpecCoverage",
+        "title": "Audit: Check Lua Spec Coverage",
+        "category": "Lurek2D",
+        "icon": "$(file-text)"
+      },
+      {
+        "command": "lurek.audit.cagLinkCheck",
+        "title": "Audit: Validate CAG File Links (strict)",
+        "category": "Lurek2D",
+        "icon": "$(link)"
+      },
+      {
+        "command": "lurek.validate.luaApi",
+        "title": "Validate: Lua API Stubs",
+        "category": "Lurek2D",
+        "icon": "$(check-all)"
+      },
+      {
+        "command": "lurek.validate.library",
+        "title": "Validate: Library Modules",
+        "category": "Lurek2D",
+        "icon": "$(library)"
+      },
+      {
+        "command": "lurek.validate.changelog",
+        "title": "Validate: CHANGELOG Format",
+        "category": "Lurek2D",
+        "icon": "$(file-text)"
+      },
+      {
+        "command": "lurek.validate.moduleCoverage",
+        "title": "Validate: Module Coverage",
+        "category": "Lurek2D",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "lurek.validate.callbacks",
+        "title": "Validate: Lua Callbacks",
+        "category": "Lurek2D",
+        "icon": "$(symbol-event)"
+      },
+      {
+        "command": "lurek.validate.cag",
+        "title": "Validate: CAG Files",
+        "category": "Lurek2D",
+        "icon": "$(hubot)"
+      },
+      {
+        "command": "lurek.library.browse",
+        "title": "Browse Pattern Library",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.library.insertSnippet",
+        "title": "Insert Pattern Library Snippet",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.library.newPattern",
+        "title": "Save Selection as New Pattern",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.cag.install",
-        "title": "Install AI Config"
+        "title": "AI: Install Copilot Config Pack",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.cag.selectAgent",
-        "title": "Select Agent"
+        "title": "AI: Switch Active Agent",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.cag.selectSkill",
-        "title": "Select Skill"
+        "title": "AI: Load Skill",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.cag.selectPrompt",
-        "title": "Select Prompt"
+        "title": "AI: Open Prompt Template",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.cag.update",
-        "title": "Update AI Config Files"
+        "title": "AI: Update Config Files",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.cag.deploy",
+        "title": "AI: Deploy GameDev CAG Pack",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.cag.scaffold",
+        "title": "AI: Scaffold GameDev CAG Templates",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.cag.updateGameDev",
+        "title": "AI: Update GameDev CAG Pack",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.mcp.install",
-        "title": "Install MCP Server"
+        "title": "MCP: Install MCP Server",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.mcp.status",
-        "title": "Show MCP Server Status"
+        "title": "MCP: Show Server Status",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.gameJam.quickStart",
-        "title": "Game Jam Quick Start"
+        "title": "Game Jam: Quick Start Project",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.gameJam.addModule",
-        "title": "Add Game Jam Module"
+        "title": "Game Jam: Add Module",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.gameJam.timer",
-        "title": "Open Game Jam Timer"
+        "title": "Game Jam: Open Countdown Timer",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.jam.quickBuild",
-        "title": "Game Jam Quick Build"
+        "title": "Game Jam: Quick Build and Package",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek.jam.checklist",
-        "title": "Open Submission Checklist"
+        "title": "Game Jam: Open Submission Checklist",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.extractToModuleFile",
+        "title": "Extract Selection to Lua Module",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.ui.snapToGrid",
+        "title": "Snap TOML UI to Grid",
+        "category": "Lurek2D"
+      },
+      {
+        "command": "lurek.ui.fixLayouts",
+        "title": "Fix TOML UI Layouts",
+        "category": "Lurek2D"
       },
       {
         "command": "lurek2d.scanAllGames",
@@ -523,210 +902,9 @@
         "category": "Lurek2D"
       },
       {
-        "command": "lurek.build.debug",
-        "title": "Build: Debug",
-        "icon": "$(tools)"
-      },
-      {
-        "command": "lurek.build.release",
-        "title": "Build: Release",
-        "icon": "$(tools)"
-      },
-      {
-        "command": "lurek.build.dist",
-        "title": "Build: Dist",
-        "icon": "$(package)"
-      },
-      {
-        "command": "lurek.build.check",
-        "title": "Build: Check (type-check only)",
-        "icon": "$(checklist)"
-      },
-      {
-        "command": "lurek.run.debugNoRebuild",
-        "title": "Run: Debug (no rebuild)",
-        "icon": "$(play)"
-      },
-      {
-        "command": "lurek.run.releaseNoRebuild",
-        "title": "Run: Release (no rebuild)",
-        "icon": "$(play)"
-      },
-      {
-        "command": "lurek.run.debugPickDemo",
-        "title": "Run: Debug \u2014 pick demo",
-        "icon": "$(list-selection)"
-      },
-      {
-        "command": "lurek.run.releasePickDemo",
-        "title": "Run: Release \u2014 pick demo",
-        "icon": "$(list-selection)"
-      },
-      {
-        "command": "lurek.test.rust.all",
-        "title": "Test: Run Rust Tests",
-        "icon": "$(beaker)"
-      },
-      {
-        "command": "lurek.test.target.math",
-        "title": "Test: Math",
-        "icon": "$(symbol-numeric)"
-      },
-      {
-        "command": "lurek.test.target.physics",
-        "title": "Test: Physics",
-        "icon": "$(settings-gear)"
-      },
-      {
-        "command": "lurek.test.target.graphics",
-        "title": "Test: Graphics",
-        "icon": "$(symbol-color)"
-      },
-      {
-        "command": "lurek.test.target.audio",
-        "title": "Test: Audio",
-        "icon": "$(unmute)"
-      },
-      {
-        "command": "lurek.test.target.input",
-        "title": "Test: Input",
-        "icon": "$(keyboard)"
-      },
-      {
-        "command": "lurek.quality.gate",
-        "title": "Quality: Gate (full pre-push)",
-        "icon": "$(pass)"
-      },
-      {
-        "command": "lurek.quality.clippy",
-        "title": "Quality: Clippy (strict)",
-        "icon": "$(search)"
-      },
-      {
-        "command": "lurek.quality.fmtApply",
-        "title": "Quality: Format Apply",
-        "icon": "$(symbol-ruler)"
-      },
-      {
-        "command": "lurek.quality.fmtCheck",
-        "title": "Quality: Format Check",
-        "icon": "$(symbol-ruler)"
-      },
-      {
-        "command": "lurek.docs.fullPipeline",
-        "title": "Docs: Full Pipeline",
-        "icon": "$(book)"
-      },
-      {
-        "command": "lurek.docs.rustBrowser",
-        "title": "Docs: Rust (browser)",
-        "icon": "$(browser)"
-      },
-      {
-        "command": "lurek.docs.libraryApi",
-        "title": "Docs: Library API",
-        "icon": "$(library)"
-      },
-      {
-        "command": "lurek.docs.validateLuaStubs",
-        "title": "Docs: Validate Lua Stubs",
-        "icon": "$(verified)"
-      },
-      {
-        "command": "lurek.dist.repackage",
-        "title": "Dist: Repackage (skip build)",
-        "icon": "$(file-zip)"
-      },
-      {
-        "command": "lurek.dist.installWindows",
-        "title": "Dist: Install Windows",
-        "icon": "$(desktop-download)"
-      },
-      {
-        "command": "lurek.audit.qualityReport",
-        "title": "Audit: Quality Report",
-        "icon": "$(graph)"
-      },
-      {
-        "command": "lurek.audit.testCoverage",
-        "title": "Audit: Test Coverage",
-        "icon": "$(graph-line)"
-      },
-      {
-        "command": "lurek.audit.docCoverage",
-        "title": "Audit: Doc Coverage",
-        "icon": "$(book)"
-      },
-      {
-        "command": "lurek.audit.exampleCoverage",
-        "title": "Audit: Example Coverage",
-        "icon": "$(file-code)"
-      },
-      {
-        "command": "lurek.audit.luaTestCoverage",
-        "title": "Audit: Lua API Test Coverage",
-        "icon": "$(beaker)"
-      },
-      {
-        "command": "lurek.audit.luaSpecCoverage",
-        "title": "Audit: Lua Spec Coverage",
-        "icon": "$(file-text)"
-      },
-      {
-        "command": "lurek.audit.cagLinkCheck",
-        "title": "Audit: CAG Link Check (strict)",
-        "icon": "$(link)"
-      },
-      {
-        "command": "lurek.validate.luaApi",
-        "title": "Validate: Lua API",
-        "icon": "$(check-all)"
-      },
-      {
-        "command": "lurek.validate.library",
-        "title": "Validate: Library",
-        "icon": "$(library)"
-      },
-      {
-        "command": "lurek.validate.changelog",
-        "title": "Validate: Changelog",
-        "icon": "$(file-text)"
-      },
-      {
-        "command": "lurek.validate.moduleCoverage",
-        "title": "Validate: Module Coverage",
-        "icon": "$(graph)"
-      },
-      {
-        "command": "lurek.validate.callbacks",
-        "title": "Validate: Callbacks",
-        "icon": "$(symbol-event)"
-      },
-      {
-        "command": "lurek.validate.cag",
-        "title": "Validate: CAG Files",
-        "icon": "$(hubot)"
-      },
-      {
         "command": "lurek2d.showRagPanel",
-        "title": "Lurek2D: Search Knowledge Base (RAG)",
+        "title": "Search Knowledge Base (RAG)",
         "category": "Lurek2D"
-      },
-      {
-        "command": "lurek.scaffold.mod",
-        "title": "Create New Mod from Template"
-      },
-      {
-        "command": "lurek.ui.snapToGrid",
-        "title": "Snap TOML UI to Grid"
-      },
-      {
-        "command": "lurek.ui.fixLayouts",
-        "title": "Fix TOML UI Layouts"
-      },
-      {
-        "command": "lurek.test.rust.parallel",
-        "title": "Run Parallel Cargo Tests"
       }
     ],
     "keybindings": [

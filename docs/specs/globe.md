@@ -321,7 +321,6 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `axial_tilt_mat` (`sphere.rs`): Return a rotation matrix representing axial tilt (alias for `rot_x`).
 - `rot_x` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the X axis.
 - `rot_y` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the Y axis.
-- `rot_z` (`sphere.rs`): Return a rotation matrix for `angle_deg` degrees around the Z axis.
 - `GlobeSyncChannel::new` (`sync.rs`): Create a new snapshot channel pair.
 - `build_snapshot` (`sync.rs`): Build a snapshot from the current globe state.
 - `apply_snapshot` (`sync.rs`): Apply a snapshot to a mutable globe instance.
@@ -356,12 +355,14 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `lurek.globe.new`: Creates a named globe with optional specification fields in the module registry.
 - `lurek.globe.get`: Returns a globe from the module registry by name.
 - `lurek.globe.remove`: Removes a globe from the registry by name.
+- `lurek.globe.loadFromTOMLFile`: Creates a globe and populates provinces from a TOML file path.
 - `lurek.globe.loadFromTOML`: Creates a globe and populates provinces from TOML source text.
 - `lurek.globe.loadFromPNG`: Creates a globe and populates provinces from a PNG file.
 - `lurek.globe.generateVoronoi`: Creates a globe and populates provinces from latitude-longitude seed points.
 - `lurek.globe.greatCircleDistance`: Computes great-circle distance between two latitude-longitude points.
 - `lurek.globe.greatCirclePath`: Computes sampled latitude-longitude points along a great-circle path.
 - `lurek.globe.latLonToUnit`: Converts latitude and longitude to a unit-sphere 3D vector table.
+- `lurek.globe.raySphereIntersect`: Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 
 ### `LGlobe` Methods
 - `LGlobe:addProvince`: Adds a province described by id, centroid, vertices, neighbors, and optional base color.

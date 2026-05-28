@@ -125,7 +125,7 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 ## 📖 API Overview
 
 - Source spec: [docs/specs/effect.md](../blob/main/docs/specs/effect.md)
-- Module-level functions: 9
+- Module-level functions: 10
 - Lua-visible types: 3
 - Total type methods: 62
 
@@ -160,6 +160,34 @@ Source: [effect.lua](../blob/main/content/examples/effect.lua)
 do
     local types = lurek.effect.getEffectTypes()
     print("available types = " .. #types)
+end
+```
+
+#### lurek.effect.getPresetNames
+
+#### Definition
+
+```lua
+--- Returns all built-in post-processing preset names.
+---@return string[] Built-in preset name strings.
+lurek.effect.getPresetNames = function() end
+```
+
+#### Description
+
+Returns all built-in post-processing preset names.
+
+Returns: `string[]` - Built-in preset name strings.
+
+#### Example
+
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
+
+```lua
+do
+    local names = lurek.effect.getPresetNames()
+    print("preset count = " .. #names)
+    print("first preset = " .. tostring(names[1]))
 end
 ```
 

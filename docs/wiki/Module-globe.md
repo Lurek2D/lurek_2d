@@ -211,7 +211,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 ## 📖 API Overview
 
 - Source spec: [docs/specs/globe.md](../blob/main/docs/specs/globe.md)
-- Module-level functions: 9
+- Module-level functions: 11
 - Lua-visible types: 2
 - Total type methods: 72
 
@@ -481,6 +481,50 @@ do
 end
 ```
 
+#### lurek.globe.loadFromTOMLFile
+
+#### Definition
+
+```lua
+--- Creates a globe and populates provinces from a TOML file path.
+---@param name string Globe registry name.
+---@param path string TOML file path to load.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New populated globe handle.
+lurek.globe.loadFromTOMLFile = function(name, path, spec_tbl) end
+```
+
+#### Description
+
+Creates a globe and populates provinces from a TOML file path.
+
+Parameters:
+
+- `name` (`string`, required): Globe registry name.
+- `path` (`string`, required): TOML file path to load.
+- `spec_tbl` (`table`, optional): Globe specification table.
+
+Returns: `LGlobe` - New populated globe handle.
+
+#### Example
+
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
+
+```lua
+do
+    local path = "logs/globe_example.toml"
+    local file = assert(io.open(path, "w"))
+    file:write("[[province]]\n")
+    file:write("id = 1\n")
+    file:write("centroid = [10.0, 20.0]\n")
+    file:write("vertices = [[10.0, 19.0], [11.0, 20.0], [10.0, 21.0], [9.0, 20.0]]\n")
+    file:close()
+
+    local g = lurek.globe.loadFromTOMLFile("toml_file_globe", path, {})
+    print("toml file globe provinces = " .. g:provinceCount())
+end
+```
+
 #### lurek.globe.new
 
 #### Definition
@@ -512,6 +556,51 @@ Source: [globe.lua](../blob/main/content/examples/globe.lua)
 do
     local g = lurek.globe.new("test_globe")
     print("globe type = " .. g:type())
+end
+```
+
+#### lurek.globe.raySphereIntersect
+
+#### Definition
+
+```lua
+--- Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
+---@param ox number Ray origin x.
+---@param oy number Ray origin y.
+---@param oz number Ray origin z.
+---@param dx number Ray direction x.
+---@param dy number Ray direction y.
+---@param dz number Ray direction z.
+---@param radius number Sphere radius.
+---@return number Hit distance `t`, or nil when the ray misses.
+lurek.globe.raySphereIntersect = function(ox, oy, oz, dx, dy, dz, radius) end
+```
+
+#### Description
+
+Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
+
+Parameters:
+
+- `ox` (`number`, required): Ray origin x.
+- `oy` (`number`, required): Ray origin y.
+- `oz` (`number`, required): Ray origin z.
+- `dx` (`number`, required): Ray direction x.
+- `dy` (`number`, required): Ray direction y.
+- `dz` (`number`, required): Ray direction z.
+- `radius` (`number`, required): Sphere radius.
+
+Returns: `number` - Hit distance `t`, or nil when the ray misses.
+
+#### Example
+
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
+
+```lua
+do
+    local t = lurek.globe.raySphereIntersect(0.0, 0.0, -2.0, 0.0, 0.0, 1.0, 1.0)
+    print("hit distance = " .. tostring(t))
+    print("ray hits sphere = " .. tostring(t ~= nil))
 end
 ```
 
@@ -3122,7 +3211,7 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [globe_demo](../tree/main/content/games/showcase/globe_demo) (showcase)
 
 [⬆ back to top](#table-of-contents)
 

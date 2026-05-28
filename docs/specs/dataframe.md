@@ -172,7 +172,6 @@ To facilitate seamless data interchange, the module implements native serializat
 
 - `read_csv_dataframe` (`file_io.rs`): Read CSV text from storage, parse it, and return a dataframe.
 - `read_json_dataframe` (`file_io.rs`): Read JSON text from storage, parse it, and return a dataframe.
-- `read_binary_dataframe` (`file_io.rs`): Read LVDF bytes from storage, parse them, and return a dataframe.
 - `write_csv_dataframe` (`file_io.rs`): Serialize a dataframe to CSV and write it through storage.
 - `write_json_dataframe` (`file_io.rs`): Serialize a dataframe to JSON and write it through storage.
 - `write_binary_dataframe` (`file_io.rs`): Serialize a dataframe to LVDF bytes and write them through storage.

@@ -2,7 +2,8 @@
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{
-    detect_system_locale, flat_table_from_json, flat_table_from_toml, interpolate, is_rtl,
+    detect_system_locale, flat_table_from_json, flat_table_from_toml, interpolate,
+    interpolate_pairs, is_rtl,
     is_valid_locale_code, Catalog, PluralForm,
 };
 use crate::runtime::SharedState;
@@ -256,11 +257,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     loc.set(
         "interpolate",
         lua.create_function(|_, (template, vars): (String, LuaTable)| {
-            let mut map = HashMap::new();
+            let mut pairs = Vec::new();
             for (k, v) in vars.pairs::<String, String>().flatten() {
-                map.insert(k, v);
+                pairs.push((k, v));
             }
-            Ok(interpolate(&template, &map))
+            Ok(interpolate_pairs(&template, &pairs))
         })?,
     )?;
     // -- pluralFor --

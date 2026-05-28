@@ -52,8 +52,6 @@ Update all linked artifacts in the same commit:
 **Architecture & CAG source of truth:**
 - `docs/architecture/philosophy.md` — full design assumptions, module groups, and binding constraint rationale.
 - `docs/architecture/cag-system.md` — CAG file types, WHY/HOW/WHAT layer doctrine, worked examples, and validator contract.
-- `docs/architecture/cag-system.md § 4.1` — authoritative agent-to-skill bundle table (derived from each agent's CAG Metadata).
-- `.github/agents/README.md` — cross-agent routing, ownership, and handoff contracts.
 
 **CAG layer — how to find the right context:**
 - Layer intent: **Agents → WHY** (scope, ownership, mission) · **Skills → HOW** (domain knowledge, patterns) · **Prompts → WHAT** (concrete steps, output criteria). A prompt must not duplicate a skill or agent workflow.

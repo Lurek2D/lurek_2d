@@ -4,20 +4,21 @@
 Steps:
     1.  gen_rust_api_data.py         -> logs/data/rust_api_data.json           (Rust master JSON)
     2.  gen_lua_api_data.py          -> logs/data/lua_api_data.json            (Lua master JSON)
-    3.  gen_extension_api.py         -> extensions/vscode/data/lurek-api.json  (VS Code extension API)
-    4.  gen_luadoc.py                -> docs/api/lurek.lua                (LuaCATS stubs)
-    4.  gen_docs_lua.py              -> docs/api/lurek.md                 (Lua API reference)
-    5.  gen_docs_rust.py             -> docs/api/rust.md                  (Rust API reference)
-    6.  gen_lib_docs.py              -> docs/api/lureksome.md + docs/api/lureksome.lua  (Lureksome library API)
-    7.  gen_wiki.py                  -> docs/wiki/*.md                    (GitHub Wiki pages)
-    8.  doc_coverage.py              -> logs/data/doc_coverage.json       (docstring coverage JSON)
-    9.  test_coverage.py             -> logs/data/test_coverage.json      (test coverage JSON)
-   10.  gen_test_docs.py --mode rust -> logs/reports/test_docs_rust.md
-   11.  gen_test_docs.py --mode lua  -> logs/reports/test_docs_lua.md
-   12.  gen_coverage_gaps.py         -> logs/reports/coverage_gaps.md     (API gap report)
-   13.  example_coverage.py          -> logs/reports/example_coverage.md  (example coverage)
-   14.  test_coverage.py             -> logs/reports/test_coverage.md     (test coverage report)
-   15.  lua_api_test_coverage.py     -> logs/reports/lua_test_coverage.md (Lua test coverage)
+    3.  gen_extension_api.py         -> extension/vscode/data/lurek-api.json  (VS Code extension API)
+    4.  gen_luadoc.py                -> docs/api/lurek.lua                     (LuaCATS stubs)
+    5.  gen_docs_lua.py              -> docs/api/lurek.md                      (Lua API reference)
+    6.  gen_docs_lua_html.py         -> build/doc/lua-api                      (Lua API HTML browser)
+    7.  gen_docs_rust.py             -> docs/api/rust.md                       (Rust API reference)
+    8.  gen_lib_docs.py              -> docs/api/lureksome.md + docs/api/lureksome.lua  (Lureksome library API)
+    9.  gen_wiki.py                  -> docs/wiki/*.md                         (GitHub Wiki pages)
+   10.  doc_coverage.py              -> logs/data/doc_coverage.json            (docstring coverage JSON)
+   11.  test_coverage.py             -> logs/data/test_coverage.json           (test coverage JSON)
+   12.  gen_test_docs.py --mode rust -> logs/reports/test_docs_rust.md
+   13.  gen_test_docs.py --mode lua  -> logs/reports/test_docs_lua.md
+   14.  gen_coverage_gaps.py         -> logs/reports/coverage_gaps.md          (API gap report)
+   15.  example_coverage.py          -> logs/reports/example_coverage.md       (example coverage)
+   16.  test_coverage.py             -> logs/reports/test_coverage.md          (test coverage report)
+   17.  lua_api_test_coverage.py     -> logs/reports/lua_test_coverage.md      (Lua test coverage)
 
 Usage:
     python tools/gen_all_docs.py          # run all steps
@@ -36,9 +37,10 @@ if hasattr(sys.stdout, "reconfigure"):
 SCRIPTS = [
     ("docs/gen_rust_api_data.py", "Rust JSON (logs/data/rust_api_data.json)"),
     ("docs/gen_lua_api_data.py",  "Lua JSON (logs/data/lua_api_data.json)"),
-    ("docs/gen_extension_api.py", "VS Code extension API (extensions/vscode/data/lurek-api.json)"),
+    ("docs/gen_extension_api.py", "VS Code extension API (extension/vscode/data/lurek-api.json)"),
     ("docs/gen_luadoc.py",        "LuaCATS Stubs (docs/api/lurek.lua)"),
     ("docs/gen_docs_lua.py",      "Lua API reference (docs/api/lurek.md)"),
+    ("docs/gen_docs_lua_html.py", "Lua API HTML browser (build/doc/lua-api)"),
     ("docs/gen_docs_rust.py",     "Rust API reference (docs/api/rust.md)"),
     ("docs/gen_lib_docs.py",      "Library API (docs/api/lureksome.md + lureksome.lua)"),
     ("docs/gen_wiki.py",          "User wiki (docs/wiki/*.md)"),

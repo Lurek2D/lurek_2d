@@ -3170,7 +3170,7 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [terminal_demo](../tree/main/content/games/showcase/terminal_demo) (showcase)
 
 [⬆ back to top](#table-of-contents)
 

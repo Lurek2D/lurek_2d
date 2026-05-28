@@ -82,8 +82,8 @@ const modules = Array.isArray(data.modules)
 // Inline the full JSON as a TypeScript constant — esbuild bundles it into
 // dist/extension.js so there are zero filesystem reads at runtime.
 const generatedTs = `// AUTO-GENERATED — DO NOT EDIT
-// Source: extensions/vscode/data/lurek-api.json
-// Generator: extensions/vscode/tools/generate-api-data.ts
+// Source: extension/vscode/data/lurek-api.json
+// Generator: extension/vscode/tools/generate-api-data.ts
 // Regenerate: npm run generate-api  (runs automatically via npm run build)
 //
 // To update the Lurek API data:

@@ -39,7 +39,7 @@ pub fn cross2d(a: &NdArray, b: &NdArray) -> Result<f64, String> {
     }
     Ok(a.get_f64(0) * b.get_f64(1) - a.get_f64(1) * b.get_f64(0))
 }
-/// Compute outer product of two vectors and return [m,n] matrix.
+/// Compute outer product of two vectors and return `[m,n]` matrix.
 pub fn outer(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     if a.ndim() != 1 || b.ndim() != 1 {
         return Err("outer: both inputs must be 1D".to_string());
@@ -55,19 +55,19 @@ pub fn outer(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     }
     Ok(out)
 }
-/// Build 2D rotation matrix and return [2,2] Float64 matrix.
+/// Build 2D rotation matrix and return `[2,2]` Float64 matrix.
 pub fn rotate2d_matrix(angle_rad: f64) -> Result<NdArray, String> {
     let (s, c) = angle_rad.sin_cos();
     let vals = [c, -s, s, c];
     NdArray::from_slice(&vals, &[2, 2], DataType::Float64)
 }
-/// Build 2D affine matrix and return [3,3] Float64 transform matrix.
+/// Build 2D affine matrix and return `[3,3]` Float64 transform matrix.
 pub fn affine2d(tx: f64, ty: f64, angle_rad: f64, sx: f64, sy: f64) -> Result<NdArray, String> {
     let (s, c) = angle_rad.sin_cos();
     let vals = [sx * c, -sy * s, tx, sx * s, sy * c, ty, 0.0, 0.0, 1.0];
     NdArray::from_slice(&vals, &[3, 3], DataType::Float64)
 }
-/// Transform [N,2] points and return transformed [N,2] points array.
+/// Transform `[N,2]` points and return transformed `[N,2]` points array.
 pub fn transform_points(matrix: &NdArray, points: &NdArray) -> Result<NdArray, String> {
     if points.ndim() != 2 || points.shape()[1] != 2 {
         return Err(format!(
@@ -117,7 +117,7 @@ pub fn transform_points(matrix: &NdArray, points: &NdArray) -> Result<NdArray, S
     }
     Ok(out)
 }
-/// Build normalized odd-sized Gaussian kernel and return [size,size] matrix.
+/// Build normalized odd-sized Gaussian kernel and return `[size,size]` matrix.
 pub fn gaussian_kernel(size: usize, sigma: f64) -> Result<NdArray, String> {
     if size == 0 {
         return Err("gaussian_kernel: size must be >= 1".to_string());

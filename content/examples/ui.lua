@@ -3283,7 +3283,7 @@ do
     print("bar df categories=" .. count)
 end
 
---@api-stub: LBarChart:addSeries
+-- Duplicate coverage lives in content/examples/charts.lua.
 do
     local chart = lurek.ui.newBarChart({width = 200, height = 100})
     chart:addSeries("Q1", 0.2, 0.6, 1.0)
@@ -7113,14 +7113,14 @@ do
     print("lurek.ui.animateColor ok")
 end
 
---@api-stub: LLineChart:addSeries
+-- Duplicate coverage lives in content/examples/charts.lua.
 do
     local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
     chart:addSeries("sales", { 1, 4, 2, 7, 3 })
     print("line series added")
 end
 
---@api-stub: LScatterPlot:addSeries
+-- Duplicate coverage lives in content/examples/charts.lua.
 do
     local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
     chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })

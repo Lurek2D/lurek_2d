@@ -8,7 +8,9 @@ use crate::globe::types::{
     FogState, GlobeSpec, HeatLayer, LabelStyle, Layer, LodTier, MarkerStyle, Region, RegionId,
     MAX_REGIONS,
 };
-use crate::globe::sphere::{great_circle_distance, great_circle_path, lat_lon_to_unit};
+use crate::globe::sphere::{
+    great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
+};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -1030,6 +1032,40 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     {
         let reg = registry.clone();
         let s = state.clone();
+        // -- loadFromTOMLFile --
+        /// Creates a globe and populates provinces from a TOML file path.
+        /// @param | name | string | Globe registry name.
+        /// @param | path | string | TOML file path to load.
+        /// @param | spec_tbl | table? | Globe specification table.
+        /// @return | LGlobe | New populated globe handle.
+        tbl.set(
+            "loadFromTOMLFile",
+            lua.create_function(
+                move |_, (name, path, spec_tbl): (String, String, Option<LuaTable>)| {
+                    let spec = parse_globe_spec(spec_tbl);
+                    let provinces =
+                        loader::load_from_toml_file(&path).map_err(mlua::Error::RuntimeError)?;
+                    {
+                        let mut guard = reg.lock().map_err(|e| {
+                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                        })?;
+                        let globe = guard.create(name.clone(), spec);
+                        for p in provinces {
+                            let _ = globe.add_province(p);
+                        }
+                    }
+                    Ok(LuaGlobe {
+                        reg: reg.clone(),
+                        name,
+                        state: s.clone(),
+                    })
+                },
+            )?,
+        )?;
+    }
+    {
+        let reg = registry.clone();
+        let s = state.clone();
         // -- loadFromTOML --
         /// Creates a globe and populates provinces from TOML source text.
         /// @param | name | string | Globe registry name.
@@ -1190,6 +1226,28 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             t.set(3, v.z)?;
             Ok(t)
         })?,
+    )?;
+    // -- raySphereIntersect --
+    /// Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
+    /// @param | ox | number | Ray origin x.
+    /// @param | oy | number | Ray origin y.
+    /// @param | oz | number | Ray origin z.
+    /// @param | dx | number | Ray direction x.
+    /// @param | dy | number | Ray direction y.
+    /// @param | dz | number | Ray direction z.
+    /// @param | radius | number | Sphere radius.
+    /// @return | number | Hit distance `t`, or nil when the ray misses.
+    tbl.set(
+        "raySphereIntersect",
+        lua.create_function(
+            |_, (ox, oy, oz, dx, dy, dz, radius): (f32, f32, f32, f32, f32, f32, f32)| {
+                Ok(ray_sphere_intersect(
+                    crate::math::Vec3::new(ox, oy, oz),
+                    crate::math::Vec3::new(dx, dy, dz),
+                    radius,
+                ))
+            },
+        )?,
     )?;
     /// Maximum number of provinces that can be registered in the globe.
     tbl.set("MAX_PROVINCES", MAX_REGIONS as u32)?;

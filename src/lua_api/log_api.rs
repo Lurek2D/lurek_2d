@@ -23,11 +23,9 @@ fn dispatch(
                 if let Some(key) = callback_keys.borrow().get(&sink.id) {
                     if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
                         if let Ok(record_table) = lua.create_table() {
-                            /// Performs the 'level' operation.
+                            // Lua callback record fields.
                             let _ = record_table.set("level", level.as_str().to_lowercase());
-                            /// The 'tag' field value exposed to Lua scripts.
                             let _ = record_table.set("tag", tag);
-                            /// Performs the 'message' operation.
                             let _ = record_table.set("message", message);
                             let _ = func.call::<LuaTable, ()>(record_table);
                         }
@@ -55,18 +53,15 @@ fn dispatch_structured(
                 if let Some(key) = callback_keys.borrow().get(&sink.id) {
                     if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
                         if let Ok(record_table) = lua.create_table() {
-                            /// Performs the 'level' operation.
+                            // Lua callback record fields.
                             let _ = record_table.set("level", level.as_str().to_lowercase());
-                            /// The 'tag' field value exposed to Lua scripts.
                             let _ = record_table.set("tag", tag);
-                            /// Performs the 'message' operation.
                             let _ = record_table.set("message", message);
                             if !fields.is_empty() {
                                 if let Ok(fields_table) = lua.create_table() {
                                     for (key, value) in fields {
                                         let _ = fields_table.set(key.as_str(), value.clone());
                                     }
-                                    /// Performs the 'fields' operation.
                                     let _ = record_table.set("fields", fields_table);
                                 }
                             }

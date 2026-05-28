@@ -1,120 +1,120 @@
-# Plan 1: Poprawki Istniejących Modułów
+﻿# Plan 1: Poprawki IstniejÄ…cych ModuĹ‚Ăłw
 
-> **Cel**: Naprawić naming, duplikaty, braki API, wrong-tier assignments i niespójności w istniejących modułach bez wprowadzania nowych modułów.
+> **Cel**: NaprawiÄ‡ naming, duplikaty, braki API, wrong-tier assignments i niespĂłjnoĹ›ci w istniejÄ…cych moduĹ‚ach bez wprowadzania nowych moduĹ‚Ăłw.
 > **Agent owner**: Developer (Rust/API changes), Lua-Designer (API surface), Doc-Writer (spec sync)
-> **Nie obejmuje**: Nowych modułów (patrz Plan 2)
+> **Nie obejmuje**: Nowych moduĹ‚Ăłw (patrz Plan 2)
 
 ---
 
 ## Metodologia planowania
 
-Każde zadanie ma:
-- **ID** — unikalny identyfikator (P1-XX)
-- **Priorytet** — Critical / High / Medium / Low
-- **Owner** — agent który wykonuje
-- **Gate** — warunek ukończenia (binarny)
-- **Zależności** — które taski muszą być przed
-- **Zakres zmian** — dokładnie co i gdzie
+KaĹĽde zadanie ma:
+- **ID** â€” unikalny identyfikator (P1-XX)
+- **Priorytet** â€” Critical / High / Medium / Low
+- **Owner** â€” agent ktĂłry wykonuje
+- **Gate** â€” warunek ukoĹ„czenia (binarny)
+- **ZaleĹĽnoĹ›ci** â€” ktĂłre taski muszÄ… byÄ‡ przed
+- **Zakres zmian** â€” dokĹ‚adnie co i gdzie
 
-Kolejność wykonania: Krytyczne najpierw → High → Medium → Low. Zadania bez zależności mogą być równoległe.
+KolejnoĹ›Ä‡ wykonania: Krytyczne najpierw â†’ High â†’ Medium â†’ Low. Zadania bez zaleĹĽnoĹ›ci mogÄ… byÄ‡ rĂłwnolegĹ‚e.
 
 ---
 
-## BLOK A — Krytyczne rename i deduplikacja (bez zmian Rust)
+## BLOK A â€” Krytyczne rename i deduplikacja (bez zmian Rust)
 
-> Żadne zadanie z tego bloku nie wymaga zmian w `src/`. Tylko dokumentacja i spec pliki.
+> Ĺ»adne zadanie z tego bloku nie wymaga zmian w `src/`. Tylko dokumentacja i spec pliki.
 
-### P1-A1 — Scalić `lua_api.md` i `runtime.md`
+### P1-A1 â€” ScaliÄ‡ `lua_api.md` i `runtime.md`
 
 **Priorytet**: Critical
 **Owner**: Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: Dwa spec pliki (`docs/specs/lua_api.md`, `docs/specs/runtime.md`) mapują na ten sam namespace `lurek.runtime`. To duplikat w dokumentacji.
+**Problem**: Dwa spec pliki (`docs/specs/lua_api.md`, `docs/specs/runtime.md`) mapujÄ… na ten sam namespace `lurek.runtime`. To duplikat w dokumentacji.
 
-**Co zrobić**:
-1. Otworzyć oba pliki i porównać sekcje.
-2. Wybrać `runtime.md` jako plik kanoniczny (bardziej kompletny).
-3. Przenieść wszystkie unikalne sekcje z `lua_api.md` do `runtime.md`.
-4. Usunąć `docs/specs/lua_api.md`.
-5. Zaktualizować `docs/specs/README.md` — usunąć wpis `lua_api`.
-6. Zaktualizować `docs/CHANGELOG.md`.
+**Co zrobiÄ‡**:
+1. OtworzyÄ‡ oba pliki i porĂłwnaÄ‡ sekcje.
+2. WybraÄ‡ `runtime.md` jako plik kanoniczny (bardziej kompletny).
+3. PrzenieĹ›Ä‡ wszystkie unikalne sekcje z `lua_api.md` do `runtime.md`.
+4. UsunÄ…Ä‡ `docs/specs/lua_api.md`.
+5. ZaktualizowaÄ‡ `docs/specs/README.md` â€” usunÄ…Ä‡ wpis `lua_api`.
+6. ZaktualizowaÄ‡ `docs/CHANGELOG.md`.
 
-**Gate**: `docs/specs/lua_api.md` nie istnieje. `docs/specs/runtime.md` zawiera wszystkie API z obu plików. `README.md` nie ma wpisu `lua_api`.
+**Gate**: `docs/specs/lua_api.md` nie istnieje. `docs/specs/runtime.md` zawiera wszystkie API z obu plikĂłw. `README.md` nie ma wpisu `lua_api`.
 
 ---
 
-### P1-A2 — Przenieść `vscode-extension.md` poza `docs/specs/`
+### P1-A2 â€” PrzenieĹ›Ä‡ `vscode-extension.md` poza `docs/specs/`
 
 **Priorytet**: Critical
 **Owner**: Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `docs/specs/vscode-extension.md` dokumentuje narzędzie deweloperskie, nie część lurek.* API Lua. Zaśmieca przestrzeń specs.
+**Problem**: `docs/specs/vscode-extension.md` dokumentuje narzÄ™dzie deweloperskie, nie czÄ™Ĺ›Ä‡ lurek.* API Lua. ZaĹ›mieca przestrzeĹ„ specs.
 
-**Co zrobić**:
-1. Przenieść plik do `extensions/vscode/docs/vscode-extension.md`.
-2. Usunąć `docs/specs/vscode-extension.md`.
-3. Zaktualizować `docs/specs/README.md` — usunąć wpis `vscode-extension`.
-4. Dodać link do nowej lokalizacji z `extensions/vscode/README.md`.
-5. Zaktualizować `docs/CHANGELOG.md`.
+**Co zrobiÄ‡**:
+1. PrzenieĹ›Ä‡ plik do `extension/vscode/docs/vscode-extension.md`.
+2. UsunÄ…Ä‡ `docs/specs/vscode-extension.md`.
+3. ZaktualizowaÄ‡ `docs/specs/README.md` â€” usunÄ…Ä‡ wpis `vscode-extension`.
+4. DodaÄ‡ link do nowej lokalizacji z `extension/vscode/README.md`.
+5. ZaktualizowaÄ‡ `docs/CHANGELOG.md`.
 
-**Gate**: Plik nie istnieje w `docs/specs/`. Istnieje w `extensions/vscode/docs/`. Żadne linki w `docs/specs/README.md` do niego nie wskazują.
+**Gate**: Plik nie istnieje w `docs/specs/`. Istnieje w `extension/vscode/docs/`. Ĺ»adne linki w `docs/specs/README.md` do niego nie wskazujÄ….
 
 ---
 
-### P1-A3 — Wyjaśnić `bin.md` i usunąć z lurek.* surface
+### P1-A3 â€” WyjaĹ›niÄ‡ `bin.md` i usunÄ…Ä‡ z lurek.* surface
 
 **Priorytet**: Critical
 **Owner**: Doc-Writer + Developer (weryfikacja)
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `bin.md` nie ma primary Lua namespace. Jest w Edge/Integration tier. Niejasne czy to spec dla binarki engine czy coś innego.
+**Problem**: `bin.md` nie ma primary Lua namespace. Jest w Edge/Integration tier. Niejasne czy to spec dla binarki engine czy coĹ› innego.
 
-**Co zrobić**:
-1. Sprawdzić `src/bin/` lub analogiczne — czy jest kod powiązany z `bin.md`.
-2. Jeśli to spec dla main binary (`src/main.rs` lub entry point) — przenieść do `docs/architecture/binary-entry.md`.
-3. Jeśli `bin.md` dokumentuje coś co ma API — uzupełnić `Primary Lua namespace`.
-4. Usunąć z `docs/specs/` jeśli nie jest częścią lurek.* API.
-5. Zaktualizować `docs/specs/README.md`.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/bin/` lub analogiczne â€” czy jest kod powiÄ…zany z `bin.md`.
+2. JeĹ›li to spec dla main binary (`src/main.rs` lub entry point) â€” przenieĹ›Ä‡ do `docs/architecture/binary-entry.md`.
+3. JeĹ›li `bin.md` dokumentuje coĹ› co ma API â€” uzupeĹ‚niÄ‡ `Primary Lua namespace`.
+4. UsunÄ…Ä‡ z `docs/specs/` jeĹ›li nie jest czÄ™Ĺ›ciÄ… lurek.* API.
+5. ZaktualizowaÄ‡ `docs/specs/README.md`.
 
 **Gate**: `bin.md` albo ma poprawny namespace albo nie istnieje w `docs/specs/`.
 
 ---
 
-## BLOK B — Rename namespace `lurek.data` → `lurek.binary`
+## BLOK B â€” Rename namespace `lurek.data` â†’ `lurek.binary`
 
-> Wymaga zmian w Rust (`src/lua_api/binary_api.rs`), testach, przykładach i docs.
+> Wymaga zmian w Rust (`src/lua_api/binary_api.rs`), testach, przykĹ‚adach i docs.
 
-### P1-B1 — Rename `lurek.data` na `lurek.binary` w bindings
+### P1-B1 â€” Rename `lurek.data` na `lurek.binary` w bindings
 
 **Priorytet**: Critical
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak (blok A może iść równolegle)
+**ZaleĹĽnoĹ›ci**: brak (blok A moĹĽe iĹ›Ä‡ rĂłwnolegle)
 
-**Problem**: `binary.md` spec file, `src/binary/` source, ale namespace = `lurek.data`. Powoduje konfuzję z `lurek.dataframe`.
+**Problem**: `binary.md` spec file, `src/binary/` source, ale namespace = `lurek.data`. Powoduje konfuzjÄ™ z `lurek.dataframe`.
 
-**Co zrobić w Rust** (`src/lua_api/binary_api.rs`):
-1. Znaleźć gdzie namespace jest rejestrowany (pattern: `lua.globals().set("lurek", ...)`  lub `create_table` z `"data"`).
-2. Zmienić string `"data"` na `"binary"` w rejestracji namespace.
-3. Uruchomić `cargo build` — błędy kompilacji wskażą inne miejsca do zmiany.
+**Co zrobiÄ‡ w Rust** (`src/lua_api/binary_api.rs`):
+1. ZnaleĹşÄ‡ gdzie namespace jest rejestrowany (pattern: `lua.globals().set("lurek", ...)`  lub `create_table` z `"data"`).
+2. ZmieniÄ‡ string `"data"` na `"binary"` w rejestracji namespace.
+3. UruchomiÄ‡ `cargo build` â€” bĹ‚Ä™dy kompilacji wskaĹĽÄ… inne miejsca do zmiany.
 
-**Co zrobić w dokumentacji**:
-1. Zaktualizować `docs/specs/binary.md` — zmienić `Primary Lua namespace: lurek.data` na `lurek.binary`.
-2. Zaktualizować wszystkie odniesienia do `lurek.data` w `docs/specs/` (grep: `lurek\.data`).
+**Co zrobiÄ‡ w dokumentacji**:
+1. ZaktualizowaÄ‡ `docs/specs/binary.md` â€” zmieniÄ‡ `Primary Lua namespace: lurek.data` na `lurek.binary`.
+2. ZaktualizowaÄ‡ wszystkie odniesienia do `lurek.data` w `docs/specs/` (grep: `lurek\.data`).
 
-**Co zrobić w testach** (`tests/lua/`):
-1. `grep -r "lurek\.data" tests/lua/` — znaleźć wszystkie pliki.
-2. Podmienić `lurek.data` na `lurek.binary` w każdym pliku testowym.
+**Co zrobiÄ‡ w testach** (`tests/lua/`):
+1. `grep -r "lurek\.data" tests/lua/` â€” znaleĹşÄ‡ wszystkie pliki.
+2. PodmieniÄ‡ `lurek.data` na `lurek.binary` w kaĹĽdym pliku testowym.
 3. Kluczowe pliki: `tests/lua/unit/test_binary_core_unit.lua`, `tests/lua/stress/test_binary_stress.lua`, `tests/lua/integration/test_binary_filesystem.lua`, `tests/lua/integration/test_binary_compute.lua`, `tests/lua/golden/test_binary_golden.lua`.
 
-**Co zrobić w examples** (`content/examples/`):
-1. `grep -r "lurek\.data" content/` — znaleźć wszystkie przykłady.
-2. Podmienić namespace.
+**Co zrobiÄ‡ w examples** (`content/examples/`):
+1. `grep -r "lurek\.data" content/` â€” znaleĹşÄ‡ wszystkie przykĹ‚ady.
+2. PodmieniÄ‡ namespace.
 
-**Gate**: `cargo clippy -- -D warnings` czyste. `cargo test` zielone. `grep -r "lurek\.data" src/ tests/ content/` zwraca 0 wyników (poza `dataframe`).
+**Gate**: `cargo clippy -- -D warnings` czyste. `cargo test` zielone. `grep -r "lurek\.data" src/ tests/ content/` zwraca 0 wynikĂłw (poza `dataframe`).
 
-**Przykładowa zmiana API** (przed / po):
+**PrzykĹ‚adowa zmiana API** (przed / po):
 ```lua
 -- PRZED
 local bd = lurek.data.newByteData(1024)
@@ -127,53 +127,53 @@ local hash = lurek.binary.hash(data, "sha256")
 
 ---
 
-## BLOK C — Naprawa namespace `lurek.input`
+## BLOK C â€” Naprawa namespace `lurek.input`
 
-### P1-C1 — Naprawić primary namespace `input.md` z `lurek.input.keyboard` na `lurek.input`
+### P1-C1 â€” NaprawiÄ‡ primary namespace `input.md` z `lurek.input.keyboard` na `lurek.input`
 
 **Priorytet**: Critical
 **Owner**: Doc-Writer + Developer (weryfikacja)
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `docs/specs/input.md` deklaruje `Primary Lua namespace: lurek.input.keyboard` zamiast `lurek.input`. Sugeruje że tylko klawiatura istnieje lub że root namespace jest nieodpowiedni.
+**Problem**: `docs/specs/input.md` deklaruje `Primary Lua namespace: lurek.input.keyboard` zamiast `lurek.input`. Sugeruje ĹĽe tylko klawiatura istnieje lub ĹĽe root namespace jest nieodpowiedni.
 
-**Co zrobić**:
-1. Sprawdzić `src/lua_api/input_api.rs` — jakie sub-namespaces są naprawdę zarejestrowane (`keyboard`, `mouse`, `gamepad`?).
-2. Jeśli `lurek.input.keyboard`, `lurek.input.mouse`, `lurek.input.gamepad` są osobnymi tabelami — dokumentować to w `input.md` z sekcją per sub-namespace.
-3. Zmienić `Primary Lua namespace: lurek.input.keyboard` na `Primary Lua namespace: lurek.input` i dodać listę sub-namespaces.
-4. Jeśli cały input jest pod `lurek.input.keyboard` — rozważyć refactor rejestracji na `lurek.input` (Developer task).
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/lua_api/input_api.rs` â€” jakie sub-namespaces sÄ… naprawdÄ™ zarejestrowane (`keyboard`, `mouse`, `gamepad`?).
+2. JeĹ›li `lurek.input.keyboard`, `lurek.input.mouse`, `lurek.input.gamepad` sÄ… osobnymi tabelami â€” dokumentowaÄ‡ to w `input.md` z sekcjÄ… per sub-namespace.
+3. ZmieniÄ‡ `Primary Lua namespace: lurek.input.keyboard` na `Primary Lua namespace: lurek.input` i dodaÄ‡ listÄ™ sub-namespaces.
+4. JeĹ›li caĹ‚y input jest pod `lurek.input.keyboard` â€” rozwaĹĽyÄ‡ refactor rejestracji na `lurek.input` (Developer task).
 
-**Gate**: `input.md` ma `Primary Lua namespace: lurek.input`. Specyfikacja wymienia wszystkie dostępne sub-namespaces.
+**Gate**: `input.md` ma `Primary Lua namespace: lurek.input`. Specyfikacja wymienia wszystkie dostÄ™pne sub-namespaces.
 
 ---
 
-## BLOK D — Naprawa duplikatów
+## BLOK D â€” Naprawa duplikatĂłw
 
-### P1-D1 — Zredukować overlap `lurek.event.Signal` vs `lurek.patterns.EventBus`
+### P1-D1 â€” ZredukowaÄ‡ overlap `lurek.event.Signal` vs `lurek.patterns.EventBus`
 
 **Priorytet**: High
 **Owner**: Lua-Designer + Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.event.LSignal` (pub-sub z wildcard) i `lurek.patterns.EventBus` (named event bus z wildcard, priority, one-shot) są konceptualnie tym samym. Programista nie wie którego użyć.
+**Problem**: `lurek.event.LSignal` (pub-sub z wildcard) i `lurek.patterns.EventBus` (named event bus z wildcard, priority, one-shot) sÄ… konceptualnie tym samym. Programista nie wie ktĂłrego uĹĽyÄ‡.
 
 **Diagnoza**:
-- `LSignal` (event module) — lightweight, Rust-backed, single signal
-- `EventBus` (patterns module) — multi-channel, priority ordering, Lua-level
+- `LSignal` (event module) â€” lightweight, Rust-backed, single signal
+- `EventBus` (patterns module) â€” multi-channel, priority ordering, Lua-level
 
 **Decyzja architektoniczna** (do wpisania w spec):
-- `lurek.event.Signal` = **niskopoziomowy** single-signal dispatcher; używaj gdy jeden konkretny event type (np. `on_player_death`)
-- `lurek.patterns.EventBus` = **wielokanałowy** pub-sub broker; używaj gdy wiele typów eventów przez jedną szynę
+- `lurek.event.Signal` = **niskopoziomowy** single-signal dispatcher; uĹĽywaj gdy jeden konkretny event type (np. `on_player_death`)
+- `lurek.patterns.EventBus` = **wielokanaĹ‚owy** pub-sub broker; uĹĽywaj gdy wiele typĂłw eventĂłw przez jednÄ… szynÄ™
 
-**Co zrobić w `docs/specs/event.md`**:
-1. Dodać sekcję `## Boundaries` z wyjaśnieniem kiedy Signal vs EventBus.
-2. Dodać cross-reference do `patterns.md`.
+**Co zrobiÄ‡ w `docs/specs/event.md`**:
+1. DodaÄ‡ sekcjÄ™ `## Boundaries` z wyjaĹ›nieniem kiedy Signal vs EventBus.
+2. DodaÄ‡ cross-reference do `patterns.md`.
 
-**Co zrobić w `docs/specs/patterns.md`**:
-1. Dodać sekcję `## Boundaries` z odniesieniem do `event.Signal`.
+**Co zrobiÄ‡ w `docs/specs/patterns.md`**:
+1. DodaÄ‡ sekcjÄ™ `## Boundaries` z odniesieniem do `event.Signal`.
 
-**Co zrobić w `content/examples/`**:
-1. Stworzyć `content/examples/event/signal_vs_eventbus.lua` — example pokazujący różnicę.
+**Co zrobiÄ‡ w `content/examples/`**:
+1. StworzyÄ‡ `content/examples/event/signal_vs_eventbus.lua` â€” example pokazujÄ…cy rĂłĹĽnicÄ™.
 
 ```lua
 -- content/examples/event/signal_vs_eventbus.lua
@@ -182,30 +182,30 @@ local onDeath = lurek.event.newSignal()
 onDeath:connect("player_death", function(victim) print("killed:", victim) end)
 onDeath:emit("player_death", "Player1")
 
--- KIEDY EventBus: wiele kanałów przez jedną szynę z priorityzacją
+-- KIEDY EventBus: wiele kanaĹ‚Ăłw przez jednÄ… szynÄ™ z priorityzacjÄ…
 local bus = lurek.patterns.newEventBus()
 bus:subscribe("combat.*", function(e, data) ... end, { priority = 10 })
 bus:subscribe("ui.*", function(e, data) ... end)
 bus:publish("combat.hit", { damage = 50 })
 ```
 
-**Gate**: Oba spec pliki mają sekcję `## Boundaries`. Example plik istnieje. Żadna zmiana Rust nie jest potrzebna.
+**Gate**: Oba spec pliki majÄ… sekcjÄ™ `## Boundaries`. Example plik istnieje. Ĺ»adna zmiana Rust nie jest potrzebna.
 
 ---
 
-### P1-D2 — Zredukować overlap `lurek.validator` vs `lurek.serial.validate`
+### P1-D2 â€” ZredukowaÄ‡ overlap `lurek.validator` vs `lurek.serial.validate`
 
 **Priorytet**: High
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.validator` i `lurek.serial.validate` oba robią schema validation. Duplikacja kodu i confusion dla użytkownika.
+**Problem**: `lurek.validator` i `lurek.serial.validate` oba robiÄ… schema validation. Duplikacja kodu i confusion dla uĹĽytkownika.
 
-**Co zrobić**:
-1. Sprawdzić `src/lua_api/validator_api.rs` i `src/serialize/schema.rs` — czy kod jest zduplikowany czy jeden wola drugi.
-2. Jeśli zduplikowany: refactor `src/serialize/schema.rs` aby był publiczny i używany przez `validator` module jako backend.
-3. Zaktualizować `docs/specs/validator.md` i `docs/specs/serialize.md` z dokumentacją relacji.
-4. Dodać example: `content/examples/data/validate_config.lua`.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/lua_api/validator_api.rs` i `src/serialize/schema.rs` â€” czy kod jest zduplikowany czy jeden wola drugi.
+2. JeĹ›li zduplikowany: refactor `src/serialize/schema.rs` aby byĹ‚ publiczny i uĹĽywany przez `validator` module jako backend.
+3. ZaktualizowaÄ‡ `docs/specs/validator.md` i `docs/specs/serialize.md` z dokumentacjÄ… relacji.
+4. DodaÄ‡ example: `content/examples/data/validate_config.lua`.
 
 ```lua
 -- content/examples/data/validate_config.lua
@@ -222,96 +222,96 @@ schema:addRule("height", {type="number", min=1, required=true})
 local result = schema:validate(config)
 ```
 
-**Gate**: Jeden z modułów używa kodu drugiego jako backend (bez duplikacji). Oba mają cross-reference w spec. Example istnieje.
+**Gate**: Jeden z moduĹ‚Ăłw uĹĽywa kodu drugiego jako backend (bez duplikacji). Oba majÄ… cross-reference w spec. Example istnieje.
 
 ---
 
-### P1-D3 — Udokumentować relację `lurek.patterns.BehaviorTree` vs `lurek.ai.behavior_tree`
+### P1-D3 â€” UdokumentowaÄ‡ relacjÄ™ `lurek.patterns.BehaviorTree` vs `lurek.ai.behavior_tree`
 
 **Priorytet**: High
 **Owner**: Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.patterns` zawiera `BehaviorTree` (strukturalne nodes i builder). `lurek.ai` zawiera BT executor z Lua callbacks. Użytkownik nie wie czego użyć.
+**Problem**: `lurek.patterns` zawiera `BehaviorTree` (strukturalne nodes i builder). `lurek.ai` zawiera BT executor z Lua callbacks. UĹĽytkownik nie wie czego uĹĽyÄ‡.
 
-**Co zrobić**:
-1. Sprawdzić `src/ai/behavior_tree.rs` — czy importuje z `src/patterns/behavior_tree.rs`.
-2. Dokumentować podział w obu specs:
-   - `patterns.BehaviorTree` = **data structure** — nodes, builder, tree shape
-   - `ai.BehaviorTree` = **runtime executor** — tick, Lua callbacks, running state
-3. Dodać diagram ASCII w `docs/specs/ai.md` sekcja `## Dependencies`.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/ai/behavior_tree.rs` â€” czy importuje z `src/patterns/behavior_tree.rs`.
+2. DokumentowaÄ‡ podziaĹ‚ w obu specs:
+   - `patterns.BehaviorTree` = **data structure** â€” nodes, builder, tree shape
+   - `ai.BehaviorTree` = **runtime executor** â€” tick, Lua callbacks, running state
+3. DodaÄ‡ diagram ASCII w `docs/specs/ai.md` sekcja `## Dependencies`.
 
-**Co zrobić w `docs/specs/patterns.md`**:
+**Co zrobiÄ‡ w `docs/specs/patterns.md`**:
 ```markdown
 ## Boundaries
-`lurek.patterns.newBehaviorTree` buduje strukturę drzewa (nodes, edges).
-Dla AI execution z Lua callbackami użyj `lurek.ai` — które importuje patterns jako backend.
+`lurek.patterns.newBehaviorTree` buduje strukturÄ™ drzewa (nodes, edges).
+Dla AI execution z Lua callbackami uĹĽyj `lurek.ai` â€” ktĂłre importuje patterns jako backend.
 ```
 
-**Gate**: Oba spec mają sekcję Boundaries. Żadna zmiana Rust nie jest potrzebna.
+**Gate**: Oba spec majÄ… sekcjÄ™ Boundaries. Ĺ»adna zmiana Rust nie jest potrzebna.
 
 ---
 
-### P1-D4 — Naprawa `lurek.event.exit` vs `lurek.event.quit` API
+### P1-D4 â€” Naprawa `lurek.event.exit` vs `lurek.event.quit` API
 
 **Priorytet**: High
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.event.exit` (z optional exit code) i `lurek.event.quit` (hardcoded 0) robią to samo z różnym interfejsem.
+**Problem**: `lurek.event.exit` (z optional exit code) i `lurek.event.quit` (hardcoded 0) robiÄ… to samo z rĂłĹĽnym interfejsem.
 
-**Co zrobić**:
-1. Sprawdzić `src/lua_api/event_api.rs` — jak są zarejestrowane.
-2. Opcja A (bezpieczna): Deprecated `quit`, zmienić implementation `quit` na call `exit(0)`. Dodać `--- @deprecated` w docstring.
-3. Opcja B (breaking): Usunąć `quit`, zostawić tylko `exit(code?)`.
-4. Rekomendacja: Opcja A — backward compat.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/lua_api/event_api.rs` â€” jak sÄ… zarejestrowane.
+2. Opcja A (bezpieczna): Deprecated `quit`, zmieniÄ‡ implementation `quit` na call `exit(0)`. DodaÄ‡ `--- @deprecated` w docstring.
+3. Opcja B (breaking): UsunÄ…Ä‡ `quit`, zostawiÄ‡ tylko `exit(code?)`.
+4. Rekomendacja: Opcja A â€” backward compat.
 
-**Co dodać w `src/lua_api/event_api.rs`**:
+**Co dodaÄ‡ w `src/lua_api/event_api.rs`**:
 ```rust
-// lurek.event.quit — deprecated, use exit(0)
+// lurek.event.quit â€” deprecated, use exit(0)
 // Docstring: "Deprecated: use lurek.event.exit(0) instead."
 ```
 
-**Co zrobić w testach** — dodać test że `quit()` jest równoważne `exit(0)`:
+**Co zrobiÄ‡ w testach** â€” dodaÄ‡ test ĹĽe `quit()` jest rĂłwnowaĹĽne `exit(0)`:
 ```lua
 -- tests/lua/unit/test_event.lua (nowy test case)
 -- test_quit_is_exit_zero
--- Sprawdza że quit() nie crashuje i jest aliasem exit(0)
+-- Sprawdza ĹĽe quit() nie crashuje i jest aliasem exit(0)
 ```
 
-**Gate**: `lurek.event.quit` ma `@deprecated` docstring wskazujący na `exit`. Nowy test case istnieje w `test_event.lua`.
+**Gate**: `lurek.event.quit` ma `@deprecated` docstring wskazujÄ…cy na `exit`. Nowy test case istnieje w `test_event.lua`.
 
 ---
 
-## BLOK E — Naprawa `physics.CellularWorld` w złym module
+## BLOK E â€” Naprawa `physics.CellularWorld` w zĹ‚ym module
 
-### P1-E1 — Przenieść `CellularWorld` z `physics` do `procgen`
+### P1-E1 â€” PrzenieĹ›Ä‡ `CellularWorld` z `physics` do `procgen`
 
 **Priorytet**: High
 **Owner**: Developer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.physics.CellularWorld` (cellular automata — Conway's Game of Life style) nie jest fizyką. Powinno być w `lurek.procgen` (procedural generation).
+**Problem**: `lurek.physics.CellularWorld` (cellular automata â€” Conway's Game of Life style) nie jest fizykÄ…. Powinno byÄ‡ w `lurek.procgen` (procedural generation).
 
-**Co zrobić w Rust**:
-1. Sprawdzić `src/physics/` — gdzie jest `CellularWorld` struct.
-2. Przenieść plik `cellular_world.rs` (lub analogiczny) do `src/procgen/cellular_world.rs`.
-3. Zaktualizować `src/physics/mod.rs` — usunąć `pub mod cellular_world`.
-4. Zaktualizować `src/procgen/mod.rs` — dodać `pub mod cellular_world`.
-5. Zaktualizować `src/lua_api/physics_api.rs` — usunąć binding `CellularWorld`.
-6. Zaktualizować `src/lua_api/procgen_api.rs` — dodać binding `CellularWorld`.
+**Co zrobiÄ‡ w Rust**:
+1. SprawdziÄ‡ `src/physics/` â€” gdzie jest `CellularWorld` struct.
+2. PrzenieĹ›Ä‡ plik `cellular_world.rs` (lub analogiczny) do `src/procgen/cellular_world.rs`.
+3. ZaktualizowaÄ‡ `src/physics/mod.rs` â€” usunÄ…Ä‡ `pub mod cellular_world`.
+4. ZaktualizowaÄ‡ `src/procgen/mod.rs` â€” dodaÄ‡ `pub mod cellular_world`.
+5. ZaktualizowaÄ‡ `src/lua_api/physics_api.rs` â€” usunÄ…Ä‡ binding `CellularWorld`.
+6. ZaktualizowaÄ‡ `src/lua_api/procgen_api.rs` â€” dodaÄ‡ binding `CellularWorld`.
 7. Nowy namespace: `lurek.procgen.newCellularWorld(...)`.
 
-**Co zrobić w testach**:
-1. Przenieść testy cellular world do `tests/lua/unit/test_procgen_cellular.lua` (nowy plik).
-2. Zaktualizować istniejące testy w `tests/lua/unit/test_physics.lua` jeśli testują `CellularWorld`.
+**Co zrobiÄ‡ w testach**:
+1. PrzenieĹ›Ä‡ testy cellular world do `tests/lua/unit/test_procgen_cellular.lua` (nowy plik).
+2. ZaktualizowaÄ‡ istniejÄ…ce testy w `tests/lua/unit/test_physics.lua` jeĹ›li testujÄ… `CellularWorld`.
 
-**Co zrobić w dokumentacji**:
-1. Zaktualizować `docs/specs/physics.md` — usunąć `CellularWorld` z Types i Functions.
-2. Zaktualizować `docs/specs/procgen.md` — dodać `CellularWorld` do Types i Functions.
-3. Regenerować API z `python tools/gen_all_docs.py`.
+**Co zrobiÄ‡ w dokumentacji**:
+1. ZaktualizowaÄ‡ `docs/specs/physics.md` â€” usunÄ…Ä‡ `CellularWorld` z Types i Functions.
+2. ZaktualizowaÄ‡ `docs/specs/procgen.md` â€” dodaÄ‡ `CellularWorld` do Types i Functions.
+3. RegenerowaÄ‡ API z `python tools/gen_all_docs.py`.
 
-**Gate**: `cargo test` czyste. `grep "CellularWorld" src/physics/` = 0 wyników. `grep "CellularWorld" src/procgen/` > 0 wyników. `lurek.procgen.newCellularWorld` działa w Lua.
+**Gate**: `cargo test` czyste. `grep "CellularWorld" src/physics/` = 0 wynikĂłw. `grep "CellularWorld" src/procgen/` > 0 wynikĂłw. `lurek.procgen.newCellularWorld` dziaĹ‚a w Lua.
 
 **Evidence test** (`tests/lua/unit/test_procgen_cellular.lua`):
 ```lua
@@ -326,48 +326,48 @@ assert(alive >= 0 and alive <= 2500, "alive count in range")
 
 ---
 
-## BLOK F — Naprawa `procgen` tier
+## BLOK F â€” Naprawa `procgen` tier
 
-### P1-F1 — Zmienić tier `procgen` z Foundations na Feature Systems
+### P1-F1 â€” ZmieniÄ‡ tier `procgen` z Foundations na Feature Systems
 
 **Priorytet**: Medium
 **Owner**: Doc-Writer (tylko spec zmiana)
-**Zależności**: P1-E1 (cellular world move)
+**ZaleĹĽnoĹ›ci**: P1-E1 (cellular world move)
 
-**Problem**: `procgen` jest w Foundations tier ale korzysta z `math`, `tilemap`, `render`. Zależności cross-tier są dozwolone (Foundations → wyżej) ale tutaj jest odwrotnie — Foundations dependuje od Feature Systems (`tilemap`).
+**Problem**: `procgen` jest w Foundations tier ale korzysta z `math`, `tilemap`, `render`. ZaleĹĽnoĹ›ci cross-tier sÄ… dozwolone (Foundations â†’ wyĹĽej) ale tutaj jest odwrotnie â€” Foundations dependuje od Feature Systems (`tilemap`).
 
-**Co zrobić w `docs/specs/procgen.md`**:
-1. Zmienić `Module group: Foundations` na `Module group: Feature Systems`.
-2. Zaktualizować `docs/specs/README.md` — przenieść `procgen` z sekcji Foundations do Feature Systems.
-3. Sprawdzić `docs/architecture/philosophy.md` — czy diagram tier zależy od tej klasyfikacji.
+**Co zrobiÄ‡ w `docs/specs/procgen.md`**:
+1. ZmieniÄ‡ `Module group: Foundations` na `Module group: Feature Systems`.
+2. ZaktualizowaÄ‡ `docs/specs/README.md` â€” przenieĹ›Ä‡ `procgen` z sekcji Foundations do Feature Systems.
+3. SprawdziÄ‡ `docs/architecture/philosophy.md` â€” czy diagram tier zaleĹĽy od tej klasyfikacji.
 
 **Gate**: `procgen.md` ma `Module group: Feature Systems`. `README.md` zawiera `procgen` w sekcji Feature Systems.
 
 ---
 
-## BLOK G — Naprawa `serialize` namespace niespójności
+## BLOK G â€” Naprawa `serialize` namespace niespĂłjnoĹ›ci
 
-### P1-G1 — Synchronizacja nazwy: `serialize.md` / `src/serialize/` / `lurek.serial`
+### P1-G1 â€” Synchronizacja nazwy: `serialize.md` / `src/serialize/` / `lurek.serial`
 
 **Priorytet**: Medium
 **Owner**: Developer + Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: Trzy różne nazwy dla jednego modułu: spec = `serialize.md`, src = `src/serialize/`, namespace = `lurek.serial`. Niespójność.
+**Problem**: Trzy rĂłĹĽne nazwy dla jednego moduĹ‚u: spec = `serialize.md`, src = `src/serialize/`, namespace = `lurek.serial`. NiespĂłjnoĹ›Ä‡.
 
-**Decyzja**: Zmienić namespace z `lurek.serial` na `lurek.serialize` dla spójności (breaking change, ale lepiej teraz niż później).
+**Decyzja**: ZmieniÄ‡ namespace z `lurek.serial` na `lurek.serialize` dla spĂłjnoĹ›ci (breaking change, ale lepiej teraz niĹĽ pĂłĹşniej).
 
-**Alternatywa (mniej breaking)**: Zmienić tylko spec i src folder na `serial`, pozostawić namespace. Brak wartości.
+**Alternatywa (mniej breaking)**: ZmieniÄ‡ tylko spec i src folder na `serial`, pozostawiÄ‡ namespace. Brak wartoĹ›ci.
 
-**Co zrobić** (opcja recommended — align wszystko na `serialize`):
-1. `src/lua_api/serialize_api.rs` — zmienić rejestrację namespace z `"serial"` na `"serialize"`.
-2. `grep -r "lurek\.serial" tests/ content/ docs/` — znaleźć wszystkie użycia.
-3. Podmienić `lurek.serial` na `lurek.serialize` wszędzie.
-4. Sprawdzić czy `lurek.data.parseToml` / `lurek.data.encodeToml` (z binary.md!) powinny być przeniesione do `lurek.serialize` — to dodatkowy overlap do rozwiązania.
+**Co zrobiÄ‡** (opcja recommended â€” align wszystko na `serialize`):
+1. `src/lua_api/serialize_api.rs` â€” zmieniÄ‡ rejestracjÄ™ namespace z `"serial"` na `"serialize"`.
+2. `grep -r "lurek\.serial" tests/ content/ docs/` â€” znaleĹşÄ‡ wszystkie uĹĽycia.
+3. PodmieniÄ‡ `lurek.serial` na `lurek.serialize` wszÄ™dzie.
+4. SprawdziÄ‡ czy `lurek.data.parseToml` / `lurek.data.encodeToml` (z binary.md!) powinny byÄ‡ przeniesione do `lurek.serialize` â€” to dodatkowy overlap do rozwiÄ…zania.
 
-**Test unit** (aktualizacja istniejących):
+**Test unit** (aktualizacja istniejÄ…cych):
 ```lua
--- tests/lua/unit/test_serialize.lua (jeśli istnieje, aktualizuj)
+-- tests/lua/unit/test_serialize.lua (jeĹ›li istnieje, aktualizuj)
 local data = {name = "test", value = 42}
 local json = lurek.serialize.toJson(data)
 assert(type(json) == "string")
@@ -375,25 +375,25 @@ local back = lurek.serialize.fromJson(json)
 assert(back.name == "test")
 ```
 
-**Gate**: `grep -r "lurek\.serial[^i]" tests/ content/ src/lua_api/` = 0 wyników. `lurek.serialize.toJson` działa.
+**Gate**: `grep -r "lurek\.serial[^i]" tests/ content/ src/lua_api/` = 0 wynikĂłw. `lurek.serialize.toJson` dziaĹ‚a.
 
 ---
 
-## BLOK H — Naprawa rendering overlap (`DepthSorter` w złym module)
+## BLOK H â€” Naprawa rendering overlap (`DepthSorter` w zĹ‚ym module)
 
-### P1-H1 — Przenieść `DepthSorter` Lua API z `scene` do `render`
+### P1-H1 â€” PrzenieĹ›Ä‡ `DepthSorter` Lua API z `scene` do `render`
 
 **Priorytet**: Medium
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.scene.newDepthSorter()` i `LDepthSorter` są zakotwiczone w `scene` module, ale depth sorting jest generalnym rendering concern używanym poza kontekstem scene management.
+**Problem**: `lurek.scene.newDepthSorter()` i `LDepthSorter` sÄ… zakotwiczone w `scene` module, ale depth sorting jest generalnym rendering concern uĹĽywanym poza kontekstem scene management.
 
-**Co zrobić**:
-1. Dodać `lurek.render.newDepthSorter()` jako alias lub przeniesienie z `scene`.
-2. Zachować `lurek.scene.newDepthSorter()` jako deprecated alias wskazujący na `lurek.render.newDepthSorter()`.
-3. Zaktualizować `docs/specs/render.md` — dodać `LDepthSorter`.
-4. Zaktualizować `docs/specs/scene.md` — dodać deprecation note.
+**Co zrobiÄ‡**:
+1. DodaÄ‡ `lurek.render.newDepthSorter()` jako alias lub przeniesienie z `scene`.
+2. ZachowaÄ‡ `lurek.scene.newDepthSorter()` jako deprecated alias wskazujÄ…cy na `lurek.render.newDepthSorter()`.
+3. ZaktualizowaÄ‡ `docs/specs/render.md` â€” dodaÄ‡ `LDepthSorter`.
+4. ZaktualizowaÄ‡ `docs/specs/scene.md` â€” dodaÄ‡ deprecation note.
 
 **Nowe testy** (`tests/lua/unit/test_render.lua`):
 ```lua
@@ -407,21 +407,21 @@ sorter:flush()
 assert(sorter:getCount() == 0)
 ```
 
-**Gate**: `lurek.render.newDepthSorter()` działa. `lurek.scene.newDepthSorter()` działa z deprecation log. Nowy test zielony.
+**Gate**: `lurek.render.newDepthSorter()` dziaĹ‚a. `lurek.scene.newDepthSorter()` dziaĹ‚a z deprecation log. Nowy test zielony.
 
 ---
 
-## BLOK I — Naprawa `input` — brakujące convenience API
+## BLOK I â€” Naprawa `input` â€” brakujÄ…ce convenience API
 
-### P1-I1 — Dodać `lurek.input.actions` — action mapping system
+### P1-I1 â€” DodaÄ‡ `lurek.input.actions` â€” action mapping system
 
 **Priorytet**: High
 **Owner**: Developer + Lua-Designer
-**Zależności**: P1-C1
+**ZaleĹĽnoĹ›ci**: P1-C1
 
-**Problem**: Brak action mapping system (Godot `InputMap` style). Hardkodowane klawisze są złą praktyką. Kluczowe dla moddability.
+**Problem**: Brak action mapping system (Godot `InputMap` style). Hardkodowane klawisze sÄ… zĹ‚Ä… praktykÄ…. Kluczowe dla moddability.
 
-**Co zrobić w Rust** (nowy plik `src/input/actions.rs`):
+**Co zrobiÄ‡ w Rust** (nowy plik `src/input/actions.rs`):
 ```rust
 // src/input/actions.rs
 // ActionMap: maps string action names to one or more key/button bindings
@@ -493,22 +493,22 @@ lurek.input.actions.bind("jump", "Gamepad:A")
 -- if lurek.input.actions.isJustPressed("jump") then player:jump() end
 ```
 
-**Gate**: `cargo test` czyste. Nowe Lua testy zielone. `docs/specs/input.md` ma sekcję `## Actions System`. `python tools/gen_all_docs.py` regeneruje docs bez błędów.
+**Gate**: `cargo test` czyste. Nowe Lua testy zielone. `docs/specs/input.md` ma sekcjÄ™ `## Actions System`. `python tools/gen_all_docs.py` regeneruje docs bez bĹ‚Ä™dĂłw.
 
 ---
 
-## BLOK J — Naprawa `network` — AI-friendly convenience API
+## BLOK J â€” Naprawa `network` â€” AI-friendly convenience API
 
-### P1-J1 — Dodać `lurek.network.httpJson(url, body, headers)` convenience function
+### P1-J1 â€” DodaÄ‡ `lurek.network.httpJson(url, body, headers)` convenience function
 
 **Priorytet**: High
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: HTTP/WebSocket już istnieje ale jest ukryte za `newRuntime()` boilerplate. Dla AI-first use case (call OpenAI API) potrzebny shortcut.
+**Problem**: HTTP/WebSocket juĹĽ istnieje ale jest ukryte za `newRuntime()` boilerplate. Dla AI-first use case (call OpenAI API) potrzebny shortcut.
 
-**Co zrobić w Rust** (`src/lua_api/network_api.rs`):
-Dodać statyczne convenience functions które internalizują `NetworkRuntime` lifecycle:
+**Co zrobiÄ‡ w Rust** (`src/lua_api/network_api.rs`):
+DodaÄ‡ statyczne convenience functions ktĂłre internalizujÄ… `NetworkRuntime` lifecycle:
 
 ```rust
 // lurek.network.httpGet(url, options?) -> {status, body, headers} or error
@@ -519,7 +519,7 @@ Dodać statyczne convenience functions które internalizują `NetworkRuntime` li
 
 **Nowe Lua API**:
 ```lua
--- Krótki helper — bez zarządzania runtime
+-- KrĂłtki helper â€” bez zarzÄ…dzania runtime
 local resp = lurek.network.httpGet("https://api.example.com/data")
 -- resp.status, resp.body, resp.headers
 
@@ -556,7 +556,7 @@ assert(resp ~= nil)
 **Integration example** (`content/examples/network/llm_request.lua`):
 ```lua
 -- content/examples/network/llm_request.lua
--- Przykład integracji z Ollama (local LLM)
+-- PrzykĹ‚ad integracji z Ollama (local LLM)
 local function askLLM(prompt)
   local result = lurek.network.httpJson(
     "http://localhost:11434/api/generate",
@@ -572,21 +572,21 @@ local answer = askLLM("What is 2+2?")
 print("LLM says:", answer)
 ```
 
-**Gate**: Nowe funkcje istnieją w `lurek.network`. Tests zielone (z `@requires network` skip dla CI). Example plik istnieje. Docs zaktualizowane.
+**Gate**: Nowe funkcje istniejÄ… w `lurek.network`. Tests zielone (z `@requires network` skip dla CI). Example plik istnieje. Docs zaktualizowane.
 
 ---
 
-## BLOK K — Naprawa `physics` — brakujące joints
+## BLOK K â€” Naprawa `physics` â€” brakujÄ…ce joints
 
-### P1-K1 — Dodać `lurek.physics.joint` API (Rapier2D joints)
+### P1-K1 â€” DodaÄ‡ `lurek.physics.joint` API (Rapier2D joints)
 
 **Priorytet**: Medium
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
 **Problem**: Rapier2D wspiera joints (spring, distance, revolute, prismatic). Brak eksponowania przez `lurek.physics`.
 
-**Co zrobić w Rust** (`src/physics/` + `src/lua_api/physics_api.rs`):
+**Co zrobiÄ‡ w Rust** (`src/physics/` + `src/lua_api/physics_api.rs`):
 ```rust
 // Nowe typy joint
 pub enum JointType { Fixed, Revolute, Prismatic, Distance, Spring }
@@ -615,17 +615,17 @@ assert(joint:getType() == "revolute")
 world:destroyJoint(joint)
 ```
 
-**Gate**: `cargo test` czyste. Joint Lua tests zielone. `docs/specs/physics.md` zaktualizowane z joints sekcją.
+**Gate**: `cargo test` czyste. Joint Lua tests zielone. `docs/specs/physics.md` zaktualizowane z joints sekcjÄ….
 
 ---
 
-## BLOK L — Naprawa `camera` — brakujące helpers
+## BLOK L â€” Naprawa `camera` â€” brakujÄ…ce helpers
 
-### P1-L1 — Dodać `lurek.camera.shake`, `follow`, `worldToScreen`
+### P1-L1 â€” DodaÄ‡ `lurek.camera.shake`, `follow`, `worldToScreen`
 
 **Priorytet**: Medium
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
 **Nowe Lua API**:
 ```lua
@@ -660,31 +660,31 @@ assert(math.abs(wx) < 0.01, "inverse round-trip X")
 assert(math.abs(wy) < 0.01, "inverse round-trip Y")
 ```
 
-**Gate**: Nowe metody istnieją. Tests zielone. `docs/specs/camera.md` zaktualizowane.
+**Gate**: Nowe metody istniejÄ…. Tests zielone. `docs/specs/camera.md` zaktualizowane.
 
 ---
 
-## BLOK M — Naprawa `learning` — unified inference interface
+## BLOK M â€” Naprawa `learning` â€” unified inference interface
 
-### P1-M1 — Dodać `lurek.learning.Model` common interface
+### P1-M1 â€” DodaÄ‡ `lurek.learning.Model` common interface
 
 **Priorytet**: High
 **Owner**: Lua-Designer + Developer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `NeuralNet`, `QLearner`, `GeneticAlgorithm`, `Neuroevolution`, `Bandit` — każdy ma inne metody do inference. Brak unified `model:predict(input)` interface.
+**Problem**: `NeuralNet`, `QLearner`, `GeneticAlgorithm`, `Neuroevolution`, `Bandit` â€” kaĹĽdy ma inne metody do inference. Brak unified `model:predict(input)` interface.
 
-**Co zrobić**:
-1. Sprawdzić obecne API każdego typu w `docs/specs/learning.md`.
-2. Dodać unified `:predict(input)` method jako alias:
-   - `NeuralNet:predict(inputs)` → alias `forward(inputs)`
-   - `QLearner:predict(state)` → alias `selectAction(state)`
-   - `Bandit:predict()` → alias `pull()`
-3. Dodać `lurek.learning.wrap(model)` — wraps any model in a common `LModel` interface.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ obecne API kaĹĽdego typu w `docs/specs/learning.md`.
+2. DodaÄ‡ unified `:predict(input)` method jako alias:
+   - `NeuralNet:predict(inputs)` â†’ alias `forward(inputs)`
+   - `QLearner:predict(state)` â†’ alias `selectAction(state)`
+   - `Bandit:predict()` â†’ alias `pull()`
+3. DodaÄ‡ `lurek.learning.wrap(model)` â€” wraps any model in a common `LModel` interface.
 
 **Nowe Lua API**:
 ```lua
--- Każdy model ma :predict()
+-- KaĹĽdy model ma :predict()
 local net = lurek.learning.newNeuralNet({layers = {2, 4, 1}})
 net:setWeights(weights)
 local output = net:predict({0.5, 0.3})  -- alias dla net:forward(...)
@@ -722,103 +722,103 @@ local r = model:predict({0.5})
 assert(type(r) == "table")
 ```
 
-**Gate**: `:predict()` działa na wszystkich model types. `lurek.learning.wrap()` istnieje. Tests zielone.
+**Gate**: `:predict()` dziaĹ‚a na wszystkich model types. `lurek.learning.wrap()` istnieje. Tests zielone.
 
 ---
 
-## BLOK N — Dokumentacja boundaries UI trio
+## BLOK N â€” Dokumentacja boundaries UI trio
 
-### P1-N1 — Zdefiniować hierarchię `lurek.ui` / `lurek.html` / `lurek.layout`
+### P1-N1 â€” ZdefiniowaÄ‡ hierarchiÄ™ `lurek.ui` / `lurek.html` / `lurek.layout`
 
 **Priorytet**: High
 **Owner**: Doc-Writer + Architect (design decision)
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: Trzy moduły UI bez dokumentacji który jest primary i jak są połączone.
+**Problem**: Trzy moduĹ‚y UI bez dokumentacji ktĂłry jest primary i jak sÄ… poĹ‚Ä…czone.
 
 **Decyzja do wpisania w specyfikacjach**:
-- `lurek.layout` = **TOML layout engine** — definiuje hierarchię elementów UI w danych (`.toml` files). Jest backend/data layer.
-- `lurek.html` = **HTML/CSS renderer** — renderuje strony HTML. Primary dla AI-generated UI (AI pisze HTML). Zależy od `lurek.layout` jako fallback i `lurek.render` jako backend.
-- `lurek.ui` = **2D Game UI widgets** — immediate-mode style game-specific widgets (health bars, inventory slots, dialog boxes). Dla game-specific UI gdy HTML jest za ciężki.
+- `lurek.layout` = **TOML layout engine** â€” definiuje hierarchiÄ™ elementĂłw UI w danych (`.toml` files). Jest backend/data layer.
+- `lurek.html` = **HTML/CSS renderer** â€” renderuje strony HTML. Primary dla AI-generated UI (AI pisze HTML). ZaleĹĽy od `lurek.layout` jako fallback i `lurek.render` jako backend.
+- `lurek.ui` = **2D Game UI widgets** â€” immediate-mode style game-specific widgets (health bars, inventory slots, dialog boxes). Dla game-specific UI gdy HTML jest za ciÄ™ĹĽki.
 
-**Hierarchia zależności**:
+**Hierarchia zaleĹĽnoĹ›ci**:
 ```
 lurek.render (GPU backend)
-    ↑
-lurek.layout (TOML data) → lurek.html (HTML renderer)
-                               ↑
+    â†‘
+lurek.layout (TOML data) â†’ lurek.html (HTML renderer)
+                               â†‘
                            lurek.ui (game widgets, uses html or direct render)
 ```
 
-**Co zrobić w docs**:
-1. Dodać sekcję `## UI Architecture` do każdego z trzech spec plików.
-2. Stworzyć `docs/architecture/ui-hierarchy.md` z pełnym diagramem.
-3. Stworzyć przykłady dla każdego:
+**Co zrobiÄ‡ w docs**:
+1. DodaÄ‡ sekcjÄ™ `## UI Architecture` do kaĹĽdego z trzech spec plikĂłw.
+2. StworzyÄ‡ `docs/architecture/ui-hierarchy.md` z peĹ‚nym diagramem.
+3. StworzyÄ‡ przykĹ‚ady dla kaĹĽdego:
 
 ```lua
--- content/examples/ui/layout_toml.lua — when to use layout
--- content/examples/ui/html_generated.lua — AI generates HTML UI
--- content/examples/ui/ui_widgets.lua — game-specific widgets
+-- content/examples/ui/layout_toml.lua â€” when to use layout
+-- content/examples/ui/html_generated.lua â€” AI generates HTML UI
+-- content/examples/ui/ui_widgets.lua â€” game-specific widgets
 ```
 
-**Gate**: Każdy z trzech spec plików ma sekcję `## UI Architecture` z opisem roli i cross-references. `docs/architecture/ui-hierarchy.md` istnieje.
+**Gate**: KaĹĽdy z trzech spec plikĂłw ma sekcjÄ™ `## UI Architecture` z opisem roli i cross-references. `docs/architecture/ui-hierarchy.md` istnieje.
 
 ---
 
-## BLOK O — Naprawa `visibility` tier assignment
+## BLOK O â€” Naprawa `visibility` tier assignment
 
-### P1-O1 — Przenieść `visibility.md` z Edge do Feature Systems
+### P1-O1 â€” PrzenieĹ›Ä‡ `visibility.md` z Edge do Feature Systems
 
 **Priorytet**: Medium
 **Owner**: Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.visibility` (fog of war, line of sight) jest w Edge/Integration tier ale to core game feature używana z `lurek.ai`, `lurek.pathfind` i `lurek.tilemap`.
+**Problem**: `lurek.visibility` (fog of war, line of sight) jest w Edge/Integration tier ale to core game feature uĹĽywana z `lurek.ai`, `lurek.pathfind` i `lurek.tilemap`.
 
-**Co zrobić**:
-1. Zmienić `Module group: Edge/Integration` na `Module group: Feature Systems` w `docs/specs/visibility.md`.
-2. Zaktualizować `docs/specs/README.md` — przenieść `visibility` do Feature Systems sekcji.
-3. Dodać cross-references do `ai.md`, `pathfind.md`, `tilemap.md` (wspólny use case: fog of war z AI agents).
+**Co zrobiÄ‡**:
+1. ZmieniÄ‡ `Module group: Edge/Integration` na `Module group: Feature Systems` w `docs/specs/visibility.md`.
+2. ZaktualizowaÄ‡ `docs/specs/README.md` â€” przenieĹ›Ä‡ `visibility` do Feature Systems sekcji.
+3. DodaÄ‡ cross-references do `ai.md`, `pathfind.md`, `tilemap.md` (wspĂłlny use case: fog of war z AI agents).
 
 **Gate**: `visibility.md` ma `Module group: Feature Systems`. `README.md` zawiera `visibility` w Feature Systems.
 
 ---
 
-## BLOK P — Naprawa `cursor.md` tier
+## BLOK P â€” Naprawa `cursor.md` tier
 
-### P1-P1 — Przenieść `cursor.md` z Edge do Platform Services
+### P1-P1 â€” PrzenieĹ›Ä‡ `cursor.md` z Edge do Platform Services
 
 **Priorytet**: Low
 **Owner**: Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.cursor` (mouse cursor management) jest w Edge/Integration. Logicznie należy do Platform Services obok `lurek.window` i `lurek.input`.
+**Problem**: `lurek.cursor` (mouse cursor management) jest w Edge/Integration. Logicznie naleĹĽy do Platform Services obok `lurek.window` i `lurek.input`.
 
-**Co zrobić**:
-1. Zmienić `Module group: Edge/Integration` na `Module group: Platform Services` w `docs/specs/cursor.md`.
-2. Zaktualizować `docs/specs/README.md`.
-3. Dodać cross-reference z `docs/specs/window.md` i `docs/specs/input.md`.
+**Co zrobiÄ‡**:
+1. ZmieniÄ‡ `Module group: Edge/Integration` na `Module group: Platform Services` w `docs/specs/cursor.md`.
+2. ZaktualizowaÄ‡ `docs/specs/README.md`.
+3. DodaÄ‡ cross-reference z `docs/specs/window.md` i `docs/specs/input.md`.
 
 **Gate**: `cursor.md` ma `Module group: Platform Services`.
 
 ---
 
-## BLOK Q — Naprawa `grep.md` — scalenie z `filesystem`
+## BLOK Q â€” Naprawa `grep.md` â€” scalenie z `filesystem`
 
-### P1-Q1 — Scalić `lurek.grep` funkcjonalność z `lurek.filesystem`
+### P1-Q1 â€” ScaliÄ‡ `lurek.grep` funkcjonalnoĹ›Ä‡ z `lurek.filesystem`
 
 **Priorytet**: Medium
 **Owner**: Developer + Doc-Writer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: `lurek.grep` (pattern search in files) jest osobnym modułem Edge tier podczas gdy logicznie należy do `lurek.filesystem`.
+**Problem**: `lurek.grep` (pattern search in files) jest osobnym moduĹ‚em Edge tier podczas gdy logicznie naleĹĽy do `lurek.filesystem`.
 
-**Co zrobić**:
-1. Sprawdzić `src/lua_api/grep_api.rs` — jakie funkcje są eksponowane.
-2. Dodać te funkcje do `src/lua_api/filesystem_api.rs` jako `lurek.filesystem.grep(path, pattern, options?)`.
-3. Zachować `lurek.grep` jako deprecated namespace z aliasami.
-4. Zaktualizować `docs/specs/filesystem.md` — dodać grep funkcje.
-5. Dodać deprecation note do `docs/specs/grep.md`.
+**Co zrobiÄ‡**:
+1. SprawdziÄ‡ `src/lua_api/grep_api.rs` â€” jakie funkcje sÄ… eksponowane.
+2. DodaÄ‡ te funkcje do `src/lua_api/filesystem_api.rs` jako `lurek.filesystem.grep(path, pattern, options?)`.
+3. ZachowaÄ‡ `lurek.grep` jako deprecated namespace z aliasami.
+4. ZaktualizowaÄ‡ `docs/specs/filesystem.md` â€” dodaÄ‡ grep funkcje.
+5. DodaÄ‡ deprecation note do `docs/specs/grep.md`.
 
 **Nowe Lua API** w `lurek.filesystem`:
 ```lua
@@ -831,23 +831,23 @@ local matches = lurek.filesystem.grep("content/", "lurek%.ai", {
 -- matches[i] = { file, line, content, context_before, context_after }
 ```
 
-**Gate**: `lurek.filesystem.grep()` działa. `lurek.grep` nadal działa z deprecation warning. Tests zaktualizowane.
+**Gate**: `lurek.filesystem.grep()` dziaĹ‚a. `lurek.grep` nadal dziaĹ‚a z deprecation warning. Tests zaktualizowane.
 
 ---
 
-## BLOK R — Naprawa `log` — structured logging
+## BLOK R â€” Naprawa `log` â€” structured logging
 
-### P1-R1 — Dodać structured logging do `lurek.log`
+### P1-R1 â€” DodaÄ‡ structured logging do `lurek.log`
 
 **Priorytet**: Medium
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
-**Problem**: Brak machine-readable log output. Dla AI-first: agent logi powinny być parsowalne przez inne systemy.
+**Problem**: Brak machine-readable log output. Dla AI-first: agent logi powinny byÄ‡ parsowalne przez inne systemy.
 
 **Nowe Lua API**:
 ```lua
--- Structured log z polami klucz-wartość (emituje JSON line do log output)
+-- Structured log z polami klucz-wartoĹ›Ä‡ (emituje JSON line do log output)
 lurek.log.info("agent_step", {
   agent_id = "npc_guard_01",
   action = "patrol",
@@ -881,17 +881,17 @@ local ok = span:finish()
 assert(ok == true)
 ```
 
-**Gate**: `lurek.log.info(event, fields)` działa. Span API działa. `docs/specs/log.md` zaktualizowane.
+**Gate**: `lurek.log.info(event, fields)` dziaĹ‚a. Span API dziaĹ‚a. `docs/specs/log.md` zaktualizowane.
 
 ---
 
-## BLOK S — Naprawa `ecs` — snapshot API
+## BLOK S â€” Naprawa `ecs` â€” snapshot API
 
-### P1-S1 — Dodać `lurek.ecs.snapshot()` / `lurek.ecs.restore()`
+### P1-S1 â€” DodaÄ‡ `lurek.ecs.snapshot()` / `lurek.ecs.restore()`
 
 **Priorytet**: Medium
 **Owner**: Developer + Lua-Designer
-**Zależności**: brak
+**ZaleĹĽnoĹ›ci**: brak
 
 **Problem**: Brak world state serialization. Kluczowe dla AI rollback, MCTS tree search, save/load systems.
 
@@ -937,17 +937,17 @@ assert(world:get(e, "Health").current == 80, "health restored from partial")
 assert(world:get(e, "Position").x == 99, "position NOT restored in partial")
 ```
 
-**Gate**: `world:snapshot()` i `world:restore()` działają. Tests zielone.
+**Gate**: `world:snapshot()` i `world:restore()` dziaĹ‚ajÄ…. Tests zielone.
 
 ---
 
-## BLOK T — Naprawa `math` — module-level helpers
+## BLOK T â€” Naprawa `math` â€” module-level helpers
 
-### P1-T1 — Dodać `lurek.math.lerp`, `clamp`, `smoothstep` jako top-level
+### P1-T1 â€” DodaÄ‡ `lurek.math.lerp`, `clamp`, `smoothstep` jako top-level
 
 **Priorytet**: Low
-**Owner**: Lua-Designer (tylko API binding, logika już istnieje)
-**Zależności**: brak
+**Owner**: Lua-Designer (tylko API binding, logika juĹĽ istnieje)
+**ZaleĹĽnoĹ›ci**: brak
 
 **Nowe Lua API**:
 ```lua
@@ -976,64 +976,65 @@ assert(lurek.math.map(5, 0, 10, 0, 100) == 50)
 
 ## Podsumowanie planu
 
-### Mapa zależności i kolejność
+### Mapa zaleĹĽnoĹ›ci i kolejnoĹ›Ä‡
 
 ```
-BLOK A (deduplikacja docs) ────────────────┐
-BLOK B (rename lurek.data)  ───────────────┤
-BLOK C (fix input namespace) ──────────────┤→ BLOK I (input.actions, zależy od C1)
-BLOK D (duplikaty: Signal/EventBus) ───────┤
-BLOK E (CellularWorld → procgen) ──────────┤→ BLOK F (procgen tier, zależy od E1)
-BLOK G (serialize namespace) ──────────────┤
-BLOK H (DepthSorter → render) ─────────────┤
-BLOK J (network httpJson) ─────────────────┤
-BLOK K (physics joints) ───────────────────┤
-BLOK L (camera helpers) ───────────────────┤
-BLOK M (learning inference) ───────────────┤
-BLOK N (UI trio docs) ─────────────────────┤
-BLOK O (visibility tier) ──────────────────┤
-BLOK P (cursor tier) ──────────────────────┤
-BLOK Q (grep → filesystem) ────────────────┤
-BLOK R (structured log) ───────────────────┤
-BLOK S (ecs snapshot) ─────────────────────┤
-BLOK T (math helpers) ─────────────────────┘
+BLOK A (deduplikacja docs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+BLOK B (rename lurek.data)  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK C (fix input namespace) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤â†’ BLOK I (input.actions, zaleĹĽy od C1)
+BLOK D (duplikaty: Signal/EventBus) â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK E (CellularWorld â†’ procgen) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤â†’ BLOK F (procgen tier, zaleĹĽy od E1)
+BLOK G (serialize namespace) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK H (DepthSorter â†’ render) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK J (network httpJson) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK K (physics joints) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK L (camera helpers) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK M (learning inference) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK N (UI trio docs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK O (visibility tier) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK P (cursor tier) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK Q (grep â†’ filesystem) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK R (structured log) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK S (ecs snapshot) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+BLOK T (math helpers) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 ```
 
-### Tabela wszystkich zadań
+### Tabela wszystkich zadaĹ„
 
-| ID | Blok | Priorytet | Owner | Rust? | Lua Tests? | Zależności |
+| ID | Blok | Priorytet | Owner | Rust? | Lua Tests? | ZaleĹĽnoĹ›ci |
 |---|---|---|---|---|---|---|
-| P1-A1 | A | Critical | Doc-Writer | Nie | Nie | — |
-| P1-A2 | A | Critical | Doc-Writer | Nie | Nie | — |
-| P1-A3 | A | Critical | Doc-Writer + Dev | Nie | Nie | — |
-| P1-B1 | B | Critical | Developer | Tak | Tak | — |
-| P1-C1 | C | Critical | Doc-Writer + Dev | Nie | Nie | — |
-| P1-D1 | D | High | Lua-Designer | Nie | Tak | — |
-| P1-D2 | D | High | Developer | Tak | Tak | — |
-| P1-D3 | D | High | Doc-Writer | Nie | Nie | — |
-| P1-D4 | D | High | Developer | Tak | Tak | — |
-| P1-E1 | E | High | Developer | Tak | Tak | — |
+| P1-A1 | A | Critical | Doc-Writer | Nie | Nie | â€” |
+| P1-A2 | A | Critical | Doc-Writer | Nie | Nie | â€” |
+| P1-A3 | A | Critical | Doc-Writer + Dev | Nie | Nie | â€” |
+| P1-B1 | B | Critical | Developer | Tak | Tak | â€” |
+| P1-C1 | C | Critical | Doc-Writer + Dev | Nie | Nie | â€” |
+| P1-D1 | D | High | Lua-Designer | Nie | Tak | â€” |
+| P1-D2 | D | High | Developer | Tak | Tak | â€” |
+| P1-D3 | D | High | Doc-Writer | Nie | Nie | â€” |
+| P1-D4 | D | High | Developer | Tak | Tak | â€” |
+| P1-E1 | E | High | Developer | Tak | Tak | â€” |
 | P1-F1 | F | Medium | Doc-Writer | Nie | Nie | P1-E1 |
-| P1-G1 | G | Medium | Developer | Tak | Tak | — |
-| P1-H1 | H | Medium | Developer | Tak | Tak | — |
+| P1-G1 | G | Medium | Developer | Tak | Tak | â€” |
+| P1-H1 | H | Medium | Developer | Tak | Tak | â€” |
 | P1-I1 | I | High | Developer | Tak | Tak | P1-C1 |
-| P1-J1 | J | High | Developer | Tak | Tak | — |
-| P1-K1 | K | Medium | Developer | Tak | Tak | — |
-| P1-L1 | L | Medium | Developer | Tak | Tak | — |
-| P1-M1 | M | High | Lua-Designer + Dev | Tak | Tak | — |
-| P1-N1 | N | High | Doc-Writer | Nie | Nie | — |
-| P1-O1 | O | Medium | Doc-Writer | Nie | Nie | — |
-| P1-P1 | P | Low | Doc-Writer | Nie | Nie | — |
-| P1-Q1 | Q | Medium | Developer | Tak | Tak | — |
-| P1-R1 | R | Medium | Developer | Tak | Tak | — |
-| P1-S1 | S | Medium | Developer | Tak | Tak | — |
-| P1-T1 | T | Low | Lua-Designer | Tak | Tak | — |
+| P1-J1 | J | High | Developer | Tak | Tak | â€” |
+| P1-K1 | K | Medium | Developer | Tak | Tak | â€” |
+| P1-L1 | L | Medium | Developer | Tak | Tak | â€” |
+| P1-M1 | M | High | Lua-Designer + Dev | Tak | Tak | â€” |
+| P1-N1 | N | High | Doc-Writer | Nie | Nie | â€” |
+| P1-O1 | O | Medium | Doc-Writer | Nie | Nie | â€” |
+| P1-P1 | P | Low | Doc-Writer | Nie | Nie | â€” |
+| P1-Q1 | Q | Medium | Developer | Tak | Tak | â€” |
+| P1-R1 | R | Medium | Developer | Tak | Tak | â€” |
+| P1-S1 | S | Medium | Developer | Tak | Tak | â€” |
+| P1-T1 | T | Low | Lua-Designer | Tak | Tak | â€” |
 
 ### Quality Gate per task
-Każdy task przed zamknięciem musi przejść:
-1. `cargo test` — zero failures
-2. `cargo clippy -- -D warnings` — zero warnings
-3. `python tools/gen_all_docs.py` — bez błędów (jeśli zmieniono API)
-4. `python tools/validate/cag_validate.py` — (jeśli zmieniono .agents/)
+KaĹĽdy task przed zamkniÄ™ciem musi przejĹ›Ä‡:
+1. `cargo test` â€” zero failures
+2. `cargo clippy -- -D warnings` â€” zero warnings
+3. `python tools/gen_all_docs.py` â€” bez bĹ‚Ä™dĂłw (jeĹ›li zmieniono API)
+4. `python tools/validate/cag_validate.py` â€” (jeĹ›li zmieniono .agents/)
 5. Nowe Lua testy w poprawnej lokalizacji (`tests/lua/unit/` lub `tests/lua/integration/`)
 6. `docs/CHANGELOG.md` zaktualizowany
+

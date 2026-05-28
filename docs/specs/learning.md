@@ -124,7 +124,7 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `QLearner::new` (`qlearner.rs`): Create a zeroed Q-table for `state_count` states and `action_count` actions.
 - `QLearner::choose_action` (`qlearner.rs`): Return a randomly chosen action (explore) or the greedy best action (exploit).
 - `QLearner::best_action` (`qlearner.rs`): Return the action with the highest Q-value for `state`; ties broken by index.
-- `QLearner::learn` (`qlearner.rs`): Apply a Bellman update: Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a]).
+- `QLearner::learn` (`qlearner.rs`): Apply a Bellman update: `Q[s,a] ← Q[s,a] + α(r + γ·max Q[s'] − Q[s,a])`.
 - `QLearner::end_episode` (`qlearner.rs`): Decay epsilon and increment `episode_count`; call once at the end of each episode.
 - `QLearner::get_q` (`qlearner.rs`): Return Q[state, action]; returns 0.0 if indices are out of bounds.
 - `QLearner::set_q` (`qlearner.rs`): Set Q[state, action] to `value`; no-op if indices are out of bounds.
@@ -191,6 +191,7 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LQLearner:getQValue`: Returns the stored Q-value for a one-based state and action pair.
 - `LQLearner:setQValue`: Sets the stored Q-value for a one-based state and action pair.
 - `LQLearner:endEpisode`: Decays epsilon and increments the episode count.
+- `LQLearner:getEpisodeCount`: Returns the total number of episodes completed so far.
 - `LQLearner:getStateCount`: Returns the number of states represented by this learner.
 - `LQLearner:getActionCount`: Returns the number of actions represented by this learner.
 - `LQLearner:setLearningRate`: Sets the Q-learning alpha learning rate.

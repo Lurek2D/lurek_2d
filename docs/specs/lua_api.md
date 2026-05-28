@@ -431,6 +431,7 @@ For the full Lua↔Rust boundary design, see [docs/architecture/lua-rust-boundar
 - `register` (`filesystem_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`flownet_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register_font_api` (`font_api.rs`): Registers the `lurek.font` namespace and returns the Lua table.
+- `register` (`font_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`globe_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`grep_api.rs`): Registers the `lurek.window` API table with the Lua VM.
 - `register` (`html_api.rs`): Registers the `lurek.window` API table with the Lua VM.

@@ -378,7 +378,7 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
     Ok((values, pos))
 }
 /// Measure static size for token format without variable-width tokens.
-pub fn measure_size(format: &str) -> Result<usize, String> {
+pub(crate) fn measure_size(format: &str) -> Result<usize, String> {
     let (_endian, tokens) = parse_format(format)?;
     let mut size = 0usize;
     for token in &tokens {

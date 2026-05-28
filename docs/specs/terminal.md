@@ -99,7 +99,6 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 - `strip_ansi_codes` (`ansi.rs`): Removes all ANSI escape sequences from `text` and returns the plain string.
 - `parse_ansi_spans` (`ansi.rs`): Tokenises `text` into [`AnsiSpan`] records, each with plain text and colour/bold state.
-- `color256` (`ansi.rs`): Convert xterm-256 color index `n` to RGB; covers standard (0–7), bright (8–15), color cube (16–231), and grayscale (232–255).
 - `CompletionEngine::new` (`completion.rs`): Create an empty `CompletionEngine` with no candidates and no active cycle.
 - `CompletionEngine::add_candidate` (`completion.rs`): Insert `candidate` into the sorted list if not already present.
 - `CompletionEngine::remove_candidate` (`completion.rs`): Remove `candidate` from the list and reset any active cycle.

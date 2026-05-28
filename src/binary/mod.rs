@@ -23,9 +23,8 @@ pub mod hash;
 pub mod pack;
 /// Fixed-capacity ring buffer with overwrite-on-full FIFO semantics.
 pub mod ring_buffer;
-pub use bin_pack::{
-    measure_size as bin_measure_size, read as bin_read, write as bin_write, BinValue,
-};
+pub(crate) use bin_pack::measure_size as bin_measure_size;
+pub use bin_pack::{read as bin_read, write as bin_write, BinValue};
 pub use byte_data::ByteData;
 pub use compress::{
     compress, compress_chunks, compress_stream, decompress, decompress_chunks, decompress_stream,

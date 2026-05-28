@@ -1,10 +1,12 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import * as fs from "fs";
 import {
-  findApiSymbolLine,
   listApiEntries,
+  loadHtmlApiEntries,
   resolveWorkspaceApiDocPath,
+  resolveWorkspaceHtmlApiIndexPath,
+  resolveWorkspaceHtmlApiSearchIndexPath,
+  resolveHtmlApiEntryUri,
 } from "../services/apiDocs.js";
 
 /**
@@ -18,10 +20,36 @@ export async function browseApi(): Promise<void> {
     return;
   }
 
+  const htmlSearchIndexPath = resolveWorkspaceHtmlApiSearchIndexPath(root);
+  if (htmlSearchIndexPath) {
+    const entries = loadHtmlApiEntries(htmlSearchIndexPath);
+    if (entries.length > 0) {
+      const picked = await vscode.window.showQuickPick(entries.map((entry) => ({
+        label: entry.title,
+        description: `${entry.kind} · ${entry.module || "global"}`,
+        detail: entry.subtitle,
+        href: entry.href,
+      })), {
+        placeHolder: "Search Lurek2D API browser...",
+        matchOnDescription: true,
+        matchOnDetail: true,
+      });
+
+      if (picked) {
+        const resolved = resolveHtmlApiEntryUri(root, picked.href);
+        if (resolved) {
+          const [filePath, fragment] = resolved.split("#", 2);
+          await vscode.env.openExternal(vscode.Uri.file(filePath).with({ fragment }));
+          return;
+        }
+      }
+    }
+  }
+
   const apiPath = resolveWorkspaceApiDocPath(root);
   if (!apiPath || !fs.existsSync(apiPath)) {
     vscode.window.showWarningMessage(
-      "API reference not found. Expected docs/api/lurek.lua or docs/api/lurek.md."
+      "API reference not found. Expected build/doc/lua-api/ or docs/api/lurek.lua / lurek.md."
     );
     return;
   }
@@ -46,9 +74,7 @@ export async function browseApi(): Promise<void> {
   if (picked) {
     const doc = await vscode.workspace.openTextDocument(apiPath);
     const editor = await vscode.window.showTextDocument(doc);
-    const lineIndex = typeof picked.line === "number"
-      ? picked.line
-      : findApiSymbolLine(content, apiPath, picked.label);
+    const lineIndex = typeof picked.line === "number" ? picked.line : -1;
     if (lineIndex >= 0) {
       const pos = new vscode.Position(lineIndex, 0);
       editor.selection = new vscode.Selection(pos, pos);
@@ -67,10 +93,16 @@ export async function openApiDocs(): Promise<void> {
     return;
   }
 
+  const htmlIndexPath = resolveWorkspaceHtmlApiIndexPath(root);
+  if (htmlIndexPath) {
+    await vscode.env.openExternal(vscode.Uri.file(htmlIndexPath));
+    return;
+  }
+
   const apiPath = resolveWorkspaceApiDocPath(root);
   if (!apiPath || !fs.existsSync(apiPath)) {
     vscode.window.showWarningMessage(
-      "API reference not found. Expected docs/api/lurek.lua or docs/api/lurek.md."
+      "API reference not found. Expected build/doc/lua-api/ or docs/api/lurek.lua / lurek.md."
     );
     return;
   }
@@ -90,7 +122,7 @@ export async function openWiki(): Promise<void> {
     /lurek\.[a-zA-Z0-9_.]+/
   );
   const symbol = wordRange ? editor!.document.getText(wordRange) : "";
-  
+
   let url = "https://github.com/RandomBladeDude/lurek2d/wiki";
   if (symbol) {
     // GitHub wikis often use dashes for search or titles, but linking directly to the search isn't straightforward.

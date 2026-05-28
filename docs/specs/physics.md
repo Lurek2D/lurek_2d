@@ -501,7 +501,7 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LWorld:sleepBody`: Forces a body into the sleeping state, pausing its simulation until disturbed.
 - `LWorld:setSolverIterations`: Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
 - `LWorld:getSolverIterations`: Returns the current number of velocity solver iterations.
-- `LWorld:newBodies`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type}.
+- `LWorld:newBodies`: Batch-creates multiple bodies at once for better performance. Each entry is {x, y, w, h, type} or {x, y, type}.
 - `LWorld:stepFixed`: Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
 - `LWorld:addZone`: Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
 - `LWorld:getZoneEvents`: Returns all zone enter/leave events from the last step.

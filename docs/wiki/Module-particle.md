@@ -150,7 +150,7 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 
 ## 🧩 Key Types
 
-- `LParticleSystem` (86 methods) - Lua-side handle for a particle system stored in shared runtime state.
+- `LParticleSystem` (91 methods) - Lua-side handle for a particle system stored in shared runtime state.
 - `LTrail` (14 methods) - Lua-side wrapper for a trail effect.
 
 [⬆ back to top](#table-of-contents)
@@ -158,9 +158,9 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 ## 📖 API Overview
 
 - Source spec: [docs/specs/particle.md](../blob/main/docs/specs/particle.md)
-- Module-level functions: 4
+- Module-level functions: 5
 - Lua-visible types: 2
-- Total type methods: 100
+- Total type methods: 105
 
 
 [⬆ back to top](#table-of-contents)
@@ -168,6 +168,50 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 ## ⚙️ Module Functions
 
 ### Module-Level Functions
+
+#### lurek.particle.drawLifecycleToImage
+
+#### Definition
+
+```lua
+--- Draws a lifecycle chart image from `(step, count)` snapshot tables.
+---@param snapshots table Array of snapshot tables or `{step, count}` arrays.
+---@param max_particles number Maximum particle count for chart scaling.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the lifecycle chart.
+lurek.particle.drawLifecycleToImage = function(snapshots, max_particles, w, h) end
+```
+
+#### Description
+
+Draws a lifecycle chart image from `(step, count)` snapshot tables.
+
+Parameters:
+
+- `snapshots` (`table`, required): Array of snapshot tables or `{step, count}` arrays.
+- `max_particles` (`integer`, required): Maximum particle count for chart scaling.
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
+
+Returns: `LImageData` - Image data containing the lifecycle chart.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local snapshots = {
+        { step = 0, count = 0 },
+        { step = 5, count = 12 },
+        { step = 10, count = 4 },
+    }
+    local image = lurek.particle.drawLifecycleToImage(snapshots, 16, 128, 64)
+    print("lifecycle type = " .. image:type())
+    print("lifecycle width = " .. image:getWidth())
+end
+```
 
 #### lurek.particle.fromTOML
 
@@ -660,6 +704,166 @@ do
     ps:emit(6)
 
     print("count = " .. ps:count())
+end
+```
+
+#### LParticleSystem:drawExplosionToImage
+
+#### Definition
+
+```lua
+--- Draws particles as an explosion preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the explosion preview.
+function LParticleSystem:drawExplosionToImage(w, h) end
+```
+
+#### Description
+
+Draws particles as an explosion preview image.
+
+Parameters:
+
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
+
+Returns: `LImageData` - Image data containing the explosion preview.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local ps = lurek.particle.newPreset("fire")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawExplosionToImage(128, 128)
+    print("explosion type = " .. image:type())
+    print("explosion width = " .. image:getWidth())
+end
+```
+
+#### LParticleSystem:drawOverImage
+
+#### Definition
+
+```lua
+--- Draws particles over an existing image and returns a composited copy.
+---@param image LImageData Background image data handle.
+---@return LImageData Image data containing the composited result.
+function LParticleSystem:drawOverImage(image) end
+```
+
+#### Description
+
+Draws particles over an existing image and returns a composited copy.
+
+Parameters:
+
+- `image` (`LImageData`, required): Background image data handle.
+
+Returns: `LImageData` - Image data containing the composited result.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local ps = lurek.particle.newPreset("sparks")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(128, 128)
+    image:fill(16, 16, 16, 255)
+
+    local over = ps:drawOverImage(image)
+    print("overlay type = " .. over:type())
+    print("overlay width = " .. over:getWidth())
+end
+```
+
+#### LParticleSystem:drawRainToImage
+
+#### Definition
+
+```lua
+--- Draws particles as a rain preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the rain preview.
+function LParticleSystem:drawRainToImage(w, h) end
+```
+
+#### Description
+
+Draws particles as a rain preview image.
+
+Parameters:
+
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
+
+Returns: `LImageData` - Image data containing the rain preview.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local ps = lurek.particle.newPreset("rain")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawRainToImage(128, 128)
+    print("rain type = " .. image:type())
+    print("rain height = " .. image:getHeight())
+end
+```
+
+#### LParticleSystem:drawSparkTrailToImage
+
+#### Definition
+
+```lua
+--- Draws particles as a spark-trail preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the spark preview.
+function LParticleSystem:drawSparkTrailToImage(w, h) end
+```
+
+#### Description
+
+Draws particles as a spark-trail preview image.
+
+Parameters:
+
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
+
+Returns: `LImageData` - Image data containing the spark preview.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local ps = lurek.particle.newPreset("sparks")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawSparkTrailToImage(128, 128)
+    print("spark type = " .. image:type())
+    print("spark width = " .. image:getWidth())
 end
 ```
 
@@ -1780,6 +1984,42 @@ do
 
     local x, y = ps:getPosition()
     print("moved = " .. x .. "," .. y)
+end
+```
+
+#### LParticleSystem:paintOnto
+
+#### Definition
+
+```lua
+--- Paints live particles directly onto an existing image in place.
+---@param image LImageData Target image data handle.
+function LParticleSystem:paintOnto(image) end
+```
+
+#### Description
+
+Paints live particles directly onto an existing image in place.
+
+Parameters:
+
+- `image` (`LImageData`, required): Target image data handle.
+
+#### Example
+
+Source: [particle.lua](../blob/main/content/examples/particle.lua)
+
+```lua
+do
+    local ps = lurek.particle.newPreset("fire")
+    ps:setPosition(32, 32)
+    ps:emit(12)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(64, 64)
+
+    ps:paintOnto(image)
+    print("paint target type = " .. image:type())
+    print("paint target height = " .. image:getHeight())
 end
 ```
 

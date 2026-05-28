@@ -171,7 +171,7 @@ impl LuaUserData for LuaArray {
         /// @return | LArray | New array with copied data and shape.
         methods.add_method("clone", |lua, this, ()| {
             lua.create_userdata(LuaArray {
-                inner: this.inner.clone(),
+                inner: ops::clone_array(&this.inner),
             })
         });
         // -- transpose --

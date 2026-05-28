@@ -135,7 +135,7 @@ def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> di
 # ── Rust public item extraction ────────────────────────────────────────────────
 
 _TOP_PUB_RE = re.compile(
-    r"^pub(?:\([^)]*\))?\s+"
+    r"^pub\s+"
     r"(?:unsafe\s+|async\s+|const\s+|extern\s+\"[^\"]*\"\s+)?"
     r"(struct|enum|fn|trait|type|const|static|mod)"
     r"\s+([A-Za-z_][A-Za-z0-9_]*)"

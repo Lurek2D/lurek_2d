@@ -899,6 +899,81 @@ do
     print("toImage type = " .. image:type())
 end
 
+--@api-stub: LParticleSystem:drawExplosionToImage
+do
+    local ps = lurek.particle.newPreset("fire")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawExplosionToImage(128, 128)
+    print("explosion type = " .. image:type())
+    print("explosion width = " .. image:getWidth())
+end
+
+--@api-stub: LParticleSystem:drawRainToImage
+do
+    local ps = lurek.particle.newPreset("rain")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawRainToImage(128, 128)
+    print("rain type = " .. image:type())
+    print("rain height = " .. image:getHeight())
+end
+
+--@api-stub: LParticleSystem:drawSparkTrailToImage
+do
+    local ps = lurek.particle.newPreset("sparks")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+
+    local image = ps:drawSparkTrailToImage(128, 128)
+    print("spark type = " .. image:type())
+    print("spark width = " .. image:getWidth())
+end
+
+--@api-stub: LParticleSystem:drawOverImage
+do
+    local ps = lurek.particle.newPreset("sparks")
+    ps:setPosition(64, 64)
+    ps:emit(20)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(128, 128)
+    image:fill(16, 16, 16, 255)
+
+    local over = ps:drawOverImage(image)
+    print("overlay type = " .. over:type())
+    print("overlay width = " .. over:getWidth())
+end
+
+--@api-stub: LParticleSystem:paintOnto
+do
+    local ps = lurek.particle.newPreset("fire")
+    ps:setPosition(32, 32)
+    ps:emit(12)
+    ps:update(0.1)
+    local image = lurek.image.newImageData(64, 64)
+
+    ps:paintOnto(image)
+    print("paint target type = " .. image:type())
+    print("paint target height = " .. image:getHeight())
+end
+
+--@api-stub: lurek.particle.drawLifecycleToImage
+do
+    local snapshots = {
+        { step = 0, count = 0 },
+        { step = 5, count = 12 },
+        { step = 10, count = 4 },
+    }
+    local image = lurek.particle.drawLifecycleToImage(snapshots, 16, 128, 64)
+    print("lifecycle type = " .. image:type())
+    print("lifecycle width = " .. image:getWidth())
+end
+
 --@api-stub: lurek.particle.newTrail
 do
     local trail = lurek.particle.newTrail(2.0, 8)

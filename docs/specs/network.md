@@ -163,7 +163,6 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `leave_room` (`lobby.rs`): Decrement the player count for the given room and return the updated `RoomInfo`; returns `None` when not found.
 - `pack` (`message.rs`): Serialize a [`NetValue`] to MessagePack bytes.
 - `unpack` (`message.rs`): Deserialize MessagePack bytes into a [`NetValue`].
-- `estimate_size` (`message.rs`): Estimate the serialized size of a [`NetValue`] without allocating.
 - `EntitySnapshot::to_netvalue` (`net_sync.rs`): Encode this snapshot as a `NetValue::Map` suitable for wire transmission.
 - `EntitySnapshot::from_netvalue` (`net_sync.rs`): Decode an `EntitySnapshot` from a `NetValue::Map`; returns `None` on missing or wrong-typed fields.
 - `predict_linear` (`net_sync.rs`): Return a linearly extrapolated snapshot one tick ahead of `snapshot` using its velocity and `dt` seconds.

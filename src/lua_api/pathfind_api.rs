@@ -3,7 +3,7 @@
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
-use crate::pathfind::hpa::{build_abstract, AbstractGraph};
+use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
 use crate::pathfind::{
     bidirectional_astar, DiagonalMode, FlowField, NavGrid, NavMesh, UnitPathfinder, Waypoint,
@@ -191,6 +191,52 @@ impl LuaUserData for LuaNavGrid {
             *this.abstract_graph.borrow_mut() = Some(graph);
             Ok(())
         });
+        // -- findHpaPath --
+        /// Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
+        /// @param | sx | integer | One-based start column.
+        /// @param | sy | integer | One-based start row.
+        /// @param | gx | integer | One-based goal column.
+        /// @param | gy | integer | One-based goal row.
+        /// @param | unit_size | integer? | Optional unit footprint in cells, default 1.
+        /// @return | table | Array of `{x, y}` waypoint tables, or nil when no path exists.
+        methods.add_method(
+            "findHpaPath",
+            |lua, this, (sx, sy, gx, gy, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+                let start = (
+                    one_based_to_zero_based(sx, "sx")?,
+                    one_based_to_zero_based(sy, "sy")?,
+                );
+                let goal = (
+                    one_based_to_zero_based(gx, "gx")?,
+                    one_based_to_zero_based(gy, "gy")?,
+                );
+                let unit_size = unit_size.unwrap_or(1).max(1);
+                if this.abstract_graph.borrow().is_none() {
+                    let grid = this.inner.borrow();
+                    let graph = build_abstract(&grid, grid.get_chunk_size());
+                    drop(grid);
+                    *this.abstract_graph.borrow_mut() = Some(graph);
+                }
+                let grid = this.inner.borrow();
+                let graph_ref = this.abstract_graph.borrow();
+                let graph = graph_ref
+                    .as_ref()
+                    .ok_or_else(|| LuaError::runtime("abstract graph is unavailable"))?;
+                match hpa_star(&grid, graph, start, goal, unit_size) {
+                    Some(path) => {
+                        let out = lua.create_table()?;
+                        for (i, (x, y)) in path.iter().enumerate() {
+                            let row = lua.create_table()?;
+                            row.set("x", *x + 1)?;
+                            row.set("y", *y + 1)?;
+                            out.set(i + 1, row)?;
+                        }
+                        Ok(LuaValue::Table(out))
+                    }
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
         // -- setDirty --
         /// Marks a one-based rectangular region dirty for incremental rebuild.
         /// @param | x | integer | One-based column of the top-left corner.

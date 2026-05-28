@@ -7775,6 +7775,10 @@ function LPostFxStack:typeOf(name) end
 ---@return string[] Built-in effect type strings.
 lurek.effect.getEffectTypes = function() end
 
+--- Returns all built-in post-processing preset names.
+---@return string[] Built-in preset name strings.
+lurek.effect.getPresetNames = function() end
+
 --- Returns whether renderer shader error display overlays are enabled.
 ---@return boolean True when shader error display is enabled.
 lurek.effect.getShaderErrorDisplay = function() end
@@ -7937,6 +7941,7 @@ function LSignal:connect(name, func) end
 --- Emits a signal event and invokes matching callbacks with the remaining arguments.
 ---@param name string Signal event name to emit.
 ---@param ... any Additional arguments passed to matching callbacks.
+---@return nil Fires callbacks synchronously; no value is returned.
 function LSignal:emit(name, ...) end
 
 --- Returns the callback count for one exact signal event name.
@@ -9590,11 +9595,29 @@ lurek.globe.loadFromPNG = function(name, png_path, spec_tbl) end
 ---@return LGlobe New populated globe handle.
 lurek.globe.loadFromTOML = function(name, toml_src, spec_tbl) end
 
+--- Creates a globe and populates provinces from a TOML file path.
+---@param name string Globe registry name.
+---@param path string TOML file path to load.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New populated globe handle.
+lurek.globe.loadFromTOMLFile = function(name, path, spec_tbl) end
+
 --- Creates a named globe with optional specification fields in the module registry.
 ---@param name string Globe registry name.
 ---@param spec_tbl? table Globe specification table.
 ---@return LGlobe New globe handle.
 lurek.globe.new = function(name, spec_tbl) end
+
+--- Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
+---@param ox number Ray origin x.
+---@param oy number Ray origin y.
+---@param oz number Ray origin z.
+---@param dx number Ray direction x.
+---@param dy number Ray direction y.
+---@param dz number Ray direction z.
+---@param radius number Sphere radius.
+---@return number Hit distance `t`, or nil when the ray misses.
+lurek.globe.raySphereIntersect = function(ox, oy, oz, dx, dy, dz, radius) end
 
 --- Removes a globe from the registry by name.
 ---@param name string Globe registry name.
@@ -15711,6 +15734,29 @@ function LParticleSystem:clone() end
 ---@return number Particle count.
 function LParticleSystem:count() end
 
+--- Draws particles as an explosion preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the explosion preview.
+function LParticleSystem:drawExplosionToImage(w, h) end
+
+--- Draws particles over an existing image and returns a composited copy.
+---@param image LImageData Background image data handle.
+---@return LImageData Image data containing the composited result.
+function LParticleSystem:drawOverImage(image) end
+
+--- Draws particles as a rain preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the rain preview.
+function LParticleSystem:drawRainToImage(w, h) end
+
+--- Draws particles as a spark-trail preview image.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the spark preview.
+function LParticleSystem:drawSparkTrailToImage(w, h) end
+
 --- Draws particles to image data. This method is available to Lua scripts.
 ---@param w number Image width.
 ---@param h number Image height.
@@ -15880,6 +15926,10 @@ function LParticleSystem:isStopped() end
 ---@param x number Emitter x coordinate.
 ---@param y number Emitter y coordinate.
 function LParticleSystem:moveTo(x, y) end
+
+--- Paints live particles directly onto an existing image in place.
+---@param image LImageData Target image data handle.
+function LParticleSystem:paintOnto(image) end
 
 --- Pauses particle emission and updates.
 function LParticleSystem:pause() end
@@ -16144,6 +16194,14 @@ function LTrail:typeOf(name) end
 ---@param dt number Delta time in seconds.
 function LTrail:update(dt) end
 
+--- Draws a lifecycle chart image from `(step, count)` snapshot tables.
+---@param snapshots table Array of snapshot tables or `{step, count}` arrays.
+---@param max_particles number Maximum particle count for chart scaling.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the lifecycle chart.
+lurek.particle.drawLifecycleToImage = function(snapshots, max_particles, w, h) end
+
 --- Creates a particle system from a TOML config file.
 ---@param path string TOML file path.
 ---@return LParticleSystem New particle system handle.
@@ -16174,6 +16232,10 @@ lurek.particle.clearBounds = LParticleSystem.clearBounds
 lurek.particle.clearCollidesWithPhysics = LParticleSystem.clearCollidesWithPhysics
 lurek.particle.clone = LParticleSystem.clone
 lurek.particle.count = LParticleSystem.count
+lurek.particle.drawExplosionToImage = LParticleSystem.drawExplosionToImage
+lurek.particle.drawOverImage = LParticleSystem.drawOverImage
+lurek.particle.drawRainToImage = LParticleSystem.drawRainToImage
+lurek.particle.drawSparkTrailToImage = LParticleSystem.drawSparkTrailToImage
 lurek.particle.drawToImage = LParticleSystem.drawToImage
 lurek.particle.emit = LParticleSystem.emit
 lurek.particle.getAttractorCount = LParticleSystem.getAttractorCount
@@ -16210,6 +16272,7 @@ lurek.particle.isFull = LParticleSystem.isFull
 lurek.particle.isPaused = LParticleSystem.isPaused
 lurek.particle.isStopped = LParticleSystem.isStopped
 lurek.particle.moveTo = LParticleSystem.moveTo
+lurek.particle.paintOnto = LParticleSystem.paintOnto
 lurek.particle.pause = LParticleSystem.pause
 lurek.particle.release = LParticleSystem.release
 lurek.particle.render = LParticleSystem.render
@@ -16505,6 +16568,15 @@ function LNavGrid:fill(cost) end
 ---@param h number Rectangle height in cells.
 ---@param cost number Movement cost (0–255).
 function LNavGrid:fillRect(x, y, w, h, cost) end
+
+--- Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
+---@param sx number One-based start column.
+---@param sy number One-based start row.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Optional unit footprint in cells, default 1.
+---@return table Array of `{x, y}` waypoint tables, or nil when no path exists.
+function LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size) end
 
 --- Returns the hierarchical chunk size in cells.
 ---@return number Chunk size.
@@ -20771,6 +20843,15 @@ function LRaycaster:drawTopDown(px, py, angle, scale) end
 ---@return LImageData Raw image data.
 function LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) end
 
+--- Extracts a pixel minimap image centered on the player from this raycaster map.
+---@param playerX number Player x position in world space.
+---@param playerY number Player y position in world space.
+---@param playerAngle number Player facing angle in radians.
+---@param viewRadius number Visible tile radius around the player.
+---@param cellSize number Pixel size of each minimap cell.
+---@return LImageData Image data containing the extracted minimap.
+function LRaycaster:extractMinimap(playerX, playerY, playerAngle, viewRadius, cellSize) end
+
 --- Returns the raw texture id assigned to this ceiling cell, or nil if none.
 ---@param x number Grid column.
 ---@param y number Grid row.
@@ -20976,6 +21057,16 @@ function LSpriteManager:type() end
 ---@param name string Type name to test against.
 ---@return boolean True if this object is of the given type.
 function LSpriteManager:typeOf(name) end
+
+--- Applies an RGB light color to a scalar shade value.
+---@param baseShade number Base shade multiplier.
+---@param r number Red light channel.
+---@param g number Green light channel.
+---@param b number Blue light channel.
+---@return number a Shaded red channel.
+---@return number b Shaded green channel.
+---@return number c Shaded blue channel.
+lurek.raycaster.applyLitShade = function(baseShade, r, g, b) end
 
 --- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 ---@param distance number Distance to shade.

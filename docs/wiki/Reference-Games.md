@@ -68,6 +68,41 @@
   - [star_voyage](#starvoyage)
   - [survival_crafting](#survivalcrafting)
   - [visual_novel](#visualnovel)
+- [showcase](#showcase)
+  - [automation_demo](#automationdemo)
+  - [debugbridge_demo](#debugbridgedemo)
+  - [demo_game](#demogame)
+  - [devtools_demo](#devtoolsdemo)
+  - [docs_demo](#docsdemo)
+  - [entity_showcase](#entityshowcase)
+  - [globe_demo](#globedemo)
+  - [hacking_game](#hackinggame)
+  - [hello_world](#helloworld)
+  - [html-dialog](#html-dialog)
+  - [html-hud](#html-hud)
+  - [html-inventory](#html-inventory)
+  - [html-load-document](#html-load-document)
+  - [html-scoreboard](#html-scoreboard)
+  - [html-settings](#html-settings)
+  - [light_demo](#lightdemo)
+  - [light_showcase](#lightshowcase)
+  - [localization_demo](#localizationdemo)
+  - [minimap_demo](#minimapdemo)
+  - [modding_demo](#moddingdemo)
+  - [music_composer](#musiccomposer)
+  - [nine_slice_demo](#nineslicedemo)
+  - [overlay_demo](#overlaydemo)
+  - [particles_demo](#particlesdemo)
+  - [patterns_demo](#patternsdemo)
+  - [pipeline_showcase](#pipelineshowcase)
+  - [postfx_demo](#postfxdemo)
+  - [province_demo](#provincedemo)
+  - [scene_demo](#scenedemo)
+  - [signal_demo](#signaldemo)
+  - [sprites](#sprites)
+  - [terminal_demo](#terminaldemo)
+  - [tween_demo](#tweendemo)
+  - [vending_lights](#vendinglights)
 - [simulation](#simulation)
   - [colony_sim](#colonysim)
   - [cooking_sim](#cookingsim)
@@ -573,6 +608,281 @@ Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast star
 A branching visual novel with three acts, three characters, affection tracking, and multiple endings.
 
 **Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+
+## showcase
+
+### [automation_demo](../tree/main/content/games/showcase/automation_demo)
+
+![automation_demo screenshot](../raw/main/content/games/showcase/automation_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [debugbridge_demo](../tree/main/content/games/showcase/debugbridge_demo)
+
+![debugbridge_demo screenshot](../raw/main/content/games/showcase/debugbridge_demo/screen.png)
+
+Simulated debug bridge visualization demonstrating runtime inspection concepts: a debug console with typed commands, real-time engine metrics, entity inspect...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [demo_game](../tree/main/content/games/showcase/demo_game)
+
+![demo_game screenshot](../raw/main/content/games/showcase/demo_game/screen.png)
+
+Physics-based shooting gallery with moving targets, combo scoring, and power-ups. Aim with the mouse and fire balls at swaying targets across three increasin...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [devtools_demo](../tree/main/content/games/showcase/devtools_demo)
+
+![devtools_demo screenshot](../raw/main/content/games/showcase/devtools_demo/screen.png)
+
+Developer tools profiling showcase: toggle real-time FPS graphs, memory profilers, entity inspectors, performance heatmaps, and draw call counters while a li...
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [docs_demo](../tree/main/content/games/showcase/docs_demo)
+
+![docs_demo screenshot](../raw/main/content/games/showcase/docs_demo/screen.png)
+
+Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces in a sidebar, inspect function signatures with syntax-highlighted params a...
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [entity_showcase](../tree/main/content/games/showcase/entity_showcase)
+
+![entity_showcase screenshot](../raw/main/content/games/showcase/entity_showcase/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [globe_demo](../tree/main/content/games/showcase/globe_demo)
+
+![globe_demo screenshot](../raw/main/content/games/showcase/globe_demo/screen.png)
+
+A showcase of the lurek.globe.* API: an interactive world globe with ~200
+
+**Modules:** [automation](Module-automation), [event](Module-event), [globe](Module-globe), [input](Module-input), [render](Module-render)
+
+### [hacking_game](../tree/main/content/games/showcase/hacking_game)
+
+![hacking_game screenshot](../raw/main/content/games/showcase/hacking_game/screen.png)
+
+Terminal-based hacking game with full CRT aesthetics. Type commands at the prompt to scan networks, connect to servers, crack passwords, and download classif...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [hello_world](../tree/main/content/games/showcase/hello_world)
+
+![hello_world screenshot](../raw/main/content/games/showcase/hello_world/screen.png)
+
+Complete engine feature sampler showcasing basic Lurek2D capabilities in a single interactive screen: animated text, geometric shapes, mouse tracking, partic...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [html-dialog](../tree/main/content/games/showcase/html-dialog)
+
+![html-dialog screenshot](../raw/main/content/games/showcase/html-dialog/screen.png)
+
+An RPG-style NPC conversation system using HTML dialog boxes with branching
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-hud](../tree/main/content/games/showcase/html-hud)
+
+![html-hud screenshot](../raw/main/content/games/showcase/html-hud/screen.png)
+
+﻿# HTML HUD Demo
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-inventory](../tree/main/content/games/showcase/html-inventory)
+
+![html-inventory screenshot](../raw/main/content/games/showcase/html-inventory/screen.png)
+
+An inventory grid screen built entirely with HTML/CSS, demonstrating how to
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-load-document](../tree/main/content/games/showcase/html-load-document)
+
+![html-load-document screenshot](../raw/main/content/games/showcase/html-load-document/screen.png)
+
+A showcase game that uses only external HTML/CSS files for UI via lurek.html.loadDocument.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard)
+
+![html-scoreboard screenshot](../raw/main/content/games/showcase/html-scoreboard/screen.png)
+
+A live leaderboard that automatically refreshes every two seconds, built with
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-settings](../tree/main/content/games/showcase/html-settings)
+
+![html-settings screenshot](../raw/main/content/games/showcase/html-settings/screen.png)
+
+A full settings screen with toggle switches and radio groups, demonstrating
+
+**Modules:** [automation](Module-automation), [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [light_demo](../tree/main/content/games/showcase/light_demo)
+
+![light_demo screenshot](../raw/main/content/games/showcase/light_demo/screen.png)
+
+Complete 2D lighting system showcase featuring dynamic point lights, spotlights, flickering torches, shadow-casting wall occluders, and ambient light control...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [light](Module-light), [particle](Module-particle), [render](Module-render), [timer](Module-timer), +2
+
+### [light_showcase](../tree/main/content/games/showcase/light_showcase)
+
+![light_showcase screenshot](../raw/main/content/games/showcase/light_showcase/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [localization_demo](../tree/main/content/games/showcase/localization_demo)
+
+![localization_demo screenshot](../raw/main/content/games/showcase/localization_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [minimap_demo](../tree/main/content/games/showcase/minimap_demo)
+
+![minimap_demo screenshot](../raw/main/content/games/showcase/minimap_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [modding_demo](../tree/main/content/games/showcase/modding_demo)
+
+![modding_demo screenshot](../raw/main/content/games/showcase/modding_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [music_composer](../tree/main/content/games/showcase/music_composer)
+
+![music_composer screenshot](../raw/main/content/games/showcase/music_composer/screen.png)
+
+Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smo...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [nine_slice_demo](../tree/main/content/games/showcase/nine_slice_demo)
+
+![nine_slice_demo screenshot](../raw/main/content/games/showcase/nine_slice_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [overlay_demo](../tree/main/content/games/showcase/overlay_demo)
+
+![overlay_demo screenshot](../raw/main/content/games/showcase/overlay_demo/screen.png)
+
+Screen overlay effects showcase demonstrating weather particles, time-of-day tinting, fog, and vignette — all composable and intensity-adjustable.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [particles_demo](../tree/main/content/games/showcase/particles_demo)
+
+![particles_demo screenshot](../raw/main/content/games/showcase/particles_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [patterns_demo](../tree/main/content/games/showcase/patterns_demo)
+
+![patterns_demo screenshot](../raw/main/content/games/showcase/patterns_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [pipeline_showcase](../tree/main/content/games/showcase/pipeline_showcase)
+
+![pipeline_showcase screenshot](../raw/main/content/games/showcase/pipeline_showcase/screen.png)
+
+Interactive visualization of the full Lurek2D engine callback pipeline — ready, process, process_physics, process_late, render, render_ui — across three scen...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [postfx_demo](../tree/main/content/games/showcase/postfx_demo)
+
+![postfx_demo screenshot](../raw/main/content/games/showcase/postfx_demo/screen.png)
+
+Complete post-processing effects stacking showcase with 10 toggleable effects, adjustable intensity, and real-time before/after comparison.
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [province_demo](../tree/main/content/games/showcase/province_demo)
+
+![province_demo screenshot](../raw/main/content/games/showcase/province_demo/screen.png)
+
+Procedural Voronoi-like province map generator with terrain, ownership, fog of war, pathfinding, and multiple visualization modes.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [scene_demo](../tree/main/content/games/showcase/scene_demo)
+
+![scene_demo screenshot](../raw/main/content/games/showcase/scene_demo/screen.png)
+
+Scene state machine with enter/exit callbacks, three transition effects, and a collect-the-coins mini-game — all wired through a reusable scene manager.
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [signal_demo](../tree/main/content/games/showcase/signal_demo)
+
+![signal_demo screenshot](../raw/main/content/games/showcase/signal_demo/screen.png)
+
+Complete pub-sub event signal system showcase demonstrating the publisher-subscriber pattern with five distinct signal types, cascading chain reactions, and ...
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [sprites](../tree/main/content/games/showcase/sprites)
+
+![sprites screenshot](../raw/main/content/games/showcase/sprites/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [camera](Module-camera), [event](Module-event), [image](Module-image), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), +2
+
+### [terminal_demo](../tree/main/content/games/showcase/terminal_demo)
+
+![terminal_demo screenshot](../raw/main/content/games/showcase/terminal_demo/screen.png)
+
+Full-screen terminal UI character creation wizard with box-drawing borders, colored text, stat allocation, and multi-page navigation — all rendered on an 80×...
+
+**Modules:** [automation](Module-automation), [render](Module-render), [terminal](Module-terminal), [window](Module-window)
+
+### [tween_demo](../tree/main/content/games/showcase/tween_demo)
+
+![tween_demo screenshot](../raw/main/content/games/showcase/tween_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [vending_lights](../tree/main/content/games/showcase/vending_lights)
+
+![vending_lights screenshot](../raw/main/content/games/showcase/vending_lights/screen.png)
+
+No description available.
+
+**Modules:** [automation](Module-automation), [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)
 
 
 ## simulation

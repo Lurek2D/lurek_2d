@@ -34,7 +34,7 @@ SRC_LUA_API_DIR = ROOT / "src" / "lua_api"
 LUA_API_JSON_PATH = ROOT / "logs" / "data" / "lua_api_data.json"
 LUREK_STUB_PATH = ROOT / "docs" / "api" / "lurek.lua"
 LIBRARY_STUB_PATH = ROOT / "docs" / "api" / "lureksome.lua"
-EXTENSION_API_PATH = ROOT / "extensions" / "vscode" / "data" / "lurek-api.json"
+EXTENSION_API_PATH = ROOT / "extension" / "vscode" / "data" / "lurek-api.json"
 DOCS_TOOLS_DIR = ROOT / "tools" / "docs"
 MIN_LUA_SUMMARY_VISIBLE_CHARS = 30
 MIN_LUA_CLASS_VISIBLE_CHARS = 30
@@ -546,7 +546,7 @@ def _print_text_report(result: dict) -> None:
     )
     print(
         "[OK]" if artifacts["extension_api_identical_to_committed"] else "[FAIL]",
-        "extensions/vscode/data/lurek-api.json matches fresh generator output",
+        "extension/vscode/data/lurek-api.json matches fresh generator output",
     )
     print(
         "[OK]" if lurek_stub_proof["missing_class_stub_count"] == 0 else "[FAIL]",
@@ -560,13 +560,13 @@ def _print_text_report(result: dict) -> None:
     )
     print(
         "[OK]" if extension_proof["missing_class_count"] == 0 else "[FAIL]",
-        "extensions/vscode/data/lurek-api.json contains every source JSON class",
+        "extension/vscode/data/lurek-api.json contains every source JSON class",
     )
     print(
         "[OK]"
         if extension_proof["missing_enum_count"] == 0 and extension_proof["enum_value_mismatch_count"] == 0
         else "[FAIL]",
-        "extensions/vscode/data/lurek-api.json contains every source JSON enum with matching values",
+        "extension/vscode/data/lurek-api.json contains every source JSON enum with matching values",
     )
     print(
         "[OK]" if lua_doc_completeness["issue_count"] == 0 else "[FAIL]",

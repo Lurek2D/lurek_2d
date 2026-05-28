@@ -89,7 +89,7 @@ Each editor has its own active implementation file in `src/editors/*Editor.ts` a
 ### From VSIX
 
 ```bash
-cd extensions/vscode
+cd extension/vscode
 npm install
 node esbuild.config.mjs --production
 npx @vscode/vsce package --no-dependencies
@@ -99,7 +99,7 @@ code --install-extension lurek2d-toolkit-1.0.0.vsix
 ### From Source (Development)
 
 ```bash
-cd extensions/vscode
+cd extension/vscode
 npm install
 node esbuild.config.mjs --watch
 # Then press F5 in VS Code to launch Extension Development Host

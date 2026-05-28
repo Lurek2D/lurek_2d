@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-
+- The `validator` module is a parallel, rule-based static analysis engine for Lua game scripts with built-in checks for asset existence, import resolution, and API compliance.
 
 ## General Info
 
@@ -15,9 +15,11 @@
 
 ## Summary
 
-The `validator` module is documented from the current source tree and existing module reference data.
+The `validator` module equips developers and CI pipelines with a structured static analysis engine for Lua game scripts. The central `ValidationEngine` is configured via `ValidatorConfig` (deserialized from a `[validator]` TOML block) and orchestrates a set of `ValidationRule` implementations over a file tree in parallel using a Rayon worker pool. Thread count defaults to the configured value; 0 forces synchronous single-threaded mode.
 
-This module is mostly self-contained inside the Edge/Integration group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+Three built-in rule types cover the most common correctness checks. The `ApiComplianceRule` inspects each `lurek.*` call site against an `ApiRegistry` loaded at startup, flagging unknown function names as `Severity::Error` and wrong argument counts as `Severity::Warning`. The `AssetExistenceRule` pattern-matches `lurek.asset.load("path")` calls and verifies each path via `GameFS::exists` without decoding the asset — missing files produce errors, likely typos produce warnings. The `ImportResolutionRule` scans for `require("path")` calls via regex, resolving each against the game's configured `lua_paths` to catch missing module files before runtime.
+
+Beyond built-in rules, the engine supports extensibility in two directions. TOML rule files (loaded via `load_rules_from_file`) specify `[[rule]]` arrays with pattern, severity, message, and optional file-extension filter — ideal for project-specific naming conventions or forbidden API patterns. Lua callbacks registered via `lurek.validator.add_rule` inject `LuaPatternRule` adapters, letting game teams write script-side rules without recompiling. Results are collected into a `ValidationReport` containing `Vec<Violation>` with file path, line number, severity, and an optional suggestion string. The `lurek.validator.*` API exposes engine creation, rule registration, single-file and tree-wide validation runs, and report display.
 
 ## Source Documentation
 
@@ -133,7 +135,7 @@ This module is mostly self-contained inside the Edge/Integration group. Cross-mo
 - `validate_parallel` (`parallel.rs`): Run validation rules in parallel across files.
 - `collect_lua_files` (`parallel.rs`): Collect all files under a directory matching extensions.
 - `collect_files_with_ext` (`parallel.rs`): Collect files with specific extensions.
-- `Severity::from_str` (`report.rs`): Parse a `Severity` level from a string; unknown values map to `Warning`.
+- `Severity::from_name` (`report.rs`): Parse a `Severity` level from a string; unknown values map to `Warning`.
 - `Severity::as_str` (`report.rs`): Return the lowercase canonical string name of this severity level.
 - `Violation::new` (`report.rs`): Create a new `Violation` for the given rule, severity, file, and message.
 - `Violation::with_line` (`report.rs`): Attach a source line number to this violation.

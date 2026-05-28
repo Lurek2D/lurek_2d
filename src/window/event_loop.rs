@@ -117,7 +117,7 @@ pub fn display_name_for_display(window: &Window, display_index: Option<usize>) -
     })
 }
 /// Move `window` to the center of monitor `display_index`; return `false` when that index doesn't exist.
-pub fn move_window_to_display(window: &Window, display_index: usize) -> bool {
+pub(crate) fn move_window_to_display(window: &Window, display_index: usize) -> bool {
     let Some(monitor) = window.available_monitors().nth(display_index) else {
         return false;
     };
@@ -126,7 +126,7 @@ pub fn move_window_to_display(window: &Window, display_index: usize) -> bool {
     true
 }
 /// Return the `MonitorHandle` to use at startup for `display_index`; falls back to primary with a warning.
-pub fn select_startup_monitor(
+pub(crate) fn select_startup_monitor(
     event_loop: &ActiveEventLoop,
     display_index: u32,
 ) -> Option<MonitorHandle> {
@@ -146,7 +146,7 @@ pub fn select_startup_monitor(
     monitor.or(primary)
 }
 /// Center `window` on `monitor` given its `width` × `height` in physical pixels.
-pub fn center_window_on_monitor(window: &Window, monitor: &MonitorHandle, width: u32, height: u32) {
+pub(crate) fn center_window_on_monitor(window: &Window, monitor: &MonitorHandle, width: u32, height: u32) {
     let monitor_size = monitor.size();
     let monitor_position = monitor.position();
     let x = monitor_position.x + ((monitor_size.width as i32 - width as i32).max(0) / 2);

@@ -2216,7 +2216,12 @@ end
 
 ## 🎮 Reference Games
 
-No direct references were found in `content/games/**/main.lua`.
+- [html-dialog](../tree/main/content/games/showcase/html-dialog) (showcase)
+- [html-hud](../tree/main/content/games/showcase/html-hud) (showcase)
+- [html-inventory](../tree/main/content/games/showcase/html-inventory) (showcase)
+- [html-load-document](../tree/main/content/games/showcase/html-load-document) (showcase)
+- [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard) (showcase)
+- [html-settings](../tree/main/content/games/showcase/html-settings) (showcase)
 
 [⬆ back to top](#table-of-contents)
 

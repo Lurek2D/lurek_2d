@@ -41,12 +41,10 @@ description: "Load this skill when routing work between CAG agents, choosing own
 - Scope-mismatch escalation: when a specialist returns SCOPE-MISMATCH, Manager re-evaluates routing, does not re-send the same task to the same specialist.
 
 ## Companion File Index
-- .github/agents/README.md
 - docs/architecture/cag-system.md
 
 ## References
 - .github/copilot-instructions.md
-- .github/agents/README.md
 - docs/architecture/cag-system.md
 - .github/agents/manager.agent.md
 

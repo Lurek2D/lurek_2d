@@ -19,6 +19,7 @@ struct LuaCursorManager {
 
 impl LuaUserData for LuaCursorManager {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setSystem --
         /// Set the active cursor to a system cursor by name.
         /// @param | name | string | System cursor name (arrow, hand, crosshair, ibeam, wait, no, etc.).
         methods.add_method("setSystem", |_, this, name: String| {
@@ -28,6 +29,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- setCustom --
         /// Set the active cursor to a custom image cursor.
         /// @param | cursor | LuaCustomCursor | Custom cursor object.
         methods.add_method("setCustom", |_, this, cursor: LuaAnyUserData| {
@@ -36,6 +38,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- setAnimated --
         /// Set the active cursor to an animated cursor.
         /// @param | cursor | LuaAnimatedCursor | Animated cursor object.
         methods.add_method("setAnimated", |_, this, cursor: LuaAnyUserData| {
@@ -44,6 +47,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- setContext --
         /// Set the current context for context-sensitive switching.
         /// @param | ctx | string | Context name (default, raycaster, globe, tilemap, ui_button, etc.).
         methods.add_method("setContext", |_, this, ctx: String| {
@@ -51,6 +55,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- addRule --
         /// Add a context rule that maps a context to a system cursor.
         /// @param | ctx | string | Context name.
         /// @param | cursor_name | string | System cursor name.
@@ -65,6 +70,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- removeRule --
         /// Remove a context rule for this object.
         /// @param | ctx | string | Context name to remove.
         methods.add_method("removeRule", |_, this, ctx: String| {
@@ -72,6 +78,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- update --
         /// Update cursor state (call each frame).
         /// @param | x | number | Cursor X position.
         /// @param | y | number | Cursor Y position.
@@ -81,6 +88,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- setVisible --
         /// Set cursor visibility for this object.
         /// @param | visible | boolean | Whether the cursor is visible.
         methods.add_method("setVisible", |_, this, visible: bool| {
@@ -88,12 +96,14 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- isVisible --
         /// Get cursor visibility for this object.
         /// @return | boolean | Whether the cursor is visible.
         methods.add_method("isVisible", |_, this, ()| {
             Ok(this.inner.borrow().is_visible())
         });
 
+        // -- setLocked --
         /// Lock the cursor position using the system grab mode.
         /// @param | locked | boolean | Whether the cursor is locked.
         methods.add_method("setLocked", |_, this, locked: bool| {
@@ -101,12 +111,14 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- isLocked --
         /// Get cursor lock state for this object.
         /// @return | boolean | Whether the cursor is locked.
         methods.add_method("isLocked", |_, this, ()| {
             Ok(this.inner.borrow().is_locked())
         });
 
+        // -- getPosition --
         /// Get cursor position for this object.
         /// @return | number | X position.
         /// @return | number | Y position.
@@ -115,12 +127,14 @@ impl LuaUserData for LuaCursorManager {
             Ok((x, y))
         });
 
+        // -- getContext --
         /// Get current context name for this object.
         /// @return | string | Active context name.
         methods.add_method("getContext", |_, this, ()| {
             Ok(this.inner.borrow().context().as_str().to_string())
         });
 
+        // -- enableTrail --
         /// Enable cursor trail with fade points mode.
         /// @param | r | number | Red (0-1).
         /// @param | g | number | Green (0-1).
@@ -135,6 +149,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- enableLineTrail --
         /// Enable cursor trail with line mode.
         /// @param | r | number | Red (0-1).
         /// @param | g | number | Green (0-1).
@@ -150,12 +165,14 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- disableTrail --
         /// Disable cursor trail for this object.
         methods.add_method("disableTrail", |_, this, ()| {
             this.inner.borrow_mut().set_trail(None);
             Ok(())
         });
 
+        // -- enableZoom --
         /// Enable zoom/magnifier at cursor position.
         /// @param | magnification | number | Zoom factor (1-10).
         /// @param | radius | number | Lens radius in pixels.
@@ -164,6 +181,7 @@ impl LuaUserData for LuaCursorManager {
             Ok(())
         });
 
+        // -- disableZoom --
         /// Disable cursor zoom for this object.
         methods.add_method("disableZoom", |_, this, ()| {
             this.inner.borrow_mut().set_zoom(None);
@@ -184,6 +202,7 @@ struct LuaCustomCursor {
 
 impl LuaUserData for LuaCustomCursor {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setPixel --
         /// Set a pixel color — Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -196,6 +215,7 @@ impl LuaUserData for LuaCustomCursor {
             Ok(())
         });
 
+        // -- getPixel --
         /// Get the pixel color at the specified cursor image position.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
@@ -210,6 +230,7 @@ impl LuaUserData for LuaCustomCursor {
             }
         });
 
+        // -- getSize --
         /// Get the pixel width and height of the cursor image.
         /// @return | integer | Width.
         /// @return | integer | Height.
@@ -218,6 +239,7 @@ impl LuaUserData for LuaCustomCursor {
             Ok((w, h))
         });
 
+        // -- getHotspot --
         /// Get hotspot position for this object.
         /// @return | integer | Hotspot X.
         /// @return | integer | Hotspot Y.
@@ -240,6 +262,7 @@ struct LuaAnimatedCursor {
 
 impl LuaUserData for LuaAnimatedCursor {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addFrame --
         /// Add a frame from a custom cursor image.
         /// @param | cursor | LuaCustomCursor | Frame image.
         /// @param | duration_ms | integer | Frame duration in milliseconds.
@@ -250,6 +273,7 @@ impl LuaUserData for LuaAnimatedCursor {
             Ok(())
         });
 
+        // -- update --
         /// Update animation (call each frame).
         /// @param | dt | number | Delta time in seconds.
         methods.add_method("update", |_, this, dt: f32| {
@@ -257,24 +281,28 @@ impl LuaUserData for LuaAnimatedCursor {
             Ok(())
         });
 
+        // -- currentIndex --
         /// Get current frame index for this object.
         /// @return | integer | Zero-based frame index.
         methods.add_method("currentIndex", |_, this, ()| {
             Ok(this.inner.borrow().current_index())
         });
 
+        // -- frameCount --
         /// Get total frame count for this object.
         /// @return | integer | Number of frames.
         methods.add_method("frameCount", |_, this, ()| {
             Ok(this.inner.borrow().frame_count())
         });
 
+        // -- currentScale --
         /// Get current scale from pulse animation.
         /// @return | number | Current scale factor.
         methods.add_method("currentScale", |_, this, ()| {
             Ok(this.inner.borrow().current_scale())
         });
 
+        // -- setPulse --
         /// Set the pulse animation speed and scale factor parameters.
         /// @param | min_scale | number | Minimum scale.
         /// @param | max_scale | number | Maximum scale.
@@ -288,12 +316,14 @@ impl LuaUserData for LuaAnimatedCursor {
             Ok(())
         });
 
+        // -- clearPulse --
         /// Disable pulse animation for this object.
         methods.add_method("clearPulse", |_, this, ()| {
             this.inner.borrow_mut().set_pulse(None);
             Ok(())
         });
 
+        // -- reset --
         /// Reset the cursor animation playback to the first frame.
         methods.add_method("reset", |_, this, ()| {
             this.inner.borrow_mut().reset();

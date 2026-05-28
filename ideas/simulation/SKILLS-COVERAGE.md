@@ -1,23 +1,23 @@
-# Block Simulator w Lurek2D - skills coverage
+﻿# Block Simulator w Lurek2D - skills coverage
 
-Ten dokument przepisuje dawną macierz skills pod Lurek2D. W starym projekcie skills były plikami `.github/skills` dla agentów i authoringu YAML/Next.js. W Lurek trzeba rozdzielić trzy rzeczy:
+Ten dokument przepisuje dawnÄ… macierz skills pod Lurek2D. W starym projekcie skills byĹ‚y plikami `.github/skills` dla agentĂłw i authoringu YAML/Next.js. W Lurek trzeba rozdzieliÄ‡ trzy rzeczy:
 
-1. mechaniczne umiejętności symulacji, czyli funkcje `library/blocksim`,
-2. domenowe template'y, czyli gotowe blueprinty procesów,
-3. skills dla CAG/VS Code, które pomagają autorowi tworzyć scenariusze, ale nie są częścią runtime.
+1. mechaniczne umiejÄ™tnoĹ›ci symulacji, czyli funkcje `library/blocksim`,
+2. domenowe template'y, czyli gotowe blueprinty procesĂłw,
+3. skills dla CAG/VS Code, ktĂłre pomagajÄ… autorowi tworzyÄ‡ scenariusze, ale nie sÄ… czÄ™Ĺ›ciÄ… runtime.
 
 ## Decyzja
 
-Nie przenosić starych skills jeden do jednego. Lurek ma własne CAG skills i własne repo rules. Stary zestaw Next.js, Tailwind, Flask, DuckDB, YAML nie pasuje bezpośrednio.
+Nie przenosiÄ‡ starych skills jeden do jednego. Lurek ma wĹ‚asne CAG skills i wĹ‚asne repo rules. Stary zestaw Next.js, Tailwind, Flask, DuckDB, YAML nie pasuje bezpoĹ›rednio.
 
 Docelowo:
 
-| Typ | Gdzie mieszka | Użycie |
+| Typ | Gdzie mieszka | UĹĽycie |
 |---|---|---|
-| Runtime mechanics | `library/blocksim/*.lua` | gra/symulacja używa w runtime |
+| Runtime mechanics | `library/blocksim/*.lua` | gra/symulacja uĹĽywa w runtime |
 | Domain blueprints | `content/games/block_sim/scenarios/*.lua` albo `library/blocksim/blueprints.lua` | szybki start dla domen |
 | Authoring guidance | `.github/skills/simulation-*` lub VS Code snippets | pomoc przy pisaniu scenariuszy |
-| API data | generated `extensions/vscode/data/lurek-api.json` | autocomplete i hover dla `lurek.*` |
+| API data | generated `extension/vscode/data/lurek-api.json` | autocomplete i hover dla `lurek.*` |
 
 ## Mechanic coverage w `library/blocksim`
 
@@ -58,39 +58,39 @@ Blueprint coverage should be tracked as tests, not only docs.
 
 ## Authoring skills dla CAG
 
-Jeżeli dodawać nowe CAG skills, proponowany minimalny zestaw:
+JeĹĽeli dodawaÄ‡ nowe CAG skills, proponowany minimalny zestaw:
 
-| Skill | Kiedy ładować | Zakres |
+| Skill | Kiedy Ĺ‚adowaÄ‡ | Zakres |
 |---|---|---|
 | `simulation-scripting` | pisanie `library/blocksim` albo scenariuszy Lua | callbacki Lurek, Lua DSL, testy Lua |
-| `simulation-blueprints` | tworzenie domenowego scenariusza | dobór bloków, itemów, resources, monitors |
+| `simulation-blueprints` | tworzenie domenowego scenariusza | dobĂłr blokĂłw, itemĂłw, resources, monitors |
 | `simulation-monitoring` | monitory i analytics | monitor config, KPI, alert rules |
 | `simulation-vscode-tools` | rozszerzenie VS Code dla symulacji | debug bridge, snippets, diagnostics |
 
-Nie mieszać ich z runtime skills. CAG skills pomagają agentom; `library/blocksim` jest kodem gry.
+Nie mieszaÄ‡ ich z runtime skills. CAG skills pomagajÄ… agentom; `library/blocksim` jest kodem gry.
 
 ## VS Code authoring features
 
-Zamiast przenosić stare skill docs, rozszerzenie powinno mieć:
+Zamiast przenosiÄ‡ stare skill docs, rozszerzenie powinno mieÄ‡:
 
 - snippets: `sim.block.process`, `sim.monitor.queue`, `sim.anomaly.heat`, `sim.analytics.kpi`,
 - diagnostics dla scenario Lua/TOML,
 - quick fix: dodaj monitor wymagany przez KPI,
-- hover: mechanika s13/s14/s15, wyjaśnienie pól,
+- hover: mechanika s13/s14/s15, wyjaĹ›nienie pĂłl,
 - command palette: `Create Simulation Blueprint`, `Run Simulation Smoke`, `Open Simulation Report`,
-- generated schema z `library/blocksim/schema.lua` albo JSON schema eksportowanego przez narzędzie.
+- generated schema z `library/blocksim/schema.lua` albo JSON schema eksportowanego przez narzÄ™dzie.
 
-## Jak mierzyć coverage
+## Jak mierzyÄ‡ coverage
 
-Każda mechanika ma trzy poziomy pokrycia:
+KaĹĽda mechanika ma trzy poziomy pokrycia:
 
 | Poziom | Wymaganie |
 |---|---|
 | documented | opisana w `ideas/simulation/out` albo docelowo `docs/specs/blocksim.md` |
 | implemented | istnieje handler/helper w `library/blocksim` albo `src/blocksim` |
-| tested | jest Lua/Rust test oraz przynajmniej jeden blueprint smoke, jeżeli mechanika jest domenowa |
+| tested | jest Lua/Rust test oraz przynajmniej jeden blueprint smoke, jeĹĽeli mechanika jest domenowa |
 
-Prosty raport może być Lua table:
+Prosty raport moĹĽe byÄ‡ Lua table:
 
 ```lua
 return {
@@ -105,24 +105,25 @@ return {
 }
 ```
 
-VS Code może renderować to jako coverage matrix.
+VS Code moĹĽe renderowaÄ‡ to jako coverage matrix.
 
-## Braki do uzupełnienia
+## Braki do uzupeĹ‚nienia
 
-Największe luki, które warto zamknąć pierwsze:
+NajwiÄ™ksze luki, ktĂłre warto zamknÄ…Ä‡ pierwsze:
 
-1. Approval-heavy domains: HR, banking, insurance, public sector potrzebują więcej gotowych patterns.
-2. Hybrid domains: pharma, healthcare, retail potrzebują długiego clocka i multi-layer composite examples.
-3. Schema evolution, simulation clock i block priority powinny mieć przykłady, bo są łatwe do pominięcia.
-4. Analytics examples powinny pokazywać end-to-end: run -> monitors -> analytics -> dashboard.
-5. VS Code diagnostics powinny rozumieć, że Lurek używa Lua/TOML, nie YAML.
+1. Approval-heavy domains: HR, banking, insurance, public sector potrzebujÄ… wiÄ™cej gotowych patterns.
+2. Hybrid domains: pharma, healthcare, retail potrzebujÄ… dĹ‚ugiego clocka i multi-layer composite examples.
+3. Schema evolution, simulation clock i block priority powinny mieÄ‡ przykĹ‚ady, bo sÄ… Ĺ‚atwe do pominiÄ™cia.
+4. Analytics examples powinny pokazywaÄ‡ end-to-end: run -> monitors -> analytics -> dashboard.
+5. VS Code diagnostics powinny rozumieÄ‡, ĹĽe Lurek uĹĽywa Lua/TOML, nie YAML.
 
 ## Testy coverage
 
-- Test `library/blocksim/coverage.lua` sprawdza, że każdy mechanic ID ma handler albo celowo `deferred`.
-- Test blueprintów sprawdza, że każdy domain blueprint buduje poprawny scenariusz.
-- Test snippets w extension sprawdza, że generowane snippet labels są zgodne z `library/blocksim/schema.lua`.
+- Test `library/blocksim/coverage.lua` sprawdza, ĹĽe kaĹĽdy mechanic ID ma handler albo celowo `deferred`.
+- Test blueprintĂłw sprawdza, ĹĽe kaĹĽdy domain blueprint buduje poprawny scenariusz.
+- Test snippets w extension sprawdza, ĹĽe generowane snippet labels sÄ… zgodne z `library/blocksim/schema.lua`.
 
 ## Migration note
 
-Stare skills o DuckDB i React mogą być inspiracją dla raportów, ale nie są dependency. Lurek ma własny UI i DataFrame API. Jeżeli kiedyś będzie eksport zewnętrzny, JSON raportów wystarczy dla narzędzi poza silnikiem.
+Stare skills o DuckDB i React mogÄ… byÄ‡ inspiracjÄ… dla raportĂłw, ale nie sÄ… dependency. Lurek ma wĹ‚asny UI i DataFrame API. JeĹĽeli kiedyĹ› bÄ™dzie eksport zewnÄ™trzny, JSON raportĂłw wystarczy dla narzÄ™dzi poza silnikiem.
+

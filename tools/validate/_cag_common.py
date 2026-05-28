@@ -58,7 +58,6 @@ SYSTEM_PROMPT_POINTER = "docs/architecture/cag-system.md"
 AGENT_REQUIRED_SECTIONS = (
     "Mission",
     "Scope",
-    "Inputs",
     "Outputs",
     "Workflow",
     "Success Metrics",

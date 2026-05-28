@@ -113,7 +113,7 @@ Pełna lista komend i opisów. Aby użyć narzędzia, uruchom `python tools/<sci
 - `gen_all_docs.py` - Convenience runner: regenerate the full Lurek2D documentation pipeline in one command.
 
 ### /snippets
-- `snippets/gen_vscode_snippets.py` - Build extensions/vscode/data/snippets.json from content/snippets/*.lua.
+- `snippets/gen_vscode_snippets.py` - Build extension/vscode/data/snippets.json from content/snippets/*.lua.
 - `snippets/snippet_catalog.py` - Shared parser for content/snippets/*.lua marker blocks.
 
 ### /ui

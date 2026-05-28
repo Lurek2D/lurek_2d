@@ -191,6 +191,7 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `lurek.particle.newTrail`: Creates a trail effect. This function is exposed to Lua scripts.
 - `lurek.particle.fromTOML`: Creates a particle system from a TOML config file.
 - `lurek.particle.newPreset`: Creates a particle system from a named preset.
+- `lurek.particle.drawLifecycleToImage`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
 
 ### `LParticleSystem` Methods
 - `LParticleSystem:update`: Updates the particle system, applies optional physics collision, and invokes pending callbacks.
@@ -263,6 +264,11 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LParticleSystem:clone`: Clones this particle system configuration into a new system handle.
 - `LParticleSystem:drawToImage`: Draws particles to image data. This method is available to Lua scripts.
 - `LParticleSystem:toImage`: Draws particles to image data. This method is available to Lua scripts.
+- `LParticleSystem:drawExplosionToImage`: Draws particles as an explosion preview image.
+- `LParticleSystem:drawRainToImage`: Draws particles as a rain preview image.
+- `LParticleSystem:drawSparkTrailToImage`: Draws particles as a spark-trail preview image.
+- `LParticleSystem:drawOverImage`: Draws particles over an existing image and returns a composited copy.
+- `LParticleSystem:paintOnto`: Paints live particles directly onto an existing image in place.
 - `LParticleSystem:warmUp`: Advances the system by a warm-up duration.
 - `LParticleSystem:addAttractor`: Adds an attractor to the particle system.
 - `LParticleSystem:clearAttractors`: Clears all attractors on this object.

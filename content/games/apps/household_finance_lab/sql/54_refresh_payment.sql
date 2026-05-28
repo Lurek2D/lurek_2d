@@ -1,3 +1,5 @@
+-- Calculate total expense amount and transaction count per payment method
+
 SELECT
     payment_method,
     SUM(expense_amount),

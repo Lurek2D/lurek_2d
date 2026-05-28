@@ -255,7 +255,7 @@ fn parse_extended_color(parts: &[u16], idx: &mut usize) -> Option<AnsiColor> {
 }
 
 /// Convert xterm-256 color index `n` to RGB; covers standard (0–7), bright (8–15), color cube (16–231), and grayscale (232–255).
-pub fn color256(n: u8) -> AnsiColor {
+fn color256(n: u8) -> AnsiColor {
     match n {
         0..=7 => PALETTE_STANDARD[n as usize].clone(),
         8..=15 => PALETTE_BRIGHT[(n - 8) as usize].clone(),

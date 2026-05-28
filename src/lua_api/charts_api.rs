@@ -1,9 +1,11 @@
 //! `lurek.charts` -- Chart creation, configuration, and rendering bindings.
 
+use super::SharedState;
 use crate::charts::config::{ChartConfig, ChartMargin, ChartSeries, DEFAULT_PALETTE};
 use crate::charts::{AreaChart, BarChart, LineChart, PieChart, ScatterPlot};
 use mlua::prelude::*;
 use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 // ---------------------------------------------------------------------------
 // Lua wrapper types
@@ -475,7 +477,7 @@ impl LuaUserData for LuaAreaChart {
 // ---------------------------------------------------------------------------
 
 /// Register the `lurek.charts` namespace.
-pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let charts = lua.create_table()?;
 
     // -- newLine --

@@ -418,6 +418,7 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LNavGrid:setChunkSize`: Sets hierarchical chunk size for abstract graph partitioning.
 - `LNavGrid:getChunkSize`: Returns the hierarchical chunk size in cells.
 - `LNavGrid:rebuildAbstract`: Rebuilds the cached abstract graph for this grid.
+- `LNavGrid:findHpaPath`: Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
 - `LNavGrid:setDirty`: Marks a one-based rectangular region dirty for incremental rebuild.
 - `LNavGrid:clearDirty`: Clears all dirty region markers from the grid.
 - `LNavGrid:setDiagonalMode`: Sets diagonal movement mode for this object.

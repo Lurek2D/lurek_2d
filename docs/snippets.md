@@ -1,4 +1,4 @@
-# Snippet System (Lua + VS Code)
+﻿# Snippet System (Lua + VS Code)
 
 ## TL;DR
 
@@ -11,7 +11,7 @@
 The target is reusable gameplay building blocks, not single-API examples.
 
 Source-of-truth files are handcrafted and live in `content/snippets/*.lua`.
-Generated VS Code snippets live in `extensions/vscode/data/snippets.json`.
+Generated VS Code snippets live in `extension/vscode/data/snippets.json`.
 
 ## Why This Exists
 
@@ -96,3 +96,4 @@ Design decision for Lurek2D:
 - Keep snippet authoring handcrafted and domain-driven.
 - Keep JSON generation deterministic and local.
 - Keep module coverage auditable in CI-style scripts.
+

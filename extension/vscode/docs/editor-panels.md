@@ -123,7 +123,7 @@ Each panel has a `src/editors/*Editor.ts` class file. These files own their loca
 
 ## Verification
 
-Run from `extensions/vscode/`:
+Run from `extension/vscode/`:
 
 - `npm run build`
 - `npm test`

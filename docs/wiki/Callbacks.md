@@ -33,7 +33,7 @@ A callback is a function on the `lurek` table that the runtime calls at a specif
 | `lurek.textinput` | `(text)` | On text entry | Text input (IME-aware) |
 | `lurek.resize` | `(w, h)` | On window resize | Layout recalculation |
 | `lurek.focus` | `(focused)` | On focus change | Pause/resume |
-| `lurek.quit` | `() → bool` | On close request | Return `true` to cancel quit |
+| `lurek.quit` | `() â†’ bool` | On close request | Return `true` to cancel quit |
 
 ## Frame Order
 

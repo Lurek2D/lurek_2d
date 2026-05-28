@@ -19,6 +19,7 @@ struct LuaValidationEngine {
 
 impl LuaUserData for LuaValidationEngine {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addAssetRule --
         /// Add the built-in asset existence rule.
         /// @param | asset_root | string | Root directory for asset files.
         methods.add_method("addAssetRule", |_, this, asset_root: String| {
@@ -26,6 +27,7 @@ impl LuaUserData for LuaValidationEngine {
             Ok(())
         });
 
+        // -- addImportRule --
         /// Add the built-in import resolution rule.
         /// @param | paths | table | Array of Lua search paths.
         methods.add_method("addImportRule", |_, this, paths: Vec<String>| {
@@ -34,12 +36,14 @@ impl LuaUserData for LuaValidationEngine {
             Ok(())
         });
 
+        // -- addApiRule --
         /// Add the built-in API compliance rule.
         methods.add_method("addApiRule", |_, this, ()| {
             this.inner.borrow_mut().add_api_rule();
             Ok(())
         });
 
+        // -- addPatternRule --
         /// Add a custom regex pattern rule to the validation engine.
         /// @param | id | string | Rule identifier.
         /// @param | pattern | string | Text pattern to match.
@@ -52,6 +56,7 @@ impl LuaUserData for LuaValidationEngine {
             Ok(())
         });
 
+        // -- addRequiredRule --
         /// Add a required pattern rule (violation if pattern NOT found).
         /// @param | id | string | Rule identifier.
         /// @param | pattern | string | Required text pattern.
@@ -63,6 +68,7 @@ impl LuaUserData for LuaValidationEngine {
             Ok(())
         });
 
+        // -- loadTomlRules --
         /// Load validation rules from a TOML-formatted rule file.
         /// @param | path | string | Path to .toml rules file.
         methods.add_method("loadTomlRules", |_, this, path: String| {
@@ -70,6 +76,7 @@ impl LuaUserData for LuaValidationEngine {
             Ok(())
         });
 
+        // -- run --
         /// Run validation against all Lua files under root.
         /// @return | table | Report with violations, files_checked, duration_ms, error_count, warning_count.
         methods.add_method("run", |lua, this, ()| {
@@ -77,6 +84,7 @@ impl LuaUserData for LuaValidationEngine {
             report_to_table(lua, &report)
         });
 
+        // -- runFile --
         /// Run validation against a single file.
         /// @param | path | string | File path to validate.
         /// @return | table | Report.
@@ -85,6 +93,7 @@ impl LuaUserData for LuaValidationEngine {
             report_to_table(lua, &report)
         });
 
+        // -- ruleCount --
         /// Get number of loaded rules for this object.
         /// @return | integer | Rule count.
         methods.add_method("ruleCount", |_, this, ()| {

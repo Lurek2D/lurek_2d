@@ -374,7 +374,7 @@ impl SoundData {
             .collect()
     }
     /// Apply ADSR amplitude envelope in place.
-    /// `attack`, `decay`, `release` are durations in seconds; `sustain` is a gain level in [0,1].
+    /// `attack`, `decay`, `release` are durations in seconds; `sustain` is a gain level in `[0,1]`.
     pub fn apply_adsr(&mut self, attack: f32, decay: f32, sustain: f32, release: f32) {
         let n = self.samples.len();
         if n == 0 {

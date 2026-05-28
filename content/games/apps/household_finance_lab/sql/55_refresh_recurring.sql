@@ -1,3 +1,5 @@
+-- Calculate total expense amount, average expense amount, and transaction count per merchant
+
 SELECT
     merchant,
     SUM(expense_amount),

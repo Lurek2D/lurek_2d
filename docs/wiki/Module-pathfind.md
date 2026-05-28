@@ -246,7 +246,7 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LFlowField` (10 methods) - Lua-side wrapper for a flow field over a navigation grid.
 - `LHexGrid` (10 methods) - Lua-side wrapper for a hexagonal grid.
 - `LJpsGrid` (5 methods) - Lua-side wrapper for a Jump Point Search grid.
-- `LNavGrid` (21 methods) - Lua-side wrapper for a navigation grid and optional abstract graph cache.
+- `LNavGrid` (22 methods) - Lua-side wrapper for a navigation grid and optional abstract graph cache.
 - `LNavMesh` (6 methods) - Lua-side wrapper for a navigation mesh.
 - `LPathGrid` (11 methods) - Lua-side wrapper for a cell-size path grid.
 - `LUnitPathfinder` (17 methods) - Lua-side wrapper for a unit pathfinder over a navigation grid.
@@ -258,7 +258,7 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - Source spec: [docs/specs/pathfind.md](../blob/main/docs/specs/pathfind.md)
 - Module-level functions: 12
 - Lua-visible types: 8
-- Total type methods: 89
+- Total type methods: 90
 
 
 [⬆ back to top](#table-of-contents)
@@ -2346,6 +2346,50 @@ do
     print("blocked_5_5 = " .. tostring(nav:isBlocked(5, 5)))
     print("blocked_10_10 = " .. tostring(nav:isBlocked(10, 10)))
     print("blocked_11_11 = " .. tostring(nav:isBlocked(11, 11)))
+end
+```
+
+#### LNavGrid:findHpaPath
+
+#### Definition
+
+```lua
+--- Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
+---@param sx number One-based start column.
+---@param sy number One-based start row.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@param unit_size? number Optional unit footprint in cells, default 1.
+---@return table Array of `{x, y}` waypoint tables, or nil when no path exists.
+function LNavGrid:findHpaPath(sx, sy, gx, gy, unit_size) end
+```
+
+#### Description
+
+Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
+
+Parameters:
+
+- `sx` (`integer`, required): One-based start column.
+- `sy` (`integer`, required): One-based start row.
+- `gx` (`integer`, required): One-based goal column.
+- `gy` (`integer`, required): One-based goal row.
+- `unit_size` (`integer`, optional): Optional unit footprint in cells, default 1.
+
+Returns: `table` - Array of `{x, y}` waypoint tables, or nil when no path exists.
+
+#### Example
+
+Source: [pathfind.lua](../blob/main/content/examples/pathfind.lua)
+
+```lua
+do
+    local nav = lurek.pathfind.newNavGrid(16, 16)
+    nav:setChunkSize(4)
+    nav:rebuildAbstract()
+    local path = nav:findHpaPath(1, 1, 16, 16, 1)
+    print("hpa path exists = " .. tostring(path ~= nil))
+    print("hpa path len = " .. tostring(path and #path or 0))
 end
 ```
 

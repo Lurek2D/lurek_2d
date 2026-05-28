@@ -234,6 +234,16 @@ do
     print("blocked_1_1 = " .. tostring(nav:isBlocked(1, 1)))
 end
 
+--@api-stub: LNavGrid:findHpaPath
+do
+    local nav = lurek.pathfind.newNavGrid(16, 16)
+    nav:setChunkSize(4)
+    nav:rebuildAbstract()
+    local path = nav:findHpaPath(1, 1, 16, 16, 1)
+    print("hpa path exists = " .. tostring(path ~= nil))
+    print("hpa path len = " .. tostring(path and #path or 0))
+end
+
 --@api-stub: LNavGrid:setDirty
 do
     local nav = lurek.pathfind.newNavGrid(50, 50)

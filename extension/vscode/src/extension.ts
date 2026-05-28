@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import { startMcpServer } from "./mcp/server.js";
 
 // Services
@@ -105,6 +107,7 @@ let lurekProcess: LurekProcessService;
 let statusBar: StatusBarService;
 let apiData: ApiDataService;
 let debugBridge: DebugBridge;
+const execFileAsync = promisify(execFile);
 
 /**
  * Activates the Lurek2D Toolkit extension.
@@ -440,7 +443,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }, undefined, context.subscriptions);
   });
   registerCommand(context, "lurek.debug.openCallStack", () => {
-    vscode.window.showInformationMessage("Call stack available when connected to the Lua debug bridge.");
+    vscode.commands.executeCommand("lurek.debug.callStack");
   });
   registerCommand(context, "lurek.debug.addWatch", () => {
     const editor = vscode.window.activeTextEditor;
@@ -474,11 +477,12 @@ export function activate(context: vscode.ExtensionContext): void {
   registerCommand(context, "lurek.openApiDocs", () => openApiDocs());
   registerCommand(context, "lurek.openWiki", () => openWiki());
   registerCommand(context, "lurek.depGraph", () => depGraph(context));
+  registerCommand(context, "lurek.deps.showGraph", () => depGraph(context));
   registerCommand(context, "lurek.depList", () => depList());
   registerCommand(context, "lurek.apiCoverage", () => {
     const terminal = vscode.window.createTerminal("Lurek2D API Coverage");
     terminal.show();
-    terminal.sendText("python tools/integration_coverage.py");
+    terminal.sendText("python tools/audit/integration_coverage.py");
   });
 
   // ─── Debug Bridge Commands (Phase 4) ──────────────────────
@@ -837,6 +841,43 @@ window.addEventListener('resize',draw);
     const t = getOrCreateDocsTerminal();
     t.show();
     t.sendText("python tools/gen_all_docs.py");
+  });
+  registerCommand(context, "lurek.docs.luaBrowser", async () => {
+    const workspaceRoot = getWorkspaceRoot();
+    if (!workspaceRoot) {
+      vscode.window.showErrorMessage("No workspace folder open.");
+      return;
+    }
+
+    const scriptPath = path.join(workspaceRoot, "tools", "docs", "gen_docs_lua_html.py");
+    const outputPath = path.join(workspaceRoot, "build", "doc", "lua-api", "index.html");
+    const python = process.env.PYTHON ?? "python";
+
+    try {
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: "Building Lua API browser",
+        },
+        async () => {
+          await execFileAsync(python, [scriptPath], {
+            cwd: workspaceRoot,
+            maxBuffer: 32 * 1024 * 1024,
+          });
+        },
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      vscode.window.showErrorMessage(`Lua API browser build failed: ${message}`);
+      return;
+    }
+
+    if (!fs.existsSync(outputPath)) {
+      vscode.window.showErrorMessage("Lua API browser was generated, but build/doc/lua-api/index.html was not found.");
+      return;
+    }
+
+    await vscode.env.openExternal(vscode.Uri.file(outputPath));
   });
   registerCommand(context, "lurek.docs.rustBrowser", () => {
     const t = getOrCreateDocsTerminal();

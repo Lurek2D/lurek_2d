@@ -9,6 +9,14 @@ export interface ApiEntry {
   kind: ApiEntryKind;
 }
 
+export interface HtmlApiEntry {
+  title: string;
+  kind: string;
+  module: string;
+  subtitle: string;
+  href: string;
+}
+
 export function resolveWorkspaceApiDocPath(root: string): string | undefined {
   const candidates = [
     path.join(root, "docs", "api", "lurek.lua"),
@@ -18,6 +26,37 @@ export function resolveWorkspaceApiDocPath(root: string): string | undefined {
   ];
 
   return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+export function resolveWorkspaceHtmlApiIndexPath(root: string): string | undefined {
+  const candidate = path.join(root, "build", "doc", "lua-api", "index.html");
+  return fs.existsSync(candidate) ? candidate : undefined;
+}
+
+export function resolveWorkspaceHtmlApiSearchIndexPath(root: string): string | undefined {
+  const candidate = path.join(root, "build", "doc", "lua-api", "search-index.json");
+  return fs.existsSync(candidate) ? candidate : undefined;
+}
+
+export function loadHtmlApiEntries(searchIndexPath: string): HtmlApiEntry[] {
+  const raw = JSON.parse(fs.readFileSync(searchIndexPath, "utf-8")) as HtmlApiEntry[];
+  return raw
+    .filter((entry) => typeof entry?.title === "string" && typeof entry?.href === "string")
+    .sort((left, right) => left.title.localeCompare(right.title));
+}
+
+export function resolveHtmlApiEntryUri(root: string, href: string): string | undefined {
+  const browserRoot = path.join(root, "build", "doc", "lua-api");
+  const [relativePath, fragment] = href.split("#", 2);
+  const fullPath = path.join(browserRoot, ...relativePath.split("/").filter(Boolean));
+  if (!fs.existsSync(fullPath)) {
+    return undefined;
+  }
+
+  const uri = fragment
+    ? `${fullPath}#${fragment}`
+    : fullPath;
+  return uri;
 }
 
 export function listApiEntries(content: string, filePath: string): ApiEntry[] {

@@ -24,7 +24,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 ## Source Documentation
 
 ### `chart.rs`
-- Re-export charts for UI module compatibility.
+- Compatibility re-exports for chart types under `lurek2d::ui::chart`.
 
 ### `containers.rs`
 - Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
@@ -55,10 +55,10 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
 
 ### `data_graph_renderer.rs`
-- Multi-series data graph renderer for line, scatter, and bar data.
-- Provides viewport management, coordinate transforms, auto-range, and cursor
-- support. Does not write GPU commands directly — callers convert `SeriesEntry`
-- values to draw calls as needed.
+- Multi-series data graph renderer with viewport coordinate mapping.
+- Supports line, scatter, and bar chart series. Provides world↔screen
+- coordinate conversion and auto-range fitting for use in both runtime
+- visualisation and editor panels.
 
 ### `extras.rs`
 - Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
@@ -141,7 +141,7 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `ScrollBar` (`struct`, `controls.rs`): A scroll bar for scrollable content areas.
 - `SpinBox` (`struct`, `controls.rs`): A numeric spin box: a text field with increment and decrement buttons.
 - `Switch` (`struct`, `controls.rs`): A binary toggle switch rendered as a pill with a sliding thumb.
-- `SeriesEntry` (`enum`, `data_graph_renderer.rs`): A single data series entry stored by the graph renderer.
+- `SeriesData` (`enum`, `data_graph_renderer.rs`): A single named data series stored in a [`GraphRenderer`].
 - `GraphRenderer` (`struct`, `data_graph_renderer.rs`): Multi-series graph renderer with viewport and coordinate mapping.
 - `Toast` (`struct`, `extras.rs`): Timed transient notification.
 - `Separator` (`struct`, `extras.rs`): Visual divider line widget.
@@ -314,26 +314,26 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `Switch::new` (`controls.rs`): Create a switch with the given initial state; sets `thumb_t` accordingly.
 - `Switch::toggle` (`controls.rs`): Flip the on/off state and snap `thumb_t` to the new position.
 - `Switch::set_on` (`controls.rs`): Set `on` to the given value and snap `thumb_t`.
-- `SeriesEntry::name` (`data_graph_renderer.rs`): Return the series label.
-- `GraphRenderer::new` (`data_graph_renderer.rs`): Create a new graph renderer with sensible defaults.
-- `GraphRenderer::series` (`data_graph_renderer.rs`): Return a slice of all series entries.
-- `GraphRenderer::add_line_series` (`data_graph_renderer.rs`): Add a line series.
-- `GraphRenderer::add_scatter_series` (`data_graph_renderer.rs`): Add a scatter series.
-- `GraphRenderer::add_bar_series` (`data_graph_renderer.rs`): Add a bar series.
-- `GraphRenderer::get_series_names` (`data_graph_renderer.rs`): Return all series names in insertion order.
-- `GraphRenderer::remove_series` (`data_graph_renderer.rs`): Remove a series by name.
-- `GraphRenderer::clear_series` (`data_graph_renderer.rs`): Remove all series.
-- `GraphRenderer::set_viewport` (`data_graph_renderer.rs`): Set the viewport rectangle (x, y, width, height) in screen pixels.
-- `GraphRenderer::get_viewport` (`data_graph_renderer.rs`): Return the current viewport rectangle as `(x, y, width, height)`.
+- `SeriesData::name` (`data_graph_renderer.rs`): Return the series name.
+- `GraphRenderer::new` (`data_graph_renderer.rs`): Create a renderer with sensible defaults (full-hidden viewport, 0..1 range).
+- `GraphRenderer::set_viewport` (`data_graph_renderer.rs`): Set the screen-pixel viewport rectangle.
+- `GraphRenderer::get_viewport` (`data_graph_renderer.rs`): Return the current viewport as `(x, y, w, h)`.
+- `GraphRenderer::set_range` (`data_graph_renderer.rs`): Set the world-space data range.
+- `GraphRenderer::get_range` (`data_graph_renderer.rs`): Return the current range as `(x_min, x_max, y_min, y_max)`.
+- `GraphRenderer::auto_range` (`data_graph_renderer.rs`): Fit the range to the bounding box of all series data, with 10 % padding.
+- `GraphRenderer::world_to_screen` (`data_graph_renderer.rs`): Map a world-space point to screen pixels.
+- `GraphRenderer::screen_to_world` (`data_graph_renderer.rs`): Map a screen-pixel point back to world space.
 - `GraphRenderer::set_show_grid` (`data_graph_renderer.rs`): Enable or disable the background grid.
-- `GraphRenderer::set_show_axes` (`data_graph_renderer.rs`): Enable or disable the axis lines.
-- `GraphRenderer::set_range` (`data_graph_renderer.rs`): Set the data range (x_min, x_max, y_min, y_max).
-- `GraphRenderer::get_range` (`data_graph_renderer.rs`): Return the current data range as `(x_min, x_max, y_min, y_max)`.
-- `GraphRenderer::world_to_screen` (`data_graph_renderer.rs`): Convert a world (data) coordinate to a screen pixel coordinate.
-- `GraphRenderer::screen_to_world` (`data_graph_renderer.rs`): Convert a screen pixel coordinate back to a world (data) coordinate.
-- `GraphRenderer::auto_range` (`data_graph_renderer.rs`): Auto-compute range from all series data with ~10% padding on each side.
-- `GraphRenderer::set_cursor_position` (`data_graph_renderer.rs`): Set the cursor world position.
-- `GraphRenderer::get_cursor_value` (`data_graph_renderer.rs`): Return the current cursor world position, or `None` if unset.
+- `GraphRenderer::set_show_axes` (`data_graph_renderer.rs`): Enable or disable axis lines.
+- `GraphRenderer::set_cursor_position` (`data_graph_renderer.rs`): Set the crosshair cursor at a world-space position.
+- `GraphRenderer::get_cursor_value` (`data_graph_renderer.rs`): Return the cursor world position, or `None` if not set.
+- `GraphRenderer::series` (`data_graph_renderer.rs`): Return a slice of all stored series.
+- `GraphRenderer::get_series_names` (`data_graph_renderer.rs`): Return the names of all stored series.
+- `GraphRenderer::add_line_series` (`data_graph_renderer.rs`): Add a line series.
+- `GraphRenderer::add_scatter_series` (`data_graph_renderer.rs`): Add a scatter-plot series.
+- `GraphRenderer::add_bar_series` (`data_graph_renderer.rs`): Add a bar chart series.
+- `GraphRenderer::remove_series` (`data_graph_renderer.rs`): Remove the first series whose name matches.
+- `GraphRenderer::clear_series` (`data_graph_renderer.rs`): Remove all series.
 - `Toast::new` (`extras.rs`): Create a toast with the given message and display duration in seconds.
 - `Toast::progress` (`extras.rs`): Return the normalised progress in `[0.0, 1.0]`; returns 1.0 when `duration <= 0`.
 - `Toast::is_expired` (`extras.rs`): Return `true` if `elapsed >= duration`.

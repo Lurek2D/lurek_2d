@@ -900,16 +900,14 @@ Parameters:
 
 #### Example
 
-Source: [ui.lua](../blob/main/content/examples/ui.lua)
+Source: [charts.lua](../blob/main/content/examples/charts.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newBarChart({width = 200, height = 100})
-    chart:addSeries("Q1", 0.2, 0.6, 1.0)
-    chart:addSeries("Q2", 1.0, 0.5, 0.1)
-    chart:addCategory("Jan", {30, 45})
-    chart:addCategory("Feb", {40, 35})
-    print("bar series count example ok")
+    local chart = lurek.charts.newBar({ width = 400, height = 300 })
+    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    print("LBarChart:addSeries ok")
+    print("height = " .. tostring(chart:getHeight()))
 end
 ```
 
@@ -1119,13 +1117,14 @@ Parameters:
 
 #### Example
 
-Source: [ui.lua](../blob/main/content/examples/ui.lua)
+Source: [charts.lua](../blob/main/content/examples/charts.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newLineChart({ width = 400, height = 300 })
-    chart:addSeries("sales", { 1, 4, 2, 7, 3 })
-    print("line series added")
+    local chart = lurek.charts.newLine({ width = 400, height = 300 })
+    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    print("LLineChart:addSeries ok")
+    print("width = " .. tostring(chart:getWidth()))
 end
 ```
 
@@ -1492,13 +1491,14 @@ Parameters:
 
 #### Example
 
-Source: [ui.lua](../blob/main/content/examples/ui.lua)
+Source: [charts.lua](../blob/main/content/examples/charts.lua)
 
 ```lua
 do
-    local chart = lurek.ui.newScatterPlot({ width = 400, height = 300 })
-    chart:addSeries("points", { {x=1,y=2}, {x=3,y=4}, {x=5,y=1} })
-    print("scatter series added")
+    local chart = lurek.charts.newScatter({ width = 400, height = 300 })
+    chart:addSeries("series1", { {1, 1}, {2, 3}, {3, 2}, {4, 5}, {5, 4} })
+    print("LScatterPlot:addSeries ok")
+    print("width = " .. tostring(chart:getWidth()))
 end
 ```
 

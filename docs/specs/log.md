@@ -60,7 +60,6 @@ Logging is highly structured, allowing messages to carry not only severity level
 - `log_structured` (`facade.rs`): Emits a structured log message with key-value `fields` through the Rust `log` crate.
 - `set_level` (`facade.rs`): Sets the active log level to the named value.
 - `get_level` (`facade.rs`): Returns the current log level name as a static string (e.g.
-- `enabled_for` (`facade.rs`): Returns `true` when messages at `level` would be emitted under the current filter.
 - `SinkLevel::as_str` (`sinks.rs`): Return the uppercase string label for this level.
 - `RotatingFileSink::open` (`sinks.rs`): Open or create the log file at `path`; returns error if the file cannot be opened.
 - `RotatingFileSink::write_with_rotation` (`sinks.rs`): Append `message` to the file, triggering rotation when `max_bytes` is exceeded.
