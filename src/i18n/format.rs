@@ -1,7 +1,8 @@
 //! Locale-aware number formatting with configurable decimal and thousands separators.
 //!
-//! - Functions: `locale_separators`, `format_number`, `format_date`, `days_to_ymd`, and 1 more.
-//! - See `docs/specs/i18n.md` for the module specification.
+//! - Date formatting from Unix timestamps with ISO, long, and short patterns.
+//! - Calendar conversion utilities (days since epoch to year/month/day).
+//! - Month name lookup tables for English output.
 
 /// Return decimal and thousands separators for a locale prefix.
 pub fn locale_separators(locale: &str) -> (char, char) {

@@ -1,7 +1,7 @@
 //! Weighted random selection over a dynamic entry list with add/remove/update.
 //!
-//! - Data types: `WeightedEntry`, `WeightedRandom`.
-//! - Implementation: `WeightedRandom`.
+//! - Single-pick and multi-pick-without-replacement algorithms using normalized samples.
+//! - Revision counter for detecting structural changes and invalidating external caches.
 
 /// A single candidate with a weight and debug label.
 #[derive(Debug, Clone)]

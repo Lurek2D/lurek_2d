@@ -1,6 +1,8 @@
 //! Engine runtime foundations: configuration, shared state, and error types.
 //!
-//! - Sub-modules: `config`, `error`, `headless`, `log_messages`, and 5 more.
+//! - Loads `conf.toml` into a typed `Config` struct consumed by all subsystems.
+//! - Provides `SharedState` for mutable cross-module communication during a frame.
+//! - Defines `EngineError` variants and slot-map resource keys.
 
 /// Runtime configuration model loaded from `conf.toml`.
 pub mod config;

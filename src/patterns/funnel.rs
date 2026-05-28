@@ -1,7 +1,7 @@
 //! Buffered accumulator that collects tagged numeric entries and flushes on a time window or count threshold.
 //!
-//! - Data types: `FunnelEntry`, `Funnel`.
-//! - Implementation: `Funnel`.
+//! - Provides push/update/flush lifecycle: push entries, tick time, drain when ready.
+//! - Supports immediate flush (window=0), count-triggered flush, and manual discard.
 
 /// A single accumulated value pushed into a `Funnel`.
 #[derive(Debug, Clone)]

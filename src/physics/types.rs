@@ -1,6 +1,7 @@
 //! Core type definitions for the physics subsystem.
 //!
-//! - Data type: `BodyId`.
+//! - `BodyId` newtype wrapper for type-safe body identification across Lua and Rust layers.
+//! - Implements `Copy`, `Hash`, and `Display`; converts to/from `usize` without allocation.
 
 /// Unique identifier for a physics body.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

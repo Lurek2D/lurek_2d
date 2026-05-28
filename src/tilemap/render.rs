@@ -1,7 +1,7 @@
 //! Camera-culled render-command generation for tile-map layers.
 //!
-//! - Implementation: `TileMap`.
-//! - Public method: `generate_render_commands`.
+//! - GID-to-color debug palette for fallback colored tile rendering.
+//! - Per-layer visibility and tint applied during command emission.
 
 use super::tilemap::TileMap;
 use crate::render::renderer::{DrawMode, RenderCommand};

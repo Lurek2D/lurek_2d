@@ -1,7 +1,7 @@
 //! Pipeline step definition: named unit of work with dependency, timing, and retry config.
 //!
-//! - Data type: `PipelineStep`.
-//! - Enums: `StepStatus`, `ErrorPolicy`.
+//! - Execution lifecycle via `StepStatus` (pending → waiting → running → terminal).
+//! - Per-step error policy overriding pipeline-level failure behavior.
 
 use std::collections::HashMap;
 

@@ -1,9 +1,11 @@
 //! Core data types for the globe subsystem: regions, markers, labels, arcs, and layers.
 //!
-//! - Data types: `RegionId`, `Region`, `HeatLayer`, `GlobeSpec`, and 7 more.
-//! - Enums: `FogState`, `MarkerShape`, `LodTier`, `GlobeError`.
-//! - Type aliases: `Province`, `ProvinceId`, `ProjectedProvince`.
-//! - Implementations: `RegionId`, `std`, `From`, `mlua`, and 5 more.
+//! - Region geometry with polygon vertices, centroids, adjacency, and per-edge tags.
+//! - Render parameters via GlobeSpec: lighting, atmosphere, borders, rotation.
+//! - Overlay and heat-map layers with per-region color overrides.
+//! - Marker and label types with style, LOD gating, and pulse animation.
+//! - Projection output types for screen-space rendering of regions and arcs.
+//! - Globe-level error enum for load, lookup, and pathfinding failures.
 
 use crate::math::Vec2;
 use std::collections::{HashMap, HashSet};

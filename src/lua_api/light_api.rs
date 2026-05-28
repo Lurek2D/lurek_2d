@@ -5,7 +5,6 @@
 //! - `LuaOccluder`: userdata type exposed to Lua.
 //! - Bridges 99 Lua-callable methods via `mlua`.
 //! - See `docs/specs/light.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::light::transition::LightTransition;

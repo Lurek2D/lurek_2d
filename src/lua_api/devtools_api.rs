@@ -5,7 +5,6 @@
 //! - `LuaReplConsole`: userdata type exposed to Lua.
 //! - Bridges 62 Lua-callable methods via `mlua`.
 //! - See `docs/specs/devtools.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use crate::devtools::{FileWatcher, FrameStats, Logger, ProfileZone, Profiler, ReplConsole};
 use crate::runtime::SharedState;

@@ -1,8 +1,13 @@
 //! `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
 //!
-//! - Data types: `MidiData`, `MidiPlayer`.
-//! - Implementation: `MidiPlayer`.
-//! - Public methods: `new`, `load`, `load_data`, `is_loaded`, and 40 more.
+//! - File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
+//! - Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
+//! - Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
+//! - Per-track mute support keyed by track index.
+//! - Configurable tempo scaling, looping, and output sample rate / channel count.
+//! - Mixer bus assignment via `BusKey` for routed playback.
+//! - `MidiData` metadata struct storing parsed song-level attributes.
+//! - Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
 
 use crate::audio::PlayState;
 use crate::log_msg;

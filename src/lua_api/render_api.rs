@@ -7,7 +7,6 @@
 //! - Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`.
 //! - Bridges 217 Lua-callable methods via `mlua`.
 //! - See `docs/specs/render.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::image::ImageData;

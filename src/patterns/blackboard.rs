@@ -1,7 +1,9 @@
 //! Shared key-value store for passing typed state between AI and game systems.
 //!
-//! - Data type: `Blackboard`.
-//! - Enum: `BlackboardValue`.
+//! - Supports bool, number, text, and nil entries with per-key revision tracking.
+//! - Global and per-key revision counters enable efficient change detection.
+//! - Optional parent chain for hierarchical lookup (child inherits parent data).
+//! - Typed getters with defaults that walk the parent chain on miss.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{BB01, BB02, BB03};

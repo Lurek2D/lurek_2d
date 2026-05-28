@@ -5,7 +5,6 @@
 //! - `LuaNetworkRuntime`: userdata type exposed to Lua.
 //! - Bridges 61 Lua-callable methods via `mlua`.
 //! - See `docs/specs/network.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, MAX_PEERS};

@@ -1,7 +1,7 @@
 //! Import LDtk project JSON into the engine tilemap representation.
 //!
-//! - Function: `load_ldtk`.
-//! - See `docs/specs/tilemap.md` for the module specification.
+//! - Parse levels, tile layers, and auto-layers with tileset geometry reconstruction.
+//! - Map LDtk pixel-based tile coordinates to grid-cell indices.
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;

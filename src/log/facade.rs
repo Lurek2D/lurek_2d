@@ -1,6 +1,7 @@
 //! Structured log dispatch with level, tag, and key-value fields.
 //!
-//! - Type alias: `LogFields`.
+//! - Runtime log-level query and mutation via string names.
+//! - Level-filter check without emitting a message.
 
 use crate::runtime::log_messages;
 use std::collections::BTreeMap;

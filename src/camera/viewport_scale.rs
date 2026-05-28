@@ -1,7 +1,7 @@
 //! Viewport scale state object used by the engine resize flow.
 //!
-//! - Data type: `ViewportScale`.
-//! - Implementation: `ViewportScale`.
+//! - Stores computed scale, offset, and scaled dimensions after each resize.
+//! - Provides bidirectional game/screen coordinate conversion helpers.
 
 use crate::camera::viewport::ScaleMode;
 

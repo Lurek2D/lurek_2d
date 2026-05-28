@@ -1,7 +1,8 @@
 //! Grid-based A* pathfinding over a rectangular isometric cell map.
 //!
-//! - Data type: `IsoGrid`.
-//! - Implementations: `IsoGrid`, `Node`.
+//! - Per-cell blocked flags and movement cost support for weighted searches.
+//! - Bresenham line-of-sight query between two grid positions.
+//! - 4-directional neighbour expansion with bounds and passability filtering.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

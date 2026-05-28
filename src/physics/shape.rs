@@ -1,8 +1,10 @@
 //! Geometry primitives: rect, circle, convex polygon, edge, and chain polyline.
 //!
-//! - Data type: `StandaloneShape`.
-//! - Enum: `Shape`.
-//! - Implementations: `Shape`, `StandaloneShape`.
+//! - Rapier collider conversion with degenerate-input rejection.
+//! - String-based shape parsing from a type tag and flat argument list.
+//! - Regular polygon constructor with side-count clamping.
+//! - `StandaloneShape` pairs geometry with density, friction, restitution, and sensor flag.
+//! - Local-space AABB queries for all shape variants.
 
 use crate::math::Vec2;
 use rapier2d::prelude::*;

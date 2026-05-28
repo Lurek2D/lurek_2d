@@ -1,7 +1,9 @@
 //! Offline audio processing: apply DSP effect chains to files without real-time playback.
 //!
-//! - Data type: `OfflineEffect`.
-//! - Functions: `process_offline`, `normalize_file`.
+//! - Peak normalisation with configurable target level.
+//! - WAV file decode to f32 and encode back to 16-bit PCM via rodio.
+//! - `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
+//! - Parent directory auto-creation for output paths.
 
 use super::effects::{ActiveEffect, AtomicParam, EffectParams, EffectType};
 use rodio::{Decoder, Source};

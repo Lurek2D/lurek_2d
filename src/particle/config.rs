@@ -1,8 +1,9 @@
 //! Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
 //!
-//! - Data types: `Attractor`, `BounceBounds`, `ParticleConfig`.
-//! - Enums: `AreaDistribution`, `InsertMode`, `EmitterState`, `EmissionShape`, and 1 more.
-//! - Implementation: `ParticleConfig`.
+//! - Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
+//! - Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.
+//! - Helper types for point attractors and axis-aligned bounce boundaries.
+//! - Relative-mode and area-distribution strategies for world-space vs emitter-attached particles.
 
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;

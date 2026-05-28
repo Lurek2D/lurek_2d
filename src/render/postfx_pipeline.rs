@@ -1,11 +1,13 @@
 //! Full-screen post-processing pipeline: compile, cache, and execute GPU shader passes.
 //!
-//! - Data types: `PostFxTexture`, `PostFxPipeline`.
-//! - Function: `params_to_uniform`.
-//! - Implementations: `PostFxTexture`, `CachedPostFxSlot`, `PostFxPipeline`, `AsRef`.
-//! - Public methods: `new`, `new`, `register_custom`, `apply`.
-//! - Contains 13 method implementations.
-//! - See `docs/specs/render.md` for the module specification.
+//! - 20+ built-in WGSL fragment shaders: bloom, blur, vignette, noise, grayscale, sepia, invert, CRT, chromatic aberration, scanlines, pixelate, hue-shift, edge-detect, god-rays, water-distort, sharpen, dither, outline, depth-of-field, motion-blur.
+//! - Shared fullscreen-triangle vertex shader emitted once and reused by all effects.
+//! - Ping-pong intermediate textures for multi-pass compositing without extra allocations.
+//! - Named parameter map → 16-float uniform packing for effect configuration.
+//! - Runtime registration of custom WGSL fragment shaders under user-chosen names.
+//! - Auto-uniform injection of time, frame count, and resolution into the last four slots.
+//! - Identity copy pass used as fallback when no effects are enabled.
+//! - Pass sequencing respects insertion order; final result written directly to the surface target.
 
 use std::collections::HashMap;
 /// Shared fullscreen-triangle vertex shader used by every built-in and custom post-fx effect.

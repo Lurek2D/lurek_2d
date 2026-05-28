@@ -1,6 +1,8 @@
 //! Globe rendering with orbit camera projection and LOD tiers.
 //!
-//! - Sub-modules: `composition`, `draw`, `export`, `fog`, and 13 more.
+//! - Region registry, fog-of-war masks, and picking queries.
+//! - Label, marker, and layer management for map overlays.
+//! - Synchronization channels for background globe updates.
 
 /// Globe composition helpers. This module is publicly re-exported.
 pub mod composition;

@@ -1,8 +1,9 @@
 //! Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
 //!
-//! - Data types: `AtlasEntry`, `SpriteAtlas`.
-//! - Functions: `parse_texturepacker_json`, `parse_aseprite_json`.
-//! - Implementations: `AtlasEntry`, `SpriteAtlas`.
+//! - `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
+//! - TexturePacker JSON parser supporting both array and object frame formats.
+//! - Aseprite JSON parser with the same dual-format support.
+//! - Conversion from `image::TextureAtlas` for runtime atlas building.
 
 use std::collections::HashMap;
 /// Named sub-region of a texture atlas with pixel coordinates, size, and flip/rotate flags.

@@ -1,7 +1,7 @@
 //! Precompute border-pair index map from province id grid.
 //!
-//! - Data type: `ProvinceBorderIndex`.
-//! - Functions: `build_border_index`, `dilate_border_index_with_styles`, `build_border_index_from_registry`.
+//! - Assigns a stable u16 pair id for each detected border pixel.
+//! - Optional dilation expands border coverage for thick styled borders.
 
 use crate::province::registry::ProvinceRegistry;
 use crate::province::types::{BorderPairStyle, ProvinceId};

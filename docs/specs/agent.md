@@ -30,19 +30,40 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 ## Source Documentation
 
 ### `client.rs`
-- Background transport for LLM agent prompts.
+- Background transport that dispatches LLM prompt requests on dedicated threads and collects responses for polling.
+- Tracks in-flight requests with an atomic counter and silently drops responses for callbacks marked as cancelled.
+- Retries transient network and timeout failures up to `AgentRequest::max_retries` times using exponential back-off.
+- Exposes `send_prompt`, `cancel`, `in_flight_count`, and `poll` as the complete public surface.
 
 ### `lua_runtime.rs`
-- Lua-facing runtime helpers for `lurek.agent`.
+- Implements the Lua-facing runtime for `LAgent`, `LAgentManager`, and `LAISystem` userdata — all business logic for the agent API lives here.
+- `LuaAgentRuntime` owns an `AgentState`, `AgentClient`, callback registry, and `BatchDispatcher` to serve one `LAgent` userdata.
+- `LuaAgentManagerRuntime` dispatches explicit task batches across multiple agents and collects their responses under a single batch callback.
+- `LuaAISystemRuntime` routes prompts through `AISystemState` context injection before dispatch, supporting `addAgent`, `addInstruction`, `addSkill`, and `buildContext`.
+- `BatchDispatcher` packs multi-agent batch IDs into a single `usize` callback, collects partial results, and fires the Lua callback once all responses arrive.
+- `lua_to_json` converts arbitrary Lua values — primitives, arrays, and mixed tables — to `serde_json::Value` for model option serialization.
 
 ### `mod.rs`
-- LLM agent runtime: state, request types, error variants, and background HTTP client.
+- LLM agent runtime: state, request types, error variants, background HTTP client, and Ollama lifecycle management.
+
+### `ollama.rs`
+- Manages connectivity, process lifecycle, and model inventory for a local Ollama HTTP server.
+- `is_running` and `version` probe the REST API; `start` and `stop` spawn or kill the `ollama serve` child process.
+- `list_models` and `has_model` query `/api/tags`; `pull_model` dispatches an async background download that delivers results via `poll`.
+- `delete_model` removes a local model; `restart` combines stop and start with a settle pause.
+- All HTTP calls reuse `crate::network::http::execute_request`; async pulls use `Arc<Mutex>` + `Arc<AtomicUsize>` for thread-safe result collection.
 
 ### `state.rs`
-- Per-agent configuration and prompt assembly helpers.
+- Holds per-agent configuration and assembles outbound `AgentRequest` values from endpoint, model, system prompt, skills, format, options, and retry settings.
+- `AgentState` builds the system block by appending named skills in insertion order behind the base system prompt.
+- `AISystemState` stores the shared system prompt, named instruction blocks selectively included per prompt, and keyword-gated skills auto-injected when their keywords match the instruction.
+- `SystemSkill` carries a keyword list and a prompt fragment; skills fire automatically when any keyword appears in the dispatched instruction.
+- `to_request` and `to_request_with_system` build the final `AgentRequest` for single and system-routed prompts respectively.
 
 ### `types.rs`
-- Public request, response, and error types for the LLM agent runtime.
+- Defines the public request, response, and error types exchanged between `AgentState`, `AgentClient`, and their Lua bindings.
+- `AgentError` classifies failures as network, timeout, format, or model errors and carries a stable Lua-facing error code and a transient-retry flag.
+- `AgentRequest` and `AgentResponse` carry the callback ID that threads agent dispatch back to the originating Lua callback.
 
 ## Types
 

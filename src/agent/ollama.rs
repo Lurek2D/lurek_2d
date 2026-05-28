@@ -1,8 +1,9 @@
-//! Local Ollama server management: connectivity checks, process lifecycle, and model operations.
+//! Manages connectivity, process lifecycle, and model inventory for a local Ollama HTTP server.
 //!
-//! - Data types: `ModelInfo`, `OllamaPullResult`, `OllamaManager`.
-//! - Implementation: `OllamaManager`.
-//! - Public methods: `new`, `is_running`, `version`, `list_models`, and 8 more.
+//! - `is_running` and `version` probe the REST API; `start` and `stop` spawn or kill the `ollama serve` child process.
+//! - `list_models` and `has_model` query `/api/tags`; `pull_model` dispatches an async background download that delivers results via `poll`.
+//! - `delete_model` removes a local model; `restart` combines stop and start with a settle pause.
+//! - All HTTP calls reuse `crate::network::http::execute_request`; async pulls use `Arc<Mutex>` + `Arc<AtomicUsize>` for thread-safe result collection.
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};

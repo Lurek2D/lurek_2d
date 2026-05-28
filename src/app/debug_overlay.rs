@@ -1,6 +1,7 @@
 //! Owns the lightweight debug HUD toggled by F12 or Lua.
 //!
-//! - Data type: `DebugOverlay`.
+//! - Renders FPS counter and draw-call counter in a semi-transparent box.
+//! - Produces render commands only when the overlay is enabled and a font key is available.
 
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;

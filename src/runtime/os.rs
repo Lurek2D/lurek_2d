@@ -1,7 +1,9 @@
 //! Operating system detection utilities for platform-specific code paths.
 //!
-//! - Enum: `PowerState`.
-//! - Functions: `get_os_name`, `get_processor_count`, `get_memory_size`, `open_url`, and 2 more.
+//! - `get_os_name()` returns a lowercase string: `"windows"`, `"linux"`, or `"macos"`.
+//! - Used at startup to set OS-specific defaults (e.g. font paths, config directories).
+//! - Exposed to Lua via `lurek.runtime.os()` for platform-conditional game scripts.
+//! - Built on `cfg!` macros; no runtime OS probing, so the result is always correct.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{LA03_OPEN_URL_REJECTED};

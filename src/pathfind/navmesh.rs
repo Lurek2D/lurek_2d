@@ -1,7 +1,9 @@
 //! Polygon-based navigation mesh for 2D pathfinding.
 //!
-//! - Data type: `NavMesh`.
-//! - Implementations: `NavMesh`, `Node`.
+//! - A\* search over polygon adjacency graph with centroid heuristic.
+//! - Ray-cast point-in-polygon containment test.
+//! - Centroid waypoint extraction from polygon corridors.
+//! - Directed and bidirectional polygon connectivity.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};

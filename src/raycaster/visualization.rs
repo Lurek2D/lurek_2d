@@ -1,9 +1,13 @@
 //! Software-rendered raycaster visualization helpers for debugging and demo output.
 //!
-//! - Implementation: `Raycaster2D`.
-//! - Public methods: `draw_top_down_to_image`, `draw_view_to_image`, `draw_depth_map_to_image`, `draw_line_of_sight_to_image`, and 2 more.
-//! - Contains 7 method implementations.
-//! - See `docs/specs/raycaster.md` for the module specification.
+//! - Top-down grid map rendering with player position and radial ray overlay.
+//! - First-person column-based wall rendering with distance-based shading.
+//! - Depth-map greyscale visualization where brightness encodes proximity.
+//! - Line-of-sight connectivity check rendered as a coloured line between two points.
+//! - Camera sweep atlas generating a multi-frame rotation sequence into a single image.
+//! - Procedural textured first-person view with brick, stone, wood, metal, and mosaic patterns.
+//! - All outputs produce an `ImageData` bitmap suitable for GPU upload or file export.
+//! - Procedural texture lookup mapping cell type and UV to RGB without external assets.
 
 use super::dda::Raycaster2D;
 impl Raycaster2D {

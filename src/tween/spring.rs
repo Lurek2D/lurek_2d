@@ -1,7 +1,7 @@
 //! Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
 //!
-//! - Data types: `SpringAxis`, `SpringSystem`.
-//! - Implementations: `SpringAxis`, `SpringSystem`.
+//! - Named spring system aggregating multiple axes under shared default parameters.
+//! - Euler integration with snap-to-target on settle to eliminate micro-oscillation.
 
 use std::collections::HashMap;
 

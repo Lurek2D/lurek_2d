@@ -1,7 +1,8 @@
 //! Read-only typed accessor over a shared Arc byte buffer
 //!
-//! - Data types: `DataView`, `LuaDataView`.
-//! - Implementations: `DataView`, `LuaDataView`.
+//! - Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64
+//! - Sub-slice views with validated offset and size
+//! - LuaDataView wrapper for Lua-facing ownership patterns
 
 use std::sync::Arc;
 /// Hold shared byte slice window with offset and size.

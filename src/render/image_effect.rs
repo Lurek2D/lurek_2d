@@ -1,4 +1,7 @@
 //! Descriptor for a single named shader pass in a post-processing chain.
+//!
+//! - Carries float uniform parameters and an enable flag per pass.
+//! - Used by the render pipeline to build configurable multi-pass effects.
 
 use std::collections::HashMap;
 /// One named shader pass in a post-processing chain; carries float uniform parameters.

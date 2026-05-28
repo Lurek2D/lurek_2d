@@ -1,8 +1,9 @@
 //! Dijkstra-based flow field that seeds from one or more goal cells and computes shortest paths across a NavGrid.
 //!
-//! - Data type: `FlowField`.
-//! - Implementation: `FlowField`.
-//! - Public methods: `new`, `calculate`, `calculate_multi`, `get_direction`, and 8 more.
+//! - Each reachable cell stores a normalised direction vector toward the nearest goal and its accumulated travel cost.
+//! - Supports variable unit sizes for clearance-aware pathfinding using the backing grid's walkability checks.
+//! - Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
+//! - Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
 
 use crate::runtime::log_messages::{FF01, FF02, FF03};
 

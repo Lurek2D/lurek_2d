@@ -1,6 +1,7 @@
 //! Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
 //!
-//! - Data type: `NineSlice`.
+//! - Generates source/destination patch tuples for scalable UI borders and panels.
+//! - Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
 
 use crate::runtime::resource_keys::TextureKey;
 

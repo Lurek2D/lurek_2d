@@ -1,6 +1,7 @@
 //! Z-ordered draw-callback queue flushed once per frame by the render loop.
 //!
-//! - Data types: `LayerEntry`, `DrawLayer`.
+//! - Entries hold a depth key and an opaque callback ID returned to Lua.
+//! - Sorted at flush time so draw callbacks execute in front-to-back order.
 
 /// A pending draw-callback slot queued in `DrawLayer`.
 pub struct LayerEntry {

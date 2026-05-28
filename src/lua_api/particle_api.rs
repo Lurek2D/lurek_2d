@@ -5,7 +5,6 @@
 //! - `LuaTrail`: userdata type exposed to Lua.
 //! - Bridges 111 Lua-callable methods via `mlua`.
 //! - See `docs/specs/particle.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;

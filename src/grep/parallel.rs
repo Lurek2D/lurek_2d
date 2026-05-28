@@ -1,7 +1,9 @@
 //! Parallel file search: distributes work across a Rayon thread pool.
 //!
-//! - Data type: `ParallelSearch`.
-//! - Implementation: `ParallelSearch`.
+//! - `validate_parallel` is the primary entry point; returns a flat `Vec<Violation>`.
+//! - `collect_lua_files` / `collect_files_with_ext` enumerate files before dispatch.
+//! - Each worker receives a slice of paths; results are merged after the pool drains.
+//! - Thread count comes from `GrepConfig`; 0 forces synchronous single-threaded mode.
 
 use super::filter::FileFilter;
 use super::matcher::Matcher;

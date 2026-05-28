@@ -1,8 +1,9 @@
 //! Random room placement with overlap rejection and configurable size ranges.
 //!
-//! - Data types: `Room`, `RoomsOpts`, `RoomsDungeon`, `RoomPrefabStamp`, and 1 more.
-//! - Functions: `rooms_dungeon`, `rooms_dungeon_with_prefabs`.
-//! - Implementations: `Room`, `RoomsOpts`.
+//! - L-shaped corridor carving between consecutive room centres.
+//! - Flat row-major tile grid output (wall / floor / corridor byte values).
+//! - Prefab stamp system that centre-pastes named mask patterns into placed rooms.
+//! - Round-robin prefab assignment across all placed rooms.
 
 use crate::procgen::lcg::Lcg;
 

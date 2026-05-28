@@ -1,8 +1,12 @@
 //! GOAP planning data storing actions, goals, search nodes, and planner state.
 //!
-//! - Data types: `GOAPAction`, `GOAPGoal`, `GOAPPlanner`.
-//! - Implementations: `PlanNode`, `GOAPPlanner`.
-//! - Public methods: `new`, `plan`, `plan_for_goal_idx`, `add_action`, and 6 more.
+//! - World-state model built from boolean preconditions, effects, and goal priorities.
+//! - Optional Lua execution callbacks attached to actions for runtime behavior.
+//! - Bounded A* search expanding reachable states and returning ordered action plans.
+//! - Unsatisfied-condition count heuristic guiding A* toward goals with minimal expansion.
+//! - Automatic highest-priority goal selection or targeted planning by goal index.
+//! - Iteration cap preventing runaway planning on large or unsolvable state spaces.
+//! - Search node tracking with parent links for plan reconstruction after goal reach.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GP01, GP02, GP03};

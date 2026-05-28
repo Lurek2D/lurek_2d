@@ -1,7 +1,9 @@
 //! Pie chart renderer: proportional slice segments from a single data series.
 //!
-//! - Data types: `PieSlice`, `PieChart`.
-//! - Implementation: `PieChart`.
+//! - Rasterises a `PieChartSpec` into an RGBA pixel buffer using arc fill.
+//! - Slice angles are computed from normalised values; labels are optional.
+//! - A configurable donut-hole radius converts the pie into a ring chart.
+//! - Owned by `lurek.charts.pie`; output is uploaded as a texture.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{fill_buffer, set_pixel};

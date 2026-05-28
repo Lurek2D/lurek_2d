@@ -1,7 +1,9 @@
 //! Scatter plot renderer: (x, y) point series showing distribution and correlation.
 //!
-//! - Data type: `ScatterPlot`.
-//! - Implementation: `ScatterPlot`.
+//! - Rasterises a `ScatterChartSpec` into an RGBA pixel buffer.
+//! - Each point is drawn as a filled circle; radius and colour are per-series.
+//! - Axes are auto-ranged or clamped to user-supplied min/max bounds.
+//! - Owned by `lurek.charts.scatter`; output is uploaded as a texture.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{

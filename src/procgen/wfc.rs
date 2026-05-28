@@ -1,7 +1,8 @@
 //! Wave Function Collapse (WFC) grid generator with weighted tile selection.
 //!
-//! - Data types: `WfcTile`, `WfcRules`, `WfcOpts`, `WfcGrid`.
-//! - Function: `wfc_generate`.
+//! - Adjacency-rule constraint propagation with automatic backtracking retries.
+//! - Deterministic seeded output via the internal LCG; each retry increments the seed.
+//! - Returns a flat row-major grid of tile IDs or `None` cells on contradiction.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

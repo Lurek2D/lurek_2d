@@ -1,8 +1,8 @@
 //! Grouped aggregation by key column with mean, sum, min, max, count, first, last
 //!
-//! - Implementation: `DataFrame`.
-//! - Public methods: `group_agg`, `par_group_agg`, `pivot`, `corr`, and 1 more.
-//! - Contains 5 method implementations.
+//! - Pivot transformation from row/column/value keys into cross-tabulated frame
+//! - Pearson correlation between two numeric columns
+//! - Full numeric-column correlation matrix generation
 
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame};
 impl DataFrame {

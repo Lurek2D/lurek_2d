@@ -1,8 +1,9 @@
 //! Province-level A* pathfinding across adjacency graphs with configurable move costs.
 //!
-//! - Data types: `ProvincePath`, `ProvinceCostFn`.
-//! - Functions: `find_province_path`, `province_reachable`.
-//! - Implementations: `ProvinceCostFn`, `AStarNode`.
+//! - Dijkstra-based reachability flood to find all provinces within a cost budget.
+//! - Per-province and per-edge-tag cost modelling with blocked-province exclusion.
+//! - Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
+//! - Euclidean centroid heuristic for A* admissibility.
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet};

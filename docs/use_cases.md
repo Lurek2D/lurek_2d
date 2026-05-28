@@ -27,23 +27,79 @@ Before enumerating use cases it is important to understand the engine's core ide
 
 ## Use Case Index
 
+### Games — Classic & Genre
+
 | # | Name | Status | Build variant |
 |---|------|--------|---------------|
 | UC-01 | Indie 2D Desktop Game | Current | `release` / `dist` |
 | UC-02 | Game Jam / Rapid Prototype | Current | `dev` / `release` |
+| UC-16 | Retro Arcade Clone / Education Game | Current | `dev` / `release` |
+| UC-17 | Visual Novel / Interactive Fiction | Current | `release` |
+| UC-18 | Sports & Physics Arcade | Current | `release` |
+| UC-19 | Music Sequencer & Creative Tool | Current | `release` |
+| UC-20 | Terminal / Hacking Game | Current | `release` |
+
+### Education & Research
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
 | UC-03 | Education — Programming & Architecture | Current | `dev` |
-| UC-04 | Demo Scene / Interactive Visual Art | Current | `release` |
+| UC-21 | Hackathon Teaching Platform | Current | `dev` |
+| UC-15 | Teaching Instrument for AI/ML Research | Near-future | `release` headless |
+
+### Simulation & Strategy
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
 | UC-05 | Simulation Sandbox & Strategy Research | Current | `release` |
 | UC-06 | Digital Twin Visualiser | Near-future | `release` headless + windowed |
-| UC-07 | Local AI-Driven NPC / Game Logic | Current | `release` (Ollama required) |
+| UC-12 | Wargame / Military Decision-Support Tool | Future | `dist` headless |
+| UC-22 | Supply Chain & Logistics Optimiser | Near-future | `release` |
+
+### Creative & Visual
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-04 | Demo Scene / Interactive Visual Art | Current | `release` |
+| UC-23 | Network Graph Visualiser | Current | `release` |
+
+### Data Science & Analytics
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-24 | Personal Finance & Budget Dashboard | Current | `release` |
+| UC-25 | Stock & Market Data Dashboard | Near-future | `release` |
+| UC-26 | Data Visualisation Studio | Current | `release` |
+| UC-27 | Image Processing Workbench | Near-future | `release` |
 | UC-08 | Headless Batch Compute & Data Pipeline | Current | `release --headless` |
+| UC-28 | Data Integration Hub | Near-future | `release --headless` |
+
+### Operations & Monitoring
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-29 | Infrastructure Monitoring Dashboard | Near-future | `release` |
+| UC-30 | Log Analysis & Anomaly Detection | Near-future | `release --headless` |
+| UC-31 | CI / Test Automation Harness | Current | `release --headless` |
+
+### AI & LLM
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
+| UC-07 | Local AI-Driven NPC / Game Logic | Current | `release` |
+| UC-32 | LLM Inference Server with GUI | Near-future | `release` |
+| UC-33 | Multi-Agent Game Design Tool | Near-future | `release` |
+| UC-34 | Procedural Content Factory | Current | `release --headless` |
+
+### Platform & Tooling
+
+| # | Name | Status | Build variant |
+|---|------|--------|---------------|
 | UC-09 | Internal Studio Tool / Level Editor | Near-future | `release` |
 | UC-10 | Modding Platform / Scripted App Host | Current | `release` |
 | UC-11 | Physical AI & Robotics Visualiser | Future | `dist` ARM64 |
-| UC-12 | Wargame / Military Decision-Support Tool | Future | `dist` headless |
 | UC-13 | Audio / Video Processing Pipeline | Future | `dist` headless |
 | UC-14 | ARM64 Edge Device Dashboard | Near-future | `lua54` ARM64 |
-| UC-15 | Teaching Instrument for AI/ML Research | Near-future | `release` headless |
 
 ---
 
@@ -738,42 +794,839 @@ Python (Gymnasium, PyTorch) is the standard. Lurek2D's advantage: single binary,
 
 ---
 
+---
+
+## UC-16 — Retro Arcade Clone / Education Game
+
+### Description
+
+A developer rebuilds a classic arcade game (Pong, Tetris, Pac-Man, Space Invaders, Asteroids, Boulder Dash, Donkey Kong, Galaga, Snake) as a teaching exercise or portfolio piece, or creates an original 2D game inspired by the classics.
+
+The repo includes reference implementations in `content/games/arcade/` (11 titles) and `content/games/retro/` (12 titles including raycaster FPS, Lemmings, and Sensible Soccer). These serve as starting points and teaching artefacts.
+
+### Build Variant
+
+`dev` for learning; `release` for distribution; `dist` for shipping.
+
+### Module Combination
+
+**Minimal arcade:** `render` · `input` · `timer` · `physics` (optional)
+
+**Richer games:** + `audio` · `particle` · `tween` · `scene` · `ui`
+
+**Retro raycaster:** + `raycaster` · `tilemap` · `effect` (CRT post-FX)
+
+### Benefits
+
+- 23 reference implementations already in the repo — clone, study, modify.
+- Physics-based games (Pong, Breakout, pinball) use `rapier2d` without manual collision math.
+- CRT post-FX (scanlines, bloom, vignette) via `effect` module for authentic retro look.
+- `i18n` module for multi-language releases.
+- Perfect first project: small scope, well-defined behaviour, no external data dependencies.
+
+### Constraints
+
+- Desktop only — no mobile arcade feel.
+- Multiplayer requires `network` module; local co-op is input-only.
+
+### Competition
+
+Pico-8 and TIC-80 are popular for retro games but have artificial constraints (128×128, limited colours). Lurek2D has no such limits and ships modern rendering.
+
+### Complexity Level
+
+⭐ — Pong in 100 lines. ⭐⭐⭐ — full Pac-Man with AI ghosts and tilemap.
+
+---
+
+## UC-17 — Visual Novel / Interactive Fiction
+
+### Description
+
+A writer or small studio builds a dialogue-driven game: visual novel, courtroom drama, social deduction game, or narrative adventure. The repo includes reference implementations in `content/games/rpg/` (visual_novel, courtroom, dialog_demo, social_deduction, adventure).
+
+The `library/dialog` and `library/narrative` Lureksome modules provide pre-built conversation graph and story state management.
+
+### Build Variant
+
+`release` / `dist`.
+
+### Module Combination
+
+`render` · `ui` · `audio` · `tween` · `save` · `input` · `scene` · `i18n` + `dialog` (library) · `narrative` (library) + `agent` (optional: LLM-generated dialogue)
+
+### Benefits
+
+- `library/dialog` provides conversation graph, branching choices, and state tracking out of the box.
+- `library/narrative` handles story flags, chapter progression, and conditional scenes.
+- `lurek.html.*` renders rich HTML+CSS dialogue boxes and UI screens (demonstrated in `showcase/html-dialog`, `showcase/html-settings`, `showcase/html-inventory`).
+- `agent` module enables dynamic LLM dialogue — characters respond to player history.
+- `tween` handles smooth sprite slide-in, text fade, and background transitions.
+- `i18n` supports localisation of all dialogue text from a single string table.
+- `audio` provides voice line playback and ambient soundtrack with named bus control.
+
+### Constraints
+
+- No built-in visual novel authoring GUI (Ren'Py style) — all logic is Lua code.
+- LLM dialogue requires Ollama on the player's machine.
+
+### Competition
+
+| Tool | Lurek advantage |
+|------|----------------|
+| Ren'Py | Full code control; Rust performance; LLM-ready |
+| Godot | Smaller binary; no editor needed; MIT |
+| TyranoBuilder | Free; code-first; testable |
+
+### Complexity Level
+
+⭐⭐ — basic branching dialogue. ⭐⭐⭐⭐ — LLM-driven responsive characters.
+
+---
+
+## UC-18 — Sports & Physics Arcade
+
+### Description
+
+Physics-heavy sports or arcade games: golf, pinball, billiards, bowling, drift racing, ski jump, trajectory-based sports, boxing, tennis. The repo includes `content/games/sports/` (12 titles).
+
+The `rapier2d` physics backend handles rigid bodies, joints, and collision detection; the Lua API wraps this cleanly via `lurek.physics.*`.
+
+### Build Variant
+
+`release` / `dist`.
+
+### Module Combination
+
+`physics` · `render` · `input` · `audio` · `camera` · `tween` · `particle` · `ui` · `save` (high scores)
+
+### Benefits
+
+- `rapier2d` with `parallel` feature — physics solver uses Rayon for multi-core stepping.
+- Joints (revolute, prismatic, spring) enable pinball flippers, car suspensions, ragdolls.
+- `lurek.physics.raycast()` enables line-of-sight checks and golf club aim assist.
+- Vehicle physics: wheel joints + torque application → drift racing out of the box.
+- `particle` module adds visual feedback: sparks, smoke, ball trails.
+
+### Constraints
+
+- 2D physics only — no 3D rigid body simulation.
+- Multiplayer requires `network` module.
+
+### Complexity Level
+
+⭐⭐ — simple projectile. ⭐⭐⭐⭐ — pinball machine with multi-ball and tilt detection.
+
+---
+
+## UC-19 — Music Sequencer & Creative Tool
+
+### Description
+
+An interactive creative application built with Lurek2D: a piano roll sequencer, a step sequencer, a generative music tool, or a music visualiser. The repo includes `content/games/showcase/music_composer/` as a working reference (32-beat × 24-note grid with BPM control, preset patterns, and per-track mute).
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`audio` · `dsp` · `midi` · `render` · `input` · `tween` · `particle` · `timer` · `serial` (project save/load)
+
+### Benefits
+
+- `lurek.dsp.*` provides filters, envelope generators, and FFT for visualiser mode.
+- `lurek.midi.*` parses MIDI files for import into the sequencer.
+- `rodio` backend plays notes via PCM synthesis or sample playback.
+- `tween` animates the playback cursor and note highlights.
+- `particle` adds sparkle on note placement and beat pulse.
+- Fully offline — no cloud sync, no subscription.
+
+### Constraints
+
+- No MIDI export (playback-only; export requires custom file writing via `filesystem`).
+- Sample quality depends on bundled audio files.
+- Not a DAW — no VST plugin hosting.
+
+### Complexity Level
+
+⭐⭐⭐ — step sequencer. ⭐⭐⭐⭐ — real-time generative music with DSP.
+
+---
+
+## UC-20 — Terminal / Hacking Game
+
+### Description
+
+A CLI-aesthetic game rendered as a text terminal inside the Lurek2D window: hacking simulators, command-line puzzles, retro-terminal adventures, or cyberpunk narrative games. The repo includes `content/games/showcase/hacking_game/` — a full hacking game with CRT aesthetics, matrix-rain title screen, animated boot sequence, password cracking, and file download missions.
+
+### Build Variant
+
+`release` / `dist`.
+
+### Module Combination
+
+`terminal` · `render` · `input` · `tween` · `particle` · `timer` · `event` · `effect` (CRT post-FX)
+
+### Benefits
+
+- `lurek.terminal.*` provides an 80×25 character grid with coloured text, scrollback, and command parsing.
+- CRT scanline + vignette + flicker via `effect` post-FX creates authentic terminal aesthetics.
+- `particle` adds matrix-rain, download sparkle, and trace alert pulse.
+- `tween` animates boot sequence and cursor blink.
+- The game logic is entirely Lua — no engine changes needed for new missions.
+
+### Constraints
+
+- Text rendering is grid-based; proportional fonts require `render.drawText()` instead.
+- No true VT100/ANSI terminal emulation.
+
+### Complexity Level
+
+⭐⭐ — basic text-input game. ⭐⭐⭐⭐ — full hacking sim with network topology.
+
+---
+
+## UC-21 — Hackathon Teaching Platform
+
+### Description
+
+A hackathon organiser or bootcamp uses Lurek2D as the common platform for all participants. Each team gets the binary + docs + examples; they compete by extending a common `main.lua` template. The platform provides: working physics, audio, UI, and save system from day one — teams focus on creative design, not engine plumbing.
+
+Compared to UC-02 (personal jam), this is an organised multi-team event with a shared starting point and a judging framework.
+
+### Build Variant
+
+`dev` during the event; `release` for submissions.
+
+### Module Combination
+
+Template provided by organiser; teams may add any `lurek.*` module.
+
+### Benefits
+
+- Single binary distributed to all participants — zero install friction.
+- VS Code extension provides IntelliSense for all `lurek.*` functions — no documentation hunting.
+- AI copilot (Antigravity + CAG system) helps participants generate correct code fast.
+- REPL mode enables live Lua evaluation for quick experiments.
+- 67 examples cover every common pattern — teams copy and modify.
+- `automation` module enables scripted test cases for judging.
+
+### Constraints
+
+- Teams must know Lua or be willing to learn in 24–48 hours.
+- Windows is the primary supported platform for events; Linux/macOS possible but requires build setup.
+
+### Complexity Level
+
+⭐ (entry) — ⭐⭐⭐ (winning entries use advanced modules).
+
+---
+
+## UC-22 — Supply Chain & Logistics Optimiser
+
+### Description
+
+An operations researcher or logistics analyst builds a visual supply chain model: factories, warehouses, transport routes, and demand nodes. The `flownet` and `graph` modules model material flow; `pathfind` routes vehicles; `dataframe` aggregates KPIs; `agent` runs LLM-driven scenario analysis.
+
+This is a specialised sub-case of UC-05 focused on the `flownet` module's supply/demand/conversion/queue system.
+
+### Build Variant
+
+`release` windowed for interactive modelling; `release --headless` for batch scenario runs.
+
+### Module Combination
+
+`flownet` · `graph` · `pathfind` · `dataframe` · `agent` · `render` · `ui` · `charts` · `minimap` · `serial` · `save` · `automation`
+
+### Key `flownet` Capabilities Used
+
+- `LGraphNode:addSupply` / `addDemand` — model mines, factories, consumers.
+- `LGraphNode:setConversion` — smelter converts 2 iron_ore → 1 iron_bar.
+- `LGraphNode:setFlowMode` — push vs pull routing logic.
+- `LGraphNode:setQueueEnabled` — buffer nodes with capacity limits.
+- `LGraph:tickParallel` — Rayon-backed parallel simulation step.
+- `LGraph:sendItem` — route cargo along edges.
+- `LGraph:on("itemEnter", ...)` — event callback when cargo arrives.
+
+### Benefits
+
+- Flow network model maps directly to real supply chains.
+- Parallel simulation tick (`tickParallel`) enables large networks without lag.
+- `dataframe` aggregates throughput, bottleneck, and on-time-delivery KPIs.
+- `agent` generates natural-language scenario summaries and what-if analysis.
+- Lua rules = domain experts can modify logic without Rust knowledge.
+
+### Constraints
+
+- Flow simulation is discrete-event, not continuous differential equations.
+- No geospatial coordinate system — positions are logical, not GPS.
+- No built-in optimisation solver (LP/MIP) — heuristic only via Lua.
+
+### Complexity Level
+
+⭐⭐⭐ — basic flow model. ⭐⭐⭐⭐⭐ — full multi-echelon supply chain with LLM analysis.
+
+---
+
+## UC-23 — Network Graph Visualiser
+
+### Description
+
+A developer or researcher builds an interactive visualisation of a graph: network topology, social network, dependency tree, knowledge graph, or financial flow diagram. Nodes and edges are rendered as 2D objects; `graph` module provides traversal, cycle detection, MST, and colouring algorithms.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`graph` · `render` · `input` · `camera` (pan/zoom) · `ui` · `dataframe` · `serial` · `math` · `tween` (animated layout transitions)
+
+### Key `graph` Capabilities
+
+- `g:findPath()`, `g:astar()` — highlight shortest paths interactively.
+- `g:mst()` — visualise minimum spanning tree.
+- `g:colorGraph()` — colour-code node groups.
+- `g:getComponents()` — highlight connected components.
+- `g:topologicalSort()` — visualise dependency order.
+- `g:hasCycle()` — detect cycles in dependency graphs.
+
+### Benefits
+
+- GPU-accelerated rendering → smooth pan/zoom on graphs with thousands of nodes.
+- `camera` module provides pixel-perfect zoom and smooth follow.
+- `tween` animates node positions during force-directed layout updates.
+- Export via `serial.toJson()` for use in other tools.
+
+### Constraints
+
+- No built-in force-directed layout algorithm — must implement in Lua.
+- Large graphs (>10 000 nodes) may hit rendering performance limits.
+
+### Complexity Level
+
+⭐⭐⭐ — static visualiser. ⭐⭐⭐⭐ — interactive real-time layout with algorithm animation.
+
+---
+
+## UC-24 — Personal Finance & Budget Dashboard
+
+### Description
+
+A desktop application for personal finance management: budget tracking, expense categorisation, multi-year trend analysis, anomaly detection, and KPI dashboards. The repo includes a working reference implementation: `content/games/apps/household_finance_lab/` — a complete 5-person household finance dashboard with:
+
+- Deterministic CSV generation (5 years, 2021–2025, multiple transaction types)
+- In-memory SQL database (`LDatabase`) with parameterised queries from external `.sql` files
+- `LDataFrame` operations: z-score, outlier detection, rolling mean/sum, % change, runway months
+- Database caching via `LDatabase:save` / `lurek.dataframe.loadDatabase`
+- TOML-driven UI layout (`content/layouts/`) with tabs, sliders, combo boxes, tables
+- SQL debounce filter — sliders don't query on every micro-movement
+
+### Build Variant
+
+`release` / `dist` — runs on the user's desktop machine.
+
+### Module Combination
+
+`dataframe` · `ui` · `charts` · `render` · `serial` · `save` · `filesystem` · `timer` · `math` · `window`
+
+### Benefits
+
+- `dataframe` provides SQL-like in-memory queries without a database server.
+- `LDatabase` supports parameterised SQL stored in external files — clean separation of data and logic.
+- Rolling statistics (rolling mean, z-score, outlier detection) are built-in operations.
+- `LGuiTable` renders data directly from a DataFrame — no manual row rendering.
+- TOML UI layouts (`content/layouts/`) separate UI structure from Lua logic.
+- Single binary — no Python, no Electron, no Node.js.
+- Fully offline — financial data never leaves the machine.
+
+### Constraints
+
+- In-memory only — no persistent database server (SQLite-style persistence requires manual save/load).
+- No charting library for SVG/PDF export (renders to texture only).
+- No CSV import wizard — parsing is Lua-scripted.
+
+### Competition
+
+| Tool | Lurek advantage |
+|------|----------------|
+| Excel / Google Sheets | Single binary; programmable in Lua; offline; no subscription |
+| Tableau / PowerBI | Free; MIT; code-first; no cloud required |
+| Python + pandas | Single binary; GPU-accelerated charts; no Python install |
+| YNAB | Fully local; no recurring fee; Lua-customisable |
+
+### Complexity Level
+
+⭐⭐⭐ — basic budget tracker. ⭐⭐⭐⭐⭐ — full multi-year analytics with SQL and anomaly detection.
+
+---
+
+## UC-25 — Stock & Market Data Dashboard
+
+### Description
+
+A trader or analyst builds a real-time stock tracking dashboard: candlestick charts, technical indicators (SMA, EMA, RSI, Bollinger Bands), portfolio performance, watchlists, and price alerts. Data arrives via HTTP polling or WebSocket from a market data API (or a local mock).
+
+The `content/games/apps/README.md` explicitly documents "Stock Market Dashboard" as a target application.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`network` (HTTP/WebSocket) · `dataframe` · `charts` · `render` · `ui` · `timer` · `serial` · `save` (watchlists, alerts) · `agent` (optional: LLM market commentary)
+
+### Benefits
+
+- `lurek.network.*` polls REST APIs or streams WebSocket tick data.
+- `dataframe` computes rolling indicators (SMA, EMA, RSI) in-process.
+- `charts` renders candlestick, bar, and line charts natively.
+- `agent` can summarise daily market moves in natural language via local LLM.
+- `save` persists watchlists and alert thresholds between sessions.
+
+### Constraints
+
+- No direct broker API integration — requires HTTP bridge to market data.
+- Tick rate limited by LuaJIT thread throughput (sufficient for 1 s candles, not HFT).
+- No backtesting framework — historical analysis requires custom Lua.
+
+### Complexity Level
+
+⭐⭐⭐ — price display. ⭐⭐⭐⭐⭐ — full technical analysis dashboard with LLM commentary.
+
+---
+
+## UC-26 — Data Visualisation Studio
+
+### Description
+
+An analyst or scientist builds an interactive data exploration tool: upload CSV/JSON, select chart type (bar, line, scatter, pie, heatmap), apply filters, zoom/pan, export. The `content/games/apps/README.md` documents "Data Visualization Studio" as a target application.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`dataframe` · `charts` · `render` · `ui` · `camera` · `input` · `serial` · `filesystem` · `dialog` (file picker) · `image` (export)
+
+### Benefits
+
+- `dataframe.fromCSVFileAsync` loads large CSV files asynchronously — UI stays responsive.
+- SQL-like queries filter and aggregate data before plotting.
+- `charts` renders multiple chart types with GPU acceleration.
+- `camera` enables zoom/pan on large charts.
+- `dialog` provides a native file picker for CSV/JSON import.
+- Single binary — share the tool as one executable.
+
+### Constraints
+
+- No 3D chart types.
+- PNG-only export (JPEG requires enabling the feature flag).
+- Chart types limited to those implemented in `charts` module.
+
+### Complexity Level
+
+⭐⭐⭐ — fixed chart from CSV. ⭐⭐⭐⭐ — interactive filter/explore UI.
+
+---
+
+## UC-27 — Image Processing Workbench
+
+### Description
+
+An artist or developer builds a CPU-side image processing tool: apply filters (blur, sharpen, colour correction, edge detection), layer blending, pixel-level manipulation, batch processing across hundreds of files. The `content/games/apps/README.md` documents "Image Processing Workbench" as a target application.
+
+### Build Variant
+
+`release` (interactive) or `release --headless` (batch processing).
+
+### Module Combination
+
+`image` · `render` · `ui` · `input` · `filesystem` · `dialog` · `serial` · `thread` (parallel batch) · `compute` (filter kernels)
+
+### Key `image` Capabilities
+
+- `lurek.image.*` provides CPU-side pixel operations, texture atlases, and DDS format support.
+- `render.newCanvas()` enables off-screen GPU compositing.
+- Custom WGSL shaders via `render.newShader()` for GPU-accelerated filters.
+
+### Benefits
+
+- GPU-accelerated filter preview via canvas + custom shaders.
+- `thread` enables parallel batch processing across worker VMs.
+- `filesystem` handles directory traversal for batch jobs.
+- Single binary — no ImageMagick, no Python PIL install.
+
+### Constraints
+
+- No SVG/vector format support.
+- No RAW camera format decode.
+- CPU filter pipeline is simpler than GPU compute shaders.
+
+### Complexity Level
+
+⭐⭐⭐ — basic filter application. ⭐⭐⭐⭐ — GPU-accelerated batch pipeline.
+
+---
+
+## UC-28 — Data Integration Hub
+
+### Description
+
+A developer builds a lightweight data integration tool in Lua: poll multiple REST APIs, normalise the responses with `dataframe`, apply transformation rules, and push results to another endpoint or write to CSV/JSON. This is an ETL (Extract-Transform-Load) tool implemented as a headless Lua script.
+
+Example pipelines:
+- Pull weather API → normalise → append to `dataframe` → write CSV daily.
+- Poll internal microservice health endpoints → aggregate → push summary to Slack webhook.
+- Merge two CSV exports from different tools → deduplicate → write unified report.
+
+### Build Variant
+
+`release --headless` — runs as a scheduled task or cron job.
+
+### Module Combination
+
+`network` · `dataframe` · `serial` · `filesystem` · `thread` · `timer` · `log` · `automation`
+
+### Benefits
+
+- Zero-dependency deployment — one binary + one Lua script.
+- `network` handles REST polling, basic auth, and JSON parsing.
+- `dataframe` provides SQL-like joins, groupby, and column transforms.
+- `thread` enables parallel API polling across worker VMs.
+- `automation` enables scripted test scenarios for the pipeline logic.
+- `serial.toJson` / `fromJson` handles API response parsing.
+
+### Constraints
+
+- No streaming protocol support (Kafka, AMQP) — HTTP/WebSocket only.
+- No built-in schema validation (use `lurek.validator.*` for basic checks).
+- In-memory only — no persistent database.
+
+### Complexity Level
+
+⭐⭐ — simple poll-and-write. ⭐⭐⭐⭐ — multi-source ETL with parallel fetch and transformation.
+
+---
+
+## UC-29 — Infrastructure Monitoring Dashboard
+
+### Description
+
+An operations team builds a live infrastructure monitoring dashboard: server health, CPU/memory/disk metrics, network latency, service uptime. Data arrives via HTTP polling of a metrics API (Prometheus, Datadog, or custom). The dashboard renders status grids, sparkline charts, and alert panels.
+
+### Build Variant
+
+`release` — runs on a NOC workstation or wall display.
+
+### Module Combination
+
+`network` · `dataframe` · `charts` · `ui` · `render` · `timer` · `serial` · `save` (alert thresholds) · `agent` (LLM anomaly narration) · `overlay` (alert popups)
+
+### Benefits
+
+- `timer` drives periodic metric polling without blocking the UI.
+- `dataframe` aggregates time-series data and detects threshold violations.
+- `charts` renders sparklines and status bars with GPU acceleration.
+- `overlay` module shows alert banners over the main view.
+- `agent` narrates anomalies: "CPU spike on server-03 started 14:32, correlates with deploy #447".
+- Single binary — runs on any Windows/Linux NOC workstation.
+
+### Constraints
+
+- No native Prometheus scrape protocol — requires HTTP/REST adapter.
+- No alert routing (PagerDuty, OpsGenie) built in — add via `network` POST.
+- Data retention is in-memory only.
+
+### Competition
+
+| Tool | Lurek advantage |
+|------|----------------|
+| Grafana | Desktop-native; single binary; LLM narration; Lua-customisable |
+| Datadog | Free; no agent required; offline-capable |
+| Custom web app | No browser dependency; GPU rendering; LuaJIT speed |
+
+### Complexity Level
+
+⭐⭐⭐ — basic status grid. ⭐⭐⭐⭐ — full anomaly detection with LLM narration.
+
+---
+
+## UC-30 — Log Analysis & Anomaly Detection
+
+### Description
+
+A developer or SRE uses Lurek2D in headless mode to parse, filter, and analyse application logs: find error patterns, detect latency spikes, aggregate by time bucket, and generate a summary report. The `agent` module sends anomalous log windows to a local LLM for natural-language root cause hypotheses.
+
+Workflow:
+1. Read log files from `filesystem`.
+2. Parse with `grep` module (regex search) or `serial.fromJson`.
+3. Load into `dataframe` for aggregation and anomaly scoring.
+4. Send anomalous rows to `agent` for LLM analysis.
+5. Write report to JSON/CSV via `serial`.
+
+### Build Variant
+
+`release --headless` — runs as a cron job or CI step.
+
+### Module Combination
+
+`grep` · `filesystem` · `dataframe` · `serial` · `agent` · `log` · `thread` · `timer`
+
+### Benefits
+
+- `grep` module enables regex search across log files from Lua.
+- `dataframe` aggregates log entries by time bucket, severity, and source.
+- Rolling z-score flags anomalous error rate spikes.
+- `agent` generates root cause hypotheses in plain English from log windows.
+- `thread` enables parallel log file processing.
+- Single binary — no ELK stack, no Python install.
+
+### Constraints
+
+- No persistent index (re-reads files each run — suitable for daily batch, not live tail).
+- Regex via `grep` module; complex parser logic requires Lua string patterns.
+- LLM context window limits how much log text can be sent to the agent.
+
+### Complexity Level
+
+⭐⭐ — simple error count. ⭐⭐⭐⭐ — anomaly detection + LLM root cause analysis.
+
+---
+
+## UC-31 — CI / Test Automation Harness
+
+### Description
+
+Lurek2D already ships a headless Lua test harness (`tests/lua/harness.rs`) used by its own CI. The same pattern can be adopted by external projects: run Lua scripts headlessly to test game logic, simulate player input, validate save/load round-trips, or benchmark frame time.
+
+The `automation` module (`lurek.automation.*`) records and replays input sequences — enabling regression tests that verify pixel-accurate game behaviour.
+
+### Build Variant
+
+`release --headless` for pure logic tests; `release` windowed for screenshot-based regression tests.
+
+### Module Combination
+
+`automation` · `serial` · `filesystem` · `timer` · `log` · `dataframe` (test result aggregation) + all modules under test
+
+### Key `automation` Capabilities (from `showcase/automation_demo`)
+
+- Full input recording: keystrokes, mouse clicks, mouse movement with timestamps.
+- Faithful playback with adjustable speed (0.5×, 1×, 2×).
+- Built-in auto-test sequences for repeatable geometric patterns.
+- Event timeline with per-event markers.
+
+### Benefits
+
+- Headless mode removes GPU requirement for logic tests.
+- `automation` replay enables "record once, test forever" patterns.
+- `timer.getFPS()` in tests detects performance regressions.
+- Test results written to JSON/CSV via `serial` for CI report parsing.
+- The engine's own quality gates (TST-01 through TST-06) demonstrate the pattern.
+
+### Constraints
+
+- Screenshot regression tests require a display or virtual framebuffer.
+- No built-in diff of rendered frames — requires external image comparison.
+
+### Complexity Level
+
+⭐⭐ — headless logic tests. ⭐⭐⭐⭐ — screenshot regression with input replay.
+
+---
+
+## UC-32 — LLM Inference Server with GUI
+
+### Description
+
+A developer builds a local LLM front-end application: a chat interface, a prompt testing tool, or a structured prompt builder. Lurek2D renders the UI; `lurek.agent.*` manages Ollama lifecycle (start, stop, pull models, list models) and dispatches prompts.
+
+This is the Lurek2D equivalent of an Ollama GUI client — built in ~200 lines of Lua.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`agent` · `ui` · `render` · `input` · `terminal` · `serial` · `save` (conversation history) · `filesystem`
+
+### Key `agent` Capabilities for This Use Case
+
+- `lurek.agent.newOllama()` — manage the local Ollama process.
+- `ollama:isRunning()`, `ollama:listModels()`, `ollama:pullModel()`, `ollama:start()` / `stop()`.
+- `agent:promptBatch()` — run multiple prompts in parallel.
+- `LAISystem` — multi-agent system with shared skills and instructions.
+- `agent:setFormat("json")` — enforce structured output.
+- `agent:evalCode()` — execute LLM-generated Lua code in a sandboxed VM.
+
+### Benefits
+
+- Manage the full Ollama lifecycle from Lua — no shell scripts needed.
+- `terminal` module renders a scrollable chat window with monospace text.
+- `agent:evalCode()` enables "AI writes code, engine runs it" workflows.
+- `AgentManager:runAll()` enables parallel multi-model comparison.
+- Single binary — distribute the LLM GUI as one executable.
+
+### Constraints
+
+- Requires Ollama installed on the same machine.
+- Streaming response (token-by-token) is not yet supported — full response arrives at once.
+- Context window management is manual (not automatic sliding window).
+
+### Complexity Level
+
+⭐⭐ — basic chat UI. ⭐⭐⭐⭐ — multi-agent system with model comparison and code execution.
+
+---
+
+## UC-33 — Multi-Agent Game Design Tool
+
+### Description
+
+A game designer uses Lurek2D as a local AI-assisted game design workbench: multiple LLM agents collaborate on game design tasks — one writes lore, another designs mechanics, a third reviews for consistency. The `LAISystem` orchestrates the agent roster; the UI displays agent outputs and lets the designer provide feedback.
+
+This is a direct application of the `LAISystem` + `AgentManager` pattern from `content/examples/agent.lua`.
+
+### Build Variant
+
+`release`.
+
+### Module Combination
+
+`agent` · `ui` · `render` · `input` · `terminal` · `dataframe` (agent output storage) · `save` · `serial`
+
+### Key Patterns
+
+- `lurek.agent.newSystem()` with multiple agents: `writer`, `designer`, `reviewer`.
+- `system:addSkill()` with keyword triggers — auto-inject domain rules into prompts.
+- `system:addInstruction()` — shared constraints (art style, tone, target platform).
+- `system:runAll()` — dispatch all agents in parallel, collect results.
+- `system:buildContext()` — preview the full prompt before sending.
+
+### Benefits
+
+- All LLM inference is local — no API cost, no privacy risk for proprietary game ideas.
+- `AgentManager` runs writer + designer + reviewer simultaneously in parallel threads.
+- `dataframe` stores and queries design output for consistency checking.
+- `save` persists the full agent session for later continuation.
+- The prompt builder (system prompt + skills + instructions) maps directly to professional prompt engineering.
+
+### Constraints
+
+- Requires Ollama + at least one capable model (≥7B parameters recommended).
+- Multi-agent coherence is a Lua design problem — agents do not share a context window.
+- No visual design canvas — text output only.
+
+### Complexity Level
+
+⭐⭐⭐ — two-agent collaboration. ⭐⭐⭐⭐⭐ — full multi-agent system with skill injection and review loop.
+
+---
+
+## UC-34 — Procedural Content Factory
+
+### Description
+
+A game studio or solo developer runs Lurek2D headlessly to generate large volumes of game content: dungeon maps, quest texts, item descriptions, NPC backstories, planet names, quest chains, or dialogue trees. The output is JSON/CSV consumed by the main game.
+
+This pattern separates content generation (offline, headless, LLM-assisted) from the game runtime (real-time, windowed).
+
+Examples:
+- Generate 10 000 dungeon layouts with `procgen` and save as JSON.
+- Batch-generate NPC backstories via `agent:promptBatch()` with 50 parallel requests.
+- Create a dialogue tree for 500 NPCs using `LAISystem` with writer + consistency-checker agents.
+- Generate a planet name database with `procgen.grammar()` rules.
+
+### Build Variant
+
+`release --headless` — runs as a build step in the game's asset pipeline.
+
+### Module Combination
+
+`procgen` · `agent` · `thread` · `dataframe` · `serial` · `filesystem` · `patterns` · `math` · `log`
+
+### Benefits
+
+- `procgen` (noise, Voronoi, L-systems, grammars) generates structured content deterministically.
+- `agent:promptBatch()` sends 50 parallel LLM requests — generates 50 descriptions simultaneously.
+- `AgentManager:runAll()` orchestrates multi-step pipelines (generate → review → format).
+- `thread` enables parallel content generation across worker VMs.
+- `dataframe` validates and deduplicates generated content before export.
+- Output is JSON/CSV — consumed by any game engine, not just Lurek2D.
+- MIT license — generated content is fully owned by the developer.
+
+### Constraints
+
+- LLM batch speed depends on Ollama model size and hardware.
+- Deterministic generation (`procgen`) is fast; LLM generation is slow (0.5–5 s per item).
+- No content quality gate built in — validation logic is Lua-scripted.
+
+### Complexity Level
+
+⭐⭐ — `procgen` map batch. ⭐⭐⭐⭐ — full LLM-assisted content pipeline with multi-agent review.
+
+---
+
 ## Module × Use Case Matrix
 
-The table below maps each major Lurek2D module to the use cases it primarily enables.
+The table below maps each major module to the use cases where it plays a primary (●) or secondary (◌) role. New UCs are abbreviated as numbers.
 
-| Module | UC-01 | UC-02 | UC-03 | UC-04 | UC-05 | UC-06 | UC-07 | UC-08 | UC-09 | UC-10 | UC-11 | UC-12 | UC-13 | UC-14 | UC-15 |
-|--------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| `render` | ● | ● | ● | ● | ● | ● | | | ● | | ● | ● | ◌ | ● | ◌ |
-| `audio` | ● | ● | | | | | | | | | | | ● | | |
-| `physics` | ● | ● | ● | | | | | | | | | | | | |
-| `input` | ● | ● | ● | ● | ● | ● | | | ● | ● | | | | | |
-| `ui` | ● | | | | ● | ● | | | ● | ● | ● | ● | | ● | |
-| `tilemap` | ● | ● | | | | | | | ● | | | | | | |
-| `scene` | ● | ● | ● | | | | | | | | | | | | |
-| `agent` | | | | | ● | ● | ● | ● | | | ● | ● | | | ● |
-| `dataframe` | | | | | ● | ● | ◌ | ● | | | ● | ● | ◌ | ● | ● |
-| `compute` | | | | ● | ● | | | ● | | | | | ● | | ● |
-| `procgen` | ● | ● | | ● | ● | | | ● | | | | | | | |
-| `province` | ◌ | | | | ● | ● | | | | | | ● | | | ● |
-| `globe` | ◌ | | | | ● | ● | | | | | ● | ● | | | |
-| `pathfind` | ● | | | | ● | ● | | | | | ● | ● | | | |
-| `flownet` | | | | | ● | ● | | | | | | ● | | | |
-| `graph` | | | | | ● | ● | | ● | | | | ● | | | |
-| `patterns` | ● | | ● | | ● | | | | | | | | | | ● |
-| `network` | ◌ | | | | | ● | | ◌ | | | ● | ◌ | | ● | |
-| `thread` | ◌ | | | | ◌ | | ● | ● | | | ● | | ● | | ● |
-| `dsp` | ◌ | | | ● | | | | | | | | | ● | | |
-| `learning` | | | | | | | ◌ | | | | | | | | ● |
-| `save` | ● | | | | ● | | ◌ | | ● | | | ● | | ● | |
-| `automation` | | | | | | ◌ | | ● | ◌ | | | ● | | | ● |
-| `charts` | | | | | ● | ● | | ● | | | | | ◌ | ● | ● |
-| `minimap` | ● | | | | ● | ● | | | | | ● | ● | | | |
-| `ecs` | ● | ● | ● | | | | | | | | | | | | |
-| `ai` | ● | | | | ● | | ● | | | | | | | | ● |
-| `mods` | ◌ | | | | | | | | | ● | | | | | |
-| `i18n` | ● | | | | | | | | | | | | | | |
-| `serial` | ● | | | | ● | ● | | ● | ● | | ● | ● | | ● | ● |
+| Module | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 |
+|--------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| `render` | ● | ● | ● | ● | ● | ● | | | ● | | ● | ● | ◌ | ● | ◌ | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | | ● | | ◌ | ◌ | ● | |
+| `audio` | ● | ● | | | | | | | | | | | ● | | | ● | ● | ● | ● | ◌ | ● | | | | | | | | | | | | | |
+| `physics` | ● | ● | ● | | | | | | | | | | | | | ● | | ● | | | ● | | | | | | | | | | | | | |
+| `input` | ● | ● | ● | ● | ● | ● | | | ● | ● | | | | | | ● | ● | ● | ● | ● | ● | | ● | ● | ◌ | ● | ● | | | | | ● | ◌ | |
+| `ui` | ● | | | | ● | ● | | | ● | ● | ● | ● | | ● | | ◌ | ● | ◌ | ◌ | ◌ | | ● | ● | ● | ● | ● | ● | | ● | | | ● | ● | |
+| `tilemap` | ● | ● | | | | | | | ● | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
+| `scene` | ● | ● | ● | | | | | | | | | | | | | ● | ● | ◌ | | | ● | | | | | | | | | | | | | |
+| `agent` | | | | | ● | ● | ● | ● | | | ● | ● | | | ● | | ◌ | | | | | ◌ | | | ◌ | | | | ◌ | ● | | ● | ● | ● |
+| `dataframe` | | | | | ● | ● | ◌ | ● | | | ● | ● | ◌ | ● | ● | | | | | | | ● | ◌ | ● | ● | ● | ◌ | ● | ● | ● | ◌ | | ● | ◌ |
+| `compute` | | | | ● | ● | | | ● | | | | | ● | | ● | | | | | | | | | | | | ● | | | | | | | |
+| `procgen` | ● | ● | | ● | ● | | | ● | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | ● |
+| `province` | ◌ | | | | ● | ● | | | | | | ● | | | ● | | | | | | | ◌ | | | | | | | | | | | | |
+| `globe` | ◌ | | | | ● | ● | | | | | ● | ● | | | | | | | | | | | | | | | | | | | | | | |
+| `pathfind` | ● | | | | ● | ● | | | | | ● | ● | | | | | | | | | | ● | | | | | | | | | | | | |
+| `flownet` | | | | | ● | ● | | | | | | ● | | | | | | | | | | ● | | | | | | | | | | | | |
+| `graph` | | | | | ● | ● | | ● | | | | ● | | | | | | | | | | ● | ● | | | | | | | | | | | |
+| `patterns` | ● | | ● | | ● | | | | | | | | | | ● | | | | | | | | | | | | | | | | | | | |
+| `network` | ◌ | | | | | ● | | ◌ | | | ● | ◌ | | ● | | | | | | | | | | | ● | | | ● | ● | ◌ | | | | |
+| `thread` | ◌ | | | | ◌ | | ● | ● | | | ● | | ● | | ● | | | | | | | | | | | | ● | ● | | ● | | | ◌ | ● |
+| `dsp` | ◌ | | | ● | | | | | | | | | ● | | | | | | ● | | | | | | | | | | | | | | | |
+| `midi` | | | | | | | | | | | | | ● | | | | | | ● | | | | | | | | | | | | | | | |
+| `learning` | | | | | | | ◌ | | | | | | | | ● | | | | | | | | | | | | | | | | | | | |
+| `save` | ● | | | | ● | | ◌ | | ● | | | ● | | ● | | | ● | ◌ | ● | | | | | ● | ● | ◌ | | | ◌ | | | ● | ● | |
+| `automation` | | | | | | ◌ | | ● | ◌ | | | ● | | | ● | | | | | | | | | | | | | ◌ | | | ● | | | |
+| `charts` | | | | | ● | ● | | ● | | | | | ◌ | ● | ● | | | | ◌ | | | ◌ | ◌ | ● | ● | ● | | | ● | | | | | |
+| `minimap` | ● | | | | ● | ● | | | | | ● | ● | | | | | | | | | | ◌ | | | | | | | | | | | | |
+| `ecs` | ● | ● | ● | | | | | | | | | | | | | ● | | ◌ | | | ● | | | | | | | | | | | | | |
+| `ai` | ● | | | | ● | | ● | | | | | | | | ● | ● | | | | | | | | | | | | | | | | | | |
+| `mods` | ◌ | | | | | | | | | ● | | | | | | | | | | | | | | | | | | | | | | | | |
+| `i18n` | ● | | | | | | | | | | | | | | | ● | ● | | | | | | | | | | | | | | | | | |
+| `serial` | ● | | | | ● | ● | | ● | ● | | ● | ● | | ● | ● | | ◌ | | ◌ | | | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● |
+| `terminal` | | | | | | | | | | | | | | | | | | | | ● | | | | | | | | | | | | ● | ● | |
+| `grep` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ● | | | | |
+| `filesystem` | ◌ | | | | | ◌ | | ● | ● | ● | | | | | | | | | | | | | | ● | | ● | ● | ● | | ● | ● | ● | | ◌ |
+| `overlay` | | | | | | | | | | | | | | | | | | | | | | | | | | | | | ● | | | | | |
+| `dialog` | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | ● | ◌ | | | | | | | |
+| `effect` | | | | ● | | | | | | | | | | | | ● | | | | ● | | | | | | | | | | | | | | |
+| `raycaster` | | | | ● | | | | | | | | | | | | ● | | | | | | | | | | | | | | | | | | |
+| `parallax` | ◌ | | | ● | | | | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
+| `tween` | ● | ● | | ◌ | | | | | | | | | | | | ● | ● | ● | ● | ● | ● | | ● | ◌ | | ◌ | | | | | | | | |
+| `timer` | ● | ● | | | | | | | | | | | | | | ● | ● | ● | ● | ● | ● | | | ● | ● | | | | ● | | | | | |
+| `particle` | ● | ◌ | | ● | | | | | | | | | | | | ● | ◌ | ● | ● | ● | ◌ | | | | | | | | | | | | | |
+| `camera` | ● | ● | | ● | | | | | ● | | | | | | | ● | ● | ● | | | | | ● | | | ● | | | | | | | | |
+| `light` | ◌ | | | ● | ● | | | | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | |
+| `spine` | ◌ | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+| `html` | | | | | | | | | | | | | | | | | ● | | | | | | | ● | | ◌ | | | | | | | | |
+| `window` | ● | ● | | | | | | | ● | | | | | | | ● | ● | ● | ● | ● | ● | | | ● | ● | ● | ● | | ● | | | ● | | |
+| `log` | | | | | | | | ● | | | | | | | | | | | | | | | | | | | | ● | | ● | ● | | | ● |
+| `validator` | | | | | | | | ◌ | | | | | | | | | | | | | | | | | | | | ◌ | | | | | | |
 
 ● = primary use   ◌ = secondary / optional
 

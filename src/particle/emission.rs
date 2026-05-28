@@ -1,7 +1,7 @@
 //! Spawn-offset sampling for particle emission shapes and area distributions.
 //!
-//! - Functions: `emission_offset`, `emission_shape_offset`.
-//! - See `docs/specs/particle.md` for the module specification.
+//! - Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
+//! - Handles area-angle rotation for distribution-based offsets.
 
 use super::config::{AreaDistribution, EmissionShape, ParticleConfig};
 use super::math::{rand_normal, rand_range};

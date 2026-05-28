@@ -1,7 +1,9 @@
 //! Queued command format staging discrete actor actions with targets, callbacks, and priority.
 //!
-//! - Data types: `Command`, `CommandQueue`.
-//! - Implementation: `CommandQueue`.
+//! - FIFO command queue with front insertion, replacement, cancellation, and advance operations.
+//! - Raw-construction helpers for enqueuing commands without separate struct building.
+//! - Interruptible commands that can be cancelled individually without clearing the queue.
+//! - Structured runtime logging for queue creation and bulk-clear events.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{CQ01, CQ02, CQ03};

@@ -1,8 +1,9 @@
 //! Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
 //!
-//! - Functions: `draw_to_image`, `draw_explosion_to_image`, `draw_rain_to_image`, `draw_spark_trail_to_image`, and 3 more.
-//! - Uses: `image`.
-//! - See `docs/specs/particle.md` for the module specification.
+//! - Generic renderer using colour/size/alpha keyframes from the emitter configuration.
+//! - Themed preset renderers for explosions, rain, and spark-trail effects.
+//! - Compositing support: overlay particles onto an existing background or paint in-place.
+//! - Bar-chart lifecycle diagram showing particle count over time steps.
 
 use super::emitter::ParticleSystem;
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes};

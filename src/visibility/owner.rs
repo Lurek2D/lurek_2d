@@ -1,6 +1,9 @@
 //! Player and faction ownership of shared visibility and discovery state.
 //!
-//! - Data type: `PlayerOwnership`.
+//! - `OwnerMap` tracks which faction owns each region for fog-of-war sharing.
+//! - Allied factions share visibility when `share_vision` is enabled per-alliance.
+//! - `OwnerMap::visible_to(faction_id, region_id)` is the hot-path query.
+//! - Ownership changes trigger re-evaluation of all visibility states for affected factions.
 
 use std::collections::HashMap;
 

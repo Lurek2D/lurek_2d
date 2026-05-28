@@ -1,7 +1,9 @@
 //! Action enum and Step struct: typed event descriptors for automation playback.
 //!
-//! - Data type: `Step`.
-//! - Enum: `Action`.
+//! - Action variants cover keyboard, mouse, wheel, text, wait, repeat, macro, and asserts.
+//! - Step carries all optional fields (key, position, delta, button, text, conditions).
+//! - Parse support maps lowercase action strings to Action variants.
+//! - Repeat and interval fields drive expansion in Script construction.
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 /// Input event kind dispatched by a `Step` during automation playback.

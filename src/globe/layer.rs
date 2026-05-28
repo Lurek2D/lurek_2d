@@ -1,7 +1,7 @@
 //! Named layer storage keyed by string, with insert, remove, and lookup.
 //!
-//! - Data type: `LayerStore`.
-//! - Implementation: `LayerStore`.
+//! - Per-region color overrides, visibility toggling, and alpha clamping.
+//! - Z-order–aware color resolution across all visible layers.
 
 use crate::globe::types::{Layer, RegionId};
 use std::collections::HashMap;

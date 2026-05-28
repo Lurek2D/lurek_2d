@@ -1,6 +1,8 @@
 //! Globe day/night lighting: sun direction from rotation and time-of-day.
 //!
-//! - Functions: `sun_direction`, `province_intensity`, `compute_intensities`, `terminator_alpha`.
+//! - Per-region diffuse intensity with ambient floor.
+//! - Batch intensity computation for region centroid sequences.
+//! - Terminator-band alpha for smooth day/night transition rendering.
 
 use crate::globe::types::GlobeSpec;
 use super::sphere::{lat_lon_to_unit, rot_y};

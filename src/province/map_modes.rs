@@ -1,7 +1,7 @@
 //! Config-driven map mode system for the province renderer.
 //!
-//! - Data types: `MapModeConfig`, `MapModeRegistry`.
-//! - Function: `resolve_color_fallback`.
+//! - Map modes are registered from Lua at runtime with per-mode display settings.
+//! - Color resolution uses the color_property field from the active map mode config.
 
 use std::collections::HashMap;
 

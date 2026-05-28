@@ -1,6 +1,7 @@
 //! Per-tile floor and ceiling height storage for raycaster maps.
 //!
-//! - Data type: `HeightMap`.
+//! - Supports individual tile and rectangular region height assignment.
+//! - Out-of-bounds coordinates are silently ignored or return safe defaults.
 
 /// Per-tile floor and ceiling height overrides for a raycaster map.
 pub struct HeightMap {

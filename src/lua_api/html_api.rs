@@ -5,7 +5,6 @@
 //! - `LuaHtmlElement`: userdata type exposed to Lua.
 //! - Bridges 60 Lua-callable methods via `mlua`.
 //! - See `docs/specs/html.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::html::{parse_css_color_rgba, HtmlDocument, HtmlDocumentOptions, HtmlElementId};

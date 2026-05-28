@@ -5,7 +5,6 @@
 //! - `LuaGlobeRegistry`: userdata type exposed to Lua.
 //! - Bridges 83 Lua-callable methods via `mlua`.
 //! - See `docs/specs/globe.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;

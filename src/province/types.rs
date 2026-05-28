@@ -1,7 +1,7 @@
 //! Core type definitions for the province map system.
 //!
-//! - Data types: `ProvinceId`, `BorderTypeConfig`, `BorderPairFlags`, `BorderPairStyle`, and 2 more.
-//! - Type alias: `BorderType`.
+//! - ProvinceId newtype, BorderType (u8) for game-defined adjacency classification, and ProvinceStyle for per-province visuals.
+//! - ProvinceSnapshot provides an immutable point-in-time view of province state.
 
 use std::collections::HashMap;
 

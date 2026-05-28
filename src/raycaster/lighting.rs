@@ -1,7 +1,7 @@
 //! Point-light model with position, radius, intensity, and RGB color.
 //!
-//! - Data type: `PointLight`.
-//! - Functions: `compute_lighting`, `apply_lit_shade`.
+//! - Bresenham line-of-sight check to block light through walls.
+//! - Per-tile lighting accumulator combining ambient and point-light contributions.
 
 /// A point light placed in world space that contributes to tile-level lighting.
 #[derive(Debug, Clone)]

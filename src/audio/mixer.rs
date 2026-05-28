@@ -1,11 +1,14 @@
 //! `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
 //!
-//! - Data types: `QueueableSource`, `Mixer`.
-//! - Enums: `SourceType`, `PlayState`.
-//! - Implementations: `QueueableSource`, `Mixer`.
-//! - Public methods: `new`, `queue_buffer`, `free_buffer_count`, `new`, and 83 more.
-//! - Contains 89 method implementations.
-//! - Uses: `audio`, `dsp`, `log_msg`, `runtime`.
+//! - rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
+//! - Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
+//! - Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
+//! - `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
+//! - `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
+//! - Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
+//! - Peak metering: per-source, per-bus average, and master peak tracking.
+//! - Stereo width, random pitch range, crossfade, and sound pool creation utilities.
+//! - `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
 
 use crate::audio::bus::Bus;
 use crate::dsp::{DynamicEffectSource, EffectParams};

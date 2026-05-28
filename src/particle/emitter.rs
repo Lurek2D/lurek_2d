@@ -1,9 +1,15 @@
 //! Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
 //!
-//! - Data type: `ParticleSystem`.
-//! - Implementation: `ParticleSystem`.
-//! - Public methods: `new`, `update`, `emit`, `count`, and 23 more.
-//! - Contains 28 method implementations.
+//! - Per-frame integration: gravity, radial/tangential acceleration, linear damping, drag, orbit, and turbulence.
+//! - Point-attractor influence applied per particle each frame with distance falloff.
+//! - Axis-aligned bounce boundaries that reflect particles with configurable restitution.
+//! - Continuous emission via fractional accumulator, burst spawning, and three insert-order modes.
+//! - Child sub-system spawning on particle death with configurable burst count and config clone.
+//! - State machine: Active, Paused, Stopped with lifetime-based auto-stop.
+//! - Render command building: shape mapping, color/alpha/size interpolation, texture quads, and animated frames.
+//! - Warm-up simulation pre-populates the pool by stepping in fixed 50 ms increments.
+//! - Custom emission shape callback support via pending offset indices drained by the Lua bridge.
+//! - Death event queue exposing world-space position and velocity for gameplay hooks.
 
 use super::config::{
     Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,

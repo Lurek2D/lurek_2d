@@ -1,9 +1,11 @@
 //! Element-wise arithmetic, comparison, and bitwise operations on NdArray
 //!
-//! - Functions: `get_par_threshold`, `set_par_threshold`, `add`, `add_scalar`, and 52 more.
-//! - Uses: `compute`.
-//! - See `docs/specs/compute.md` for the module specification.
-//! - Part of the `compute` subsystem.
+//! - Scalar and array binary operations with row-broadcast support
+//! - Reduction operations (sum, mean, min, max) globally and along axes
+//! - In-place mutation variants for add, sub, mul, div
+//! - Reshape, transpose, clone, fill, threshold, and conditional select
+//! - Configurable parallel dispatch via rayon above a tunable threshold
+//! - Argmin, argmax, count_nonzero, any, all logical queries
 
 use crate::compute::array::{DataType, NdArray};
 use rayon::prelude::*;

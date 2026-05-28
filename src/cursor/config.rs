@@ -1,4 +1,9 @@
 //! Global cursor system configuration shared across the cursor manager.
+//!
+//! - `CursorConfig` is deserialized from the game TOML config section `[cursor]`.
+//! - Controls trail, zoom, context rules, idle-hide timeout, and default kind.
+//! - All fields have safe defaults; the entire struct is optional in the config file.
+//! - Loaded once at engine startup; changes require a restart.
 
 /// Global cursor system configuration.
 #[derive(Debug, Clone)]

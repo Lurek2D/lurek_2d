@@ -1,7 +1,7 @@
 //! Animated sliding doors placed on raycaster grid tiles.
 //!
-//! - Data types: `Door`, `DoorManager`.
-//! - Enums: `DoorDirection`, `DoorState`.
+//! - Per-door state machine: Closed → Opening → Open → Closing → Closed.
+//! - DoorManager registry drives batch updates and spatial lookups.
 
 /// Slide axis of a door: horizontal (slides along X) or vertical (slides along Y).
 #[derive(Debug, Clone, Copy, PartialEq)]

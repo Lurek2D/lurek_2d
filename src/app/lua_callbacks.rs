@@ -1,7 +1,7 @@
 //! Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
 //!
-//! - Functions: `call_lua_callback`, `call_lua_callback_checked`, `call_lua_callback_with_timeout`, `call_lua_callback_checked_with_timeout`.
-//! - See `docs/specs/app.md` for the module specification.
+//! - Installs an instruction-count hook to abort runaway callbacks after a deadline.
+//! - Provides checked and unchecked variants for both timed and untimed invocation.
 
 use mlua::prelude::*;
 use mlua::HookTriggers;

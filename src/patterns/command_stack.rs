@@ -1,7 +1,7 @@
 //! Linear undo/redo command history with cursor-based navigation.
 //!
-//! - Data types: `CommandEntry`, `CommandStack`.
-//! - Implementation: `CommandStack`.
+//! - Batch grouping for multi-command atomic operations.
+//! - Configurable max-size eviction of oldest entries.
 
 /// Metadata record for a single pushed command.
 #[derive(Debug, Clone)]

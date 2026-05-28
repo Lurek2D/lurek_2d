@@ -1,6 +1,8 @@
 //! Procedural generation toolkit: noise, dungeons, heightmaps, and world graphs.
 //!
-//! - Sub-modules: `biome`, `bsp`, `cellular`, `color`, and 12 more.
+//! - Algorithms: Perlin/Simplex/Worley noise, BSP & room-scatter dungeons, cellular automata caves.
+//! - Utilities: Poisson disk sampling, L-systems, Markov name generation, Voronoi, WFC.
+//! - All generators are deterministic given a seed via the internal LCG.
 
 /// Biome classification types and rules-based classifier.
 pub mod biome;

@@ -1,13 +1,15 @@
 //! Retained-mode GUI context owning a flat arena of widgets addressed by index.
 //!
-//! - Data type: `GuiContext`.
-//! - Enums: `UiBindingValue`, `GuiEvent`, `WidgetKind`.
-//! - Implementations: `WidgetKind`, `GuiContext`.
-//! - Public methods: `base`, `base_mut`, `children`, `children_mut`, and 77 more.
-//! - Contains 142 method implementations.
-//! - Uses: `log_msg`, `math`, `runtime`, `ui`.
-//! - See `docs/specs/ui.md` for the module specification.
-//! - Derives: `Debug`, `Clone`, `PartialEq`.
+//! - Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
+//! - Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
+//! - Focus management with forward/backward cycling and keyboard-driven tab navigation.
+//! - Drag-and-drop API with cycle detection to prevent parent-into-child drops.
+//! - Alpha and position transition animations stepped each frame with automatic expiry.
+//! - Data binding system mapping string keys to numeric, text, or boolean widget values.
+//! - FNV-hash render signature for fast dirty-check without full tree diffing.
+//! - Mouse press/release/move and keyboard input dispatch to the focused widget.
+//! - Toast overlay queue with per-message timers and automatic expiry.
+//! - Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
 
 use crate::log_msg;
 use crate::math::Rect;

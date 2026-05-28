@@ -1,6 +1,7 @@
 //! Geometric shape primitives controlling how individual particles are rendered.
 //!
-//! - Enum: `ParticleShape`.
+//! - Includes simple fills (square, circle, triangle), directional shapes (spark, ray, capsule), and composite outlines (ring).
+//! - Each variant may carry inline parameters (edge count, aspect ratio, thickness).
 
 /// Geometric primitive used to draw a single particle.
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize, serde::Deserialize)]

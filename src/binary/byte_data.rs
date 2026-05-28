@@ -1,6 +1,7 @@
 //! Owned mutable byte buffer with indexed read and write access
 //!
-//! - Data type: `ByteData`.
+//! - UTF-8 string encoding and lossy decoding from raw bytes
+//! - Immutable and mutable slice views for zero-copy downstream use
 
 #[derive(Debug, Clone)]
 /// Hold owned raw bytes with convenience conversion helpers.

@@ -1,7 +1,9 @@
 //! Line chart renderer: connected data-point series over time or categories.
 //!
-//! - Data type: `LineChart`.
-//! - Implementation: `LineChart`.
+//! - Rasterises a `LineChartSpec` into an RGBA pixel buffer.
+//! - Supports multiple named series with per-series colour and line width.
+//! - Pixel coordinates are mapped via `render_utils::world_to_screen`.
+//! - Owned by `lurek.charts.line`; result is uploaded as a texture each frame.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{

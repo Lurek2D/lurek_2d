@@ -1,7 +1,9 @@
 //! Procedural heightmap generation from FBM Perlin noise with configurable octaves, lacunarity, and persistence.
 //!
-//! - Data types: `HeightmapOpts`, `Heightmap`.
-//! - Implementations: `HeightmapOpts`, `Heightmap`.
+//! - Simple hydraulic erosion pass that redistributes height differences across 4-connected neighbours.
+//! - Construction from raw noise maps or cellular automata grids with automatic normalisation to 0.0–1.0.
+//! - Clamped coordinate access and flat RGBA byte export for GPU texture upload.
+//! - Deterministic output controlled by a seed value passed through to the noise generator.
 
 use crate::procgen::noise::{FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use crate::procgen::scalar_map_to_rgba_bytes;

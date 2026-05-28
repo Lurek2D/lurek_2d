@@ -1,7 +1,7 @@
 //! Tabular Q-learning model with flat state-action value table and training parameters.
 //!
-//! - Data type: `QLearner`.
-//! - Implementation: `QLearner`.
+//! - Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
+//! - Lightweight persistence helpers for serializing and reloading learned policies.
 
 /// Q-learning agent with a flat `state × action` value table.
 pub struct QLearner {

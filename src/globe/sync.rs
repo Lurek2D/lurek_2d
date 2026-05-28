@@ -1,6 +1,7 @@
 //! Snapshot serialization of globe state for cross-thread transfer.
 //!
-//! - Data types: `GlobeSyncSnapshot`, `GlobeSyncChannel`.
+//! - Channel pair for sending and receiving globe snapshots.
+//! - Build and apply helpers to capture or restore globe state.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::RegionId;

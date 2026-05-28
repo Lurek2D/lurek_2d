@@ -1,6 +1,8 @@
 //! Bridges a Spine skeleton to an animation state machine via name mapping.
 //!
-//! - Data type: `SpineAnimBridge`.
+//! - Plays mapped Spine clips automatically when the FSM transitions to a new state.
+//! - Owns the skeleton instance and advances its animation and world transforms each frame.
+//! - Exposes read and write access to the skeleton and the last applied FSM state.
 
 use super::state_machine::AnimStateMachine;
 use crate::spine::skeleton::Skeleton;

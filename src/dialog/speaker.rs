@@ -1,6 +1,9 @@
 //! Speaker registry and character metadata used across dialog trees.
 //!
-//! - Data types: `Speaker`, `SpeakerRegistry`.
+//! - `Speaker` holds a display name, portrait asset path, and voice bank key.
+//! - The global `SpeakerRegistry` maps speaker IDs to `Speaker` values.
+//! - Speakers are registered from TOML at load time or dynamically via `lurek.dialog`.
+//! - Speaker IDs are stable string slugs (e.g. `"npc_merchant"`) not numeric indices.
 
 use std::collections::HashMap;
 

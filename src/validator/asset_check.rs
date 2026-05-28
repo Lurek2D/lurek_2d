@@ -1,6 +1,9 @@
 //! Asset existence checker: validates that image, sound, and font paths in scripts exist.
 //!
-//! - Data type: `AssetExistenceRule`.
+//! - `AssetExistenceRule` pattern-matches `lurek.asset.load("path")` call sites.
+//! - For each matched path string, checks presence via `GameFS::exists` (no I/O decode).
+//! - Missing assets are reported as `Severity::Error`; path typos as `Warning`.
+//! - Runs during `lurek.validator.run()` and the CI quality gate.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

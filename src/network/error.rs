@@ -1,6 +1,7 @@
 //! Unified error enum for all network subsystem failures.
 //!
-//! - Enum: `NetworkError`.
+//! - Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
+//! - Integrates with `thiserror` for automatic `Display` and `From` impls.
 
 use thiserror::Error;
 

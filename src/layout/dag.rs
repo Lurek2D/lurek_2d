@@ -1,7 +1,10 @@
 //! Sugiyama layered layout algorithm for directed acyclic graphs.
 //!
-//! - Function: `layout_dag`.
-//! - See `docs/specs/layout.md` for the module specification.
+//! - `layout_dag(nodes, edges, config)` returns a `LayoutResult` with `(x, y)` positions.
+//! - Phases: cycle removal, layer assignment, crossing minimisation, coordinate assignment.
+//! - `DagConfig` controls node separation, layer height, and direction (top-down / LR).
+//! - Output coordinates are in logical pixels; caller applies camera transform.
+//! - Used by `lurek.layout.dag`; suitable for dependency trees and tech-tree UIs.
 
 use super::types::*;
 use std::collections::{HashMap, HashSet, VecDeque};

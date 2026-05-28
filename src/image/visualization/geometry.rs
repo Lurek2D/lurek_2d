@@ -1,8 +1,12 @@
 //! Polygon gallery with regular shapes of varying side counts.
 //!
-//! - Functions: `polygon_gallery_to_image`, `spiral_to_image`, `filled_primitives_to_image`, `draw_geometry_shapes_to_image`, and 1 more.
-//! - Uses: `image`.
-//! - Part of the `image/visualization` subsystem.
+//! - Archimedes spiral rendering with HSV ring colors.
+//! - Filled primitive samples: rectangles, circles, brightness grid.
+//! - Convex hull computation and overlay drawing.
+//! - Point-in-polygon, centroid, and area visualization.
+//! - Bresenham line rasterization proof.
+//! - Segment-segment and circle-line intersection tests.
+//! - Circle-segment and line intersection proof rendering.
 
 use super::hsv_to_rgb_viz;
 use crate::image::ImageData;

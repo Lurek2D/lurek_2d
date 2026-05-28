@@ -1,7 +1,9 @@
 //! Mod API compliance checker: validates Lua scripts against registered type schemas.
 //!
-//! - Data type: `ApiComplianceRule`.
-//! - Implementation: `ApiComplianceRule`.
+//! - `ApiComplianceRule` inspects each `lurek.*` call site and checks argument types.
+//! - Unknown function names produce a `Severity::Error`; wrong arg count is a `Warning`.
+//! - Schema is loaded from `ApiRegistry` at engine startup; rules are stateless.
+//! - Returns `Vec<Violation>` per file; violations include file path and line number.
 
 use super::report::{Severity, Violation};
 use super::rule::ValidationRule;

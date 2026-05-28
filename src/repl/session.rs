@@ -1,7 +1,10 @@
 //! Implements `ReplSession`, a stateful Lua evaluator with bounded command history.
 //!
-//! - Data type: `ReplSession`.
-//! - Enum: `ReplResult`.
+//! - `ReplResult` captures value output, silent success, structured error text, or a parsed colon command.
+//! - Eval dispatches colon commands first; expression input tries `return <input>` then falls back to statement execution.
+//! - History is capped at `max_history` entries; oldest entries are evicted when the cap is reached; default capacity is 200.
+//! - `:load` reads a file from disk and executes it inside the current Lua VM, returning a command or error result.
+//! - Session state is pure Rust; the Lua reference is borrowed per call and never stored on the struct.
 
 use crate::repl::commands::ReplCommand;
 use crate::repl::completer::complete_prefix;

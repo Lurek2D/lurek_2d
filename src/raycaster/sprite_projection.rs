@@ -1,4 +1,7 @@
 //! Screen-space sprite projection data for raycaster billboard rendering.
+//!
+//! - Stores position, scale, distance, and visibility after camera-plane projection.
+//! - Consumed by the depth-buffer occlusion pass to sort and clip sprites.
 
 /// Screen-space projection of a single world billboard; used for depth-buffer occlusion.
 #[derive(Debug, Clone)]

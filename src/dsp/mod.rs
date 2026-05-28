@@ -1,4 +1,9 @@
 //! Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.
+//!
+//! - Provides a per-source processing graph evaluated on the audio thread.
+//! - Node types include: gain, pan, low-pass/high-pass filters, reverb, and delay.
+//! - Graph topology changes are sent via a lock-free command queue to avoid blocking.
+//! - Re-exported to Lua via `lurek.audio.dsp.*` through `audio_api.rs`.
 
 /// Level and spectrum analysis helpers.
 pub mod analysis;

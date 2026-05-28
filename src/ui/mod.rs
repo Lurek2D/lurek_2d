@@ -1,6 +1,7 @@
 //! Immediate-mode GUI toolkit: containers, controls, extras, and theming.
 //!
-//! - Sub-modules: `chart`, `data_graph_renderer`, `containers`, `context`, and 6 more.
+//! - Provides layout panels, interactive widgets, and data-bound context.
+//! - Optional TOML layout-loader feature behind a feature flag.
 
 /// Chart types re-exported from the charts crate module.
 pub mod chart;

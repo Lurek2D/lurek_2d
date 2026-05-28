@@ -1,8 +1,9 @@
 //! Monte Carlo Tree Search configuring search parameters, arena-backed nodes, and rollout statistics.
 //!
-//! - Data types: `MCTSConfig`, `MCTSEngine`.
-//! - Implementations: `MCTSConfig`, `MCTSNode`, `MCTSEngine`.
-//! - Public methods: `new`, `config`, `search`.
+//! - Selection, expansion, rollout, and backpropagation flow scoring actions through bounded simulations.
+//! - Internal random helper and UCT scoring logic driving node choice and action sampling.
+//! - Arena-backed tree structure avoiding per-node heap allocations during iterative search.
+//! - Generic state, action-enumeration, transition, and evaluation closures for domain-independent search.
 
 /// Configuration for one MCTS search run.
 pub struct MCTSConfig {

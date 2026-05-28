@@ -1,9 +1,9 @@
 //! Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
 //!
-//! - Data type: `ImageData`.
-//! - Implementation: `ImageData`.
-//! - Public methods: `new`, `from_file`, `from_encoded_bytes`, `from_bytes`, and 18 more.
-//! - Contains 22 method implementations.
+//! - Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
+//! - Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
+//! - Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
+//! - PNG encoding for serialization and export.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};

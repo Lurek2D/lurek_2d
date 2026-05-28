@@ -7,7 +7,6 @@
 //! - Userdata type: `LuaMapGen`.
 //! - Bridges 190 Lua-callable methods via `mlua`.
 //! - See `docs/specs/tilemap.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::math::Rect;

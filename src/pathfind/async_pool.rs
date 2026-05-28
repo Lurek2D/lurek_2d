@@ -1,7 +1,7 @@
 //! Fixed-size thread pool that runs A* pathfinding off the game thread.
 //!
-//! - Data type: `PathThreadPool`.
-//! - Type alias: `PathResult`.
+//! - Job submission, cancellation, and non-blocking result polling via channels.
+//! - Workers share a single work queue and skip cancelled requests early.
 
 use crate::pathfind::{astar, NavGrid};
 use std::sync::{

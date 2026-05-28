@@ -1,7 +1,7 @@
 //! Fixed-capacity ring buffer backed by `VecDeque` with automatic eviction of oldest entries.
 //!
-//! - Data types: `Ring`, `RingEntry`.
-//! - Implementation: `Ring`.
+//! - Each entry carries an optional numeric or string payload plus a caller-assigned tag.
+//! - Provides aggregate helpers (sum, average) and ordered iteration from oldest to newest.
 
 use std::collections::VecDeque;
 

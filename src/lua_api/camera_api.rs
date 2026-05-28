@@ -5,7 +5,6 @@
 //! - `LuaCameraRig`: userdata type exposed to Lua.
 //! - Bridges 88 Lua-callable methods via `mlua`.
 //! - See `docs/specs/camera.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::camera::{

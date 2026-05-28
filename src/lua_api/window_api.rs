@@ -3,9 +3,6 @@
 //! - Registers `lurek.window.*` functions and types via `register()`.
 //! - Bridges 55 Lua-callable methods via `mlua`.
 //! - See `docs/specs/window.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
-//! - See `src/lua_api` for related modules (1).
-//! - See `src/lua_api` for related modules (2).
 
 use super::SharedState;
 use crate::window;

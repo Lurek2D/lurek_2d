@@ -1,9 +1,9 @@
 //! Scripted procedural map assembler: executes a sequence of placement steps.
 //!
-//! - Data type: `MapBlockGenerator`.
-//! - Implementations: `Lcg`, `MapBlockGenerator`.
-//! - Public methods: `new`, `set_rect_shape`, `set_shape`, `set_grid`, and 11 more.
-//! - Contains 25 method implementations.
+//! - `MapBlockGenerator` owns the grid, block registry, and RNG state.
+//! - Runs the `MapScript` step list: Fill, PlaceGroup, PlaceBlock, ApplyLayer.
+//! - After assembly, converts the grid to a `TileMap` via `mapblock::output`.
+//! - Exposed to Lua via `lurek.mapblock.generate(config, script)` returning a tilemap.
 
 use super::config::MapBlockConfig;
 use super::constraints::NeighborRules;

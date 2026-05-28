@@ -1,8 +1,9 @@
 //! Context-sensitive cursor switching: maps named contexts to cursor states.
 //!
-//! - Data types: `ContextRule`, `CursorManager`.
-//! - Enums: `CursorState`, `CursorContext`.
-//! - Implementations: `CursorContext`, `CursorManager`.
+//! - `CursorContext` holds a registry of context-name → `CursorState` mappings.
+//! - `CursorState` discriminates between system, custom, and animated cursor kinds.
+//! - Context names are arbitrary strings set by game scripts (e.g. `"dialog"`, `"combat"`).
+//! - The active context is applied immediately; fallback is the default system cursor.
 
 use super::animated_cursor::AnimatedCursor;
 use super::custom_cursor::CustomCursor;

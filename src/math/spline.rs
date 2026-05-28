@@ -1,7 +1,7 @@
 //! Catmull-Rom multi-segment spline with dynamic control-point management.
 //!
-//! - Data types: `CatmullRomSpline`, `HermiteSpline`.
-//! - Implementations: `CatmullRomSpline`, `HermiteSpline`.
+//! - Hermite cubic segment defined by endpoints and tangents.
+//! - Normalized parameter sampling across full spline or individual segments.
 
 /// Multi-point Catmull-Rom spline with dynamic control-point list.
 pub struct CatmullRomSpline {

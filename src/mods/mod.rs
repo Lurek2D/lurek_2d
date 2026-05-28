@@ -1,4 +1,9 @@
 //! Mod system entry point exposing lifecycle management for game mods.
+//!
+//! - Handles discovery, enabling/disabling, and Lua script integration of mods.
+//! - Game API registry for type-safe mod content declarations.
+//! - Sandboxing to restrict mod capabilities.
+//! - Instance loading from TOML content files.
 
 /// Mod lifecycle management: discovery, enable/disable, and Lua integration.
 pub mod mod_manager;

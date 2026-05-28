@@ -4,8 +4,6 @@
 //! - `LuaDepthSorter`: userdata type exposed to Lua.
 //! - Bridges 70 Lua-callable methods via `mlua`.
 //! - See `docs/specs/scene.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
-//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::scene::depth_sorter::DepthSorter;

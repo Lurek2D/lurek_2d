@@ -1,9 +1,12 @@
 //! Automation simulator: drives script playback by advancing time and dispatching events.
 //!
-//! - Data type: `Simulator`.
-//! - Trait: `StepEventSink`.
-//! - Implementations: `EventQueue`, `Simulator`, `ConditionParser`.
-//! - Public methods: `new`, `load`, `unload`, `has_script`, and 29 more.
+//! - Manages a registry of named scripts and macros with load/unload lifecycle.
+//! - Evaluates condition expressions (&&, ||, !, parentheses) against named boolean flags.
+//! - Supports pause, resume, speed control, and visual highlight mode for debug tools.
+//! - CallMacro steps inline macro scripts at the current playback position.
+//! - VisualAssert steps compare baseline and actual images with pixel-diff tolerance.
+//! - Assert steps halt playback when condition expressions evaluate to false.
+//! - StepEventSink trait decouples event dispatch from EventQueue for testing.
 
 use super::script::MAX_STEPS;
 use super::{Action, Script, Step};

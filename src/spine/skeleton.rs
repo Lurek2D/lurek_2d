@@ -1,9 +1,11 @@
 //! Skeleton struct holding bones, slots, animations, IK constraints, skins, and playback state.
 //!
-//! - Data types: `BoneParams`, `Skeleton`.
-//! - Implementation: `Skeleton`.
-//! - Public methods: `new`, `add_bone`, `add_slot`, `find_bone`, and 24 more.
-//! - Contains 28 method implementations.
+//! - Bone and slot management: add, find by name, query world transforms.
+//! - Animation playback: start/stop clips, advance time, loop or clamp at duration.
+//! - IK constraint registration and per-frame solving against bone poses.
+//! - Skin system: register skins, switch active skin, map attachments per slot.
+//! - World-transform recomputation traversing bones in parent-before-child order.
+//! - Debug visualization: rasterise skeleton bones and slot markers into ImageData.
 
 use super::bone::Bone;
 use super::ik::IKConstraint;

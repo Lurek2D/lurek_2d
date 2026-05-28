@@ -1,7 +1,9 @@
 //! Structured log file search with level, time-range, and text pattern filters.
 //!
-//! - Data types: `LogEntry`, `LogSearchOpts`.
-//! - Functions: `parse_log_lines`, `search_logs`.
+//! - `parse_log_lines` parses lines of the form `[LEVEL TIMESTAMP] MESSAGE`.
+//! - `search_logs` filters `Vec<LogEntry>` by level, time bounds, and text pattern.
+//! - `LogSearchOpts` drives the filter; all fields are optional (zero = no filter).
+//! - Used by `lurek.grep.logs` to let game scripts query the engine's runtime log.
 
 /// A single parsed log entry with line number, timestamp, level, and message.
 #[derive(Debug, Clone)]

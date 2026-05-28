@@ -1,6 +1,8 @@
 //! Serialization and deserialization for multiple formats (JSON, TOML, CSV, XML, MsgPack, INI)
 //!
-//! - Sub-modules: `codec`, `csv`, `ini`, `json`, and 5 more.
+//! - Unified codec interface with auto-detection and round-trip encode/decode
+//! - Schema validation and default application for structured data
+//! - Lua table ↔ Rust value bridging via SerialValue
 
 /// Unified codec: format detection, encode, and decode entry points.
 pub mod codec;

@@ -1,8 +1,9 @@
 //! DOM element model: tag, attributes, children, parent linkage, and text content.
 //!
-//! - Data types: `HtmlRect`, `HtmlElement`.
-//! - Type alias: `HtmlElementId`.
-//! - Function: `normalise_name`.
+//! - Inline style handling with bidirectional sync to the `style` attribute.
+//! - Class list manipulation: add, remove, toggle, and membership queries.
+//! - Axis-aligned layout rectangle for hit testing and position queries.
+//! - Attribute normalization and void-tag classification helpers.
 
 use crate::html::style::parse_declarations;
 use std::collections::BTreeMap;

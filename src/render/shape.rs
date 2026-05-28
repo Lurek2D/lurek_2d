@@ -1,7 +1,7 @@
 //! Compound shape storage: named, replayable sequences of vector-drawing commands.
 //!
-//! - Data type: `CompoundShape`.
-//! - Enum: `ShapeCommand`.
+//! - Shape commands: rectangles, circles, ellipses, arcs, polygons, lines, and polylines.
+//! - State tracking: per-shape color and line-width carried across replays.
 
 use super::renderer::DrawMode;
 /// One drawing operation stored inside a `CompoundShape`.

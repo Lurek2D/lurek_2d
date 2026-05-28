@@ -1,7 +1,7 @@
 //! Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
 //!
-//! - Data type: `RandomGenerator`.
-//! - Implementation: `RandomGenerator`.
+//! - Uniform integer, float, and Gaussian sampling primitives.
+//! - Seed persistence via string serialisation for deterministic replay.
 
 use fastrand::Rng;
 

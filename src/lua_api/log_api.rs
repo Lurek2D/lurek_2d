@@ -3,7 +3,6 @@
 //! - Registers `lurek.log.*` functions and types via `register()`.
 //! - Bridges 18 Lua-callable methods via `mlua`.
 //! - See `docs/specs/log.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::log as log_domain;

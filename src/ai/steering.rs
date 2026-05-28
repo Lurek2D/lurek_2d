@@ -1,9 +1,8 @@
 //! Steering model representing individual movement behaviors, blending rules, and waypoint following.
 //!
-//! - Data types: `SteeringBase`, `SteeringManager`.
-//! - Enums: `CombineMode`, `SteeringBehaviorType`.
-//! - Type alias: `Force`.
-//! - Implementations: `CombineMode`, `SteeringBase`, `SteeringBehaviorType`, `SteeringManager`.
+//! - Behavior variants: seek, flee, arrive, wander, flock, pursue, evade, and custom callbacks.
+//! - Manager logic combining active behaviors with weighting or priority selection.
+//! - Waypoint path advancement and final steering force clamping.
 
 /// Force vector used by steering systems.
 pub type Force = (f32, f32);

@@ -1,7 +1,8 @@
-//! Background transport for LLM agent prompts.
+//! Background transport that dispatches LLM prompt requests on dedicated threads and collects responses for polling.
 //!
-//! - Data type: `AgentClient`.
-//! - Implementation: `AgentClient`.
+//! - Tracks in-flight requests with an atomic counter and silently drops responses for callbacks marked as cancelled.
+//! - Retries transient network and timeout failures up to `AgentRequest::max_retries` times using exponential back-off.
+//! - Exposes `send_prompt`, `cancel`, `in_flight_count`, and `poll` as the complete public surface.
 
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicUsize, Ordering};

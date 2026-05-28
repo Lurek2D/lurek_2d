@@ -3,7 +3,6 @@
 //! - Registers `lurek.i18n.*` functions and types via `register()`.
 //! - Bridges 36 Lua-callable methods via `mlua`.
 //! - See `docs/specs/i18n.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{

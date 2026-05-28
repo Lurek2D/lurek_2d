@@ -1,8 +1,9 @@
 //! 2D float vector type used for all position, direction, and velocity math.
 //!
-//! - Data type: `Vec2`.
-//! - Implementations: `Vec2`, `Mul`, `Div`, `MulAssign`.
-//! - Public methods: `new`, `zero`, `splat`, `dot`, and 11 more.
+//! - Arithmetic operators: add, sub, mul, div, negate, and assign variants.
+//! - Geometric helpers: length, normalize, distance, dot, cross, perpendicular.
+//! - Rotation, reflection, and angle conversion utilities.
+//! - Linear interpolation and unit-direction construction from radians.
 
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 

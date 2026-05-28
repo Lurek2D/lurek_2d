@@ -1,4 +1,9 @@
 //! Visibility state-change events emitted when regions transition between states.
+//!
+//! - `VisibilityEvent` variants: `RegionRevealed`, `RegionDiscovered`, `RegionHidden`.
+//! - Events are queued during the visibility update pass and drained to Lua each tick.
+//! - `RegionRevealed` fires when a region moves from Hidden/Discovered to Visible.
+//! - Used to trigger map-reveal animations, narration, and scripted events.
 
 /// Events emitted by the visibility system when regions change state.
 #[derive(Debug, Clone, PartialEq)]

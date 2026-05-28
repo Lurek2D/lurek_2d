@@ -1,8 +1,10 @@
 //! Raycaster-specific minimap overlay rendering.
 //!
-//! - Data type: `MinimapTileSample`.
-//! - Functions: `compute_tile_light`, `build_minimap_tile_window`, `reveal_cells_from_rays`, `extract_minimap`, and 1 more.
-//! - Uses: `raycaster`.
+//! - Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
+//! - Bresenham grid traversal for fast obstruction testing between player and map cells.
+//! - FOV ray fan that reveals all traversed cells within a max distance and step size.
+//! - Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
+//! - Player arrow rendering (filled circle plus direction line) composited onto the minimap.
 
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};

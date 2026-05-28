@@ -1,7 +1,7 @@
 //! Multi-touch contact tracking with per-frame pressed/released deltas.
 //!
-//! - Data types: `TouchPoint`, `TouchState`.
-//! - Implementation: `TouchState`.
+//! - Position and pressure state for each active touch id.
+//! - Frame-boundary lifecycle: begin_frame clears deltas, start/move/end mutate state.
 
 use std::collections::{HashMap, HashSet};
 

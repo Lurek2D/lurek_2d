@@ -1,8 +1,9 @@
 //! Biome classification system mapping height, moisture, and temperature to terrain types.
 //!
-//! - Data types: `BiomeRules`, `BiomeClassifier`.
-//! - Enum: `BiomeType`.
-//! - Function: `biome_map_to_rgba`.
+//! - Defines `BiomeType` enum covering ocean, coast, desert, forest, tundra, and more.
+//! - Configurable `BiomeRules` thresholds for tuning world generation.
+//! - Stateless `BiomeClassifier` for single-cell or bulk grid classification.
+//! - RGBA color mapping for biome visualisation output.
 
 /// Biome variant covering terrain from ocean to ice cap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

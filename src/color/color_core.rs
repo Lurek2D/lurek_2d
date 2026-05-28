@@ -1,8 +1,10 @@
 //! Core colour conversion and manipulation: RGB, HSL, HSV, and hex parsing.
 //!
-//! - Data type: `Color`.
-//! - Functions: `hsv_to_rgb`, `gamma_to_linear`, `linear_to_gamma`, `hsl_to_rgb`.
-//! - Implementation: `Color`.
+//! - `hsl_to_rgb` / `hsv_to_rgb` — convert hue-based spaces to RGBA bytes.
+//! - `parse_hex_color` — parses `#RGB`, `#RRGGBB`, `#RRGGBBAA` strings.
+//! - `rgba_to_hex` — serialises an RGBA byte array to a `#RRGGBBAA` string.
+//! - All public functions are pure and allocation-free where possible.
+//! - Exposed to Lua via `lurek.color.*` through `color_api.rs`.
 
 /// Linear RGBA float color; all channels are in [0.0, 1.0] unless explicitly noted.
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -1,6 +1,7 @@
 //! Name-based service registry for runtime feature discovery.
 //!
-//! - Data type: `ServiceLocator`.
+//! - Register, unregister, and query string-keyed services.
+//! - Sorted enumeration of all active service names.
 
 use std::collections::HashSet;
 

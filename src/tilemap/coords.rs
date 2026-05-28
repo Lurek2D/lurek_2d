@@ -1,7 +1,10 @@
 //! Isometric tile-to-screen and screen-to-tile coordinate conversions.
 //!
-//! - Functions: `to_screen_iso`, `from_screen_iso`, `iso_rotate`, `iso_direction_name`, and 12 more.
-//! - Uses: `math`.
+//! - Cardinal direction rotation, naming, and angle snapping for iso grids.
+//! - Hex axial coordinate conversions between screen and grid space.
+//! - Hex neighbor lookup, distance, and rounding for fractional coordinates.
+//! - Line drawing, ring enumeration, spiral traversal, and area fill on hex grids.
+//! - Hex rotation and reflection transforms around arbitrary center cells.
 
 use crate::math::Vec2;
 use std::f32::consts::PI;

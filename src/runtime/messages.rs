@@ -1,7 +1,7 @@
 //! Embedded TOML-based message catalog for runtime log and display text.
 //!
-//! - Data type: `MessageCatalog`.
-//! - Functions: `init`, `get_message`, `resolve_message`, `has_message`, and 2 more.
+//! - Lazy one-shot initialization with fallback to raw identifiers.
+//! - Recursive string extraction from nested TOML tables.
 
 use std::collections::HashMap;
 use std::sync::OnceLock;

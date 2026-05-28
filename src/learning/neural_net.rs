@@ -1,7 +1,7 @@
 //! Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
 //!
-//! - Data types: `NeuralLayer`, `NeuralNet`.
-//! - Enum: `Activation`.
+//! - Layer-local forward evaluation, activation application, and parameter counting.
+//! - Network-level operations: append layers, run forward passes, load/export weight buffers.
 
 /// Activation function used by a layer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

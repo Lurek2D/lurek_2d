@@ -1,7 +1,7 @@
 //! Deferred query step representation for filter, sort, select, head, tail, slice, and limit
 //!
-//! - Data type: `LazyQuery`.
-//! - Implementations: `LazyQuery`, `DataFrame`.
+//! - Lazy query builder that chains steps without executing until `collect`
+//! - Materialization via sequential step application over a cloned source frame
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 #[derive(Clone)]

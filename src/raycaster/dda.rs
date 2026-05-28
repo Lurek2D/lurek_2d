@@ -1,9 +1,14 @@
 //! 2D grid map and Digital Differential Analyzer (DDA) ray-stepping engine.
 //!
-//! - Data type: `Raycaster2D`.
-//! - Implementation: `Raycaster2D`.
-//! - Public methods: `new`, `set_cell`, `get_cell`, `set_cells`, and 13 more.
-//! - Contains 17 method implementations.
+//! - Single-ray casting with perpendicular distance correction and texture-U sampling.
+//! - Multi-hit ray casting through transparent walls up to a configurable depth.
+//! - Fan-cast (cast_rays) with fish-eye correction for full-screen column rendering.
+//! - Flat-packed ray output for efficient Lua-side consumption without per-hit tables.
+//! - Grid-based line-of-sight query using DDA traversal.
+//! - World-to-screen sprite projection with FOV-aware perspective transform.
+//! - Per-pixel floor/ceiling UV generation for textured floor casting.
+//! - Per-tile-type wall alpha overrides enabling transparent and semi-transparent walls.
+//! - Bounds-safe cell access with silent clamping for out-of-range coordinates.
 
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;

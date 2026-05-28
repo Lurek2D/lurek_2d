@@ -1,6 +1,7 @@
 //! Declares `ReplCommand` enum for the five built-in colon commands: `:help`, `:quit`, `:clear`, `:reset`, and `:load <path>`.
 //!
-//! - Enum: `ReplCommand`.
+//! - `display_text` returns a short human-readable confirmation string for each command variant.
+//! - Command data only; dispatch logic and Lua eval live in `session.rs`.
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 /// Special colon command recognised by `ReplSession`.

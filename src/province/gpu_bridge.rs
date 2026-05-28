@@ -1,7 +1,7 @@
 //! GPU-uploadable province data bridge between registry and render pipeline.
 //!
-//! - Data types: `ProvinceGpuRecord`, `BorderStyleGpuRecord`.
-//! - Functions: `build_gpu_records`, `build_border_style_gpu_records`.
+//! - Packs province style fields into a repr(C) record for direct buffer upload.
+//! - Builds sorted record arrays from the province registry for deterministic GPU ordering.
 
 use crate::province::border_index::ProvinceBorderIndex;
 use crate::province::registry::ProvinceRegistry;

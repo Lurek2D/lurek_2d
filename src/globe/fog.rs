@@ -1,8 +1,9 @@
 //! Compact per-region fog mask storing hidden, explored, and visible states.
 //!
-//! - Data types: `FogMask`, `FogStore`.
-//! - Implementations: `FogMask`, `FogStore`.
-//! - Public methods: `all_hidden`, `all_visible`, `is_visible`, `state`, and 29 more.
+//! - Bit-packed base64 serialization for save/load round-trips.
+//! - Per-viewer fog store keyed by viewer name with automatic mask creation.
+//! - Reveal, hide, explore, and toggle operations on individual or batched regions.
+//! - Query helpers for visible/explored id lists and region counts.
 
 use crate::globe::types::{FogState, RegionId, MAX_REGIONS};
 use base64::Engine;

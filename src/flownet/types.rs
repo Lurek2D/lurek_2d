@@ -1,7 +1,9 @@
 //! Shared type definitions for the flownet visual scripting graph.
 //!
-//! - Data types: `NodeId`, `EdgeId`, `ItemId`.
-//! - Implementations: `NodeId`, `std`, `From`, `EdgeId`, and 1 more.
+//! - `NodeId`, `PortId`, and `EdgeId` are newtype wrappers around `u32` for clarity.
+//! - `PortKind` distinguishes input/output and the value type carried (number, bool, any).
+//! - `NodeValue` is the runtime variant type flowing through edges at evaluation time.
+//! - All types are `Clone + Debug + PartialEq` to support undo-redo snapshotting.
 
 /// Unique identifier for a flownet graph node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

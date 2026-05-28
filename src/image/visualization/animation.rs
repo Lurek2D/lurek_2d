@@ -1,7 +1,9 @@
 //! Frame grid rendering for animation debug overlays.
 //!
-//! - Functions: `draw_animation_frame_grid_to_image`, `draw_animation_playback_to_image`, `animation_playback_control_to_image`, `draw_animation_to_image`.
-//! - Uses: `animation`, `image`.
+//! - Playback timeline preview with active frame highlighting.
+//! - Playback control state visualization with run, idle, pause, and resume.
+//! - Default cell-dimension wrapper for quick animation preview.
+//! - Color-coded frame indicators for current vs inactive frames.
 
 use crate::animation::Animation;
 use crate::image::ImageData;

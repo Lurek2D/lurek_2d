@@ -1,4 +1,7 @@
 //! DDA ray-cast result record holding wall distance, hit coordinates, and texture sampling data.
+//!
+//! - Carries both fish-eye-corrected and raw distances for flexible column rendering.
+//! - Provides side, alpha, and cell value for shading and transparency decisions.
 
 /// Result record for one DDA ray; produced by `Raycaster2D::cast_ray`.
 #[derive(Debug, Clone)]

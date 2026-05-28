@@ -3,7 +3,6 @@
 //! - Registers `lurek.agent.*` functions and types via `register()`.
 //! - Bridges 43 Lua-callable methods via `mlua`.
 //! - See `docs/specs/agent.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use crate::agent::{AgentBatchTask, LuaAgentManagerRuntime, LuaAgentRuntime, LuaAISystemRuntime, OllamaManager, lua_to_json};
 use crate::runtime::SharedState;

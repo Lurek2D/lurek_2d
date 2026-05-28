@@ -1,6 +1,7 @@
-//! Public request, response, and error types for the LLM agent runtime.
+//! Defines the public request, response, and error types exchanged between `AgentState`, `AgentClient`, and their Lua bindings.
 //!
-//! - Data types: `AgentRequest`, `AgentResponse`.
+//! - `AgentError` classifies failures as network, timeout, format, or model errors and carries a stable Lua-facing error code and a transient-retry flag.
+//! - `AgentRequest` and `AgentResponse` carry the callback ID that threads agent dispatch back to the originating Lua callback.
 
 
 /// Error variants for LLM agent requests; used by [`AgentClient`] and [`AgentState`].

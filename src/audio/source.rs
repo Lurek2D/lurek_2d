@@ -1,6 +1,7 @@
 //! `SpatialState` 3D position, velocity, and orientation for positional audio.
 //!
-//! - Data types: `SpatialState`, `AudioSource`.
+//! - `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
+//! - Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
 
 use crate::log_msg;
 use crate::runtime::log_messages::AS01;

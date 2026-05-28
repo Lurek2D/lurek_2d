@@ -1,8 +1,9 @@
 //! Grid-based influence map with named floating-point layers over a uniform cell grid.
 //!
-//! - Data type: `InfluenceMap`.
-//! - Implementation: `InfluenceMap`.
-//! - Public methods: `new`, `add_layer`, `has_layer`, `set_influence`, and 15 more.
+//! - Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
+//! - Query aggregated influence inside world-space rectangles or locate extrema positions.
+//! - Blend multiple layers with weighted combination into a destination layer.
+//! - Debug visualisation rendering layers into an RGBA image for inspection.
 
 use crate::runtime::log_messages::{IF01, IF02, IF03};
 

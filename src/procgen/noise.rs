@@ -1,11 +1,14 @@
 //! Standalone 2D, 3D, and 4D Perlin noise evaluation with configurable seeds.
 //!
-//! - Data types: `MapGenOptions`, `NoiseGenerator`.
-//! - Enums: `DistType`, `NoiseKind`, `FractalType`.
-//! - Functions: `perlin2d`, `simplex2d`, `simplex_noise_2d`, `simplex_noise_3d`, and 5 more.
-//! - Implementations: `MapGenOptions`, `NoiseGenerator`.
-//! - Public methods: `new`, `set_seed`, `seed`, `perlin_1d`, and 13 more.
-//! - Contains 29 method implementations.
+//! - 2D simplex noise with seeded and convenience zero-seed wrappers.
+//! - FBM fractal layering over Perlin noise with normalised output.
+//! - Seeded `NoiseGenerator` with permutation-table Perlin (1D/2D/3D) and Simplex (2D/3D/4D).
+//! - Worley (cellular) noise in 2D and 3D with Euclidean, Manhattan, and Chebyshev metrics.
+//! - Fractal combinators: FBM, ridged multifractal, and turbulence; all normalised.
+//! - Domain warping via Perlin-driven coordinate offsets.
+//! - Sequential and parallel (`rayon`) height-map generation from `MapGenOptions`.
+//! - Tileable periodic 2D Perlin noise for seamless texture synthesis.
+//! - Internal hash and gradient helpers for all supported dimensions.
 
 use rayon::prelude::*;
 

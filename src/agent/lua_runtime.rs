@@ -1,9 +1,10 @@
-//! Lua-facing runtime helpers for `lurek.agent`.
+//! Implements the Lua-facing runtime for `LAgent`, `LAgentManager`, and `LAISystem` userdata — all business logic for the agent API lives here.
 //!
-//! - Data types: `AgentBatchTask`, `LuaAgentRuntime`, `LuaAgentManagerRuntime`, `LuaAISystemRuntime`.
-//! - Function: `lua_to_json`.
-//! - Implementations: `BatchDispatcher`, `LuaAgentRuntime`, `LuaAgentManagerRuntime`, `LuaAISystemRuntime`.
-//! - Public methods: `from_lua_config`, `add_skill`, `clear_skills`, `set_option`, and 27 more.
+//! - `LuaAgentRuntime` owns an `AgentState`, `AgentClient`, callback registry, and `BatchDispatcher` to serve one `LAgent` userdata.
+//! - `LuaAgentManagerRuntime` dispatches explicit task batches across multiple agents and collects their responses under a single batch callback.
+//! - `LuaAISystemRuntime` routes prompts through `AISystemState` context injection before dispatch, supporting `addAgent`, `addInstruction`, `addSkill`, and `buildContext`.
+//! - `BatchDispatcher` packs multi-agent batch IDs into a single `usize` callback, collects partial results, and fires the Lua callback once all responses arrive.
+//! - `lua_to_json` converts arbitrary Lua values — primitives, arrays, and mixed tables — to `serde_json::Value` for model option serialization.
 
 use crate::agent::{AISystemState, AgentClient, AgentError, AgentRequest, AgentState};
 use mlua::prelude::*;

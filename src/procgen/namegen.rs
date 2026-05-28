@@ -1,7 +1,8 @@
 //! Markov-chain name generator trained on arbitrary word corpora.
 //!
-//! - Data type: `NameGen`.
-//! - Implementation: `NameGen`.
+//! - Configurable n-gram order controls fidelity-vs-variety tradeoff.
+//! - Deterministic output via internal LCG seeding for reproducible generation.
+//! - Batch generation with length constraints and bounded retry logic.
 
 use crate::procgen::lcg::Lcg;
 use std::collections::HashMap;

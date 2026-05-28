@@ -1,7 +1,7 @@
 //! Convert a built raycaster scene into GPU-ready render commands.
 //!
-//! - Implementation: `RaycasterScene`.
-//! - Public method: `generate_render_commands`.
+//! - Emit textured quads for ceilings, floors, walls, and sprites in correct painter order.
+//! - Fall back to solid-color rectangles when a surface has no texture assigned.
 
 use crate::raycaster::scene::RaycasterScene;
 use crate::render::renderer::{DrawMode, RenderCommand};

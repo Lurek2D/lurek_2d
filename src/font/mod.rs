@@ -1,4 +1,9 @@
 //! Font subsystem: glyph metrics, text measurement, word wrapping, and font registry.
+//!
+//! - Bitmap font atlas loading and glyph lookup.
+//! - Runtime TTF/OTF rasterisation into atlas format via fontdue.
+//! - Text measurement and word wrapping without GPU dependency.
+//! - Font registry for named font handles.
 
 /// Bitmap font atlas data and glyph lookup.
 pub mod bitmap_font;

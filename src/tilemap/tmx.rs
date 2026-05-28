@@ -1,9 +1,13 @@
 //! Parse the Tiled TMX XML map format into engine-native structs for tile and object layers.
 //!
-//! - Data types: `TmxTileset`, `TmxTileLayer`, `TmxObjectLayer`, `TmxObject`, and 1 more.
-//! - Enums: `TmxOrientation`, `TmxStaggerAxis`, `TmxLayer`.
-//! - Function: `load_tmx`.
-//! - Implementations: `TmxOrientation`, `TmxMap`.
+//! - Support orthogonal, isometric, staggered, and hexagonal map orientations.
+//! - Decode tile GID arrays from CSV, raw XML, and base64 encodings with zlib/gzip decompression.
+//! - Extract tileset metadata including image paths, spacing, margins, and solid-tile markers.
+//! - Parse object layers with position, size, type, and optional tile-GID references.
+//! - Mask Tiled flip flags (horizontal, vertical, diagonal) from raw GID values before storage.
+//! - Detect solid tiles via embedded objectgroups or `solid=true` custom properties.
+//! - Propagate parse failures as descriptive error strings with element and attribute context.
+//! - Parse Tiled hex color strings (`#RRGGBB` / `#AARRGGBB`) for map background color.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TL01, TL02};

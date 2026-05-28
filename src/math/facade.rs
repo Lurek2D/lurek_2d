@@ -1,6 +1,7 @@
 //! Scalar interpolation helpers: lerp, inverse_lerp, remap, smoothstep.
 //!
-//! - Functions: `lerp`, `remap`, `clamp`, `sign`, and 2 more.
+//! - Numeric utilities: clamp, sign.
+//! - All functions operate on `f32` and are pure (no side effects).
 
 /// Linearly interpolate from `a` to `b` by factor `t`; t=0 returns `a`, t=1 returns `b`.
 pub fn lerp(a: f32, b: f32, t: f32) -> f32 {

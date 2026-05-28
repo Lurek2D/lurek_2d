@@ -1,8 +1,8 @@
 //! One-shot threaded dataframe jobs for file loading and SQL queries.
 //!
-//! - Data type: `DataFrameTask`.
-//! - Implementation: `DataFrameTask`.
-//! - Public methods: `spawn_csv_file`, `spawn_json_file`, `spawn_dataframe_query`, `spawn_database_query`, and 6 more.
+//! - Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
+//! - Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
+//! - Snapshot-based DataFrame and Database query execution on Rust worker threads.
 
 use crate::dataframe::file_io::{self, DataFrameFileError, DataFrameFileStore};
 use crate::dataframe::frame::{CellValue, DataFrame, Database};

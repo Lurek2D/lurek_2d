@@ -1,7 +1,7 @@
 //! Debug visualization for pathfinding structures as colored `RenderCommand` lists.
 //!
-//! - Implementations: `NavGrid`, `FlowField`, `InfluenceMap`.
-//! - Public methods: `generate_render_commands`, `generate_render_commands`, `generate_render_commands`.
+//! - NavGrid renders walkable/blocked cells, FlowField draws directional arrows, InfluenceMap shows signed heat.
+//! - Each struct exposes `generate_render_commands` returning a `Vec<RenderCommand>` for overlay drawing.
 
 use crate::pathfind::flow_field::FlowField;
 use crate::pathfind::influence_map::InfluenceMap;

@@ -1,7 +1,9 @@
 //! Named colour palettes: retro console, web-safe, and designer presets.
 //!
-//! - Data type: `Palette`.
-//! - Sub-modules: `css_named`, `retro`.
+//! - `retro` sub-module provides PICO-8, Game Boy, CGA, and ZX Spectrum palettes.
+//! - Each palette is a static `&[&str]` of hex strings; no heap allocation.
+//! - Exposed to Lua via `lurek.color.palette.*`.
+//! - Palettes are additive — new sets can be registered via the Lua API.
 
 use super::color_core::Color;
 

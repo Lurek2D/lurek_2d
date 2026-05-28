@@ -1,8 +1,10 @@
 //! Per-frame mouse state tracking: position, button held/pressed/released deltas, and scroll accumulators.
 //!
-//! - Data types: `MouseState`, `CursorHandle`.
-//! - Enums: `SystemCursor`, `CursorKind`.
-//! - Function: `is_cursor_supported`.
+//! - System cursor shape selection from a fixed set of OS-provided variants.
+//! - Custom image-based cursor support via raw RGBA pixel buffers with hotspot offsets.
+//! - Cursor visibility, grab (confinement), and relative (delta) mode toggles.
+//! - Warp-to-position requests consumed by the runtime window loop.
+//! - Frame-boundary reset for button deltas and scroll values.
 
 /// OS-provided cursor shape variants available through `lurek.input.setCursor`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

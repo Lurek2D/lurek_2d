@@ -1,7 +1,8 @@
 //! Scene transition visual effects for smooth scene switching (fade, slide, wipe, iris, zoom, crossfade).
 //!
-//! - Data type: `ActiveTransition`.
-//! - Enums: `TransitionType`, `EasingType`.
+//! - Easing curves with evaluation: linear, quadratic, cubic, bounce, and back overshoot.
+//! - Active transition state tracking elapsed time and computing eased progress.
+//! - Lua string parsing for transition type and easing selection from game scripts.
 
 use crate::log_msg;
 use crate::math::easing;

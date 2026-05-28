@@ -1,8 +1,9 @@
 //! Dirty-tracking, auto-save scheduling, and schema-versioned migration for `lurek.save`.
 //!
-//! - Data types: `SlotMeta`, `SaveManager`.
-//! - Enum: `SaveValue`.
-//! - Functions: `serialize_table`, `serialize_value`, `compress_save_content`, `decompress_save_content`.
+//! - `SaveManager` owns registration of Lua tables, auto-save interval logic, and migration routing.
+//! - `SaveValue` tree converts between Lua tables and a serializable Rust enum.
+//! - Serialization emits Lua table literals; compression uses LZ4 + Base64 with a marker header.
+//! - Slot file naming, parse validation, and summary forwarding to `SlotMeta`.
 
 use crate::binary::compress::{compress, decompress, CompressFormat};
 use crate::log_msg;

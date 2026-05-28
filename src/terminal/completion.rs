@@ -1,7 +1,7 @@
 //! Prefix-based tab-completion engine for the in-game terminal.
 //!
-//! - Data type: `CompletionEngine`.
-//! - Implementation: `CompletionEngine`.
+//! - Maintains a sorted candidate list; cycles through matches on repeated Tab presses.
+//! - Supports dynamic add/remove of candidates and stateless prefix queries.
 
 /// Sorted candidate store with prefix-based cycling for terminal Tab completion.
 pub struct CompletionEngine {

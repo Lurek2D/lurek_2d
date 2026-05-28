@@ -1,8 +1,9 @@
 //! Mono waveform preview with axis grid and peak normalization.
 //!
-//! - Functions: `waveform_to_image`, `waveform_stereo_to_image`, `waveform_zoomed_to_image`, `draw_sound_waveform_to_image`.
-//! - Uses: `image`.
-//! - Part of the `image/visualization` subsystem.
+//! - Stereo waveform rendering with channel separation.
+//! - Zoomed waveform with interpolated sample detail.
+//! - Labeled waveform strip with custom color mapping.
+//! - Shared peak normalization and column-based rendering.
 
 use crate::image::ImageData;
 /// Render a mono waveform preview into an image.

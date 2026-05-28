@@ -1,6 +1,7 @@
 //! Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
 //!
-//! - Data types: `TextureKey`, `FontKey`, `CanvasKey`, `SoundKey`, and 10 more.
+//! - Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
+//! - Generated via `slotmap::new_key_type!` for O(1) lookup with generational validity checks.
 
 use slotmap::new_key_type;
 new_key_type! {

@@ -1,13 +1,15 @@
-//! Lurek2D engine library root: module declarations and re-exports.
+//! Lurek2D crate root: module declarations and top-level runtime entry points.
 //!
-//! - Functions: `lurek_run`, `build_builtin_cli_script`.
-//! - Sub-modules: `agent`, `ai`, `animation`, `app`, and 64 more.
-//! - Contains 1 method implementation.
-//! - Contains 1 `unsafe` block; see SAFETY comments.
+//! - Declares all engine subsystems as public modules — agent, ai, animation, audio, camera, compute, dsp, ecs, input, render, physics, and 30+ more — each documented in its own `//!` header.
+//! - `lurek_run()` is the primary binary entry: initialises the Lua VM, loads the game's `main.lua`, and runs the winit event loop until the window closes.
+//! - `build_builtin_cli_script()` generates the embedded Lua bootstrap baked into the binary for headless and launch use cases.
+//! - Re-exports `binary` as `data` so existing `crate::data::` import paths continue to resolve while the module itself lives at `crate::binary::`.
+//! - Feature-gates optional subsystems: `automation` behind `automation-plugin`, `charts` behind `ui-charts`, keeping the binary lean for core builds.
+//! - Suppresses `unused_doc_comments` and `clippy::doc_lazy_continuation` globally; detailed documentation lives in each subsystem's own `//!` headers, not here.
+//! - Contains a single `unsafe` block in the ZIP-extraction helper; all archive entry paths are validated against path-traversal before extraction.
 
 #![allow(unused_doc_comments)]
 #![allow(clippy::doc_lazy_continuation)]
-//! Core Lurek2D crate modules and the top-level runtime entry point.
 
 /// Exposes the LLM agent subsystem module.
 pub mod agent;

@@ -1,8 +1,10 @@
 //! DAG-based pipeline representing named steps with explicit dependency edges.
 //!
-//! - Data type: `Pipeline`.
-//! - Enum: `ErrorMode`.
-//! - Implementations: `ErrorMode`, `Pipeline`.
+//! - Topological ordering via Kahn's algorithm with cycle detection.
+//! - Parallel-level grouping for concurrent scheduling of independent steps.
+//! - Sub-pipeline merging under a namespace prefix with outer dependency wiring.
+//! - Validation of dependency references, execution-order queries, and ASCII diagram rendering.
+//! - Result collection from final step statuses into a typed `PipelineResult`.
 
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};

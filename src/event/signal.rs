@@ -1,7 +1,7 @@
 //! Named signal subscription registry with exact-name and wildcard pattern matching.
 //!
-//! - Data types: `Subscription`, `Signal`.
-//! - Implementation: `Signal`.
+//! - Handle-based subscribe/remove lifecycle with monotonic id allocation.
+//! - Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{SG01, SG02};

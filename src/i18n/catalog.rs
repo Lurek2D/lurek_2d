@@ -1,9 +1,9 @@
 //! Locale-indexed translation catalog with active locale and ordered fallback chain.
 //!
-//! - Data types: `CoverageGap`, `Catalog`.
-//! - Enum: `CatalogError`.
-//! - Functions: `is_valid_locale_code`, `is_rtl`, `detect_system_locale`, `flat_table_from_toml`, and 1 more.
-//! - Implementation: `Catalog`.
+//! - Key lookup, category grouping, value search, and word-index caching.
+//! - Coverage-gap analysis comparing locales against a reference table.
+//! - TOML and JSON flattening into dot-separated translation tables.
+//! - Locale validation, RTL detection, and system-locale auto-detection.
 
 use serde_json;
 use std::cell::RefCell;

@@ -1,7 +1,9 @@
 //! Mod loader: discovers, validates, and loads mod packages from the mods directory.
 //!
-//! - Data type: `ModInstance`.
-//! - Enum: `FieldValue`.
+//! - Scans `content/mods/` for `mod.toml` manifests and loads each into a `ModInstance`.
+//! - `load_instances_from_toml` parses a single manifest and builds the instance.
+//! - Validates API requirements against the `ApiRegistry` before executing any Lua.
+//! - Load order is deterministic (alphabetical by mod ID) and overrideable via priority.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

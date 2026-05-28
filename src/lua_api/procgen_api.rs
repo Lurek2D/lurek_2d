@@ -5,7 +5,6 @@
 //! - `LuaNoiseGenerator`: userdata type exposed to Lua.
 //! - Bridges 53 Lua-callable methods via `mlua`.
 //! - See `docs/specs/procgen.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::procgen::biome::{BiomeClassifier, BiomeRules, BiomeType};

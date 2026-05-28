@@ -1,6 +1,9 @@
 //! Dialog gate conditions: guards that control branch and topic visibility.
 //!
-//! - Data type: `GateContext`.
+//! - `Condition` is an enum with variants for flag checks, stat comparisons, and Lua callbacks.
+//! - Evaluated lazily at the point where the dialog engine requests the next node.
+//! - Lua callback conditions receive the current `DialogState` as a table argument.
+//! - Composed with `And` / `Or` / `Not` wrappers for complex gating logic.
 
 use std::collections::HashMap;
 

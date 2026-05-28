@@ -1,9 +1,10 @@
 //! Stack-based scene manager: push, pop, switch, and clear with optional transitions.
 //!
-//! - Data type: `SceneStack`.
-//! - Type alias: `SceneId`.
-//! - Implementation: `SceneStack`.
-//! - Public methods: `new`, `next_scene_id`, `push`, `pop`, and 40 more.
+//! - Overlay support: scenes marked as overlays render above all normal scenes.
+//! - Transition queuing: enqueues fade/slide/wipe transitions and drains them sequentially.
+//! - Layer ordering: per-scene draw priority for front-to-back render sorting.
+//! - Named registry: associate string names with SceneIds for lookup and navigation.
+//! - Per-scene data slots: store and retrieve SceneId-encoded values by string key.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{

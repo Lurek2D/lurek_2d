@@ -1,8 +1,8 @@
 //! Rolling mean, sum, min, and max over configurable window size
 //!
-//! - Implementation: `DataFrame`.
-//! - Public methods: `with_rolling_mean`, `with_rolling_sum`, `with_rolling_min`, `with_rolling_max`, and 3 more.
-//! - Contains 7 method implementations.
+//! - Dense rank computation with average-rank tie-breaking
+//! - Row-to-row percent change calculation
+//! - Cumulative sum across ordered rows
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 impl DataFrame {

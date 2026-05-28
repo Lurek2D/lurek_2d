@@ -1,7 +1,9 @@
 //! Settings panel layout with controls, sliders, and buttons.
 //!
-//! - Functions: `panel_layout_to_image`, `hud_bars_to_image`.
-//! - Uses: `image`.
+//! - HUD bar rendering for health, mana, stamina, and XP.
+//! - Skill cooldown arcs with radial fill indicators.
+//! - Color swatch palette with selection highlight.
+//! - Progress bars and percentage label formatting.
 
 use crate::image::ImageData;
 /// Render a panel layout with borders, labels, and content areas into an image.

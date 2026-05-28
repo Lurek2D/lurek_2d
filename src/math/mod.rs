@@ -1,6 +1,7 @@
 //! Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Transform.
 //!
-//! - Sub-modules: `aabb_tree`, `bezier`, `circle`, `easing`, and 12 more.
+//! - Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
+//! - Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
 
 /// AABB broadphase spatial query tree.
 pub mod aabb_tree;

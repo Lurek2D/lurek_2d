@@ -1,7 +1,9 @@
 //! Shared chart configuration types: size, background, margins, and axis labels.
 //!
-//! - Data types: `ChartMargin`, `ChartConfig`, `ChartSeries`, `ChartDataFrameOptions`.
-//! - Implementations: `ChartMargin`, `ChartConfig`.
+//! - `ChartConfig` is the common base embedded in every chart spec.
+//! - Pixel dimensions, background colour, and title string live here.
+//! - Axis label and legend settings are optional; missing values use defaults.
+//! - Referenced by `BarChartSpec`, `LineChartSpec`, `PieChartSpec`, etc.
 
 /// Default palette of 8 distinct colors for auto-assigning series (RGBA, 0.0–1.0).
 pub const DEFAULT_PALETTE: &[[f32; 4]; 8] = &[

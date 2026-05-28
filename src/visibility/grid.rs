@@ -1,7 +1,9 @@
 //! Visibility grid: per-region state storage for multiple simultaneous players/factions.
 //!
-//! - Data type: `VisibilityGrid`.
-//! - Implementation: `VisibilityGrid`.
+//! - `VisibilityGrid` maps `(faction_id, region_id) → VisibilityState`.
+//! - Update pass: marks visible set, propagates discovery, reverts out-of-range to Discovered.
+//! - Dirty tracking ensures only changed regions emit events and redraw fog tiles.
+//! - Grid is serialised into the save file; full snapshot is compact (2 bits per region per faction).
 
 use super::{FogConfig, PlayerOwnership, VisibilityEvent, VisibilityFlags, VisibilityState};
 

@@ -1,7 +1,9 @@
 //! Script steps that drive the procedural map block generation sequence.
 //!
-//! - Data types: `ScriptStep`, `MapScript`.
-//! - Enum: `StepType`.
+//! - `MapScript` is a `Vec<ScriptStep>` executed in order by the generator.
+//! - `StepType` variants: `Fill`, `PlaceGroup`, `PlaceBlock`, `ApplyLayer`, `Repeat`.
+//! - Steps can be loaded from TOML or constructed programmatically from Lua.
+//! - `Repeat { count, steps }` nests a sub-list with its own RNG advancement.
 
 /// Type of procedural map generation step executed by the build script.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

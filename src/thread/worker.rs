@@ -1,7 +1,9 @@
 //! Worker VM lifecycle: spawn an OS thread with an isolated Lua VM, track Pending/Running/Completed/Error states.
 //!
-//! - Data type: `LuaThread`.
-//! - Enum: `ThreadState`.
+//! - Restricted API surface: inject only `lurek.thread.getChannel`, `lurek.fs.read`, and `arg` into worker VMs.
+//! - Channel-based communication: workers receive a shared channel registry for typed cross-VM messaging.
+//! - Blocking and timeout joins: wait indefinitely or poll with a deadline for worker completion.
+//! - Path-traversal guard: `fs.read` in worker VMs rejects `..` segments to prevent sandbox escape.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};

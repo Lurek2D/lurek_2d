@@ -1,8 +1,9 @@
 //! Validate a `SerialValue` tree against a schema describing expected types, ranges, and structure.
 //!
-//! - Functions: `validate`, `apply_defaults`.
-//! - Uses: `log_msg`, `runtime`.
-//! - See `docs/specs/serialize.md` for the module specification.
+//! - Enforce required fields, numeric min/max, string length bounds, nested table fields, and array items.
+//! - Apply default values from a schema to fill missing fields in a value tree.
+//! - Report path-qualified error messages when validation fails.
+//! - Log schema pass/fail outcomes through the engine log system.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

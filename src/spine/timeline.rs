@@ -1,8 +1,9 @@
 //! Easing curves (linear, quadratic in/out, step) for inter-keyframe interpolation.
 //!
-//! - Data types: `Keyframe`, `BoneTimeline`, `EventKeyframe`, `SkeletonAnimation`.
-//! - Enums: `EasingType`, `BoneProperty`.
-//! - Implementations: `EasingType`, `BoneTimeline`, `EventKeyframe`, `SkeletonAnimation`.
+//! - Keyframe storage and sorted insertion for bone property timelines.
+//! - BoneTimeline evaluation with clamping and step-hold semantics.
+//! - Event keyframes fired at specific animation times for Lua callback dispatch.
+//! - SkeletonAnimation clip: multi-timeline playback, blending, reversal, and JSON parsing.
 
 use super::bone::Bone;
 /// Interpolation curve applied between two adjacent keyframes.

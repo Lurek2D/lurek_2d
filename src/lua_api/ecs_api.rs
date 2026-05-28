@@ -4,8 +4,6 @@
 //! - `LuaUniverse`: userdata type exposed to Lua.
 //! - Bridges 69 Lua-callable methods via `mlua`.
 //! - See `docs/specs/ecs.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
-//! - See `src/lua_api` for related modules (1).
 
 use super::SharedState;
 use crate::ecs::Universe;

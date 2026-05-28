@@ -1,4 +1,7 @@
 //! OS window lifecycle: creation, sizing, positioning, fullscreen, and DPI handling.
+//!
+//! - Multi-monitor support: display enumeration, selection, and window placement.
+//! - Virtual viewport: logical-to-pixel scaling and scale-mode selection.
 
 /// Event-loop helpers: display enumeration, monitor selection, window centering, and startup placement.
 pub mod event_loop;

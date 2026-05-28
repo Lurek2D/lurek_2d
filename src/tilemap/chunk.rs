@@ -1,7 +1,9 @@
 //! Infinite sparse tile grid partitioned into fixed-size square chunks.
 //!
-//! - Data type: `ChunkMap`.
-//! - Implementation: `ChunkMap`.
+//! - On-demand chunk allocation and explicit load/unload lifecycle.
+//! - Tile read/write by world coordinates with automatic chunk decomposition.
+//! - Rectangular fill, chunk enumeration, and view-frustum culling helpers.
+//! - World-space geometry queries for chunk bounds and overlap testing.
 
 use crate::log_msg;
 use crate::math::Rect;

@@ -1,9 +1,10 @@
 //! Province map rendering: convert registry data into a flat RenderCommand list.
 //!
-//! - Data type: `ProvinceRenderOptions`.
-//! - Enum: `ProvinceZoomMode`.
-//! - Function: `generate_render_commands`.
-//! - Implementation: `ProvinceRenderOptions`.
+//! - Viewport culling based on screen bounds and zoom/pan transform.
+//! - Fill rendering via per-province span rectangles coloured by the active map mode.
+//! - Border rendering with config-based color from registered border types.
+//! - Capital dot markers and text labels with shadow offset.
+//! - Hover and selection highlight outlines for interactive feedback.
 
 use crate::province::map_modes::resolve_color_fallback;
 use crate::province::registry::ProvinceRegistry;

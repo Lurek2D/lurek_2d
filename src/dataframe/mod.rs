@@ -1,4 +1,12 @@
 //! Columnar DataFrame type and Database container
+//!
+//! - Lazy query builder and deferred execution pipeline
+//! - Query-time transforms: filtering, grouping, analytics, processing, and window functions
+//! - CSV, JSON, and binary serialization and parsing
+//! - Storage-agnostic file persistence helpers for dataframe and database payloads
+//! - One-shot threaded dataframe tasks for file loading and SQL queries
+//! - SQL-like SELECT executor with tokenizer and recursive-descent parser
+//! - Typed vectorized column storage with parallel reduce and scalar operations
 
 /// Storage-agnostic dataframe and database file persistence helpers.
 pub mod file_io;

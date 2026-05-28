@@ -1,8 +1,7 @@
 //! AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
 //!
-//! - Implementations: `StateMachine`, `BehaviorTree`.
-//! - Public methods: `generate_render_commands`, `draw_to_image`, `generate_render_commands`, `draw_to_image`.
-//! - Contains 4 method implementations.
+//! - Layout and traversal logic walking state-machine and tree data with position assignment.
+//! - Image drawing helpers mirroring structures into offline ImageData for inspection.
 
 use crate::ai::behavior_tree::{BTNode, BTStatus, BehaviorTree};
 use crate::ai::fsm::StateMachine;

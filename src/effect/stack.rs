@@ -1,8 +1,9 @@
 //! Ordered post-processing effect stack with per-entry enable flags.
 //!
-//! - Data type: `PostFxStack`.
-//! - Implementation: `PostFxStack`.
-//! - Public methods: `new`, `add`, `remove`, `insert`, and 19 more.
+//! - Index-based effect references aligned with a parallel enabled vector.
+//! - Stack manipulation: add, remove, insert, reorder, deduplicate.
+//! - Query helpers for enabled subset, dimensions, and positional lookup.
+//! - Debug visualization renderers for stack state, catalogs, parameters, and type bars.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};

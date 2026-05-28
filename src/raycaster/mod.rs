@@ -1,6 +1,8 @@
 //! Grid-based 2D raycaster using DDA ray-stepping and column projection.
 //!
-//! - Sub-modules: `build_scene`, `column_batch`, `dda`, `depth_buffer`, and 17 more.
+//! - Builds per-frame scenes with wall quads, floor/ceiling, sprites, and doors.
+//! - Supports heightmaps, distance lighting, depth occlusion, and FOV visibility.
+//! - Provides debug visualization helpers.
 
 /// Raycaster scene construction from camera and world grid.
 pub mod build_scene;

@@ -1,7 +1,7 @@
 //! Define `GraphItem` as the data carrier moved through graph nodes and edges.
 //!
-//! - Data type: `GraphItem`.
-//! - Enum: `ItemPosition`.
+//! - Track item position (at node, in transit, or unplaced) via `ItemPosition`.
+//! - Provide decay-time lifetime, priority, and alive/dead state per item.
 
 use crate::flownet::types::ItemId;
 

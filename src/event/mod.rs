@@ -1,4 +1,7 @@
 //! Priority queue with ordered dispatch and Lua payload conversion for runtime events.
+//!
+//! - Name-based and wildcard signal subscriptions for decoupled communication.
+//! - Re-exports `EventQueue`, `Event`, `EventArg`, `EventPriority`, and signal types.
 
 /// Priority queue and Lua payload conversion support for runtime events.
 pub mod event_queue;

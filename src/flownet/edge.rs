@@ -1,7 +1,7 @@
 //! Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
 //!
-//! - Data type: `Edge`.
-//! - Implementation: `Edge`.
+//! - Type-based filtering restricts which items may transit an edge.
+//! - Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
 
 use std::collections::HashSet;
 

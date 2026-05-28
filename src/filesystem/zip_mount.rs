@@ -1,7 +1,7 @@
 //! ZIP-backed virtual filesystem mount with path-indexed entry lookup.
 //!
-//! - Data type: `ZipMount`.
-//! - Functions: `normalise`, `is_traversal`.
+//! - Reads individual files from a ZIP archive on demand without full extraction.
+//! - Normalizes virtual paths and rejects directory-traversal attempts.
 
 use std::collections::HashMap;
 use std::io::Read;

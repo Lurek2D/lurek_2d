@@ -1,8 +1,9 @@
 //! Region and edge data types representing nodes and weighted connections in a world graph.
 //!
-//! - Data types: `WorldRegion`, `WorldEdge`, `WorldGraph`.
-//! - Function: `generate_world_graph`.
-//! - Implementations: `WorldGraph`, `WNode`.
+//! - A* pathfinding with Euclidean heuristic for shortest-path queries between regions.
+//! - Bounded Dijkstra reachability returning all regions within a cumulative travel cost.
+//! - Minimum spanning tree computation via Kruskal's algorithm.
+//! - Random world graph generation placing regions in a bounding box and connecting k-nearest neighbours.
 
 use crate::procgen::lcg::Lcg;
 use std::cmp::Ordering;

@@ -1,7 +1,7 @@
 //! Change-log entries for single-field province mutations (colour, terrain, border, fog, visibility).
 //!
-//! - Enums: `ProvinceChange`, `ProvinceEvent`.
-//! - Uses: `province`.
+//! - High-level map events emitted to Lua callbacks after batched province updates.
+//! - Typed signals for map-mode switches, palette replacements, and fog overlays.
 
 use crate::province::types::{BorderType, ProvinceId};
 

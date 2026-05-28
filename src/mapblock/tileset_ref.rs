@@ -1,6 +1,9 @@
 //! Tileset reference: links a map block's tile slots to ID ranges in a tileset asset.
 //!
-//! - Data type: `TilesetRef`.
+//! - `TilesetRef` stores the tileset asset key and a `base_id` offset applied to all tiles.
+//! - Multiple blocks may reference the same tileset with different `base_id` offsets.
+//! - Resolved at generator build time; missing tilesets produce a load-time error.
+//! - The resolved tileset texture is loaded once and shared across all referencing blocks.
 
 /// Reference to a tileset used by map blocks.
 #[derive(Debug, Clone)]

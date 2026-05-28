@@ -1,8 +1,9 @@
-//! DSP synthesis helpers for procedural waveforms and envelopes.
+//! Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.
 //!
-//! - Data types: `AdsrEnvelope`, `Synthesizer`.
-//! - Enum: `Waveform`.
-//! - Implementations: `Waveform`, `AdsrEnvelope`, `Synthesizer`.
+//! - `Waveform` selects the oscillator shape — sine, square, sawtooth, triangle, or white noise — and exposes `parse()` for name-based construction from Lua configuration.
+//! - `AdsrEnvelope` applies attack, decay, sustain, and release amplitude shaping; `amplitude_at(elapsed)` returns the gain multiplier at any point in the note's lifetime.
+//! - `Synthesizer` combines a `Waveform` oscillator and an `AdsrEnvelope` to render a complete `SoundData` PCM buffer at a given frequency, duration, sample rate, and peak amplitude.
+//! - All rendering is CPU-side in a tight sample loop; the resulting `SoundData` is passed to `rodio` for device mixing via the audio subsystem.
 
 use crate::audio::sound_data::SoundData;
 

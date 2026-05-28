@@ -1,6 +1,7 @@
 //! Named type registry with alias support for dynamic object construction.
 //!
-//! - Data type: `Factory`.
+//! - Register, unregister, and resolve canonical type names at runtime.
+//! - Alias mapping allows multiple names to reference the same underlying type.
 
 use std::collections::HashSet;
 /// Registry of named constructable types with optional string aliases.

@@ -1,8 +1,9 @@
 //! Post-processing effect type enumeration and name registry.
 //!
-//! - Enum: `PostFxEffectType`.
-//! - Implementation: `PostFxEffectType`.
-//! - Public methods: `from_name`, `built_in_names`, `name`, `debug_label`, and 1 more.
+//! - Canonical lowercase name mapping for Lua-facing effect lookup.
+//! - Debug label generation for renderer diagnostics.
+//! - Default parameter tables for each built-in effect.
+//! - Built-in effect catalog excluding the custom shader pass.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

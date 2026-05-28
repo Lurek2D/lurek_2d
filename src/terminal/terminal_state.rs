@@ -1,11 +1,13 @@
 //! Terminal grid state machine: fixed-size cell buffer with 1-based cursor, per-cell fg/bg colors, and content-preserving resize.
 //!
-//! - Data type: `Terminal`.
-//! - Enum: `TerminalEvent`.
-//! - Implementation: `Terminal`.
-//! - Public methods: `new`, `set`, `get`, `clear`, and 49 more.
-//! - Contains 57 method implementations.
-//! - Uses: `render`, `runtime`.
+//! - Widget system: compositable label, button, text-box, list, border, and panel widgets drawn on top of the grid with default shaded skins.
+//! - Focus and input dispatch: keyboard, text-input, and mouse events routed to the focused widget with event emission.
+//! - Scrollback buffer: capped line history with offset-based windowed retrieval.
+//! - Command history: push/prev/next navigation for console-style input recall.
+//! - Cell manipulation helpers: single-cell set/get, bulk print, colored print, and default-color application.
+//! - Render output: composited cell buffer flattened into batched background and text `RenderCommand` lists for the renderer.
+//! - Border rendering: single, double, and ASCII frame styles with optional title text.
+//! - Panel child tracking: index-based parent-child relationships with automatic adjustment on widget removal.
 
 use super::cell::{TCell, DEFAULT_FG};
 use super::widget::{BorderStyle, Widget, WidgetKind};

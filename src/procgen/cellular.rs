@@ -1,6 +1,7 @@
 //! Cellular automata cave generator producing flat grid maps from configurable birth/survive rules.
 //!
-//! - Data type: `CellularOpts`.
+//! - Supports reproducible output via seeded LCG randomisation.
+//! - Treats out-of-bounds neighbours as solid, forming natural cave walls at map edges.
 
 use super::lcg::Lcg;
 

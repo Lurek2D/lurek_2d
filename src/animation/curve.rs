@@ -1,8 +1,9 @@
 //! Defines keyed numeric curves and sparse multi-property timelines for animation data.
 //!
-//! - Data types: `AnimCurve`, `AnimPropertyTimeline`.
-//! - Enum: `EasingKind`.
-//! - Implementations: `AnimCurve`, `AnimPropertyTimeline`.
+//! - Stores sorted keyframes for single values and named property tracks.
+//! - Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.
+//! - Evaluates one curve, one property, or a full property snapshot at an arbitrary time.
+//! - Provides the interpolation layer used by higher animation systems for parameter driving over time.
 
 use crate::math::easing;
 use std::collections::HashMap;

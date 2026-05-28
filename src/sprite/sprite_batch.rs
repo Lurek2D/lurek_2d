@@ -1,7 +1,7 @@
 //! Deferred sprite draw-call collector bound to a single texture atlas.
 //!
-//! - Data types: `SpriteBatch`, `BatchEntry`.
-//! - Implementation: `SpriteBatch`.
+//! - Accumulates positioned, rotated, scaled source-quad entries for batch submission.
+//! - Supports optional capacity cap to limit per-frame draw volume.
 
 use crate::runtime::resource_keys::TextureKey;
 

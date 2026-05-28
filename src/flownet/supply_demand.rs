@@ -1,7 +1,7 @@
 //! Priority-ordered demand matching against available supply nodes.
 //!
-//! - Implementation: `Graph`.
-//! - Public method: `process_demand`.
+//! - Pathfinding-based item routing from supplier to consumer.
+//! - Event emission on supply depletion and demand fulfillment.
 
 use super::core::Graph;
 use super::item::ItemPosition;

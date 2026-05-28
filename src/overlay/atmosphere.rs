@@ -1,7 +1,7 @@
 //! State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
 //!
-//! - Data types: `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, and 2 more.
-//! - Implementations: `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, and 2 more.
+//! - Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
+//! - All default to disabled so overlays are opt-in per scene.
 
 #[derive(Debug, Clone)]
 /// Configures animated cloud overlay generation.

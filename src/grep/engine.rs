@@ -1,7 +1,9 @@
 //! High-level search engine: wires configuration, file filter, and pattern matcher.
 //!
-//! - Data type: `GrepEngine`.
-//! - Implementation: `GrepEngine`.
+//! - `GrepEngine::run(root, pattern)` returns a `GrepResult` across all matching files.
+//! - Delegates file discovery to `FileFilter` and matching to `Matcher`.
+//! - Work is split across a Rayon thread pool sized from `GrepConfig::thread_count`.
+//! - Used by `lurek.grep.*` Lua API; the Lua binding owns the config lifecycle.
 
 use super::config::GrepConfig;
 use super::filter::FileFilter;

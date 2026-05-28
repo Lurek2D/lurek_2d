@@ -1,7 +1,9 @@
 //! Z-layer management for multi-storey and multi-level map construction.
 //!
-//! - Data type: `BlockLayer`.
-//! - Implementation: `BlockLayer`.
+//! - `LayerStack` holds a `Vec<MapBlockGrid>`, one per Z level starting from 0.
+//! - Layers are independent grids; block placement in one layer does not affect another.
+//! - Layer 0 is the ground floor; negative indices are not supported.
+//! - The `MapBlockConfig::layer_count` field pre-allocates the stack at generator init.
 
 use super::maptile::MapTile;
 

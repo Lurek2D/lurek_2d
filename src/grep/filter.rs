@@ -1,7 +1,9 @@
 //! File extension and path filters for narrowing the search scope.
 //!
-//! - Data type: `FileFilter`.
-//! - Implementation: `FileFilter`.
+//! - `FileFilter` accepts `include_extensions`, `exclude_extensions`, and glob patterns.
+//! - `FileFilter::matches(path)` is a pure predicate; no I/O at the filter stage.
+//! - Hidden files and directories starting with `.` are excluded by default.
+//! - Configured from `GrepConfig` or directly by Lua via `lurek.grep.set_filter`.
 
 use std::path::Path;
 

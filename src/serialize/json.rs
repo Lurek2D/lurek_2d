@@ -1,6 +1,7 @@
 //! Parse JSON strings into the engine's `SerialValue` intermediate representation.
 //!
-//! - Functions: `from_json`, `to_json`.
+//! - Encode `SerialValue` trees back to JSON (compact or pretty-printed).
+//! - Map JSON types (null, bool, number, string, array, object) to `SerialValue` variants bidirectionally.
 
 use super::lua_table::SerialValue;
 use crate::log_msg;

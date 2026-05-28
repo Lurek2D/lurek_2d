@@ -1,4 +1,7 @@
 //! Exports the release-safe Lua REPL core: session, commands, completer, and value formatter.
+//!
+//! - Re-exports top-level symbols for convenient use by `lua_api` bindings and `devtools`.
+//! - All REPL state is pure Rust with no wgpu or winit dependencies; safe for headless and test contexts.
 
 /// REPL command parsing and command result types.
 pub mod commands;

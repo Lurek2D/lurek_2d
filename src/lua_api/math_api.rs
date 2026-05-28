@@ -7,7 +7,6 @@
 //! - Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`.
 //! - Bridges 233 Lua-callable methods via `mlua`.
 //! - See `docs/specs/math.md` for the full API specification.
-//! - Part of the `lua_api` subsystem.
 
 use super::SharedState;
 use crate::math::easing;

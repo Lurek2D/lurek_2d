@@ -1,6 +1,8 @@
 //! Directed flownet container with typed nodes, edges, and item flow.
 //!
-//! - Sub-modules: `types`, `algorithms`, `core`, `edge`, and 6 more.
+//! - Supply/demand modeling, conversion rules, and overflow policies.
+//! - Pathfinding, simulation stepping, and event emission.
+//! - Render helpers for visual flownet output.
 
 /// Type-safe identifiers for nodes, edges, and items.
 pub mod types;

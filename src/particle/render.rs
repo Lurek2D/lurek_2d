@@ -1,6 +1,7 @@
 //! Render-command generation for particle systems and trails.
 //!
-//! - Function: `expand_particle_commands`.
+//! - Expansion of batched `DrawParticleSystem` into individual textured draw calls.
+//! - Untextured particles remain batched for efficient rendering.
 
 use super::emitter::ParticleSystem;
 use super::trail::Trail;

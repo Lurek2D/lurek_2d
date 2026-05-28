@@ -1,7 +1,7 @@
 //! 3D float vector for cross-product normals, raycasting directions, and noise inputs.
 //!
-//! - Data type: `Vec3`.
-//! - Implementations: `Vec3`, `Mul`, `Div`, `fmt`.
+//! - Arithmetic ops (add, sub, mul, div, neg) and geometric helpers (dot, cross, normalize, reflect, project).
+//! - Lerp, distance, and length utilities for interpolation and spatial queries.
 
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};

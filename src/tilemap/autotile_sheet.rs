@@ -1,8 +1,9 @@
 //! Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
 //!
-//! - Data type: `AutoTileSheet`.
-//! - Enum: `AutoTileLayout`.
-//! - Implementation: `AutoTileSheet`.
+//! - Bitmask table generation and reverse lookup from neighbor mask to tile index.
+//! - 8-bit diagonal collapse for correct cardinal-gated corner resolution.
+//! - Quarter-tile compositing helpers for sub-tile source and destination rects.
+//! - Sheet-to-tileset rule registration for runtime autotile placement.
 
 use super::tileset::TileSet;
 use crate::math::Rect;

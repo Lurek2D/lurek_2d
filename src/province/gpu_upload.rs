@@ -1,8 +1,7 @@
 //! Province GPU upload helpers for id, border-index, and distance-field textures.
 //!
-//! - Data type: `ProvinceGpuTextures`.
-//! - Functions: `pack_u32_pixels_le`, `pack_u16_pixels_le`, `create_province_id_texture`, `create_border_index_texture`, and 2 more.
-//! - See `docs/specs/province.md` for the module specification.
+//! - Consistent texture descriptors for `R32Uint`, `R16Uint`, and `R8Unorm` data.
+//! - Byte packing utilities used by upload paths and unit tests.
 
 /// GPU texture bundle used by the province map renderer.
 pub struct ProvinceGpuTextures {

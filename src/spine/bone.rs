@@ -1,6 +1,7 @@
 //! Bone struct holding local and accumulated world-space transform.
 //!
-//! - Data type: `Bone`.
+//! - Parent-child hierarchy via optional parent index.
+//! - Constructors for root bones and parented child bones.
 
 /// Single bone in the skeleton tree with local and accumulated world-space transform.
 #[derive(Debug, Clone)]

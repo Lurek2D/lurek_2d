@@ -1,4 +1,9 @@
 //! Smooth value interpolation with configurable easing curves.
+//!
+//! - Sequence and parallel combinators for complex multi-step animations.
+//! - Spring-based physics tweening for natural motion.
+//! - Shared tween engine driving all active tweens each frame.
+//! - Multi-channel interpolator driven by easing functions over a fixed duration.
 
 /// Core tween engine that ticks and manages active tween instances.
 pub mod engine;

@@ -1,7 +1,9 @@
 //! Mod API registry: records which `lurek.*` namespaces are available to mod scripts.
 //!
-//! - Data types: `TypeSchema`, `GameApiRegistry`.
-//! - Implementations: `TypeSchema`, `GameApiRegistry`.
+//! - `ApiRegistry` maps API name strings to the set of permitted function identifiers.
+//! - Populated at engine startup from the built-in API schema and any engine plugins.
+//! - Mods declare their required API surface in `mod.toml`; the sandbox checks against it.
+//! - Unknown API requests produce a sandbox violation error before the mod is loaded.
 
 use super::api_schema::{AssetRequirement, FieldDef, MethodDef};
 use std::collections::HashMap;

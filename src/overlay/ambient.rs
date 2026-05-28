@@ -1,6 +1,7 @@
 //! Global ambient tint state driven by a time-of-day curve.
 //!
-//! - Data type: `AmbientState`.
+//! - Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
+//! - Consumed by the overlay renderer when the ambient effect is enabled.
 
 #[derive(Debug, Clone)]
 /// Stores ambient tint settings applied across the whole screen.

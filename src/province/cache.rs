@@ -1,7 +1,7 @@
 //! Serialisable geometry cache for province spans and border segments.
 //!
-//! - Data type: `ProvinceGeometryCache`.
-//! - Implementation: `ProvinceGeometryCache`.
+//! - Binary encode/decode with versioned little-endian format.
+//! - Built from a ProvinceRegistry snapshot for fast load without re-scanning.
 
 use crate::province::registry::ProvinceRegistry;
 

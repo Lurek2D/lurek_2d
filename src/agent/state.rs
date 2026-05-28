@@ -1,8 +1,9 @@
-//! Per-agent configuration, system-level orchestration state, and prompt assembly helpers.
+//! Holds per-agent configuration and assembles outbound `AgentRequest` values from endpoint, model, system prompt, skills, format, options, and retry settings.
 //!
-//! - Data types: `AgentState`, `SystemSkill`, `AISystemState`.
-//! - Implementations: `AgentState`, `AISystemState`.
-//! - Public methods: `new`, `set_name`, `set_description`, `set_max_retries`, and 13 more.
+//! - `AgentState` builds the system block by appending named skills in insertion order behind the base system prompt.
+//! - `AISystemState` stores the shared system prompt, named instruction blocks selectively included per prompt, and keyword-gated skills auto-injected when their keywords match the instruction.
+//! - `SystemSkill` carries a keyword list and a prompt fragment; skills fire automatically when any keyword appears in the dispatched instruction.
+//! - `to_request` and `to_request_with_system` build the final `AgentRequest` for single and system-routed prompts respectively.
 
 use crate::agent::AgentRequest;
 use std::collections::HashMap;

@@ -1,9 +1,14 @@
 //! Central mutable state container shared across all engine subsystems during a frame.
 //!
-//! - Data types: `WindowState`, `ErrorInfo`, `ScreenshotRequest`, `FrameProfile`, and 4 more.
-//! - Enum: `FullscreenType`.
-//! - Implementations: `WindowState`, `PhysicsRunConfig`, `SharedState`.
-//! - Public methods: `new`, `step_timer`, `touch_texture`, `touch_canvas`, and 10 more.
+//! - Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
+//! - Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
+//! - Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
+//! - Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
+//! - Memory budget enforcement with LRU eviction of textures and canvases.
+//! - Asynchronous file I/O through GameFS with poll-based completion.
+//! - Physics stepping configuration and run-state parameters.
+//! - Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
+//! - Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
 
 use crate::midi::MidiState;
 use crate::audio::Mixer;

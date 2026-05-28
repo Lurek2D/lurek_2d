@@ -1,7 +1,7 @@
 //! Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
 //!
-//! - Data type: `HttpResponse`.
-//! - Function: `execute_request`.
+//! - Configurable per-request timeout via agent builder.
+//! - Unified `HttpResponse` captures status, body, headers, and optional error message.
 
 use log::{debug, warn};
 use std::time::Duration;

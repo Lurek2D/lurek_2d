@@ -1,4 +1,15 @@
 //! Universal visibility system for fog-of-war, discovery, and line-of-sight.
+//!
+//! - This module provides a generic visibility layer that can be attached to any
+//! - region-based system (tilemap, province map, globe, custom). The module is
+//! - agnostic to geometry — it receives region counts and adjacency lists.
+//! - # Architecture
+//! - `VisibilityGrid` — per-region visibility state for multiple players
+//! - `VisibilityState` — enum: Hidden, Discovered, Visible (+ custom u8 levels)
+//! - `PlayerOwnership` — which players/groups share visibility
+//! - `VisibilityFlags` — bitfield per region (terrain, units, buildings, etc.)
+//! - `DiscoveryCost` — per-region cost to reveal, adjacency requirements
+//! - `FogConfig` — fog intensity and rendering hints
 
 /// Adjacency provider trait defining region neighbor relationships.
 pub mod adjacency;

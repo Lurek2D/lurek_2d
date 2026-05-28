@@ -1,7 +1,9 @@
 //! A* shortest-path search over weighted directed/bidirectional graphs.
 //!
-//! - Functions: `graph_astar`, `graph_range`.
-//! - Implementation: `GNode`.
+//! - Range query returning all nodes reachable within a cost budget.
+//! - Heuristic support for informed search; falls back to Dijkstra when omitted.
+//! - Min-heap priority queue node with reverse ordering for `BinaryHeap`.
+//! - Path reconstruction from predecessor map.
 
 use crate::flownet::core::Graph;
 use std::cmp::Ordering;

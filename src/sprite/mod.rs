@@ -1,4 +1,7 @@
 //! Sprite, SpriteSheet, and SpriteBatch types for 2D rendering
+//!
+//! - Texture atlas parsing (TexturePacker JSON) and region lookup
+//! - Nine-slice panel geometry for scalable UI elements
 
 /// Texture atlas region map and TexturePacker JSON parser.
 pub mod atlas;

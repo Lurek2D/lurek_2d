@@ -1,7 +1,7 @@
 //! Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
 //!
-//! - Data types: `Consideration`, `UAAction`, `UtilityAI`.
-//! - Enum: `ResponseCurve`.
+//! - Response-curve mapping rules and action-side data binding Lua scorers with momentum weighting.
+//! - Evaluation flow calling registered scorers, tracking per-action scores, and selecting best action.
 
 use mlua::prelude::*;
 use mlua::RegistryKey;

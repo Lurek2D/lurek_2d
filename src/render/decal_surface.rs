@@ -1,6 +1,7 @@
 //! Persistent paint-target surface for world-space decals.
 //!
-//! - Data type: `DecalSurface`.
+//! - Stores pixel dimensions used by the renderer to allocate backing textures.
+//! - Lightweight data struct with no GPU resources of its own.
 
 /// Paint-target surface for persistent world decals; holds pixel dimensions only.
 pub struct DecalSurface {

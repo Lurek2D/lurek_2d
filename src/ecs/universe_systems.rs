@@ -1,7 +1,7 @@
 //! System registration, removal, and count queries on a Universe.
 //!
-//! - Implementation: `Universe`.
-//! - Public methods: `add_system`, `get_sorted_system_indices_all`, `get_sorted_system_indices_for_phase`, `remove_system`, and 1 more.
+//! - Priority-based and dependency-aware topological sorting of systems per phase.
+//! - Phase filtering with fallback semantics for empty-phase systems.
 
 use super::Universe;
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};

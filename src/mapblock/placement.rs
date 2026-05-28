@@ -1,8 +1,9 @@
 //! Block placement grid, valid-position search, and placed-block tracking.
 //!
-//! - Data types: `PlacedBlock`, `PlacementGrid`.
-//! - Function: `find_valid_positions`.
-//! - Implementation: `PlacementGrid`.
+//! - `PlacementGrid` tracks which cells are occupied and caches constraint state.
+//! - `find_valid_positions(grid, block)` returns all (x, y) cells where the block fits.
+//! - Placement validation is O(edges × constraints) per candidate cell.
+//! - `PlacedBlock` records the block ID, position, and applied rotation for undo support.
 
 use super::block::{Edge, MapBlock};
 use super::constraints::{opposite_edge, NeighborRules};

@@ -1,7 +1,7 @@
 //! Debug visualisation of physics bodies as render commands or rasterised images.
 //!
-//! - Implementation: `World`.
-//! - Public methods: `generate_render_commands`, `draw_to_image`.
+//! - Colour-codes bodies by type: dynamic, static, kinematic, sensor.
+//! - Draws velocity arrows for dynamic bodies and shape outlines for all bodies.
 
 use crate::image::ImageData;
 use crate::physics::body::{BodyShape, BodyType};

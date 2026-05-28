@@ -1,4 +1,4 @@
-//! LLM agent runtime: state, request types, error variants, background HTTP client, and Ollama lifecycle.
+//! LLM agent runtime: state, request types, error variants, background HTTP client, and Ollama lifecycle management.
 
 pub mod client;
 pub(crate) mod lua_runtime;

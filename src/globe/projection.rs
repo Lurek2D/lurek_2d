@@ -1,7 +1,9 @@
 //! Orbit camera with latitude, longitude, zoom, and level-of-detail selection.
 //!
-//! - Data type: `OrbitCamera`.
-//! - Functions: `build_view_matrix`, `project_point`, `project_region`, `project_province`, and 3 more.
+//! - View-matrix construction from globe rotation, axial tilt, and camera angles.
+//! - Single-point and polygon projection from lat/lon to screen space.
+//! - Back-face culling via z-depth test for hidden-hemisphere rejection.
+//! - Screen-drag-to-pan conversion and vector normalization helpers.
 
 use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};
 use super::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
