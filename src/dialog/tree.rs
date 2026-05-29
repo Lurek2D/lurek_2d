@@ -1,8 +1,9 @@
-//! - Provides the core dialogue graph data used to model selectable topics, branches, and authored node content.
-//! - Applies contextual filtering so only candidates compatible with current runtime state remain eligible.
-//! - Scores eligible options with base weights and optional utility signals to choose the strongest narrative path.
-//! - Keeps selection deterministic and inspectable by storing gating and scoring inputs directly in dialog records.
-//! - Serves as the central planning layer that higher-level dialogue state and scripting flows execute over time.
+//! Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths.
+//! Applies runtime gate filtering so only context-compatible narrative candidates remain available.
+//! Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes.
+//! Keeps decision flow transparent by storing gating and scoring inputs directly with authored records.
+//! Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
+//! Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
 
 use std::collections::HashMap;
 

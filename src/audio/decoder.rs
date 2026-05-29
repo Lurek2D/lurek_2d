@@ -1,9 +1,7 @@
-//! Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
-//!
-//! - Random-access seek and rewind via cursor over the decoded i16 sample buffer.
-//! - Chunked iteration with configurable `buffer_size` for streaming consumption.
-//! - Duration and position queries derived from sample rate and channel count.
-//! - Seekable flag always true since the entire file is held in memory.
+//! Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer.
+//! Provides random-access cursor movement for rewind, seek, and chunked iteration workflows.
+//! Exposes duration and playback-position metrics derived from decoded sample metadata.
+//! Serves as the decode bridge between file assets and streaming or buffered playback paths.
 
 use crate::log_msg;
 use crate::runtime::log_messages::AD01_AUDIO_DECODED;

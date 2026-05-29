@@ -1,12 +1,8 @@
-//! Runtime state machine executor for AI agents.
-//!
-//! - For structural FSM definition and graph validation, see [`crate::patterns::state_machine`].
-//! - This module adds Lua callback execution, priority-based transitions, and per-frame time tracking.
-//! - Finite-state-machine storing named states, callback hooks, transition rules, and active state.
-//! - Callback bundles for state entry, update, and exit with priority-sorted transition records.
-//! - Mutable machine state tracking current state, initial state, elapsed time, and registration helpers.
-//! - Descending-priority transition sorting so the tick evaluator tests highest-priority guards first.
-//! - Elapsed time tracking in the current state for time-based guards and Lua update callbacks.
+//! Provides explicit mode-based control where behavior advances through named states over time.
+//! Evaluates guarded transitions in deterministic priority order to keep switching reproducible.
+//! Coordinates lifecycle callbacks around entry, steady update, and exit handoff boundaries.
+//! Tracks dwell time to support time-aware logic without external bookkeeping overhead.
+//! Serves agents that need clear phase changes rather than fully continuous utility arbitration.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FN01, FN02};

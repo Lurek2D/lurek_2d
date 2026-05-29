@@ -1,7 +1,7 @@
-//! Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
-//!
-//! - Installs an instruction-count hook to abort runaway callbacks after a deadline.
-//! - Provides checked and unchecked variants for both timed and untimed invocation.
+//! Implements guarded invocation of named `lurek.*` callbacks from engine-side runtime flow.
+//! Provides checked and logging variants so callers choose explicit error propagation behavior.
+//! Supports optional timeout enforcement via instruction hooks to stop runaway callback execution.
+//! Serves as the callback safety boundary between frame orchestration and Lua script handlers.
 
 use mlua::prelude::*;
 use mlua::HookTriggers;

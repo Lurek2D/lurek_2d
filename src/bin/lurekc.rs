@@ -1,4 +1,6 @@
-//! Console-less launcher variant for the shared `lurek_run()` bootstrap path.
+//! Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap.
+//! Reuses the main runtime startup path while controlling subsystem behavior on Windows.
+//! Serves as the minimal binary entrypoint for standard interactive game launch.
 
 #![cfg_attr(windows, windows_subsystem = "windows")]
 use std::process::ExitCode;

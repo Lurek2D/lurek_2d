@@ -1,9 +1,9 @@
-//! Holds per-agent configuration and assembles outbound `AgentRequest` values from endpoint, model, system prompt, skills, format, options, and retry settings.
-//!
-//! - `AgentState` builds the system block by appending named skills in insertion order behind the base system prompt.
-//! - `AISystemState` stores the shared system prompt, named instruction blocks selectively included per prompt, and keyword-gated skills auto-injected when their keywords match the instruction.
-//! - `SystemSkill` carries a keyword list and a prompt fragment; skills fire automatically when any keyword appears in the dispatched instruction.
-//! - `to_request` and `to_request_with_system` build the final `AgentRequest` for single and system-routed prompts respectively.
+//! Defines runtime state contracts that shape outbound agent requests from script-facing configuration.
+//! Aggregates endpoint, model, prompt policy, timeout, and retry controls into deterministic payload inputs.
+//! Builds direct and system-routed request variants with consistent field and option mapping.
+//! Composes AI-system context from instructions and skill fragments matched to prompt intent signals.
+//! Keeps mutable control state separate from transport execution to preserve predictable behavior boundaries.
+//! Bridges Lua runtime controls to transport-ready request structures without duplicating orchestration logic.
 
 use crate::agent::AgentRequest;
 use std::collections::HashMap;

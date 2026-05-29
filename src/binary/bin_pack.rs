@@ -1,12 +1,13 @@
-//! Token-based binary packing and unpacking using whitespace-separated format strings
-//!
-//! - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes
-//! - Coercion helpers that convert between BinValue variants at write time
-//! - Length-prefixed and null-terminated string support for wire protocols
-//! - Padding tokens for alignment and fixed-layout binary structures
-//! - Bounds-checked reads with descriptive underflow error messages
-//! - Static size measurement for formats without variable-width tokens
-//! - ByteData output for zero-copy integration with the binary module pipeline
+//! Implements token-driven binary pack and unpack flows over whitespace-delimited format descriptions.
+//! Supports endian-aware serialization of scalar values, strings, booleans, and raw byte payloads.
+//! Applies value coercion rules so heterogeneous input variants can be normalized at write time.
+//! Handles fixed-width and variable-width token semantics including prefixed and null-terminated strings.
+//! Provides padding support for alignment-sensitive binary structure construction.
+//! Performs bounds-checked reads and returns structured failures on truncated source buffers.
+//! Computes format size where possible to aid buffer planning and validation.
+//! Returns owned byte containers suitable for downstream binary pipeline integration.
+//! Keeps format parsing and conversion behavior deterministic for script-driven packing contracts.
+//! Serves as a high-level schema layer above low-level byte buffer primitives.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

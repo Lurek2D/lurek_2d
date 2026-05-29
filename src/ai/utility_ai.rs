@@ -1,7 +1,8 @@
-//! Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
-//!
-//! - Response-curve mapping rules and action-side data binding Lua scorers with momentum weighting.
-//! - Evaluation flow calling registered scorers, tracking per-action scores, and selecting best action.
+//! Implements continuous utility-based action choice through layered consideration scoring pipelines.
+//! Shapes raw inputs with configurable response curves to express nonlinear decision preference.
+//! Blends historical momentum with fresh evidence so action selection avoids abrupt instability.
+//! Captures per-action score snapshots each tick for introspection and downstream decision context.
+//! Serves agents that benefit from smooth preference arbitration instead of hard state jumps.
 
 use mlua::prelude::*;
 use mlua::RegistryKey;

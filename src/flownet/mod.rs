@@ -1,8 +1,6 @@
-//! Directed flownet container with typed nodes, edges, and item flow.
-//!
-//! - Supply/demand modeling, conversion rules, and overflow policies.
-//! - Pathfinding, simulation stepping, and event emission.
-//! - Render helpers for visual flownet output.
+//! Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support.
+//! Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface.
+//! Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation.
 
 /// Type-safe identifiers for nodes, edges, and items.
 pub mod types;

@@ -1,9 +1,9 @@
-//! Buffered file handle abstraction for GameFS read, write, and append streams.
-//!
-//! - Mode-based state machine: Read, Write, Append, or Closed.
-//! - Resolves logical game paths through GameFS before opening OS files.
-//! - Provides line-oriented and byte-oriented read APIs with EOF detection.
-//! - Seek, tell, flush, and auto-close on drop for safe resource cleanup.
+//! Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
+//! Resolves logical game paths through GameFS before touching host filesystem resources.
+//! Exposes byte and line reading utilities with EOF-aware iteration semantics.
+//! Supports seek, tell, flush, and explicit close workflows for predictable stream control.
+//! Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
+//! Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
 
 use crate::filesystem::GameFS;
 use crate::runtime::error::{EngineError, EngineResult};

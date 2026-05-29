@@ -1,9 +1,8 @@
-//! Scatter plot renderer: (x, y) point series showing distribution and correlation.
-//!
-//! - Rasterises a `ScatterChartSpec` into an RGBA pixel buffer.
-//! - Each point is drawn as a filled circle; radius and colour are per-series.
-//! - Axes are auto-ranged or clamped to user-supplied min/max bounds.
-//! - Owned by `lurek.charts.scatter`; output is uploaded as a texture.
+//! Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation.
+//! Draws each sample as a configurable filled marker over chart-space transformed coordinates.
+//! Supports automatic domain estimation or explicit axis bounds for controlled plot framing.
+//! Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
+//! Serves as the point-series rendering backend for the charts scatter API path.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{

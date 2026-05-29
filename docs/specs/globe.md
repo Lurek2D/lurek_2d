@@ -59,6 +59,7 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - Id-keyed label storage for globe map annotations.
 - Insert, remove, move, and toggle visibility of positioned text labels.
 - LOD-aware iteration filters labels by minimum detail tier.
+- Captures functional behavior for label so callers can compose this capability safely.
 
 ### layer.rs
 
@@ -80,12 +81,14 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - Generate approximate region geometry from Voronoi seed points.
 - Convert between internal builder representations and the shared `Region` type.
 - Parse TOML primitives: u32 literals, float pairs, float-4 arrays, string key-value lines.
+- Captures functional behavior for loader so callers can compose this capability safely.
 
 ### marker.rs
 
 - Stable-id marker collection for globe pin management.
 - Insert, remove, move, and query markers by id or type.
 - Per-marker visibility toggle and arbitrary string attributes.
+- Captures functional behavior for marker so callers can compose this capability safely.
 
 ### mod.rs
 

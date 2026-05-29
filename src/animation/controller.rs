@@ -1,9 +1,13 @@
-//! Owns the runtime animation player for frame-based clips.
-//!
-//! - Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
-//! - Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.
-//! - Advances playback with forward, reverse, and ping-pong modes, including looping, stopping, pausing, and speed scaling.
-//! - Exposes the current quad, event drain, crossfade blend state, and simple preview images for the active frame set.
+//! Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow.
+//! Advances playback through forward, reverse, ping-pong, looped, and paused progression modes.
+//! Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable.
+//! Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata.
+//! Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization.
+//! Exposes current frame sampling for render-facing systems that require stable quad lookup each tick.
+//! Maintains deterministic update behavior so identical input timing yields identical playback state.
+//! Supports preview and inspection flows used by tools and debugging overlays.
+//! Keeps clip selection, event buffering, and cursor mutation within one cohesive control surface.
+//! Serves as the primary animation execution engine for sprite and timeline-driven characters.
 
 use super::clip::{AnimClip, ClipPlaybackMode};
 use super::event::AnimEvent;

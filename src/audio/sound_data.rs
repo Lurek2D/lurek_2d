@@ -1,11 +1,11 @@
-//! `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
-//!
-//! - File decode via rodio, silent-buffer allocation, and Lua argument factory.
-//! - WAV encoding to byte vector for save/export.
-//! - Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
-//! - In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
-//! - Waveform drawing into `ImageData` for visual feedback.
-//! - Duration, sample count, and channel count queries.
+//! Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
+//! Supports decode from file and direct buffer creation for generated or procedural audio content.
+//! Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
+//! Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
+//! Exposes encode paths for export-ready WAV byte output from runtime sample data.
+//! Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
+//! Bridges sample data to visual workflows through waveform drawing integration points.
+//! Serves as the core raw sound-data container for playback and preprocessing pipelines.
 
 use rodio::Source;
 #[derive(Debug, Clone)]

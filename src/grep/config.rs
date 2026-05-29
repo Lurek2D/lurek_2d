@@ -1,5 +1,4 @@
-//! Grep engine configuration: thread count, file size limits, and encoding settings.
-//!
+//! - Grep engine configuration: thread count, file size limits, and encoding settings.
 //! - `GrepConfig` holds `thread_count`, `max_file_size`, `case_sensitive`, and `whole_word`.
 //! - Deserialized from the `[grep]` TOML block or constructed via Lua table defaults.
 //! - `thread_count` defaults to `num_cpus / 2`; 0 means single-threaded.

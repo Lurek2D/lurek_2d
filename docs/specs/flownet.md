@@ -52,12 +52,14 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
 - Type-based filtering restricts which items may transit an edge.
 - Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
+- Captures functional behavior for edge so callers can compose this capability safely.
 
 ### item.rs
 
 - Define `GraphItem` as the data carrier moved through graph nodes and edges.
 - Track item position (at node, in transit, or unplaced) via `ItemPosition`.
 - Provide decay-time lifetime, priority, and alive/dead state per item.
+- Captures functional behavior for item so callers can compose this capability safely.
 
 ### mod.rs
 
@@ -108,6 +110,7 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - Priority-ordered demand matching against available supply nodes.
 - Pathfinding-based item routing from supplier to consumer.
 - Event emission on supply depletion and demand fulfillment.
+- Captures functional behavior for supply demand so callers can compose this capability safely.
 
 ### types.rs
 

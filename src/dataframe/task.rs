@@ -1,8 +1,8 @@
-//! One-shot threaded dataframe jobs for file loading and SQL queries.
-//!
-//! - Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
-//! - Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
-//! - Snapshot-based DataFrame and Database query execution on Rust worker threads.
+//! Implements one-shot threaded dataframe jobs for file loading and SQL query execution.
+//! Captures worker-side data snapshots to avoid large payload transfer through script boundaries.
+//! Provides poll, wait, progress, result, and error lifecycle helpers for async task management.
+//! Executes dataframe and database operations on worker threads with bounded state handoff.
+//! Serves as the asynchronous execution layer used by Lua-facing dataframe task APIs.
 
 use crate::dataframe::file_io::{self, DataFrameFileError, DataFrameFileStore};
 use crate::dataframe::frame::{CellValue, DataFrame, Database};

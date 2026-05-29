@@ -1,9 +1,9 @@
-//! Per-session and persistent memory primitives for LLM agents.
-//!
-//! - `WorkingMemory` is a bounded FIFO key-value store with configurable capacity (FIFO eviction when full).
-//! - `EpisodicMemory` records time-stamped events and supports simple key-match queries and age-based pruning.
-//! - `SemanticMemory` is an unbounded key-value fact store.
-//! - `AgentMemory` bundles all three types and optionally serialises to disk via `save()` / `load()`.
+//! Implements layered agent memory with short-term context, episodic recall, and durable semantic knowledge.
+//! Applies distinct retention strategies so each memory tier fits a different reasoning horizon.
+//! Supports bounded working slots for prompt context while preserving ordered recency behavior.
+//! Records timestamped episodes for searchable event history and narrative continuity.
+//! Stores semantic facts as named durable entries that survive immediate conversational churn.
+//! Provides aggregate save and load flows for cross-session continuity of memory state.
 
 use std::collections::{HashMap, VecDeque};
 

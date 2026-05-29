@@ -1,7 +1,8 @@
-//! Define `GraphItem` as the data carrier moved through graph nodes and edges.
-//!
-//! - Track item position (at node, in transit, or unplaced) via `ItemPosition`.
-//! - Provide decay-time lifetime, priority, and alive/dead state per item.
+//! Provides flownet item records that carry typed payload identity through nodes and transit edges.
+//! Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions.
+//! Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior.
+//! Delivers the movable unit model consumed by demand, conversion, and transport mechanics.
+//! Keeps item lifecycle state centralized for deterministic flow simulation and event emission.
 
 use crate::flownet::types::ItemId;
 

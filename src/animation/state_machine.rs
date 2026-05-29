@@ -1,9 +1,9 @@
-//! Implements a named-state animation FSM driven by typed parameters and parsed conditions.
-//!
-//! - Registers states with clip bindings and transitions with string-based condition expressions.
-//! - Evaluates transition chains each frame and force-plays the target clip on state change.
-//! - Supports float, int, and bool parameters compared with standard relational operators.
-//! - Provides the condition parser and numeric comparison utilities used by transition evaluation.
+//! Implements animation finite-state control with typed parameters and condition-driven transitions.
+//! Evaluates transition rules each frame to move between clip-bound states deterministically.
+//! Parses authored condition expressions into executable checks used during state progression.
+//! Activates destination clips immediately on state change to keep visual intent synchronized.
+//! Provides parameterized graph control for expressive authored animation behavior.
+//! Serves as the transition-governance layer above raw clip playback execution.
 
 use super::controller::Animation;
 use std::collections::HashMap;

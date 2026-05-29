@@ -34,6 +34,7 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 - Condvar-based blocking wait with optional timeout for thread synchronization.
 - Lua value conversion utilities for copying event payloads across the Rust-Lua boundary.
 - Table key and value marshalling with shallow-copy semantics.
+- Captures functional behavior for event queue so callers can compose this capability safely.
 
 ### mod.rs
 
@@ -46,6 +47,7 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 - Named signal subscription registry with exact-name and wildcard pattern matching.
 - Handle-based subscribe/remove lifecycle with monotonic id allocation.
 - Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
+- Captures functional behavior for signal so callers can compose this capability safely.
 
 ## Lua API Ref
 

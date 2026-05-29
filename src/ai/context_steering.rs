@@ -1,14 +1,10 @@
-//! Slot-based context steering accumulating interest and danger around a directional ring.
-//!
-//! - Behavior variants projecting targets, hazards, wander, fixed headings, and world-bound avoidance.
-//! - Evaluation pass merging contributions and choosing the strongest safe direction.
-//! - Seek-target interest projection using an angle cone toward the target position.
-//! - Hash-based wander jitter biasing direction over time without explicit random state.
-//! - Per-slot danger subtraction so agents steer around hazards while maintaining progress.
-//! - Last chosen heading and magnitude recording for downstream movement application.
-//! - Inspection accessors for interest and danger maps useful for debug visualization.
-//! - Uses cosine-attenuated cone fill to smoothly distribute weights across
-//! - neighboring slots near a target angle.
+//! Implements slot-based directional reasoning that scores where motion should be pulled or resisted.
+//! Projects multiple influences into angular context so local movement stays responsive and legible.
+//! Mixes attraction, avoidance, drift, and boundary pressure as one continuous heading composition.
+//! Resolves conflict by weighing directional appetite against threat, then extracting the safest momentum lane.
+//! Preserves smooth steering continuity by keeping representation compact and frame-friendly.
+//! Outputs a movement-ready vector that downstream motion systems can apply with minimal translation.
+//! Acts as a tactical micro-navigation layer beneath planners and above raw kinematic integration.
 
 use std::f32::consts::{PI, TAU};
 /// Behavior kind used by context steering slots.

@@ -1,7 +1,8 @@
-//! Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
-//!
-//! - Type-based filtering restricts which items may transit an edge.
-//! - Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
+//! Provides flownet edge state that links nodes with transit limits, timing, and routing metadata.
+//! Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility.
+//! Supports directional and bidirectional semantics with pathfinding weight and speed modifiers.
+//! Delivers the per-connection transport contract used by simulation and routing systems.
+//! Keeps edge behavior explicit so tuning and diagnostics remain consistent across network updates.
 
 use std::collections::HashSet;
 

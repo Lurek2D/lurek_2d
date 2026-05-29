@@ -1,7 +1,7 @@
-//! Defines the public request, response, and error types exchanged between `AgentState`, `AgentClient`, and their Lua bindings.
-//!
-//! - `AgentError` classifies failures as network, timeout, format, or model errors and carries a stable Lua-facing error code and a transient-retry flag.
-//! - `AgentRequest` and `AgentResponse` carry the callback ID that threads agent dispatch back to the originating Lua callback.
+//! Defines shared data contracts for agent requests, responses, and cross-layer failure representation.
+//! Aligns state construction, async transport, and callback dispatch on one stable payload vocabulary.
+//! Encodes retry semantics and error categories so runtime behavior is consistent across entry points.
+//! Serves as the canonical contract layer that keeps agent submodules interoperable and predictable.
 
 
 /// Error variants for LLM agent requests; used by [`AgentClient`] and [`AgentState`].

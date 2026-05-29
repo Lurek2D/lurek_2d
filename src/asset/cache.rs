@@ -1,8 +1,10 @@
-//! Ref-counted asset registry used by `lurek.asset`.
-//!
-//! `AssetCache` stores asset metadata, optional text payload, and reference counts.
-//! Decoded runtime resources remain owned by feature modules such as image, font, and audio.
-//! This module provides load bookkeeping, metadata/tag queries, and handle lifecycle helpers.
+//! Implements a reference-counted asset registry for tracking media lifecycle across runtime systems.
+//! Stores normalized metadata, optional text payloads, and ownership counters for shared access.
+//! Separates cache bookkeeping from decoded resource ownership handled by feature-specific modules.
+//! Supports acquisition, release, and eviction decisions through explicit handle lifecycle updates.
+//! Provides metadata and tag-query surfaces for tooling, filtering, and runtime introspection.
+//! Preserves deterministic cache semantics so repeated asset flow remains predictable.
+//! Serves as the core state container behind the engine-facing `lurek.asset` behavior.
 
 use std::collections::{HashMap, HashSet};
 

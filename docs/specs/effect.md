@@ -67,6 +67,7 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
 - Preset construction with viewport-sized stack initialization.
 - Static name lookup for canonical preset identifiers.
+- Captures functional behavior for presets so callers can compose this capability safely.
 
 ### render.rs
 
@@ -81,6 +82,7 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - Stack manipulation: add, remove, insert, reorder, deduplicate.
 - Query helpers for enabled subset, dimensions, and positional lookup.
 - Debug visualization renderers for stack state, catalogs, parameters, and type bars.
+- Captures functional behavior for stack so callers can compose this capability safely.
 
 ## Lua API Ref
 

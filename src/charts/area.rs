@@ -1,9 +1,9 @@
-//! Area chart renderer: filled regions below one or more line series.
-//!
-//! - Rasterises each series into an RGBA pixel buffer via `render_area_chart`.
-//! - Supports stacked and overlapping fill modes with per-series alpha.
-//! - Delegates coordinate mapping to `charts::render_utils::world_to_screen`.
-//! - Owned by `lurek.charts.area` Lua API; output is uploaded as a texture.
+//! Implements area-chart rasterization where series are rendered as filled regions over plot space.
+//! Supports overlapping and stacked accumulation modes for comparative and compositional data views.
+//! Maps data coordinates into pixel coordinates through shared chart-space transform helpers.
+//! Produces RGBA buffers that downstream systems upload as textures for runtime presentation.
+//! Integrates optional DataFrame extraction paths for column-driven area plotting workflows.
+//! Serves as the filled-series rendering backend behind the charts area API surface.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions, ChartSeries};
 use crate::charts::render_utils::{

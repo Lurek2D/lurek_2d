@@ -1,7 +1,7 @@
-//! Render a graph as a circular node-and-edge diagram via `RenderCommand` output.
-//!
-//! - Layout nodes evenly on a circle, draw edges as lines, color nodes by type.
-//! - Produce a self-contained command list suitable for the engine renderer.
+//! Provides debug render-command generation that visualizes flownet topology as node-edge diagrams.
+//! Lays out nodes on a circular frame and draws links with deterministic mapping.
+//! Colors nodes by type to expose structural roles at a glance during inspection.
+//! Delivers a self-contained preview command stream consumable by the renderer.
 
 use crate::flownet::core::Graph;
 use crate::render::renderer::{DrawMode, RenderCommand};

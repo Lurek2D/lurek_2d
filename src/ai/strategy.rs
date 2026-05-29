@@ -1,7 +1,8 @@
-//! High-level strategy selection scoring named goals against current tag context over time.
-//!
-//! - Goal records with eligibility tags, priority scaling, enable state, and computed scores.
-//! - Timed evaluation flow querying external scorers and storing the active strategic choice.
+//! Implements high-level intent arbitration that ranks strategic goals against current world context.
+//! Blends static priority and dynamic scoring pressure into a single comparable decision signal.
+//! Evaluates on a controlled cadence to avoid noisy goal thrashing between adjacent frames.
+//! Retains active intent continuity so tactical layers receive stable direction over time.
+//! Serves as the top strategic filter above lower-level planners and executors.
 
 /// One strategic goal considered by the planner.
 #[derive(Clone)]

@@ -60,6 +60,8 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
 - Recursive and flat directory listing with merged overlay results.
 - File handle creation, copy, move, and remove operations within the save boundary.
+- Captures functional behavior for vfs so callers can compose this capability safely.
+- Provides additional operational detail for vfs workflows in filesystem.
 
 ### watcher.rs
 
@@ -72,6 +74,7 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - ZIP-backed virtual filesystem mount with path-indexed entry lookup.
 - Reads individual files from a ZIP archive on demand without full extraction.
 - Normalizes virtual paths and rejects directory-traversal attempts.
+- Captures functional behavior for zip mount so callers can compose this capability safely.
 
 ## Lua API Ref
 

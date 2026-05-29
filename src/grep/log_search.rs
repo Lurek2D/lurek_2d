@@ -1,5 +1,4 @@
-//! Structured log file search with level, time-range, and text pattern filters.
-//!
+//! - Structured log file search with level, time-range, and text pattern filters.
 //! - `parse_log_lines` parses lines of the form `[LEVEL TIMESTAMP] MESSAGE`.
 //! - `search_logs` filters `Vec<LogEntry>` by level, time bounds, and text pattern.
 //! - `LogSearchOpts` drives the filter; all fields are optional (zero = no filter).

@@ -1,8 +1,8 @@
-//! Decodes embedded splash icon and banner PNGs into temporary texture storage.
-//!
-//! - Builds render commands for the splash screen layout with centred branding.
-//! - Shows a drag-and-drop hint that changes colour when a folder is hovered.
-//! - Provides the `SplashBranding` struct used by the app loop until a game loads.
+//! Implements splash branding presentation before gameplay content is loaded into active runtime state.
+//! Decodes embedded visual assets into temporary texture storage used by startup rendering.
+//! Builds centered splash layout command sequences with icon, banner, and hint messaging elements.
+//! Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback.
+//! Serves as the pre-game visual bridge between process launch and first playable scene.
 
 use super::app::fit_contain_size;
 use crate::render::renderer::{DrawMode, RenderCommand, TextureData};

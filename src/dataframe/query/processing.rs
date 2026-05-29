@@ -1,8 +1,8 @@
-//! Frequency tables with optional percentage output
-//!
-//! - Column-level missing-value reports
-//! - Duplicate row extraction by full-row or selected-column keys
-//! - ISO date part extraction into appended year, month, and day columns
+//! Implements dataframe processing helpers for frequency summaries and table-quality diagnostics.
+//! Builds value-count tables with optional percentage columns for distribution inspection.
+//! Produces missing-value reports and duplicate-row extraction over full-row or keyed comparisons.
+//! Appends parsed ISO date parts into structured year, month, and day output columns.
+//! Serves as a reusable cleanup and profiling layer for downstream dataframe query workflows.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 

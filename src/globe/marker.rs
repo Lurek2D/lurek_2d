@@ -1,7 +1,8 @@
-//! Stable-id marker collection for globe pin management.
-//!
-//! - Insert, remove, move, and query markers by id or type.
-//! - Per-marker visibility toggle and arbitrary string attributes.
+//! Provides stable-id globe marker storage for pins and point annotations on planetary surfaces.
+//! Supports marker insertion, removal, movement, and lookup by id or classification type.
+//! Manages marker visibility and custom attributes for flexible runtime presentation.
+//! Keeps marker collections deterministic for rendering and interaction queries.
+//! Delivers the marker-management layer used by tactical and informational map overlays.
 
 use crate::globe::types::{Marker, MarkerStyle};
 use std::collections::HashMap;

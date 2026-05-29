@@ -1,7 +1,8 @@
-//! Id-keyed label storage for globe map annotations.
-//!
-//! - Insert, remove, move, and toggle visibility of positioned text labels.
-//! - LOD-aware iteration filters labels by minimum detail tier.
+//! Provides id-keyed globe label storage for map annotations positioned by latitude and longitude.
+//! Supports add, remove, update, and visibility operations for dynamic labeling workflows.
+//! Applies LOD-aware filtering so text density scales with camera detail level.
+//! Maintains stable iteration outputs used by rendering and debugging interfaces.
+//! Delivers the label-management layer for readable and controllable geographic annotation.
 
 use crate::globe::types::{Label, LabelStyle};
 use std::collections::HashMap;

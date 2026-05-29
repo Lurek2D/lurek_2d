@@ -1,10 +1,8 @@
-//! Percentile computation by linear interpolation over sorted values
-//!
-//! - Z-score standardization for numeric columns
-//! - Min-max normalization to arbitrary output range
-//! - Outlier detection via z-score threshold
-//! - Mode value computation across non-nil cells
-//! - Shannon entropy calculation over rendered cell distributions
+//! Implements statistical analytics helpers over dataframe columns and derived numeric distributions.
+//! Provides percentile extraction through interpolation on ordered numeric sample sequences.
+//! Supports z-score and min-max normalization for consistent feature scaling workflows.
+//! Includes outlier detection, mode estimation, and entropy-style spread characterization helpers.
+//! Serves as the compact statistics layer used by higher query and reporting operations.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 /// Compute percentile by linear interpolation over sorted values.

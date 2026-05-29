@@ -1,9 +1,9 @@
-//! Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d)
-//!
-//! - Histogram binning with configurable range and bin count
-//! - Percentile extraction with linear interpolation
-//! - Pairwise statistical measures (covariance, Pearson correlation)
-//! - Value normalization helpers (range scaling, z-score standardization)
+//! Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
+//! Provides histogram generation with configurable domains and binning resolution control.
+//! Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
+//! Exposes pairwise statistics such as covariance and correlation for relationship analysis.
+//! Includes normalization helpers for range scaling and standardized z-score transformations.
+//! Serves as the statistical post-processing layer for compute arrays and derived results.
 
 use crate::compute::array::NdArray;
 

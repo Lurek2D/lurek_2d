@@ -1,9 +1,9 @@
-//! Post-processing effect type enumeration and name registry.
-//!
-//! - Canonical lowercase name mapping for Lua-facing effect lookup.
-//! - Debug label generation for renderer diagnostics.
-//! - Default parameter tables for each built-in effect.
-//! - Built-in effect catalog excluding the custom shader pass.
+//! Provides the canonical post-effect type catalog that defines all built-in processing identities.
+//! Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
+//! Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
+//! Defines default parameter sets so each effect starts from consistent baseline behavior.
+//! Separates built-in variants from custom-shader paths while preserving one shared lookup model.
+//! Delivers the naming and typing backbone used by effect instances, stacks, and presets.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

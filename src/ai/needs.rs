@@ -1,8 +1,8 @@
-//! Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
-//!
-//! - Per-need decay, urgency scoring, satisfaction updates, and cooldown-aware advertisement scoring.
-//! - System-level operations for adding needs, time-based updates, and most-urgent drive selection.
-//! - Best-advertisement selection weighted by distance, cooldown, and need priority.
+//! Models internal drives as normalized pressures that decay, recover, and compete for attention.
+//! Converts need intensity into urgency signals that higher decision layers can compare directly.
+//! Scores available satisfiers against context so fulfillment choice remains situational and explainable.
+//! Maintains cooldown-aware motivation flow to avoid oscillation between equivalent opportunities.
+//! Supplies a behavioral hunger layer that gives planners a dynamic reason to act.
 
 /// One tracked need with a normalized value.
 pub struct Need {

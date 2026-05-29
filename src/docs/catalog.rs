@@ -1,7 +1,7 @@
-//! Provide in-memory catalog storage for documentation entries collected from Rust source.
-//!
-//! - Support insertion-order preservation, module grouping, and text search.
-//! - Offer merge, filter, and deduplication for multi-source doc aggregation.
+//! Provides the in-memory documentation catalog used to collect and organize normalized API entries.
+//! Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
+//! Enables merge and dedup workflows for combining multiple documentation sources into one view.
+//! Delivers the central container that feeds both export generation and quality analysis stages.
 
 use crate::docs::entry::DocEntry;
 /// Hold the in-memory list of documentation entries collected from source data.

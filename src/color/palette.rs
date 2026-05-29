@@ -1,9 +1,8 @@
-//! Named colour palettes: retro console, web-safe, and designer presets.
-//!
-//! - `retro` sub-module provides PICO-8, Game Boy, CGA, and ZX Spectrum palettes.
-//! - Each palette is a static `&[&str]` of hex strings; no heap allocation.
-//! - Exposed to Lua via `lurek.color.palette.*`.
-//! - Palettes are additive — new sets can be registered via the Lua API.
+//! Implements named color-palette collections for retro, utility, and designer-oriented presets.
+//! Stores curated palette definitions as static data for low-overhead runtime access.
+//! Provides lookup and conversion helpers that map palette entries into structured color values.
+//! Supports extension flows where new palette sets can be surfaced through higher API layers.
+//! Serves as the canonical palette source used by rendering tools and script-facing color features.
 
 use super::color_core::Color;
 

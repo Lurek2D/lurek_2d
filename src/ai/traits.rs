@@ -1,8 +1,8 @@
-//! Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
-//!
-//! - Profile logic resolving effective trait values, advancing and removing expiring modifiers.
-//! - Interpolation toward other profiles with origin archetype tracking.
-//! - Archetype registry and deterministic hash helper for varied profiles with per-trait jitter.
+//! Defines long-lived personality dimensions that shape how agents weight and express decisions.
+//! Combines base profile values with temporary modifiers to model evolving behavioral flavor.
+//! Updates modifier lifecycles over time so transient influences fade in a controlled manner.
+//! Supports archetypal presets and deterministic variation for reproducible character differentiation.
+//! Supplies stable temperament context consumed by planners, scorers, and tactical selectors.
 
 use std::collections::HashMap;
 

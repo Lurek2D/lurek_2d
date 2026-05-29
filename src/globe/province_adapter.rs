@@ -1,7 +1,6 @@
-//! Sync political colors and fog visibility from the province registry into the globe.
-//!
-//! - Bridge between province game-state and globe rendering data.
-//! - Copies color and fog state from `ProvinceRegistry` into matching `Globe` region entries.
+//! Provides a bridge that applies province-registry ownership and visibility state onto globe regions.
+//! Synchronizes political coloring so map visuals reflect current simulation authority data.
+//! Delivers adapter logic that keeps province gameplay state aligned with globe presentation.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::RegionId;

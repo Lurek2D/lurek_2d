@@ -1,7 +1,6 @@
-//! Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.
-//!
-//! - Stateless utility struct with no allocation or state.
-//! - Supports up to ~16M slots and 256 generations per slot.
+//! Provides stateless generational id packing that combines slot and generation into one compact handle.
+//! Enables cheap decoding of slot and generation fields for validity checks during entity access.
+//! Delivers the identity encoding contract used by ECS storage and lifecycle reuse rules.
 
 /// Stateless namespace for encoding and decoding packed entity identifiers.
 pub struct GenerationalId;

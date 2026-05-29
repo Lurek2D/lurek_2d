@@ -1,8 +1,13 @@
-//! Steering model representing individual movement behaviors, blending rules, and waypoint following.
-//!
-//! - Behavior variants: seek, flee, arrive, wander, flock, pursue, evade, and custom callbacks.
-//! - Manager logic combining active behaviors with weighting or priority selection.
-//! - Waypoint path advancement and final steering force clamping.
+//! Provides continuous movement intent synthesis for agents that steer instead of teleporting state.
+//! Combines concurrent influences into one force signal while preserving controllable blending semantics.
+//! Supports reactive pursuit, evasion, spacing, and exploratory drift as composable motion textures.
+//! Integrates waypoint progression so authored path flow and emergent steering can coexist smoothly.
+//! Applies bounded output shaping to keep acceleration pressure stable for frame-to-frame integration.
+//! Treats path following as a first-class influence that can lead or defer to behavior priorities.
+//! Preserves deterministic fallback when no active influence produces meaningful directional intent.
+//! Exposes configurable weighting that lets designers tune expressive movement character per actor role.
+//! Maintains lightweight state for runtime-safe updates under dense multi-agent simulation loads.
+//! Serves as the tactical locomotion bridge between decision outputs and physics-facing motion updates.
 
 /// Force vector used by steering systems.
 pub type Force = (f32, f32);

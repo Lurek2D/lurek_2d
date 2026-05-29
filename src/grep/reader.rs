@@ -1,5 +1,4 @@
-//! File reading utilities: buffered I/O and memory-mapped access for large files.
-//!
+//! - File reading utilities: buffered I/O and memory-mapped access for large files.
 //! - Small files (< threshold) are read with `BufReader` and iterated line-by-line.
 //! - Large files use `memmap2` for zero-copy line scanning via byte search.
 //! - The threshold is configurable via `GrepConfig::mmap_threshold_bytes`.

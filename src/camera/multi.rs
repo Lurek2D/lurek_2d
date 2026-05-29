@@ -1,7 +1,7 @@
-//! Multi-camera rig that stores and manages named Camera2D instances.
-//!
-//! - Provides preset viewport layouts: split-screen, minimap, and picture-in-picture.
-//! - Supports bulk update and deterministic iteration for multi-view rendering passes.
+//! Implements multi-camera rig management over named camera instances for concurrent view setups.
+//! Provides preset layout helpers for split-screen, minimap, and picture-in-picture arrangements.
+//! Supports deterministic iteration and bulk mutation flows for multi-pass rendering integration.
+//! Serves as the orchestration layer for scenarios requiring more than one active camera view.
 
 use crate::camera::types::Camera2D;
 use std::collections::HashMap;

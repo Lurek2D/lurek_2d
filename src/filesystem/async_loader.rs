@@ -1,9 +1,9 @@
-//! Background file I/O via a dedicated worker thread and bounded request queue.
-//!
-//! - Non-blocking read and write requests returning opaque handles for polling.
-//! - Capacity-limited channel with graceful overflow reporting.
-//! - Thread-safe result storage consumed by callers through poll methods.
-//! - Automatic worker shutdown and join on drop.
+//! Provides background file I/O through a dedicated worker thread and bounded request channel.
+//! Supports non-blocking read and write scheduling with opaque handles for later status polling.
+//! Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
+//! Enforces queue capacity limits to keep memory and scheduling pressure under control.
+//! Handles worker lifecycle shutdown cleanly when the loader is dropped.
+//! Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
 
 use std::collections::HashMap;
 use std::path::PathBuf;

@@ -1,9 +1,10 @@
-//! Run a non-blocking TCP server loop accepting debug bridge client connections.
-//!
-//! - Parse JSON-RPC messages and dispatch to built-in handlers or runtime queue.
-//! - Deliver pending responses and broadcast events to connected clients.
-//! - Handle protocol handshake, nonce authentication, and version negotiation.
-//! - Support ping, hello, eval, performance, print history, and screenshot requests.
+//! Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch.
+//! Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers.
+//! Delivers queued responses and broadcast events across connected debugger endpoints.
+//! Handles handshake, protocol version checks, and nonce-based authentication workflows.
+//! Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests.
+//! Serves as the network transport execution layer for the debugbridge subsystem.
+//! Preserves deterministic request lifecycle behavior across concurrent debugger client sessions.
 
 use super::bridge::{BridgeShared, PendingRequest, PendingResponse};
 use std::io::{BufRead, BufReader, Write};

@@ -1,7 +1,8 @@
-//! Priority-ordered demand matching against available supply nodes.
-//!
-//! - Pathfinding-based item routing from supplier to consumer.
-//! - Event emission on supply depletion and demand fulfillment.
+//! Provides demand-processing logic that matches prioritized needs against available network supply.
+//! Uses pathfinding to route produced items from supplier nodes toward consumer destinations.
+//! Tracks fulfillment progress and decrements source supply quantities during transfer.
+//! Emits simulation events that expose depletion and fulfillment transitions to observers.
+//! Delivers the balancing layer that drives directed resource flow through the graph.
 
 use super::core::Graph;
 use super::item::ItemPosition;

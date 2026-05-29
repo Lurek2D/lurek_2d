@@ -1,9 +1,6 @@
-//! Software-rasterised chart rendering for data visualisation.
-//!
-//! - Five chart types: line, bar, scatter, pie, area.
-//! - Configurable appearance: colors, margins, grid, titles, legends.
-//! - Renders to CPU pixel buffers (no GPU dependency).
-//! - DataFrame integration for direct column-to-series mapping.
+//! Defines the charts module boundary for CPU-rasterized data-visualization rendering.
+//! Groups chart types, shared config contracts, and utility drawing primitives into one surface.
+//! Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
 
 /// Chart configuration and shared types.
 pub mod config;

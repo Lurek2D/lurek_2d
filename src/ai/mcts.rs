@@ -1,9 +1,9 @@
-//! Monte Carlo Tree Search configuring search parameters, arena-backed nodes, and rollout statistics.
-//!
-//! - Selection, expansion, rollout, and backpropagation flow scoring actions through bounded simulations.
-//! - Internal random helper and UCT scoring logic driving node choice and action sampling.
-//! - Arena-backed tree structure avoiding per-node heap allocations during iterative search.
-//! - Generic state, action-enumeration, transition, and evaluation closures for domain-independent search.
+//! Implements Monte Carlo Tree Search as a reusable decision kernel for branching action spaces.
+//! Executes the full selection, expansion, rollout, and backpropagation rhythm under fixed budgets.
+//! Uses exploration pressure to balance known strong branches against uncertain alternatives.
+//! Stores tree state in compact node arenas for iterative simulation throughput.
+//! Returns action preference grounded in sampled outcomes rather than handcrafted deterministic rules.
+//! Supports game-specific state, transition, and scoring logic through generic integration hooks.
 
 /// Configuration for one MCTS search run.
 pub struct MCTSConfig {

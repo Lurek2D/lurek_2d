@@ -1,11 +1,9 @@
-//! Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
-//!
-//! - Region add/remove/get and sector grouping operations.
-//! - Heat-layer and arc overlay management with add/replace/remove.
-//! - Orbit camera integration and screen-space region picking.
-//! - Frame emission producing render commands for the full globe state.
-//! - Named globe registry for storing and retrieving multiple globes by name.
-//! - Reachability caching per faction for path-cost queries.
+//! Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data.
+//! Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers.
+//! Integrates camera projection and picking paths so selection and rendering share one state container.
+//! Emits full-frame render commands from current globe state for deterministic map visualization.
+//! Caches sector and reachability information to support strategic lookup and path-cost workflows.
+//! Delivers named registry management for handling multiple independent globe instances.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;

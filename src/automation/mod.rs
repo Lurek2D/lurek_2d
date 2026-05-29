@@ -1,8 +1,6 @@
-//! Automation subsystem for deterministic input replay and visual regression testing.
-//!
-//! - Script stores time-sorted steps parsed from TOML with repeat expansion.
-//! - Simulator drives playback, dispatches events, evaluates conditions, and runs asserts.
-//! - Step and Action types describe timed input events and control flow actions.
+//! Defines the automation module boundary for deterministic input replay and scripted verification flows.
+//! Groups script parsing, playback simulation, and typed step contracts under one coherent runtime surface.
+//! Serves as the composition entry for test-like interaction automation inside engine execution.
 
 /// `Script`: ordered, time-sorted step sequences with TOML parsing and repeat expansion.
 pub mod script;

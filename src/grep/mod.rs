@@ -1,5 +1,4 @@
-//! Text search engine for game content files.
-//!
+//! - Text search engine for game content files.
 //! - Literal, regex, glob, and multi-pattern search.
 //! - Memory-mapped file reading for large files.
 //! - Parallel file search with rayon-style thread distribution.

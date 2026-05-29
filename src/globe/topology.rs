@@ -1,9 +1,8 @@
-//! Region graph structure with adjacency caching, centroid lookup, and edge tags.
-//!
-//! - Pathfinding integration via cost functions and reachability queries.
-//! - Region attribute storage and neighbor-list access.
-//! - Cache rebuild for bulk topology mutations.
-//! - Default-cost convenience wrappers for quick path and range checks.
+//! Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges.
+//! Supports insertion, removal, and mutation workflows while keeping lookup caches coherent.
+//! Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions.
+//! Exposes neighbor and region iteration helpers used by rendering and gameplay systems.
+//! Delivers the structural map-graph backbone that powers globe connectivity logic.
 
 use crate::globe::types::{GlobeError, Region, RegionId, MAX_REGIONS};
 use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};

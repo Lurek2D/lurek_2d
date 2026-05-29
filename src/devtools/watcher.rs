@@ -1,9 +1,8 @@
-//! Track watched file paths with last-observed modification timestamps
-//!
-//! - Poll for mtime changes and report modified paths on each tick
-//! - Integrate native notify backend when devtools-plugin feature is enabled
-//! - Support forced-stale marking, path registration, and full clear
-//! - Deduplicate change reports via sorted set collection
+//! Implements watched-file tracking with mtime snapshots for change-detection workflows.
+//! Polls registered paths and reports deterministic modified-path sets per update tick.
+//! Integrates optional native notify backend when feature-gated devtools plugin support is enabled.
+//! Supports path registration, stale marking, and complete watch-state reset operations.
+//! Deduplicates and orders change reports for stable hot-reload consumption.
 
 use crate::filesystem::watcher::read_mtime;
 #[cfg(feature = "devtools-plugin")]

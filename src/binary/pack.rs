@@ -1,12 +1,11 @@
-//! Python struct-style format-string packing and unpacking
-//!
-//! - Single-character format tokens for integers, floats, strings, and padding
-//! - Endian switching via '<' (little) and '>' (big) prefix characters
-//! - Length-prefixed ('s') and null-terminated ('z') string support
-//! - Coercion helpers that widen numeric PackValue variants at write time
-//! - Bounds-checked reads with per-token underflow error messages
-//! - Static and dynamic packed-size calculation for buffer pre-allocation
-//! - ByteData output for integration with the binary module pipeline
+//! Implements struct-style format packing and unpacking for compact binary schema workflows.
+//! Parses tokenized format strings covering numeric types, strings, and explicit padding markers.
+//! Supports endian switching through prefix directives for cross-platform wire compatibility.
+//! Handles both fixed and variable-width string representations during serialization and decode.
+//! Applies numeric widening and coercion rules so value variants map safely onto target tokens.
+//! Performs strict bounds checks on reads with token-aware failure context for truncated input.
+//! Computes static or dynamic packed size to aid allocation and validation steps.
+//! Produces owned byte outputs integrated with shared binary data container contracts.
 
 use super::byte_data::ByteData;
 #[derive(Debug, Clone)]

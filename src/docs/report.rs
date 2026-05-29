@@ -1,9 +1,8 @@
-//! Compute per-entry quality scores from completeness of description, params, and metadata.
-//!
-//! - Convert scores to letter grades for human-readable reporting.
-//! - Validate catalogs for missing, phantom, and incomplete entries.
-//! - Aggregate module-level and overall quality metrics from a catalog snapshot.
-//! - Support both catalog-based and standalone entry-based report construction.
+//! Provides documentation quality evaluation logic that scores completeness and classifies report grades.
+//! Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
+//! Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
+//! Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
+//! Delivers consistent quality signals that guide doc cleanup and release readiness checks.
 
 use crate::docs::catalog::Catalog;
 use crate::docs::entry::DocEntry;

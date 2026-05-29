@@ -1,10 +1,8 @@
-//! DSP processing graph: nodes connected by typed audio-rate and control-rate edges.
-//!
-//! - `DspGraph` owns a topologically sorted list of `DspNode` processing units.
-//! - Edges carry either audio frames (f32 interleaved) or scalar control signals.
-//! - Evaluated once per audio buffer in the rodio callback on the audio thread.
-//! - Graph mutation (add/remove node, patch edge) is performed from the game thread
-//! - via a lock-free command queue consumed at the start of each audio callback.
+//! Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow.
+//! Organizes processing units into deterministic traversal order for stable per-buffer execution.
+//! Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure.
+//! Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption.
+//! Delivers the structural layer used to compose complex effect pipelines from reusable nodes.
 
 use crate::audio::sound_data::SoundData;
 

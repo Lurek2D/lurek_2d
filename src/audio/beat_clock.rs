@@ -1,8 +1,11 @@
-//! Musical beat clock — tempo and measure tracking for rhythm games and procedural audio.
-//!
-//! - `BeatClock` converts wall-clock time into beats, bars, and pulse events.
-//! - Supports BPM change, time-signature change, tap-tempo, and quantised scheduling.
-//! - No audio playback — pure timing. Wire it to audio callbacks in Lua.
+//! Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses.
+//! Supports tempo and meter changes while preserving coherent phase continuity over runtime updates.
+//! Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination.
+//! Applies latency and swing parameters to shape musical timing feel without audio-thread coupling.
+//! Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries.
+//! Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source.
+//! Serves rhythm, sequencing, and procedural trigger systems that require stable musical time.
+//! Functions as the temporal backbone for Lua callbacks aligned to musical structure.
 
 /// Runtime options used when creating a beat clock.
 #[derive(Clone, Copy, Debug)]

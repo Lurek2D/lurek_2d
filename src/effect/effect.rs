@@ -1,7 +1,7 @@
-//! Post-processing effect instance holding type, parameters, and enabled state.
-//!
-//! - Built-in effects carry default params; custom effects bind to an explicit shader id.
-//! - Parameter accessors for reading, writing, and listing scalar uniforms.
+//! Provides runtime post-effect instances that couple effect kind with mutable parameter state.
+//! Supports built-in and custom shader-backed variants under one unified runtime shape.
+//! Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
+//! Delivers the per-effect state object consumed by stack management and rendering stages.
 
 use super::effect_type::PostFxEffectType;
 use crate::log_msg;

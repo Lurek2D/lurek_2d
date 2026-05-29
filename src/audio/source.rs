@@ -1,7 +1,7 @@
-//! `SpatialState` 3D position, velocity, and orientation for positional audio.
-//!
-//! - `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
-//! - Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
+//! Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
+//! Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
+//! Stores identity and basic playback defaults that classify each loaded runtime source.
+//! Serves as the foundational source contract shared across routing, playback, and spatialization paths.
 
 use crate::log_msg;
 use crate::runtime::log_messages::AS01;

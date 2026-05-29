@@ -1,8 +1,8 @@
-//! Background transport that dispatches LLM prompt requests on dedicated threads and collects responses for polling.
-//!
-//! - Tracks in-flight requests with an atomic counter and silently drops responses for callbacks marked as cancelled.
-//! - Retries transient network and timeout failures up to `AgentRequest::max_retries` times using exponential back-off.
-//! - Exposes `send_prompt`, `cancel`, `in_flight_count`, and `poll` as the complete public surface.
+//! Provides asynchronous prompt transport that moves network latency off the main update path.
+//! Tracks in-flight requests and pending completions so polling remains deterministic and frame-safe.
+//! Supports callback-scoped cancellation to discard stale results after gameplay state has changed.
+//! Retries transient transport failures with bounded backoff to improve completion reliability.
+//! Bridges worker-thread execution and runtime polling with consistent response delivery semantics.
 
 use std::collections::HashSet;
 use std::sync::atomic::{AtomicUsize, Ordering};

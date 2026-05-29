@@ -1,10 +1,10 @@
-//! Vector operations (normalize, cross2d, outer product, dot via spatial)
-//!
-//! - 2D transformation matrices (rotation, affine, point transform)
-//! - Convolution kernels (Gaussian) and edge detection (Sobel)
-//! - Linear system solving via Gaussian elimination with partial pivoting
-//! - LU decomposition with row permutation and determinant sign tracking
-//! - Dominant eigenpair estimation via power iteration
+//! Implements linear-algebra and geometric helper operations over compute array structures.
+//! Provides vector normalization, cross-style products, and matrix-oriented transformation utilities.
+//! Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows.
+//! Solves linear systems with Gaussian elimination using pivoting for improved numerical stability.
+//! Computes LU decomposition with permutation tracking to support determinant-aware factorization.
+//! Exposes dominant eigenpair estimation through iterative power-method style evaluation.
+//! Serves as the algebraic backbone for higher-level analytical and spatial compute tasks.
 
 use crate::compute::array::{DataType, NdArray};
 use crate::compute::spatial;

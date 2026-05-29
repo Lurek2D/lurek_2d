@@ -1,7 +1,6 @@
-//! Compose multiple globe views into a single frame via split viewports.
-//!
-//! - Emit render commands for each named globe with per-entry screen center overrides.
-//! - Iterate the registry, clone camera state, and collect draw output into one batch.
+//! Provides split-view globe composition that merges multiple named views into one render batch.
+//! Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior.
+//! Delivers multi-panel frame assembly for comparative or tactical map presentation.
 
 use crate::globe::draw::emit_globe_frame;
 use crate::globe::registry::GlobeRegistry;

@@ -1,9 +1,7 @@
-//! AI level-of-detail model grouping agents into distance-based update tiers.
-//!
-//! - Tier data controlling maximum coverage, think distance, and frame cadence.
-//! - Tier sorting, agent assignment from positions, and per-frame run decisions.
-//! - Frame-cadence check so distant agents skip updates while near agents run every frame.
-//! - Default three-tier near/mid/far layout suitable for 2D worlds on integrated GPUs.
+//! Defines distance-tiered AI update policy so compute effort follows player-relevant proximity.
+//! Assigns cadence bands that throttle far entities while keeping near interactions immediate.
+//! Stabilizes frame budget by converting spatial spread into predictable scheduling pressure.
+//! Provides a compact scalability dial for large-population scenes with bounded responsiveness loss.
 
 /// One LOD bucket for AI work. This item is part of the public API.
 #[derive(Clone)]

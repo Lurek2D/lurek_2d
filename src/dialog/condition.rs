@@ -1,6 +1,7 @@
-//! - Provides reusable gate predicates that decide whether dialog branches and topics are currently eligible.
-//! - Encodes state checks and numeric-threshold checks in declarative data so selection logic stays data-driven.
-//! - Combines predicates with all/any semantics to support layered narrative gating from runtime context.
+//! Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context.
+//! Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first.
+//! Supports composable all-or-any logic for layered progression constraints across branching conversations.
+//! Delivers a deterministic condition engine that keeps availability checks consistent between systems and scripts.
 
 use std::collections::HashMap;
 

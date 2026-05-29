@@ -1,7 +1,7 @@
-//! Snapshot serialization of globe state for cross-thread transfer.
-//!
-//! - Channel pair for sending and receiving globe snapshots.
-//! - Build and apply helpers to capture or restore globe state.
+//! Provides globe snapshot transfer structures for cross-thread synchronization and state exchange.
+//! Defines channel wrappers and snapshot payload shapes used to move globe state safely.
+//! Supports building and applying snapshots to keep remote and local globe views aligned.
+//! Delivers the synchronization utility layer for background simulation integration.
 
 use crate::globe::registry::Globe;
 use crate::globe::types::RegionId;

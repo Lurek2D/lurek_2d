@@ -1,7 +1,6 @@
-//! Deep-copy utility for Lua tables via mlua.
-//!
-//! - Recursively clones nested table structures by value.
-//! - Used by ECS and other systems that need independent table snapshots.
+//! Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots.
+//! Recursively clones nested table structures so template and runtime data can diverge safely.
+//! Delivers a shared cloning primitive used by serialization, blueprints, and diff-friendly workflows.
 
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};
 

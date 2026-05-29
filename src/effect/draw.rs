@@ -1,7 +1,6 @@
-//! Render a preview image summarizing the current post-FX stack state.
-//!
-//! - Produce a solid-color thumbnail indicating whether any effects are active.
-//! - Image colour differs between an empty stack and a stack with at least one enabled effect.
+//! Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
+//! Distinguishes active and inactive stack states through deterministic color selection.
+//! Delivers a minimal visual probe for tooling and debug-side effect inspection.
 
 use super::stack::PostFxStack;
 use crate::image::ImageData;

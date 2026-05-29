@@ -1,7 +1,6 @@
-//! Base64 and hexadecimal encoding and decoding for opaque byte payloads
-//!
-//! - Format selection via enum variant parsed from user-facing labels
-//! - Consistent error wrapping for malformed input
+//! Implements textual encoding and decoding of opaque bytes via base64 and hexadecimal formats.
+//! Selects algorithms through stable enum variants parsed from user-facing format labels.
+//! Returns normalized failures for malformed textual payloads during decode operations.
 
 use base64::Engine;
 #[derive(Debug, Clone, Copy, PartialEq)]

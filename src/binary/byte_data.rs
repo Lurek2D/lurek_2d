@@ -1,7 +1,7 @@
-//! Owned mutable byte buffer with indexed read and write access
-//!
-//! - UTF-8 string encoding and lossy decoding from raw bytes
-//! - Immutable and mutable slice views for zero-copy downstream use
+//! Implements an owned mutable byte buffer with indexed access and conversion helpers.
+//! Supports UTF-8 encoding and tolerant text decoding from arbitrary byte content.
+//! Exposes immutable and mutable slice views for efficient downstream processing.
+//! Serves as the foundational byte container shared across binary utility modules.
 
 #[derive(Debug, Clone)]
 /// Hold owned raw bytes with convenience conversion helpers.

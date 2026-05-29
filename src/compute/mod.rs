@@ -1,7 +1,6 @@
-//! N-dimensional array container, element-wise and reduction operations
-//!
-//! - FFT, linear algebra, spatial filtering, and statistical analytics
-//! - Configurable parallel dispatch threshold for large arrays
+//! Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
+//! Groups core numeric submodules under one cohesive surface with shared data contracts.
+//! Serves as the composition entry for engine-side compute and numeric utility workflows.
 
 /// Exposes analytics helpers for cumulative and statistical operations.
 pub mod analytics;

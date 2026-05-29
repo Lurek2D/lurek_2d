@@ -1,9 +1,9 @@
-//! Stateless and stateful LLM chat helpers: global provider config, single-shot completion, chat sessions, and prompt templates.
-//!
-//! - `GlobalLlmConfig` is a process-wide default stored in a `Mutex`; set once via `configure()` and read by every direct completion call.
-//! - `LlmChat` maintains a stateful message history and calls the Ollama `/api/chat` endpoint.
-//! - `LlmTemplate` renders `{key}` placeholders from a Lua table.
-//! - Sync HTTP calls reuse `crate::network::http::execute_request`.
+//! Implements the direct synchronous conversation surface for immediate model-backed agent interactions.
+//! Builds deterministic request envelopes for plain text, structured JSON, and embedding-oriented calls.
+//! Preserves reusable global provider configuration so repeated invocations share one operational baseline.
+//! Maintains multi-turn message history for session continuity and contextual follow-up reasoning.
+//! Applies lightweight prompt templating to inject runtime variables without changing call contracts.
+//! Normalizes backend responses into stable Lua-facing shapes with predictable field semantics.
 
 use std::sync::{Mutex, OnceLock};
 use std::collections::HashMap;

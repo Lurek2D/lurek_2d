@@ -1,9 +1,8 @@
-//! Orbit camera with latitude, longitude, zoom, and level-of-detail selection.
-//!
-//! - View-matrix construction from globe rotation, axial tilt, and camera angles.
-//! - Single-point and polygon projection from lat/lon to screen space.
-//! - Back-face culling via z-depth test for hidden-hemisphere rejection.
-//! - Screen-drag-to-pan conversion and vector normalization helpers.
+//! Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control.
+//! Builds view transforms from globe rotation, axial tilt, and camera orientation inputs.
+//! Projects points and regions from spherical coordinates into screen-space render geometry.
+//! Applies facing checks and depth culling to reject back-hemisphere geometry during projection.
+//! Delivers camera and projection utilities used by drawing, picking, and interaction code paths.
 
 use crate::globe::types::{GlobeSpec, LodTier, ProjectedRegion, Region};
 use super::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};

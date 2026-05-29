@@ -1,12 +1,13 @@
-//! Automation simulator: drives script playback by advancing time and dispatching events.
-//!
-//! - Manages a registry of named scripts and macros with load/unload lifecycle.
-//! - Evaluates condition expressions (&&, ||, !, parentheses) against named boolean flags.
-//! - Supports pause, resume, speed control, and visual highlight mode for debug tools.
-//! - CallMacro steps inline macro scripts at the current playback position.
-//! - VisualAssert steps compare baseline and actual images with pixel-diff tolerance.
-//! - Assert steps halt playback when condition expressions evaluate to false.
-//! - StepEventSink trait decouples event dispatch from EventQueue for testing.
+//! Implements deterministic automation playback that advances script time and dispatches input events.
+//! Maintains registries of named scripts and macros for reusable scenario composition.
+//! Evaluates boolean condition expressions to gate control-flow steps and assertion behavior.
+//! Supports pause, resume, and speed scaling so runs can be inspected or accelerated as needed.
+//! Inlines macro calls into active playback flow while preserving temporal consistency.
+//! Executes visual assertions through baseline comparison with configurable tolerance thresholds.
+//! Stops or reports on failed assertions to provide reliable test-signal semantics during playback.
+//! Decouples event emission via sink abstractions to support runtime and test harness integration.
+//! Tracks simulator state transitions and progression indices for deterministic repeatability.
+//! Serves as the execution core for scripted automation scenarios and regression validation.
 
 use super::script::MAX_STEPS;
 use super::{Action, Script, Step};

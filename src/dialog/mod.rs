@@ -1,6 +1,6 @@
-//! - Provides the runtime conversation stack for branching dialogue, speaker metadata, and progression state.
-//! - Combines gate-aware topic and branch selection with lightweight context signals for adaptive narrative flow.
-//! - Exposes a clean integration surface where scripts consume events while core logic remains in typed dialog data.
+//! Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
+//! Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
+//! Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
 
 /// Gate conditions that guard dialog branch and topic selection.
 pub mod condition;

@@ -1,7 +1,7 @@
-//! Define normalized documentation record types for lurek API symbols.
-//!
-//! - Model parameter, return, and metadata fields used by export and report stages.
-//! - Provide completeness validation helpers for entry quality checks.
+//! Provides normalized documentation record types that represent public API symbols and their metadata.
+//! Models parameter and return descriptors so downstream export and reporting stages share one data shape.
+//! Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
+//! Delivers the common in-memory contract used across collection, transformation, and reporting flows.
 
 use std::collections::HashMap;
 #[derive(Debug, Clone, Default)]

@@ -1,9 +1,10 @@
-//! Dense n-dimensional array container with typed storage (float32, float64, int32)
-//!
-//! - Shape validation, stride computation, and flat-index addressing
-//! - Constructors for zeros, ones, range, and from-slice initialization
-//! - Element access by flat index or multidimensional coordinates
-//! - Utility iterators, fill, map, and display formatting
+//! Implements the dense n-dimensional array container used by all compute submodules.
+//! Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
+//! Validates dimensions and element counts to protect allocation and indexing safety boundaries.
+//! Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
+//! Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
+//! Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
+//! Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
 
 /// Defines maximum allowed number of elements for safe allocations.
 const MAX_ELEMENTS: usize = 268_435_456;

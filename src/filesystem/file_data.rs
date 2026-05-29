@@ -1,7 +1,6 @@
-//! Pair raw file bytes with the logical path they were loaded from.
-//!
-//! - Provide length, emptiness, and UTF-8 decode helpers on the cached payload.
-//! - Serve as the common return type for GameFS load operations.
+//! Provides a lightweight file payload container pairing logical paths with loaded raw bytes.
+//! Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption.
+//! Delivers the shared data object returned by filesystem read operations.
 
 /// Cached file bytes paired with the logical path they came from.
 pub struct FileData {

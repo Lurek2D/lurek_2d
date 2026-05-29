@@ -1,9 +1,8 @@
-//! Waypoint-based camera path interpolation for scripted camera movement.
-//!
-//! - CameraZoomTween provides eased transitions between zoom levels over time.
-//! - CameraEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
-//! - CameraPath segments multi-point paths with linear interpolation and progress tracking.
-//! - ZoomTween is a type alias preserving backwards compatibility.
+//! Implements waypoint-driven camera path interpolation for scripted movement and guided shots.
+//! Provides zoom tweening with easing control for smooth focal transitions over fixed durations.
+//! Tracks segment progress across multi-point paths to produce continuous positional interpolation.
+//! Supports reusable easing selection so authored camera motion keeps consistent temporal character.
+//! Serves as the timeline-friendly movement layer above direct camera transform manipulation.
 
 use super::types::CameraEasing;
 

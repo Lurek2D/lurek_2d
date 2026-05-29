@@ -1,8 +1,9 @@
-//! Rolling mean, sum, min, and max over configurable window size
-//!
-//! - Dense rank computation with average-rank tie-breaking
-//! - Row-to-row percent change calculation
-//! - Cumulative sum across ordered rows
+//! Implements window-style dataframe computations over ordered row sequences and bounded spans.
+//! Provides rolling mean, sum, min, and max evaluation with configurable window lengths.
+//! Computes dense-style ranking with stable tie handling across repeated numeric values.
+//! Supports row-over-row percent-change derivation for trend and momentum analysis.
+//! Builds cumulative running totals across ordered rows for progressive metric inspection.
+//! Serves as the window-function layer for time-like and sequence-aware dataframe analytics.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 impl DataFrame {

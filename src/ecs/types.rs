@@ -1,9 +1,6 @@
-//! Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.
-//!
-//! - `EntityId` is a `u32` generation-stamped handle; 0 is the null entity.
-//! - `ComponentSlot` is a dense index into a component storage array.
-//! - `ArchetypeKey` is a sorted bitset of component type IDs identifying a layout.
-//! - All types derive `Copy`, `Eq`, and `Hash` so they can be used as map keys.
+//! Provides core ECS identifier wrappers used to pass entity handles across module boundaries.
+//! Defines lightweight typed ids that keep call sites explicit while preserving compact storage.
+//! Delivers a shared identity contract for indexing, mapping, and query-level interoperability.
 
 /// Unique identifier for an ECS entity.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

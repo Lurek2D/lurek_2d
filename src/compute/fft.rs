@@ -1,8 +1,8 @@
-//! Radix-2 in-place FFT and inverse FFT for power-of-two length buffers
-//!
-//! - Real-to-complex forward transform with automatic zero-padding
-//! - Complex-to-real inverse transform for spectrum reconstruction
-//! - Magnitude spectrum extraction from complex bin pairs
+//! Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths.
+//! Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes.
+//! Provides inverse reconstruction paths from complex spectra back to real-domain samples.
+//! Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis.
+//! Serves as the spectral-analysis primitive layer for compute-side signal processing tasks.
 
 use std::f64::consts::PI;
 

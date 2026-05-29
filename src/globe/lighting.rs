@@ -1,8 +1,7 @@
-//! Globe day/night lighting: sun direction from rotation and time-of-day.
-//!
-//! - Per-region diffuse intensity with ambient floor.
-//! - Batch intensity computation for region centroid sequences.
-//! - Terminator-band alpha for smooth day/night transition rendering.
+//! Provides globe lighting helpers that derive sun direction and regional light intensity over time.
+//! Computes diffuse contribution with ambient floors to keep night-side visuals readable.
+//! Supports batch intensity and terminator blending calculations for smooth day-night transitions.
+//! Delivers reusable illumination math consumed by globe rendering passes.
 
 use crate::globe::types::GlobeSpec;
 use super::sphere::{lat_lon_to_unit, rot_y};

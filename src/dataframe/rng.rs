@@ -1,7 +1,6 @@
-//! Xorshift64 pseudo-random number generator for deterministic dataframe sampling
-//!
-//! - Float, integer, and index generation from 64-bit state
-//! - Zero-seed remap to avoid degenerate all-zero output
+//! Implements lightweight xorshift64 random generation used by dataframe-local sampling utilities.
+//! Produces deterministic integer, float, and index outputs from a compact 64-bit state.
+//! Remaps zero seed values to prevent degenerate all-zero generator behavior.
 
 /// Hold xorshift64 state used by dataframe-local random helpers.
 pub(crate) struct Xorshift64 {

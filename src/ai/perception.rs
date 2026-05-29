@@ -1,8 +1,10 @@
-//! Perception model storing stimuli, sensor configuration, detection results, and awareness state.
-//!
-//! - Stimulus world for visual, auditory, and custom signals with insertion, decay, and removal.
-//! - Sensor-side logic testing visibility, hearing, detecting nearby stimuli, and updating awareness.
-//! - Custom detection range tracking and time-based stimulus expiration.
+//! Implements sensory intake as a multi-channel stream of world cues with persistent awareness state.
+//! Captures visual, auditory, and custom signals in a unified format suitable for agent reasoning.
+//! Applies range and confidence dynamics so perception strength evolves instead of flipping abruptly.
+//! Maintains temporal awareness memory that can fade, refresh, or intensify based on new evidence.
+//! Separates sensing configuration from stimulus flow to keep tuning independent from event production.
+//! Bridges raw world events into decision-ready perceptual context consumed by planning layers.
+//! Acts as the attentional gate that determines what information reaches behavior systems and when.
 
 use std::collections::HashMap;
 /// Stimulus classification used by the sensor world.

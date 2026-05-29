@@ -1,9 +1,8 @@
-//! Bar chart renderer: vertical or horizontal grouped/stacked bars.
-//!
-//! - Rasterises a `BarChartSpec` into an RGBA pixel buffer.
-//! - Supports grouped and stacked layouts; bar width and gap are configurable.
-//! - Uses `render_utils::draw_rect_filled` for individual bar segments.
-//! - Owned by `lurek.charts.bar`; output is uploaded as a per-frame texture.
+//! Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts.
+//! Supports configurable bar width, spacing, and orientation behavior across multiple value series.
+//! Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment.
+//! Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays.
+//! Serves as the rectangular-series rendering backend for the charts bar API path.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{

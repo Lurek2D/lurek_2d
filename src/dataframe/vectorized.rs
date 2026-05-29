@@ -1,13 +1,15 @@
-//! Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks
-//!
-//! - Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg
-//! - Element-wise binary operations between two numeric columns
-//! - Column reduction: sum, mean, min, max, std, var, count
-//! - Comparison mask generation for filter predicates
-//! - VecFrame ↔ DataFrame bidirectional conversion with type inference
-//! - Parallel multi-column reduce and scalar operations via rayon
-//! - Column type casting between float64, int64, and text
-//! - Boolean mask filtering across all column types
+//! Implements typed vectorized column storage for high-throughput dataframe-style numeric processing.
+//! Supports float, integer, boolean, and text columns with optional validity-mask semantics.
+//! Provides scalar element-wise transforms across arithmetic and unary operation families.
+//! Executes binary column operations with dtype-aware coercion and compatibility checks.
+//! Computes reductions including sum, mean, min, max, variance, and related aggregate metrics.
+//! Generates comparison masks for predicate-style filtering over typed column values.
+//! Supports bidirectional conversion between vectorized frames and generic dataframe representations.
+//! Applies parallelized multi-column operations and reductions via rayon-backed execution paths.
+//! Handles explicit column casting between numeric and textual type domains.
+//! Preserves boolean-mask filtering behavior consistently across all supported column types.
+//! Balances performance-oriented storage layout with conversion interoperability requirements.
+//! Serves as the vectorized acceleration layer above core dataframe contracts.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use rayon::prelude::*;

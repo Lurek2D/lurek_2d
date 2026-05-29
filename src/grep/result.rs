@@ -1,5 +1,4 @@
-//! Search result types: per-line matches, per-file matches, and totals.
-//!
+//! - Search result types: per-line matches, per-file matches, and totals.
 //! - `LineMatch` carries `line_number`, `content` string, and `positions` spans.
 //! - `FileMatch` groups `Vec<LineMatch>` under a `PathBuf` source path.
 //! - `GrepResult` is the top-level return: `matches`, `files_searched`, `total_matches`.

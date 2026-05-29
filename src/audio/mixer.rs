@@ -1,14 +1,18 @@
-//! `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
-//!
-//! - rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
-//! - Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
-//! - Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
-//! - `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
-//! - `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
-//! - Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
-//! - Peak metering: per-source, per-bus average, and master peak tracking.
-//! - Stereo width, random pitch range, crossfade, and sound pool creation utilities.
-//! - `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
+//! Implements the central audio mixer registry that owns sources, buses, streams, and listener state.
+//! Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable.
+//! Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows.
+//! Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping.
+//! Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior.
+//! Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics.
+//! Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues.
+//! Applies distance-model and doppler controls for runtime spatialization consistency.
+//! Tracks metering data across source, bus, and master levels for diagnostics and gameplay feedback.
+//! Provides utility controls for stereo width, random pitch spread, crossfade behavior, and pooled playback.
+//! Preserves stable key-based lookup so script calls map deterministically to mixer-owned runtime entities.
+//! Coordinates effect processing boundaries while leaving advanced DSP behavior to dedicated modules.
+//! Centralizes audio concurrency decisions so frame systems interact through one coherent control plane.
+//! Serves as the primary engine-side audio execution surface behind Lua-facing playback APIs.
+//! Anchors all real-time audio state mutation under a deterministic, runtime-safe ownership model.
 
 use crate::audio::bus::Bus;
 use crate::dsp::{DynamicEffectSource, EffectParams};

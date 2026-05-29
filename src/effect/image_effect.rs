@@ -1,7 +1,7 @@
-//! Image-scoped post-processing effect pipeline that groups and orders shader passes.
-//!
-//! - Provides add, remove, lookup-by-index/name, and clear operations on owned or shared effects.
-//! - Converts the active pipeline into renderer-ready `ShaderPassDescriptor` sequences.
+//! Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
+//! Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
+//! Converts active effects into renderer-facing pass descriptors for downstream execution.
+//! Delivers the per-target composition layer for reusable shader effect application.
 
 use super::effect::PostFxEffect;
 use crate::log_msg;

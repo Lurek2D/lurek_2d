@@ -1,5 +1,4 @@
-//! JSON path search: query structured key-value paths within JSON files.
-//!
+//! - JSON path search: query structured key-value paths within JSON files.
 //! - `search_json_path` scans a directory for JSON files and extracts values at a path.
 //! - `search_json_file` operates on a single file; returns `Option<serde_json::Value>`.
 //! - Path syntax uses `/`-separated keys; arrays are addressed by numeric index.

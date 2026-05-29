@@ -1,7 +1,7 @@
-//! Screen-space region picking via ray-polygon intersection.
-//!
-//! - Projects region polygons from 3D globe to 2D screen for hit testing.
-//! - Selects the front-most visible region under a pointer position.
+//! Provides screen-space globe picking that identifies visible regions under pointer coordinates.
+//! Projects region geometry into 2D and applies point-in-polygon hit testing for selection.
+//! Chooses the front-most valid candidate using camera-facing depth information.
+//! Delivers interaction picking results consumed by UI and gameplay selection flows.
 
 use crate::globe::projection::{build_view_matrix, OrbitCamera};
 use crate::globe::topology::RegionGraph;

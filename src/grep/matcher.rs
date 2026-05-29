@@ -1,5 +1,4 @@
-//! Low-level pattern matcher: wraps all supported pattern kinds behind one trait.
-//!
+//! - Low-level pattern matcher: wraps all supported pattern kinds behind one trait.
 //! - `Matcher` implements literal, regex, glob, and fuzzy match against a `&str`.
 //! - Returns a `Vec<(usize, usize)>` of byte-span matches within the target string.
 //! - Regex variant compiles once and is reused across all lines in a file.

@@ -1,9 +1,9 @@
-//! Camera effect primitives for transient motion overlays on top of base camera state.
-//!
-//! - ZoomPulse provides a one-shot sinusoidal zoom spike triggered by game events.
-//! - CameraSway adds oscillating positional offset with configurable frequency and decay.
-//! - CameraBreathing delivers subtle periodic zoom modulation for idle camera presence.
-//! - Each effect is composable: the parent camera sums their outputs each frame.
+//! Implements transient camera-motion effects layered on top of the base follow transform state.
+//! Provides pulse-based zoom bursts for impact moments and short-lived cinematic emphasis.
+//! Adds oscillatory sway offsets with tunable frequency and damping for dynamic camera motion feel.
+//! Supplies breathing-style zoom modulation for subtle ambient life during low-action periods.
+//! Keeps each effect independently updateable so compositions remain modular and controllable.
+//! Serves as the reusable effect toolkit consumed by camera runtime state integration.
 
 use std::f32::consts::PI;
 

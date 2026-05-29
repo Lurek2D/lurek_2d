@@ -1,7 +1,6 @@
-//! Stub device enumeration and selection for the audio output backend.
-//!
-//! - Always reports a single "Default" device until platform-specific enumeration is added.
-//! - Validates device name against the available list on set.
+//! Provides the audio device facade used for output listing and active-device selection hooks.
+//! Exposes a stable API surface while backend-specific device enumeration remains minimal.
+//! Validates requested device names against known outputs before accepting selection changes.
 
 /// Return the list of available audio output device names; currently always `["Default"]`.
 pub fn get_playback_devices() -> Vec<String> {

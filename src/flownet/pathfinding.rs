@@ -1,10 +1,10 @@
-//! Dijkstra shortest-path search over weighted directed graphs.
-//!
-//! - Item-type-aware pathfinding respecting edge filters and cooldowns.
-//! - Distance queries and bounded reachability flood-fill.
-//! - Neighbor discovery across active edges and bidirectional links.
-//! - Path reconstruction from predecessor maps into ordered node/edge lists.
-//! - Priority-queue state with min-cost ordering for traversal.
+//! Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges.
+//! Respects edge activity, cooldown, and type filters so route output matches simulation constraints.
+//! Supports distance and reachability queries for planning and demand-matching workflows.
+//! Builds predecessor maps and reconstructs ordered node and edge paths for execution.
+//! Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state.
+//! Integrates neighbor discovery across directional and bidirectional connectivity patterns.
+//! Delivers the routing layer used by supply movement and logistics decision systems.
 
 use super::core::Graph;
 use std::cmp::Ordering;

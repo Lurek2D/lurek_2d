@@ -1,7 +1,8 @@
-//! Named signal subscription registry with exact-name and wildcard pattern matching.
-//!
-//! - Handle-based subscribe/remove lifecycle with monotonic id allocation.
-//! - Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
+//! Provides named signal subscription storage with support for exact and wildcard pattern matching.
+//! Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control.
+//! Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns.
+//! Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection.
+//! Delivers the subscription registry used by event publishers to find active listeners efficiently.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{SG01, SG02};

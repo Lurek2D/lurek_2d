@@ -1,7 +1,8 @@
-//! Squad-level coordination grouping named members under one leader with shared local memory.
-//!
-//! - Formation mode, spacing, and ordered membership determining relative placement.
-//! - Formation-position logic producing target offsets for line, column, wedge, and circle patterns.
+//! Defines group-level coordination state that binds members around shared intent and leadership.
+//! Maintains formation semantics as geometric offsets that stay coherent during leader motion.
+//! Carries shared tactical context so squad behavior can react as one unit instead of isolated actors.
+//! Produces placement guidance for synchronized movement patterns across common formation styles.
+//! Serves as the structural layer for multi-agent cohesion above individual steering behaviors.
 
 use crate::ai::blackboard::Blackboard;
 /// Supported squad formation shapes.

@@ -1,9 +1,9 @@
-//! 2D convolution with zero-padded boundary handling
-//!
-//! - Binary morphology operators (dilate, erode) using Manhattan radius
-//! - Flood fill with 4-connected BFS propagation
-//! - Sub-region extraction and insertion for 2D arrays
-//! - Matrix multiplication and 1D dot product
+//! Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces.
+//! Provides zero-padded convolution for kernel filtering across image-like matrix inputs.
+//! Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods.
+//! Supports flood-fill propagation and region extraction or insertion for localized data editing.
+//! Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
+//! Serves as the spatial-processing utility layer built on top of NdArray primitives.
 
 use crate::compute::array::{DataType, NdArray};
 use std::collections::VecDeque;

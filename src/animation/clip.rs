@@ -1,7 +1,6 @@
-//! Defines named animation clips as reusable frame-index ranges.
-//!
-//! - Stores playback direction, looping state, and fallback FPS for clips that do not rely on per-frame timing.
-//! - Gives higher animation systems a compact clip descriptor they can switch, reuse, and combine by name.
+//! Defines reusable animation clip metadata over frame spans, playback direction, and loop policy.
+//! Carries baseline timing settings that playback systems use when frame durations are unspecified.
+//! Serves as a compact contract shared by controller, state-machine, and blend-layer orchestration.
 
 /// Supported clip playback modes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

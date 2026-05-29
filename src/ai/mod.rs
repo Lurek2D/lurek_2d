@@ -1,8 +1,8 @@
-//! Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
-//!
-//! - Module-level export map for agent state, planners, blackboard, and command flow.
-//! - Learning helpers, perception, steering, and squad coordination re-exports.
-//! - Compact entry surface re-exporting runtime types for higher engine layers.
+//! Groups the full AI runtime surface into one coherent module boundary for decision and control.
+//! Exposes complementary layers for actor state, sensing, planning, steering, coordination, and tooling.
+//! Keeps integration predictable by publishing shared types through a single composition entry point.
+//! Aligns tactical and strategic subsystems under consistent data flow and update expectations.
+//! Defines the high-level contract of engine-side intelligence capabilities available to the rest of runtime.
 
 /// Core agent type and decision model wiring.
 pub mod agent;

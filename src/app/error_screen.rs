@@ -1,8 +1,9 @@
-//! Formats fatal Lua and engine errors into a user-facing screen.
-//!
-//! - Splits message text and traceback, word-wraps long lines, and cleans Lua string markers.
-//! - Builds full-screen render commands showing error title, body, traceback, and hint footer.
-//! - Provides clipboard export text for quick copy of error details.
+//! Formats fatal runtime failures into a user-facing visual report that remains readable under stress.
+//! Splits primary error content from traceback context and normalizes noisy text artifacts.
+//! Wraps long lines into screen-friendly layout blocks for predictable in-window readability.
+//! Builds full-screen render command payloads for title, detail body, traceback, and guidance text.
+//! Provides clipboard-ready export text so failure details can be captured quickly.
+//! Serves as the terminal failure presentation path when normal gameplay rendering cannot continue.
 
 use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::error::EngineError;

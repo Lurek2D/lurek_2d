@@ -1,9 +1,8 @@
-//! Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
-//!
-//! - Great-circle distance (Haversine) and arc interpolation between two geo-points.
-//! - Ray-sphere intersection returning the nearest positive hit distance.
-//! - Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
-//! - Matrix-vector and matrix-matrix multiplication for globe-view transforms.
+//! Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space.
+//! Computes great-circle distance and interpolation for geodesic path and arc construction.
+//! Supplies ray-sphere intersection tests used by projection and picking style calculations.
+//! Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms.
+//! Delivers foundational math primitives shared across lighting, projection, and topology tools.
 
 use crate::math::Vec3;
 

@@ -1,9 +1,8 @@
-//! Define ordered severity levels with case-insensitive parsing
-//!
-//! - Store bounded in-memory log history with timestamped entries
-//! - Filter log output by minimum severity and optional category prefix
-//! - Mirror accepted entries to stderr and optional append-only file
-//! - Provide tail and category query access over retained entries
+//! Implements structured developer logging with severity levels and bounded in-memory retention.
+//! Parses level labels case-insensitively and applies configurable minimum-level filtering.
+//! Supports optional category filtering and tail-style retrieval over retained log entries.
+//! Mirrors accepted records to stderr and optional append-only file outputs.
+//! Serves as the local devtools logging backbone for runtime diagnostics.
 
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;

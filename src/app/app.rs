@@ -1,14 +1,24 @@
-//! Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
-//!
-//! - Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
-//! - Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
-//! - Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
-//! - Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
-//! - Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
-//! - Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
-//! - Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
-//! - Boots the Lua VM, loads main.lua, fires `lurek.init()`, and enters the main game loop.
-//! - Provides `App` bootstrap wrapper that initializes logging and launches the event loop.
+//! Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution.
+//! Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression.
+//! Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration.
+//! Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic.
+//! Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling.
+//! Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration.
+//! Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes.
+//! Handles splash and fallback presentation paths before gameplay state is fully available.
+//! Provides fatal-error rendering transition when execution cannot continue in normal game flow.
+//! Controls screenshot timing and capture output as part of frame lifecycle responsibilities.
+//! Drives Lua VM startup, script loading, and callback invocation as the script execution spine.
+//! Applies guarded callback execution paths to keep runtime responsive under script-side anomalies.
+//! Coordinates hot-reload triggers for content and script changes in active development sessions.
+//! Preserves state continuity across reload boundaries where restart semantics allow safe recovery.
+//! Maintains integration seams between render backend, runtime state, and high-level app orchestration.
+//! Centralizes frame-profile collection points for observability and performance diagnostics.
+//! Exposes utility operations used by auxiliary app submodules without duplicating orchestration logic.
+//! Ensures one coherent ownership model for transient frame state and long-lived application resources.
+//! Keeps platform interactions isolated so gameplay modules consume normalized runtime behavior.
+//! Serves as the operational heartbeat that advances the engine from launch to shutdown.
+//! Anchors the complete desktop execution lifecycle under one deterministic application control surface.
 
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;

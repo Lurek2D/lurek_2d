@@ -1,11 +1,11 @@
-//! Core data types for the globe subsystem: regions, markers, labels, arcs, and layers.
-//!
-//! - Region geometry with polygon vertices, centroids, adjacency, and per-edge tags.
-//! - Render parameters via GlobeSpec: lighting, atmosphere, borders, rotation.
-//! - Overlay and heat-map layers with per-region color overrides.
-//! - Marker and label types with style, LOD gating, and pulse animation.
-//! - Projection output types for screen-space rendering of regions and arcs.
-//! - Globe-level error enum for load, lookup, and pathfinding failures.
+//! Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts.
+//! Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes.
+//! Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior.
+//! Supplies layer and heat-overlay structures used to blend thematic map information at runtime.
+//! Models marker and label style data with visibility, pulse, and level-of-detail controls.
+//! Includes projection result types for screen-space rendering and interaction pipelines.
+//! Declares subsystem error variants for loading, lookup, and path-related failure handling.
+//! Delivers the canonical type contract consumed by all globe modules and integration surfaces.
 
 use crate::math::Vec2;
 use std::collections::{HashMap, HashSet};

@@ -1,8 +1,8 @@
-//! Defines blend masks and named blend layers for multi-clip animation mixing.
-//!
-//! - Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
-//! - Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.
-//! - Provides the layer data higher animation systems use to build partial-body or weighted blends.
+//! Implements layered animation blending where multiple clip outputs combine into one final pose.
+//! Applies per-layer influence weights to shape how strongly each source contributes over time.
+//! Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions.
+//! Maintains ordered layer stacking so blend precedence stays explicit and predictable.
+//! Serves as the composition core for expressive multi-source character animation behavior.
 
 /// Bone mask for restricting a blend layer to selected bones.
 #[derive(Debug, Clone, Default)]

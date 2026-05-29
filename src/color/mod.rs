@@ -1,9 +1,6 @@
-//! RGBA color types, palettes, blending, and color-space conversions.
-//!
-//! - Linear RGBA float color with named constants and brand palette.
-//! - Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
-//! - Predefined palettes: CSS named colors, retro consoles, game-dev common.
-//! - Blending modes: lerp, multiply, screen, overlay, additive.
+//! Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers.
+//! Groups core color math and curated palette sources into one reusable runtime surface.
+//! Serves as the composition entry for engine-side and Lua-side color workflows.
 
 /// Core RGBA color type and color-space conversions.
 pub mod color_core;

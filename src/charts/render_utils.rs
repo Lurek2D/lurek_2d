@@ -1,10 +1,8 @@
-//! Internal rasterisation utilities shared by all chart renderers.
-//!
-//! - `fill_buffer` — flood-fills an RGBA buffer with a single background colour.
-//! - `draw_rect_filled` / `draw_circle_filled` — axis-aligned primitive fill.
-//! - `world_to_screen` — maps a data-space value to a pixel coordinate.
-//! - `auto_range` — computes the bounding min/max across all series data.
-//! - All functions operate on a flat `&mut [u8]` RGBA buffer with stride = width×4.
+//! Provides shared CPU rasterization helpers used by all chart renderer implementations.
+//! Includes primitive pixel operations for points, lines, circles, rectangles, and full-buffer fills.
+//! Converts chart data coordinates to screen-space pixels through normalized range mapping utilities.
+//! Computes automatic value ranges across multiple series for default axis domain selection.
+//! Serves as the low-level drawing toolkit for consistent chart image generation behavior.
 
 use crate::charts::config::ChartSeries;
 

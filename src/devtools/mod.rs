@@ -1,9 +1,6 @@
-//! Aggregate frame-time statistics and FPS percentile snapshots
-//!
-//! - Structured logging with severity filtering, file output, and history
-//! - Hierarchical profiler with zone stacking and per-frame capture
-//! - Interactive Lua REPL console with bounded command history
-//! - File-watcher polling and native notify integration for hot-reload
+//! Defines the devtools module boundary for profiling, logging, REPL, and file-watch diagnostics.
+//! Groups developer instrumentation utilities into one cohesive runtime helper surface.
+//! Serves as the composition entry for non-production debugging and observability workflows.
 
 /// Expose frame-time history collection and aggregate snapshot helpers.
 pub mod frame_stats;

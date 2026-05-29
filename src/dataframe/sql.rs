@@ -1,13 +1,18 @@
-//! SQL text tokenizer producing typed token stream
-//!
-//! - Recursive-descent parser for SELECT statements
-//! - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
-//! - Aggregate function support: COUNT, SUM, AVG, MIN, MAX
-//! - SELECT arithmetic expressions with explicit `AS` aliases
-//! - GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
-//! - JOIN clause parsing and inner-join execution
-//! - SQL LIKE pattern matching with `%` and `_` wildcards
-//! - Single-frame and multi-table Database query entry points
+//! Implements SQL-like query execution over dataframe and database table structures.
+//! Tokenizes input query text into typed lexical units for downstream parser consumption.
+//! Parses SELECT statements through recursive-descent grammar with explicit clause ordering.
+//! Builds expression trees for WHERE and HAVING filters including boolean and pattern operators.
+//! Supports projection arithmetic with aliasing and function-call style aggregate expressions.
+//! Executes grouping, aggregation, ordering, limits, and offsets over intermediate query results.
+//! Parses and applies join clauses for multi-table query paths within database containers.
+//! Implements LIKE-style wildcard matching semantics compatible with SQL-style pattern tokens.
+//! Validates column and table references with structured error reporting on unresolved names.
+//! Exposes query entry points for both single-frame and multi-table execution contexts.
+//! Preserves deterministic clause semantics and result-shape construction behavior.
+//! Balances expressiveness with bounded parser and evaluator complexity for runtime safety.
+//! Serves as the declarative query layer on top of core dataframe manipulation primitives.
+//! Integrates tightly with frame and value contracts for consistent type handling outcomes.
+//! Anchors script-facing tabular querying with predictable parser and execution behavior.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame, Database};
 #[derive(Debug, Clone, PartialEq)]

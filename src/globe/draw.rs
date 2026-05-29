@@ -1,10 +1,10 @@
-//! Emit a complete globe frame as a list of render commands.
-//!
-//! - Draw regions with fog-of-war, lighting, heat-layer blending, and texture mapping.
-//! - Render borders with optional polyline smoothing passes.
-//! - Project and draw great-circle arcs between coordinate pairs.
-//! - Display animated markers with pulse, rotation, and labels.
-//! - Emit atmosphere halo circles and LOD-gated text labels.
+//! Provides full globe frame emission that converts world map state into ordered render commands.
+//! Draws projected regions with fog, lighting, overlays, and optional texture contribution.
+//! Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues.
+//! Integrates marker and label drawing with animation and LOD-aware visibility rules.
+//! Applies camera projection and world parameters consistently across all rendered primitives.
+//! Supports layered heat and style effects so thematic map signals remain legible.
+//! Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
 
 use crate::globe::fog::FogStore;
 use crate::globe::label::LabelStore;

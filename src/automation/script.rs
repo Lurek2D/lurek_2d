@@ -1,9 +1,8 @@
-//! Automation script container: named, time-sorted step sequences for deterministic replay.
-//!
-//! - Expands repeat markers into cloned steps at computed time offsets.
-//! - Parses TOML input with meta description and typed step fields.
-//! - Enforces a configurable step limit (default MAX_STEPS = 100,000).
-//! - Sorts steps by time after expansion for correct playback ordering.
+//! Implements automation script storage as named, time-ordered step sequences for deterministic replay.
+//! Parses TOML definitions into typed runtime steps with metadata and validated field extraction.
+//! Expands repeat directives into concrete scheduled steps at computed temporal offsets.
+//! Enforces bounded script size to protect playback and memory behavior under large inputs.
+//! Maintains stable chronological ordering so simulator playback semantics stay predictable.
 
 use super::{Action, Step};
 /// Maximum number of steps retained in a single automation script.

@@ -1,9 +1,8 @@
-//! Pie chart renderer: proportional slice segments from a single data series.
-//!
-//! - Rasterises a `PieChartSpec` into an RGBA pixel buffer using arc fill.
-//! - Slice angles are computed from normalised values; labels are optional.
-//! - A configurable donut-hole radius converts the pie into a ring chart.
-//! - Owned by `lurek.charts.pie`; output is uploaded as a texture.
+//! Implements pie-style chart rasterization where values are mapped to proportional angular slices.
+//! Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers.
+//! Supports optional donut-hole shaping and label metadata for ring-style visual presentation.
+//! Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows.
+//! Serves as the circular-segment rendering backend behind the charts pie API.
 
 use crate::charts::config::{ChartConfig, ChartDataFrameOptions};
 use crate::charts::render_utils::{fill_buffer, set_pixel};

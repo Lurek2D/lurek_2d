@@ -1,7 +1,6 @@
-//! Convert Lua values to human-readable text for REPL and debug display
-//!
-//! - Handle nil, boolean, number, string, table, function, and userdata variants
-//! - Return safe fallback labels for unrecognized value kinds
+//! Implements Lua value pretty-print conversion for REPL and debug-facing display output.
+//! Handles scalar and structured value variants with stable human-readable formatting behavior.
+//! Returns safe fallback labels for unrecognized or unsupported value representations.
 
 /// Convert one Lua value to display text and return a fallback for unknown kinds.
 pub fn value_to_string(v: &mlua::Value) -> String {

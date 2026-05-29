@@ -1,7 +1,6 @@
-//! Render-command integration for the post-effects stack.
-//!
-//! - Emits begin/end/apply command sequences consumed by the renderer.
-//! - Skips command generation when no effects are enabled.
+//! Provides render-command generation for post-effect capture and application flows.
+//! Emits deterministic begin, end, and apply command sequences consumed by the renderer.
+//! Delivers no-op behavior when stacks have no active effects to process.
 
 use crate::effect::stack::PostFxStack;
 use crate::render::renderer::RenderCommand;

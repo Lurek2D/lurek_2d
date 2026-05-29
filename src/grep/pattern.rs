@@ -1,5 +1,4 @@
-//! Pattern kinds: literal, regex, glob, fuzzy, and multi-literal match strategies.
-//!
+//! - Pattern kinds: literal, regex, glob, fuzzy, and multi-literal match strategies.
 //! - `PatternKind` is the discriminant stored in `Matcher` to select dispatch logic.
 //! - `Literal` and `MultiLiteral` use Aho-Corasick for sub-linear multi-pattern search.
 //! - `Regex` wraps the `regex` crate; patterns are validated at construction time.

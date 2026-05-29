@@ -1,7 +1,7 @@
-//! Poll-based file watcher that detects modification-time changes on registered paths.
-//!
-//! - Maintains a path→mtime cache and reports diffs on each poll cycle.
-//! - Supports watch/unwatch, forced invalidation, and empty-state queries.
+//! Provides poll-based file watch behavior that detects mtime changes for registered paths.
+//! Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
+//! Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
+//! Delivers a lightweight change-detection utility for assets and config reload pipelines.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

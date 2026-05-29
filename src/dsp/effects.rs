@@ -1,14 +1,13 @@
-//! Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
-//!
-//! - `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
-//! - `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
-//! - `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
-//! - Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
-//! - `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
-//! - `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
-//! - Comb-buffer sizing derived from sample rate and effect type at construction time.
-//! - Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
-//! - LFO-driven modulated delay for flanger and phaser with depth and rate controls.
+//! Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior.
+//! Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces.
+//! Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable.
+//! Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers.
+//! Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges.
+//! Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback.
+//! Wraps rodio sources in a dynamic processor that applies full chain processing during streaming.
+//! Handles effect-internal sizing from sample-rate context so algorithms remain portable across devices.
+//! Keeps filter and modulation math localized to one layer for consistent sonic behavior across call sites.
+//! Delivers the central effect-processing backbone for real-time and script-driven DSP workflows.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{DP01, DP02, DP03};

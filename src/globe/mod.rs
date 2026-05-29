@@ -1,8 +1,7 @@
-//! Globe rendering with orbit camera projection and LOD tiers.
-//!
-//! - Region registry, fog-of-war masks, and picking queries.
-//! - Label, marker, and layer management for map overlays.
-//! - Synchronization channels for background globe updates.
+//! Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration.
+//! Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface.
+//! Supports synchronization and loading flows so globe state can be updated from external game systems.
+//! Delivers a cohesive planetary-view feature set for strategic map presentation and interaction.
 
 /// Globe composition helpers. This module is publicly re-exported.
 pub mod composition;

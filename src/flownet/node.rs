@@ -1,10 +1,10 @@
-//! Node struct with id, type, capacity, inventory, and flow settings for graph simulation.
-//!
-//! - OverflowPolicy enum controlling behavior when a node reaches capacity: reject, destroy, or queue.
-//! - FlowMode enum defining automatic push, pull, or passive behavior during simulation steps.
-//! - ConversionRule, Supply, and Demand structs for item transformation and economic modeling.
-//! - Tag, queue, and item management methods on Node.
-//! - String-based FromStr parsing for policy and flow mode enums.
+//! Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration.
+//! Defines overflow behavior modes that govern how nodes handle arrivals beyond available space.
+//! Encodes push and pull flow semantics used by simulation to move items across the graph.
+//! Stores conversion, supply, and demand records for transformation and economic-style mechanics.
+//! Exposes node-level queue and tag operations needed for runtime orchestration.
+//! Parses textual policy and flow values into typed enums for resilient script integration.
+//! Delivers the per-node behavior contract that anchors transport and conversion decisions.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::str::FromStr;

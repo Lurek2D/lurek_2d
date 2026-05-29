@@ -1,9 +1,10 @@
-//! Ordered post-processing effect stack with per-entry enable flags.
-//!
-//! - Index-based effect references aligned with a parallel enabled vector.
-//! - Stack manipulation: add, remove, insert, reorder, deduplicate.
-//! - Query helpers for enabled subset, dimensions, and positional lookup.
-//! - Debug visualization renderers for stack state, catalogs, parameters, and type bars.
+//! Provides ordered post-effect stack management with per-entry enable state and target dimensions.
+//! Stores effect references in application order while preserving synchronized activation flags.
+//! Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
+//! Exposes query helpers that report active subsets and positional stack metadata.
+//! Includes stack-introspection render helpers for debugging and visual tooling overlays.
+//! Applies defensive index handling so invalid operations fail safely at runtime boundaries.
+//! Delivers the sequencing core that determines how effect chains are executed frame to frame.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};

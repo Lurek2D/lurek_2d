@@ -1,9 +1,9 @@
-//! Defines keyed numeric curves and sparse multi-property timelines for animation data.
-//!
-//! - Stores sorted keyframes for single values and named property tracks.
-//! - Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.
-//! - Evaluates one curve, one property, or a full property snapshot at an arbitrary time.
-//! - Provides the interpolation layer used by higher animation systems for parameter driving over time.
+//! Implements keyframed property timelines that interpolate numeric animation parameters over time.
+//! Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior.
+//! Evaluates sparse named tracks into sampled property values at arbitrary timeline positions.
+//! Provides both single-property reads and full snapshot sampling for synchronized consumers.
+//! Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts.
+//! Serves as the parameter animation layer beneath higher-level state and clip orchestration.
 
 use crate::math::easing;
 use std::collections::HashMap;

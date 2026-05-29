@@ -1,7 +1,7 @@
-//! Converts the current animation frame quad into a textured draw command.
-//!
-//! - Stores atlas reference, position, rotation, and scale in `AnimRenderParams`.
-//! - Provides a standalone `quad_to_draw_command` helper reusable outside the controller.
+//! Converts active animation frame state into renderer-ready textured draw command payloads.
+//! Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution.
+//! Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation.
+//! Serves as the bridge between animation runtime output and command-stream based rendering.
 
 use crate::animation::controller::Animation;
 use crate::math::Rect;

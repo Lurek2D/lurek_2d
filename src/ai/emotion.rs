@@ -1,9 +1,8 @@
-//! Per-agent emotion state tracking named feelings as clamped scalars decaying toward rest.
-//!
-//! - Single-emotion rules for activation thresholds, direct setting, triggering, and decay.
-//! - Model-level add, replace, query, dominant-state lookup, update, and reset operations.
-//! - Value clamping to [0, 1] at the write boundary preventing out-of-range propagation.
-//! - Dominant emotion identification by filtering active entries and selecting highest value.
+//! Tracks affective channels as bounded signals that rise on events and relax toward personal baselines.
+//! Translates short-term emotional pressure into a clean modulation stream for decision weighting.
+//! Preserves stability with clamped values and predictable decay so mood changes remain interpretable.
+//! Resolves dominant feeling state as a compact summary other AI layers can consume cheaply.
+//! Supplies a lightweight emotional color layer without locking behavior to one planner architecture.
 
 /// One named emotion tracked by `EmotionModel`.
 pub struct Emotion {

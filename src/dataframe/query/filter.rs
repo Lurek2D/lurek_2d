@@ -1,13 +1,11 @@
-//! Row filtering by column predicate with comparison and contains operators
-//!
-//! - Column sorting in ascending or descending order
-//! - Head, tail, and inclusive slice row selection
-//! - Column projection and unique value extraction
-//! - Group-by partitioning and inner/left join merging
-//! - Frame merge, count-by, drop-nil, and deterministic sampling
-//! - Aggregate statistics: sum, mean, min, max, median, stddev, variance
-//! - Descriptive statistics frame generation
-//! - Nil fill, batch row append, and column f64 import/export
+//! Implements primary row and column query transforms for dataframe selection and restructuring.
+//! Applies predicate-based filtering with comparison and text containment operator semantics.
+//! Provides ordering, slicing, projection, and uniqueness extraction over tabular datasets.
+//! Supports grouping and join composition for cross-frame and keyed relational-style operations.
+//! Includes deterministic sampling, nil handling, and batch append utilities for data preparation.
+//! Computes common aggregate statistics and descriptive summary frames across numeric columns.
+//! Exposes import and export helpers for numeric column vectors and merged frame workflows.
+//! Serves as the high-utility query manipulation layer for core dataframe use cases.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 use crate::dataframe::rng::Xorshift64;

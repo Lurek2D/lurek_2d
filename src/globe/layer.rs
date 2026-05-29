@@ -1,7 +1,7 @@
-//! Named layer storage keyed by string, with insert, remove, and lookup.
-//!
-//! - Per-region color overrides, visibility toggling, and alpha clamping.
-//! - Z-order–aware color resolution across all visible layers.
+//! Provides named globe layer storage that overlays per-region color and visibility modifications.
+//! Supports insert, remove, lookup, and alpha control for composable thematic map styling.
+//! Resolves effective colors in z-order so stacked overlays produce deterministic final output.
+//! Delivers the overlay-composition layer used by draw logic and gameplay visualization.
 
 use crate::globe::types::{Layer, RegionId};
 use std::collections::HashMap;

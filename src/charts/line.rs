@@ -1,9 +1,8 @@
-//! Line chart renderer: connected data-point series over time or categories.
-//!
-//! - Rasterises a `LineChartSpec` into an RGBA pixel buffer.
-//! - Supports multiple named series with per-series colour and line width.
-//! - Pixel coordinates are mapped via `render_utils::world_to_screen`.
-//! - Owned by `lurek.charts.line`; result is uploaded as a texture each frame.
+//! Implements line-chart rasterization for connected series over categorical or continuous domains.
+//! Supports multi-series rendering with configurable color, width, and optional point markers.
+//! Maps value space into pixel coordinates through shared chart transformation utilities.
+//! Produces RGBA output buffers that can be uploaded as frame-local chart textures.
+//! Serves as the polyline rendering backend exposed through the charts line API.
 
 use crate::charts::config::{ChartConfig, ChartSeries};
 use crate::charts::render_utils::{

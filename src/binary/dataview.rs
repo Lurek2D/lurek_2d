@@ -1,8 +1,8 @@
-//! Read-only typed accessor over a shared Arc byte buffer
-//!
-//! - Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64
-//! - Sub-slice views with validated offset and size
-//! - LuaDataView wrapper for Lua-facing ownership patterns
+//! Implements a read-only typed view over shared byte storage with offset and length windows.
+//! Provides bounds-checked scalar decoding for integer and floating-point primitive types.
+//! Supports validated sub-view creation for structured parsing of nested binary regions.
+//! Keeps shared ownership cheap through Arc-backed buffer references in multi-consumer paths.
+//! Serves as the safe read surface for binary inspection and Lua-facing bridge wrappers.
 
 use std::sync::Arc;
 /// Hold shared byte slice window with offset and size.

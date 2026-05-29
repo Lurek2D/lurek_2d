@@ -1,7 +1,6 @@
-//! Expose the debug bridge subsystem for runtime-to-IDE communication.
-//!
-//! - Provide shared state queues, TCP server loop, and JSON-RPC dispatch.
-//! - Re-export integration types used by the engine runtime layer.
+//! Defines the debugbridge module boundary for runtime-to-IDE transport and state exchange.
+//! Groups shared bridge state and TCP server functionality under one integration surface.
+//! Serves as the composition entry for engine-side debugbridge capabilities.
 
 /// Expose shared bridge state and pending request or response buffers.
 pub mod bridge;

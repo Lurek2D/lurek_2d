@@ -1,9 +1,8 @@
-//! Record hierarchical profiling zones with push/pop stack semantics
-//!
-//! - Compute total and self (exclusive) duration per zone
-//! - Capture per-frame zone trees into bounded rolling history
-//! - Retrieve frames by positive or negative index
-//! - Flatten nested zone trees for aggregate reporting
+//! Implements hierarchical runtime profiling with nested push-pop zone timing semantics.
+//! Computes total and exclusive durations per zone for accurate hotspot attribution.
+//! Captures per-frame profiling trees into bounded rolling history collections.
+//! Supports indexed frame access and flattened traversal for aggregate performance reporting.
+//! Serves as the profiling core for devtools runtime instrumentation.
 
 use crate::devtools::time_anchor::TimeAnchor;
 use std::collections::VecDeque;

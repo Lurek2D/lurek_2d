@@ -1,9 +1,8 @@
-//! Queued command format staging discrete actor actions with targets, callbacks, and priority.
-//!
-//! - FIFO command queue with front insertion, replacement, cancellation, and advance operations.
-//! - Raw-construction helpers for enqueuing commands without separate struct building.
-//! - Interruptible commands that can be cancelled individually without clearing the queue.
-//! - Structured runtime logging for queue creation and bulk-clear events.
+//! Provides a staged action stream that turns chosen intent into executable command cadence.
+//! Maintains ordering, urgency, and interruption semantics so control pressure stays predictable.
+//! Couples command payloads with completion hooks to close the loop between plan and outcome.
+//! Offers controlled dequeue flow that supports reactive overrides without timeline fragmentation.
+//! Serves as the pacing buffer between high-level deliberation and low-level execution dispatch.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{CQ01, CQ02, CQ03};

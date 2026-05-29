@@ -1,7 +1,7 @@
-//! Render command generation from camera transform state.
-//!
-//! - Builds PushTransform/Translate/Rotate/Scale/PopTransform sequences for Camera and Camera2D.
-//! - Separates begin/end phases so callers can sandwich scene commands between transforms.
+//! Converts camera transform state into renderer command sequences for scene-space projection.
+//! Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping.
+//! Splits begin and end phases so callers can bracket arbitrary scene draw commands safely.
+//! Serves as the render-bridge layer between camera math state and command-stream execution.
 
 use crate::camera::types::{Camera, Camera2D};
 use crate::render::renderer::RenderCommand;

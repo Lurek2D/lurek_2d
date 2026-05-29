@@ -1,9 +1,6 @@
-//! Statistical and distribution-oriented analytics helpers
-//!
-//! - Row filtering, sorting, joins, and sampling operations
-//! - Grouped aggregation, pivoting, and correlation computations
-//! - Reusable processing helpers for counts, missingness, duplicates, and dates
-//! - Rolling and ranking window functions
+//! Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic.
+//! Groups query submodules under one cohesive extension surface over core frame structures.
+//! Serves as the composition entry for staged dataframe query operations.
 
 /// Statistical and distribution-oriented query helpers.
 pub mod analytics;

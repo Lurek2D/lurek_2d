@@ -1,7 +1,9 @@
-//! AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
-//!
-//! - Layout and traversal logic walking state-machine and tree data with position assignment.
-//! - Image drawing helpers mirroring structures into offline ImageData for inspection.
+//! Provides debug-visualization translation from live AI state into drawable diagnostic artifacts.
+//! Turns control-graph structure into spatial layouts that remain readable during runtime inspection.
+//! Encodes execution status into visual signals so behavior flow can be understood at a glance.
+//! Supports both command-stream overlays and image snapshots for tooling and reporting paths.
+//! Keeps rendering concerns decoupled from decision logic while preserving faithful state representation.
+//! Acts as the observability lens for active finite-state and tree-based decision dynamics.
 
 use crate::ai::behavior_tree::{BTNode, BTStatus, BehaviorTree};
 use crate::ai::fsm::StateMachine;

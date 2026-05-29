@@ -1,7 +1,8 @@
-//! ZIP-backed virtual filesystem mount with path-indexed entry lookup.
-//!
-//! - Reads individual files from a ZIP archive on demand without full extraction.
-//! - Normalizes virtual paths and rejects directory-traversal attempts.
+//! Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
+//! Builds an index for fast repeated lookups while reading files on demand without full extraction.
+//! Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
+//! Supports listing and existence checks over mounted archive content through a unified interface.
+//! Delivers archive overlay functionality used by the virtual filesystem mount stack.
 
 use std::collections::HashMap;
 use std::io::Read;

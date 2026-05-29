@@ -1,8 +1,8 @@
-//! Provides storage-agnostic DataFrame and Database file persistence helpers.
-//!
-//! - Defines a narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
-//! - Combines existing CSV, JSON, LVDF, and database serializers with caller-provided storage operations.
-//! - Keeps storage failures separate from parse and format failures so Lua bindings can preserve error surfaces.
+//! Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows.
+//! Defines narrow read and write abstraction traits decoupled from concrete filesystem backends.
+//! Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations.
+//! Preserves distinct error domains for storage, parsing, and format conversion failure handling.
+//! Serves as the persistence integration layer for runtime and binding-side dataframe file operations.
 
 use crate::dataframe::frame::{DataFrame, Database};
 use crate::dataframe::serial;

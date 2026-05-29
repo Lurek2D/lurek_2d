@@ -1,7 +1,8 @@
-//! Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
-//!
-//! - Preset construction with viewport-sized stack initialization.
-//! - Static name lookup for canonical preset identifiers.
+//! Provides built-in post-effect presets that package curated visual moods into ready-to-use chains.
+//! Builds effect sets with viewport-aware stack initialization for immediate runtime application.
+//! Exposes canonical preset names so scripts can select consistent looks with stable identifiers.
+//! Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable.
+//! Delivers one-call factories that return enabled stacks configured for direct deployment.
 
 use super::effect::PostFxEffect;
 use super::effect_type::PostFxEffectType;

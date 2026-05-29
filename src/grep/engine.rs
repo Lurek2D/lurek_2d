@@ -1,5 +1,4 @@
-//! High-level search engine: wires configuration, file filter, and pattern matcher.
-//!
+//! - High-level search engine: wires configuration, file filter, and pattern matcher.
 //! - `GrepEngine::run(root, pattern)` returns a `GrepResult` across all matching files.
 //! - Delegates file discovery to `FileFilter` and matching to `Matcher`.
 //! - Work is split across a Rayon thread pool sized from `GrepConfig::thread_count`.

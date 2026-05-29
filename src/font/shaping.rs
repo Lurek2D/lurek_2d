@@ -1,10 +1,8 @@
-//! Text shaping and word-wrap algorithms for multi-line layout.
-//!
-//! - `wrap_words` wraps at word boundaries to fit `max_width` in logical pixels.
-//! - `wrap_characters` wraps at character boundaries for CJK and monospace fonts.
-//! - `WordWrap` enum selects the strategy; `None` disables wrapping entirely.
-//! - Both functions return a `Vec<&str>` of lines; no allocation of the text itself.
-//! - Called by `measure_text` and the UI text widget before rasterisation.
+//! Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts.
+//! Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs.
+//! Computes aligned line placement using measured advances and target width constraints.
+//! Emits shaped line collections with offsets and widths for downstream rendering stages.
+//! Delivers the layout layer that bridges font metrics and final text draw preparation.
 
 use crate::font::bitmap_font::BitmapFont;
 use crate::font::metrics::char_advance;

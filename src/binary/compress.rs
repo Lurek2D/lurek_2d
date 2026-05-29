@@ -1,9 +1,9 @@
-//! Multi-codec compression and decompression (deflate, gzip, zlib, lz4)
-//!
-//! - Full-buffer and streaming APIs for both single slices and chunk lists
-//! - Configurable compression level clamped to valid range (0-9)
-//! - ChunkReader adapter that flattens multiple borrowed slices into one Read stream
-//! - Consistent error wrapping with codec-specific context messages
+//! Implements multi-codec compression and decompression for buffer and stream style workflows.
+//! Supports deflate, gzip, zlib, and lz4 variants through one unified format selection surface.
+//! Provides full-buffer and chunked processing paths for different memory and throughput constraints.
+//! Applies bounded compression-level normalization to keep codec settings within valid operating ranges.
+//! Adapts chunk lists into stream readers for incremental processing integration.
+//! Returns codec-contextual error results that preserve failure source clarity.
 
 use std::io::{Cursor, Read, Write};
 #[derive(Debug, Clone, Copy, PartialEq)]

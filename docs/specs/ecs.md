@@ -88,6 +88,7 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 - System registration, removal, and count queries on a Universe.
 - Priority-based and dependency-aware topological sorting of systems per phase.
 - Phase filtering with fallback semantics for empty-phase systems.
+- Captures functional behavior for universe systems so callers can compose this capability safely.
 
 ## Lua API Ref
 

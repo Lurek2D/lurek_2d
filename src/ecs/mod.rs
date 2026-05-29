@@ -1,7 +1,6 @@
-//! Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.
-//!
-//! - Relationship graph for parent/child, ownership, and custom link types between entities.
-//! - Deep-copy and snapshot utilities for cloning Lua component tables.
+//! Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management.
+//! Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model.
+//! Delivers a stable integration surface for systems that need structured world state and deterministic access.
 
 /// Entity id packing and unpacking helpers.
 pub mod generational_id;

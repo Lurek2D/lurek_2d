@@ -1,9 +1,9 @@
-//! Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.
-//!
-//! - `Waveform` selects the oscillator shape — sine, square, sawtooth, triangle, or white noise — and exposes `parse()` for name-based construction from Lua configuration.
-//! - `AdsrEnvelope` applies attack, decay, sustain, and release amplitude shaping; `amplitude_at(elapsed)` returns the gain multiplier at any point in the note's lifetime.
-//! - `Synthesizer` combines a `Waveform` oscillator and an `AdsrEnvelope` to render a complete `SoundData` PCM buffer at a given frequency, duration, sample rate, and peak amplitude.
-//! - All rendering is CPU-side in a tight sample loop; the resulting `SoundData` is passed to `rodio` for device mixing via the audio subsystem.
+//! Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering.
+//! Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output.
+//! Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails.
+//! Combines oscillator and envelope models into renderable buffers ready for playback and further processing.
+//! Delivers the synthesis layer used for generated sound effects and lightweight musical content.
+//! Keeps synthesis behavior modular so higher-level systems can extend sound generation workflows safely.
 
 use crate::audio::sound_data::SoundData;
 

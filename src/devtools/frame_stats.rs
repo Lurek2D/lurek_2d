@@ -1,7 +1,8 @@
-//! Collect bounded rolling history of frame-delta samples
-//!
-//! - Compute aggregate metrics: FPS, average, min, max, and percentiles
-//! - Produce immutable snapshots summarizing recent frame performance
+//! Implements bounded rolling frame-timing history used for live performance telemetry.
+//! Computes aggregate metrics including FPS, mean, min, max, and percentile summaries.
+//! Produces immutable snapshot views for diagnostics overlays and developer reporting paths.
+//! Serves as the frame-statistics data source for devtools performance introspection.
+//! Keeps sample retention bounded to maintain predictable memory usage in long sessions.
 
 use std::collections::VecDeque;
 #[derive(Debug)]

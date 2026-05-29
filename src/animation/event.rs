@@ -1,8 +1,6 @@
-//! Defines the animation events emitted while clip playback advances.
-//!
-//! - Carries the state changes higher layers react to: finish, loop, and frame switch.
-//! - Stores the optional frame index payload for frame-change notifications.
-//! - Provides a stable event name and a small accessor surface for consumers of runtime playback events.
+//! Defines the event payload contract emitted by animation playback state transitions.
+//! Captures completion, loop, and frame-change signals as stable timeline reaction points.
+//! Serves gameplay and scripting systems that listen to animation progression milestones.
 
 /// Event emitted by `Animation`.
 #[derive(Debug, Clone, PartialEq)]

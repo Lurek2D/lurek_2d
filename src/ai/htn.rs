@@ -1,9 +1,9 @@
-//! HTN planning model representing symbolic world state, tasks, methods, and the task registry.
-//!
-//! - Primitive tasks mutating state directly and compound tasks expanding through methods.
-//! - Recursive decomposition of a root task into a linear primitive plan with precondition checks.
-//! - Float-threshold preconditions on world-state keys expressing partial satisfaction.
-//! - Recursion depth cap at 128 levels preventing infinite expansion in cyclic task domains.
+//! Provides hierarchical task decomposition that transforms abstract goals into executable primitive flow.
+//! Expands authored methods through recursive branching while honoring world-state numeric constraints.
+//! Preserves plan structure and intent traceability across each decomposition depth step.
+//! Limits expansion depth to protect runtime from runaway combinatorial growth.
+//! Supports domain-authored behavioral style where sequencing logic is explicit and inspectable.
+//! Serves as a long-horizon planning backbone for structured narrative or tactical routines.
 
 use std::collections::HashMap;
 /// Symbolic world state keyed by string names.

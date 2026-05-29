@@ -1,8 +1,10 @@
-//! Grouped aggregation by key column with mean, sum, min, max, count, first, last
-//!
-//! - Pivot transformation from row/column/value keys into cross-tabulated frame
-//! - Pearson correlation between two numeric columns
-//! - Full numeric-column correlation matrix generation
+//! Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping.
+//! Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count.
+//! Builds pivoted result frames from row, column, and value key combinations.
+//! Computes pairwise Pearson correlation between selected numeric columns.
+//! Generates full numeric correlation matrices for multivariate relationship inspection.
+//! Preserves deterministic group output construction and explicit missing-value handling paths.
+//! Serves as the grouping and correlation analytics layer for dataframe query pipelines.
 
 use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame};
 impl DataFrame {

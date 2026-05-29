@@ -1,6 +1,7 @@
-//! - Provides character identity records used by dialogue nodes to resolve display and voice context.
-//! - Centralizes participant lookup in a registry keyed by stable speaker identifiers across a session.
-//! - Keeps conversation content decoupled from presentation assets by storing metadata separately from tree flow.
+//! Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step.
+//! Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session.
+//! Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags.
+//! Delivers a single reference layer that makes speaker data consistent for tree logic and runtime state.
 
 use std::collections::HashMap;
 

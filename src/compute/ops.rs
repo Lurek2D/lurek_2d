@@ -1,11 +1,15 @@
-//! Element-wise arithmetic, comparison, and bitwise operations on NdArray
-//!
-//! - Scalar and array binary operations with row-broadcast support
-//! - Reduction operations (sum, mean, min, max) globally and along axes
-//! - In-place mutation variants for add, sub, mul, div
-//! - Reshape, transpose, clone, fill, threshold, and conditional select
-//! - Configurable parallel dispatch via rayon above a tunable threshold
-//! - Argmin, argmax, count_nonzero, any, all logical queries
+//! Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
+//! Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
+//! Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
+//! Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
+//! Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
+//! Handles integer and floating operation variants through dtype-aware dispatch behavior.
+//! Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
+//! Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
+//! Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
+//! Preserves predictable semantics across contiguous and non-trivial shape transformations.
+//! Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
+//! Anchors most data-manipulation behavior on top of the shared NdArray contract.
 
 use crate::compute::array::{DataType, NdArray};
 use rayon::prelude::*;

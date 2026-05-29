@@ -1,7 +1,6 @@
-//! Capture a monotonic instant at construction time
-//!
-//! - Compute elapsed seconds from that anchor on demand
-//! - Provide a shared timing primitive for logger and profiler
+//! Implements a monotonic timing anchor used to compute elapsed seconds on demand.
+//! Provides shared timestamp base behavior for logger and profiler instrumentation.
+//! Serves as a lightweight time-reference primitive for devtools subsystems.
 
 use std::time::Instant;
 #[derive(Debug, Clone)]

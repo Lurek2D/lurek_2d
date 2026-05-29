@@ -1,9 +1,7 @@
-//! Shared chart configuration types: size, background, margins, and axis labels.
-//!
-//! - `ChartConfig` is the common base embedded in every chart spec.
-//! - Pixel dimensions, background colour, and title string live here.
-//! - Axis label and legend settings are optional; missing values use defaults.
-//! - Referenced by `BarChartSpec`, `LineChartSpec`, `PieChartSpec`, etc.
+//! Defines shared chart configuration contracts used across all chart rendering variants.
+//! Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata.
+//! Provides common series and DataFrame mapping structures consumed by concrete chart specs.
+//! Serves as the canonical option layer for consistent chart behavior and appearance.
 
 /// Default palette of 8 distinct colors for auto-assigning series (RGBA, 0.0–1.0).
 pub const DEFAULT_PALETTE: &[[f32; 4]; 8] = &[

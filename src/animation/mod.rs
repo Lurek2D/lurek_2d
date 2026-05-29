@@ -1,8 +1,7 @@
-//! Provides frame-based sprite animation with clips, playback modes, and named events.
-//!
-//! - Supports Aseprite JSON import, blend layers, property curves, and state machine transitions.
-//! - Offers Spine skeleton bridge, sync groups, and render-command generation for active frames.
-//! - Re-exports all primary types so dependents can import from `animation::` directly.
+//! Defines the animation module boundary that unifies playback, blending, transitions, and render bridging.
+//! Groups import, curve, event, sync, and state-control subsystems into one coherent runtime surface.
+//! Keeps frame-based and bridge-based animation features accessible through a consistent composition root.
+//! Serves as the high-level integration entry for character animation behavior in engine runtime.
 
 /// Aseprite JSON parsing and tag extraction.
 pub mod aseprite;

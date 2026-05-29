@@ -1,9 +1,9 @@
-//! Manages connectivity, process lifecycle, and model inventory for a local Ollama HTTP server.
-//!
-//! - `is_running` and `version` probe the REST API; `start` and `stop` spawn or kill the `ollama serve` child process.
-//! - `list_models` and `has_model` query `/api/tags`; `pull_model` dispatches an async background download that delivers results via `poll`.
-//! - `delete_model` removes a local model; `restart` combines stop and start with a settle pause.
-//! - All HTTP calls reuse `crate::network::http::execute_request`; async pulls use `Arc<Mutex>` + `Arc<AtomicUsize>` for thread-safe result collection.
+//! Provides backend infrastructure control for local Ollama service lifecycle and operational health checks.
+//! Handles start, stop, restart, and version discovery to keep runtime integration state observable.
+//! Exposes model inventory queries and availability checks for capability-aware script decisions.
+//! Supports model deletion and asynchronous pull workflows with pollable completion tracking.
+//! Isolates backend process management from prompt orchestration to keep runtime layering clean.
+//! Normalizes infrastructure outcomes into stable results consumed by higher agent control surfaces.
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};

@@ -1,9 +1,8 @@
-//! Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
-//!
-//! - Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
-//! - Mono downmix helper for multi-channel input files.
-//! - Heat-colour mapping from normalised magnitude to RGBA.
-//! - Parent directory auto-creation for output image paths.
+//! Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images.
+//! Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection.
+//! Handles multi-channel input normalization so visual output stays coherent across source formats.
+//! Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time.
+//! Delivers artifact generation used by tooling, debugging workflows, and content analysis pipelines.
 
 use image::{ImageBuffer, Rgba};
 use rodio::{Decoder, Source};

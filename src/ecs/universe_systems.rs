@@ -1,7 +1,8 @@
-//! System registration, removal, and count queries on a Universe.
-//!
-//! - Priority-based and dependency-aware topological sorting of systems per phase.
-//! - Phase filtering with fallback semantics for empty-phase systems.
+//! Provides Universe system-management behavior for registration, removal, and inspection of runtime systems.
+//! Computes deterministic execution order using priorities combined with dependency-aware topological sorting.
+//! Applies phase filtering rules so system selection remains predictable across update and render passes.
+//! Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage.
+//! Delivers the execution-order facade used by callers to run systems consistently frame to frame.
 
 use super::Universe;
 use mlua::{Lua, Result as LuaResult, Table, Value as LuaValue};

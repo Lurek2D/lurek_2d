@@ -1,7 +1,8 @@
-//! Sequential binary writer with a movable cursor over a growable byte buffer
-//!
-//! - Little-endian and big-endian integer, float, and string write methods
-//! - Seek support with automatic zero-fill when moving past buffer end
+//! Implements sequential binary writing over a growable buffer with explicit cursor control.
+//! Supports little-endian and big-endian emission for integers, floats, and string payloads.
+//! Allows seeking within the buffer to overwrite or append structured binary segments.
+//! Zero-fills gaps when seeking past current length to keep layout deterministic.
+//! Serves as the mutable write surface for format-driven serialization workflows.
 
 /// Hold buffer and cursor for binary writes.
 pub struct DataWriter {

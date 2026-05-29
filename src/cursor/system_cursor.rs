@@ -1,9 +1,7 @@
-//! System cursor shapes available on all desktop platforms.
-//!
-//! - `SystemCursor` enumerates arrow, hand, crosshair, ibeam, wait, and resize variants.
-//! - Maps directly to `winit::window::CursorIcon` at the platform integration layer.
-//! - Parsing from string (used by config deserialization) is case-insensitive.
-//! - Exposed to Lua via `lurek.cursor.set_system(name)`.
+//! Defines cross-platform system cursor shape variants used by runtime cursor state.
+//! Maps engine-facing cursor variants to platform-native icon representations.
+//! Supports case-insensitive string parsing for config and script-driven selection.
+//! Serves as the canonical enum contract for system cursor mode requests.
 
 /// System cursor shapes available on all platforms.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

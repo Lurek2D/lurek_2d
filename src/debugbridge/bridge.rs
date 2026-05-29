@@ -1,10 +1,9 @@
-//! Define shared state and queue structures for the debug bridge protocol.
-//!
-//! - Hold pending request and response buffers for runtime-client communication.
-//! - Track rolling frame-time performance metrics with bounded sample windows.
-//! - Maintain bounded print history captured from runtime Lua output.
-//! - Manage session configuration: port, protocol version, capabilities, and nonce.
-//! - Provide broadcast queue for event delivery to all connected clients.
+//! Implements shared state and queue structures for runtime-to-client debug bridge communication.
+//! Stores pending requests and responses exchanged between network server and runtime logic.
+//! Tracks rolling performance metrics and bounded print history for debugger-side inspection.
+//! Maintains session configuration and capability metadata used across active bridge connections.
+//! Provides broadcast event queues for fan-out delivery to all connected debug clients.
+//! Serves as the core synchronization layer under the debug bridge protocol subsystem.
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};

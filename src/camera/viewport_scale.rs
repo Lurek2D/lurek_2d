@@ -1,7 +1,7 @@
-//! Viewport scale state object used by the engine resize flow.
-//!
-//! - Stores computed scale, offset, and scaled dimensions after each resize.
-//! - Provides bidirectional game/screen coordinate conversion helpers.
+//! Implements runtime viewport-scale state used by resize and projection update workflows.
+//! Stores computed scale factors, offsets, and scaled dimensions after each window-size change.
+//! Provides bidirectional conversion helpers between logical game space and screen pixel coordinates.
+//! Serves as a compact scaling container for systems that need fast coordinate remapping.
 
 use crate::camera::viewport::ScaleMode;
 

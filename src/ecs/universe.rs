@@ -1,14 +1,15 @@
-//! Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
-//!
-//! - Component storage: set, get, has, remove, and name-list queries backed by Lua registry tables.
-//! - Archetype-style query acceleration via optional component-name index (`ecs-archetype` feature).
-//! - String tags with reverse index and bitmap tags with 63-bit fast masking.
-//! - Entity hierarchy: parent/child links, recursive deletion, and child enumeration.
-//! - Layer assignment and sorted entity retrieval for render ordering.
-//! - Blueprint templates: define, extend, spawn from template, and list operations.
-//! - System registration metadata: priorities, phases, names, and dependency lists.
-//! - Snapshot diff and dirty tracking for component add/remove notification streams.
-//! - Full universe reset via clear, draining all stores and recycling state.
+//! Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state.
+//! Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors.
+//! Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics.
+//! Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal.
+//! Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable.
+//! Coordinates system metadata needed for later scheduling and phase-aware execution ordering.
+//! Captures snapshot-diff signals so external consumers can observe incremental state changes.
+//! Supports query acceleration and deterministic iteration patterns for stable gameplay behavior.
+//! Integrates relationship management to keep inter-entity link semantics adjacent to core storage.
+//! Provides reset and cleanup behavior that drains stores safely between scenario lifecycles.
+//! Keeps ECS responsibilities concentrated in one authoritative runtime world-state container.
+//! Delivers the foundational state layer consumed by simulation, rendering, scripting, and tooling.
 
 use super::relationships::RelationshipManager;
 use crate::ecs::generational_id::GenerationalId;

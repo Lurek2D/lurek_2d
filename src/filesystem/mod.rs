@@ -1,8 +1,6 @@
-//! Virtual filesystem with layered mounts (directory, ZIP archive).
-//!
-//! - Async file loading queue with handle-based status polling.
-//! - Buffered file I/O with read, write, and append modes.
-//! - File modification watcher for hot-reload workflows.
+//! Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
+//! Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
+//! Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
 
 /// Async file request queue and result tracking.
 pub mod async_loader;

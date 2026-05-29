@@ -1,7 +1,8 @@
-//! Deferred query step representation for filter, sort, select, head, tail, slice, and limit
-//!
-//! - Lazy query builder that chains steps without executing until `collect`
-//! - Materialization via sequential step application over a cloned source frame
+//! Implements deferred dataframe query planning through composable step-chain descriptions.
+//! Stores filter, sort, select, window, and limit operations without immediate execution.
+//! Materializes lazy plans on collect by applying steps over cloned source-frame state.
+//! Preserves deterministic step order and transformation semantics during pipeline realization.
+//! Serves as the lazy-query orchestration layer for staged dataframe processing.
 
 use crate::dataframe::frame::{CellValue, ColRef, DataFrame};
 #[derive(Clone)]

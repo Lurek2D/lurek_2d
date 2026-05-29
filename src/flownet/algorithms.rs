@@ -1,12 +1,10 @@
-//! Connected-component discovery via undirected BFS traversal.
-//!
-//! - Directed cycle detection using a three-color DFS walk.
-//! - Kahn-style topological sort with deterministic tie-breaking.
-//! - Kruskal minimum spanning forest using a union-find structure.
-//! - Greedy graph coloring with sorted node-id processing order.
-//! - Bipartiteness test through BFS two-coloring.
-//! - A* shortest-path search using Euclidean node-position heuristics.
-//! - All algorithms operate on the shared `Graph` adjacency representation.
+//! Provides graph algorithm utilities for connectivity, ordering, coloring, and optimization analyses.
+//! Implements traversal and cycle checks that reveal structural health of directed flow networks.
+//! Supplies deterministic topological and spanning computations for planning and diagnostics workflows.
+//! Includes coloring and bipartite checks for partitioning and compatibility reasoning.
+//! Offers heuristic shortest-path search to support efficient route estimation over node geometry.
+//! Operates directly on shared graph adjacency state to avoid duplicate model translations.
+//! Delivers the analytical toolkit used to inspect and tune flownet topology behavior.
 
 use super::core::Graph;
 use std::collections::{HashMap, HashSet, VecDeque};

@@ -1,6 +1,7 @@
-//! - Provides mutable conversation state that tracks active position, visit history, and per-run variables.
-//! - Supports lifecycle transitions for starting, advancing, ending, and resetting dialogue progression.
-//! - Preserves narrative continuity data in a compact structure that runtime systems can read each tick.
+//! Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables.
+//! Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling.
+//! Preserves continuity data in a compact snapshot that dependent systems can query every frame.
+//! Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time.
 
 use std::collections::{HashMap, HashSet};
 

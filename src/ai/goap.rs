@@ -1,12 +1,9 @@
-//! GOAP planning data storing actions, goals, search nodes, and planner state.
-//!
-//! - World-state model built from boolean preconditions, effects, and goal priorities.
-//! - Optional Lua execution callbacks attached to actions for runtime behavior.
-//! - Bounded A* search expanding reachable states and returning ordered action plans.
-//! - Unsatisfied-condition count heuristic guiding A* toward goals with minimal expansion.
-//! - Automatic highest-priority goal selection or targeted planning by goal index.
-//! - Iteration cap preventing runaway planning on large or unsolvable state spaces.
-//! - Search node tracking with parent links for plan reconstruction after goal reach.
+//! Delivers deliberative planning over symbolic world facts, actionable effects, and prioritized intentions.
+//! Searches plan space with bounded best-first expansion to stay tractable under live-frame budgets.
+//! Reconstructs coherent action chains from explored nodes into executable intent trajectories.
+//! Balances optimality pressure against hard iteration ceilings so runtime cost remains predictable.
+//! Integrates Lua-side execution hooks while preserving engine-owned planning invariants.
+//! Acts as the intentional reasoning core for long-horizon task choice and sequencing.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{GP01, GP02, GP03};

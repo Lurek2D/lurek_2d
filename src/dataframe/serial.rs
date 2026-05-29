@@ -1,13 +1,13 @@
-//! CSV parsing with quote escaping and type auto-detection
-//!
-//! - CSV serialization with field escaping rules
-//! - JSON array-of-objects parsing into DataFrame
-//! - JSON serialization with proper string escaping
-//! - Compact binary LVDF format encoding and decoding
-//! - Padded string-table rendering for debug and display
-//! - Database-level JSON serialization across all tables
-//! - Database-level JSON parsing from named table arrays
-//! - Nested JSON value and array handling during parse
+//! Implements serialization and parsing for dataframe and database payloads across multiple formats.
+//! Supports CSV decode and encode with quoting, escaping, and type-inference behavior.
+//! Provides JSON array-object conversion between textual payloads and dataframe structures.
+//! Handles nested JSON values and arrays during parser traversal and value coercion.
+//! Encodes and decodes compact LVDF binary format for efficient dataframe transport storage.
+//! Supplies text-table rendering helpers for debugging and readable frame inspection outputs.
+//! Serializes complete database table collections into JSON with stable named table mapping.
+//! Parses database-level JSON payloads back into structured table collections.
+//! Preserves explicit parse and conversion failure reporting across supported format paths.
+//! Serves as the format-conversion backbone for dataframe persistence and interchange.
 
 use crate::dataframe::frame::{CellValue, DataFrame};
 /// Parse CSV text and return DataFrame or validation error.

@@ -1,11 +1,6 @@
-//! Cursor management system.
-//!
-//! - System cursors (arrow, crosshair, hand, etc.).
-//! - Custom image cursors with hotspot.
-//! - Animated cursors with frame sequences and pulsing.
-//! - Cursor trails (fade points, particles, lines).
-//! - Context-sensitive cursor switching.
-//! - Zoom/magnifier at cursor position.
+//! Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior.
+//! Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface.
+//! Serves as the composition entry for engine and script-side cursor control workflows.
 
 /// Animated cursor with frame sequences, timing, and pulse effects.
 pub mod animated_cursor;

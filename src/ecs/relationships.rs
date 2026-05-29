@@ -1,9 +1,9 @@
-//! Relationship type definitions with named level labels and validated defaults.
-//!
-//! - Pairwise relationship records storing numeric affinity and per-type level state.
-//! - Canonical entity-pair ordering for symmetric, order-independent lookups.
-//! - Directed named links between entities for one-way associations.
-//! - Query helpers: filter by entity, check existence, iterate all relations.
+//! Provides typed relationship modeling for unordered pair links and directed named connections between entities.
+//! Defines relationship categories with constrained level labels and validated default values.
+//! Stores affinity metrics and per-type state in canonical pair records for stable lookups.
+//! Supports directed link sets that capture one-way ownership or routing semantics.
+//! Exposes query and mutation helpers that keep relationship operations centralized and consistent.
+//! Delivers the graph substrate used by gameplay systems that reason about inter-entity ties.
 
 use crate::log_msg;
 use crate::runtime::log_messages::{RL01, RL02, RL03};

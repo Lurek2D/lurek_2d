@@ -1,7 +1,7 @@
-//! Shared AI world container owning registered agents, name-to-index lookup, and global blackboard.
-//!
-//! - Lifecycle operations adding or removing named agents with synchronized lookup tables.
-//! - World update surface exposing global blackboard access and velocity-based position integration.
+//! Provides the global AI registry that owns agents, lookup indices, and shared world context.
+//! Keeps identity-to-storage mapping synchronized so retrieval remains stable across lifecycle changes.
+//! Centralizes broad update progression to advance many actors through one coherent world pulse.
+//! Serves as the integration hub where individual agent logic becomes population-level simulation flow.
 
 use crate::ai::agent::Agent;
 use crate::ai::blackboard::Blackboard;

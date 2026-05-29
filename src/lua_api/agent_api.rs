@@ -1,11 +1,13 @@
 //! File: src/lua_api/agent_api.rs
 
 use crate::agent::{
-    AgentBatchTask, AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat, LlmTemplate,
-    LuaAgentManagerRuntime, LuaAgentRuntime, LuaAISystemRuntime, OllamaManager, SemanticMemory,
-    WorkingMemory, lua_to_json, read_global_config, write_global_config,
+    AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat, LlmTemplate, OllamaManager,
+    SemanticMemory, WorkingMemory, read_global_config, write_global_config,
 };
 use crate::agent::chat::{ollama_embed, ollama_generate, ollama_generate_json, ollama_is_available, ollama_list_models};
+use self::runtime::{
+    AgentBatchTask, LuaAISystemRuntime, LuaAgentManagerRuntime, LuaAgentRuntime, lua_to_json,
+};
 use crate::runtime::SharedState;
 use mlua::prelude::*;
 use mlua::{AnyUserData, UserData, UserDataMethods};
@@ -13,7 +15,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-// â”€â”€â”€ LuaAgent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAgent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for a single LLM Agent.
 pub struct LuaAgent {
@@ -22,7 +24,7 @@ pub struct LuaAgent {
 
 impl UserData for LuaAgent {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ addSkill â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addSkill Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Appends a named skill prompt to the agent's context block.
         /// @param | name | string | Unique skill identifier shown in the injected context.
         /// @param | prompt | string | Instruction text appended to the system block.
@@ -32,7 +34,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ clearSkills â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ clearSkills Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes all registered skills from the agent's context.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clearSkills", |_, this, ()| {
@@ -40,7 +42,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setOption â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setOption Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets a single model option forwarded to the LLM backend.
         /// @param | key | string | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`).
         /// @param | value | any | Option value forwarded as JSON.
@@ -51,7 +53,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setFormat â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setFormat Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Changes the response format for future prompts.
         /// @param | format | string | One of `"json"`, `"csv"`, or `"text"`.
         /// @return | nil | No value is returned.
@@ -60,7 +62,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setMaxRetries â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setMaxRetries Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the maximum retry count on transient network or timeout errors.
         /// @param | n | integer | Number of retries (0 disables retry).
         /// @return | nil | No value is returned.
@@ -69,7 +71,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setContextSize â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setContextSize Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the token context window size forwarded to the LLM backend.
         /// @param | n | integer | Context size in tokens (e.g. 4096).
         /// @return | nil | No value is returned.
@@ -78,7 +80,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setTemperature â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setTemperature Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the sampling temperature forwarded to the LLM backend.
         /// @param | t | number | Temperature value (e.g. 0.7). Higher = more random.
         /// @return | nil | No value is returned.
@@ -87,7 +89,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setName â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setName Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the agent's name identifier used when added to an AISystem.
         /// @param | name | string | Agent name.
         /// @return | nil | No value is returned.
@@ -96,7 +98,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setDescription â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setDescription Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the agent's role description injected after the system prompt when routed through an AISystem.
         /// @param | description | string | Role description text.
         /// @return | nil | No value is returned.
@@ -105,7 +107,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setModel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Changes the model identifier for future prompts.
         /// @param | model | string | Model name (e.g. `"llama3"`, `"mistral"`).
         /// @return | nil | No value is returned.
@@ -114,7 +116,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setUrl â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setUrl Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Changes the LLM endpoint URL for future prompts.
         /// @param | url | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
         /// @return | nil | No value is returned.
@@ -123,7 +125,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ setTimeout â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setTimeout Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the per-request timeout in seconds (0 uses the default 60 s).
         /// @param | secs | integer | Timeout in seconds.
         /// @return | nil | No value is returned.
@@ -132,42 +134,42 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ getName â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getName Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the agent's name identifier.
         /// @return | string | Agent name, or `""` if not set.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.runtime.get_name().to_string())
         });
 
-        // â”€â”€â”€ getDescription â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getDescription Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the agent's role description.
         /// @return | string | Role description, or `""` if not set.
         methods.add_method("getDescription", |_, this, ()| {
             Ok(this.runtime.get_description().to_string())
         });
 
-        // â”€â”€â”€ getModel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the current model identifier.
         /// @return | string | Model name.
         methods.add_method("getModel", |_, this, ()| {
             Ok(this.runtime.get_model().to_string())
         });
 
-        // â”€â”€â”€ getUrl â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getUrl Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the current LLM endpoint URL.
         /// @return | string | Endpoint URL.
         methods.add_method("getUrl", |_, this, ()| {
             Ok(this.runtime.get_url().to_string())
         });
 
-        // â”€â”€â”€ getFormat â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getFormat Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the current response format string.
         /// @return | string | One of `"json"`, `"csv"`, or `"text"`.
         methods.add_method("getFormat", |_, this, ()| {
             Ok(this.runtime.get_format().to_string())
         });
 
-        // â”€â”€â”€ hasSkill â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ hasSkill Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if a skill with `name` is registered.
         /// @param | name | string | Skill name to check.
         /// @return | boolean | `true` if the skill exists.
@@ -175,14 +177,14 @@ impl UserData for LuaAgent {
             Ok(this.runtime.has_skill(&name))
         });
 
-        // â”€â”€â”€ skillCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ skillCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered skills.
         /// @return | integer | Skill count.
         methods.add_method("skillCount", |_, this, ()| {
             Ok(this.runtime.skill_count())
         });
 
-        // â”€â”€â”€ listSkills â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listSkills Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a list of registered skill names in insertion order.
         /// @return | table | String array of skill names.
         methods.add_method("listSkills", |lua, this, ()| {
@@ -194,7 +196,7 @@ impl UserData for LuaAgent {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ prompt â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ prompt Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends an instructional prompt to the LLM asynchronously.
         /// @param | instruction | string | The specific task instruction for the agent.
         /// @param | callback | function | Function called with `(success, data, err_info)` when complete.
@@ -206,7 +208,7 @@ impl UserData for LuaAgent {
             },
         );
 
-        // â”€â”€â”€ promptBatch â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ promptBatch Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends a batch of prompts to the LLM asynchronously.
         /// @param | instructions | table | Ordered list of instruction strings.
         /// @param | callback | function | Function called with a results table when all complete.
@@ -218,7 +220,7 @@ impl UserData for LuaAgent {
             },
         );
 
-        // â”€â”€â”€ cancel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ cancel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Cancels an in-flight or pending request by callback ID.
         /// @param | callback_id | integer | ID returned by `prompt` or `promptBatch`.
         /// @return | nil | No value is returned.
@@ -227,19 +229,19 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // â”€â”€â”€ pendingCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ pendingCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of in-flight requests that have not yet completed.
         /// @return | integer | Number of pending requests.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.runtime.pending_count())
         });
 
-        // â”€â”€â”€ update â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Polls the background client for completed LLM requests and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
 
-        // â”€â”€â”€ evalCode â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ evalCode Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Evaluates a Lua code string inside the active VM.
         /// @param | code | string | The Lua code to execute.
         /// @return | boolean | `true` on success, raises an error on failure.
@@ -249,7 +251,7 @@ impl UserData for LuaAgent {
     }
 }
 
-// â”€â”€â”€ LuaAgentManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAgentManager Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for managing multiple LLM Agents in parallel.
 pub struct LuaAgentManager {
@@ -258,7 +260,7 @@ pub struct LuaAgentManager {
 
 impl UserData for LuaAgentManager {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ runAll â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ runAll Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Runs multiple agent tasks in parallel and calls a single callback when all finish.
         /// @param | tasks | table | List of `{ agent = LAgent, instruction = string }` tables.
         /// @param | callback | function | Function called with a results table when all tasks complete.
@@ -278,14 +280,14 @@ impl UserData for LuaAgentManager {
             },
         );
 
-        // â”€â”€â”€ update â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Polls the manager's background client for completed tasks and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
     }
 }
 
-// â”€â”€â”€ LuaAISystem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAISystem Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for an AISystem multi-agent orchestrator.
 pub struct LuaAISystem {
@@ -294,7 +296,7 @@ pub struct LuaAISystem {
 
 impl UserData for LuaAISystem {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ addAgent â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addAgent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Registers a named agent in the system.
         /// @param | name | string | Unique agent name used for routing.
         /// @param | agent | LAgent | The agent instance to register.
@@ -305,7 +307,7 @@ impl UserData for LuaAISystem {
             Ok(())
         });
 
-        // â”€â”€â”€ removeAgent â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ removeAgent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes a registered agent by name.
         /// @param | name | string | Agent name to remove.
         /// @return | boolean | `true` if the agent was found and removed.
@@ -313,7 +315,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_agent(&name))
         });
 
-        // â”€â”€â”€ listAgents â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listAgents Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a sorted list of all registered agent names.
         /// @return | table | String array of agent names.
         methods.add_method("listAgents", |lua, this, ()| {
@@ -325,7 +327,7 @@ impl UserData for LuaAISystem {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ hasAgent â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ hasAgent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if an agent with `name` is registered.
         /// @param | name | string | Agent name to check.
         /// @return | boolean | `true` if the agent exists.
@@ -333,14 +335,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_agent(&name))
         });
 
-        // â”€â”€â”€ agentCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ agentCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered agents.
         /// @return | integer | Agent count.
         methods.add_method("agentCount", |_, this, ()| {
             Ok(this.runtime.agent_count())
         });
 
-        // â”€â”€â”€ addInstruction â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addInstruction Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Adds a named instruction block the user can explicitly include per prompt.
         /// @param | key | string | Unique instruction identifier.
         /// @param | text | string | Instruction text injected into the system block.
@@ -350,7 +352,7 @@ impl UserData for LuaAISystem {
             Ok(())
         });
 
-        // â”€â”€â”€ removeInstruction â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ removeInstruction Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes an instruction block by key.
         /// @param | key | string | Instruction key to remove.
         /// @return | boolean | `true` if the instruction was found and removed.
@@ -358,7 +360,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_instruction(key))
         });
 
-        // â”€â”€â”€ hasInstruction â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ hasInstruction Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if an instruction with `key` is registered.
         /// @param | key | string | Instruction key to check.
         /// @return | boolean | `true` if the instruction exists.
@@ -366,14 +368,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_instruction(&key))
         });
 
-        // â”€â”€â”€ instructionCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ instructionCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered instruction blocks.
         /// @return | integer | Instruction count.
         methods.add_method("instructionCount", |_, this, ()| {
             Ok(this.runtime.instruction_count())
         });
 
-        // â”€â”€â”€ listInstructions â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listInstructions Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a list of registered instruction keys in insertion order.
         /// @return | table | String array of instruction keys.
         methods.add_method("listInstructions", |lua, this, ()| {
@@ -385,7 +387,7 @@ impl UserData for LuaAISystem {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ addSkill â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addSkill Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
         /// @param | name | string | Skill identifier shown in the injected context.
         /// @param | keywords | table | String array of trigger keywords (case-insensitive match).
@@ -404,7 +406,7 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // â”€â”€â”€ removeSkill â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ removeSkill Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes a registered system skill by exact name.
         /// @param | name | string | Skill name to remove.
         /// @return | boolean | `true` if the skill was found and removed.
@@ -412,7 +414,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_system_skill(name))
         });
 
-        // â”€â”€â”€ hasSkill â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ hasSkill Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if a system skill with `name` is registered.
         /// @param | name | string | Skill name to check.
         /// @return | boolean | `true` if the skill exists.
@@ -420,14 +422,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_system_skill(&name))
         });
 
-        // â”€â”€â”€ skillCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ skillCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of registered system skills.
         /// @return | integer | Skill count.
         methods.add_method("skillCount", |_, this, ()| {
             Ok(this.runtime.system_skill_count())
         });
 
-        // â”€â”€â”€ buildContext â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ buildContext Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Builds and returns the full context string that would be sent for a given prompt.
         /// @param | instruction | string | The prompt text used for keyword matching.
         /// @param | opts | table | Optional table with `agent` (string) and `instructions` (table) keys.
@@ -449,7 +451,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.build_context(&instruction, &include, agent_name.as_deref()))
         });
 
-        // â”€â”€â”€ prompt â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ prompt Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends a prompt to a named agent through the system, auto-injecting matching context.
         /// @param | agent_name | string | Name of the agent to query.
         /// @param | instruction | string | The task instruction for the agent.
@@ -479,7 +481,7 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // â”€â”€â”€ runAll â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ runAll Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Dispatches multiple named-agent tasks in parallel through the system.
         /// @param | tasks | table | List of `{ agent = string, instruction = string, instructions = table? }`.
         /// @param | callback | function | Function called with a results table when all tasks complete.
@@ -510,14 +512,14 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // â”€â”€â”€ update â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Polls the system's background client for completed requests and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
     }
 }
 
-// â”€â”€â”€ LuaOllamaManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaOllamaManager Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for managing a local Ollama server lifecycle and models.
 pub struct LuaOllamaManager {
@@ -529,28 +531,28 @@ pub struct LuaOllamaManager {
 
 impl UserData for LuaOllamaManager {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ isRunning â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ isRunning Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if the Ollama HTTP server responds within 5 seconds.
         /// @return | boolean | `true` if Ollama is reachable.
         methods.add_method("isRunning", |_, this, ()| {
             Ok(this.manager.is_running())
         });
 
-        // â”€â”€â”€ version â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ version Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the Ollama version string, or an empty string if not running.
         /// @return | string | Ollama version or `""`.
         methods.add_method("version", |_, this, ()| {
             Ok(this.manager.version())
         });
 
-        // â”€â”€â”€ baseUrl â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ baseUrl Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the base URL this manager was created with.
         /// @return | string | Base URL (e.g. `"http://127.0.0.1:11434"`).
         methods.add_method("baseUrl", |_, this, ()| {
             Ok(this.manager.base_url().to_string())
         });
 
-        // â”€â”€â”€ listModels â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listModels Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a table of locally available models, each with `name` and `size_gb` fields.
         /// @return | table | Array of `{ name = string, size_gb = number }` tables.
         methods.add_method("listModels", |lua, this, ()| {
@@ -565,7 +567,7 @@ impl UserData for LuaOllamaManager {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ modelNames â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ modelNames Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns a string array of locally available model names; empty if Ollama is not running.
         /// @return | table | String array of model names.
         methods.add_method("modelNames", |lua, this, ()| {
@@ -577,7 +579,7 @@ impl UserData for LuaOllamaManager {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ hasModel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ hasModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns `true` if a model with the given name (or name prefix) is available locally.
         /// @param | name | string | Model name to check (e.g. `"llama3"` or `"llama3:latest"`).
         /// @return | boolean | `true` if found locally.
@@ -585,28 +587,28 @@ impl UserData for LuaOllamaManager {
             Ok(this.manager.has_model(&name))
         });
 
-        // â”€â”€â”€ start â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ start Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Spawns `ollama serve` as a managed child process. Returns `true` on success.
         /// @return | boolean | `true` if the process started.
         methods.add_method_mut("start", |_, this, ()| {
             Ok(this.manager.start())
         });
 
-        // â”€â”€â”€ stop â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ stop Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Kills the Ollama process started by this manager. Returns `true` if it was running.
         /// @return | boolean | `true` if the process was running under this manager.
         methods.add_method_mut("stop", |_, this, ()| {
             Ok(this.manager.stop())
         });
 
-        // â”€â”€â”€ restart â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ restart Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Stops then restarts the managed Ollama process. Returns `true` on success.
         /// @return | boolean | `true` if the restart succeeded.
         methods.add_method_mut("restart", |_, this, ()| {
             Ok(this.manager.restart())
         });
 
-        // â”€â”€â”€ pullModel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ pullModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Dispatches an async model download; calls `callback(success, err_msg)` on completion.
         /// @param | name | string | Model name to download (e.g. `"llama3"`).
         /// @param | callback | function | Called with `(success, err_msg)` on completion.
@@ -621,7 +623,7 @@ impl UserData for LuaOllamaManager {
             },
         );
 
-        // â”€â”€â”€ deleteModel â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ deleteModel Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends `DELETE /api/delete` to remove a model from local Ollama storage.
         /// @param | name | string | Model name to delete (e.g. `"llama3:latest"`).
         /// @return | boolean | `true` if the request succeeded.
@@ -629,14 +631,14 @@ impl UserData for LuaOllamaManager {
             Ok(this.manager.delete_model(&name))
         });
 
-        // â”€â”€â”€ pendingCount â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ pendingCount Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of in-flight model pull operations.
         /// @return | integer | Number of pending pulls.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.manager.in_flight_count())
         });
 
-        // â”€â”€â”€ update â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ update Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Polls completed pull operations and dispatches registered callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| {
@@ -656,7 +658,7 @@ impl UserData for LuaOllamaManager {
     }
 }
 
-// â”€â”€â”€ LuaAgentChat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAgentChat Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for a stateful LLM chat session.
 pub struct LuaAgentChat {
@@ -665,7 +667,7 @@ pub struct LuaAgentChat {
 
 impl UserData for LuaAgentChat {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ setSystemPrompt â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ setSystemPrompt Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sets the system prompt used for all completions in this session.
         /// @param | prompt | string | System prompt text.
         /// @return | nil | No value is returned.
@@ -674,7 +676,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // â”€â”€â”€ addMessage â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ addMessage Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Appends a message to the chat history without sending a completion.
         /// @param | role | string | Role identifier: `"user"`, `"assistant"`, or `"system"`.
         /// @param | content | string | Message content.
@@ -684,7 +686,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // â”€â”€â”€ complete â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ complete Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Sends the current history to the LLM and returns the assistant reply.
         ///
         /// The assistant reply is automatically appended to the history.
@@ -697,7 +699,7 @@ impl UserData for LuaAgentChat {
                 .map_err(mlua::Error::RuntimeError)
         });
 
-        // â”€â”€â”€ clear â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ clear Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Clears all stored chat history messages.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clear", |_, this, ()| {
@@ -705,7 +707,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // â”€â”€â”€ getHistory â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getHistory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the chat history as an array of `{role, content}` tables.
         /// @return | table | Array of `{ role = string, content = string }` tables.
         methods.add_method("getHistory", |lua, this, ()| {
@@ -721,7 +723,7 @@ impl UserData for LuaAgentChat {
     }
 }
 
-// â”€â”€â”€ LuaAgentTemplate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAgentTemplate Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for a `{key}` placeholder prompt template.
 pub struct LuaAgentTemplate {
@@ -730,9 +732,9 @@ pub struct LuaAgentTemplate {
 
 impl UserData for LuaAgentTemplate {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ render â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ render Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Renders the template by substituting `{key}` placeholders from `values`.
-        /// @param | values | table | Map of key â†’ string substitutions.
+        /// @param | values | table | Map of key Ă˘â€ â€™ string substitutions.
         /// @return | string | Rendered string, or raises an error if a key is missing.
         methods.add_method("render", |_, this, values: mlua::Table| {
             let mut map = HashMap::new();
@@ -752,7 +754,7 @@ impl UserData for LuaAgentTemplate {
     }
 }
 
-// â”€â”€â”€ LuaWorkingMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaWorkingMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for a bounded FIFO working memory.
 pub struct LuaWorkingMemory {
@@ -791,7 +793,7 @@ fn json_to_lua<'lua>(lua: &'lua Lua, val: serde_json::Value) -> LuaResult<mlua::
 
 impl UserData for LuaWorkingMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ push â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ push Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
         /// @param | key | string | Entry key.
         /// @param | value | any | Entry value (any serialisable Lua value).
@@ -802,7 +804,7 @@ impl UserData for LuaWorkingMemory {
             Ok(())
         });
 
-        // â”€â”€â”€ get â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ get Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the value for `key`, or `nil` if not found.
         /// @param | key | string | Entry key.
         /// @return | table | Stored value converted from JSON when present; returns nil when missing.
@@ -813,7 +815,7 @@ impl UserData for LuaWorkingMemory {
             }
         });
 
-        // â”€â”€â”€ forget â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ forget Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes the entry with `key`.  Returns `true` if it existed.
         /// @param | key | string | Entry key.
         /// @return | boolean | `true` if the entry was removed.
@@ -821,7 +823,7 @@ impl UserData for LuaWorkingMemory {
             Ok(this.mem.forget(&key))
         });
 
-        // â”€â”€â”€ getRecent â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ getRecent Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
         /// @param | n | integer | Maximum number of entries to return.
         /// @return | table | Array of `{ key = string, value = any }` tables.
@@ -836,19 +838,19 @@ impl UserData for LuaWorkingMemory {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ len â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ len Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the current number of entries.
         /// @return | integer | Entry count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
 
-        // â”€â”€â”€ capacity â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ capacity Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the configured capacity (0 = unlimited).
         /// @return | integer | Capacity.
         methods.add_method("capacity", |_, this, ()| Ok(this.mem.capacity()));
     }
 }
 
-// â”€â”€â”€ LuaEpisodicMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaEpisodicMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for append-only episodic memory.
 pub struct LuaEpisodicMemory {
@@ -857,7 +859,7 @@ pub struct LuaEpisodicMemory {
 
 impl UserData for LuaEpisodicMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ record â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ record Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Records a new episode at `tick` with `data`.
         /// @param | tick | integer | Logical tick or frame counter for this episode.
         /// @param | data | table | Key-value payload stored with the episode.
@@ -872,7 +874,7 @@ impl UserData for LuaEpisodicMemory {
             Ok(())
         });
 
-        // â”€â”€â”€ query â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ query Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns all episodes whose data matches every key-value pair in `filter`.
         /// @param | filter | table | Key-value filter table (empty = return all).
         /// @return | table | Array of `{ tick = integer, data = table }` episode tables.
@@ -897,7 +899,7 @@ impl UserData for LuaEpisodicMemory {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ forgetBefore â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ forgetBefore Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes all episodes with tick < `cutoff`.
         /// @param | cutoff | integer | Tick threshold; episodes older than this are removed.
         /// @return | nil | No value is returned.
@@ -906,23 +908,23 @@ impl UserData for LuaEpisodicMemory {
             Ok(())
         });
 
-        // â”€â”€â”€ len â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ len Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of stored episodes.
         /// @return | integer | Episode count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
     }
 }
 
-// â”€â”€â”€ LuaSemanticMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaSemanticMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
-/// Lua-side handle for an unbounded key â†’ value fact store.
+/// Lua-side handle for an unbounded key Ă˘â€ â€™ value fact store.
 pub struct LuaSemanticMemory {
     mem: SemanticMemory,
 }
 
 impl UserData for LuaSemanticMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ learn â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ learn Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Inserts or replaces a fact at `key`.
         /// @param | key | string | Fact key.
         /// @param | value | any | Fact value.
@@ -932,7 +934,7 @@ impl UserData for LuaSemanticMemory {
             Ok(())
         });
 
-        // â”€â”€â”€ recall â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ recall Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the fact for `key`, or `nil` if not found.
         /// @param | key | string | Fact key.
         /// @return | table | Stored fact converted from JSON when present; returns nil when missing.
@@ -943,7 +945,7 @@ impl UserData for LuaSemanticMemory {
             }
         });
 
-        // â”€â”€â”€ forget â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ forget Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Removes the fact at `key`.  Returns `true` if it existed.
         /// @param | key | string | Fact key.
         /// @return | boolean | `true` if the fact was removed.
@@ -951,7 +953,7 @@ impl UserData for LuaSemanticMemory {
             Ok(this.mem.forget(&key))
         });
 
-        // â”€â”€â”€ query â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ query Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns all facts whose value matches every key-value pair in `filter`.
         /// @param | filter | table | Key-value filter applied to each fact's value object (empty = return all).
         /// @return | table | Array of `{ key = string, value = any }` tables.
@@ -972,14 +974,14 @@ impl UserData for LuaSemanticMemory {
             Ok(tbl)
         });
 
-        // â”€â”€â”€ len â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ len Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the number of stored facts.
         /// @return | integer | Fact count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
     }
 }
 
-// â”€â”€â”€ LuaAgentMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaAgentMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
 pub struct LuaAgentMemory {
@@ -988,35 +990,35 @@ pub struct LuaAgentMemory {
 
 impl UserData for LuaAgentMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // â”€â”€â”€ working â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ working Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the working memory component.
         /// @return | LWorkingMemory | Working memory handle.
         methods.add_method("working", |_, this, ()| {
             Ok(LuaWorkingMemory { mem: WorkingMemory::new(this.mem.working.capacity()) })
         });
 
-        // â”€â”€â”€ episodic â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ episodic Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the episodic memory component.
         /// @return | LEpisodicMemory | Episodic memory handle.
         methods.add_method("episodic", |_, _this, ()| {
             Ok(LuaEpisodicMemory { mem: EpisodicMemory::new() })
         });
 
-        // â”€â”€â”€ semantic â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ semantic Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Returns the semantic memory component.
         /// @return | LSemanticMemory | Semantic memory handle.
         methods.add_method("semantic", |_, _this, ()| {
             Ok(LuaSemanticMemory { mem: SemanticMemory::new() })
         });
 
-        // â”€â”€â”€ save â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ save Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Serialises all memory banks to the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method("save", |_, this, ()| {
             this.mem.save().map(|_| true).map_err(mlua::Error::RuntimeError)
         });
 
-        // â”€â”€â”€ load â”€â”€â”€
+        // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ load Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
         /// Deserialises memory state from the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method_mut("load", |_, this, ()| {
@@ -1025,13 +1027,13 @@ impl UserData for LuaAgentMemory {
     }
 }
 
-// â”€â”€â”€ register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ register Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 
 /// Registers the `lurek.agent` API in the global environment.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let agent_table = lua.create_table()?;
 
-    // â”€â”€â”€ new â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ new Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new configurable LLM Agent runtime instance.
     /// @param | config | table | Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
     /// @return | LAgent | A new agent object.
@@ -1044,7 +1046,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newManager â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newManager Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new Agent Manager for batching multiple LLM agents over a shared client.
     /// @return | LAgentManager | A new agent manager object.
     agent_table.set(
@@ -1056,7 +1058,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newSystem â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newSystem Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
     /// @param | config | table | Config with `system_prompt` for the shared system context.
     /// @return | LAISystem | A new AI system object.
@@ -1069,7 +1071,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newOllama â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newOllama Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates an Ollama infrastructure manager for server lifecycle and model management.
     /// @param | config | table? | Optional config with `url` (default `"http://127.0.0.1:11434"`).
     /// @return | LOllamaManager | A new Ollama manager object.
@@ -1087,7 +1089,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ configure â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ configure Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Configures the global LLM provider settings used by module-level functions.
     /// @param | config | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.
     /// @return | nil | No value is returned.
@@ -1107,7 +1109,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ complete â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ complete Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Sends a single prompt to the global LLM and returns the response text.
     /// @param | prompt | string | Prompt text.
     /// @return | string | Response text, or raises an error on failure.
@@ -1121,7 +1123,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ completeAsync â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ completeAsync Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
     /// @param | prompt | string | Prompt text.
     /// @param | callback | function | Called with `(text, err)` on completion (`err` is `nil` on success).
@@ -1164,7 +1166,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newChat â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newChat Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new stateful chat session using the global LLM config.
     /// @return | LAgentChat | A new chat session object.
     agent_table.set(
@@ -1174,7 +1176,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newTemplate â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newTemplate Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new `{key}` placeholder prompt template.
     /// @param | pattern | string | Template string with `{key}` placeholders.
     /// @return | LAgentTemplate | A new template object.
@@ -1185,7 +1187,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ completeJson â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ completeJson Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
     /// @param | prompt | string | Prompt text.
     /// @return | table | Parsed JSON response as a Lua table, or raises an error on failure.
@@ -1200,7 +1202,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ embed â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ embed Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Returns an embedding vector for `text` from the global LLM.
     /// @param | text | string | Text to embed.
     /// @return | table | Number array of float embedding values, or raises an error on failure.
@@ -1219,7 +1221,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ isAvailable â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ isAvailable Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Returns `true` if the configured LLM server responds within 5 seconds.
     /// @return | boolean | `true` if the server is reachable.
     agent_table.set(
@@ -1230,7 +1232,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ listModels â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ listModels Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Returns a list of available model names from the configured LLM server.
     /// @return | table | String array of model names; empty if the server is unreachable.
     agent_table.set(
@@ -1247,7 +1249,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newWorkingMemory â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newWorkingMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new bounded FIFO working memory with the given capacity.
     /// @param | capacity | integer | Maximum number of key-value slots (0 = unlimited).
     /// @return | LWorkingMemory | A new working memory object.
@@ -1258,7 +1260,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newEpisodicMemory â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newEpisodicMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new episodic memory for recording time-stamped events.
     /// @return | LEpisodicMemory | A new episodic memory object.
     agent_table.set(
@@ -1268,7 +1270,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newSemanticMemory â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newSemanticMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a new semantic memory for storing named facts.
     /// @return | LSemanticMemory | A new semantic memory object.
     agent_table.set(
@@ -1278,7 +1280,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // â”€â”€â”€ newAgentMemory â”€â”€â”€
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ newAgentMemory Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     /// Creates a bundled working+episodic+semantic memory with optional disk persistence.
     /// @param | config | table? | Config with `working_capacity` (integer) and `persist_path` (string?) fields.
     /// @return | LAgentMemory | A new agent memory object.
@@ -1300,3 +1302,830 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     Ok(())
 }
 
+mod runtime {
+
+    //! Implements the Lua-facing runtime for `LAgent`, `LAgentManager`, and `LAISystem` userdata â€” all business logic for the agent API lives here.
+    //!
+    //! - `LuaAgentRuntime` owns an `AgentState`, `AgentClient`, callback registry, and `BatchDispatcher` to serve one `LAgent` userdata.
+    //! - `LuaAgentManagerRuntime` dispatches explicit task batches across multiple agents and collects their responses under a single batch callback.
+    //! - `LuaAISystemRuntime` routes prompts through `AISystemState` context injection before dispatch, supporting `addAgent`, `addInstruction`, `addSkill`, and `buildContext`.
+    //! - `BatchDispatcher` packs multi-agent batch IDs into a single `usize` callback, collects partial results, and fires the Lua callback once all responses arrive.
+    //! - `lua_to_json` converts arbitrary Lua values â€” primitives, arrays, and mixed tables â€” to `serde_json::Value` for model option serialization.
+
+    use crate::agent::orchestration::{
+        build_system_context, make_system_task as build_system_task, pack_batch_callback_id,
+        unpack_batch_callback_id,
+    };
+    use crate::agent::{AISystemState, AgentClient, AgentError, AgentRequest, AgentState};
+    use mlua::prelude::*;
+    use mlua::{Function, Lua, RegistryKey, Table, Value};
+    use std::collections::HashMap;
+    use std::rc::Rc;
+
+    // â”€â”€â”€ BatchDispatcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// Accumulates in-flight batch requests and fires a single Lua callback when all tasks finish.
+    #[derive(Default)]
+    struct BatchDispatcher {
+        /// Active batch states keyed by batch callback ID.
+        callback_registry: HashMap<usize, BatchCallbackState>,
+        /// Next batch callback ID to assign.
+        next_callback_id: usize,
+    }
+
+    /// Per-batch bookkeeping stored in [`BatchDispatcher`] until all tasks complete.
+    struct BatchCallbackState {
+        /// Registry key of the Lua function to call when the batch finishes.
+        callback_key: RegistryKey,
+        /// Number of tasks in this batch; when `results.len() == expected_count` the batch is done.
+        expected_count: usize,
+        /// Response format per task index, used when converting the body to a Lua value.
+        formats: HashMap<usize, String>,
+        /// Accumulated task results keyed by task index.
+        results: HashMap<usize, Result<String, AgentError>>,
+    }
+
+    pub(crate) use crate::agent::AgentBatchTask;
+
+    impl BatchDispatcher {
+        /// Creates an empty [`BatchDispatcher`] with the ID counter starting at 1.
+        fn new() -> Self {
+            Self {
+                callback_registry: HashMap::new(),
+                next_callback_id: 1,
+            }
+        }
+
+        /// Allocates and returns the next monotonically increasing batch ID.
+        fn next_id(&mut self) -> usize {
+            let id = self.next_callback_id;
+            self.next_callback_id += 1;
+            id
+        }
+
+        /// Registers `tasks` under a new batch ID, queues requests, and returns `(batch_id, requests)`.
+        ///
+        /// If `tasks` is empty the callback is invoked immediately and `None` is returned.
+        fn start_batch(
+            &mut self,
+            lua: &Lua,
+            tasks: Vec<AgentBatchTask>,
+            callback: Function,
+        ) -> LuaResult<Option<(usize, Vec<AgentRequest>)>> {
+            if tasks.is_empty() {
+                callback.call::<_, ()>(lua.create_table()?)?;
+                return Ok(None);
+            }
+
+            let batch_id = self.next_id();
+            let mut formats = HashMap::new();
+            let mut requests = Vec::with_capacity(tasks.len());
+
+            for task in tasks {
+                let packed_id = pack_batch_callback_id(batch_id, task.agent_idx);
+                formats.insert(task.agent_idx, task.state.format.clone());
+                let req = if let Some(sys) = task.system_override {
+                    task.state.to_request_with_system(task.instruction, sys, packed_id)
+                } else {
+                    task.state.to_request(task.instruction, packed_id)
+                };
+                requests.push(req);
+            }
+
+            let callback_key = lua.create_registry_value(callback)?;
+            self.callback_registry.insert(
+                batch_id,
+                BatchCallbackState {
+                    callback_key,
+                    expected_count: requests.len(),
+                    formats,
+                    results: HashMap::new(),
+                },
+            );
+
+            Ok(Some((batch_id, requests)))
+        }
+
+        /// Records one task result; returns `true` when all expected results have arrived.
+        fn store_response(
+            &mut self,
+            batch_id: usize,
+            task_idx: usize,
+            body: Result<String, AgentError>,
+        ) -> bool {
+            if let Some(state) = self.callback_registry.get_mut(&batch_id) {
+                state.results.insert(task_idx, body);
+                return state.results.len() == state.expected_count;
+            }
+            false
+        }
+
+        /// Finalises the batch: converts results to Lua, calls the callback, and removes the state.
+        fn finish_batch(&mut self, lua: &Lua, batch_id: usize) -> LuaResult<()> {
+            let Some(mut state) = self.callback_registry.remove(&batch_id) else {
+                return Ok(());
+            };
+
+            let callback: Function = lua.registry_value(&state.callback_key)?;
+            lua.remove_registry_value(state.callback_key)?;
+
+            let out_table = lua.create_table()?;
+            let mut keys = state.results.keys().copied().collect::<Vec<_>>();
+            keys.sort_unstable();
+
+            for idx in keys {
+                let format = state
+                    .formats
+                    .get(&idx)
+                    .map(String::as_str)
+                    .unwrap_or("text");
+                let result = state.results.remove(&idx).unwrap_or_else(|| {
+                    Err(AgentError::Model("missing batch result".to_string()))
+                });
+                let result_table = lua.create_table()?;
+                let (success, data, err_info) = process_response(lua, format, result)?;
+                result_table.set("success", success)?;
+                result_table.set("data", data)?;
+                result_table.set("error", err_info)?;
+                out_table.set(idx as mlua::Integer, result_table)?;
+            }
+
+            callback.call::<_, ()>(out_table)?;
+            Ok(())
+        }
+    }
+
+    // â”€â”€â”€ LuaAgentRuntime â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// Runtime state owned by a single Lua `LAgent` userdata.
+    pub(crate) struct LuaAgentRuntime {
+        pub(crate) state: AgentState,
+        /// Shared background HTTP client for this agent.
+        client: Rc<AgentClient>,
+        /// Single-prompt callbacks: callback_id -> (registry_key, format_string).
+        callback_registry: HashMap<usize, (RegistryKey, String)>,
+        /// Batch dispatcher for promptBatch calls.
+        batch_dispatcher: BatchDispatcher,
+        /// Next single-prompt callback ID to assign.
+        next_callback_id: usize,
+    }
+
+    impl LuaAgentRuntime {
+        /// Creates a Lua-facing runtime from a Lua configuration table.
+        pub(crate) fn from_lua_config(config: Table) -> LuaResult<Self> {
+            let url: String = config
+                .get("url")
+                .unwrap_or_else(|_| "http://127.0.0.1:11434/api/generate".to_string());
+            let model: String = config
+                .get("model")
+                .unwrap_or_else(|_| "llama3".to_string());
+            let system_prompt: String = config.get("system_prompt").unwrap_or_default();
+            let format: String = config.get("format").unwrap_or_else(|_| "json".to_string());
+
+            let mut options = HashMap::new();
+            if let Ok(options_table) = config.get::<_, Table>("options") {
+                for (key, value) in options_table.pairs::<String, Value>().flatten() {
+                    options.insert(key, lua_to_json(value)?);
+                }
+            }
+
+            let mut state = AgentState::new(url, model, system_prompt, format, options);
+
+            if let Ok(name) = config.get::<_, String>("name") {
+                state.set_name(name);
+            }
+            if let Ok(description) = config.get::<_, String>("description") {
+                state.set_description(description);
+            }
+            if let Ok(max_retries) = config.get::<_, u32>("max_retries") {
+                state.set_max_retries(max_retries);
+            }
+            if let Ok(timeout) = config.get::<_, u64>("timeout") {
+                state.set_timeout(timeout);
+            }
+
+            Ok(Self {
+                state,
+                client: Rc::new(AgentClient::new()),
+                callback_registry: HashMap::new(),
+                batch_dispatcher: BatchDispatcher::new(),
+                next_callback_id: 1,
+            })
+        }
+
+        /// Appends one named skill prompt to the runtime state.
+        pub(crate) fn add_skill(&mut self, name: String, prompt: String) {
+            self.state.add_skill(name, prompt);
+        }
+
+        /// Removes all registered skills from the runtime state.
+        pub(crate) fn clear_skills(&mut self) {
+            self.state.clear_skills();
+        }
+
+        /// Sets or updates a single model option (e.g. `temperature`, `seed`).
+        pub(crate) fn set_option(&mut self, key: String, value: serde_json::Value) {
+            self.state.set_option(key, value);
+        }
+
+        /// Changes the response format (`"json"`, `"csv"`, or `"text"`).
+        pub(crate) fn set_format(&mut self, format: String) {
+            self.state.set_format(format);
+        }
+
+        /// Sets the maximum retry count for transient errors.
+        pub(crate) fn set_max_retries(&mut self, n: u32) {
+            self.state.set_max_retries(n);
+        }
+
+        /// Sets the agent's display name (used when added to an AISystem).
+        pub(crate) fn set_name(&mut self, name: String) {
+            self.state.set_name(name);
+        }
+
+        /// Sets the agent's role description (injected by AISystem after the system prompt).
+        pub(crate) fn set_description(&mut self, description: String) {
+            self.state.set_description(description);
+        }
+
+        /// Sets the model identifier forwarded to the LLM backend.
+        pub(crate) fn set_model(&mut self, model: String) {
+            self.state.set_model(model);
+        }
+
+        /// Sets the LLM endpoint URL used for future requests.
+        pub(crate) fn set_url(&mut self, url: String) {
+            self.state.set_url(url);
+        }
+
+        /// Sets the per-request timeout in seconds.
+        pub(crate) fn set_timeout(&mut self, secs: u64) {
+            self.state.set_timeout(secs);
+        }
+
+        /// Returns `true` if a skill with `name` is registered.
+        pub(crate) fn has_skill(&self, name: &str) -> bool {
+            self.state.has_skill(name)
+        }
+
+        /// Returns the number of registered skills.
+        pub(crate) fn skill_count(&self) -> usize {
+            self.state.skill_count()
+        }
+
+        /// Returns the names of all registered skills in insertion order.
+        pub(crate) fn list_skills(&self) -> Vec<String> {
+            self.state.list_skills()
+        }
+
+        /// Returns the agent's name identifier.
+        pub(crate) fn get_name(&self) -> &str {
+            &self.state.name
+        }
+
+        /// Returns the agent's role description.
+        pub(crate) fn get_description(&self) -> &str {
+            &self.state.description
+        }
+
+        /// Returns the model identifier.
+        pub(crate) fn get_model(&self) -> &str {
+            &self.state.model
+        }
+
+        /// Returns the LLM endpoint URL.
+        pub(crate) fn get_url(&self) -> &str {
+            &self.state.url
+        }
+
+        /// Returns the response format string.
+        pub(crate) fn get_format(&self) -> &str {
+            &self.state.format
+        }
+
+        /// Cancels an in-flight or pending callback by ID, discarding its response.
+        pub(crate) fn cancel(&self, callback_id: usize) {
+            self.client.cancel(callback_id);
+        }
+
+        /// Returns the number of in-flight requests that have not yet completed.
+        pub(crate) fn pending_count(&self) -> usize {
+            self.client.in_flight_count()
+        }
+
+        /// Queues one asynchronous prompt and stores its Lua callback.
+        pub(crate) fn prompt(
+            &mut self,
+            lua: &Lua,
+            instruction: String,
+            callback: Function,
+        ) -> LuaResult<usize> {
+            let callback_id = self.next_callback_id;
+            self.next_callback_id += 1;
+
+            let format = self.state.format.clone();
+            let callback_key = lua.create_registry_value(callback)?;
+            self.callback_registry.insert(callback_id, (callback_key, format));
+
+            self.client
+                .send_prompt(self.state.to_request(instruction, callback_id))
+                .map_err(LuaError::runtime)?;
+
+            Ok(callback_id)
+        }
+
+        /// Queues a batch of prompts that resolve through one Lua callback table.
+        pub(crate) fn prompt_batch(
+            &mut self,
+            lua: &Lua,
+            instructions: Table,
+            callback: Function,
+        ) -> LuaResult<usize> {
+            let mut tasks = Vec::new();
+            for pair in instructions.pairs::<mlua::Integer, String>() {
+                let (idx, instruction) = pair?;
+                tasks.push(self.make_batch_task(idx as usize, instruction));
+            }
+
+            let Some((batch_id, requests)) =
+                self.batch_dispatcher.start_batch(lua, tasks, callback)?
+            else {
+                return Ok(0);
+            };
+
+            for request in requests {
+                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+            }
+
+            Ok(batch_id)
+        }
+
+        /// Polls completed prompt and batch responses and dispatches Lua callbacks.
+        pub(crate) fn update(&mut self, lua: &Lua) -> LuaResult<()> {
+            let responses = self.client.poll();
+
+            for response in responses {
+                if let Some((callback_key, format)) =
+                    self.callback_registry.remove(&response.callback_id)
+                {
+                    let callback: Function = lua.registry_value(&callback_key)?;
+                    lua.remove_registry_value(callback_key)?;
+                    let (success, data, err_info) =
+                        process_response(lua, &format, response.body)?;
+                    callback.call::<_, ()>((success, data, err_info))?;
+                    continue;
+                }
+
+                let (batch_id, task_idx) = unpack_batch_callback_id(response.callback_id);
+                if batch_id == 0 {
+                    continue;
+                }
+
+                if self
+                    .batch_dispatcher
+                    .store_response(batch_id, task_idx, response.body)
+                {
+                    self.batch_dispatcher.finish_batch(lua, batch_id)?;
+                }
+            }
+
+            Ok(())
+        }
+
+        /// Executes Lua code inside the active VM and returns `true` on success.
+        pub(crate) fn eval_code(&self, lua: &Lua, code: String) -> LuaResult<bool> {
+            let chunk = lua.load(&code);
+            match chunk.exec() {
+                Ok(_) => Ok(true),
+                Err(error) => Err(LuaError::RuntimeError(format!("Eval failed: {}", error))),
+            }
+        }
+
+        /// Clones the current runtime state into one explicit batch task.
+        pub(crate) fn make_batch_task(
+            &self,
+            agent_idx: usize,
+            instruction: String,
+        ) -> AgentBatchTask {
+            AgentBatchTask {
+                agent_idx,
+                instruction,
+                state: self.state.clone(),
+                system_override: None,
+            }
+        }
+    }
+
+    // â”€â”€â”€ LuaAgentManagerRuntime â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// Runtime state owned by a Lua `LAgentManager` userdata.
+    pub(crate) struct LuaAgentManagerRuntime {
+        /// Shared background HTTP client for all managed agents.
+        client: Rc<AgentClient>,
+        /// Batch dispatcher for runAll calls.
+        batch_dispatcher: BatchDispatcher,
+    }
+
+    impl LuaAgentManagerRuntime {
+        /// Creates an empty batch manager runtime with its own background client.
+        pub(crate) fn new() -> Self {
+            Self {
+                client: Rc::new(AgentClient::new()),
+                batch_dispatcher: BatchDispatcher::new(),
+            }
+        }
+
+        /// Dispatches explicit batch tasks and stores the shared Lua completion callback.
+        pub(crate) fn run_all(
+            &mut self,
+            lua: &Lua,
+            tasks: Vec<AgentBatchTask>,
+            callback: Function,
+        ) -> LuaResult<usize> {
+            let Some((batch_id, requests)) = self.batch_dispatcher.start_batch(lua, tasks, callback)? else {
+                return Ok(0);
+            };
+
+            for request in requests {
+                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+            }
+
+            Ok(batch_id)
+        }
+
+        /// Polls completed manager batch responses and dispatches the batch callback.
+        pub(crate) fn update(&mut self, lua: &Lua) -> LuaResult<()> {
+            let responses = self.client.poll();
+            for response in responses {
+                let (batch_id, task_idx) = unpack_batch_callback_id(response.callback_id);
+                if batch_id == 0 {
+                    continue;
+                }
+
+                if self
+                    .batch_dispatcher
+                    .store_response(batch_id, task_idx, response.body)
+                {
+                    self.batch_dispatcher.finish_batch(lua, batch_id)?;
+                }
+            }
+
+            Ok(())
+        }
+    }
+
+    // â”€â”€â”€ LuaAISystemRuntime â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// Runtime state owned by a Lua `LAISystem` userdata.
+    pub(crate) struct LuaAISystemRuntime {
+        /// Shared orchestration state (system prompt, instructions, system skills).
+        pub(crate) system_state: AISystemState,
+        /// Registered agents keyed by the name supplied to `addAgent`.
+        agents: HashMap<String, AgentState>,
+        /// Shared background HTTP client for all system-routed prompts.
+        client: Rc<AgentClient>,
+        /// Single-prompt callbacks: callback_id -> (registry_key, format_string).
+        callback_registry: HashMap<usize, (RegistryKey, String)>,
+        /// Batch dispatcher for runAll calls.
+        batch_dispatcher: BatchDispatcher,
+        /// Next single-prompt callback ID to assign.
+        next_callback_id: usize,
+    }
+
+    impl LuaAISystemRuntime {
+        /// Creates a new `LuaAISystemRuntime` from a Lua configuration table.
+        pub(crate) fn from_lua_config(config: Table) -> LuaResult<Self> {
+            let system_prompt: String = config.get("system_prompt").unwrap_or_default();
+            Ok(Self {
+                system_state: AISystemState::new(system_prompt),
+                agents: HashMap::new(),
+                client: Rc::new(AgentClient::new()),
+                callback_registry: HashMap::new(),
+                batch_dispatcher: BatchDispatcher::new(),
+                next_callback_id: 1,
+            })
+        }
+
+        /// Adds an agent to the system under the given name.
+        pub(crate) fn add_agent(&mut self, name: String, state: AgentState) {
+            self.agents.insert(name, state);
+        }
+
+        /// Removes an agent by name. Returns `true` if it existed.
+        pub(crate) fn remove_agent(&mut self, name: &str) -> bool {
+            self.agents.remove(name).is_some()
+        }
+
+        /// Returns a snapshot of registered agent names.
+        pub(crate) fn list_agents(&self) -> Vec<String> {
+            let mut names: Vec<String> = self.agents.keys().cloned().collect();
+            names.sort();
+            names
+        }
+
+        /// Adds or replaces a named instruction block.
+        pub(crate) fn add_instruction(&mut self, key: String, text: String) {
+            self.system_state.add_instruction(key, text);
+        }
+
+        /// Removes an instruction by key.
+        pub(crate) fn remove_instruction(&mut self, key: String) -> bool {
+            self.system_state.remove_instruction(&key)
+        }
+
+        /// Adds a keyword-gated skill. Replaces an existing skill with the same name.
+        pub(crate) fn add_system_skill(
+            &mut self,
+            name: String,
+            keywords: Vec<String>,
+            prompt: String,
+        ) {
+            self.system_state.add_system_skill(name, keywords, prompt);
+        }
+
+        /// Removes a system skill by name.
+        pub(crate) fn remove_system_skill(&mut self, name: String) -> bool {
+            self.system_state.remove_system_skill(&name)
+        }
+
+        /// Returns `true` if an agent with `name` is registered.
+        pub(crate) fn has_agent(&self, name: &str) -> bool {
+            self.agents.contains_key(name)
+        }
+
+        /// Returns the number of registered agents.
+        pub(crate) fn agent_count(&self) -> usize {
+            self.agents.len()
+        }
+
+        /// Returns `true` if an instruction with `key` exists.
+        pub(crate) fn has_instruction(&self, key: &str) -> bool {
+            self.system_state.has_instruction(key)
+        }
+
+        /// Returns the number of registered instructions.
+        pub(crate) fn instruction_count(&self) -> usize {
+            self.system_state.instruction_count()
+        }
+
+        /// Returns the keys of all registered instructions in insertion order.
+        pub(crate) fn list_instructions(&self) -> Vec<String> {
+            self.system_state.list_instructions()
+        }
+
+        /// Returns `true` if a system skill with `name` is registered.
+        pub(crate) fn has_system_skill(&self, name: &str) -> bool {
+            self.system_state.has_system_skill(name)
+        }
+
+        /// Returns the number of registered system skills.
+        pub(crate) fn system_skill_count(&self) -> usize {
+            self.system_state.system_skill_count()
+        }
+
+        /// Builds the system context block that would be sent for `instruction`; used by `buildContext` and routing.
+        pub(crate) fn build_context(
+            &self,
+            instruction: &str,
+            include_instructions: &[String],
+            agent_name: Option<&str>,
+        ) -> String {
+            build_system_context(
+                &self.system_state,
+                &self.agents,
+                instruction,
+                include_instructions,
+                agent_name,
+            )
+        }
+
+        /// Sends a single prompt to a named agent through the system, auto-injecting context.
+        pub(crate) fn prompt(
+            &mut self,
+            lua: &Lua,
+            agent_name: String,
+            instruction: String,
+            callback: Function,
+            include_instructions: Vec<String>,
+        ) -> LuaResult<usize> {
+            let agent = self
+                .agents
+                .get(&agent_name)
+                .ok_or_else(|| LuaError::runtime(format!("agent '{}' not found", agent_name)))?
+                .clone();
+
+            let system_block = self.build_context(&instruction, &include_instructions, Some(&agent_name));
+
+            let callback_id = self.next_callback_id;
+            self.next_callback_id += 1;
+
+            let format = agent.format.clone();
+            let callback_key = lua.create_registry_value(callback)?;
+            self.callback_registry.insert(callback_id, (callback_key, format));
+
+            let req = agent.to_request_with_system(instruction, system_block, callback_id);
+            self.client.send_prompt(req).map_err(LuaError::runtime)?;
+
+            Ok(callback_id)
+        }
+
+        /// Dispatches batch tasks built from named agents with auto-injected system context.
+        pub(crate) fn run_all(
+            &mut self,
+            lua: &Lua,
+            tasks: Vec<AgentBatchTask>,
+            callback: Function,
+        ) -> LuaResult<usize> {
+            let Some((batch_id, requests)) =
+                self.batch_dispatcher.start_batch(lua, tasks, callback)?
+            else {
+                return Ok(0);
+            };
+
+            for request in requests {
+                self.client.send_prompt(request).map_err(LuaError::runtime)?;
+            }
+
+            Ok(batch_id)
+        }
+
+        /// Builds an `AgentBatchTask` for a named agent, injecting system context.
+        pub(crate) fn make_system_task(
+            &self,
+            agent_name: &str,
+            task_idx: usize,
+            instruction: String,
+            include_instructions: &[String],
+        ) -> LuaResult<AgentBatchTask> {
+            build_system_task(
+                &self.system_state,
+                &self.agents,
+                agent_name,
+                task_idx,
+                instruction,
+                include_instructions,
+            )
+            .map_err(LuaError::runtime)
+        }
+
+        /// Polls all completed system responses and dispatches Lua callbacks.
+        pub(crate) fn update(&mut self, lua: &Lua) -> LuaResult<()> {
+            let responses = self.client.poll();
+
+            for response in responses {
+                if let Some((callback_key, format)) =
+                    self.callback_registry.remove(&response.callback_id)
+                {
+                    let callback: Function = lua.registry_value(&callback_key)?;
+                    lua.remove_registry_value(callback_key)?;
+                    let (success, data, err_info) =
+                        process_response(lua, &format, response.body)?;
+                    callback.call::<_, ()>((success, data, err_info))?;
+                    continue;
+                }
+
+                let (batch_id, task_idx) = unpack_batch_callback_id(response.callback_id);
+                if batch_id == 0 {
+                    continue;
+                }
+
+                if self
+                    .batch_dispatcher
+                    .store_response(batch_id, task_idx, response.body)
+                {
+                    self.batch_dispatcher.finish_batch(lua, batch_id)?;
+                }
+            }
+
+            Ok(())
+        }
+    }
+
+    // â”€â”€â”€ Private helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    /// Recursively converts a `serde_json::Value` into a Lua value.
+    fn json_to_lua<'lua>(lua: &'lua Lua, value: &serde_json::Value) -> LuaResult<Value<'lua>> {
+        match value {
+            serde_json::Value::Null => Ok(Value::Nil),
+            serde_json::Value::Bool(value) => Ok(Value::Boolean(*value)),
+            serde_json::Value::Number(value) => match value.as_f64() {
+                Some(value) => Ok(Value::Number(value)),
+                None => Ok(Value::Nil),
+            },
+            serde_json::Value::String(value) => Ok(Value::String(lua.create_string(value)?)),
+            serde_json::Value::Array(values) => {
+                let table = lua.create_table()?;
+                for (idx, value) in values.iter().enumerate() {
+                    table.set(idx + 1, json_to_lua(lua, value)?)?;
+                }
+                Ok(Value::Table(table))
+            }
+            serde_json::Value::Object(values) => {
+                let table = lua.create_table()?;
+                for (key, value) in values {
+                    table.set(key.as_str(), json_to_lua(lua, value)?)?;
+                }
+                Ok(Value::Table(table))
+            }
+        }
+    }
+
+    /// Recursively converts an `mlua::Value` into a `serde_json::Value`.
+    pub(crate) fn lua_to_json(value: Value) -> LuaResult<serde_json::Value> {
+        match value {
+            Value::Nil => Ok(serde_json::Value::Null),
+            Value::Boolean(value) => Ok(serde_json::Value::Bool(value)),
+            Value::Integer(value) => Ok(serde_json::json!(value)),
+            Value::Number(value) => Ok(serde_json::json!(value)),
+            Value::String(value) => Ok(serde_json::Value::String(value.to_str()?.to_string())),
+            Value::Table(value) => {
+                if value.contains_key(1)? {
+                    let mut array = Vec::new();
+                    for pair in value.pairs::<Value, Value>() {
+                        let (_, item) = pair?;
+                        array.push(lua_to_json(item)?);
+                    }
+                    Ok(serde_json::Value::Array(array))
+                } else {
+                    let mut object = serde_json::Map::new();
+                    for pair in value.pairs::<String, Value>() {
+                        let (key, item) = pair?;
+                        object.insert(key, lua_to_json(item)?);
+                    }
+                    Ok(serde_json::Value::Object(object))
+                }
+            }
+            _ => Ok(serde_json::Value::Null),
+        }
+    }
+
+    /// Converts a CSV-formatted string into a Lua table of row tables keyed by header name.
+    fn parse_csv_to_lua<'lua>(lua: &'lua Lua, csv_data: &str) -> LuaResult<Value<'lua>> {
+        let mut reader = csv::ReaderBuilder::new()
+            .has_headers(true)
+            .from_reader(csv_data.as_bytes());
+
+        let headers = reader
+            .headers()
+            .map_err(|error| LuaError::RuntimeError(format!("CSV headers error: {}", error)))?
+            .clone();
+
+        let rows = lua.create_table()?;
+        let mut row_idx = 1;
+        for record in reader.records() {
+            let record =
+                record.map_err(|error| LuaError::RuntimeError(format!("CSV record error: {}", error)))?;
+            let row = lua.create_table()?;
+            for (idx, value) in record.iter().enumerate() {
+                if let Some(header) = headers.get(idx) {
+                    row.set(header, value)?;
+                }
+            }
+            rows.set(row_idx, row)?;
+            row_idx += 1;
+        }
+
+        Ok(Value::Table(rows))
+    }
+
+    /// Parses an agent response body according to `format` and returns `(success, data, error_info)`.
+    fn process_response<'lua>(
+        lua: &'lua Lua,
+        format: &str,
+        body: Result<String, AgentError>,
+    ) -> LuaResult<(bool, Value<'lua>, Value<'lua>)> {
+        match body {
+            Ok(body) if format == "json" => match serde_json::from_str::<serde_json::Value>(&body) {
+                Ok(value) => Ok((true, json_to_lua(lua, &value)?, Value::Nil)),
+                Err(error) => Ok((
+                    false,
+                    Value::Nil,
+                    error_table(lua, "PARSE_ERROR", format!("Invalid JSON: {}", error))?,
+                )),
+            },
+            Ok(body) if format == "csv" => match parse_csv_to_lua(lua, &body) {
+                Ok(value) => Ok((true, value, Value::Nil)),
+                Err(error) => Ok((
+                    false,
+                    Value::Nil,
+                    error_table(lua, "PARSE_ERROR", error.to_string())?,
+                )),
+            },
+            Ok(body) => Ok((true, Value::String(lua.create_string(&body)?), Value::Nil)),
+            Err(error) => Ok((
+                false,
+                Value::Nil,
+                error_table(lua, error.code(), error.to_string())?,
+            )),
+        }
+    }
+
+    /// Builds a Lua error-info table with `code` and `message` fields.
+    fn error_table<'lua>(lua: &'lua Lua, code: &str, message: impl AsRef<str>) -> LuaResult<Value<'lua>> {
+        let table = lua.create_table()?;
+        table.set("code", code)?;
+        table.set("message", message.as_ref())?;
+        Ok(Value::Table(table))
+    }
+
+}

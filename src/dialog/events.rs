@@ -1,6 +1,6 @@
-//! - Provides the event payloads emitted by the dialog runtime while a conversation is advancing.
-//! - Carries progression and selection signals so UI and script layers can react without inspecting engine internals.
-//! - Keeps integration boundaries explicit by representing conversation lifecycle changes as typed records.
+//! Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes.
+//! Carries typed payloads so UI, scripting, and telemetry can react without digging into internal state.
+//! Delivers a clean event contract that keeps conversation flow observable across integration points.
 
 /// Events emitted by the dialog system for script integration.
 #[derive(Debug, Clone)]

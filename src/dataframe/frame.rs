@@ -1,15 +1,15 @@
-//! Core dataframe cell type and typed value representation
-//!
-//! - Columnar storage with named columns and row-major access
-//! - Column resolution by name or one-based index
-//! - Row and column CRUD operations including add, remove, and rename
-//! - DataFrame cloning, slicing, and row iteration
-//! - Database container for named table collections
-//! - Random data generation from typed column definitions
-//! - Arithmetic expression evaluation per row via `with_eval`
-//! - Pivot table construction with configurable aggregation
-//! - Rolling mean, rolling sum, and rank computations
-//! - Aggregation function enumeration and parsing
+//! Implements the core DataFrame and Database runtime models with typed cell-value representation.
+//! Stores table data in named column structures with stable row-wise access semantics.
+//! Supports column resolution by name or index for flexible scripting and API integration paths.
+//! Provides row and column lifecycle operations including add, remove, rename, and mutation workflows.
+//! Exposes slicing, cloning, iteration, and structural transformation helpers for table processing.
+//! Maintains multi-table database containers that group frames under stable logical identifiers.
+//! Includes random-data generation and expression-evaluation helpers for synthetic and derived columns.
+//! Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions.
+//! Implements rolling and rank-oriented analytics over sequential data windows.
+//! Defines aggregation enum contracts and parsing behavior for consistent operation selection.
+//! Preserves deterministic data-shape handling and explicit error reporting on invalid operations.
+//! Serves as the foundational dataframe domain layer consumed by SQL, lazy, and vectorized modules.
 
 use crate::dataframe::rng::Xorshift64;
 use std::cmp::Ordering;
