@@ -599,3 +599,110 @@ do
     print("wfcFromPrompt cells_type=" .. type(grid.cells))
     print("wfcFromPrompt failed_type=" .. type(grid.failed_cells))
 end
+
+--@api-stub: lurek.procgen.newCellular
+do
+    local ca = lurek.procgen.newCellular(32, 32)
+    ca:setCell(5, 5, lurek.procgen.CELL_SAND)
+    ca:step()
+    print("cellular type = " .. ca:type())
+end
+
+--@api-stub: LCellular:countCells
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(0, 0, lurek.procgen.CELL_ROCK)
+    print("rock count = " .. ca:countCells(lurek.procgen.CELL_ROCK))
+end
+
+--@api-stub: LCellular:fillCircle
+do
+    local ca = lurek.procgen.newCellular(32, 32)
+    ca:fillCircle(16, 16, 5, lurek.procgen.CELL_WATER)
+    print("fillCircle done")
+end
+
+--@api-stub: LCellular:fillRect
+do
+    local ca = lurek.procgen.newCellular(32, 32)
+    ca:fillRect(0, 0, 8, 8, lurek.procgen.CELL_ROCK)
+    print("fillRect done")
+end
+
+--@api-stub: LCellular:findCells
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(3, 7, lurek.procgen.CELL_WATER)
+    local found = ca:findCells(lurek.procgen.CELL_WATER)
+    print("found count = " .. #found)
+end
+
+--@api-stub: LCellular:getCell
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    local v = ca:getCell(0, 0)
+    print("cell = " .. v)
+end
+
+--@api-stub: LCellular:loadFromBytes
+do
+    local ca = lurek.procgen.newCellular(8, 8)
+    local bytes = ca:toBytes()
+    local ca2 = lurek.procgen.newCellular(8, 8)
+    ca2:loadFromBytes(bytes)
+    print("loadFromBytes done")
+end
+
+--@api-stub: LCellular:setCell
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    ca:setCell(3, 3, lurek.procgen.CELL_SAND)
+    print("setCell done")
+end
+
+--@api-stub: LCellular:step
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    ca:step()
+    print("step done")
+end
+
+--@api-stub: LCellular:stepN
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    ca:stepN(5)
+    print("stepN done")
+end
+
+--@api-stub: LCellular:toBytes
+do
+    local ca = lurek.procgen.newCellular(8, 8)
+    local bytes = ca:toBytes()
+    print("toBytes length = " .. #bytes)
+end
+
+--@api-stub: LCellular:toImageData
+do
+    local ca = lurek.procgen.newCellular(16, 16)
+    local img = ca:toImageData()
+    print("toImageData type = " .. img:type())
+end
+
+--@api-stub: LCellular:toImageDataRegion
+do
+    local ca = lurek.procgen.newCellular(32, 32)
+    local img = ca:toImageDataRegion(0, 0, 16, 16)
+    print("toImageDataRegion type = " .. img:type())
+end
+
+--@api-stub: LCellular:type
+do
+    local ca = lurek.procgen.newCellular(8, 8)
+    print("type = " .. ca:type())
+end
+
+--@api-stub: LCellular:typeOf
+do
+    local ca = lurek.procgen.newCellular(8, 8)
+    print("typeOf LCellular = " .. tostring(ca:typeOf("LCellular")))
+end

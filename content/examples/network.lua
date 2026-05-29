@@ -681,3 +681,19 @@ do
     print(stream:typeOf("LSseStream"))
     stream:close()
 end
+
+--@api-stub: LNetworkRuntime:httpJson
+do
+    local net = lurek.network.new()
+    -- httpJson is a POST helper that automatically sets Content-Type: application/json
+    local response = net:httpJson("http://localhost:8080/api", '{"key":"value"}')
+    print("httpJson response: " .. tostring(response))
+end
+
+--@api-stub: LNetworkRuntime:httpStream
+do
+    local net = lurek.network.new()
+    -- httpStream streams response for SSE/chunked responses
+    local response = net:httpStream("http://localhost:8080/stream")
+    print("httpStream response: " .. tostring(response))
+end

@@ -1850,3 +1850,12 @@ end
 -- content/examples/render.lua
 -- Auto-generated from content/examples2/render_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/render.lua
+
+--@api-stub: lurek.render.newDepthSorter
+do
+    local sorter = lurek.render.newDepthSorter()
+    sorter:add(function() print("draw layer A") end, 10)
+    sorter:add(function() print("draw layer B") end, 5)
+    sorter:flush()
+    print("depth sorter type = " .. sorter:type())
+end

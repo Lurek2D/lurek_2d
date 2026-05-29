@@ -1,4 +1,4 @@
--- Lurek2D Stress Test: Mass Body Creation
+﻿-- Lurek2D Stress Test: Mass Body Creation
 -- Creates 1000 physics bodies and steps the world
 
 -- @describe physics stress: 1000 bodies
@@ -66,45 +66,45 @@ describe("stress: cellular world simulation", function()
     -- @stress LCellular:countCells
     -- @stress LCellular:fillRect
     -- @stress LCellular:stepN
-    -- @stress lurek.physics.CELL_ROCK
-    -- @stress lurek.physics.CELL_SAND
-    -- @stress lurek.physics.CELL_WATER
-    -- @stress lurek.physics.newCellular
+    -- @stress lurek.procgen.CELL_ROCK
+    -- @stress lurek.procgen.CELL_SAND
+    -- @stress lurek.procgen.CELL_WATER
+    -- @stress lurek.procgen.newCellular
     it("128x128 cellular steps 500 ticks without error", function()
         local W, H = 128, 128
-        local sim = lurek.physics.newCellular(W, H)
+        local sim = lurek.procgen.newCellular(W, H)
 
         -- Place a layer of sand at the top.
-        sim:fillRect(0, 0, W, 4, lurek.physics.CELL_SAND)
+        sim:fillRect(0, 0, W, 4, lurek.procgen.CELL_SAND)
         -- Place a water layer in the middle.
-        sim:fillRect(0, math.floor(H / 2), W, 4, lurek.physics.CELL_WATER)
+        sim:fillRect(0, math.floor(H / 2), W, 4, lurek.procgen.CELL_WATER)
         -- Rock floor.
-        sim:fillRect(0, H - 2, W, 2, lurek.physics.CELL_ROCK)
+        sim:fillRect(0, H - 2, W, 2, lurek.procgen.CELL_ROCK)
 
-        local sand_initial = sim:countCells(lurek.physics.CELL_SAND)
-        local rock_initial = sim:countCells(lurek.physics.CELL_ROCK)
+        local sand_initial = sim:countCells(lurek.procgen.CELL_SAND)
+        local rock_initial = sim:countCells(lurek.procgen.CELL_ROCK)
 
         expect_no_error(function()
             sim:stepN(500)
         end)
 
         -- Rock is immutable     count must remain the same.
-        expect_equal(rock_initial, sim:countCells(lurek.physics.CELL_ROCK))
+        expect_equal(rock_initial, sim:countCells(lurek.procgen.CELL_ROCK))
 
         -- Sand is conserved.
-        expect_equal(sand_initial, sim:countCells(lurek.physics.CELL_SAND))
+        expect_equal(sand_initial, sim:countCells(lurek.procgen.CELL_SAND))
     end)
 
     --              after a long simulation run.
     -- @stress LCellular:fillRect
     -- @stress LCellular:stepN
     -- @stress LCellular:toImageData
-    -- @stress lurek.physics.CELL_SAND
-    -- @stress lurek.physics.newCellular
+    -- @stress lurek.procgen.CELL_SAND
+    -- @stress lurek.procgen.newCellular
     it("toImageData returns correct size after 200 steps", function()
         local W, H = 128, 128
-        local sim = lurek.physics.newCellular(W, H)
-        sim:fillRect(0, 0, W, 1, lurek.physics.CELL_SAND)
+        local sim = lurek.procgen.newCellular(W, H)
+        sim:fillRect(0, 0, W, 1, lurek.procgen.CELL_SAND)
         sim:stepN(200)
         local raw = sim:toImageData()
         expect_equal(W * H * 4, #raw)
@@ -376,45 +376,45 @@ describe("stress: cellular world simulation", function()
     -- @stress LCellular:countCells
     -- @stress LCellular:fillRect
     -- @stress LCellular:stepN
-    -- @stress lurek.physics.CELL_ROCK
-    -- @stress lurek.physics.CELL_SAND
-    -- @stress lurek.physics.CELL_WATER
-    -- @stress lurek.physics.newCellular
+    -- @stress lurek.procgen.CELL_ROCK
+    -- @stress lurek.procgen.CELL_SAND
+    -- @stress lurek.procgen.CELL_WATER
+    -- @stress lurek.procgen.newCellular
     it("128x128 cellular steps 500 ticks without error", function()
         local W, H = 128, 128
-        local sim = lurek.physics.newCellular(W, H)
+        local sim = lurek.procgen.newCellular(W, H)
 
         -- Place a layer of sand at the top.
-        sim:fillRect(0, 0, W, 4, lurek.physics.CELL_SAND)
+        sim:fillRect(0, 0, W, 4, lurek.procgen.CELL_SAND)
         -- Place a water layer in the middle.
-        sim:fillRect(0, math.floor(H / 2), W, 4, lurek.physics.CELL_WATER)
+        sim:fillRect(0, math.floor(H / 2), W, 4, lurek.procgen.CELL_WATER)
         -- Rock floor.
-        sim:fillRect(0, H - 2, W, 2, lurek.physics.CELL_ROCK)
+        sim:fillRect(0, H - 2, W, 2, lurek.procgen.CELL_ROCK)
 
-        local sand_initial = sim:countCells(lurek.physics.CELL_SAND)
-        local rock_initial = sim:countCells(lurek.physics.CELL_ROCK)
+        local sand_initial = sim:countCells(lurek.procgen.CELL_SAND)
+        local rock_initial = sim:countCells(lurek.procgen.CELL_ROCK)
 
         expect_no_error(function()
             sim:stepN(500)
         end)
 
         -- Rock is immutable     count must remain the same.
-        expect_equal(rock_initial, sim:countCells(lurek.physics.CELL_ROCK))
+        expect_equal(rock_initial, sim:countCells(lurek.procgen.CELL_ROCK))
 
         -- Sand is conserved.
-        expect_equal(sand_initial, sim:countCells(lurek.physics.CELL_SAND))
+        expect_equal(sand_initial, sim:countCells(lurek.procgen.CELL_SAND))
     end)
 
     --              after a long simulation run.
     -- @stress LCellular:fillRect
     -- @stress LCellular:stepN
     -- @stress LCellular:toImageData
-    -- @stress lurek.physics.CELL_SAND
-    -- @stress lurek.physics.newCellular
+    -- @stress lurek.procgen.CELL_SAND
+    -- @stress lurek.procgen.newCellular
     it("toImageData returns correct size after 200 steps", function()
         local W, H = 128, 128
-        local sim = lurek.physics.newCellular(W, H)
-        sim:fillRect(0, 0, W, 1, lurek.physics.CELL_SAND)
+        local sim = lurek.procgen.newCellular(W, H)
+        sim:fillRect(0, 0, W, 1, lurek.procgen.CELL_SAND)
         sim:stepN(200)
         local raw = sim:toImageData()
         expect_equal(W * H * 4, #raw)
