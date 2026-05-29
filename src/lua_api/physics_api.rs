@@ -1,14 +1,4 @@
-//! `lurek.physics` -- Lua bindings for 2D rigid-body physics systems and helpers.
-//! Covers worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
-//!
-//! - Registers `lurek.physics.*` functions and types via `register()`.
-//! - `LuaWorld`: userdata type exposed to Lua.
-//! - `LuaZone`: userdata type exposed to Lua.
-//! - `LuaTerrain`: userdata type exposed to Lua.
-//! - `LuaCellular`: userdata type exposed to Lua.
-//! - `LuaBody`: userdata type exposed to Lua.
-//! - `LuaPhysicsShape`: userdata type exposed to Lua.
-//! - Bridges 205 Lua-callable methods via `mlua`.
+//! File: src/lua_api/physics_api.rs
 
 use super::SharedState;
 use crate::math::Vec2;
@@ -408,7 +398,7 @@ impl LuaUserData for LuaWorld {
         /// Updates the friction coefficient of a specific fixture on a body.
         /// @param | bodyId | integer | The body ID.
         /// @param | fixtureIndex | integer | Zero-based fixture index on the body.
-        /// @param | friction | number | New friction value (0Ă˘â‚¬â€ś1 typical range).
+        /// @param | friction | number | New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).
         methods.add_method(
             "setFixtureFriction",
             |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
@@ -570,7 +560,7 @@ impl LuaUserData for LuaWorld {
         /// Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
         /// @param | bodyA | integer | First body ID.
         /// @param | bodyB | integer | Second body ID.
-        /// @param | factor | number | Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence.
+        /// @param | factor | number | Correction factor (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1), higher = faster convergence.
         /// @return | integer | The joint ID.
         methods.add_method(
             "addMotorJoint",
@@ -1085,7 +1075,7 @@ impl LuaUserData for LuaWorld {
         });
         // -- setSolverIterations --
         /// Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
-        /// @param | n | integer | Number of iterations (default is typically 4Ă˘â‚¬â€ś8).
+        /// @param | n | integer | Number of iterations (default is typically 4Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›8).
         methods.add_method("setSolverIterations", |_, this, n: usize| {
             this.world.borrow_mut().set_solver_iterations(n);
             Ok(())
@@ -1674,7 +1664,7 @@ impl LuaUserData for LuaBody {
         });
         // -- setRestitution --
         /// Sets the body's restitution (bounciness) value.
-        /// @param | restitution | number | New restitution (0Ă˘â‚¬â€ś1).
+        /// @param | restitution | number | New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).
         methods.add_method("setRestitution", |_, this, restitution: f32| {
             let mut w = this.world.borrow_mut();
             if let Some(b) = w.get_body_mut(this.id.0) {

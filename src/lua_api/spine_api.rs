@@ -1,9 +1,4 @@
-//! `lurek.spine` — Spine-like skeletal animation with bones, slots, attachments, IK constraints, and skin mixing.
-//!
-//! - Registers `lurek.spine.*` functions and types via `register()`.
-//! - `LuaSkeleton`: userdata type exposed to Lua.
-//! - `LuaSkeletonAnimation`: userdata type exposed to Lua.
-//! - Bridges 37 Lua-callable methods via `mlua`.
+//! File: src/lua_api/spine_api.rs
 
 use super::SharedState;
 use crate::spine::ik::IKConstraint;
@@ -116,7 +111,7 @@ impl LuaUserData for LuaSkeleton {
         // -- getBoneWorld --
         /// Returns the final world-space transform of a bone after hierarchy resolution.
         /// @param | idx | integer | Zero-based bone index.
-        /// @return | table | Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
+        /// @return | table | Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid.
         /// @field | x | number | X position.
         /// @field | y | number | Y position.
         /// @field | rotation | number | Rotation in degrees.

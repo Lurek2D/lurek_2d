@@ -1,14 +1,8 @@
-//! INTERNAL ONLY: Rust-only tests for audio helpers and data structures that are not directly
-//! asserted through `lurek.audio.*`.
-//!
-//! Public playback, mixer, bus, MIDI-player, pool, and sound-data behaviour is
-//! covered by the Lua-first suite in `tests/lua/unit/test_audio_unit.lua`.
-//! The remaining Rust coverage keeps low-level DSP/state helpers and offline
-//! struct invariants.
+//! File: tests/rust/unit/audio_tests.rs
 
 use lurek2d::audio::*;
 
-// ── midi tests ───────────────────────────────────────────────────────────────
+// â”€â”€ midi tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod midi_tests {
     use super::*;
@@ -84,9 +78,9 @@ mod midi_tests {
     }
 }
 
-// ── pool tests ───────────────────────────────────────────────────────────────
+// â”€â”€ pool tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// ── source tests ─────────────────────────────────────────────────────────────
+// â”€â”€ source tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod source_tests {
     use super::*;
@@ -111,7 +105,7 @@ mod source_tests {
     }
 }
 
-// ── sound_data tests ─────────────────────────────────────────────────────────
+// â”€â”€ sound_data tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod sound_data_tests {
     use super::*;

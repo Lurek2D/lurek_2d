@@ -1,4 +1,14 @@
-﻿# Lurek2D â€” VS Code Extension Architecture
+﻿# Lurek2D - Developer Ecosystem Architecture
+
+## TL;DR
+
+- Consolidated AI-first developer experience architecture: VS Code extension, CAG doctrine, MCP integration, and local RAG index.
+
+---
+
+## VS Code Extension Layer
+
+# Lurek2D â€” VS Code Extension Architecture
 
 ## TL;DR
 
@@ -164,3 +174,90 @@ Editor-specific tests verify:
 - Extension code must not import Rust types.
 - Generated API/snippet data must be regenerated through the configured scripts, not hand-edited.
 
+
+
+---
+
+## CAG Layer Doctrine (WHY / HOW / WHAT)
+
+| File type | Layer | Core question |
+|-----------|-------|--------------|
+| Agent `.agent.md` | **WHY** | *Why does this role exist? What is it responsible for?* |
+| Skill `SKILL.md` | **HOW** | *How do you do the work? What domain knowledge is needed?* |
+| Prompt `.prompt.md` | **WHAT** | *What exact steps produce the outcome?* |
+
+**Rules:**
+- A prompt must not duplicate a skill's HOW-TO. Steps should invoke skills by name, not restate their content.
+- A skill must not contain agent ownership language â€” that belongs in agents.
+- An agent must not contain step-by-step instructions â€” those belong in prompts or skills.
+- If a concept appears in two file types, one is wrong. Move to the canonical layer and link.
+
+---
+
+## CAG Discovery Flow
+
+```
+User request
+     â”‚
+     â–Ľ
+.github/copilot-instructions.md          (always loaded)
+     â”‚
+     â”śâ”€â”€ Engine Identity + Binding Constraints
+     â”śâ”€â”€ Cross-Artifact Sync table
+     â””â”€â”€ Discovery Directives
+           â”‚
+           â”śâ”€â”€ Domain question / pattern?
+           â”‚     â†’ match intent against SKILL.md `description`
+           â”‚     â†’ load matched skill(s) + Companion File Index
+           â”‚
+           â”śâ”€â”€ Multi-step workflow / role?
+           â”‚     â†’ match task to agent `mission`
+           â”‚     â†’ Manager loads `agent-routing` for handoffs
+           â”‚
+           â””â”€â”€ Slash command / user button?
+                 â†’ .github/prompts/<verb>-<noun>.prompt.md
+```
+
+Three properties hold:
+- **System prompt is the only file always loaded.** Everything else is demand-pulled.
+- **Skills are additive.** A single task may load several (e.g. `lua-api-design` + `lua-rust-bridge` + `testing-rust`).
+- **Agents are roles.** When work spans â‰Ą3 agents or â‰Ą5 files, route to Manager first; Manager engages Planner before implementation.
+
+**Worked example** â€” "fix a crash in `src/physics/`": load skills `dev-debugging` + `module-architecture` + `error-handling` â†’ route to `Developer` for root-cause and fix â†’ `Tester` for regression test â†’ `Verifier` to gate commit.
+
+---
+
+---
+
+## Local RAG System (SQLite FTS5)
+
+1. **`rag_index.db`**: An SQLite database located at `tools/rag/rag_index.db`. It contains an FTS5 virtual table called `documents`.
+2. **`rag.toml`**: The central configuration file at `tools/rag/rag.toml`, defining chunk limits, search weights, and target paths.
+3. **`build_index.py`**: The indexer. It traverses targeted directories, chunks source code/markdown, and importantly, reads `logs/data/lua_api_data.json` to inject highly structured API definitions.
+4. **`query.py`**: The search engine. It uses the BM25 algorithm to execute queries against the index.
+
+## Profiles
+
+The RAG system implements semantic profiles to prevent noisy search results. When querying, you can specify a profile to constrain the results:
+* **Game**: Restricts search to `content/`, `library/`, `docs/`, and structured `API` definitions. Ideal for learning how to use Lurek2D.
+* **Engine**: Restricts search to `src/`, `tests/`, `.github/`, and `tools/`. Ideal for internal architecture or bug-fixing queries.
+* **All**: Searches the entire codebase.
+
+## VS Code Integration
+
+The Lurek2D VS Code extension acts as the primary interface for the RAG system.
+* **Auto-Indexing**: A file watcher listens for changes to `.lua`, `.rs`, and `.md` files. On save, it invokes a background update, ensuring the SQLite index is always perfectly in sync without requiring a full rebuild.
+* **Human Webview**: The `Lurek2D: Search Knowledge Base (RAG)` command opens a dedicated UI panel. Developers can query the index, select a profile, and click directly into source files.
+* **Agent MCP**: The extension hosts an MCP server that exposes two core tools to AI agents: `lurek2d.ragSearch` and `lurek2d.ragBuildIndex`.
+
+## Rationale: Why FTS5?
+
+We deliberately avoided massive Python dependencies (like PyTorch or `sentence-transformers`) to maintain Lurek2D's lightweight philosophy. SQLite FTS5 provides instantaneous full-text search out of the box with standard Python 3.11+.
+
+To compensate for the lack of semantic "vector" search, we artificially boost the BM25 weighting of the `title` column and explicitly sort `type='api'` rows to the top. This ensures that a query for `lurek.render.rectangle` immediately returns the exact, structured API definition rather than a test file that happens to use the term frequently.
+
+## Runtime Integration Notes
+
+- The extension process hosts indexing and search flows used by "Lurek2D: Search Knowledge Base (RAG)".
+- MCP tools expose RAG lookup/build actions to agents.
+- CAG doctrine defines how prompts, skills, and agents shape requests that are resolved through extension + MCP + RAG.

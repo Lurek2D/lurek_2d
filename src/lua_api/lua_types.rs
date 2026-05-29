@@ -1,4 +1,4 @@
-//! Public types and helpers for the lua_types module.
+//! File: src/lua_api/lua_types.rs
 
 use mlua::prelude::*;
 /// Defines the lurek type behavior required by this module.

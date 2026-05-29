@@ -1,9 +1,4 @@
-//! `lurek.mods` -- Lua bindings for mod metadata, mod manager load order/dependency helpers, content registries, and API version checks.
-//!
-//! - Registers `lurek.mods.*` functions and types via `register()`.
-//! - `LuaMod`: userdata type exposed to Lua.
-//! - `LuaModManager`: userdata type exposed to Lua.
-//! - `LuaContentRegistry`: userdata type exposed to Lua.
+//! File: src/lua_api/mods_api.rs
 
 use super::SharedState;
 use crate::mods::{ModInfo, ModManager};

@@ -1,11 +1,4 @@
-//! `lurek.animation` -- Animation bindings for sprite clips, state machines, blend layers, curves, sync groups, and Aseprite import helpers.
-//!
-//! - Registers `lurek.animation.*` functions and types via `register()`.
-//! - `LuaAnimation`: userdata type exposed to Lua.
-//! - `LuaAnimStateMachine`: userdata type exposed to Lua.
-//! - `LuaBlendLayerSet`: userdata type exposed to Lua.
-//! - `LuaAnimCurve`: userdata type exposed to Lua.
-//! - `LuaAnimSyncGroup`: userdata type exposed to Lua.
+//! File: src/lua_api/animation_api.rs
 
 use super::render_api::LuaImage;
 use super::SharedState;
@@ -1010,7 +1003,7 @@ impl LuaUserData for LuaAnimCurve {
                 "ease_in_out" => EasingKind::EaseInOut,
                 other => {
                     return Err(LuaError::RuntimeError(format!(
-                        "unknown easing mode '{other}' — expected step|linear|ease_in|ease_out|ease_in_out"
+                        "unknown easing mode '{other}' â€” expected step|linear|ease_in|ease_out|ease_in_out"
                     )));
                 }
             };

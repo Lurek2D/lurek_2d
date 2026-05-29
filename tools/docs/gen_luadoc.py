@@ -13,8 +13,6 @@ import json
 import os
 import re
 
-from gen_extension_api import BUILTIN_ENUMS, CALLBACKS
-
 # Lua reserved keywords â€” cannot be used as parameter names in stub declarations.
 LUA_KEYWORDS = {
     "and", "break", "do", "else", "elseif", "end", "false", "for",
@@ -50,9 +48,17 @@ TYPE_NORMALIZATIONS = {
     "count": "number",
     "integer": "number",
     "Thread": "ThreadHandle",
+    "Style": "table",
     "unknown": DYNAMIC_LUA_TYPE,
     "void": "nil",
 }
+
+# Populated in main() from discovered declared L* types.
+LEGACY_TO_L_TYPES = {}
+
+
+def _is_canonical_l_type(type_name: str) -> bool:
+    return bool(type_name) and len(type_name) > 1 and type_name[0] == "L" and type_name[1].isupper()
 
 
 def split_top_level_types(text):
@@ -105,6 +111,23 @@ def normalize_type(type_name):
 
     for old, new in TYPE_NORMALIZATIONS.items():
         type_name = re.sub(rf"\b{re.escape(old)}\b", new, type_name)
+
+    # Map legacy non-L type spellings (e.g. Image) to canonical L-prefixed
+    # types (e.g. LImage) so the public stub surface stays consistent.
+    for old, new in LEGACY_TO_L_TYPES.items():
+        type_name = re.sub(rf"\b{re.escape(old)}\b", new, type_name)
+
+    # Collapse duplicate union members, e.g. table|table -> table.
+    if "|" in type_name:
+        parts = [p.strip() for p in type_name.split("|") if p.strip()]
+        deduped = []
+        seen = set()
+        for p in parts:
+            if p in seen:
+                continue
+            seen.add(p)
+            deduped.append(p)
+        type_name = "|".join(deduped)
 
     return type_name or DYNAMIC_LUA_TYPE
 
@@ -188,14 +211,157 @@ def extract_overload_entries_from_full_doc(full_doc):
 
 def _derive_class_name(fn_name):
     """Derive a PascalCase class name from a stub function name."""
+    class_name = ""
     if ":" in fn_name:
         owner, method = fn_name.split(":", 1)
-        return owner + method[0].upper() + method[1:] + "Result"
-    if "." in fn_name:
+        class_name = owner + method[0].upper() + method[1:] + "Result"
+    elif "." in fn_name:
         parts = fn_name.split(".")
         tail = parts[-2:] if len(parts) >= 2 else parts
-        return "".join(p[0].upper() + p[1:] for p in tail) + "Result"
-    return fn_name[0].upper() + fn_name[1:] + "Result"
+        class_name = "".join(p[0].upper() + p[1:] for p in tail) + "Result"
+    else:
+        class_name = fn_name[0].upper() + fn_name[1:] + "Result"
+
+    return class_name if _is_canonical_l_type(class_name) else f"L{class_name}"
+
+
+def extract_generated_result_class(fn, name):
+    """Build a generated result class from @field entries, if present."""
+    field_entries = extract_field_entries_from_full_doc(fn.get("full_doc", ""))
+    if not field_entries:
+        return None
+
+    class_name = _derive_class_name(name)
+    fields = []
+    for fe in field_entries:
+        fields.append(
+            {
+                "name": fe["name"],
+                "type": normalize_type(fe["type"]),
+                "description": fe.get("description", "").strip(),
+            }
+        )
+    return class_name, fields
+
+
+def merge_generated_result_class(store, class_name, fields):
+    """Merge generated class fields by name so duplicate emit sites stay stable."""
+    if class_name not in store:
+        store[class_name] = {"fields": {}}
+    for field in fields:
+        fname = field["name"]
+        if fname not in store[class_name]["fields"]:
+            store[class_name]["fields"][fname] = field
+
+
+def collect_generated_result_classes(lua_api, lua_namespace_map):
+    """Collect all @field-derived result classes before writing function stubs."""
+    generated = {}
+
+    for mod_name in sorted(lua_api.keys()):
+        lua_ns = lua_namespace_map.get(mod_name, mod_name)
+        mod_data = lua_api[mod_name]
+
+        classes = mod_data.get("classes", {})
+        for class_name in sorted(classes.keys()):
+            methods = classes[class_name].get("methods", [])
+            methods.sort(key=lambda x: x.get("name", ""))
+            for method in methods:
+                name = method.get("lua_name", f"{class_name}:{method['name']}")
+                if ":" not in name and ("." not in name):
+                    name = f"{class_name}:{method['name']}"
+                elif "." in name and ":" not in name:
+                    last_dot = name.rfind(".")
+                    name = name[:last_dot] + ":" + name[last_dot + 1:]
+
+                maybe_class = extract_generated_result_class(method, name)
+                if maybe_class:
+                    generated_name, fields = maybe_class
+                    merge_generated_result_class(generated, generated_name, fields)
+
+        functions = mod_data.get("functions", [])
+        functions.sort(key=lambda x: (x.get("kind", "function"), x.get("name", "")))
+        for func in functions:
+            name = func.get("lua_name", f"lurek.{lua_ns}.{func['name']}")
+            if ":" in name:
+                continue
+            if mod_name != lua_ns and name.startswith(f"lurek.{mod_name}."):
+                name = f"lurek.{lua_ns}." + name[len(f"lurek.{mod_name}."):]
+
+            maybe_class = extract_generated_result_class(func, name)
+            if maybe_class:
+                generated_name, fields = maybe_class
+                merge_generated_result_class(generated, generated_name, fields)
+
+    return generated
+
+
+def collect_nested_namespaces(lua_api, lua_namespace_map):
+    nested_by_module = {}
+    for mod_name in sorted(lua_api.keys()):
+        lua_ns = lua_namespace_map.get(mod_name, mod_name)
+        nested = set()
+
+        for func in lua_api[mod_name].get("functions", []):
+            lua_name = (func.get("lua_name") or "").strip()
+            if not lua_name.startswith("lurek."):
+                continue
+            parts = lua_name.split(".")
+            if len(parts) < 4:
+                continue
+            if parts[1] != lua_ns:
+                continue
+            nested.add(parts[2])
+
+        if nested:
+            nested_by_module[mod_name] = sorted(nested)
+
+    return nested_by_module
+
+
+def collect_namespace_declarations(lua_api, lua_namespace_map, nested_namespaces):
+    decls = []
+    for mod_name in sorted(lua_api.keys()):
+        lua_ns = lua_namespace_map.get(mod_name, mod_name)
+        nested = list(nested_namespaces.get(mod_name, []))
+        decls.append(
+            {
+                "mod_name": mod_name,
+                "lua_ns": lua_ns,
+                "nested": nested,
+            }
+        )
+    return decls
+
+
+def collect_userdata_class_declarations(lua_api):
+    decls = []
+    ui_non_widget = {
+        "LTheme",
+        "LLineChart",
+        "LBarChart",
+        "LScatterPlot",
+        "LPieChart",
+        "LAreaChart",
+        "LUiWidget",
+    }
+    for mod_name in sorted(lua_api.keys()):
+        classes = lua_api[mod_name].get("classes", {})
+        for class_name in sorted(classes.keys()):
+            class_data = classes[class_name]
+            decl = class_name
+            if mod_name == "ui" and class_name not in ui_non_widget:
+                decl = f"{class_name} : LUiWidget"
+            decls.append(
+                {
+                    "mod_name": mod_name,
+                    "class_name": class_name,
+                    "class_decl": decl,
+                    "description": class_data.get("description", "").strip(),
+                    "fields": class_data.get("fields", []),
+                }
+            )
+    return decls
 
 
 def get_return_entries(fn):
@@ -212,6 +378,11 @@ def get_return_entries(fn):
 
 
 def normalize_param_type(type_name, is_optional=False):
+    # Some parsed @param payloads can accidentally include the beginning of
+    # the prose description after the type token. Keep only the type fragment.
+    m = re.match(r"^\s*([A-Za-z_][A-Za-z0-9_<>{}\[\]|?,.]*)", type_name or "")
+    if m:
+        type_name = m.group(1)
     normalized = normalize_type(type_name)
     if normalized.endswith("?"):
         normalized = normalized[:-1] or DYNAMIC_LUA_TYPE
@@ -638,7 +809,6 @@ def parse_returns(fn):
     return None
 
 def write_function_doc(out, fn, name):
-    block_start = len(out)
 
     desc = fn.get("description", "").strip()
     if desc:
@@ -690,40 +860,35 @@ def write_function_doc(out, fn, name):
                 out.append(f"---@param {safe_k} {t}".strip())
             param_names.append(safe_k)
 
-    # --- @field → @class generation for table returns ---
-    field_entries = extract_field_entries_from_full_doc(fn.get("full_doc", ""))
-    generated_class_name = None
-    if field_entries:
-        generated_class_name = _derive_class_name(name)
-        class_block = [f"---@class {generated_class_name}"]
-        for fe in field_entries:
-            ft = normalize_type(fe["type"])
-            fd = fe.get("description", "")
-            if fd:
-                class_block.append(f"---@field {fe['name']} {ft} {fd}")
-            else:
-                class_block.append(f"---@field {fe['name']} {ft}")
-        class_block.append("")  # blank separator
-        for ci, cl in enumerate(class_block):
-            out.insert(block_start + ci, cl)
+    maybe_generated_class = extract_generated_result_class(fn, name)
+    generated_class_name = maybe_generated_class[0] if maybe_generated_class else None
 
     ret_entries, has_explicit_return_entries = get_return_entries(fn)
+    ret_desc_values = [desc.strip() for _, desc in ret_entries]
+    duplicated_multi_return_desc = (
+        len(ret_entries) > 1
+        and bool(ret_desc_values)
+        and len(set(ret_desc_values)) == 1
+        and bool(ret_desc_values[0])
+    )
     for i, (ret_type, ret_desc) in enumerate(ret_entries):
         if generated_class_name and normalize_type(ret_type) == "table":
             ret_type = generated_class_name
         raw_ret_desc = ret_desc.strip()
-        if raw_ret_desc:
-            if len(ret_entries) > 1:
-                # For multi-return functions, insert a positional single-letter name
-                # so that commas in the description are not misinterpreted by LuaLS as
-                # additional return type entries (e.g. "X, Y, and Z" would be parsed as
-                # types X, Y, Z without an explicit name token separating type from desc).
-                pos_name = chr(ord("a") + i) if i < 26 else f"ret{i + 1}"
-                out.append(f"---@return {ret_type} {pos_name} {raw_ret_desc}")
-            else:
-                out.append(f"---@return {ret_type} {raw_ret_desc}")
-        else:
-            out.append(f"---@return {ret_type}")
+        # Keep descriptions without synthetic return variable names.
+        # For multi-return entries where source docs omit per-value details,
+        # emit a positional fallback description to avoid empty @return lines.
+        if not raw_ret_desc:
+            raw_ret_desc = (
+                "Return value."
+                if len(ret_entries) == 1
+                else f"Return value {i + 1}."
+            )
+        elif duplicated_multi_return_desc:
+            raw_ret_desc = f"{raw_ret_desc} (value {i + 1})."
+        if len(ret_entries) > 1:
+            raw_ret_desc = raw_ret_desc.replace(",", ";")
+        out.append(f"---@return {ret_type} {raw_ret_desc}")
 
     for overload in overload_entries:
         overload_param_name = overload["param_name"]
@@ -768,6 +933,8 @@ def write_callback_doc(out, callback):
     if desc:
         for line in desc.splitlines():
             out.append(f"--- {line}")
+    if desc.lower().startswith("deprecated"):
+        out.append(f"---@deprecated {desc}")
 
     params = callback.get("parameters", [])
     arg_names = []
@@ -805,7 +972,7 @@ def main():
     # Maps internal json key â†’ actual Lua namespace (for modules that register under a different name)
     _LUA_NAMESPACE = {}
 
-    source_enums = data.get("lua_api", {}).get("enums") or BUILTIN_ENUMS
+    source_enums = data.get("lua_api", {}).get("enums", {})
 
     out = []
     out.append("---@meta")
@@ -822,36 +989,11 @@ def main():
         if token not in declared_types and (token[0].isupper() or token in {"Lua", "LuaValue", "Thread"})
     )
 
-    # Dynamic mlua carrier types normalize to `LuaValue`, a real project alias for
-    # unconstrained Lua runtime values.
-    # Old-name â†’ L-prefix aliases: if a referenced type "Foo" has a declared counterpart "LFoo",
-    # emit an alias instead of a duplicate stub class.  This happens when docstring @return tags
-    # still use the pre-L-prefix name.
-    #
-    # Manual overrides for types whose canonical L-prefix name cannot be derived automatically
-    # (casing mismatches, suffix changes, or genuinely internal/non-userdata types).
-    _OPAQUE_ALIASES: dict[str, str] = {
-        "MultiValue":   DYNAMIC_LUA_TYPE,   # mlua multi-return carrier
-        "Environment":  DYNAMIC_LUA_TYPE,   # OS/Lua environment table
-        "GID":          "number",  # tilemap global tile ID â€” integer alias
-        "ID":           "number",  # generic ID â€” integer alias
-        "Radius":       "number",   # plain numeric radius â€” not a userdata type
-        "TextureKey":   DYNAMIC_LUA_TYPE,   # internal render key â€” not exposed as userdata
-        "Tint":         DYNAMIC_LUA_TYPE,   # plain color tint â€” not a userdata type
-        # Struct-name â†’ L-prefix where casing or suffix differs
-        "AiFlowField":    "LAIFlowField",    # LuaAiFlowField struct but type() returns LAIFlowField
-        "Camera2D":       "LCamera",         # LuaCamera2D struct but type() returns LCamera
-        "Edge":           "LGraphEdge",      # LuaEdge shorthand â†’ full graph type
-        "Node":           "LGraphNode",      # LuaNode shorthand â†’ full graph type
-        "Step":           "LPipelineStep",   # LuaStep shorthand â†’ full pipeline type
-        "ThreadHandle":   "LThread",         # LuaThreadHandle â†’ LThread
-    }
-    # Auto-derive: if a referenced type "Foo" has a declared counterpart "LFoo" (exact match),
-    # alias it.  Case-insensitive fallback for minor capitalisation differences.
+    # Old-name -> L-prefix aliases: if a referenced type "Foo" has a declared
+    # counterpart "LFoo", emit an alias instead of a duplicate stub class.
     _l_declared_lower = {("l" + n[1:]).lower(): n for n in declared_types if n.startswith("L")}
+    _OPAQUE_ALIASES: dict[str, str] = {}
     for type_name in opaque_types:
-        if type_name in _OPAQUE_ALIASES:
-            continue
         lname = "L" + type_name
         if lname in declared_types:
             _OPAQUE_ALIASES[type_name] = lname
@@ -860,23 +1002,22 @@ def main():
             if candidate in _l_declared_lower:
                 _OPAQUE_ALIASES[type_name] = _l_declared_lower[candidate]
 
-    # Types defined as @class in docs/api/lureksome.lua â€” skip generating aliases for them
-    # to avoid 'duplicate-doc-alias' warnings from the Lua language server.
-    _SKIP_ALIAS = {"EventBus", "Scheduler", "Stack"}
-
-    # UI widget types that appear only as return types (no class-specific methods)
-    # but should still inherit from LUiWidget in the generated stub.
-    _UI_OPAQUE_WIDGETS = {"LSpacer"}
+    # Build legacy no-prefix -> canonical L-prefixed type map (Image -> LImage).
+    LEGACY_TO_L_TYPES.clear()
+    for declared in sorted(declared_types):
+        if _is_canonical_l_type(declared):
+            LEGACY_TO_L_TYPES.setdefault(declared[1:], declared)
 
     for type_name in opaque_types:
-        if type_name in _SKIP_ALIAS:
+        # Keep public class universe L-prefixed and avoid creating free-floating
+        # non-L classes in the global stub namespace.
+        if not _is_canonical_l_type(type_name):
             continue
         if type_name in _OPAQUE_ALIASES:
             out.append(f"---@alias {type_name} {_OPAQUE_ALIASES[type_name]}")
             out.append("")
         else:
-            parent = " : LUiWidget" if type_name in _UI_OPAQUE_WIDGETS else ""
-            out.append(f"---@class {type_name}{parent}")
+            out.append(f"---@class {type_name}")
             out.append(f"{type_name} = {{}}")
             out.append("")
 
@@ -888,97 +1029,62 @@ def main():
         out.append(f"---@alias {enum_name} {union}")
         out.append("")
 
-    for callback in CALLBACKS:
-        write_callback_doc(out, callback)
+    generated_result_classes = collect_generated_result_classes(lua_api, _LUA_NAMESPACE)
+    for class_name in sorted(generated_result_classes.keys()):
+        out.append(f"---@class {class_name}")
+        fields = generated_result_classes[class_name]["fields"]
+        for field_name in sorted(fields.keys()):
+            field = fields[field_name]
+            if field["description"]:
+                out.append(f"---@field {field['name']} {field['type']} {field['description']}")
+            else:
+                out.append(f"---@field {field['name']} {field['type']}")
+        out.append(f"{class_name} = {{}}")
+        out.append("")
 
-    # Module-level constants that the Rust parser cannot auto-discover.
-    _MODULE_CONSTANTS = {
-        "physics": [
-            ("CELL_AIR",   "number", "empty air cell (0)"),
-            ("CELL_SAND",  "number", "sand cell (1)"),
-            ("CELL_WATER", "number", "water cell (2)"),
-            ("CELL_ROCK",  "number", "rock cell (3)"),
-            ("CELL_FIRE",  "number", "fire cell (4)"),
-            ("CELL_GAS",   "number", "gas cell (5)"),
-        ],
-        "math": [
-            ("pi",  "number", "\u03c0 \u2248 3.14159265358979"),
-            ("tau", "number", "\u03c4 = 2\u03c0 \u2248 6.28318530717959"),
-        ],
-        "tilemap": [
-            ("FLOOR",      "number", "solid floor tile type (1)"),
-            ("NORTH_WALL", "number", "north-facing wall tile type (2)"),
-            ("WEST_WALL",  "number", "west-facing wall tile type (3)"),
-            ("OBJECT",     "number", "object tile type (4)"),
-        ],
-        "globe": [
-            ("MAX_PROVINCES", "number", "Maximum number of provinces the globe supports."),
-            ("LOD_FAR",       "string",  'LOD tier constant "far" â€” zoomed-out view (zoom < 1.5).'),
-            ("LOD_MID",       "string",  'LOD tier constant "mid" â€” medium zoom (1.5 \u2264 zoom < 4.0).'),
-            ("LOD_NEAR",      "string",  'LOD tier constant "near" â€” close-zoom view (zoom \u2265 4.0).'),
-        ],
+    nested_namespaces = collect_nested_namespaces(lua_api, _LUA_NAMESPACE)
 
-    }
+    namespace_decls = collect_namespace_declarations(
+        lua_api,
+        _LUA_NAMESPACE,
+        nested_namespaces,
+    )
 
-    # Modules that register functions under nested sub-namespaces.
-    # These sub-tables must be declared before their functions are emitted so
-    # the Lua language server can resolve lurek.input.keyboard.isDown etc.
-    _NESTED_NAMESPACES: dict[str, list[str]] = {
-        "input": ["keyboard", "mouse", "gamepad", "touch"],
-        "scene": ["transitions"],
-    }
+    for ns in namespace_decls:
+        out.append(f"---@class lurek.{ns['lua_ns']}")
+        out.append(f"lurek.{ns['lua_ns']} = {{}}")
+        out.append("")
+        for sub_ns in ns["nested"]:
+            out.append(f"---@class lurek.{ns['lua_ns']}.{sub_ns}")
+            out.append(f"lurek.{ns['lua_ns']}.{sub_ns} = {{}}")
+            out.append("")
 
-    _UI_NON_WIDGET_CLASSES = {
-        "LTheme",
-        "LLineChart",
-        "LBarChart",
-        "LScatterPlot",
-        "LPieChart",
-        "LAreaChart",
-        "LUiWidget",
-    }
+    for cls in collect_userdata_class_declarations(lua_api):
+        if cls["description"]:
+            for line in cls["description"].splitlines():
+                out.append(f"--- {line}")
+        out.append(f"---@class {cls['class_decl']}")
+        class_name = cls["class_name"]
+        for field in cls.get("fields", []):
+            fname = field.get("name", "").strip()
+            if not fname:
+                continue
+            ftype = normalize_type(field.get("type", "any"))
+            fdesc = field.get("description", "").strip()
+            if fdesc:
+                out.append(f"---@field {fname} {ftype} {fdesc}")
+            else:
+                out.append(f"---@field {fname} {ftype}")
+        out.append(f"{class_name} = {{}}")
+        out.append("")
 
     for mod_name in sorted(lua_api.keys()):
         lua_ns = _LUA_NAMESPACE.get(mod_name, mod_name)
         mod_data = lua_api[mod_name]
-        out.append(f"---@class lurek.{lua_ns}")
-        for const_name, const_type, const_desc in _MODULE_CONSTANTS.get(mod_name, []):
-            out.append(f"---@field {const_name} {normalize_type(const_type)}  {const_desc}")
-        out.append(f"lurek.{lua_ns} = {{}}")
-        out.append("")
-        # Emit declarations for nested sub-namespaces (e.g. lurek.input.keyboard).
-        for sub_ns in _NESTED_NAMESPACES.get(mod_name, []):
-            out.append(f"---@class lurek.{lua_ns}.{sub_ns}")
-            out.append(f"lurek.{lua_ns}.{sub_ns} = {{}}")
-            out.append("")
 
         classes = mod_data.get("classes", {})
         for class_name in sorted(classes.keys()):
             class_data = classes[class_name]
-            desc = class_data.get("description", "").strip()
-            if desc:
-                for line in desc.splitlines():
-                    out.append(f"--- {line}")
-            class_decl = class_name
-            if mod_name == "ui" and class_name not in _UI_NON_WIDGET_CLASSES:
-                class_decl = f"{class_name} : LUiWidget"
-            out.append(f"---@class {class_decl}")
-            # Hardcoded field annotations for types whose fields are Rust struct members
-            # not visible to the Rust parser (registered via add_field_method_get).
-            if class_name == "LUiWidget":
-                out.append("---@field _idx integer  Internal widget pool index.")
-            if class_name == "LVec2":
-                out.append("---@field x number  x component")
-                out.append("---@field y number  y component")
-            elif class_name == "LVec3":
-                out.append("---@field x number  x component")
-                out.append("---@field y number  y component")
-                out.append("---@field z number  z component")
-            elif class_name == "LTweenState":
-                out.append("---@field paused boolean  whether the tween is currently paused")
-            out.append(f"{class_name} = {{}}")
-            out.append("")
-
             methods = class_data.get("methods", [])
             methods.sort(key=lambda x: x.get("name", ""))
 
@@ -1007,25 +1113,6 @@ def main():
             if mod_name != lua_ns and name.startswith(f"lurek.{mod_name}."):
                 name = f"lurek.{lua_ns}." + name[len(f"lurek.{mod_name}."):]
             write_function_doc(out, func, name)
-
-        # â”€â”€ Particle flat-forwarding wrappers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        # particle_api.rs registers every LParticleSystem method *also* as a module-level
-        # function  lurek.particle.METHOD(ps, ...)  via its flat_methods list.  These have
-        # no Rust docstrings so they don't appear in the JSON.  Emit type assignments here
-        # so LuaLS can resolve  lurek.particle.stop(ps)  without an undefined-field error.
-        if mod_name == "particle" and "LParticleSystem" in classes:
-            out.append("-- Flat forwarding: lurek.particle.METHOD(ps,...) == ps:METHOD(...)")
-            emitted_fns = {f.get("name", "") for f in functions}
-            for m in sorted(classes["LParticleSystem"]["methods"], key=lambda x: x.get("name", "")):
-                mname = m.get("name", "")
-                if mname and mname not in emitted_fns:
-                    out.append(f"lurek.particle.{mname} = LParticleSystem.{mname}")
-            out.append("")
-
-    # Module aliases: runtime registrations that expose the same table under multiple names.
-    out.append("-- lurek.serialize is an alias for lurek.serial (both registered at runtime)")
-    out.append("lurek.serialize = lurek.serial")
-    out.append("")
 
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:

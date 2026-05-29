@@ -63,6 +63,39 @@ LUREK_NAMESPACES = {
     "mouse", "gamepad", "touch", "event",
 }
 
+TODO_RE = re.compile(r"(?i)\bTODO(\([^)]+\))?:?.*")
+
+# Normalize internal shorthand receiver names to stable public class names.
+CLASS_NAME_MAP = {
+    "seq": "Sequence",
+    "part": "DollPart",
+    "tmpl": "DollTemplate",
+    "doll": "Doll",
+    "item": "Item",
+    "stack": "Stack",
+    "slot": "Slot",
+    "container": "Container",
+    "inv": "Inventory",
+    "iset": "ItemSet",
+    "it": "ItemType",
+    "pool": "ItemPool",
+    "builder": "StackBuilder",
+    "history": "StackHistory",
+    "manager": "StackManager",
+}
+
+
+def _clean_public_line(raw: str) -> str:
+    if not raw:
+        return ""
+    if TODO_RE.search(raw):
+        raw = TODO_RE.sub("", raw).strip()
+    return raw.strip()
+
+
+def _public_class_name(name: str) -> str:
+    return CLASS_NAME_MAP.get(name, name)
+
 # ── LDoc parser ───────────────────────────────────────────────────────────────
 
 
@@ -212,7 +245,9 @@ def _consume_module_tags(block: list[str], info: dict) -> None:
         elif raw.startswith("@"):
             continue
         else:
-            desc.append(raw)
+            clean = _clean_public_line(raw)
+            if clean:
+                desc.append(clean)
     if usage:
         if desc:
             desc.append("")
@@ -285,7 +320,9 @@ def _consume_tags(block: list[str], fn: dict) -> None:
         elif raw.startswith("@"):
             continue
         else:
-            desc.append(raw)
+            clean = _clean_public_line(raw)
+            if clean:
+                desc.append(clean)
     fn["desc"] = " ".join(d for d in desc if d).strip()
 
 
@@ -802,7 +839,7 @@ def render_api_md(modules: dict) -> str:
         for fn in info["functions"]:
             raw = fn["name"]  # e.g. "M.newStatusEffect" or "StatusEffect:getName"
             if ":" in raw:
-                cls = raw.split(":")[0]
+                cls = _public_class_name(raw.split(":")[0])
                 class_methods.setdefault(cls, []).append(fn)
             else:
                 module_fns.append(fn)
@@ -886,7 +923,7 @@ def render_luacats(modules: dict) -> str:
         for fn in info["functions"]:
             raw_name = fn["name"]
             if ":" in raw_name:
-                cls = raw_name.split(":", 1)[0]
+                cls = _public_class_name(raw_name.split(":", 1)[0])
                 if cls not in declared_classes:
                     out.append(f"---@class {cls}")
                     out.append(f"{cls} = {{}}")
@@ -952,7 +989,7 @@ def render_luacats(modules: dict) -> str:
 
             # Function declaration
             if ":" in raw_name:
-                cls = raw_name.split(":", 1)[0]
+                cls = _public_class_name(raw_name.split(":", 1)[0])
                 method = raw_name.split(":", 1)[1]
                 args = fn["args"]
                 out.append(f"function {cls}:{method}({args}) end")

@@ -1,13 +1,4 @@
-//! `lurek.ai` - Lua bindings for AI worlds, agents, blackboards, behavior trees, steering, planning, learning, and simulation helpers.
-//!
-//! - Registers `lurek.ai.*` functions and types via `register()`.
-//! - Userdata types: `LuaAIWorld`, `LuaAgent`, `LuaAIBlackboard`.
-//! - Userdata types: `LuaStateMachine`, `LuaBehaviorTree`, `LuaBTNode`.
-//! - Userdata types: `LuaSteeringManager`, `LuaUtilityAI`, `LuaGOAPPlanner`.
-//! - Userdata types: `LuaInfluenceMap`, `LuaSquad`, `LuaCommandQueue`.
-//! - Userdata types: `LuaTraitProfile`, `LuaStimulusWorld`, `LuaContextSteering`.
-//! - Userdata types: `LuaNeedSystem`, `LuaAIDirector`, `LuaHTNDomain`.
-//! - Userdata types: `LuaMCTSEngine`, `LuaEmotionModel`, `LuaORCASolver`.
+//! File: src/lua_api/ai_api.rs
 
 use super::SharedState;
 use crate::ai::{

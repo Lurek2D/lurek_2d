@@ -1,17 +1,9 @@
-//! INTERNAL ONLY: public `lurek.save.SaveManager` behavior is covered by the Lua-first suites in
-//! `tests/lua/unit/test_save_unit.lua` and `tests/lua/security/test_save.lua`.
-//!
-//! The Rust-only coverage that remains here is limited to helpers and internal
-//! state that are not directly observable through the Lua API:
-//! - migration bookkeeping helpers such as `applicable_migrations`
-//! - serializer/parser helpers like `serialize_table`, `serialize_value`, and
-//!   `parse_save_string`
-//! - private metadata defaults and path formatting helpers
+//! File: tests/rust/unit/save_tests.rs
 
 use lurek2d::save::*;
 use std::collections::HashMap;
 
-// ── save_manager tests ───────────────────────────────────────────────────────
+// â”€â”€ save_manager tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod save_manager_tests {
     use super::*;

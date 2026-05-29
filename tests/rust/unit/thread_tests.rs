@@ -1,10 +1,6 @@
-//! INTERNAL ONLY: public `lurek.thread.*` behavior is covered primarily by
-//! `tests/lua/unit/test_thread_unit.lua` plus stress/integration suites.
-//!
-//! This Rust file keeps worker-VM and pool internals that are awkward to prove
-//! through the Lua layer, while removing duplicated checks for channel basics.
+//! File: tests/rust/unit/thread_tests.rs
 
-// ── channel ───────────────────────────────────────────────────────────────────
+// â”€â”€ channel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod channel_tests {
     use std::thread;
@@ -12,7 +8,7 @@ mod channel_tests {
 
     use lurek2d::thread::channel::{Channel, ChannelValue};
 
-    // ── Channel basics ────────────────────────────────────────────────────
+    // â”€â”€ Channel basics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn named_channel_has_name() {
@@ -33,7 +29,7 @@ mod channel_tests {
         assert_eq!(ch.capacity(), Some(3));
     }
 
-    // ── Push / Pop ────────────────────────────────────────────────────────
+    // â”€â”€ Push / Pop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn push_returns_monotonic_ids() {
@@ -43,7 +39,7 @@ mod channel_tests {
         assert!(id2 > id1);
     }
 
-    // ── ChannelValue clone ────────────────────────────────────────────────
+    // â”€â”€ ChannelValue clone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn channel_value_clone_roundtrip() {
@@ -122,7 +118,7 @@ mod channel_tests {
     }
 }
 
-// ── worker ────────────────────────────────────────────────────────────────────
+// â”€â”€ worker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod worker_tests {
     use std::collections::HashMap;
@@ -248,7 +244,7 @@ mod worker_tests {
     }
 }
 
-// ── pool ──────────────────────────────────────────────────────────────────────
+// â”€â”€ pool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod pool_tests {
     use lurek2d::thread::channel::ChannelValue;
@@ -285,7 +281,7 @@ mod pool_tests {
     #[test]
     fn collect_returns_none_when_empty() {
         let pool = ThreadPool::new(1, ECHO_WORKER.to_string());
-        // No submit → no output yet (workers block on demand)
+        // No submit â†’ no output yet (workers block on demand)
         assert!(pool.collect().is_none());
     }
 
@@ -314,7 +310,7 @@ mod pool_tests {
     }
 }
 
-// ── promise ───────────────────────────────────────────────────────────────────
+// â”€â”€ promise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod promise_tests {
     use lurek2d::thread::promise::PromiseState;

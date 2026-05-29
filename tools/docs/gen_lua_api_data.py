@@ -42,18 +42,9 @@ def _load_gen_lua_api():
     return mod
 
 
-def _load_gen_extension_api():
-    spec = importlib.util.spec_from_file_location(
-        "gen_extension_api", TOOLS_DIR / "docs" / "gen_extension_api.py"
-    )
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
 # ── Lua API extraction ─────────────────────────────────────────────────────────
 
-def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> dict:
+def extract_lua_api(gen_lua_api, verbose: bool = False) -> dict:
     """Extract all Lua API data using gen_lua_api module."""
     src_dir = SRC_DIR / "lua_api"
     all_fns = gen_lua_api.collect_all_functions(src_dir)
@@ -69,6 +60,9 @@ def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> di
         )
         class_descs = (
             gen_lua_api.collect_class_descriptions(api_file) if api_file.exists() else {}
+        )
+        class_fields = (
+            gen_lua_api.collect_class_fields(api_file) if api_file.exists() else {}
         )
 
         module_fns = []
@@ -99,6 +93,7 @@ def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> di
                 if owner not in classes:
                     classes[owner] = {
                         "description": class_descs.get(owner, ""),
+                        "fields": class_fields.get(owner, []),
                         "methods": [],
                     }
                 classes[owner]["methods"].append(entry)
@@ -107,6 +102,8 @@ def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> di
         for owner, cls_data in classes.items():
             if not cls_data["description"] and owner in class_descs:
                 cls_data["description"] = class_descs[owner]
+            if not cls_data.get("fields") and owner in class_fields:
+                cls_data["fields"] = class_fields[owner]
 
         modules[mod_name] = {
             "description": module_doc,
@@ -127,7 +124,7 @@ def extract_lua_api(gen_lua_api, gen_extension_api, verbose: bool = False) -> di
             "coverage_pct": round(documented / total * 100, 1) if total else 0,
             "modules": len(all_fns),
         },
-        "enums": dict(gen_extension_api.BUILTIN_ENUMS),
+            "enums": {},
         "modules": modules,
     }
 
@@ -448,8 +445,7 @@ def main() -> int:
 
     print("--- Scanning Lua API ---")
     gen_lua_api = _load_gen_lua_api()
-    gen_extension_api = _load_gen_extension_api()
-    lua_api = extract_lua_api(gen_lua_api, gen_extension_api, verbose=args.verbose)
+    lua_api = extract_lua_api(gen_lua_api, verbose=args.verbose)
 
     # Apply docs overlay (fills descriptions that cannot live in Rust source)
     overlay_path = WORKSPACE_ROOT / "logs" / "docs_overlay.json"

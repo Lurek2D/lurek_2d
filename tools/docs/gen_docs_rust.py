@@ -21,6 +21,7 @@ Exit codes:
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -46,6 +47,20 @@ _KIND_KW = {
 # Sort order for kinds (structs first, fns last)
 _KIND_ORDER = ["struct", "enum", "trait", "type", "const", "static", "fn", "mod"]
 
+_TODO_RE = re.compile(r"(?i)\bTODO(\([^)]+\))?:?.*")
+
+
+def _clean_public_description(text: str) -> str:
+    if not text:
+        return ""
+    cleaned: list[str] = []
+    for raw in text.splitlines():
+        if _TODO_RE.search(raw):
+            raw = _TODO_RE.sub("", raw).strip()
+        if raw:
+            cleaned.append(raw)
+    return " ".join(cleaned).strip()
+
 
 def _top_group(mod_path: str) -> str:
     """Return the top-level module group name (first path segment)."""
@@ -59,7 +74,7 @@ def _format_item_line(item: dict) -> str:
     kind = item.get("kind", "fn")
     name = item["name"]
     kw = _KIND_KW.get(kind, f"pub {kind}")
-    desc = (item.get("description", "") or "").strip()
+    desc = _clean_public_description((item.get("description", "") or "")).strip()
 
     if kind == "fn":
         params = item.get("params", "") or ""
@@ -147,7 +162,7 @@ def generate_rust_docs(data: dict) -> str:
             if not items:
                 continue
 
-            module_doc = (mod_data.get("module_doc", "") or "").strip()
+            module_doc = _clean_public_description((mod_data.get("module_doc", "") or "")).strip()
             src = mod_data.get("source_file", "")
 
             # Module coverage

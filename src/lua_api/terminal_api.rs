@@ -1,10 +1,4 @@
-//! `lurek.terminal` - Provides an in-game terminal emulator with command parsing, history, output buffering, and ANSI-style formatting.
-//!
-//! - Registers `lurek.terminal.*` functions and types via `register()`.
-//! - `LuaTerminal`: userdata type exposed to Lua.
-//! - `LuaWidget`: userdata type exposed to Lua.
-//! - Bridges 88 Lua-callable methods via `mlua`.
-//! - See `docs/specs/terminal.md` for the full API specification.
+//! File: src/lua_api/terminal_api.rs
 
 use super::SharedState;
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
@@ -1477,7 +1471,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 "nord" => (236, 239, 244, 46, 52, 64),
                 other => {
                     return Err(LuaError::RuntimeError(format!(
-                        "unknown theme '{other}' â€” available: solarized_dark, solarized_light, monokai, dracula, nord"
+                        "unknown theme '{other}' Ă˘â‚¬â€ť available: solarized_dark, solarized_light, monokai, dracula, nord"
                     )));
                 }
             };

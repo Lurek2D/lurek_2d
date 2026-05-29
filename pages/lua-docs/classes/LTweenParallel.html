@@ -70,7 +70,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LTweenParallel userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-add"><div class="item-row-main"><h3>add</h3><pre class="inline-signature">LTweenParallel:add(tw_ud: LTween)</pre><p>Adds an existing tween handle to this parallel group. The tween becomes owned by the group.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:859</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-add"><div class="item-row-main"><h3>add</h3><pre class="inline-signature">LTweenParallel:add(tw_ud: LTween)</pre><p>Adds an existing tween handle to this parallel group. The tween becomes owned by the group.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:980</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj1 = { alpha = 1 }
     local obj2 = { scale = 1 }
     local tw1 = lurek.tween.tween(0.8, obj1, { alpha = 0 })
@@ -84,7 +84,7 @@ end</code></pre></details>
 
     lurek.tween.update(0.8)
     print(&quot;alpha=&quot; .. obj1.alpha .. &quot; scale=&quot; .. obj2.scale)
-end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTweenParallel:cancel()</pre><p>Cancels all tweens in this parallel group immediately.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:936</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTweenParallel:cancel()</pre><p>Cancels all tweens in this parallel group immediately.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1057</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0 }
     local b = { y = 0 }
     local par = lurek.tween.parallel()
@@ -96,37 +96,37 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     par:cancel()
     print(&quot;cancelled: active=&quot; .. tostring(par:isActive()))
     print(&quot;x=&quot; .. a.x .. &quot; y=&quot; .. b.y)
-end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTweenParallel:isActive() -&gt; boolean</pre><p>Returns whether this parallel group is still running.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:944</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTweenParallel:isActive() -&gt; boolean</pre><p>Returns whether this parallel group is still running.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1065</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))
     print(&quot;par_type=&quot; .. par:type()) ; print(&quot;par_typeOf=&quot; .. tostring(par:typeOf(&quot;LTweenParallel&quot;)))
     par:start() ; par:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTweenParallel:onComplete(f: function) -&gt; LTweenParallel</pre><p>Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:951</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTweenParallel:onComplete(f: function) -&gt; LTweenParallel</pre><p>Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1072</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))
     print(&quot;par_type=&quot; .. par:type()) ; print(&quot;par_typeOf=&quot; .. tostring(par:typeOf(&quot;LTweenParallel&quot;)))
     par:start() ; par:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">LTweenParallel:start() -&gt; LTweenParallel</pre><p>Starts all tweens in this parallel group simultaneously.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:929</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">LTweenParallel:start() -&gt; LTweenParallel</pre><p>Starts all tweens in this parallel group simultaneously.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1050</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))
     print(&quot;par_type=&quot; .. par:type()) ; print(&quot;par_typeOf=&quot; .. tostring(par:typeOf(&quot;LTweenParallel&quot;)))
     par:start() ; par:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-tween"><div class="item-row-main"><h3>tween</h3><pre class="inline-signature">LTweenParallel:tween(duration: number, target: table, fields: table, easing: string?) -&gt; LTweenParallel</pre><p>Creates and adds a new tween step directly to this parallel group.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:890</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-tween"><div class="item-row-main"><h3>tween</h3><pre class="inline-signature">LTweenParallel:tween(duration: number, target: table, fields: table, easing: string?) -&gt; LTweenParallel</pre><p>Creates and adds a new tween step directly to this parallel group.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1011</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))
     print(&quot;par_type=&quot; .. par:type()) ; print(&quot;par_typeOf=&quot; .. tostring(par:typeOf(&quot;LTweenParallel&quot;)))
     par:start() ; par:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTweenParallel:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:968</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTweenParallel:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1089</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))
     print(&quot;par_type=&quot; .. par:type()) ; print(&quot;par_typeOf=&quot; .. tostring(par:typeOf(&quot;LTweenParallel&quot;)))
     par:start() ; par:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTweenParallel:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:974</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTweenParallel:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1095</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local a = { x = 0.0 } ; local b = { y = 0.0 } ; local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, &quot;linear&quot;) ; par:tween(0.5, b, { y = 20 }, &quot;easeinquad&quot;) ; local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, &quot;linear&quot;)
     par:add(tw_extra) ; par:onComplete(function() print(&quot;parallel_done&quot;) end) ; print(&quot;par_active=&quot; .. tostring(par:isActive()))

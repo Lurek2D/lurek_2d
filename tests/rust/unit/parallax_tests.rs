@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for parallax render helpers that are not directly asserted
-//! through `lurek.parallax.*`.
-//!
-//! Public parallax-layer behaviour is covered by `tests/lua/unit/test_parallax_unit.lua`.
-//! The remaining Rust tests keep draw-batch to render-command translation and
-//! image helper invariants.
+//! File: tests/rust/unit/parallax_tests.rs
 
 use lurek2d::parallax::layer::ParallaxDrawBatch;
 use lurek2d::parallax::render::batch_to_render_commands;
@@ -18,7 +13,7 @@ fn dummy_key() -> TextureKey {
     TextureKey::from(KeyData::from_ffi(1))
 }
 
-// ── render ────────────────────────────────────────────────────────────────────
+// â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use super::*;
@@ -73,7 +68,7 @@ mod render_tests {
     }
 }
 
-// ── draw ──────────────────────────────────────────────────────────────────────
+// â”€â”€ draw â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod draw_tests {
     use super::*;
@@ -109,7 +104,7 @@ mod draw_tests {
     }
 }
 
-// ── layer ─────────────────────────────────────────────────────────────────────
+// â”€â”€ layer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod layer_tests {
     use super::*;

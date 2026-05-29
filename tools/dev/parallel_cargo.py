@@ -111,7 +111,17 @@ def shell_join(command: Sequence[str]) -> str:
 
 
 def default_jobs(value: int | None) -> int:
-    return value or logical_cpu_count()
+    if value is not None:
+        return value
+
+    cpu_count = logical_cpu_count()
+
+    # Windows link.exe is memory-hungry; keep the default compile fan-out small
+    # so a normal build does not spawn a large pile of concurrent linkers.
+    if os.name == "nt":
+        return max(1, min(2, cpu_count))
+
+    return cpu_count
 
 
 def parse_cargo_test_targets() -> list[str]:
@@ -435,7 +445,7 @@ def run_test_all(args: argparse.Namespace) -> int:
     if args.warm_build:
         warm_build = ["cargo", "test", "--tests", "--no-run"]
         add_verbose_flag(warm_build, args.verbose)
-        add_jobs_flag(warm_build, cpu_count)
+        add_jobs_flag(warm_build, jobs)
         steps.append(("warm-build", warm_build))
     rust_steps = [
         ("test:rust", ("__parallel_rust__",))
@@ -493,7 +503,7 @@ def run_test_rust(args: argparse.Namespace) -> int:
     if getattr(args, "warm_build", False):
         warm_build_command = ["cargo", "test", "--tests", "--no-run"]
         add_verbose_flag(warm_build_command, args.verbose)
-        add_jobs_flag(warm_build_command, cpu_count)
+        add_jobs_flag(warm_build_command, default_jobs(None))
         warm_build_result = single_command_result("warm-build", warm_build_command, args.dry_run)
         planned_results.append(warm_build_result)
         if not args.dry_run and warm_build_result.returncode != 0:

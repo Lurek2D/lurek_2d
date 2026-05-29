@@ -1,6 +1,4 @@
-//! Trait-based module registration for `lurek.*` Lua API modules.
-//!
-//! - Registers `lurek.lua_module.*` functions and types via `register()`.
+//! File: src/lua_api/lua_module.rs
 
 use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;

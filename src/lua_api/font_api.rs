@@ -1,9 +1,4 @@
-//! `lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.
-//!
-//! - Registers `lurek.font.*` functions and types via `register()`.
-//! - `LuaFont`: userdata type exposed to Lua.
-//! - Helper function: `register_font_api`.
-//! - Bridges 19 Lua-callable methods via `mlua`.
+//! File: src/lua_api/font_api.rs
 
 use super::SharedState;
 use crate::render::font::{AVAILABLE_POINT_SIZES, Font};
@@ -705,7 +700,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     Ok(font)
 }
 
-/// Standard module registration entry point — registers `lurek.font` and returns `Ok(())`.
+/// Standard module registration entry point â€” registers `lurek.font` and returns `Ok(())`.
 pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let font = register_font_api(lua, state)?;
     lurek.set("font", font)?;

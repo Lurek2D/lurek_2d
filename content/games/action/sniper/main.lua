@@ -330,26 +330,26 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.3, 0.35, 0.25)
 
     math.randomseed(os.time())
-    
+
     lurek.ui.loadLayoutFile("content/games/action/sniper/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.go_score = ui_root:findById("go_score")
     app_ui.go_rating = ui_root:findById("go_rating")
     app_ui.go_acc = ui_root:findById("go_acc")
     app_ui.go_stats = ui_root:findById("go_stats")
     app_ui.go_restart = ui_root:findById("go_restart")
-    
+
     app_ui.round_end_screen = ui_root:findById("round_end_screen")
     app_ui.re_title = ui_root:findById("re_title")
     app_ui.re_score = ui_root:findById("re_score")
     app_ui.re_acc = ui_root:findById("re_acc")
     app_ui.re_next = ui_root:findById("re_next")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.hud_round = ui_root:findById("hud_round")
     app_ui.hud_shots = ui_root:findById("hud_shots")
@@ -521,7 +521,7 @@ function lurek.process(dt)
             state = STATE_TITLE
         end
     end
-    
+
     -- UI Sync
     if app_ui then
         app_ui.title_screen.visible = (state == STATE_TITLE)
@@ -529,7 +529,7 @@ function lurek.process(dt)
             local blink = math.abs(math.sin(sway_time * 2))
             app_ui.press_start.color = {1, 1, 1, blink}
         end
-        
+
         app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
         if state == STATE_GAME_OVER then
             app_ui.go_score.text = "FINAL SCORE: " .. total_score
@@ -541,7 +541,7 @@ function lurek.process(dt)
             local blink = math.abs(math.sin(sway_time * 2))
             app_ui.go_restart.color = {1, 1, 1, blink}
         end
-        
+
         app_ui.round_end_screen.visible = (state == STATE_ROUND_END)
         if state == STATE_ROUND_END then
             local rdef = round_defs[current_round]
@@ -557,7 +557,7 @@ function lurek.process(dt)
                 app_ui.re_next.text = "PRESS ENTER FOR RESULTS"
             end
         end
-        
+
         app_ui.hud.visible = (state == STATE_AIMING or state == STATE_BULLET_FLIGHT)
         if app_ui.hud.visible then
             local rdef = round_defs[current_round]
@@ -566,7 +566,7 @@ function lurek.process(dt)
             app_ui.hud_score.text = "Score: " .. round_score
             app_ui.hud_total.text = "Total: " .. total_score
             app_ui.hud_wind.text = wind_display
-            
+
             if breath_held then
                 local pct = 1.0 - (breath_timer / BREATH_DURATION)
                 app_ui.breath_bg.visible = true
@@ -585,7 +585,7 @@ function lurek.process(dt)
                 app_ui.breath_text.color = {0.7, 0.7, 0.6, 0.7}
                 app_ui.breath_text.y = 10
             end
-            
+
             local ct = targets[current_target_idx]
             if ct and ct.alive then
                 app_ui.hud_range.text = "Range: " .. math.floor(ct.x) .. "px"

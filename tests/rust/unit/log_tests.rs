@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for logging helpers that are not directly asserted through
-//! `lurek.log.*`.
-//!
-//! Public log configuration behaviour is covered by `tests/lua/unit/test_log_unit.lua`.
-//! The remaining Rust tests keep internal level parsing and sink-level helper
-//! invariants.
+//! File: tests/rust/unit/log_tests.rs
 
 mod log_mod_tests {
     use lurek2d::log::{get_level, set_level};

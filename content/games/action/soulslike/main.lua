@@ -58,6 +58,7 @@ local game_state = STATE.TITLE
 local player = {}
 local boss   = {}
 local projectiles = {}
+local app_ui
 
 -- Particles
 local hit_ps, dodge_ps, block_ps, enrage_ps, death_ps
@@ -523,13 +524,13 @@ function lurek.init()
         speed = 80, spread = math.pi, colors = {{0.8,0.1,0.1,1},{0.3,0,0,0}} })
 
     start_combat()
-    
+
     lurek.ui.loadLayoutFile("content/games/action/soulslike/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.hp_fill = ui_root:findById("hp_fill")
     app_ui.stam_fill = ui_root:findById("stam_fill")
@@ -538,11 +539,11 @@ function lurek.init()
     app_ui.exhaust_warn = ui_root:findById("exhaust_warn")
     app_ui.boss_hp_fill = ui_root:findById("boss_hp_fill")
     app_ui.boss_phase_label = ui_root:findById("boss_phase_label")
-    
+
     app_ui.death_screen = ui_root:findById("death_screen")
     app_ui.death_text = ui_root:findById("death_text")
     app_ui.death_retry = ui_root:findById("death_retry")
-    
+
     app_ui.victory_screen = ui_root:findById("victory_screen")
     app_ui.victory_text = ui_root:findById("victory_text")
     app_ui.victory_sub = ui_root:findById("victory_sub")
@@ -628,7 +629,7 @@ function lurek.process(dt)
                 boss.y + math.random() * BOSS_H, 2)
         end
     end
-    
+
     -- UI Sync
     if app_ui then
         app_ui.title_screen.visible = (game_state == STATE.TITLE)
@@ -636,12 +637,12 @@ function lurek.process(dt)
             local a = math.abs(math.sin(title_blink * 2))
             app_ui.press_start.color = {0.9, 0.85, 0.7, a}
         end
-        
+
         app_ui.hud.visible = (game_state ~= STATE.TITLE)
         if app_ui.hud.visible then
             local hp_frac = (player.hp_disp or player.hp) / PLAYER_MAX_HP
             app_ui.hp_fill.width = 160 * hp_frac
-            
+
             local st_frac = (player.stam_disp or player.stamina) / PLAYER_MAX_STAM
             app_ui.stam_fill.width = 160 * st_frac
             if player.exhausted > 0 then
@@ -653,7 +654,7 @@ function lurek.process(dt)
                 app_ui.stam_fill.background = {0.1, 0.7, 0.15, 1.0}
                 app_ui.exhaust_warn.visible = false
             end
-            
+
             for i=1, 3 do
                 if i <= player.estus then
                     app_ui.estus_icons[i].background = {0.9, 0.6, 0.1, 1.0}
@@ -661,14 +662,14 @@ function lurek.process(dt)
                     app_ui.estus_icons[i].background = {0.3, 0.2, 0.1, 0.5}
                 end
             end
-            
+
             local boss_frac = (boss.hp_disp or boss.hp) / BOSS_MAX_HP
             app_ui.boss_hp_fill.width = 200 * boss_frac
             local bossR = boss.enraged and 0.9 or 0.6
             app_ui.boss_hp_fill.background = {bossR, 0.08, 0.12, 1.0}
             app_ui.boss_phase_label.text = "BOSS  P" .. boss.phase
         end
-        
+
         app_ui.death_screen.visible = (game_state == STATE.PLAYER_DIED)
         if game_state == STATE.PLAYER_DIED then
             if death_timer > 1.0 then
@@ -685,7 +686,7 @@ function lurek.process(dt)
                 app_ui.death_retry.color = {0.8, 0.7, 0.6, 0.0}
             end
         end
-        
+
         app_ui.victory_screen.visible = (game_state == STATE.VICTORY)
         if game_state == STATE.VICTORY then
             local va = math.min(1, victory_timer / 1.0)

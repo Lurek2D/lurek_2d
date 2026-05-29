@@ -1,8 +1,4 @@
-//! Lua VM creation and `lurek.*` module registration entry point.
-//!
-//! - Registers `lurek.register.*` functions and types via `register()`.
-//! - Helper functions: `create_lua_vm`, `create_headless_vm`, `create_test_vm`.
-//! - See `docs/specs/register.md` for the full API specification.
+//! File: src/lua_api/register.rs
 
 #[cfg(feature = "automation-plugin")]
 use super::automation_api;
@@ -57,7 +53,7 @@ macro_rules! gated {
 /// Order is preserved from the original registration sequence.
 /// Always-on modules have `is_enabled` returning `true` unconditionally.
 static MODULES: &[ModuleEntry] = &[
-    // ── Always-on core modules ──────────────────────────────────────────
+    // â”€â”€ Always-on core modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     always!(agent_api),
     always!(asset_api),
     always!(event_api),
@@ -77,7 +73,7 @@ static MODULES: &[ModuleEntry] = &[
     always!(color_api),
     always!(system_api),
     always!(font_api),
-    // ── Config-gated modules ────────────────────────────────────────────
+    // â”€â”€ Config-gated modules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     gated!(timer_api, timer),
     gated!(image_api, image),
     gated!(camera_api, camera),
@@ -125,7 +121,7 @@ static MODULES: &[ModuleEntry] = &[
     gated!(render_api, render),
 ];
 
-// ─── VM constructors ────────────────────────────────────────────────────────
+// â”€â”€â”€ VM constructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Creates a Lua VM, locks down unsafe standard-library entry points, installs the `lurek` table, and registers enabled modules.
 pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
@@ -167,7 +163,7 @@ pub fn create_test_vm() -> LuaResult<Lua> {
     create_lua_vm(state, &modules)
 }
 
-// ─── Internal helpers ───────────────────────────────────────────────────────
+// â”€â”€â”€ Internal helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Removes unsafe standard-library functions from the Lua global environment.
 fn lockdown_stdlib(lua: &Lua) -> LuaResult<()> {
@@ -201,7 +197,7 @@ fn register_modules(
         }
     }
 
-    // Feature-gated modules require compile-time #[cfg] — cannot be in MODULES.
+    // Feature-gated modules require compile-time #[cfg] â€” cannot be in MODULES.
     #[cfg(feature = "automation-plugin")]
     if modules.debug {
         automation_api::register(lua, lurek, state.clone())?;

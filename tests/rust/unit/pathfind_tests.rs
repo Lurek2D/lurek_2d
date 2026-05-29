@@ -1,16 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for pathfinding internals that are not asserted through the
-//! Lua-facing `lurek.pathfind.*` API.
-//!
-//! Grid, JPS, NavGrid, UnitPathfinder, RangeMap, and thread-pool behavior reachable via
-//! `lurek.pathfind.*` lives in `tests/lua/unit/test_pathfind_core_unit.lua` and
-//! `tests/lua/unit/test_pathfind_ai_unit.lua`.
-//!
-//! Remaining coverage:
-//! - `IsoGrid` (not exposed to Lua)
-//! - `NavGrid::from_costs` and raw byte load error paths
-//! - `DiagonalMode::from_lua_str` enum parsing used by bindings
-//! - `PathThreadPool` (`setThreadCount` / `getThreadCount` Lua stubs are not wired yet)
-//! - `graph_astar` / `graph_range` (feature `graph`, no direct Lua surface)
+//! File: tests/rust/unit/pathfind_tests.rs
 
 use lurek2d::pathfind::{DiagonalMode, IsoGrid, NavGrid, PathThreadPool};
 

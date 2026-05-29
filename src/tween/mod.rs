@@ -20,6 +20,6 @@ pub use handle::{LuaTween, LuaTweenParallel, LuaTweenSequence, ParallelEntry, Se
 pub use state::{builtin_easing_names, TweenState};
 pub use interpolator::{Tween, TweenValue};
 pub use spring::{SpringAxis, SpringSystem};
-/// Sequential tween chain with labels and loop support.
+/// Sequential tween chain with labels, loop support, and fluent playback controls.
 pub mod chain;
 pub use chain::{ChainEvent, ChainStep, TweenChain};

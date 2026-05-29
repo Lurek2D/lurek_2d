@@ -121,11 +121,25 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-tot
     local toml = lurek.serial.toToml({ version = &quot;1.0&quot;, debug = false })
     print(&quot;toml length = &quot; .. #toml)
     print(&quot;contains version = &quot; .. tostring(toml:find(&quot;version&quot;) ~= nil))
-end</code></pre></details></article><article class="item-row api-row" id="fn-validate"><div class="item-row-main"><h3>validate</h3><pre class="inline-signature">lurek.serialize.validate(value: any, schema: table) -&gt; boolean</pre><p>Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:198</span></div><details class="example-block"><summary>Example · Exact example · serialize.lua</summary><pre><code>do
-    local schema = { type = &quot;object&quot;, required = { &quot;name&quot;, &quot;level&quot; } }
-    local ok, err = lurek.serial.validate({ name = &quot;Knight&quot;, level = 50 }, schema)
-    print(&quot;valid data ok = &quot; .. tostring(ok))
-    print(&quot;valid err = &quot; .. tostring(err))
+end</code></pre></details></article><article class="item-row api-row" id="fn-validate"><div class="item-row-main"><h3>validate</h3><pre class="inline-signature">lurek.serialize.validate(value: any, schema: table) -&gt; boolean</pre><p>Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/serialize_api.rs:198</span></div><details class="example-block"><summary>Example · Exact example · data_validate_config.lua</summary><pre><code>do
+    local config = {
+        title = &quot;Household Finance Lab&quot;,
+        autosave = true,
+        month_limit = 12,
+    }
+
+    local schema = {
+        type = &quot;table&quot;,
+        fields = {
+            title = { type = &quot;string&quot;, required = true, minlen = 1 },
+            autosave = { type = &quot;boolean&quot;, required = true },
+            month_limit = { type = &quot;number&quot;, required = true, min = 1, max = 24 },
+        },
+    }
+
+    local ok, err = lurek.serial.validate(config, schema)
+    print(&quot;config schema ok=&quot; .. tostring(ok))
+    print(&quot;config schema err=&quot; .. tostring(err))
 end</code></pre></details></article>
   </div>
 </section>

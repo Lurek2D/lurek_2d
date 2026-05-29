@@ -1,10 +1,4 @@
-//! `lurek.camera` -- Camera bindings for 2D transforms, targets, bounds, screen conversion, paths, zoom tweens, parallax factors, effects, constraints, presets, and camera rigs.
-//!
-//! - Registers `lurek.camera.*` functions and types via `register()`.
-//! - `LuaCamera2D`: userdata type exposed to Lua.
-//! - `LuaCameraRig`: userdata type exposed to Lua.
-//! - Bridges 88 Lua-callable methods via `mlua`.
-//! - See `docs/specs/camera.md` for the full API specification.
+//! File: src/lua_api/camera_api.rs
 
 use super::SharedState;
 use crate::camera::{

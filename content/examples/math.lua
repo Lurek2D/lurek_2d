@@ -1628,3 +1628,238 @@ do
     local y = lurek.math.cubicBezier(0.25, 0.1, 0.25, 1.0, 0.5)
     print("cubicBezier(0.5) = " .. y)
 end
+
+--@api-stub: lurek.math.newLootTable
+do
+    local loot = lurek.math.newLootTable({ seed = 42 })
+    loot:add("common", 10.0, { tier = "c" })
+    loot:add("rare", 1.0, { tier = "r" })
+    loot:build()
+    local pick = loot:sample()
+    print("loot pick = " .. tostring(pick and pick.id))
+end
+
+--@api-stub: lurek.math.lootFromList
+do
+    local loot = lurek.math.lootFromList({
+        { id = "gold", weight = 20.0, meta = { kind = "currency" } },
+        { id = "gem", weight = 2.0, meta = { kind = "currency" } },
+    })
+    print("fromList count = " .. loot:entryCount())
+end
+
+--@api-stub: lurek.math.newPityTracker
+do
+    local loot = lurek.math.newLootTable(7)
+    loot:add("common", 100.0)
+    loot:add("rare", 0.0, { tier = "r" })
+    loot:build()
+
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    pity:notice("common")
+    local id = lurek.math.sampleWithPity(loot, pity)
+    print("pity sample = " .. tostring(id))
+end
+
+--@api-stub: lurek.math.sampleWithPity
+do
+    local loot = lurek.math.newLootTable(9)
+    loot:add("a", 1.0)
+    loot:build()
+    local pity = lurek.math.newPityTracker("a", 1)
+    local id = lurek.math.sampleWithPity(loot, pity)
+    print("sampleWithPity = " .. tostring(id))
+end
+
+--@api-stub: LLootTable:merge
+do
+    local a = lurek.math.newLootTable(9)
+    local b = lurek.math.newLootTable(10)
+    a:add("a", 1.0)
+    b:add("b", 1.0)
+    a:merge(b)
+    a:build()
+    print("merged entries = " .. tostring(a:entryCount()))
+end
+
+--@api-stub: LLootTable:save
+do
+    local a = lurek.math.newLootTable(9)
+    a:add("a", 1.0)
+    a:build()
+    local blob = a:save()
+    print("save blob = " .. tostring(blob))
+end
+
+--@api-stub: LLootTable:restore
+do
+    local a = lurek.math.newLootTable(9)
+    a:add("a", 1.0)
+    a:build()
+    local blob = a:save()
+    local restored = lurek.math.newLootTable()
+    restored:restore(blob)
+    print("restore count = " .. tostring(restored:entryCount()))
+end
+
+--@api-stub: LPityTracker:save
+do
+    local pity = lurek.math.newPityTracker("b", 1)
+    local pity_blob = pity:save()
+    print("pity save blob = " .. tostring(pity_blob))
+end
+
+--@api-stub: LPityTracker:restore
+do
+    local pity = lurek.math.newPityTracker("b", 1)
+    local pity_blob = pity:save()
+    pity:restore(pity_blob)
+    print("pity restore ok")
+end
+
+--@api-stub: lurek.math.lootFromToml
+do
+    local tbl = lurek.math.lootFromToml("save/loot_table_unit_test.toml")
+    print("lootFromToml entries = " .. tostring(tbl:entryCount()))
+end
+
+--@api-stub: LLootTable:add
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    print("add ok")
+end
+
+--@api-stub: LLootTable:build
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:build()
+    print("build ok")
+end
+
+--@api-stub: LLootTable:entryCount
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    print("entryCount = " .. tostring(tbl:entryCount()))
+end
+
+--@api-stub: LLootTable:remove
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:remove("wood")
+    print("remove ok")
+end
+
+--@api-stub: LLootTable:sample
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:build()
+    print("sample = " .. tostring(tbl:sample()))
+end
+
+--@api-stub: LLootTable:sampleN
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:add("stone", 1.0)
+    tbl:build()
+    local picks = tbl:sampleN(2)
+    print("sampleN = " .. tostring(#picks))
+end
+
+--@api-stub: LLootTable:sampleUnique
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:add("stone", 1.0)
+    tbl:build()
+    local picks = tbl:sampleUnique(2)
+    print("sampleUnique = " .. tostring(#picks))
+end
+
+--@api-stub: LLootTable:setSeed
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:setSeed(7)
+    print("setSeed ok")
+end
+
+--@api-stub: LLootTable:setWeight
+do
+    local tbl = lurek.math.newLootTable(1)
+    tbl:add("wood", 1.0)
+    tbl:setWeight("wood", 2.0)
+    print("setWeight ok")
+end
+
+--@api-stub: LLootTable:type
+do
+    local tbl = lurek.math.newLootTable(1)
+    print("type = " .. tostring(tbl:type()))
+end
+
+--@api-stub: LLootTable:typeOf
+do
+    local tbl = lurek.math.newLootTable(1)
+    print("typeOf = " .. tostring(tbl:typeOf("LLootTable")))
+end
+
+--@api-stub: LPityTracker:counter
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("counter = " .. tostring(pity:counter()))
+end
+
+--@api-stub: LPityTracker:export
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    local snapshot = pity:export()
+    print("export ok = " .. tostring(snapshot ~= nil))
+end
+
+--@api-stub: LPityTracker:import
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    local snapshot = pity:export()
+    pity:import(snapshot)
+    print("import ok")
+end
+
+--@api-stub: LPityTracker:isPrimed
+do
+    local pity = lurek.math.newPityTracker("rare", 1)
+    pity:notice("common")
+    print("isPrimed = " .. tostring(pity:isPrimed()))
+end
+
+--@api-stub: LPityTracker:notice
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    print("notice ok")
+end
+
+--@api-stub: LPityTracker:reset
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    pity:notice("common")
+    pity:reset()
+    print("reset counter = " .. tostring(pity:counter()))
+end
+
+--@api-stub: LPityTracker:type
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("type = " .. tostring(pity:type()))
+end
+
+--@api-stub: LPityTracker:typeOf
+do
+    local pity = lurek.math.newPityTracker("rare", 2)
+    print("typeOf = " .. tostring(pity:typeOf("LPityTracker")))
+end

@@ -532,14 +532,14 @@ define_tracks()
 function lurek.init()
     lurek.window.setTitle("Drift Racing — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.2, 0.1)
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/drift_racing/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.track_select_screen = ui_root:findById("track_select_screen")
     app_ui.hud = ui_root:findById("hud")
     app_ui.results_screen = ui_root:findById("results_screen")
-    
+
     app_ui.speed_label = ui_root:findById("speed_label")
     app_ui.lap_label = ui_root:findById("lap_label")
     app_ui.time_label = ui_root:findById("time_label")
@@ -549,21 +549,21 @@ function lurek.init()
     app_ui.drift_score_label = ui_root:findById("drift_score_label")
     app_ui.boost_fuel_label = ui_root:findById("boost_fuel_label")
     app_ui.boost_event_label = ui_root:findById("boost_event_label")
-    
+
     app_ui.results_pos_label = ui_root:findById("results_pos_label")
     app_ui.results_time_label = ui_root:findById("results_time_label")
     app_ui.results_best_lap_label = ui_root:findById("results_best_lap_label")
     app_ui.results_drift_label = ui_root:findById("results_drift_label")
-    
+
     app_ui.press_start = ui_root:findById("press_start")
     app_ui.press_track_select = ui_root:findById("press_track_select")
-    
+
     local function handle_action_click()
         if state == "TITLE" or state == "RESULTS" then
             state = "TRACK_SELECT"
         end
     end
-    
+
     if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
     if app_ui.press_track_select then app_ui.press_track_select:setOnClick(handle_action_click) end
 end
@@ -623,25 +623,25 @@ function lurek.process(delta)
     app_ui.track_select_screen.visible = (state == "TRACK_SELECT")
     app_ui.hud.visible = (state == "RACING")
     app_ui.results_screen.visible = (state == "RESULTS")
-    
+
     if state == "RACING" then
         app_ui.speed_label.text = string.format("Speed: %d", math.floor(tween_speed_display))
         app_ui.lap_label.text = string.format("Lap %d / %d", math.min(player.lap + 1, TOTAL_LAPS), TOTAL_LAPS)
         app_ui.time_label.text = string.format("Time: %.1fs", race_timer)
-        
+
         if best_lap < math.huge then
             app_ui.best_lap_label.visible = true
             app_ui.best_lap_label.text = string.format("Best Lap: %.1fs", best_lap)
         else
             app_ui.best_lap_label.visible = false
         end
-        
+
         local pos = get_position()
         local pos_labels = {"1st", "2nd", "3rd"}
         local pos_colors = {{1, 0.85, 0, tween_pos_alpha}, {0.75, 0.75, 0.75, tween_pos_alpha}, {0.8, 0.5, 0.2, tween_pos_alpha}}
         app_ui.position_label.text = pos_labels[pos] or tostring(pos)
         app_ui.position_label.color = pos_colors[pos] or {1, 1, 1, tween_pos_alpha}
-        
+
         if player.is_drifting then
             app_ui.drift_event_label.visible = true
             app_ui.drift_event_label.text = string.format("DRIFT! +%d", math.floor(player.drift_score))
@@ -651,14 +651,14 @@ function lurek.process(delta)
             app_ui.drift_score_label.visible = true
             app_ui.drift_score_label.text = string.format("Drift: %d pts", math.floor(player.drift_score))
         end
-        
+
         if player.boost_fuel > 0 then
             app_ui.boost_fuel_label.visible = true
             app_ui.boost_fuel_label.text = string.format("Boost: %d", player.boost_fuel)
         else
             app_ui.boost_fuel_label.visible = false
         end
-        
+
         if player.boost_active then
             app_ui.boost_event_label.visible = true
             app_ui.boost_event_label.color = {1, 0.4, 0, 0.8 + 0.2 * math.sin(race_timer * 10)}
@@ -666,22 +666,22 @@ function lurek.process(delta)
             app_ui.boost_event_label.visible = false
         end
     end
-    
+
     if state == "RESULTS" then
         local pos_labels = {"1st", "2nd", "3rd"}
         local pos_colors = {{1, 0.85, 0, 1}, {0.75, 0.75, 0.75, 1}, {0.8, 0.5, 0.2, 1}}
         app_ui.results_pos_label.text = string.format("Position: %s", pos_labels[results.position] or "???")
         app_ui.results_pos_label.color = pos_colors[results.position] or {1, 1, 1, 1}
-        
+
         app_ui.results_time_label.text = string.format("Total Time: %.1fs", results.total_time)
-        
+
         if results.best_lap < math.huge then
             app_ui.results_best_lap_label.visible = true
             app_ui.results_best_lap_label.text = string.format("Best Lap: %.1fs", results.best_lap)
         else
             app_ui.results_best_lap_label.visible = false
         end
-        
+
         app_ui.results_drift_label.text = string.format("Drift Score: %d pts", results.drift_score)
     end
 

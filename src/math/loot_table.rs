@@ -7,6 +7,7 @@
 
 use crate::math::random::RandomGenerator;
 use std::collections::HashMap;
+use toml::Value as TomlValue;
 
 // ── LootEntry ─────────────────────────────────────────────────────────────────
 
@@ -207,6 +208,167 @@ impl LootTable {
     pub fn entries(&self) -> &[LootEntry] {
         &self.entries
     }
+
+    /// Serialise the loot table and RNG state into a compact binary blob.
+    pub fn save(&self) -> Vec<u8> {
+        let mut out = Vec::new();
+
+        write_u32(&mut out, 1); // format version
+        write_u32(&mut out, self.entries.len() as u32);
+        for entry in &self.entries {
+            write_bytes(&mut out, entry.id.as_bytes());
+            out.extend_from_slice(&entry.weight.to_le_bytes());
+            write_u32(&mut out, entry.meta.len() as u32);
+            for (k, v) in &entry.meta {
+                write_bytes(&mut out, k.as_bytes());
+                write_bytes(&mut out, v.as_bytes());
+            }
+        }
+
+        write_u32(&mut out, self.prob.len() as u32);
+        for p in &self.prob {
+            out.extend_from_slice(&p.to_le_bytes());
+        }
+
+        write_u32(&mut out, self.alias.len() as u32);
+        for a in &self.alias {
+            out.extend_from_slice(&(*a as u64).to_le_bytes());
+        }
+
+        out.push(if self.built { 1u8 } else { 0u8 });
+        write_bytes(&mut out, self.rng.get_state().as_bytes());
+
+        out
+    }
+
+    /// Restore from a blob produced by [`LootTable::save`].
+    pub fn restore(&mut self, data: &[u8]) -> Result<(), String> {
+        let mut cursor = 0usize;
+        let version = read_u32(data, &mut cursor)?;
+        if version != 1 {
+            return Err(format!("loot table restore: unsupported version {version}"));
+        }
+
+        let entry_count = read_u32(data, &mut cursor)? as usize;
+        let mut entries = Vec::with_capacity(entry_count);
+        for _ in 0..entry_count {
+            let id = read_string(data, &mut cursor)?;
+            let weight = read_f64(data, &mut cursor)?;
+            let meta_count = read_u32(data, &mut cursor)? as usize;
+            let mut meta = HashMap::with_capacity(meta_count);
+            for _ in 0..meta_count {
+                let k = read_string(data, &mut cursor)?;
+                let v = read_string(data, &mut cursor)?;
+                meta.insert(k, v);
+            }
+            entries.push(LootEntry { id, weight, meta });
+        }
+
+        let prob_len = read_u32(data, &mut cursor)? as usize;
+        let mut prob = Vec::with_capacity(prob_len);
+        for _ in 0..prob_len {
+            prob.push(read_f64(data, &mut cursor)?);
+        }
+
+        let alias_len = read_u32(data, &mut cursor)? as usize;
+        let mut alias = Vec::with_capacity(alias_len);
+        for _ in 0..alias_len {
+            alias.push(read_u64(data, &mut cursor)? as usize);
+        }
+
+        let built = read_u8(data, &mut cursor)? != 0;
+        let rng_state = read_string(data, &mut cursor)?;
+        if cursor != data.len() {
+            return Err("loot table restore: trailing bytes in blob".into());
+        }
+
+        let mut rng = RandomGenerator::new();
+        rng.set_state(&rng_state)
+            .map_err(|e| format!("loot table restore: invalid RNG state: {e}"))?;
+
+        self.entries = entries;
+        self.prob = prob;
+        self.alias = alias;
+        self.built = built;
+        self.rng = rng;
+
+        if self.built {
+            if self.prob.len() != self.entries.len() || self.alias.len() != self.entries.len() {
+                return Err("loot table restore: alias/prob lengths do not match entry count".into());
+            }
+        } else {
+            self.prob.clear();
+            self.alias.clear();
+        }
+
+        Ok(())
+    }
+
+    /// Build a loot table from TOML source.
+    ///
+    /// Expected shape:
+    /// `seed = 123` (optional)
+    /// and `entries = [{ id = "x", weight = 1.0, meta = { key = "value" } }, ...]`.
+    pub fn from_toml(src: &str) -> Result<Self, String> {
+        let value: TomlValue = src
+            .parse::<TomlValue>()
+            .map_err(|e| format!("loot table from_toml: parse error: {e}"))?;
+        let root = value
+            .as_table()
+            .ok_or_else(|| "loot table from_toml: root must be a table".to_string())?;
+
+        let mut table = if let Some(seed) = root.get("seed").and_then(TomlValue::as_integer) {
+            if seed < 0 {
+                return Err("loot table from_toml: seed must be >= 0".into());
+            }
+            Self::with_seed(seed as u64)
+        } else {
+            Self::new()
+        };
+
+        let entries = root
+            .get("entries")
+            .and_then(TomlValue::as_array)
+            .ok_or_else(|| "loot table from_toml: missing entries array".to_string())?;
+
+        for (idx, entry) in entries.iter().enumerate() {
+            let entry_tbl = entry.as_table().ok_or_else(|| {
+                format!("loot table from_toml: entries[{idx}] must be a table")
+            })?;
+            let id = entry_tbl
+                .get("id")
+                .and_then(TomlValue::as_str)
+                .ok_or_else(|| format!("loot table from_toml: entries[{idx}].id must be string"))?;
+            let weight = match entry_tbl.get("weight") {
+                Some(TomlValue::Float(f)) => *f,
+                Some(TomlValue::Integer(i)) => *i as f64,
+                Some(_) => {
+                    return Err(format!(
+                        "loot table from_toml: entries[{idx}].weight must be number"
+                    ))
+                }
+                None => {
+                    return Err(format!(
+                        "loot table from_toml: entries[{idx}] missing weight"
+                    ))
+                }
+            };
+
+            let mut meta = HashMap::new();
+            if let Some(meta_tbl) = entry_tbl.get("meta").and_then(TomlValue::as_table) {
+                for (k, v) in meta_tbl {
+                    meta.insert(k.clone(), toml_value_to_string(v));
+                }
+            }
+
+            table.add(id, weight, meta);
+        }
+
+        if !table.entries.is_empty() {
+            table.build();
+        }
+        Ok(table)
+    }
 }
 
 impl Default for LootTable {
@@ -323,4 +485,79 @@ pub fn sample_with_pity<'a>(
 
     // Return a reference to the entry with the selected id
     table.entries().iter().find(|e| e.id == result_id)
+}
+
+fn toml_value_to_string(v: &TomlValue) -> String {
+    match v {
+        TomlValue::String(s) => s.clone(),
+        TomlValue::Integer(n) => n.to_string(),
+        TomlValue::Float(f) => f.to_string(),
+        TomlValue::Boolean(b) => b.to_string(),
+        TomlValue::Datetime(dt) => dt.to_string(),
+        _ => v.to_string(),
+    }
+}
+
+fn write_u32(out: &mut Vec<u8>, value: u32) {
+    out.extend_from_slice(&value.to_le_bytes());
+}
+
+fn write_bytes(out: &mut Vec<u8>, bytes: &[u8]) {
+    write_u32(out, bytes.len() as u32);
+    out.extend_from_slice(bytes);
+}
+
+fn read_u8(data: &[u8], cursor: &mut usize) -> Result<u8, String> {
+    if *cursor + 1 > data.len() {
+        return Err("loot table restore: unexpected EOF (u8)".into());
+    }
+    let v = data[*cursor];
+    *cursor += 1;
+    Ok(v)
+}
+
+fn read_u32(data: &[u8], cursor: &mut usize) -> Result<u32, String> {
+    if *cursor + 4 > data.len() {
+        return Err("loot table restore: unexpected EOF (u32)".into());
+    }
+    let mut buf = [0u8; 4];
+    buf.copy_from_slice(&data[*cursor..*cursor + 4]);
+    *cursor += 4;
+    Ok(u32::from_le_bytes(buf))
+}
+
+fn read_u64(data: &[u8], cursor: &mut usize) -> Result<u64, String> {
+    if *cursor + 8 > data.len() {
+        return Err("loot table restore: unexpected EOF (u64)".into());
+    }
+    let mut buf = [0u8; 8];
+    buf.copy_from_slice(&data[*cursor..*cursor + 8]);
+    *cursor += 8;
+    Ok(u64::from_le_bytes(buf))
+}
+
+fn read_f64(data: &[u8], cursor: &mut usize) -> Result<f64, String> {
+    if *cursor + 8 > data.len() {
+        return Err("loot table restore: unexpected EOF (f64)".into());
+    }
+    let mut buf = [0u8; 8];
+    buf.copy_from_slice(&data[*cursor..*cursor + 8]);
+    *cursor += 8;
+    Ok(f64::from_le_bytes(buf))
+}
+
+fn read_bytes<'a>(data: &'a [u8], cursor: &mut usize) -> Result<&'a [u8], String> {
+    let len = read_u32(data, cursor)? as usize;
+    if *cursor + len > data.len() {
+        return Err("loot table restore: unexpected EOF (bytes)".into());
+    }
+    let out = &data[*cursor..*cursor + len];
+    *cursor += len;
+    Ok(out)
+}
+
+fn read_string(data: &[u8], cursor: &mut usize) -> Result<String, String> {
+    let bytes = read_bytes(data, cursor)?;
+    String::from_utf8(bytes.to_vec())
+        .map_err(|_| "loot table restore: invalid UTF-8 in string".to_string())
 }

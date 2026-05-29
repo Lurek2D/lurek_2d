@@ -52,6 +52,7 @@
 - [lurek.asset](#lurekasset)
   - [LAssetHandle](#lassethandle)
 - [lurek.audio](#lurekaudio)
+  - [LBeatClock](#lbeatclock)
   - [LBus](#lbus)
   - [LDecoder](#ldecoder)
   - [LMidiPlayer](#lmidiplayer)
@@ -181,6 +182,8 @@
   - [LCatmullRom](#lcatmullrom)
   - [LCircle](#lcircle)
   - [LHermite](#lhermite)
+  - [LLootTable](#lloottable)
+  - [LPityTracker](#lpitytracker)
   - [LRandomGenerator](#lrandomgenerator)
   - [LRectPacker](#lrectpacker)
   - [LSpatialHash](#lspatialhash)
@@ -315,6 +318,7 @@
 - [lurek.tween](#lurektween)
   - [LSpring](#lspring)
   - [LTween](#ltween)
+  - [LTweenChain](#ltweenchain)
   - [LTweenParallel](#ltweenparallel)
   - [LTweenSequence](#ltweensequence)
   - [LTweenState](#ltweenstate)
@@ -1109,6 +1113,7 @@ lurek.audio.isPaused(source: LSource|integer) -> boolean -- Returns whether a so
 lurek.audio.isPlaying(source: LSource|integer) -> boolean -- Returns whether a source is currently playing.
 lurek.audio.isStopped(source: LSource|integer) -> boolean -- Returns whether a source is currently stopped.
 lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData) -- Mixes the samples of `src` into `dest` in-place (both must have the same format).
+lurek.audio.newBeatClock(bpm: number, [beats_per_bar]: integer) -> LBeatClock -- Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
 lurek.audio.newBus(name: string) -> LBus -- Creates a new audio mixing bus for grouping and controlling sources.
 lurek.audio.newDecoder(source: string, [buffersize]: integer) -> LDecoder -- Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
 lurek.audio.newMidiPlayer([path]: string) -> LMidiPlayer -- Creates a new MIDI player instance, optionally loading a file immediately.
@@ -1152,6 +1157,29 @@ lurek.audio.stop(source: LSource|integer) -- Stops playback of a source and rese
 lurek.audio.stopAll() -- Stops all audio sources and resets their positions.
 lurek.audio.stopQueueable(qsource_id: integer) -- Stops playback of a queueable audio source.
 lurek.audio.tell(source: LSource|integer) -> number -- Returns the current playback position of a source in seconds.
+```
+
+### LBeatClock
+
+```lua
+LBeatClock:beatsPerBar() -> integer -- Returns the number of beats per bar.
+LBeatClock:bpm() -> number -- Returns the current BPM.
+LBeatClock:drainFired() -> table -- Returns and removes all scheduled beats that have now passed.
+LBeatClock:isRunning() -> boolean -- Returns true when the clock is running.
+LBeatClock:position() -> table -- Returns the current beat position.
+LBeatClock:quantise(beat: number, grid: number) -> number -- Quantises `beat` to the nearest `grid` beat grid (static utility).
+LBeatClock:reset() -- Resets elapsed time to zero without changing running state.
+LBeatClock:scheduleAt(beat: number) -> boolean -- Schedules a one-shot event at `beat`. Returns true when the beat is in the future.
+LBeatClock:secondsPerBeat() -> number -- Returns seconds-per-beat at the current BPM.
+LBeatClock:secondsToNextBeat() -> number -- Returns seconds until the next whole beat boundary.
+LBeatClock:setBeatsPerBar(beats: integer) -- Changes the time-signature beats-per-bar.
+LBeatClock:setBpm(bpm: number) -- Sets a new BPM. Elapsed time is preserved.
+LBeatClock:start() -- Starts the clock.
+LBeatClock:stop() -- Pauses the clock.
+LBeatClock:tap(wall_time_secs: number) -> number -- Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).
+LBeatClock:tick(dt: number) -> table -- Advances the clock by `dt` seconds. Returns an array of whole-beat crossings.
+LBeatClock:type() -> string -- Returns the Lua-visible type name.
+LBeatClock:typeOf(name: string) -> boolean -- Returns whether this handle matches the given type name.
 ```
 
 ### LBus
@@ -3883,6 +3911,8 @@ lurek.math.max(...: number) -> number -- Returns the largest supplied value.
 lurek.math.min(...: number) -> number -- Returns the smallest supplied value.
 lurek.math.newBezierCurve(points: table) -> LBezierCurve -- Creates a Bezier curve from a flat point table.
 lurek.math.newCircle(x: number, y: number, radius: number) -> LCircle -- Creates a circle primitive. This function is exposed to Lua scripts.
+lurek.math.newLootTable([seed]: integer) -> LLootTable -- Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
+lurek.math.newPityTracker(target_id: string, threshold: integer) -> LPityTracker -- Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.
 lurek.math.newRandomGenerator([seed]: integer) -> LRandomGenerator -- Creates a deterministic random generator with an optional seed.
 lurek.math.newRectPacker(width: integer, height: integer, [padding]: integer) -> LRectPacker -- Creates a rectangle packer. This function is exposed to Lua scripts.
 lurek.math.newSpatialHash(cell_size: number) -> LSpatialHash -- Creates a spatial hash index with a cell size.
@@ -3991,6 +4021,35 @@ LCircle:y() -> number -- Returns this circle center y coordinate.
 LHermite:sample(t: number) -> number -- Samples the spline at normalized parameter `t`.
 LHermite:type() -> string -- Returns the Lua-visible type name for this spline handle.
 LHermite:typeOf(name: string) -> boolean -- Returns whether this spline handle matches a supported type name.
+```
+
+### LLootTable
+
+```lua
+LLootTable:add(id: string, weight: number, [meta]: table) -- Adds an entry to the table. Re-build is required before the next sample.
+LLootTable:build() -- Rebuilds the alias table after mutations. Call before sampling.
+LLootTable:entryCount() -> integer -- Returns the number of entries in the table.
+LLootTable:remove(id: string) -> boolean -- Removes an entry by id. Returns true when found.
+LLootTable:sample() -> table? -- Samples one entry in O(1). Returns nil when the table is empty.
+LLootTable:sampleN(n: integer) -> table -- Samples n entries with replacement. Returns an array table.
+LLootTable:sampleUnique(n: integer) -> table -- Samples up to n unique entries (by id). Returns an array table.
+LLootTable:setSeed(seed: integer) -- Sets the RNG seed. The alias table remains valid.
+LLootTable:setWeight(id: string, weight: number) -> boolean -- Updates the weight of an existing entry. Returns true when found.
+LLootTable:type() -> string -- Returns the Lua-visible type name.
+LLootTable:typeOf(name: string) -> boolean -- Returns whether this handle matches the given type name.
+```
+
+### LPityTracker
+
+```lua
+LPityTracker:counter() -> integer -- Returns the current miss counter.
+LPityTracker:export() -> string -- Serialises pity state to a binary blob.
+LPityTracker:import(blob: string) -- Restores pity state from a blob produced by `export`.
+LPityTracker:isPrimed() -> boolean -- Returns true when the guaranteed drop is due.
+LPityTracker:notice(result_id: string) -> boolean -- Notifies the tracker of a sample result id.
+LPityTracker:reset() -- Resets counter and primed state.
+LPityTracker:type() -> string -- Returns the Lua-visible type name.
+LPityTracker:typeOf(name: string) -> boolean -- Returns whether this handle matches the given type name.
 ```
 
 ### LRandomGenerator
@@ -5665,12 +5724,16 @@ lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, c
 ```lua
 LProvinceRegistry:adjacencies() -> table -- Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representi...
 LProvinceRegistry:borderSegments() -> table -- Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1)...
+LProvinceRegistry:findIsolatedProvinces(owner_attr: string) -> integer[] -- Returns provinces that have no adjacent province with the same owner attribute.
+LProvinceRegistry:findRoute(from_id: integer, to_id: integer, [cost_fn]: function) -> table? -- Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+LProvinceRegistry:findRoutes(pairs: table, [cost_fn]: function) -> table -- Finds routes for a batch of `{from, to}` pairs.
 LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, [pixel_size]: number) -> number, number, number -- Computes camera position and zoom so the entire province map fits within the given screen dimensions.
 LProvinceRegistry:getAt(x: integer, y: integer) -> integer -- Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wastelan...
 LProvinceRegistry:getBorderClass(a: integer, b: integer) -> integer -- Backward-compatible alias for getBorderType. Returns the border type ID.
 LProvinceRegistry:getBorderPairStyle(a: integer, b: integer) -> table -- Returns the style override for a specific adjacency pair, or nil when unset.
 LProvinceRegistry:getBorderType(a: integer, b: integer) -> integer -- Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
 LProvinceRegistry:getChangesSince(revision: integer) -> table -- Returns all province changes that occurred after the given revision. Each entry contains the revision numbe...
+LProvinceRegistry:getConnectedComponents() -> table -- Returns connected components in the province adjacency graph.
 LProvinceRegistry:getHeight() -> integer -- Returns the height of the province grid in cells (pixels of the source PNG).
 LProvinceRegistry:getMapMode() -> string -- Returns the name of the currently active map mode.
 LProvinceRegistry:getName() -> string -- Returns the string name used to identify this registry in the province system.
@@ -5679,6 +5742,7 @@ LProvinceRegistry:getProvince(id: integer) -> table -- Returns a snapshot table 
 LProvinceRegistry:getRevision() -> integer -- Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog cha...
 LProvinceRegistry:getWidth() -> integer -- Returns the width of the province grid in cells (pixels of the source PNG).
 LProvinceRegistry:importMetadataFromFiles(opts: table) -> table -- Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV...
+LProvinceRegistry:isConnected(from_id: integer, to_id: integer) -> boolean -- Returns true when there is at least one route between two provinces.
 LProvinceRegistry:provinceCount() -> integer -- Returns the total number of distinct provinces in this registry (excluding ID 0).
 LProvinceRegistry:provinceIds() -> integer[] -- Returns a sequential table of all province IDs in this registry.
 LProvinceRegistry:provinceSpans() -> table -- Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one provin...
@@ -5700,6 +5764,7 @@ LProvinceRegistry:setMapMode(name: string) -> boolean -- Switches the active map
 LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean -- Sets the political map color for a province. Used in political map mode rendering and change tracking.
 LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -> boolean -- Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in te...
 LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -> boolean -- Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discove...
+LProvinceRegistry:totalAttrForOwner(owner_attr: string, owner_val: string, sum_attr: string) -> number -- Sums a numeric attribute for all provinces with matching owner value.
 LProvinceRegistry:type() -> string -- Returns the type name string for this userdata object.
 LProvinceRegistry:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
 ```
@@ -6868,6 +6933,7 @@ lurek.tween.cancelAll() -- Immediately cancels all active tweens, sequences, par
 lurek.tween.delay(seconds: number, [cb]: function) -> LTweenSequence -- Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
 lurek.tween.getActiveCount() -> number -- Returns the total number of currently active tweens, sequences, and parallels.
 lurek.tween.getEasingNames() -> string[] -- Returns an array of all available easing function names, including both built-in and custom-registered easi...
+lurek.tween.newChain([looping]: boolean) -> LTweenChain -- Creates a sequential tween chain for cinematic value-interpolation sequences.
 lurek.tween.newState(duration: number, [easing]: string) -> LTweenState -- Creates a standalone tween state for manual interpolation. Useful when you need eased progress without auto...
 lurek.tween.parallel() -> LTweenParallel -- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to r...
 lurek.tween.registerEasing(name: string, f: function) -- Registers a custom easing function by name. The function receives a progress value (0..1) and must return a...
@@ -6917,6 +6983,24 @@ LTween:setRepeat(n: integer) -- Sets how many times the tween should repeat afte
 LTween:setYoyo(enabled: boolean) -- Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
 LTween:type() -> string -- Returns the type name of this object.
 LTween:typeOf(name: string) -> boolean -- Checks whether this object matches the given type name.
+```
+
+### LTweenChain
+
+```lua
+LTweenChain:clear() -- Removes all steps and resets the cursor.
+LTweenChain:cursor() -> integer -- Returns the one-based index of the currently active step.
+LTweenChain:isFinished() -> boolean -- Returns true when the non-looping chain has completed all steps.
+LTweenChain:isLooping() -> boolean -- Returns true when the chain loops.
+LTweenChain:jumpTo(step: integer) -- Jumps to the given step (one-based).
+LTweenChain:len() -> integer -- Returns the number of steps in the chain.
+LTweenChain:push(opts: table) -> integer -- Appends a step to the chain.
+LTweenChain:reset() -- Resets the chain to step 0.
+LTweenChain:setLooping(looping: boolean) -- Enables or disables chain looping.
+LTweenChain:tick(dt: number) -> table -- Advances the chain and returns an array of completed step events.
+LTweenChain:type() -> string -- Returns the Lua-visible type name.
+LTweenChain:typeOf(name: string) -> boolean -- Returns whether this handle matches the given type name.
+LTweenChain:value() -> number -- Returns the current interpolated value of the active step.
 ```
 
 ### LTweenParallel

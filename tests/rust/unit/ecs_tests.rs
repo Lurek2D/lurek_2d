@@ -1,13 +1,9 @@
-//! INTERNAL ONLY: Rust-only tests for ECS internals that are not directly asserted through
-//! `lurek.ecs.*`.
-//!
-//! Public ECS-facing behaviour is covered by `tests/lua/unit/test_ecs_unit.lua`.
-//! The remaining Rust tests keep ID packing and relationship-manager internals.
+//! File: tests/rust/unit/ecs_tests.rs
 
 use lurek2d::ecs::relationships::RelationshipManager;
 use lurek2d::ecs::universe::Universe;
 
-// ── universe — generational ID packing ───────────────────────────────────────
+// â”€â”€ universe â€” generational ID packing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod universe_tests {
     use super::*;
@@ -36,7 +32,7 @@ mod universe_tests {
         assert_eq!(Universe::unpack_gen(id), 255);
     }
 
-    // ── system phase indices ─────────────────────────────────────────────────
+    // â”€â”€ system phase indices â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn get_sorted_system_indices_for_phase_empty_world() {
@@ -52,7 +48,7 @@ mod universe_tests {
         assert!(idx.is_empty());
     }
 
-    // ── dirty set ────────────────────────────────────────────────────────────
+    // â”€â”€ dirty set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn dirty_entities_empty_on_new_world() {
@@ -74,7 +70,7 @@ mod universe_tests {
         assert!(events.1.is_empty());
     }
 
-    // ── get_sorted_system_indices_for_phase returns sorted order ────────────
+    // â”€â”€ get_sorted_system_indices_for_phase returns sorted order â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Verify that phase filtering works with only the internal priority/phase vecs
     /// (not the Lua store), by poking private state through the public inspection API.
@@ -82,7 +78,7 @@ mod universe_tests {
     fn sorted_indices_respect_priority_without_lua() {
         // We cannot register real Lua systems without a VM, so this test just
         // confirms get_sorted_system_indices_for_phase returns an empty Vec for a
-        // fresh Universe — the full priority-order contract is covered by Lua tests.
+        // fresh Universe â€” the full priority-order contract is covered by Lua tests.
         let u = Universe::new();
         let pre = u.get_sorted_system_indices_for_phase("pre_update");
         let tick = u.get_sorted_system_indices_for_phase("update");
@@ -93,7 +89,7 @@ mod universe_tests {
     }
 }
 
-// ── relationships ────────────────────────────────────────────────────────────
+// â”€â”€ relationships â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod relationships_tests {
     use super::*;

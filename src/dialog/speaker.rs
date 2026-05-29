@@ -1,9 +1,6 @@
-//! Speaker registry and character metadata used across dialog trees.
-//!
-//! - `Speaker` holds a display name, portrait asset path, and voice bank key.
-//! - The global `SpeakerRegistry` maps speaker IDs to `Speaker` values.
-//! - Speakers are registered from TOML at load time or dynamically via `lurek.dialog`.
-//! - Speaker IDs are stable string slugs (e.g. `"npc_merchant"`) not numeric indices.
+//! - Provides character identity records used by dialogue nodes to resolve display and voice context.
+//! - Centralizes participant lookup in a registry keyed by stable speaker identifiers across a session.
+//! - Keeps conversation content decoupled from presentation assets by storing metadata separately from tree flow.
 
 use std::collections::HashMap;
 

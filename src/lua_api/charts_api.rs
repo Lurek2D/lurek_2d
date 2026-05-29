@@ -1,9 +1,4 @@
-//! `lurek.charts` -- Chart creation, configuration, and rendering bindings.
-//!
-//! - Registers `lurek.charts.*` functions and types via `register()`.
-//! - Userdata types: `LuaLineChart`, `LuaBarChart`, `LuaScatterPlot`.
-//! - Userdata types: `LuaPieChart`, `LuaAreaChart`.
-//! - Bridges 39 Lua-callable methods via `mlua`.
+//! File: src/lua_api/charts_api.rs
 
 use super::SharedState;
 use crate::charts::config::{ChartConfig, ChartMargin, ChartSeries, DEFAULT_PALETTE};
@@ -349,7 +344,7 @@ impl LuaUserData for LuaScatterPlot {
 impl LuaUserData for LuaPieChart {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addSlice --
-        /// Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
+        /// Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
         /// @param | label | string | Display label for the slice.
         /// @param | value | number | Numeric value determining the slice proportion.
         /// @param | color | table|nil | Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.

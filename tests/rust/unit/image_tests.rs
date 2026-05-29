@@ -1,4 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for image internals that are not exposed as `lurek.image.*`.
+//! File: tests/rust/unit/image_tests.rs
 
 use lurek2d::image::*;
 use lurek2d::render::renderer::RenderCommand;

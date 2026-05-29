@@ -1,8 +1,4 @@
-//! `lurek.layout` — Lua bindings for graph/tree/DAG layout algorithms.
-//!
-//! - Registers `lurek.layout.*` functions and types via `register()`.
-//! - Bridges 5 Lua-callable methods via `mlua`.
-//! - See `docs/specs/layout.md` for the full API specification.
+//! File: src/lua_api/layout_api.rs
 
 use super::SharedState;
 use crate::layout::{
@@ -90,7 +86,7 @@ fn parse_config(tbl: Option<LuaTable>) -> LayoutConfig {
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let layout_table = lua.create_table()?;
 
-    // lurek.layout.tree(nodes, children, root, config?) → result
+    // lurek.layout.tree(nodes, children, root, config?) â†’ result
     /// Lays out a tree using the Reingold-Tilford algorithm.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | children | table | Map of parent node ID to array of child node IDs.
@@ -129,7 +125,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
 
-    // lurek.layout.dag(nodes, edges, config?) → result
+    // lurek.layout.dag(nodes, edges, config?) â†’ result
     /// Lays out a DAG using the Sugiyama layered algorithm.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | edges | table | Array of edge tables with from, to, weight fields.
@@ -148,7 +144,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
 
-    // lurek.layout.force(nodes, edges, config?) → result
+    // lurek.layout.force(nodes, edges, config?) â†’ result
     /// Lays out a graph using force-directed Fruchterman-Reingold simulation.
     /// @param | nodes | table | Array of node tables with id, width, height, label fields.
     /// @param | edges | table | Array of edge tables with from, to, weight fields.
@@ -179,7 +175,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
 
-    // lurek.layout.snapToGrid(result, gridSize) → result
+    // lurek.layout.snapToGrid(result, gridSize) â†’ result
     /// Snaps all node positions to the nearest grid point.
     /// @param | result | table | A layout result table with nodes array.
     /// @param | gridSize | number | Grid cell size in pixels.
@@ -195,7 +191,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // lurek.layout.centerInArea(result, width, height) → result
+    // lurek.layout.centerInArea(result, width, height) â†’ result
     /// Centers the layout within a given area.
     /// @param | result | table | A layout result table with nodes array.
     /// @param | width | number | Target area width.

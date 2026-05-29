@@ -338,24 +338,24 @@ function lurek.init()
         colorEnd   = {0.8, 0.8, 0.8, 0.0},
     })
     reset_game()
-    
+
     lurek.ui.loadLayoutFile("content/games/action/vertical_climber/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.title_highscore = ui_root:findById("title_highscore")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.go_score = ui_root:findById("go_score")
     app_ui.go_new_high = ui_root:findById("go_new_high")
     app_ui.go_restart = ui_root:findById("go_restart")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.hud_score = ui_root:findById("hud_score")
     app_ui.hud_best = ui_root:findById("hud_best")
     app_ui.hud_height = ui_root:findById("hud_height")
-    
+
     app_ui.fps_text = ui_root:findById("fps_text")
 end
 
@@ -590,7 +590,7 @@ function lurek.process(dt)
     -- UI Sync
     if app_ui then
         app_ui.fps_text.text = "FPS: " .. lurek.timer.getFPS()
-        
+
         app_ui.title_screen.visible = (game_state == STATE.TITLE)
         if game_state == STATE.TITLE then
             if high_score > 0 then
@@ -602,7 +602,7 @@ function lurek.process(dt)
             local blink = math.floor(title_blink * 2) % 2 == 0
             app_ui.press_start.visible = blink
         end
-        
+
         app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
         if game_state == STATE.GAME_OVER then
             app_ui.go_score.text = "Score: " .. score
@@ -610,7 +610,7 @@ function lurek.process(dt)
             local blink = math.floor(title_blink * 2) % 2 == 0
             app_ui.go_restart.visible = blink
         end
-        
+
         app_ui.hud.visible = (game_state == STATE.PLAYING)
         if game_state == STATE.PLAYING then
             app_ui.hud_score.text = "Score: " .. score

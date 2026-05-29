@@ -1,7 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for `lurek2d::patterns::graph::Graph`.
-//!
-//! Public graph behavior reachable through `lurek.graph.*` is covered in Lua tests.
-//! These Rust-only checks cover internal adjacency, BFS/DFS, and node/edge invariants.
+//! File: tests/rust/unit/graph_tests.rs
 
 use lurek2d::patterns::graph::Graph;
 

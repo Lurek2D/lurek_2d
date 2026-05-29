@@ -3,7 +3,7 @@
 ## TL;DR
 
 - The `effect` module is a comprehensive Platform Services component responsible for the engine's post-processing and screen-space visual effects pipeline.
-- **Note:** Weather, atmosphere, and screen overlay effects have been extracted to `src/overlay/` — see [`docs/specs/overlay.md`](overlay.md).
+- **Note:** Weather, atmosphere, and screen overlay effects have been extracted to `src/overlay/` â€” see [`docs/specs/overlay.md`](overlay.md).
 
 ## General Info
 
@@ -16,211 +16,190 @@
 
 ## Summary
 
-It provides developers with the tools to significantly enhance the visual fidelity of their games through composable, full-screen shaders and overlays. The core of this pipeline is the `PostFxStack`, which manages an ordered list of `PostFxEffect` instances. These effects process the rendered frame buffer sequentially before it is presented to the screen. The built-in effects catalog is extensive, offering varied blur algorithms (Gaussian, box, radial), bloom (combining thresholding, blurring, and additive blending), LUT-based color grading, lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation. Custom shader passes are also fully supported via explicit shader handles.
+The `effect` module manages visual post-effect composition data and lifecycle, including stack ordering, effect instances, presets, and conversion into render-command level apply/capture passes. It focuses on effect state orchestration rather than direct GPU execution.
 
-Operating parallel to the shader pipeline is the `Overlay` controller. It manages screen-space, CPU-driven visual states that overlay the world, such as ambient lighting tints driven by a time-of-day curve (dawn, day, dusk, night) and complex weather particle simulations (rain, snow, hail, dust, leaves, ash, pollen). The `Overlay` system also handles instantaneous atmospheric triggers, including screen flashes, camera shakes with deterministic PRNG offsets, lightning flashes, and fade-in/fade-out transitions. A specialized `WaterOverlay` adds animated water surface distortion with configurable amplitude and depth-based color shifting.
+Core responsibilities are partitioned across submodules: `effect` and `effect_type` define instance/state and built-in identifiers, `stack` manages ordered effect collections, `presets` supplies reusable configurations, `image_effect` groups image-scoped effect sets, and `render`/`draw` adapt effect state into command-level outputs consumed by the renderer.
 
-For bridging scene changes, the module includes a `ScreenTransition` state machine offering classic visual transitions (fade, wipe, iris wipe, dissolve) with time-based playback and reverse capabilities. For scenarios where GPU post-processing is unnecessary or unavailable, `ImageEffect` provides CPU-side per-pixel operations. The entire module is heavily configurable via Lua scripts through the `lurek.effect.*` namespace, allowing for dynamic, real-time adjustments to effect stacks, preset loading, and weather conditions.
+A key architectural property is data-driven configuration. Effects are represented as configurable descriptors and parameter maps, enabling Lua and tooling workflows to compose visual pipelines without hardcoding render paths per effect.
 
-## Source Documentation
+The module should continue to own effect lifecycle and stack policy (including expiry/removal timing), while the renderer remains responsible for executing the generated commands on GPU resources.
 
-### `draw.rs`
+Implementation detail and boundary guarantees for effect: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: draw.rs: Render a preview image summarizing the current post-FX stack state.; effect.rs: Post-processing effect instance holding type, parameters, and enabled state.; effect_type.rs: Post-processing effect type enumeration and name registry.; image_effect.rs: Image-scoped post-processing effect pipeline that groups and orders shader passes.; mod.rs: Visual effect sub-system: particle effects, screen-space post-processing, and shakes.; presets.rs: Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).; render.rs: Render-command integration for the post-effects stack.; stack.rs: Ordered post-processing effect stack with per-entry enable flags.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Files
+
+### draw.rs
+
 - Render a preview image summarizing the current post-FX stack state.
 - Produce a solid-color thumbnail indicating whether any effects are active.
 - Image colour differs between an empty stack and a stack with at least one enabled effect.
 
-### `effect.rs`
+### effect.rs
+
 - Post-processing effect instance holding type, parameters, and enabled state.
 - Built-in effects carry default params; custom effects bind to an explicit shader id.
 - Parameter accessors for reading, writing, and listing scalar uniforms.
 
-### `effect_type.rs`
+### effect_type.rs
+
 - Post-processing effect type enumeration and name registry.
 - Canonical lowercase name mapping for Lua-facing effect lookup.
 - Debug label generation for renderer diagnostics.
 - Default parameter tables for each built-in effect.
 - Built-in effect catalog excluding the custom shader pass.
 
-### `image_effect.rs`
+### image_effect.rs
+
 - Image-scoped post-processing effect pipeline that groups and orders shader passes.
 - Provides add, remove, lookup-by-index/name, and clear operations on owned or shared effects.
 - Converts the active pipeline into renderer-ready `ShaderPassDescriptor` sequences.
 
-### `mod.rs`
+### mod.rs
+
 - Visual effect sub-system: particle effects, screen-space post-processing, and shakes.
 - Orchestrates `particle`, `tween`, `dsp` integrations for composite effects.
 - All effects are data-driven: configured from Lua tables, not hard-coded structs.
 - Effects are lifetime-managed; expired effects are removed at the start of each tick.
 - No GPU work is performed here — effect data is converted to `RenderCommand`s.
 
-### `presets.rs`
+### presets.rs
+
 - Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
 - Preset construction with viewport-sized stack initialization.
 - Static name lookup for canonical preset identifiers.
 
-### `render.rs`
+### render.rs
+
 - Render-command integration for the post-effects stack.
 - Emits begin/end/apply command sequences consumed by the renderer.
 - Skips command generation when no effects are enabled.
 
-### `stack.rs`
+### stack.rs
+
 - Ordered post-processing effect stack with per-entry enable flags.
 - Index-based effect references aligned with a parallel enabled vector.
 - Stack manipulation: add, remove, insert, reorder, deduplicate.
 - Query helpers for enabled subset, dimensions, and positional lookup.
 - Debug visualization renderers for stack state, catalogs, parameters, and type bars.
 
-## Types
+## Lua API Ref
 
-- `PostFxEffect` (`struct`, `effect.rs`): One post-processing pass with effect type, parameter map, enabled flag, and optional custom shader handle.
-- `PostFxEffectType` (`enum`, `effect_type.rs`): Enum naming the built-in post-processing pass types and their default parameter sets.
-- `ImageEffect` (`struct`, `image_effect.rs`): Ordered per-image effect chain that converts to lightweight shader pass descriptors.
-- `EffectPreset` (`struct`, `presets.rs`): A fully configured preset: an ordered stack of effects with their data.
-- `PostFxStack` (`struct`, `stack.rs`): Ordered full-frame post-processing pipeline with per-pass enabled flags and capture dimensions.
-
-## Functions
-
-- `PostFxStack::draw_to_image` (`draw.rs`): Renders a solid-color preview image that reflects whether any stack effects are enabled.
-- `PostFxEffect::new` (`effect.rs`): Creates an enabled built-in effect with its default parameter set.
-- `PostFxEffect::new_custom` (`effect.rs`): Creates an enabled custom effect bound to an explicit shader id.
-- `PostFxEffect::set_parameter` (`effect.rs`): Inserts or replaces one scalar effect parameter.
-- `PostFxEffect::get_parameter` (`effect.rs`): Returns a scalar effect parameter or the caller-provided fallback.
-- `PostFxEffect::has_parameter` (`effect.rs`): Returns whether a named scalar parameter is present.
-- `PostFxEffect::get_parameter_names` (`effect.rs`): Returns the sorted list of parameter names defined on this effect.
-- `PostFxEffect::get_type_name` (`effect.rs`): Returns the lowercase effect type name used by renderer-facing code.
-- `PostFxEffect::is_built_in` (`effect.rs`): Returns whether this effect uses a built-in effect type.
-- `PostFxEffect::new_disabled` (`effect.rs`): Creates a built-in effect in the disabled state.
-- `PostFxEffect::set_param` (`effect.rs`): Convenience alias for setting one scalar effect parameter.
-- `PostFxEffect::get_param_or` (`effect.rs`): Convenience alias for fetching one scalar effect parameter with a fallback.
-- `PostFxEffectType::from_name` (`effect_type.rs`): Resolves a lowercase built-in effect name into the matching enum entry.
-- `PostFxEffectType::built_in_names` (`effect_type.rs`): Returns the lowercase names for all non-custom built-in effect types.
-- `PostFxEffectType::name` (`effect_type.rs`): Returns the lowercase canonical name for this effect type.
-- `PostFxEffectType::debug_label` (`effect_type.rs`): Returns the uppercase debug label used in renderer diagnostics.
-- `PostFxEffectType::default_params` (`effect_type.rs`): Returns the default scalar parameter map for this effect type.
-- `ImageEffect::new` (`image_effect.rs`): Creates an empty image effect pipeline with the given debug name.
-- `ImageEffect::add_effect` (`image_effect.rs`): Appends a new owned effect instance to the pipeline.
-- `ImageEffect::add_effect_rc` (`image_effect.rs`): Appends a shared effect handle to the pipeline without cloning it.
-- `ImageEffect::get_effect_by_index` (`image_effect.rs`): Returns the shared effect handle at the given zero-based index.
-- `ImageEffect::get_effect_by_name` (`image_effect.rs`): Returns the first effect whose type name matches the requested name.
-- `ImageEffect::remove_by_index` (`image_effect.rs`): Removes the effect at the given zero-based index.
-- `ImageEffect::remove_by_name` (`image_effect.rs`): Removes the first effect whose type name matches the requested name.
-- `ImageEffect::clear` (`image_effect.rs`): Removes every effect from the pipeline.
-- `ImageEffect::effect_count` (`image_effect.rs`): Returns the number of effects currently stored in the pipeline.
-- `ImageEffect::to_passes` (`image_effect.rs`): Converts the pipeline into renderer shader pass descriptors.
-- `preset_names` (`presets.rs`): Returns a list of all available preset names.
-- `build_preset` (`presets.rs`): Builds a named preset stack, returning `None` when the name is unknown.
-- `PostFxStack::begin_capture_command` (`render.rs`): Builds the command that starts post-effect capture for a stack id.
-- `PostFxStack::end_capture_command` (`render.rs`): Builds the command that ends post-effect capture for a stack id.
-- `PostFxStack::apply_command` (`render.rs`): Builds the command that applies the captured stack output at the stack dimensions.
-- `PostFxStack::generate_render_commands` (`render.rs`): Emits the capture and apply command sequence when the stack has enabled effects.
-- `PostFxStack::new` (`stack.rs`): Creates an empty post-effect stack for the given render size.
-- `PostFxStack::add` (`stack.rs`): Appends an enabled effect index to the end of the stack.
-- `PostFxStack::remove` (`stack.rs`): Removes the first stack entry that references the given effect index.
-- `PostFxStack::insert` (`stack.rs`): Inserts an enabled effect index at a one-based stack position.
-- `PostFxStack::set_enabled` (`stack.rs`): Sets the enable flag for the first stack entry that references the effect index.
-- `PostFxStack::is_enabled` (`stack.rs`): Returns the enable flag for the first stack entry that references the effect index.
-- `PostFxStack::get_effect_count` (`stack.rs`): Returns the number of stack entries.
-- `PostFxStack::get_effect` (`stack.rs`): Returns the effect index at a one-based stack position.
-- `PostFxStack::enabled_effects` (`stack.rs`): Returns the effect indices whose stack entries are currently enabled.
-- `PostFxStack::resize` (`stack.rs`): Updates the target render dimensions stored on the stack.
-- `PostFxStack::get_width` (`stack.rs`): Returns the target render width.
-- `PostFxStack::get_height` (`stack.rs`): Returns the target render height.
-- `PostFxStack::get_dimensions` (`stack.rs`): Returns the target render dimensions as `(width, height)`.
-- `PostFxStack::len` (`stack.rs`): Returns the number of stack entries.
-- `PostFxStack::is_empty` (`stack.rs`): Returns whether the stack has no entries.
-- `PostFxStack::clear` (`stack.rs`): Removes every stack entry and enable flag.
-- `PostFxStack::dedup_indices` (`stack.rs`): Removes duplicate effect indices while preserving first occurrence order.
-- `PostFxStack::draw_info_to_image` (`stack.rs`): Renders a debug overview of stack entries and their enabled state.
-- `PostFxStack::draw_stack_management_to_image` (`stack.rs`): Renders a labeled debug panel for stack management operations.
-- `PostFxStack::draw_effect_catalog_to_image` (`stack.rs`): Renders a tiled debug catalog for effect labels and representative colors.
-- `PostFxStack::draw_effect_parameters_to_image` (`stack.rs`): Renders a labeled debug panel showing effect parameter names and values.
-- `PostFxStack::draw_effect_type_bars_to_image` (`stack.rs`): Renders one colored debug row per effect type together with its parameter count.
-- `PostFxStack::draw_effect_types_to_image` (`stack.rs`): Renders a debug catalog for a list of effect types using synthetic colors.
-
-## Lua API Reference
-
-- Binding path(s): `src/lua_api/effect_api.rs`
+- Binding: `src/lua_api/effect_api.rs`
 - Namespace: `lurek.effect`
 
-### Module Functions
-- `lurek.effect.newEffect`: Creates a built-in post-processing effect by type name.
-- `lurek.effect.newCustomEffect`: Creates a custom post-processing effect that references an existing shader id.
-- `lurek.effect.newStack`: Creates a post-processing stack using optional dimensions or the current window size.
-- `lurek.effect.newPresetStack`: Creates a named preset post-processing stack with optional dimensions.
-- `lurek.effect.newPass`: Creates a custom post-processing pass from an existing shader id.
+### Functions
+
 - `lurek.effect.getEffectTypes`: Returns all built-in post-processing effect type names.
 - `lurek.effect.getPresetNames`: Returns all built-in post-processing preset names.
-- `lurek.effect.newImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
-- `lurek.effect.setShaderErrorDisplay`: Enables or disables renderer shader error display overlays.
 - `lurek.effect.getShaderErrorDisplay`: Returns whether renderer shader error display overlays are enabled.
+- `lurek.effect.newCustomEffect`: Creates a custom post-processing effect that references an existing shader id.
+- `lurek.effect.newEffect`: Creates a built-in post-processing effect by type name.
+- `lurek.effect.newImageEffect`: Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
+- `lurek.effect.newPass`: Creates a custom post-processing pass from an existing shader id.
+- `lurek.effect.newPresetStack`: Creates a named preset post-processing stack with optional dimensions.
+- `lurek.effect.newStack`: Creates a post-processing stack using optional dimensions or the current window size.
+- `lurek.effect.setShaderErrorDisplay`: Enables or disables renderer shader error display overlays.
 
-### `LImageEffect` Methods
+### Enums
+
+- No documented module-level enums/constants.
+
+### Types
+
+
+#### LImageEffect Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LImageEffect:addEffect`: Appends a built-in post-effect by type name to this image effect chain.
-- `LImageEffect:getEffect`: Looks up an image effect by one-based index or effect type name.
-- `LImageEffect:removeEffect`: Removes an image effect by one-based index or effect type name.
-- `LImageEffect:clearEffects`: Removes every effect from this image effect chain.
 - `LImageEffect:clear`: Removes every effect from this image effect chain.
-- `LImageEffect:effectCount`: Returns the number of effects in this image effect chain.
-- `LImageEffect:getEffectCount`: Returns the number of effects in this image effect chain.
+- `LImageEffect:clearEffects`: Removes every effect from this image effect chain.
 - `LImageEffect:clone`: Creates a new image effect chain with cloned effect entries.
+- `LImageEffect:effectCount`: Returns the number of effects in this image effect chain.
+- `LImageEffect:getEffect`: Looks up an image effect by one-based index or effect type name.
+- `LImageEffect:getEffectCount`: Returns the number of effects in this image effect chain.
+- `LImageEffect:removeByIndex`: Removes an image effect by zero-based internal index.
+- `LImageEffect:removeByName`: Removes the first image effect with a matching effect type name.
+- `LImageEffect:removeEffect`: Removes an image effect by one-based index or effect type name.
 - `LImageEffect:save`: Reports success for the current image effect save placeholder.
 - `LImageEffect:type`: Returns the Lua-visible type name for this image effect handle.
 - `LImageEffect:typeOf`: Returns whether this image effect handle matches a supported type name.
-- `LImageEffect:removeByIndex`: Removes an image effect by zero-based internal index.
-- `LImageEffect:removeByName`: Removes the first image effect with a matching effect type name.
 
-### `LPostFxEffect` Methods
+
+#### LPostFxEffect Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LPostFxEffect:disableAutoUniforms`: Disables automatic time and resolution uniforms for this effect.
+- `LPostFxEffect:enableAutoUniforms`: Enables automatic time and resolution uniforms for this effect.
+- `LPostFxEffect:getEffectType`: Returns the renderer effect type name.
+- `LPostFxEffect:getParameter`: Reads a numeric shader parameter and falls back to a default value when missing.
+- `LPostFxEffect:getParameterNames`: Returns the parameter names stored on this effect.
+- `LPostFxEffect:getType`: Returns the renderer effect type name.
 - `LPostFxEffect:getTypeName`: Returns the built-in or custom effect type name.
+- `LPostFxEffect:hasParameter`: Returns whether a shader parameter exists on this effect.
+- `LPostFxEffect:isAutoUniforms`: Returns whether automatic uniforms are enabled for this effect.
 - `LPostFxEffect:isBuiltIn`: Returns whether this effect uses one of the engine built-in effect types.
 - `LPostFxEffect:isEnabled`: Returns whether this effect is enabled on its owning effect object.
-- `LPostFxEffect:setEnabled`: Enables or disables this effect. This method is available to Lua scripts.
-- `LPostFxEffect:setParameter`: Sets a numeric shader parameter by name.
-- `LPostFxEffect:getParameter`: Reads a numeric shader parameter and falls back to a default value when missing.
-- `LPostFxEffect:hasParameter`: Returns whether a shader parameter exists on this effect.
-- `LPostFxEffect:getParameterNames`: Returns the parameter names stored on this effect.
-- `LPostFxEffect:getEffectType`: Returns the renderer effect type name.
-- `LPostFxEffect:getType`: Returns the renderer effect type name.
-- `LPostFxEffect:type`: Returns the Lua-visible type name for this post-processing effect handle.
-- `LPostFxEffect:typeOf`: Returns whether this effect handle matches a supported type name.
-- `LPostFxEffect:setThreshold`: Sets the threshold shader parameter on this effect.
-- `LPostFxEffect:setIntensity`: Sets the intensity shader parameter on this effect.
-- `LPostFxEffect:setRadius`: Sets the radius shader parameter on this effect.
-- `LPostFxEffect:setStrength`: Sets the strength shader parameter on this effect.
-- `LPostFxEffect:setScanlineStrength`: Sets the scanline strength shader parameter on this effect.
-- `LPostFxEffect:setOffset`: Sets the offset shader parameter on this effect.
 - `LPostFxEffect:setBrightness`: Sets the brightness shader parameter on this effect.
 - `LPostFxEffect:setContrast`: Sets the contrast shader parameter on this effect.
+- `LPostFxEffect:setEnabled`: Enables or disables this effect. This method is available to Lua scripts.
+- `LPostFxEffect:setIntensity`: Sets the intensity shader parameter on this effect.
+- `LPostFxEffect:setOffset`: Sets the offset shader parameter on this effect.
+- `LPostFxEffect:setParameter`: Sets a numeric shader parameter by name.
+- `LPostFxEffect:setRadius`: Sets the radius shader parameter on this effect.
 - `LPostFxEffect:setSaturation`: Sets the saturation shader parameter on this effect.
-- `LPostFxEffect:enableAutoUniforms`: Enables automatic time and resolution uniforms for this effect.
-- `LPostFxEffect:disableAutoUniforms`: Disables automatic time and resolution uniforms for this effect.
-- `LPostFxEffect:isAutoUniforms`: Returns whether automatic uniforms are enabled for this effect.
+- `LPostFxEffect:setScanlineStrength`: Sets the scanline strength shader parameter on this effect.
+- `LPostFxEffect:setStrength`: Sets the strength shader parameter on this effect.
+- `LPostFxEffect:setThreshold`: Sets the threshold shader parameter on this effect.
+- `LPostFxEffect:type`: Returns the Lua-visible type name for this post-processing effect handle.
+- `LPostFxEffect:typeOf`: Returns whether this effect handle matches a supported type name.
 
-### `LPostFxStack` Methods
+
+#### LPostFxStack Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LPostFxStack:add`: Appends an effect to the end of this stack.
-- `LPostFxStack:remove`: Removes the first matching effect handle from this stack.
-- `LPostFxStack:insert`: Inserts an effect at a one-based stack position.
-- `LPostFxStack:setEnabled`: Enables or disables the effect pass at a one-based stack position.
-- `LPostFxStack:isEnabled`: Returns whether the effect pass at a one-based position is enabled.
-- `LPostFxStack:getEffectCount`: Returns the number of effect handles in this stack.
-- `LPostFxStack:getEffect`: Returns the effect handle at a one-based position.
-- `LPostFxStack:getEnabledEffects`: Returns effect handles whose stack passes are enabled.
-- `LPostFxStack:getWidth`: Returns the stack render width. This method is available to Lua scripts.
-- `LPostFxStack:getHeight`: Returns the stack render height. This method is available to Lua scripts.
-- `LPostFxStack:getDimensions`: Returns the stack render dimensions.
-- `LPostFxStack:resize`: Resizes the post-processing stack render target dimensions.
-- `LPostFxStack:len`: Returns the number of effect handles in this stack.
-- `LPostFxStack:isEmpty`: Returns whether this stack has no effects.
-- `LPostFxStack:clear`: Removes all effects and pass state from this stack.
-- `LPostFxStack:dedup`: Removes duplicate effect handles while preserving first occurrences.
-- `LPostFxStack:isCapturing`: Returns whether this stack is currently capturing draw commands.
-- `LPostFxStack:beginCapture`: Starts post-effect capture and queues a renderer begin-capture command.
-- `LPostFxStack:endCapture`: Ends post-effect capture and queues a renderer end-capture command.
 - `LPostFxStack:apply`: Queues this stack's enabled post-effect passes for renderer application.
+- `LPostFxStack:beginCapture`: Starts post-effect capture and queues a renderer begin-capture command.
+- `LPostFxStack:clear`: Removes all effects and pass state from this stack.
+- `LPostFxStack:clearFeedback`: Resets the stack feedback blend factor to zero.
+- `LPostFxStack:dedup`: Removes duplicate effect handles while preserving first occurrences.
+- `LPostFxStack:endCapture`: Ends post-effect capture and queues a renderer end-capture command.
+- `LPostFxStack:getDimensions`: Returns the stack render dimensions.
+- `LPostFxStack:getEffect`: Returns the effect handle at a one-based position.
+- `LPostFxStack:getEffectCount`: Returns the number of effect handles in this stack.
+- `LPostFxStack:getEnabledEffects`: Returns effect handles whose stack passes are enabled.
+- `LPostFxStack:getFeedback`: Returns the current stack feedback blend factor.
+- `LPostFxStack:getHeight`: Returns the stack render height. This method is available to Lua scripts.
+- `LPostFxStack:getWidth`: Returns the stack render width. This method is available to Lua scripts.
+- `LPostFxStack:insert`: Inserts an effect at a one-based stack position.
+- `LPostFxStack:isCapturing`: Returns whether this stack is currently capturing draw commands.
+- `LPostFxStack:isEmpty`: Returns whether this stack has no effects.
+- `LPostFxStack:isEnabled`: Returns whether the effect pass at a one-based position is enabled.
+- `LPostFxStack:len`: Returns the number of effect handles in this stack.
+- `LPostFxStack:remove`: Removes the first matching effect handle from this stack.
+- `LPostFxStack:resize`: Resizes the post-processing stack render target dimensions.
+- `LPostFxStack:setEnabled`: Enables or disables the effect pass at a one-based stack position.
+- `LPostFxStack:setFeedback`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 - `LPostFxStack:type`: Returns the Lua-visible type name for this post-processing stack handle.
 - `LPostFxStack:typeOf`: Returns whether this stack handle matches a supported type name.
-- `LPostFxStack:setFeedback`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
-- `LPostFxStack:getFeedback`: Returns the current stack feedback blend factor.
-- `LPostFxStack:clearFeedback`: Resets the stack feedback blend factor to zero.
 
 ## References
 
@@ -228,8 +207,3 @@ For bridging scene changes, the module includes a `ScreenTransition` state machi
 - `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
 - `render`: Imports or references `render` from `src/render/`.
 - `runtime`: Imports or references `runtime` from `src/runtime/`.
-
-## Notes
-
-- Keep this module reference synchronized with `src/effect/` and any matching Lua bindings.
-- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

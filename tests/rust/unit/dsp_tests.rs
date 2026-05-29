@@ -1,4 +1,4 @@
-//! Rust-only tests for DSP internals that are not directly asserted through `lurek.dsp.*`.
+//! File: tests/rust/unit/dsp_tests.rs
 
 use lurek2d::dsp::{
     ActiveEffect, AtomicParam, EffectParams, EffectType, OfflineEffect,

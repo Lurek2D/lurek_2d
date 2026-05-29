@@ -1,4 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for mods internals not exposed as `lurek.mods.*`.
+//! File: tests/rust/unit/mods_tests.rs
 
 mod mod_manager_tests {
     use lurek2d::mods::{ModInfo, ModManager};

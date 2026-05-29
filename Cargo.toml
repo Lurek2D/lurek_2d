@@ -204,26 +204,23 @@ name = "lurek2d"
 path = "src/lib.rs"
 
 [profile.dev]
-# FASTEST COMPILE — all settings tuned for minimum wall-clock build time.
-# opt-level = 0: no compiler optimizations; code is slow to run but fast to compile.
-# incremental = false: Windows MSVC link stability (lua_tests link crashes).
-# debug = 2: full DWARF — variable values, type info, step-into; best debugger UX.
+# FAST DEV BUILD — tuned for the shortest edit/build/run cycle.
+# opt-level = 0: no compiler optimizations; fastest compile and lightest link.
+# incremental = false: keeps disk churn lower and avoids incremental cache bloat.
+# debug = 0: no debug symbols for the fast path; use a debugger-specific build
+#            only when you actually need step-through debugging.
 # codegen-units = 256: maximum parallel code generation units = fastest compile.
 opt-level = 0
 incremental = false
-debug = 2
+debug = 0
 codegen-units = 256
 
-# Compile dependencies at opt-level 1 — avoids slow dep compiles (proc-macros,
-# wgpu internals) while keeping game code debuggable at opt-level 0 above.
-[profile.dev.package."*"]
-opt-level = 1
-
 [profile.release]
-# MAXIMUM PERFORMANCE — opt-level=3 enables full inlining, loop unrolling, and
-# all LLVM optimizations. Binary is larger (~32 MB raw) but runs fastest.
+# RELEASE BUILD — optimized for runtime performance and a compact executable.
+# Target shape on Windows: roughly 30-50 MB raw, then 10-15 MB after UPX.
+# opt-level=3 enables full inlining, loop unrolling, and all LLVM optimizations.
 # lto="fat" + codegen-units=1 = whole-program dead-code elimination.
-# strip=true + panic=abort remove all symbol tables and unwind machinery.
+# strip=true + panic=abort remove symbol tables and unwind machinery.
 opt-level = 3
 lto = "fat"
 codegen-units = 1
@@ -356,6 +353,10 @@ path = "tests/rust/unit/input_tests.rs"
 [[test]]
 name = "light_tests"
 path = "tests/rust/unit/light_tests.rs"
+
+[[test]]
+name = "learning_tests"
+path = "tests/rust/unit/learning_tests.rs"
 
 [[test]]
 name = "log_tests"

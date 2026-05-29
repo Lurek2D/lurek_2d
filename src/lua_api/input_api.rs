@@ -1,11 +1,4 @@
-//! `lurek.input` -- Input bindings for keyboard, mouse, cursor objects, gamepads, touch points, action mappings, combo detection, virtual d-pad conversion, input recording, and playback state exposed through nested Lua tables.
-//!
-//! - Registers `lurek.input.*` functions and types via `register()`.
-//! - `LuaCursor`: userdata type exposed to Lua.
-//! - `LuaCombo`: userdata type exposed to Lua.
-//! - `LuaInputRecording`: userdata type exposed to Lua.
-//! - Bridges 98 Lua-callable methods via `mlua`.
-//! - See `docs/specs/input.md` for the full API specification.
+//! File: src/lua_api/input_api.rs
 
 use super::SharedState;
 use crate::input::combo::{ComboDetector, ComboStep};

@@ -601,40 +601,40 @@ function lurek.init()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.go_rooms = ui_root:findById("go_rooms")
     app_ui.go_kills = ui_root:findById("go_kills")
     app_ui.go_score = ui_root:findById("go_score")
     app_ui.go_perk_texts = {}
     for i=1, 6 do app_ui.go_perk_texts[i] = ui_root:findById("go_perk_" .. i) end
-    
+
     app_ui.perk_select_screen = ui_root:findById("perk_select_screen")
     app_ui.ps_bgs = {}
     app_ui.ps_titles = {}
     app_ui.ps_descs = {}
-    for i=1, 3 do 
+    for i=1, 3 do
         app_ui.ps_bgs[i] = ui_root:findById("ps_bg_" .. i)
         app_ui.ps_titles[i] = ui_root:findById("ps_title_" .. i)
         app_ui.ps_descs[i] = ui_root:findById("ps_desc_" .. i)
     end
     app_ui.ps_room_cleared = ui_root:findById("ps_room_cleared")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.hp_fill = ui_root:findById("hp_fill")
     app_ui.hp_text = ui_root:findById("hp_text")
     app_ui.room_text = ui_root:findById("room_text")
     app_ui.score_text = ui_root:findById("score_text")
     app_ui.kills_text = ui_root:findById("kills_text")
-    
+
     app_ui.cd_melee = ui_root:findById("cd_melee")
     app_ui.cd_ranged = ui_root:findById("cd_ranged")
     app_ui.cd_dash = ui_root:findById("cd_dash")
-    
+
     app_ui.perks_summary_title = ui_root:findById("perks_summary_title")
     app_ui.hud_perk_texts = {}
     for i=1, 6 do app_ui.hud_perk_texts[i] = ui_root:findById("hud_perk_" .. i) end
-    
+
     app_ui.boss_hp_bg = ui_root:findById("boss_hp_bg")
     app_ui.boss_hp_fill = ui_root:findById("boss_hp_fill")
     app_ui.boss_text = ui_root:findById("boss_text")
@@ -917,7 +917,7 @@ function lurek.process(dt)
             app_ui.room_text.text = string.format("Room %d", room_number)
             app_ui.score_text.text = string.format("Score: %d", score)
             app_ui.kills_text.text = string.format("Kills: %d", kills_total)
-            
+
             if player.melee_cd > 0 then
                 app_ui.cd_melee.width = 50 * (player.melee_cd / (MELEE_COOLDOWN * player.cd_mult))
             else app_ui.cd_melee.width = 0 end
@@ -927,7 +927,7 @@ function lurek.process(dt)
             if player.dash_cd > 0 then
                 app_ui.cd_dash.width = 50 * (player.dash_cd / (DASH_COOLDOWN * player.cd_mult))
             else app_ui.cd_dash.width = 0 end
-            
+
             if #perks_collected > 0 then
                 app_ui.perks_summary_title.visible = true
                 for i=1, 6 do
@@ -942,7 +942,7 @@ function lurek.process(dt)
                 app_ui.perks_summary_title.visible = false
                 for i=1, 6 do app_ui.hud_perk_texts[i].visible = false end
             end
-            
+
             if state == STATE.BOSS and boss and boss.hp > 0 then
                 app_ui.boss_hp_bg.visible = true
                 app_ui.boss_hp_fill.visible = true

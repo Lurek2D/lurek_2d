@@ -120,17 +120,17 @@ UpgradeTree = {}
 ---@class RecipeGroup
 RecipeGroup = {}
 
----@class seq
-seq = {}
+---@class Sequence
+Sequence = {}
 
----@class part
-part = {}
+---@class DollPart
+DollPart = {}
 
----@class tmpl
-tmpl = {}
+---@class DollTemplate
+DollTemplate = {}
 
----@class doll
-doll = {}
+---@class Doll
+Doll = {}
 
 ---@class Resource
 Resource = {}
@@ -147,38 +147,26 @@ ResourceManager = {}
 ---@class ActionMap
 ActionMap = {}
 
----@class item
-item = {}
+---@class Item
+Item = {}
 
----@class stack
-stack = {}
+---@class Container
+Container = {}
 
----@class slot
-slot = {}
+---@class ItemSet
+ItemSet = {}
 
----@class container
-container = {}
+---@class Inventory
+Inventory = {}
 
----@class iset
-iset = {}
+---@class ItemType
+ItemType = {}
 
----@class inv
-inv = {}
+---@class ItemPool
+ItemPool = {}
 
----@class it
-it = {}
-
----@class pool
-pool = {}
-
----@class builder
-builder = {}
-
----@class history
-history = {}
-
----@class manager
-manager = {}
+---@class StackBuilder
+StackBuilder = {}
 
 ---@class Room
 Room = {}
@@ -269,12 +257,6 @@ ActionPoints = {}
 
 ---@class Attribute
 Attribute = {}
-
----@class Doll
-Doll = {}
-
----@class DollTemplate
-DollTemplate = {}
 
 ---@class LCard
 LCard = {}
@@ -768,7 +750,7 @@ function CombatBattle:nextTurn() end
 ---@return nil
 function CombatBattle:_checkBattleOver() end
 
---- Resolve an attack. TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic battle replays. Currently uses the global Lua RNG which makes saves non-deterministic across reloads.
+--- Resolve an attack. battle replays. Currently uses the global Lua RNG which makes saves non-deterministic across reloads.
 ---@param attacker_name string
 ---@param action_name string
 ---@param target_name string
@@ -1255,7 +1237,7 @@ function Stack:sortByCategory() end
 ---@return nil
 function Stack:sortByName() end
 
---- Shuffle cards into a random order using Fisher-Yates. TODO(P4 lift): replace with lurek.math.shuffle when available so the shuffle becomes seedable and decoupled from the global RNG state.
+--- Shuffle cards into a random order using Fisher-Yates. shuffle becomes seedable and decoupled from the global RNG state.
 ---@return nil
 function Stack:shuffle() end
 
@@ -1447,7 +1429,7 @@ function CardPool:drawUniqueTypes(n) end
 ---@return table
 function CardPool:drawUniqueItems(n) end
 
---- Draw n Card instances using a fixed random seed for reproducibility. Saves and restores the global RNG state across the call so callers outside the seeded scope continue to observe the global RNG sequence. TODO(P4 lift): use lurek.math.newRng()/lurek.math.shuffle when available to avoid touching the global RNG entirely.
+--- Draw n Card instances using a fixed random seed for reproducibility. Saves and restores the global RNG state across the call so callers outside the seeded scope continue to observe the global RNG sequence. to avoid touching the global RNG entirely.
 ---@param n number
 ---@param seed number
 ---@return table
@@ -3095,85 +3077,85 @@ function library.dialog.newSequencer() end
 --- Load a new script, replacing any existing one. Call start() afterwards to begin playback.
 ---@param nodes table
 ---@return nil
-function seq:load(nodes) end
+function Sequence:load(nodes) end
 
 --- Begin playback from the first node.
 ---@return nil
-function seq:start() end
+function Sequence:start() end
 
 --- Advance per-frame. Call every frame while isActive() is true.
 ---@param dt number
 ---@return nil
-function seq:update(dt) end
+function Sequence:update(dt) end
 
 --- Advance past the current line (when state == "waiting" or "typing"). If typing, skips to full reveal first. If waiting, moves to next node.
 ---@return nil
-function seq:advance() end
+function Sequence:advance() end
 
 --- Skip the entire current line instantly (advances to "waiting").
 ---@return nil
-function seq:skip() end
+function Sequence:skip() end
 
 --- Select a choice option by 1-based index. Only valid when state == "choice".
 ---@param index number
 ---@return nil
-function seq:choose(index) end
+function Sequence:choose(index) end
 
 --- Set the typewriter reveal speed.
 ---@param cps number
 ---@return nil
-function seq:setSpeed(cps) end
+function Sequence:setSpeed(cps) end
 
 --- Get the current reveal speed.
 ---@return number
-function seq:getSpeed() end
+function Sequence:getSpeed() end
 
 --- Get the current state string.
 ---@return string
-function seq:getState() end
+function Sequence:getState() end
 
 --- Returns true while the sequence is in progress (not idle or done).
 ---@return boolean
-function seq:isActive() end
+function Sequence:isActive() end
 
 --- Returns true when a choice is pending player input.
 ---@return boolean
-function seq:isWaitingForChoice() end
+function Sequence:isWaitingForChoice() end
 
 --- Returns the speaker name of the current "say" node.
 ---@return string
-function seq:currentSpeaker() end
+function Sequence:currentSpeaker() end
 
 --- Returns the full text of the current "say" node.
 ---@return string
-function seq:currentText() end
+function Sequence:currentText() end
 
 --- Returns only the revealed portion of the current text.
 ---@return string
-function seq:revealedText() end
+function Sequence:revealedText() end
 
 --- Returns the prompt text of the current "choice" node.
 ---@return string
-function seq:getChoiceText() end
+function Sequence:getChoiceText() end
 
 --- Returns an array of choice labels for the current "choice" node.
 ---@return table
-function seq:getChoiceLabels() end
+function Sequence:getChoiceLabels() end
 
 --- Register a callback for a named event. Events: "line" (speaker, text), "choice" (), "finished" (), "done" (), "event" (name, data), "typewrite" (char, full_text).
 ---@param event string
 ---@param fn function
 ---@return nil
-function seq:on(event, fn) end
+function Sequence:on(event, fn) end
 
 --- Unregister all callbacks for a named event.
 ---@param event string
 ---@return nil
-function seq:off(event) end
+function Sequence:off(event) end
 
 --- Return the optional `lurek.patterns` EventBus mirror, or nil when the engine is not present. External systems can subscribe to any of the sequencer's events through the bus without going through `seq:on()`. The canonical event delivery path remains the local handler table, so the bus is purely a parallel observer channel.
 ---@return table|nil
-function seq:getEventBus() end
+function Sequence:getEventBus() end
 
 --- Create a `say` dialog node (spoken line with typewriter reveal).
 ---@param actor string
@@ -3223,97 +3205,97 @@ function library.doll.newPart() end
 
 --- Texture / Quad Return the texture assigned to this part.
 ---@return any
-function part:getTexture() end
+function DollPart:getTexture() end
 
 --- Assign a texture to this part.
 ---@param tex any
 ---@return nil
-function part:setTexture(tex) end
+function DollPart:setTexture(tex) end
 
 --- Return the texture quad (sub-region) for this part.
 ---@return any
-function part:getQuad() end
+function DollPart:getQuad() end
 
 --- Set the texture quad (sub-region) for this part.
 ---@param q any
 ---@return nil
-function part:setQuad(q) end
+function DollPart:setQuad(q) end
 
 --- Local Transform Return the local offset of this part from its socket origin.
 ---@return number
 ---@return number
-function part:getOffset() end
+function DollPart:getOffset() end
 
 --- Set the local offset of this part from its socket origin.
 ---@param x number
 ---@param y number
 ---@return nil
-function part:setOffset(x, y) end
+function DollPart:setOffset(x, y) end
 
 --- Return the local rotation of this part in radians.
 ---@return number
-function part:getRotation() end
+function DollPart:getRotation() end
 
 --- Set the local rotation of this part in radians.
 ---@param r number
 ---@return nil
-function part:setRotation(r) end
+function DollPart:setRotation(r) end
 
 --- Return the local scale of this part as (scaleX, scaleY).
 ---@return number
 ---@return number
-function part:getScale() end
+function DollPart:getScale() end
 
 --- Set part scale. Passing a single number sets uniform scale.
 ---@param sx number
 ---@param sy number
 ---@return nil
-function part:setScale(sx, sy) end
+function DollPart:setScale(sx, sy) end
 
 --- Return the render origin (pivot point) of this part.
 ---@return number
 ---@return number
-function part:getOrigin() end
+function DollPart:getOrigin() end
 
 --- Set the render origin (pivot point) of this part.
 ---@param ox number
 ---@param oy number
 ---@return nil
-function part:setOrigin(ox, oy) end
+function DollPart:setOrigin(ox, oy) end
 
 --- Draw Order & Type Return the draw order key for this part.
 ---@return number
-function part:getDrawOrder() end
+function DollPart:getDrawOrder() end
 
 --- Set part draw order (z-sort key).
 ---@param n number
 ---@return nil
-function part:setDrawOrder(n) end
+function DollPart:setDrawOrder(n) end
 
 --- Return the part type string (used for socket type-filter matching).
 ---@return string
-function part:getPartType() end
+function DollPart:getPartType() end
 
 --- Set the part type string.
 ---@param t string
 ---@return nil
-function part:setPartType(t) end
+function DollPart:setPartType(t) end
 
 --- Visibility & Appearance Return true if this part is currently visible.
 ---@return boolean
-function part:isVisible() end
+function DollPart:isVisible() end
 
 --- Set visibility of this part.
 ---@param v boolean
 ---@return nil
-function part:setVisible(v) end
+function DollPart:setVisible(v) end
 
 --- Return the RGBA colour tint of this part.
 ---@return number
 ---@return number
 ---@return number
 ---@return number
-function part:getColor() end
+function DollPart:getColor() end
 
 --- Set the RGBA colour tint of this part.
 ---@param r number
@@ -3321,60 +3303,60 @@ function part:getColor() end
 ---@param b number
 ---@param a number
 ---@return nil
-function part:setColor(r, g, b, a) end
+function DollPart:setColor(r, g, b, a) end
 
 --- Return the flip flags for this part.
 ---@return boolean
 ---@return boolean
-function part:getFlip() end
+function DollPart:getFlip() end
 
 --- Set horizontal and vertical flip flags.
 ---@param fx boolean
 ---@param fy boolean
 ---@return nil
-function part:setFlip(fx, fy) end
+function DollPart:setFlip(fx, fy) end
 
 --- Behaviour Return true if this part inherits the socket's rotation.
 ---@return boolean
-function part:getFollowsRotation() end
+function DollPart:getFollowsRotation() end
 
 --- Set whether this part inherits the socket's rotation.
 ---@param f boolean
 ---@return nil
-function part:setFollowsRotation(f) end
+function DollPart:setFollowsRotation(f) end
 
 --- Attributes (user-defined key-value store) Get the value of a user-defined attribute by key.
 ---@param key string
 ---@return any
-function part:getAttribute(key) end
+function DollPart:getAttribute(key) end
 
 --- Set a user-defined attribute value.
 ---@param key string
 ---@param val any
 ---@return nil
-function part:setAttribute(key, val) end
+function DollPart:setAttribute(key, val) end
 
 --- Return a list of all attribute keys on this part.
 ---@return table
-function part:getAttributeKeys() end
+function DollPart:getAttributeKeys() end
 
 --- Optional physics fixture ref (stored, never called) Return the optional physics fixture reference.
 ---@return any
-function part:getFixture() end
+function DollPart:getFixture() end
 
 --- Store an optional physics fixture reference on this part.
 ---@param f any
 ---@return nil
-function part:setFixture(f) end
+function DollPart:setFixture(f) end
 
 --- Get the absolute scale magnitude, ignoring flip. Useful when flip is used for mirroring but the caller needs the positive magnitude (e.g. bounding-box calculation).
 ---@return number
 ---@return number
-function part:getAbsoluteScale() end
+function DollPart:getAbsoluteScale() end
 
 --- Get a shallow copy of all attributes.
 ---@return table
-function part:getAttributes() end
+function DollPart:getAttributes() end
 
 --- Create a new DollTemplate (socket layout blueprint). A template defines named sockets at fixed positions and rotations. Each socket has an acceptType filter and a drawOrder for z-sorting.
 ---@param name string
@@ -3383,12 +3365,12 @@ function library.doll.newTemplate(name) end
 
 --- Return the template name.
 ---@return string
-function tmpl:getName() end
+function DollTemplate:getName() end
 
 --- Set the template name.
 ---@param n string
 ---@return nil
-function tmpl:setName(n) end
+function DollTemplate:setName(n) end
 
 --- Add a socket to the template. Returns true on success, or false plus a message if the name is invalid or already registered.
 ---@param socketName string
@@ -3399,29 +3381,29 @@ function tmpl:setName(n) end
 ---@param drawOrder number
 ---@return boolean
 ---@return string
-function tmpl:addSocket(socketName, acceptType, x, y, rotation, drawOrder) end
+function DollTemplate:addSocket(socketName, acceptType, x, y, rotation, drawOrder) end
 
 --- Remove a socket by name. Returns false if the socket does not exist.
 ---@param socketName string
 ---@return boolean
-function tmpl:removeSocket(socketName) end
+function DollTemplate:removeSocket(socketName) end
 
 --- Return a copy of the socket definition, or nil if not found.
 ---@param socketName string
 ---@return table|nil
-function tmpl:getSocket(socketName) end
+function DollTemplate:getSocket(socketName) end
 
 --- Return an ordered array of socket names.
 ---@return table
-function tmpl:getSocketNames() end
+function DollTemplate:getSocketNames() end
 
 --- Return the number of sockets in this template.
 ---@return number
-function tmpl:getSocketCount() end
+function DollTemplate:getSocketCount() end
 
 --- Internal: iterate raw sockets (used by Doll).
 ---@return nil
-function tmpl:_iterSockets() end
+function DollTemplate:_iterSockets() end
 
 --- Create a new Doll (runtime composite instance of a template). A Doll binds a DollTemplate to a world-space transform and holds Part instances attached to template sockets.
 ---@param template DollTemplate
@@ -3431,105 +3413,105 @@ function library.doll.newDoll(template) end
 --- Transform Return the world-space position of this doll.
 ---@return number
 ---@return number
-function doll:getPosition() end
+function Doll:getPosition() end
 
 --- Set the world-space position of this doll.
 ---@param x number
 ---@param y number
 ---@return nil
-function doll:setPosition(x, y) end
+function Doll:setPosition(x, y) end
 
 --- Return the world-space rotation of this doll in radians.
 ---@return number
-function doll:getRotation() end
+function Doll:getRotation() end
 
 --- Set the world-space rotation of this doll in radians.
 ---@param r number
 ---@return nil
-function doll:setRotation(r) end
+function Doll:setRotation(r) end
 
 --- Return the world-space scale of this doll.
 ---@return number
 ---@return number
-function doll:getScale() end
+function Doll:getScale() end
 
 --- Set the world-space scale of this doll.
 ---@param sx number
 ---@param sy number
 ---@return nil
-function doll:setScale(sx, sy) end
+function Doll:setScale(sx, sy) end
 
 --- Template Return the DollTemplate this doll was created from.
 ---@return DollTemplate
-function doll:getTemplate() end
+function Doll:getTemplate() end
 
 --- Visibility Return true if this doll is currently visible.
 ---@return boolean
-function doll:isVisible() end
+function Doll:isVisible() end
 
 --- Set the visibility of this doll.
 ---@param v boolean
 ---@return nil
-function doll:setVisible(v) end
+function Doll:setVisible(v) end
 
 --- Optional body / user data refs Return the optional physics body reference attached to this doll.
 ---@return any
-function doll:getBody() end
+function Doll:getBody() end
 
 --- Store an optional physics body reference on this doll.
 ---@param b any
 ---@return nil
-function doll:setBody(b) end
+function Doll:setBody(b) end
 
 --- Return the optional user-data reference on this doll.
 ---@return any
-function doll:getUserData() end
+function Doll:getUserData() end
 
 --- Store an optional user-data reference on this doll.
 ---@param v any
 ---@return nil
-function doll:setUserData(v) end
+function Doll:setUserData(v) end
 
 --- Attach a Part to a named socket. Returns false if socket not found, type mismatch, or invalid args.
 ---@param socketName string
 ---@param part Part
 ---@return boolean
-function doll:attach(socketName, part) end
+function Doll:attach(socketName, part) end
 
 --- Detach the Part from a socket, returning it.
 ---@param socketName string
 ---@return Part|nil
-function doll:detach(socketName) end
+function Doll:detach(socketName) end
 
 --- Return the Part attached at `socketName`, or nil.
 ---@param socketName string
 ---@return Part|nil
-function doll:getPartAt(socketName) end
+function Doll:getPartAt(socketName) end
 
 --- Return the socket name the given Part is attached to, or nil.
 ---@param part Part
 ---@return string|nil
-function doll:findSocket(part) end
+function Doll:findSocket(part) end
 
 --- Detach all parts from all sockets.
 ---@return nil
-function doll:detachAll() end
+function Doll:detachAll() end
 
 --- Return an array of socket names that currently have a part attached.
 ---@return table
-function doll:getAttachedSockets() end
+function Doll:getAttachedSockets() end
 
 --- Return an array of socket names that are currently empty.
 ---@return table
-function doll:getEmptySockets() end
+function Doll:getEmptySockets() end
 
 --- Compute world-transform draw list sorted by drawOrder. Each entry: {socketName, part, x, y, rotation, scaleX, scaleY, originX, originY, drawOrder}. **Flip behaviour**: Part flip flags produce negative scale values (e.g. scaleX = -2 when flipX is true and doll+part scale = 2). This is intentional — GPU scale-based mirroring. Use `doll.getAbsoluteScale(entry)` if you need the positive magnitude. **Transform order**: Part offset is rotated by socket rotation before being added to the socket position (socket-local space). The combined offset is then scaled by doll scale and rotated by doll rotation. Does NOT filter by part visibility — caller handles that.
 ---@return table
-function doll:getDrawList() end
+function Doll:getDrawList() end
 
 --- Deprecated convenience draw shim — retained only as a no-op. The original implementation referenced an undefined global (`lurek`) and a non-existent namespace (`lurek.render`), so the call chain was a silent no-op in every build. Library code must not call rendering APIs directly (per `library.*` conventions), so the correct path now is for the caller to iterate `Doll:getDrawList()` and dispatch the entries to `lurek.render` (or any other renderer) themselves. This method emits a one-time warning on first invocation and then returns immediately. It will be removed in a future major bump.
 ---@return nil
-function doll:draw() end
+function Doll:draw() end
 
 --- Get the absolute scale magnitude from a draw-list entry. Strips the sign introduced by flip flags, returning positive values.
 ---@param entry table
@@ -4204,73 +4186,73 @@ function library.inventory.newItem(type_name) end
 
 --- Return the type name.
 ---@return string
-function item:getType() end
+function Item:getType() end
 
 --- Return item weight.
 ---@return number
-function item:getWeight() end
+function Item:getWeight() end
 
 --- Set physical weight (must be non-negative).
 ---@param w number
 ---@return nil
-function item:setWeight(w) end
+function Item:setWeight(w) end
 
 --- Return grid width.
 ---@return number
-function item:getSizeW() end
+function Item:getSizeW() end
 
 --- Return grid height.
 ---@return number
-function item:getSizeH() end
+function Item:getSizeH() end
 
 --- Set grid size (both dimensions clamped to >= 1).
 ---@param w number
 ---@param h number
 ---@return nil
-function item:setSize(w, h) end
+function Item:setSize(w, h) end
 
 --- Return maximum items per stack.
 ---@return number
-function item:getStackLimit() end
+function Item:getStackLimit() end
 
 --- Set maximum stack size (clamped to >= 1).
 ---@param n number
 ---@return nil
-function item:setStackLimit(n) end
+function Item:setStackLimit(n) end
 
 --- Return true if the item has the given tag.
 ---@param tag string
 ---@return boolean
-function item:hasTag(tag) end
+function Item:hasTag(tag) end
 
 --- Add a tag (no-op if already present).
 ---@param tag string
 ---@return nil
-function item:addTag(tag) end
+function Item:addTag(tag) end
 
 --- Remove a tag. Returns true if tag existed.
 ---@param tag string
 ---@return boolean
-function item:removeTag(tag) end
+function Item:removeTag(tag) end
 
 --- Return all tag names as an array.
 ---@return table
-function item:getTags() end
+function Item:getTags() end
 
 --- Set a generic property.
 ---@param key string
 ---@param val any
 ---@return nil
-function item:setProperty(key, val) end
+function Item:setProperty(key, val) end
 
 --- Get a generic property.
 ---@param key string
 ---@return any
-function item:getProperty(key) end
+function Item:getProperty(key) end
 
---- Deep-copy this item definition. TODO(P4 lift): once a shared deepCopy helper ships, replace the manual field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
+--- Deep-copy this item definition. field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
 ---@return table
-function item:clone() end
+function Item:clone() end
 
 --- Create a counted stack of a single item type.
 ---@param inv_item table
@@ -4281,48 +4263,48 @@ function library.inventory.newItemStack(inv_item, quantity, max_quantity) end
 
 --- Return the underlying InvItem.
 ---@return table
-function stack:getItem() end
+function Stack:getItem() end
 
 --- Return current quantity.
 ---@return number
-function stack:getQuantity() end
+function Stack:getQuantity() end
 
 --- Directly set quantity (clamped 0..max).
 ---@param n number
 ---@return nil
-function stack:setQuantity(n) end
+function Stack:setQuantity(n) end
 
 --- Return max quantity.
 ---@return number
-function stack:getStackLimit() end
+function Stack:getStackLimit() end
 
 --- Return true when stack holds max items.
 ---@return boolean
-function stack:isFull() end
+function Stack:isFull() end
 
 --- Return true when stack is empty.
 ---@return boolean
-function stack:isEmpty() end
+function Stack:isEmpty() end
 
 --- Add n items. Returns overflow (items that did not fit).
 ---@param n number
 ---@return number
-function stack:add(n) end
+function Stack:add(n) end
 
 --- Remove n items. Returns count actually removed.
 ---@param n number
 ---@return number
-function stack:remove(n) end
+function Stack:remove(n) end
 
 --- Split n items off into a new stack. Returns nil if n invalid.
 ---@param n number
 ---@return table|nil
-function stack:split(n) end
+function Stack:split(n) end
 
 --- Merge another stack into this one. Returns leftover count.
 ---@param other table
 ---@return number
-function stack:merge(other) end
+function Stack:merge(other) end
 
 --- Create a single inventory slot (holds one ItemStack).
 ---@param slot_type string
@@ -4332,46 +4314,46 @@ function library.inventory.newSlot(slot_type, state) end
 
 --- Return slot type filter.
 ---@return string
-function slot:getSlotType() end
+function Slot:getSlotType() end
 
 --- Return current state.
 ---@return string
-function slot:getState() end
+function Slot:getState() end
 
 --- Set state.
 ---@param s string
 ---@return nil
-function slot:setState(s) end
+function Slot:setState(s) end
 
 --- Return true if no item is held.
 ---@return boolean
-function slot:isEmpty() end
+function Slot:isEmpty() end
 
 --- Return the held ItemStack, or nil.
 ---@return table|nil
-function slot:getStack() end
+function Slot:getStack() end
 
 --- Return the held InvItem (unwrapped), or nil.
 ---@return table|nil
-function slot:getItem() end
+function Slot:getItem() end
 
 --- Return true if the item fits size constraints and type filter. Items are accepted if the slot type is "any", or the item type matches the slot type, or the item carries a tag matching the slot type.
 ---@param item table
 ---@return boolean
-function slot:canAccept(item) end
+function Slot:canAccept(item) end
 
 --- Place an ItemStack. Returns false if item not accepted.
 ---@param s table
 ---@return boolean
-function slot:setStack(s) end
+function Slot:setStack(s) end
 
 --- Remove and return the held stack.
 ---@return table|nil
-function slot:takeStack() end
+function Slot:takeStack() end
 
 --- Clear the slot.
 ---@return nil
-function slot:clear() end
+function Slot:clear() end
 
 --- Create a named container managing a list of slots. For expandable mode, `max_slots` caps how far `expand()` can grow.
 ---@param name string
@@ -4383,101 +4365,101 @@ function library.inventory.newContainer(name, mode, slot_count, max_slots) end
 
 --- Return the container name.
 ---@return string
-function container:getName() end
+function Container:getName() end
 
 --- Return the container mode string.
 ---@return string
-function container:getMode() end
+function Container:getMode() end
 
 --- Return the number of slots.
 ---@return number
-function container:slotCount() end
+function Container:slotCount() end
 
 --- Return max slot count. 0 = unbounded.
 ---@return number
-function container:getCapacity() end
+function Container:getCapacity() end
 
 --- Set weight limit (must be non-negative). 0 = unlimited.
 ---@param w number
 ---@return nil
-function container:setWeightLimit(w) end
+function Container:setWeightLimit(w) end
 
 --- Return weight limit. 0 = unlimited.
 ---@return number
-function container:getWeightLimit() end
+function Container:getWeightLimit() end
 
 --- Return current total weight.
 ---@return number
-function container:getCurrentWeight() end
+function Container:getCurrentWeight() end
 
 --- Alias for getCurrentWeight.
 ---@return number
-function container:totalWeight() end
+function Container:totalWeight() end
 
 --- Return true if all slots are occupied (fixed/expandable) or weight limit reached.
 ---@return boolean
-function container:isFull() end
+function Container:isFull() end
 
 --- Get a slot by 1-based index.
 ---@param idx number
 ---@return table|nil
-function container:getSlot(idx) end
+function Container:getSlot(idx) end
 
 --- Return all slots array.
 ---@return table
-function container:getSlots() end
+function Container:getSlots() end
 
 --- Add slot (respects mode limits).
 ---@param sl table
 ---@return nil
-function container:addSlot(sl) end
+function Container:addSlot(sl) end
 
 --- Set the upper slot capacity (expandable mode only). Clamped so it cannot be less than the current slot count.
 ---@param n number
 ---@return nil
-function container:setCapacity(n) end
+function Container:setCapacity(n) end
 
 --- Expand by n new empty slots (expandable mode only). Returns true if any added. Respects the max-slot capacity; stops adding once the limit is reached.
 ---@param n number
 ---@return boolean
-function container:expand(n) end
+function Container:expand(n) end
 
 --- Auto-place item quantity. Merges into ALL existing matching stacks first, then fills empty slots. For unlimited containers, auto-grows as needed.
 ---@param inv_item table
 ---@param quantity number
 ---@return boolean
-function container:addItem(inv_item, quantity) end
+function Container:addItem(inv_item, quantity) end
 
 --- Count all items of a given type across all slots.
 ---@param type_name string
 ---@return number
-function container:countItem(type_name) end
+function Container:countItem(type_name) end
 
 --- Return true if >= qty of type_name present.
 ---@param type_name string
 ---@param qty number
 ---@return boolean
-function container:hasItem(type_name, qty) end
+function Container:hasItem(type_name, qty) end
 
 --- Remove up to qty items of type_name. Returns count removed.
 ---@param type_name string
 ---@param qty number
 ---@return number
-function container:removeItem(type_name, qty) end
+function Container:removeItem(type_name, qty) end
 
 --- Return all items with the given tag.
 ---@param tag string
 ---@return table
-function container:findByTag(tag) end
+function Container:findByTag(tag) end
 
 --- Return a summary list of {type_name, quantity} aggregated across slots.
 ---@return table
-function container:toItemList() end
+function Container:toItemList() end
 
 --- Remove the slot at a 1-based index. Shifts subsequent slots down.
 ---@param idx number
 ---@return boolean
-function container:removeSlot(idx) end
+function Container:removeSlot(idx) end
 
 --- Create a named item set (bonus condition). All requirements must be satisfied simultaneously for the set to be active.
 ---@param name string
@@ -4486,22 +4468,22 @@ function library.inventory.newItemSet(name) end
 
 --- Return the set name.
 ---@return string
-function iset:getName() end
+function ItemSet:getName() end
 
 --- Add a requirement: at least one equip slot must hold an item with `tag`.
 ---@param tag string
 ---@param slot_filter string
 ---@return nil
-function iset:addRequirement(tag, slot_filter) end
+function ItemSet:addRequirement(tag, slot_filter) end
 
 --- Return all requirements as array of {tag, slot_filter}.
 ---@return table
-function iset:getRequirements() end
+function ItemSet:getRequirements() end
 
 --- Check if all requirements are satisfied given an equip_slots table {name -> Slot}.
 ---@param equip_slots table
 ---@return boolean
-function iset:isSatisfied(equip_slots) end
+function ItemSet:isSatisfied(equip_slots) end
 
 --- Create a top-level inventory managing containers, equip slots, item sets, and subsystem flags.
 ---@return table
@@ -4509,103 +4491,103 @@ function library.inventory.newInventory() end
 
 --- Return (or lazily create) an optional `lurek.patterns` EventBus that callers can subscribe to for inventory change notifications. Returns nil when the engine binding is unavailable. The library does not auto-emit events on this bus; callers may emit on it from their own wrappers without affecting baseline test behaviour.
 ---@return table|nil
-function inv:getEventBus() end
+function Inventory:getEventBus() end
 
 --- Register a container. Replaces any existing container with the same name.
 ---@param name string
 ---@param container table
 ---@return nil
-function inv:addContainer(name, container) end
+function Inventory:addContainer(name, container) end
 
 --- Get a container by name.
 ---@param name string
 ---@return table|nil
-function inv:getContainer(name) end
+function Inventory:getContainer(name) end
 
 --- Remove a container. Returns true if it existed.
 ---@param name string
 ---@return boolean
-function inv:removeContainer(name) end
+function Inventory:removeContainer(name) end
 
 --- Return container names in insertion order.
 ---@return table
-function inv:containerNames() end
+function Inventory:containerNames() end
 
 --- Add or replace a named equip slot.
 ---@param name string
 ---@param slot table
 ---@return nil
-function inv:addEquipSlot(name, slot) end
+function Inventory:addEquipSlot(name, slot) end
 
 --- Get an equip slot by name.
 ---@param name string
 ---@return table|nil
-function inv:getEquipSlot(name) end
+function Inventory:getEquipSlot(name) end
 
 --- Remove an equip slot. Returns true if it existed.
 ---@param name string
 ---@return boolean
-function inv:removeEquipSlot(name) end
+function Inventory:removeEquipSlot(name) end
 
 --- Return equip slot names in insertion order.
 ---@return table
-function inv:equipSlotNames() end
+function Inventory:equipSlotNames() end
 
 --- Equip an ItemStack into the named slot. Returns false if slot missing or item rejected.
 ---@param slot_name string
 ---@param stack table
 ---@return boolean
-function inv:equip(slot_name, stack) end
+function Inventory:equip(slot_name, stack) end
 
 --- Unequip a slot and return its InvItem (not the full stack). Returns nil if empty.
 ---@param slot_name string
 ---@return table|nil
-function inv:unequip(slot_name) end
+function Inventory:unequip(slot_name) end
 
 --- Register an item set.
 ---@param iset table
 ---@return nil
-function inv:addItemSet(iset) end
+function Inventory:addItemSet(iset) end
 
 --- Return all registered item sets.
 ---@return table
-function inv:getItemSets() end
+function Inventory:getItemSets() end
 
 --- Return only the currently active item sets (all requirements met).
 ---@return table
-function inv:getActiveSets() end
+function Inventory:getActiveSets() end
 
 --- Enable a named subsystem ("weight", "size", "stacking", "sets").
 ---@param name string
 ---@return nil
-function inv:enableSubsystem(name) end
+function Inventory:enableSubsystem(name) end
 
 --- Disable a named subsystem.
 ---@param name string
 ---@return nil
-function inv:disableSubsystem(name) end
+function Inventory:disableSubsystem(name) end
 
 --- Return true if the named subsystem is active.
 ---@param name string
 ---@return boolean
-function inv:isSubsystemEnabled(name) end
+function Inventory:isSubsystemEnabled(name) end
 
 --- Count items of a type across ALL containers.
 ---@param type_name string
 ---@return number
-function inv:countItem(type_name) end
+function Inventory:countItem(type_name) end
 
 --- Return true if total count >= qty across all containers.
 ---@param type_name string
 ---@param qty number
 ---@return boolean
-function inv:hasItem(type_name, qty) end
+function Inventory:hasItem(type_name, qty) end
 
 --- Remove qty items of type_name from whichever containers have them.
 ---@param type_name string
 ---@param qty number
 ---@return boolean
-function inv:removeFromAny(type_name, qty) end
+function Inventory:removeFromAny(type_name, qty) end
 
 --- Transfer a stack from one container slot to another (1-based indices).
 ---@param from_name string
@@ -4613,21 +4595,21 @@ function inv:removeFromAny(type_name, qty) end
 ---@param to_name string
 ---@param to_idx number
 ---@return boolean
-function inv:transfer(from_name, from_idx, to_name, to_idx) end
+function Inventory:transfer(from_name, from_idx, to_name, to_idx) end
 
 --- Split `quantity` items from the stack at `slot_idx` in `container_name` into the first empty compatible slot in the same container. Returns true if the split succeeded.
 ---@param container_name string
 ---@param slot_idx number
 ---@param quantity number
 ---@return boolean
-function inv:splitStack(container_name, slot_idx, quantity) end
+function Inventory:splitStack(container_name, slot_idx, quantity) end
 
 --- Merge the stack at `from_slot` into `to_slot` within `container_name`. If the destination is empty, the source stack is moved into it. Returns true if any items were merged or moved.
 ---@param container_name string
 ---@param from_slot number
 ---@param to_slot number
 ---@return boolean
-function inv:mergeStacks(container_name, from_slot, to_slot) end
+function Inventory:mergeStacks(container_name, from_slot, to_slot) end
 
 --- Swap items between two container slots (may be in different containers). Returns true on success.
 ---@param container_a string
@@ -4635,7 +4617,7 @@ function inv:mergeStacks(container_name, from_slot, to_slot) end
 ---@param container_b string
 ---@param slot_b number
 ---@return boolean
-function inv:swap(container_a, slot_a, container_b, slot_b) end
+function Inventory:swap(container_a, slot_a, container_b, slot_b) end
 
 ---@class library.item
 library.item = {}
@@ -4666,124 +4648,124 @@ function library.item.newItem(type_name) end
 
 --- Return the type name.
 ---@return string
-function it:getType() end
+function ItemType:getType() end
 
 --- Return the category from the type registry.
 ---@return string
-function it:getCategory() end
+function ItemType:getCategory() end
 
 --- Return the value of a stat, or nil if not set.
 ---@param key string
 ---@return number|nil
-function it:getStat(key) end
+function ItemType:getStat(key) end
 
 --- Set or override a stat value.
 ---@param key string
 ---@param val number
 ---@return nil
-function it:setStat(key, val) end
+function ItemType:setStat(key, val) end
 
 --- Add delta to an existing stat (creates stat at delta if absent).
 ---@param key string
 ---@param delta number
 ---@return nil
-function it:addStat(key, delta) end
+function ItemType:addStat(key, delta) end
 
 --- Remove a stat entirely.
 ---@param key string
 ---@return nil
-function it:removeStat(key) end
+function ItemType:removeStat(key) end
 
 --- Return all current stats as a shallow copy.
 ---@return table
-function it:getStats() end
+function ItemType:getStats() end
 
 --- Return true if this item has the given tag.
 ---@param tag string
 ---@return boolean
-function it:hasTag(tag) end
+function ItemType:hasTag(tag) end
 
 --- Add a tag (no-op if already present).
 ---@param tag string
 ---@return nil
-function it:addTag(tag) end
+function ItemType:addTag(tag) end
 
 --- Remove a tag. Returns true if tag existed.
 ---@param tag string
 ---@return boolean
-function it:removeTag(tag) end
+function ItemType:removeTag(tag) end
 
 --- Return all tag names as a sorted array.
 ---@return table
-function it:getTags() end
+function ItemType:getTags() end
 
 --- Set a metadata value.
 ---@param key string
 ---@param val any
 ---@return nil
-function it:setMeta(key, val) end
+function ItemType:setMeta(key, val) end
 
 --- Get a metadata value, or nil.
 ---@param key string
 ---@return any
-function it:getMeta(key) end
+function ItemType:getMeta(key) end
 
 --- Set the owner reference.
 ---@param owner any
 ---@return nil
-function it:setOwner(owner) end
+function ItemType:setOwner(owner) end
 
 --- Return the owner reference.
 ---@return any
-function it:getOwner() end
+function ItemType:getOwner() end
 
 --- Return the display name (seeds from type def; may differ from type name).
 ---@return string
-function it:getName() end
+function ItemType:getName() end
 
 --- Set the display name.
 ---@param n string
 ---@return nil
-function it:setName(n) end
+function ItemType:setName(n) end
 
 --- Return the current slot/position name.
 ---@return string
-function it:getSlot() end
+function ItemType:getSlot() end
 
 --- Set the slot/position name.
 ---@param s string
 ---@return nil
-function it:setSlot(s) end
+function ItemType:setSlot(s) end
 
 --- Get a named integer counter (0 if not set).
 ---@param key string
 ---@return number
-function it:getCounter(key) end
+function ItemType:getCounter(key) end
 
 --- Set a named integer counter.
 ---@param key string
 ---@param val number
 ---@return nil
-function it:setCounter(key, val) end
+function ItemType:setCounter(key, val) end
 
 --- Add delta to a named counter and return the new value.
 ---@param key string
 ---@param delta number
 ---@return number
-function it:addCounter(key, delta) end
+function ItemType:addCounter(key, delta) end
 
 --- Remove a named counter entry.
 ---@param key string
 ---@return nil
-function it:removeCounter(key) end
+function ItemType:removeCounter(key) end
 
 --- Return all counters as a shallow copy.
 ---@return table
-function it:getCounters() end
+function ItemType:getCounters() end
 
---- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). TODO(P4 lift): replace with a shared deepCopy helper once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
+--- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
 ---@return table
-function it:clone() end
+function ItemType:clone() end
 
 --- Create a named stack with optional capacity limit. Acts as both a LIFO stack and a positional list.
 ---@param name string
@@ -4793,169 +4775,169 @@ function library.item.newStack(name, capacity) end
 
 --- Return the stack name.
 ---@return string
-function stack:getName() end
+function Stack:getName() end
 
 --- Return number of items.
 ---@return number
-function stack:size() end
+function Stack:size() end
 
 --- Return capacity (0 = unlimited).
 ---@return number
-function stack:getCapacity() end
+function Stack:getCapacity() end
 
 --- Set or update capacity (0 = unlimited).
 ---@param n number
 ---@return nil
-function stack:setCapacity(n) end
+function Stack:setCapacity(n) end
 
 --- Return true if at capacity.
 ---@return boolean
-function stack:isFull() end
+function Stack:isFull() end
 
 --- Remove all items.
 ---@return nil
-function stack:clear() end
+function Stack:clear() end
 
 --- Push item onto top (returns false if capacity full).
 ---@param it table
 ---@return boolean
-function stack:push(it) end
+function Stack:push(it) end
 
 --- Push item onto bottom. Returns false if full.
 ---@param it table
 ---@return boolean
-function stack:pushBottom(it) end
+function Stack:pushBottom(it) end
 
 --- Pop and return top item, or nil if empty.
 ---@return table|nil
-function stack:pop() end
+function Stack:pop() end
 
 --- Alias for pop.
 ---@return table|nil
-function stack:popTop() end
+function Stack:popTop() end
 
 --- Remove and return bottom item, or nil if empty.
 ---@return table|nil
-function stack:popBottom() end
+function Stack:popBottom() end
 
 --- Peek at bottom item without removing it.
 ---@return table|nil
-function stack:peekBottom() end
+function Stack:peekBottom() end
 
 --- Peek at top item without removing it.
 ---@return table|nil
-function stack:peek() end
+function Stack:peek() end
 
 --- Alias for peek (slot compat).
 ---@return table|nil
-function stack:getItem() end
+function Stack:getItem() end
 
 --- Peek at item at 1-based index without removing. Returns nil if out of range.
 ---@param idx number
 ---@return table|nil
-function stack:peekAt(idx) end
+function Stack:peekAt(idx) end
 
 --- Remove and return item at 1-based index. Returns nil if out of range.
 ---@param idx number
 ---@return table|nil
-function stack:removeAt(idx) end
+function Stack:removeAt(idx) end
 
 --- Insert item at 1-based position. Returns false if full or index invalid.
 ---@param idx number
 ---@param it table
 ---@return boolean
-function stack:insertAt(idx, it) end
+function Stack:insertAt(idx, it) end
 
 --- Return the first item for which predicate(item) is true. Nil if none.
 ---@param pred function
 ---@return table|nil
-function stack:findFirst(pred) end
+function Stack:findFirst(pred) end
 
 --- Return a shallow copy of all items (bottom to top).
 ---@return table
-function stack:getItems() end
+function Stack:getItems() end
 
 --- Return true if the stack has no items.
 ---@return boolean
-function stack:isEmpty() end
+function Stack:isEmpty() end
 
 --- Pop n items from the top. Returns array of items (may be shorter if stack runs out).
 ---@param n number
 ---@return table
-function stack:popMany(n) end
+function Stack:popMany(n) end
 
 --- Move item at index `from` to index `to` (both 1-based). Returns false if invalid.
 ---@param from number
 ---@param to number
 ---@return boolean
-function stack:moveWithin(from, to) end
+function Stack:moveWithin(from, to) end
 
 --- Return all items whose type matches. Uses item:getType().
 ---@param type_name string
 ---@return table
-function stack:searchByType(type_name) end
+function Stack:searchByType(type_name) end
 
 --- Return all items that have the given tag.
 ---@param tag string
 ---@return table
-function stack:searchByTag(tag) end
+function Stack:searchByTag(tag) end
 
 --- Return all items in the given category.
 ---@param cat string
 ---@return table
-function stack:searchByCategory(cat) end
+function Stack:searchByCategory(cat) end
 
 --- Return first item with the given type (or nil).
 ---@param type_name string
 ---@return table|nil
-function stack:findByType(type_name) end
+function Stack:findByType(type_name) end
 
 --- Return first item with the given tag (or nil).
 ---@param tag string
 ---@return table|nil
-function stack:findByTag(tag) end
+function Stack:findByTag(tag) end
 
 --- Count items with the given type.
 ---@param type_name string
 ---@return number
-function stack:countByType(type_name) end
+function Stack:countByType(type_name) end
 
 --- Count items in the given category.
 ---@param cat string
 ---@return number
-function stack:countByCategory(cat) end
+function Stack:countByCategory(cat) end
 
 --- Count items with the given tag.
 ---@param tag string
 ---@return number
-function stack:countByTag(tag) end
+function Stack:countByTag(tag) end
 
 --- Sort items ascending by a numeric stat. Items without the stat sort last.
 ---@param stat string
 ---@return nil
-function stack:sortByStat(stat) end
+function Stack:sortByStat(stat) end
 
 --- Sort items descending by a numeric stat.
 ---@param stat string
 ---@return nil
-function stack:sortByStatDesc(stat) end
+function Stack:sortByStatDesc(stat) end
 
 --- Sort items by category (alphabetical).
 ---@return nil
-function stack:sortByCategory() end
+function Stack:sortByCategory() end
 
 --- Sort items by type name (alphabetical).
 ---@return nil
-function stack:sortByName() end
+function Stack:sortByName() end
 
---- Shuffle items in-place (Fisher-Yates). TODO(P4 lift): replace with `lurek.math.shuffle(_items)` once that helper ships (P4 lift candidate; would also fix the LuaJIT vs Lua 5.4 RNG divergence noted in P4_lift_candidates.md).
+--- Shuffle items in-place (Fisher-Yates). helper ships (P4 lift candidate; would also fix the LuaJIT vs Lua 5.4 RNG divergence noted in P4_lift_candidates.md).
 ---@return nil
-function stack:shuffle() end
+function Stack:shuffle() end
 
 --- Return the type names of the top n items (without removing).
 ---@param n number
 ---@return table
-function stack:peekTopNTypes(n) end
+function Stack:peekTopNTypes(n) end
 
 --- Create a weighted loot pool. Supports weighted draw, bulk multi-draw, and unique-draw operations.
 ---@return table
@@ -4963,50 +4945,50 @@ function library.item.newItemPool() end
 
 --- Return number of entries.
 ---@return number
-function pool:size() end
+function ItemPool:size() end
 
 --- Return true if the pool has no entries.
 ---@return boolean
-function pool:isEmpty() end
+function ItemPool:isEmpty() end
 
 --- Return the sum of all entry weights.
 ---@return number
-function pool:totalWeight() end
+function ItemPool:totalWeight() end
 
 --- Return all entries as array of {type_name, weight}.
 ---@return table
-function pool:getEntries() end
+function ItemPool:getEntries() end
 
 --- Add a type with a given weight. If type already present, adds another entry.
 ---@param type_name string
 ---@param weight number
 ---@return nil
-function pool:addType(type_name, weight) end
+function ItemPool:addType(type_name, weight) end
 
 --- Update the weight of the first matching entry. Returns false if not found.
 ---@param type_name string
 ---@param weight number
 ---@return boolean
-function pool:setWeight(type_name, weight) end
+function ItemPool:setWeight(type_name, weight) end
 
 --- Remove the first entry of type_name. Returns false if not found.
 ---@param type_name string
 ---@return boolean
-function pool:remove(type_name) end
+function ItemPool:remove(type_name) end
 
 --- Draw one random item (weighted). Returns nil if pool is empty or total weight is zero.
 ---@return table|nil
-function pool:draw() end
+function ItemPool:draw() end
 
 --- Draw n items (with replacement). Entries from an empty pool are skipped (nil).
 ---@param n number
 ---@return table
-function pool:drawTypes(n) end
+function ItemPool:drawTypes(n) end
 
 --- Draw up to n unique type names (no type drawn twice), returns array of Items. If n exceeds the number of distinct types in the pool, returns all distinct types.
 ---@param n number
 ---@return table
-function pool:drawUniqueTypes(n) end
+function ItemPool:drawUniqueTypes(n) end
 
 --- Create a stack builder for constructing stacks from a recipe list.
 ---@return table
@@ -5016,7 +4998,7 @@ function library.item.newStackBuilder() end
 ---@param type_name string
 ---@param count number
 ---@return nil
-function builder:add(type_name, count) end
+function StackBuilder:add(type_name, count) end
 
 --- Add items with per-item stat overrides and extra tags. Unlike add(), overrides are applied immediately to pre-built item instances.
 ---@param type_name string
@@ -5024,46 +5006,46 @@ function builder:add(type_name, count) end
 ---@param stat_overrides table
 ---@param extra_tags table
 ---@return nil
-function builder:addWith(type_name, count, stat_overrides, extra_tags) end
+function StackBuilder:addWith(type_name, count, stat_overrides, extra_tags) end
 
 --- Enable or disable Fisher-Yates shuffle after build.
 ---@param enabled boolean
 ---@return nil
-function builder:setShuffleOnBuild(enabled) end
+function StackBuilder:setShuffleOnBuild(enabled) end
 
 --- Require that a specific type appears at least once.
 ---@param type_name string
 ---@return nil
-function builder:requireType(type_name) end
+function StackBuilder:requireType(type_name) end
 
 --- Ban a specific type from appearing.
 ---@param type_name string
 ---@return nil
-function builder:banType(type_name) end
+function StackBuilder:banType(type_name) end
 
 --- Remove a ban on a type.
 ---@param type_name string
 ---@return nil
-function builder:removeBannedType(type_name) end
+function StackBuilder:removeBannedType(type_name) end
 
 --- Build the stack from recipe entries plus addWith items. Applies shuffleOnBuild if enabled.
 ---@param name string
 ---@return table
-function builder:build(name) end
+function StackBuilder:build(name) end
 
 --- Validate the current recipe + addWith items against required/banned constraints. Returns nil on success, or an error string on failure.
 ---@return string|nil
-function builder:validateEntries() end
+function StackBuilder:validateEntries() end
 
 --- Validate a pre-built stack against required/banned constraints. Returns nil on success, or an error string on failure.
 ---@param stack table
 ---@return string|nil
-function builder:validateStack(stack) end
+function StackBuilder:validateStack(stack) end
 
 --- Build the stack with a custom name (alias for build).
 ---@param name string
 ---@return table
-function builder:buildNamed(name) end
+function StackBuilder:buildNamed(name) end
 
 --- Create a bounded event history for stack operations.
 ---@param max_entries number
@@ -5075,56 +5057,56 @@ function library.item.newStackHistory(max_entries) end
 ---@param item_type string
 ---@param size_after number
 ---@return nil
-function history:recordPush(source, item_type, size_after) end
+function StackHistory:recordPush(source, item_type, size_after) end
 
 --- Record a pop action.
 ---@param source string
 ---@param item_type string
 ---@param size_after number
 ---@return nil
-function history:recordPop(source, item_type, size_after) end
+function StackHistory:recordPop(source, item_type, size_after) end
 
 --- Record a clear action.
 ---@param source string
 ---@return nil
-function history:recordClear(source) end
+function StackHistory:recordClear(source) end
 
 --- Record a custom event.
 ---@param source string
 ---@param label string
 ---@param size_after number
 ---@return nil
-function history:recordCustom(source, label, size_after) end
+function StackHistory:recordCustom(source, label, size_after) end
 
 --- Return all recorded entries (oldest first). Each entry has: action, source, item_type, size_after.
 ---@return table
-function history:entries() end
+function StackHistory:entries() end
 
 --- Return the last n entries, or all if n > count.
 ---@param n number
 ---@return table
-function history:getLastN(n) end
+function StackHistory:getLastN(n) end
 
 --- Clear all log entries.
 ---@return nil
-function history:clear() end
+function StackHistory:clear() end
 
 --- Return number of entries.
 ---@return number
-function history:count() end
+function StackHistory:count() end
 
 --- Return true if no events have been recorded.
 ---@return boolean
-function history:isEmpty() end
+function StackHistory:isEmpty() end
 
 --- Return the most recent entry, or nil if empty.
 ---@return table|nil
-function history:last() end
+function StackHistory:last() end
 
 --- Return all entries matching a specific source name.
 ---@param source string
 ---@return table
-function history:entriesFor(source) end
+function StackHistory:entriesFor(source) end
 
 --- Create a named-stack manager.
 ---@return table
@@ -5134,41 +5116,41 @@ function library.item.newStackManager() end
 ---@param name string
 ---@param stack table
 ---@return nil
-function manager:addStack(name, stack) end
+function StackManager:addStack(name, stack) end
 
 --- Retrieve a stack by name.
 ---@param name string
 ---@return table|nil
-function manager:getStack(name) end
+function StackManager:getStack(name) end
 
 --- Remove a stack. Returns true if existed.
 ---@param name string
 ---@return boolean
-function manager:removeStack(name) end
+function StackManager:removeStack(name) end
 
 --- Return all registered stack names.
 ---@return table
-function manager:keys() end
+function StackManager:keys() end
 
 --- Return true if a stack with this name exists.
 ---@param name string
 ---@return boolean
-function manager:hasStack(name) end
+function StackManager:hasStack(name) end
 
 --- Create and register a new empty unlimited stack.
 ---@param name string
 ---@return nil
-function manager:createStack(name) end
+function StackManager:createStack(name) end
 
 --- Create and register a new empty stack with a capacity limit.
 ---@param name string
 ---@param capacity number
 ---@return nil
-function manager:createStackCapped(name, capacity) end
+function StackManager:createStackCapped(name, capacity) end
 
 --- Return total number of items across all stacks.
 ---@return number
-function manager:totalItems() end
+function StackManager:totalItems() end
 
 --- Move item at 1-based index from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
 ---@param from string
@@ -5176,7 +5158,7 @@ function manager:totalItems() end
 ---@param to string
 ---@return table|nil
 ---@return string|nil
-function manager:moveItem(from, index, to) end
+function StackManager:moveItem(from, index, to) end
 
 --- Move the first item of a given type from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
 ---@param from string
@@ -5184,14 +5166,14 @@ function manager:moveItem(from, index, to) end
 ---@param to string
 ---@return table|nil
 ---@return string|nil
-function manager:moveItemByType(from, item_type, to) end
+function StackManager:moveItemByType(from, item_type, to) end
 
 --- Move the top item from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
 ---@param from string
 ---@param to string
 ---@return table|nil
 ---@return string|nil
-function manager:moveTop(from, to) end
+function StackManager:moveTop(from, to) end
 
 --- Create a named slot with optional capacity limit. A slot is a bounded named position that holds zero or more items.
 ---@param name string
@@ -5201,69 +5183,69 @@ function library.item.newSlot(name, capacity) end
 
 --- Return the slot name.
 ---@return string
-function slot:getName() end
+function Slot:getName() end
 
 --- Return number of items in the slot.
 ---@return number
-function slot:size() end
+function Slot:size() end
 
 --- Return true if the slot is empty.
 ---@return boolean
-function slot:isEmpty() end
+function Slot:isEmpty() end
 
 --- Return true if the slot is at capacity.
 ---@return boolean
-function slot:isFull() end
+function Slot:isFull() end
 
 --- Return capacity (0 = unlimited).
 ---@return number
-function slot:getCapacity() end
+function Slot:getCapacity() end
 
 --- Set or update capacity (0 = unlimited).
 ---@param n number
 ---@return nil
-function slot:setCapacity(n) end
+function Slot:setCapacity(n) end
 
 --- Add an item to the slot. Returns true on success, false if at capacity.
 ---@param it table
 ---@return boolean
-function slot:push(it) end
+function Slot:push(it) end
 
 --- Remove and return the last item, or nil if empty.
 ---@return table|nil
-function slot:pop() end
+function Slot:pop() end
 
 --- Remove and return the item at 1-based index, or nil if out of range.
 ---@param index number
 ---@return table|nil
-function slot:removeAt(index) end
+function Slot:removeAt(index) end
 
 --- Peek at the last item without removing it.
 ---@return table|nil
-function slot:peek() end
+function Slot:peek() end
 
 --- Peek at item at 1-based index without removing it.
 ---@param index number
 ---@return table|nil
-function slot:peekAt(index) end
+function Slot:peekAt(index) end
 
 --- Remove all items and return them as an array.
 ---@return table
-function slot:clear() end
+function Slot:clear() end
 
 --- Return a shallow copy of all items.
 ---@return table
-function slot:items() end
+function Slot:items() end
 
 --- Return true if any item has the given tag.
 ---@param tag string
 ---@return boolean
-function slot:hasItemWithTag(tag) end
+function Slot:hasItemWithTag(tag) end
 
 --- Return true if any item is of the given type.
 ---@param item_type string
 ---@return boolean
-function slot:hasItemOfType(item_type) end
+function Slot:hasItemOfType(item_type) end
 
 --- Return 0-based indices of the top N items ranked by a stat (descending).
 ---@param items table
@@ -5872,7 +5854,7 @@ function NetState:poll() end
 ---@return nil
 function NetState:_markDirty(key) end
 
---- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.binary.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
+--- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
 ---@return number
 function NetState:hashState() end
 

@@ -60,34 +60,34 @@ end</code></pre></details>
     <p>Instance methods exported from the LProvinceRegistry userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-adjacencies"><div class="item-row-main"><h3>adjacencies</h3><pre class="inline-signature">LProvinceRegistry:adjacencies() -&gt; table</pre><p>Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:280</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-adjacencies"><div class="item-row-main"><h3>adjacencies</h3><pre class="inline-signature">LProvinceRegistry:adjacencies() -&gt; table</pre><p>Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:282</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;pairs&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
 
     print(&quot;adjacency pairs = &quot; .. tostring(#pairs))
     print(&quot;first pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
-end</code></pre></details></article><article class="item-row api-row" id="method-bordersegments"><div class="item-row-main"><h3>borderSegments</h3><pre class="inline-signature">LProvinceRegistry:borderSegments() -&gt; table</pre><p>Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:326</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-bordersegments"><div class="item-row-main"><h3>borderSegments</h3><pre class="inline-signature">LProvinceRegistry:borderSegments() -&gt; table</pre><p>Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:328</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;geo_segments&quot;, &quot;assets/textures/province_map.png&quot;)
     local segments = reg:borderSegments()
     local first = segments[1]
 
     print(&quot;segment count = &quot; .. tostring(#segments))
     print(&quot;first pair = &quot; .. tostring(first and first.province_a) .. &quot;, &quot; .. tostring(first and first.province_b))
-end</code></pre></details></article><article class="item-row api-row" id="method-fitcamera"><div class="item-row-main"><h3>fitCamera</h3><pre class="inline-signature">LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, pixel_size: number?) -&gt; number, number, number</pre><p>Computes camera position and zoom so the entire province map fits within the given screen dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:171</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findisolatedprovinces"><div class="item-row-main"><h3>findIsolatedProvinces</h3><pre class="inline-signature">LProvinceRegistry:findIsolatedProvinces(owner_attr: string) -&gt; integer[]</pre><p>Returns provinces that have no adjacent province with the same owner attribute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:556</span></div></article><article class="item-row api-row" id="method-findroute"><div class="item-row-main"><h3>findRoute</h3><pre class="inline-signature">LProvinceRegistry:findRoute(from_id: integer, to_id: integer, cost_fn: function?) -&gt; table?</pre><p>Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:429</span></div></article><article class="item-row api-row" id="method-findroutes"><div class="item-row-main"><h3>findRoutes</h3><pre class="inline-signature">LProvinceRegistry:findRoutes(pairs: table, cost_fn: function?) -&gt; table</pre><p>Finds routes for a batch of `{from, to}` pairs.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:477</span></div></article><article class="item-row api-row" id="method-fitcamera"><div class="item-row-main"><h3>fitCamera</h3><pre class="inline-signature">LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, pixel_size: number?) -&gt; number, number, number</pre><p>Computes camera position and zoom so the entire province map fits within the given screen dimensions.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:173</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;cam_fit&quot;, &quot;assets/textures/province_map.png&quot;)
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
 
     print(&quot;camera x = &quot; .. tostring(cam_x))
     print(&quot;camera y = &quot; .. tostring(cam_y))
     print(&quot;zoom = &quot; .. tostring(zoom))
-end</code></pre></details></article><article class="item-row api-row" id="method-getat"><div class="item-row-main"><h3>getAt</h3><pre class="inline-signature">LProvinceRegistry:getAt(x: integer, y: integer) -&gt; integer</pre><p>Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:162</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getat"><div class="item-row-main"><h3>getAt</h3><pre class="inline-signature">LProvinceRegistry:getAt(x: integer, y: integer) -&gt; integer</pre><p>Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:164</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;spatial&quot;, &quot;assets/textures/province_map.png&quot;)
     local province_id = reg:getAt(50, 50)
 
     print(&quot;province at 50,50 = &quot; .. tostring(province_id))
     print(&quot;province at 0,0 = &quot; .. tostring(reg:getAt(0, 0)))
-end</code></pre></details></article><article class="item-row api-row" id="method-getborderclass"><div class="item-row-main"><h3>getBorderClass</h3><pre class="inline-signature">LProvinceRegistry:getBorderClass(a: integer, b: integer) -&gt; integer</pre><p>Backward-compatible alias for getBorderType. Returns the border type ID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:447</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getborderclass"><div class="item-row-main"><h3>getBorderClass</h3><pre class="inline-signature">LProvinceRegistry:getBorderClass(a: integer, b: integer) -&gt; integer</pre><p>Backward-compatible alias for getBorderType. Returns the border type ID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:658</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;border_class_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -99,7 +99,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;border class = &quot; .. tostring(pair and reg:getBorderClass(pair.province_a, pair.province_b)))
-end</code></pre></details></article><article class="item-row api-row" id="method-getborderpairstyle"><div class="item-row-main"><h3>getBorderPairStyle</h3><pre class="inline-signature">LProvinceRegistry:getBorderPairStyle(a: integer, b: integer) -&gt; table</pre><p>Returns the style override for a specific adjacency pair, or nil when unset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:513</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getborderpairstyle"><div class="item-row-main"><h3>getBorderPairStyle</h3><pre class="inline-signature">LProvinceRegistry:getBorderPairStyle(a: integer, b: integer) -&gt; table</pre><p>Returns the style override for a specific adjacency pair, or nil when unset.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:724</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;border_pair_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -117,7 +117,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;thickness = &quot; .. tostring(style and style.thickness))
     print(&quot;flag count = &quot; .. tostring(style and style.flags and #style.flags or 0))
-end</code></pre></details></article><article class="item-row api-row" id="method-getbordertype"><div class="item-row-main"><h3>getBorderType</h3><pre class="inline-signature">LProvinceRegistry:getBorderType(a: integer, b: integer) -&gt; integer</pre><p>Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getbordertype"><div class="item-row-main"><h3>getBorderType</h3><pre class="inline-signature">LProvinceRegistry:getBorderType(a: integer, b: integer) -&gt; integer</pre><p>Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:637</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;borders_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -129,7 +129,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;border type = &quot; .. tostring(pair and reg:getBorderType(pair.province_a, pair.province_b)))
-end</code></pre></details></article><article class="item-row api-row" id="method-getchangessince"><div class="item-row-main"><h3>getChangesSince</h3><pre class="inline-signature">LProvinceRegistry:getChangesSince(revision: integer) -&gt; table</pre><p>Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:813</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getchangessince"><div class="item-row-main"><h3>getChangesSince</h3><pre class="inline-signature">LProvinceRegistry:getChangesSince(revision: integer) -&gt; table</pre><p>Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1024</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;changes_since&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -144,13 +144,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;change count = &quot; .. tostring(#changes))
     print(&quot;first kind = &quot; .. tostring(first_change and first_change.kind))
-end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LProvinceRegistry:getHeight() -&gt; integer</pre><p>Returns the height of the province grid in cells (pixels of the source PNG).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:154</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getconnectedcomponents"><div class="item-row-main"><h3>getConnectedComponents</h3><pre class="inline-signature">LProvinceRegistry:getConnectedComponents() -&gt; table</pre><p>Returns connected components in the province adjacency graph.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:530</span></div></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LProvinceRegistry:getHeight() -&gt; integer</pre><p>Returns the height of the province grid in cells (pixels of the source PNG).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:156</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;info_height&quot;, &quot;assets/textures/province_map.png&quot;)
     local height = reg:getHeight()
 
     print(&quot;height = &quot; .. tostring(height))
     print(&quot;name = &quot; .. reg:getName())
-end</code></pre></details></article><article class="item-row api-row" id="method-getmapmode"><div class="item-row-main"><h3>getMapMode</h3><pre class="inline-signature">LProvinceRegistry:getMapMode() -&gt; string</pre><p>Returns the name of the currently active map mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:971</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getmapmode"><div class="item-row-main"><h3>getMapMode</h3><pre class="inline-signature">LProvinceRegistry:getMapMode() -&gt; string</pre><p>Returns the name of the currently active map mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1182</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;map_mode_get&quot;, &quot;assets/textures/province_map.png&quot;)
 
     reg:registerMapMode(&quot;political_plus&quot;, {
@@ -162,11 +162,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     reg:setMapMode(&quot;political_plus&quot;)
 
     print(&quot;mode = &quot; .. reg:getMapMode())
-end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LProvinceRegistry:getName() -&gt; string</pre><p>Returns the string name used to identify this registry in the province system.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:146</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LProvinceRegistry:getName() -&gt; string</pre><p>Returns the string name used to identify this registry in the province system.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:148</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;test_reg&quot;, &quot;assets/textures/province_map.png&quot;)
 
     print(&quot;name = &quot; .. reg:getName())
-end</code></pre></details></article><article class="item-row api-row" id="method-getneighbors"><div class="item-row-main"><h3>getNeighbors</h3><pre class="inline-signature">LProvinceRegistry:getNeighbors(id: integer) -&gt; integer[]</pre><p>Returns a table of province IDs that share a border with the given province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:413</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getneighbors"><div class="item-row-main"><h3>getNeighbors</h3><pre class="inline-signature">LProvinceRegistry:getNeighbors(id: integer) -&gt; integer[]</pre><p>Returns a table of province IDs that share a border with the given province.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:415</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;adj&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -174,7 +174,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province id = &quot; .. tostring(province_id))
     print(&quot;neighbor count = &quot; .. tostring(#neighbors))
-end</code></pre></details></article><article class="item-row api-row" id="method-getprovince"><div class="item-row-main"><h3>getProvince</h3><pre class="inline-signature">LProvinceRegistry:getProvince(id: integer) -&gt; table</pre><p>Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:362</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getprovince"><div class="item-row-main"><h3>getProvince</h3><pre class="inline-signature">LProvinceRegistry:getProvince(id: integer) -&gt; table</pre><p>Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:364</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;snap&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -183,7 +183,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;province_id = &quot; .. tostring(snap and snap.province_id))
     print(&quot;revision = &quot; .. tostring(snap and snap.revision))
     print(&quot;terrain type = &quot; .. tostring(snap and snap.style and snap.style.terrain_type))
-end</code></pre></details></article><article class="item-row api-row" id="method-getrevision"><div class="item-row-main"><h3>getRevision</h3><pre class="inline-signature">LProvinceRegistry:getRevision() -&gt; integer</pre><p>Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:350</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getrevision"><div class="item-row-main"><h3>getRevision</h3><pre class="inline-signature">LProvinceRegistry:getRevision() -&gt; integer</pre><p>Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;changes_revision&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -195,13 +195,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;revision before = &quot; .. tostring(before))
     print(&quot;revision after = &quot; .. tostring(reg:getRevision()))
-end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LProvinceRegistry:getWidth() -&gt; integer</pre><p>Returns the width of the province grid in cells (pixels of the source PNG).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:150</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LProvinceRegistry:getWidth() -&gt; integer</pre><p>Returns the width of the province grid in cells (pixels of the source PNG).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:152</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;info_width&quot;, &quot;assets/textures/province_map.png&quot;)
     local width = reg:getWidth()
 
     print(&quot;width = &quot; .. tostring(width))
     print(&quot;name = &quot; .. reg:getName())
-end</code></pre></details></article><article class="item-row api-row" id="method-importmetadatafromfiles"><div class="item-row-main"><h3>importMetadataFromFiles</h3><pre class="inline-signature">LProvinceRegistry:importMetadataFromFiles(opts: table) -&gt; table</pre><p>Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:643</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-importmetadatafromfiles"><div class="item-row-main"><h3>importMetadataFromFiles</h3><pre class="inline-signature">LProvinceRegistry:importMetadataFromFiles(opts: table) -&gt; table</pre><p>Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:854</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;meta_import&quot;, &quot;content/games/strategy/eu2/map.png&quot;)
     local summary = reg:importMetadataFromFiles({
         color_map_png = &quot;content/games/strategy/eu2/map.png&quot;,
@@ -213,26 +213,26 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;mapped provinces = &quot; .. tostring(summary.mapped_provinces))
     print(&quot;capitals set = &quot; .. tostring(summary.capitals_set))
     print(&quot;labels set = &quot; .. tostring(summary.labels_set))
-end</code></pre></details></article><article class="item-row api-row" id="method-provincecount"><div class="item-row-main"><h3>provinceCount</h3><pre class="inline-signature">LProvinceRegistry:provinceCount() -&gt; integer</pre><p>Returns the total number of distinct provinces in this registry (excluding ID 0).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:261</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isconnected"><div class="item-row-main"><h3>isConnected</h3><pre class="inline-signature">LProvinceRegistry:isConnected(from_id: integer, to_id: integer) -&gt; boolean</pre><p>Returns true when there is at least one route between two provinces.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:589</span></div></article><article class="item-row api-row" id="method-provincecount"><div class="item-row-main"><h3>provinceCount</h3><pre class="inline-signature">LProvinceRegistry:provinceCount() -&gt; integer</pre><p>Returns the total number of distinct provinces in this registry (excluding ID 0).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:263</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;info_count&quot;, &quot;assets/textures/province_map.png&quot;)
     local count = reg:provinceCount()
 
     print(&quot;province count = &quot; .. tostring(count))
-end</code></pre></details></article><article class="item-row api-row" id="method-provinceids"><div class="item-row-main"><h3>provinceIds</h3><pre class="inline-signature">LProvinceRegistry:provinceIds() -&gt; integer[]</pre><p>Returns a sequential table of all province IDs in this registry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:267</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-provinceids"><div class="item-row-main"><h3>provinceIds</h3><pre class="inline-signature">LProvinceRegistry:provinceIds() -&gt; integer[]</pre><p>Returns a sequential table of all province IDs in this registry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:269</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;info_ids&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
 
     print(&quot;id count = &quot; .. tostring(#ids))
     print(&quot;first id = &quot; .. tostring(ids[1]))
     print(&quot;last id = &quot; .. tostring(ids[#ids]))
-end</code></pre></details></article><article class="item-row api-row" id="method-provincespans"><div class="item-row-main"><h3>provinceSpans</h3><pre class="inline-signature">LProvinceRegistry:provinceSpans() -&gt; table</pre><p>Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:300</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-provincespans"><div class="item-row-main"><h3>provinceSpans</h3><pre class="inline-signature">LProvinceRegistry:provinceSpans() -&gt; table</pre><p>Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:302</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;geo_spans&quot;, &quot;assets/textures/province_map.png&quot;)
     local spans = reg:provinceSpans()
     local first = spans[1]
 
     print(&quot;span count = &quot; .. tostring(#spans))
     print(&quot;first span province = &quot; .. tostring(first and first.province_id))
-end</code></pre></details></article><article class="item-row api-row" id="method-registerbordertype"><div class="item-row-main"><h3>registerBorderType</h3><pre class="inline-signature">LProvinceRegistry:registerBorderType(type_id: integer, config: table)</pre><p>Registers a border type config by ID. Defines visual appearance for borders of this type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:467</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-registerbordertype"><div class="item-row-main"><h3>registerBorderType</h3><pre class="inline-signature">LProvinceRegistry:registerBorderType(type_id: integer, config: table)</pre><p>Registers a border type config by ID. Defines visual appearance for borders of this type.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:678</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;border_type_register&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
 
@@ -240,7 +240,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;registered type = 5&quot;)
     print(&quot;adjacency pairs = &quot; .. tostring(#pairs))
-end</code></pre></details></article><article class="item-row api-row" id="method-registermapmode"><div class="item-row-main"><h3>registerMapMode</h3><pre class="inline-signature">LProvinceRegistry:registerMapMode(name: string, config: table)</pre><p>Registers a named map mode with display configuration. Overwrites if name exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:932</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-registermapmode"><div class="item-row-main"><h3>registerMapMode</h3><pre class="inline-signature">LProvinceRegistry:registerMapMode(name: string, config: table)</pre><p>Registers a named map mode with display configuration. Overwrites if name exists.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1143</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;map_mode_register&quot;, &quot;assets/textures/province_map.png&quot;)
 
     reg:registerMapMode(&quot;economy&quot;, {
@@ -257,7 +257,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;registered mode = economy&quot;)
     print(&quot;current mode = &quot; .. reg:getMapMode())
-end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LProvinceRegistry:render(opts: table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (&quot;auto&quot;|&quot;strategic&quot;)</pre><p>Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:718</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-render"><div class="item-row-main"><h3>render</h3><pre class="inline-signature">LProvinceRegistry:render(opts: table?|Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals/draw_roads (boolean?), border_width (number?), zoom_mode (&quot;auto&quot;|&quot;strategic&quot;)</pre><p>Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:929</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;render&quot;, &quot;assets/textures/province_map.png&quot;)
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
 
@@ -280,20 +280,20 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;rendered registry = &quot; .. reg:getName())
     print(&quot;zoom = &quot; .. tostring(zoom))
-end</code></pre></details></article><article class="item-row api-row" id="method-screentomap"><div class="item-row-main"><h3>screenToMap</h3><pre class="inline-signature">LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, pixel_size: number?) -&gt; number, number</pre><p>Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:194</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-screentomap"><div class="item-row-main"><h3>screenToMap</h3><pre class="inline-signature">LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, pixel_size: number?) -&gt; number, number</pre><p>Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:196</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;cam_map&quot;, &quot;assets/textures/province_map.png&quot;)
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
     local map_x, map_y = reg:screenToMap(400, 300, cam_x, cam_y, zoom, 1.0)
 
     print(&quot;map x = &quot; .. tostring(map_x))
     print(&quot;map y = &quot; .. tostring(map_y))
-end</code></pre></details></article><article class="item-row api-row" id="method-screentoprovince"><div class="item-row-main"><h3>screenToProvince</h3><pre class="inline-signature">LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, pixel_size: number?) -&gt; integer</pre><p>Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:226</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-screentoprovince"><div class="item-row-main"><h3>screenToProvince</h3><pre class="inline-signature">LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, pixel_size: number?) -&gt; integer</pre><p>Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:228</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;cam_province&quot;, &quot;assets/textures/province_map.png&quot;)
     local cam_x, cam_y, zoom = reg:fitCamera(800, 600, 1.0)
     local province_id = reg:screenToProvince(400, 300, cam_x, cam_y, zoom, 1.0)
 
     print(&quot;province at center = &quot; .. tostring(province_id))
-end</code></pre></details></article><article class="item-row api-row" id="method-setattr"><div class="item-row-main"><h3>setAttr</h3><pre class="inline-signature">LProvinceRegistry:setAttr(id: integer, key: string, value: string) -&gt; boolean</pre><p>Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:598</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setattr"><div class="item-row-main"><h3>setAttr</h3><pre class="inline-signature">LProvinceRegistry:setAttr(id: integer, key: string, value: string) -&gt; boolean</pre><p>Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:809</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;attrs&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -305,7 +305,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setborderclass"><div class="item-row-main"><h3>setBorderClass</h3><pre class="inline-signature">LProvinceRegistry:setBorderClass(a: integer, b: integer, border_type: integer)</pre><p>Backward-compatible alias for setBorderType. Sets the border type ID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:456</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setborderclass"><div class="item-row-main"><h3>setBorderClass</h3><pre class="inline-signature">LProvinceRegistry:setBorderClass(a: integer, b: integer, border_type: integer)</pre><p>Backward-compatible alias for setBorderType. Sets the border type ID.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;border_class_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -319,7 +319,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setborderpairstyle"><div class="item-row-main"><h3>setBorderPairStyle</h3><pre class="inline-signature">LProvinceRegistry:setBorderPairStyle(a: integer, b: integer, style: table|Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string) -&gt; boolean</pre><p>Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:500</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setborderpairstyle"><div class="item-row-main"><h3>setBorderPairStyle</h3><pre class="inline-signature">LProvinceRegistry:setBorderPairStyle(a: integer, b: integer, style: table|Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string) -&gt; boolean</pre><p>Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;border_pair_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -335,7 +335,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setborderstyle"><div class="item-row-main"><h3>setBorderStyle</h3><pre class="inline-signature">LProvinceRegistry:setBorderStyle(id: integer, border_style: integer) -&gt; boolean</pre><p>Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:567</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setborderstyle"><div class="item-row-main"><h3>setBorderStyle</h3><pre class="inline-signature">LProvinceRegistry:setBorderStyle(id: integer, border_style: integer) -&gt; boolean</pre><p>Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:778</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;style_border&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -347,7 +347,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setbordertype"><div class="item-row-main"><h3>setBorderType</h3><pre class="inline-signature">LProvinceRegistry:setBorderType(a: integer, b: integer, border_type: integer)</pre><p>Sets the border type ID between two adjacent provinces. Register types first with registerBorderType.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:435</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setbordertype"><div class="item-row-main"><h3>setBorderType</h3><pre class="inline-signature">LProvinceRegistry:setBorderType(a: integer, b: integer, border_type: integer)</pre><p>Sets the border type ID between two adjacent provinces. Register types first with registerBorderType.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:646</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;borders_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local pairs = reg:adjacencies()
     local pair = pairs[1]
@@ -359,7 +359,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;pair = &quot; .. tostring(pair and pair.province_a) .. &quot;, &quot; .. tostring(pair and pair.province_b))
     print(&quot;border type = &quot; .. tostring(pair and reg:getBorderType(pair.province_a, pair.province_b)))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcapital"><div class="item-row-main"><h3>setCapital</h3><pre class="inline-signature">LProvinceRegistry:setCapital(id: integer, x: number, y: number) -&gt; boolean</pre><p>Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcapital"><div class="item-row-main"><h3>setCapital</h3><pre class="inline-signature">LProvinceRegistry:setCapital(id: integer, x: number, y: number) -&gt; boolean</pre><p>Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:821</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;labels_capital&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -371,7 +371,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setfogstate"><div class="item-row-main"><h3>setFogState</h3><pre class="inline-signature">LProvinceRegistry:setFogState(id: integer, fog_state: integer) -&gt; boolean</pre><p>Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:578</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setfogstate"><div class="item-row-main"><h3>setFogState</h3><pre class="inline-signature">LProvinceRegistry:setFogState(id: integer, fog_state: integer) -&gt; boolean</pre><p>Sets a fog-of-war byte for a province. This value is game-defined metadata and can be used by scripts/map modes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:789</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;style_fog&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -383,7 +383,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setlabelline"><div class="item-row-main"><h3>setLabelLine</h3><pre class="inline-signature">LProvinceRegistry:setLabelLine(id: integer, ax: number, ay: number, bx: number, by: number) -&gt; boolean</pre><p>Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:621</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlabelline"><div class="item-row-main"><h3>setLabelLine</h3><pre class="inline-signature">LProvinceRegistry:setLabelLine(id: integer, ax: number, ay: number, bx: number, by: number) -&gt; boolean</pre><p>Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:832</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;labels_line&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -395,7 +395,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setlabeltext"><div class="item-row-main"><h3>setLabelText</h3><pre class="inline-signature">LProvinceRegistry:setLabelText(id: integer, text: string) -&gt; boolean</pre><p>Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:632</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlabeltext"><div class="item-row-main"><h3>setLabelText</h3><pre class="inline-signature">LProvinceRegistry:setLabelText(id: integer, text: string) -&gt; boolean</pre><p>Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:843</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;labels_text&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -407,7 +407,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setmapmode"><div class="item-row-main"><h3>setMapMode</h3><pre class="inline-signature">LProvinceRegistry:setMapMode(name: string) -&gt; boolean</pre><p>Switches the active map mode to a previously registered mode name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:964</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setmapmode"><div class="item-row-main"><h3>setMapMode</h3><pre class="inline-signature">LProvinceRegistry:setMapMode(name: string) -&gt; boolean</pre><p>Switches the active map mode to a previously registered mode name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1175</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;map_mode_set&quot;, &quot;assets/textures/province_map.png&quot;)
 
     reg:registerMapMode(&quot;terrain_view&quot;, {
@@ -422,7 +422,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;applied = &quot; .. tostring(ok))
     print(&quot;mode = &quot; .. reg:getMapMode())
-end</code></pre></details></article><article class="item-row api-row" id="method-setpoliticalcolor"><div class="item-row-main"><h3>setPoliticalColor</h3><pre class="inline-signature">LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, a: number?) -&gt; boolean</pre><p>Sets the political map color for a province. Used in political map mode rendering and change tracking.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:543</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setpoliticalcolor"><div class="item-row-main"><h3>setPoliticalColor</h3><pre class="inline-signature">LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, a: number?) -&gt; boolean</pre><p>Sets the political map color for a province. Used in political map mode rendering and change tracking.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:754</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;colors&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -434,7 +434,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setterraintype"><div class="item-row-main"><h3>setTerrainType</h3><pre class="inline-signature">LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -&gt; boolean</pre><p>Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:556</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setterraintype"><div class="item-row-main"><h3>setTerrainType</h3><pre class="inline-signature">LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -&gt; boolean</pre><p>Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:767</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;style_terrain&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -446,7 +446,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-setvisibilitystate"><div class="item-row-main"><h3>setVisibilityState</h3><pre class="inline-signature">LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -&gt; boolean</pre><p>Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:586</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setvisibilitystate"><div class="item-row-main"><h3>setVisibilityState</h3><pre class="inline-signature">LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -&gt; boolean</pre><p>Sets the render visibility state for a province. `0` = hidden (no fill/border/capital/label), `1` = discovered (gray fill only), `2+` = fully visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:797</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;style_visibility&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -458,11 +458,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;applied = &quot; .. tostring(ok))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LProvinceRegistry:type() -&gt; string</pre><p>Returns the type name string for this userdata object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:978</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-totalattrforowner"><div class="item-row-main"><h3>totalAttrForOwner</h3><pre class="inline-signature">LProvinceRegistry:totalAttrForOwner(owner_attr: string, owner_val: string, sum_attr: string) -&gt; number</pre><p>Sums a numeric attribute for all provinces with matching owner value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:611</span></div></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LProvinceRegistry:type() -&gt; string</pre><p>Returns the type name string for this userdata object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1189</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;typed_name&quot;, &quot;assets/textures/province_map.png&quot;)
 
     print(&quot;type = &quot; .. reg:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LProvinceRegistry:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name. Returns true for &quot;LProvinceRegistry&quot; and &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:983</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LProvinceRegistry:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name. Returns true for &quot;LProvinceRegistry&quot; and &quot;Object&quot;.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/province_api.rs:1194</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;typed_check&quot;, &quot;assets/textures/province_map.png&quot;)
 
     print(&quot;is registry = &quot; .. tostring(reg:typeOf(&quot;LProvinceRegistry&quot;)))

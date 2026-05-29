@@ -1,8 +1,4 @@
-//! `lurek.log` -- Logging bindings for severity helpers, global level control, memory/file/rotating/callback sinks, sink listing and flushing, memory reads, structured field logs, tag filters, and Lua callback dispatch.
-//!
-//! - Registers `lurek.log.*` functions and types via `register()`.
-//! - Bridges 18 Lua-callable methods via `mlua`.
-//! - See `docs/specs/log.md` for the full API specification.
+//! File: src/lua_api/log_api.rs
 
 use super::SharedState;
 use crate::log as log_domain;

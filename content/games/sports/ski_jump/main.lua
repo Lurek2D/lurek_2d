@@ -215,13 +215,13 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.7, 0.8, 0.95)
     compute_ramp()
     math.randomseed(os.time())
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/ski_jump/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.title_hill_label = ui_root:findById("title_hill_label")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.final_screen = ui_root:findById("final_screen")
     app_ui.final_rounds = {
         ui_root:findById("final_round_1"),
@@ -230,21 +230,21 @@ function lurek.init()
     }
     app_ui.final_total = ui_root:findById("final_total")
     app_ui.press_restart = ui_root:findById("press_restart")
-    
+
     app_ui.top_bar = ui_root:findById("top_bar")
     app_ui.round_label = ui_root:findById("round_label")
     app_ui.hill_label = ui_root:findById("hill_label")
     app_ui.wind_label = ui_root:findById("wind_label")
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     app_ui.approach_hud = ui_root:findById("approach_hud")
     app_ui.speed_label = ui_root:findById("speed_label")
     app_ui.crouching_label = ui_root:findById("crouching_label")
-    
+
     app_ui.airborne_hud = ui_root:findById("airborne_hud")
     app_ui.flight_time_label = ui_root:findById("flight_time_label")
     app_ui.lean_indicator = ui_root:findById("lean_indicator")
-    
+
     app_ui.score_hud = ui_root:findById("score_hud")
     app_ui.distance_label = ui_root:findById("distance_label")
     app_ui.landing_quality_label = ui_root:findById("landing_quality_label")
@@ -257,7 +257,7 @@ function lurek.init()
     }
     app_ui.round_score_label = ui_root:findById("round_score_label")
     app_ui.press_continue = ui_root:findById("press_continue")
-    
+
     local function handle_action_click()
         if state == "TITLE" then
             round = 1
@@ -277,7 +277,7 @@ function lurek.init()
             end
         end
     end
-    
+
     if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
     if app_ui.press_restart then app_ui.press_restart:setOnClick(handle_action_click) end
     if app_ui.press_continue then app_ui.press_continue:setOnClick(handle_action_click) end
@@ -483,14 +483,14 @@ function lurek.process(delta)
     -- UI Sync
     local fps = lurek.timer.getFPS()
     app_ui.fps_label.text = string.format("FPS: %d", math.floor(fps))
-    
+
     app_ui.title_screen.visible = (state == "TITLE")
     app_ui.final_screen.visible = (state == "FINAL")
     app_ui.top_bar.visible = (state == "APPROACH" or state == "AIRBORNE" or state == "SCORE")
     app_ui.approach_hud.visible = (state == "APPROACH")
     app_ui.airborne_hud.visible = (state == "AIRBORNE")
     app_ui.score_hud.visible = (state == "SCORE")
-    
+
     if state == "TITLE" then
         app_ui.title_hill_label.text = "Hill: " .. HILLS[hill].name .. " (" .. HILLS[hill].k_point .. "m)"
     elseif state == "FINAL" then
@@ -504,18 +504,18 @@ function lurek.process(delta)
         end
         app_ui.final_total.text = string.format("Total: %.1f", grand_total)
     end
-    
+
     if state == "APPROACH" or state == "AIRBORNE" or state == "SCORE" then
         app_ui.round_label.text = string.format("Round %d/%d", round, MAX_ROUNDS)
         app_ui.hill_label.text = HILLS[hill].name .. " Hill"
-        
+
         local wind_label = string.format("Wind: %.1f m/s %s", math.abs(wind), wind > 0 and "→" or "←")
         app_ui.wind_label.text = wind_label
         local wind_color_r = wind > 0 and 0.2 or 0.9
         local wind_color_b = wind > 0 and 0.9 or 0.2
         app_ui.wind_label.color = {wind_color_r, 0.7, wind_color_b, 1}
     end
-    
+
     if state == "APPROACH" then
         app_ui.speed_label.text = string.format("Speed: %.0f km/h", display_speed * 3.6 / 10)
         app_ui.crouching_label.visible = crouching
@@ -527,7 +527,7 @@ function lurek.process(delta)
         app_ui.lean_indicator.y = lean_pos
     elseif state == "SCORE" then
         app_ui.distance_label.text = string.format("Distance: %.1f m", display_distance)
-        
+
         if landing_quality == "smooth" then
             app_ui.landing_quality_label.text = "SMOOTH LANDING!"
             app_ui.landing_quality_label.color = {0.2, 1, 0.3, 1}
@@ -538,7 +538,7 @@ function lurek.process(delta)
             app_ui.landing_quality_label.text = "CRASH!"
             app_ui.landing_quality_label.color = {1, 0.2, 0.2, 1}
         end
-        
+
         for i = 1, JUDGES do
             if i <= shown_judges then
                 local s = judge_scores[i]
@@ -555,7 +555,7 @@ function lurek.process(delta)
                 app_ui.judges[i].color = {0.5, 0.5, 0.6, 0.5}
             end
         end
-        
+
         if shown_judges >= JUDGES then
             app_ui.round_score_label.visible = true
             app_ui.press_continue.visible = true

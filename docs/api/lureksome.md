@@ -194,7 +194,7 @@ CombatBattle:sortInitiative(  )  -- Sort combatants by speed (descending).
 CombatBattle:getCurrentCombatant(  ) -> Combatant|nil  -- Get the current alive combatant.
 CombatBattle:nextTurn(  ) -> boolean  -- Advance to next turn. Returns false if battle is over.
 CombatBattle:_checkBattleOver(  )  -- Check if battle is over (one team or fewer alive).
-CombatBattle:attack( attacker_name : string, action_name : string, target_name : string ) -> table|nil  -- Resolve an attack. TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic battle replays. Currently uses the global Lua RNG which makes saves non-deterministic across reloads.
+CombatBattle:attack( attacker_name : string, action_name : string, target_name : string ) -> table|nil  -- Resolve an attack. battle replays. Currently uses the global Lua RNG which makes saves non-deterministic across reloads.
 CombatBattle:getAliveNames(  ) -> table  -- Get names of all alive combatants.
 CombatBattle:getAllNames(  ) -> table  -- Get names of all combatants.
 CombatBattle:removeCombatant( name : string ) -> boolean  -- Remove a combatant by name.
@@ -211,7 +211,6 @@ CombatBattle:resolve(  ) -> boolean  -- Resolve end-of-round bookkeeping: tick a
 > Configurable camera follow behaviors for 2D games: smooth follow, deadzone,
 lookahead, world bounds clamping, screen shake, and cutscene override.
 Wraps lurek.camera.setPosition / lurek.camera.setZoom internally.
-
 ## Engine integrations
 
 *13 functions documented, 1 classes*
@@ -348,7 +347,7 @@ Stack:sortByStat( stat : string )  -- Sort cards by a named stat in ascending or
 Stack:sortByStatDesc( stat : string )  -- Sort cards by a named stat in descending order (in-place).
 Stack:sortByCategory(  )  -- Sort cards alphabetically by category field (in-place).
 Stack:sortByName(  )  -- Sort cards alphabetically by name field (in-place).
-Stack:shuffle(  )  -- Shuffle cards into a random order using Fisher-Yates. TODO(P4 lift): replace with lurek.math.shuffle when available so the shuffle becomes seedable and decoupled from the global RNG state.
+Stack:shuffle(  )  -- Shuffle cards into a random order using Fisher-Yates. shuffle becomes seedable and decoupled from the global RNG state.
 Stack:items(  ) -> table  -- Return the raw card array (by reference).
 Stack:peekTopNTypes( n : number ) -> table  -- Return the type names of the top n cards (topmost first).
 Stack:snapshotCards(  ) -> table  -- Return a shallow copy of the card array for later restoration.
@@ -396,7 +395,7 @@ CardPool:drawTypes( n : number ) -> table  -- Draw n type names by weighted rand
 CardPool:drawItems( n : number ) -> table  -- Draw n Card instances by weighted random selection (with replacement).
 CardPool:drawUniqueTypes( n : number ) -> table  -- Draw up to n unique type names by weighted selection without replacement.
 CardPool:drawUniqueItems( n : number ) -> table  -- Draw up to n unique Card instances by weighted selection without replacement.
-CardPool:drawItemsSeeded( n : number, seed : number ) -> table  -- Draw n Card instances using a fixed random seed for reproducibility. Saves and restores the global RNG state across the call so callers outside the seeded scope continue to observe the global RNG sequence. TODO(P4 lift): use lurek.math.newRng()/lurek.math.shuffle when available to avoid touching the global RNG entirely.
+CardPool:drawItemsSeeded( n : number, seed : number ) -> table  -- Draw n Card instances using a fixed random seed for reproducibility. Saves and restores the global RNG state across the call so callers outside the seeded scope continue to observe the global RNG sequence. to avoid touching the global RNG entirely.
 CardPool:drawByRarity( distribution : table ) -> table  -- Draw cards matching a rarity distribution table {rarity=count,...}.
 ```
 
@@ -462,11 +461,9 @@ CardGroup:allHaveTag( cards : table, tag : string ) -> boolean  -- Return true i
 ## `library.cinematic` *(partial)* {#cinematic}
 
 > Lurek2D cinematic library — multi-track scrubbable cutscene timeline.
-
 Sequences `lurek.tween`, `lurek.camera`, `lurek.audio`, `lurek.event`,
 and `library.dialog` clips into a single time-positioned timeline that
 supports play/pause/seek/scrub/skip-to-label/branch.
-
 Each track is a sorted list of clips: `{at, duration, kind, params,
 on_apply, on_revert}`. The timeline owns its own clock — it does not use
 `lurek.timer.Scheduler`.
@@ -890,11 +887,9 @@ RecipeGroup:getOrder(  ) -> number  -- Get the sort order.
 ## `library.dialog` {#dialog}
 
 > Lurek2D dialog sequencer - typewriter text, branching choices, events.
-
 A pure-Lua replacement for the former `lurek.dialog` Rust binding.
 No engine dependencies; works in headless test VMs.
 Optional: uses `lurek.log.debug()` when available for dialog progression tracing.
-
 Usage:
 local dialog = require("library.dialog")
 local seq = dialog.newSequencer()
@@ -917,28 +912,28 @@ library.dialog.call( fn : function, opts : table ) -> table  -- Create a `call` 
 library.dialog.jump( target : string, opts : table ) -> table  -- Create a `jump` dialog node (label-based control transfer). Execution resumes at the first node in the current script whose `.label` field equals `target`. Unknown targets are silently skipped.
 ```
 
-### `seq`
+### `Sequence`
 
 ```lua
-seq:load( nodes : table )  -- Load a new script, replacing any existing one. Call start() afterwards to begin playback.
-seq:start(  )  -- Begin playback from the first node.
-seq:update( dt : number )  -- Advance per-frame. Call every frame while isActive() is true.
-seq:advance(  )  -- Advance past the current line (when state == "waiting" or "typing"). If typing, skips to full reveal first. If waiting, moves to next node.
-seq:skip(  )  -- Skip the entire current line instantly (advances to "waiting").
-seq:choose( index : number )  -- Select a choice option by 1-based index. Only valid when state == "choice".
-seq:setSpeed( cps : number )  -- Set the typewriter reveal speed.
-seq:getSpeed(  ) -> number  -- Get the current reveal speed.
-seq:getState(  ) -> string  -- Get the current state string.
-seq:isActive(  ) -> boolean  -- Returns true while the sequence is in progress (not idle or done).
-seq:isWaitingForChoice(  ) -> boolean  -- Returns true when a choice is pending player input.
-seq:currentSpeaker(  ) -> string  -- Returns the speaker name of the current "say" node.
-seq:currentText(  ) -> string  -- Returns the full text of the current "say" node.
-seq:revealedText(  ) -> string  -- Returns only the revealed portion of the current text.
-seq:getChoiceText(  ) -> string  -- Returns the prompt text of the current "choice" node.
-seq:getChoiceLabels(  ) -> table  -- Returns an array of choice labels for the current "choice" node.
-seq:on( event : string, fn : function )  -- Register a callback for a named event. Events: "line" (speaker, text), "choice" (), "finished" (), "done" (), "event" (name, data), "typewrite" (char, full_text).
-seq:off( event : string )  -- Unregister all callbacks for a named event.
-seq:getEventBus(  ) -> table|nil  -- Return the optional `lurek.patterns` EventBus mirror, or nil when the engine is not present. External systems can subscribe to any of the sequencer's events through the bus without going through `seq:on()`. The canonical event delivery path remains the local handler table, so the bus is purely a parallel observer channel.
+Sequence:load( nodes : table )  -- Load a new script, replacing any existing one. Call start() afterwards to begin playback.
+Sequence:start(  )  -- Begin playback from the first node.
+Sequence:update( dt : number )  -- Advance per-frame. Call every frame while isActive() is true.
+Sequence:advance(  )  -- Advance past the current line (when state == "waiting" or "typing"). If typing, skips to full reveal first. If waiting, moves to next node.
+Sequence:skip(  )  -- Skip the entire current line instantly (advances to "waiting").
+Sequence:choose( index : number )  -- Select a choice option by 1-based index. Only valid when state == "choice".
+Sequence:setSpeed( cps : number )  -- Set the typewriter reveal speed.
+Sequence:getSpeed(  ) -> number  -- Get the current reveal speed.
+Sequence:getState(  ) -> string  -- Get the current state string.
+Sequence:isActive(  ) -> boolean  -- Returns true while the sequence is in progress (not idle or done).
+Sequence:isWaitingForChoice(  ) -> boolean  -- Returns true when a choice is pending player input.
+Sequence:currentSpeaker(  ) -> string  -- Returns the speaker name of the current "say" node.
+Sequence:currentText(  ) -> string  -- Returns the full text of the current "say" node.
+Sequence:revealedText(  ) -> string  -- Returns only the revealed portion of the current text.
+Sequence:getChoiceText(  ) -> string  -- Returns the prompt text of the current "choice" node.
+Sequence:getChoiceLabels(  ) -> table  -- Returns an array of choice labels for the current "choice" node.
+Sequence:on( event : string, fn : function )  -- Register a callback for a named event. Events: "line" (speaker, text), "choice" (), "finished" (), "done" (), "event" (name, data), "typewrite" (char, full_text).
+Sequence:off( event : string )  -- Unregister all callbacks for a named event.
+Sequence:getEventBus(  ) -> table|nil  -- Return the optional `lurek.patterns` EventBus mirror, or nil when the engine is not present. External systems can subscribe to any of the sequencer's events through the bus without going through `seq:on()`. The canonical event delivery path remains the local handler table, so the bus is purely a parallel observer channel.
 ```
 
 ---
@@ -950,7 +945,6 @@ Assembles composite visual objects (characters, vehicles, faces) from
 interchangeable Part sprites attached to named Socket positions on a
 DollTemplate blueprint. No physics, no collision, no gameplay logic —
 purely visual composition with draw ordering.
-
 The library never calls rendering APIs directly; it produces a sorted
 draw list via `Doll:getDrawList()` that the caller hands to its renderer
 (typically `lurek.render`). The legacy `Doll:draw()` method is retained
@@ -965,80 +959,80 @@ library.doll.newDoll( template : DollTemplate ) -> Doll  -- Create a new Doll (r
 library.doll.getAbsoluteScale( entry : table ) -> number, number  -- Get the absolute scale magnitude from a draw-list entry. Strips the sign introduced by flip flags, returning positive values.
 ```
 
-### `part`
+### `DollPart`
 
 ```lua
-part:getTexture(  ) -> any  -- Texture / Quad Return the texture assigned to this part.
-part:setTexture( tex : any )  -- Assign a texture to this part.
-part:getQuad(  ) -> any  -- Return the texture quad (sub-region) for this part.
-part:setQuad( q : any )  -- Set the texture quad (sub-region) for this part.
-part:getOffset(  ) -> number, number  -- Local Transform Return the local offset of this part from its socket origin.
-part:setOffset( x : number, y : number )  -- Set the local offset of this part from its socket origin.
-part:getRotation(  ) -> number  -- Return the local rotation of this part in radians.
-part:setRotation( r : number )  -- Set the local rotation of this part in radians.
-part:getScale(  ) -> number, number  -- Return the local scale of this part as (scaleX, scaleY).
-part:setScale( sx : number, sy : number )  -- Set part scale. Passing a single number sets uniform scale.
-part:getOrigin(  ) -> number, number  -- Return the render origin (pivot point) of this part.
-part:setOrigin( ox : number, oy : number )  -- Set the render origin (pivot point) of this part.
-part:getDrawOrder(  ) -> number  -- Draw Order & Type Return the draw order key for this part.
-part:setDrawOrder( n : number )  -- Set part draw order (z-sort key).
-part:getPartType(  ) -> string  -- Return the part type string (used for socket type-filter matching).
-part:setPartType( t : string )  -- Set the part type string.
-part:isVisible(  ) -> boolean  -- Visibility & Appearance Return true if this part is currently visible.
-part:setVisible( v : boolean )  -- Set visibility of this part.
-part:getColor(  ) -> number, number, number, number  -- Return the RGBA colour tint of this part.
-part:setColor( r : number, g : number, b : number, a : number )  -- Set the RGBA colour tint of this part.
-part:getFlip(  ) -> boolean, boolean  -- Return the flip flags for this part.
-part:setFlip( fx : boolean, fy : boolean )  -- Set horizontal and vertical flip flags.
-part:getFollowsRotation(  ) -> boolean  -- Behaviour Return true if this part inherits the socket's rotation.
-part:setFollowsRotation( f : boolean )  -- Set whether this part inherits the socket's rotation.
-part:getAttribute( key : string ) -> any stored value, or nil  -- Attributes (user-defined key-value store) Get the value of a user-defined attribute by key.
-part:setAttribute( key : string, val : any )  -- Set a user-defined attribute value.
-part:getAttributeKeys(  ) -> table  -- Return a list of all attribute keys on this part.
-part:getFixture(  ) -> any fixture or nil  -- Optional physics fixture ref (stored, never called) Return the optional physics fixture reference.
-part:setFixture( f : any )  -- Store an optional physics fixture reference on this part.
-part:getAbsoluteScale(  ) -> number, number  -- Get the absolute scale magnitude, ignoring flip. Useful when flip is used for mirroring but the caller needs the positive magnitude (e.g. bounding-box calculation).
-part:getAttributes(  ) -> table  -- Get a shallow copy of all attributes.
+DollPart:getTexture(  ) -> any  -- Texture / Quad Return the texture assigned to this part.
+DollPart:setTexture( tex : any )  -- Assign a texture to this part.
+DollPart:getQuad(  ) -> any  -- Return the texture quad (sub-region) for this part.
+DollPart:setQuad( q : any )  -- Set the texture quad (sub-region) for this part.
+DollPart:getOffset(  ) -> number, number  -- Local Transform Return the local offset of this part from its socket origin.
+DollPart:setOffset( x : number, y : number )  -- Set the local offset of this part from its socket origin.
+DollPart:getRotation(  ) -> number  -- Return the local rotation of this part in radians.
+DollPart:setRotation( r : number )  -- Set the local rotation of this part in radians.
+DollPart:getScale(  ) -> number, number  -- Return the local scale of this part as (scaleX, scaleY).
+DollPart:setScale( sx : number, sy : number )  -- Set part scale. Passing a single number sets uniform scale.
+DollPart:getOrigin(  ) -> number, number  -- Return the render origin (pivot point) of this part.
+DollPart:setOrigin( ox : number, oy : number )  -- Set the render origin (pivot point) of this part.
+DollPart:getDrawOrder(  ) -> number  -- Draw Order & Type Return the draw order key for this part.
+DollPart:setDrawOrder( n : number )  -- Set part draw order (z-sort key).
+DollPart:getPartType(  ) -> string  -- Return the part type string (used for socket type-filter matching).
+DollPart:setPartType( t : string )  -- Set the part type string.
+DollPart:isVisible(  ) -> boolean  -- Visibility & Appearance Return true if this part is currently visible.
+DollPart:setVisible( v : boolean )  -- Set visibility of this part.
+DollPart:getColor(  ) -> number, number, number, number  -- Return the RGBA colour tint of this part.
+DollPart:setColor( r : number, g : number, b : number, a : number )  -- Set the RGBA colour tint of this part.
+DollPart:getFlip(  ) -> boolean, boolean  -- Return the flip flags for this part.
+DollPart:setFlip( fx : boolean, fy : boolean )  -- Set horizontal and vertical flip flags.
+DollPart:getFollowsRotation(  ) -> boolean  -- Behaviour Return true if this part inherits the socket's rotation.
+DollPart:setFollowsRotation( f : boolean )  -- Set whether this part inherits the socket's rotation.
+DollPart:getAttribute( key : string ) -> any stored value, or nil  -- Attributes (user-defined key-value store) Get the value of a user-defined attribute by key.
+DollPart:setAttribute( key : string, val : any )  -- Set a user-defined attribute value.
+DollPart:getAttributeKeys(  ) -> table  -- Return a list of all attribute keys on this part.
+DollPart:getFixture(  ) -> any fixture or nil  -- Optional physics fixture ref (stored, never called) Return the optional physics fixture reference.
+DollPart:setFixture( f : any )  -- Store an optional physics fixture reference on this part.
+DollPart:getAbsoluteScale(  ) -> number, number  -- Get the absolute scale magnitude, ignoring flip. Useful when flip is used for mirroring but the caller needs the positive magnitude (e.g. bounding-box calculation).
+DollPart:getAttributes(  ) -> table  -- Get a shallow copy of all attributes.
 ```
 
-### `tmpl`
+### `DollTemplate`
 
 ```lua
-tmpl:getName(  ) -> string  -- Return the template name.
-tmpl:setName( n : string )  -- Set the template name.
-tmpl:addSocket( socketName : string, acceptType : string, x : number, y : number, rotation : number, drawOrder : number ) -> boolean, string  -- Add a socket to the template. Returns true on success, or false plus a message if the name is invalid or already registered.
-tmpl:removeSocket( socketName : string ) -> boolean  -- Remove a socket by name. Returns false if the socket does not exist.
-tmpl:getSocket( socketName : string ) -> table|nil  -- Return a copy of the socket definition, or nil if not found.
-tmpl:getSocketNames(  ) -> table  -- Return an ordered array of socket names.
-tmpl:getSocketCount(  ) -> number  -- Return the number of sockets in this template.
-tmpl:_iterSockets(  )  -- Internal: iterate raw sockets (used by Doll).
+DollTemplate:getName(  ) -> string  -- Return the template name.
+DollTemplate:setName( n : string )  -- Set the template name.
+DollTemplate:addSocket( socketName : string, acceptType : string, x : number, y : number, rotation : number, drawOrder : number ) -> boolean, string  -- Add a socket to the template. Returns true on success, or false plus a message if the name is invalid or already registered.
+DollTemplate:removeSocket( socketName : string ) -> boolean  -- Remove a socket by name. Returns false if the socket does not exist.
+DollTemplate:getSocket( socketName : string ) -> table|nil  -- Return a copy of the socket definition, or nil if not found.
+DollTemplate:getSocketNames(  ) -> table  -- Return an ordered array of socket names.
+DollTemplate:getSocketCount(  ) -> number  -- Return the number of sockets in this template.
+DollTemplate:_iterSockets(  )  -- Internal: iterate raw sockets (used by Doll).
 ```
 
-### `doll`
+### `Doll`
 
 ```lua
-doll:getPosition(  ) -> number, number  -- Transform Return the world-space position of this doll.
-doll:setPosition( x : number, y : number )  -- Set the world-space position of this doll.
-doll:getRotation(  ) -> number  -- Return the world-space rotation of this doll in radians.
-doll:setRotation( r : number )  -- Set the world-space rotation of this doll in radians.
-doll:getScale(  ) -> number, number  -- Return the world-space scale of this doll.
-doll:setScale( sx : number, sy : number )  -- Set the world-space scale of this doll.
-doll:getTemplate(  ) -> DollTemplate  -- Template Return the DollTemplate this doll was created from.
-doll:isVisible(  ) -> boolean  -- Visibility Return true if this doll is currently visible.
-doll:setVisible( v : boolean )  -- Set the visibility of this doll.
-doll:getBody(  ) -> any body or nil  -- Optional body / user data refs Return the optional physics body reference attached to this doll.
-doll:setBody( b : any )  -- Store an optional physics body reference on this doll.
-doll:getUserData(  ) -> any user data or nil  -- Return the optional user-data reference on this doll.
-doll:setUserData( v : any )  -- Store an optional user-data reference on this doll.
-doll:attach( socketName : string, part : Part ) -> boolean  -- Attach a Part to a named socket. Returns false if socket not found, type mismatch, or invalid args.
-doll:detach( socketName : string ) -> Part|nil  -- Detach the Part from a socket, returning it.
-doll:getPartAt( socketName : string ) -> Part|nil  -- Return the Part attached at `socketName`, or nil.
-doll:findSocket( part : Part ) -> string|nil  -- Return the socket name the given Part is attached to, or nil.
-doll:detachAll(  )  -- Detach all parts from all sockets.
-doll:getAttachedSockets(  ) -> table  -- Return an array of socket names that currently have a part attached.
-doll:getEmptySockets(  ) -> table  -- Return an array of socket names that are currently empty.
-doll:getDrawList(  ) -> table  -- Compute world-transform draw list sorted by drawOrder. Each entry: {socketName, part, x, y, rotation, scaleX, scaleY, originX, originY, drawOrder}. **Flip behaviour**: Part flip flags produce negative scale values (e.g. scaleX = -2 when flipX is true and doll+part scale = 2). This is intentional — GPU scale-based mirroring. Use `doll.getAbsoluteScale(entry)` if you need the positive magnitude. **Transform order**: Part offset is rotated by socket rotation before being added to the socket position (socket-local space). The combined offset is then scaled by doll scale and rotated by doll rotation. Does NOT filter by part visibility — caller handles that.
-doll:draw(  )  -- Deprecated convenience draw shim — retained only as a no-op. The original implementation referenced an undefined global (`lurek`) and a non-existent namespace (`lurek.render`), so the call chain was a silent no-op in every build. Library code must not call rendering APIs directly (per `library.*` conventions), so the correct path now is for the caller to iterate `Doll:getDrawList()` and dispatch the entries to `lurek.render` (or any other renderer) themselves. This method emits a one-time warning on first invocation and then returns immediately. It will be removed in a future major bump.
+Doll:getPosition(  ) -> number, number  -- Transform Return the world-space position of this doll.
+Doll:setPosition( x : number, y : number )  -- Set the world-space position of this doll.
+Doll:getRotation(  ) -> number  -- Return the world-space rotation of this doll in radians.
+Doll:setRotation( r : number )  -- Set the world-space rotation of this doll in radians.
+Doll:getScale(  ) -> number, number  -- Return the world-space scale of this doll.
+Doll:setScale( sx : number, sy : number )  -- Set the world-space scale of this doll.
+Doll:getTemplate(  ) -> DollTemplate  -- Template Return the DollTemplate this doll was created from.
+Doll:isVisible(  ) -> boolean  -- Visibility Return true if this doll is currently visible.
+Doll:setVisible( v : boolean )  -- Set the visibility of this doll.
+Doll:getBody(  ) -> any body or nil  -- Optional body / user data refs Return the optional physics body reference attached to this doll.
+Doll:setBody( b : any )  -- Store an optional physics body reference on this doll.
+Doll:getUserData(  ) -> any user data or nil  -- Return the optional user-data reference on this doll.
+Doll:setUserData( v : any )  -- Store an optional user-data reference on this doll.
+Doll:attach( socketName : string, part : Part ) -> boolean  -- Attach a Part to a named socket. Returns false if socket not found, type mismatch, or invalid args.
+Doll:detach( socketName : string ) -> Part|nil  -- Detach the Part from a socket, returning it.
+Doll:getPartAt( socketName : string ) -> Part|nil  -- Return the Part attached at `socketName`, or nil.
+Doll:findSocket( part : Part ) -> string|nil  -- Return the socket name the given Part is attached to, or nil.
+Doll:detachAll(  )  -- Detach all parts from all sockets.
+Doll:getAttachedSockets(  ) -> table  -- Return an array of socket names that currently have a part attached.
+Doll:getEmptySockets(  ) -> table  -- Return an array of socket names that are currently empty.
+Doll:getDrawList(  ) -> table  -- Compute world-transform draw list sorted by drawOrder. Each entry: {socketName, part, x, y, rotation, scaleX, scaleY, originX, originY, drawOrder}. **Flip behaviour**: Part flip flags produce negative scale values (e.g. scaleX = -2 when flipX is true and doll+part scale = 2). This is intentional — GPU scale-based mirroring. Use `doll.getAbsoluteScale(entry)` if you need the positive magnitude. **Transform order**: Part offset is rotated by socket rotation before being added to the socket position (socket-local space). The combined offset is then scaled by doll scale and rotated by doll rotation. Does NOT filter by part visibility — caller handles that.
+Doll:draw(  )  -- Deprecated convenience draw shim — retained only as a no-op. The original implementation referenced an undefined global (`lurek`) and a non-existent namespace (`lurek.render`), so the call chain was a silent no-op in every build. Library code must not call rendering APIs directly (per `library.*` conventions), so the correct path now is for the caller to iterate `Doll:getDrawList()` and dispatch the entries to `lurek.render` (or any other renderer) themselves. This method emits a one-time warning on first invocation and then returns immediately. It will be removed in a future major bump.
 ```
 
 ---
@@ -1205,10 +1199,8 @@ ResourceManager:getReserved( name : string ) -> number  -- Return the reserved a
 ## `library.input_action_map` {#input_action_map}
 
 > Lurek2D input action map — bind named actions to keys, mouse buttons, and gamepad buttons.
-
 A pure-Lua action mapping layer over `lurek.input.*`. Supports multiple
 bindings per action, pressed/held/released queries, and simple two-action axes.
-
 Usage:
 local InputActionMap = require("library.input_action_map")
 local actions = InputActionMap.new()
@@ -1243,11 +1235,9 @@ ActionMap:clear(  )  -- Remove all actions and bindings from this map.
 ## `library.inventory` {#inventory}
 
 > Lurek2D inventory system - containers, weighted bags, slots, item stacks, equip slots, and item sets.
-
 A pure-Lua replacement for the former `lurek.inventory` Rust binding.
 Provides ItemStack, Container (fixed/unlimited/expandable), InvItem with tags,
 Slot and SlotState, ItemSet, and a full Inventory with equip slots and subsystem flags.
-
 Usage:
 local inventory = require("library.inventory")
 local bag = inventory.newContainer("bag", "unlimited", 0)
@@ -1267,118 +1257,118 @@ library.inventory.newItemSet( name : string ) -> table  -- Create a named item s
 library.inventory.newInventory(  ) -> table  -- Create a top-level inventory managing containers, equip slots, item sets, and subsystem flags.
 ```
 
-### `item`
+### `Item`
 
 ```lua
-item:getType(  ) -> string  -- Return the type name.
-item:getWeight(  ) -> number  -- Return item weight.
-item:setWeight( w : number )  -- Set physical weight (must be non-negative).
-item:getSizeW(  ) -> number  -- Return grid width.
-item:getSizeH(  ) -> number  -- Return grid height.
-item:setSize( w : number, h : number )  -- Set grid size (both dimensions clamped to >= 1).
-item:getStackLimit(  ) -> number  -- Return maximum items per stack.
-item:setStackLimit( n : number )  -- Set maximum stack size (clamped to >= 1).
-item:hasTag( tag : string ) -> boolean  -- Return true if the item has the given tag.
-item:addTag( tag : string )  -- Add a tag (no-op if already present).
-item:removeTag( tag : string ) -> boolean  -- Remove a tag. Returns true if tag existed.
-item:getTags(  ) -> table  -- Return all tag names as an array.
-item:setProperty( key : string, val : any )  -- Set a generic property.
-item:getProperty( key : string ) -> any  -- Get a generic property.
-item:clone(  ) -> table  -- Deep-copy this item definition. TODO(P4 lift): once a shared deepCopy helper ships, replace the manual field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
+Item:getType(  ) -> string  -- Return the type name.
+Item:getWeight(  ) -> number  -- Return item weight.
+Item:setWeight( w : number )  -- Set physical weight (must be non-negative).
+Item:getSizeW(  ) -> number  -- Return grid width.
+Item:getSizeH(  ) -> number  -- Return grid height.
+Item:setSize( w : number, h : number )  -- Set grid size (both dimensions clamped to >= 1).
+Item:getStackLimit(  ) -> number  -- Return maximum items per stack.
+Item:setStackLimit( n : number )  -- Set maximum stack size (clamped to >= 1).
+Item:hasTag( tag : string ) -> boolean  -- Return true if the item has the given tag.
+Item:addTag( tag : string )  -- Add a tag (no-op if already present).
+Item:removeTag( tag : string ) -> boolean  -- Remove a tag. Returns true if tag existed.
+Item:getTags(  ) -> table  -- Return all tag names as an array.
+Item:setProperty( key : string, val : any )  -- Set a generic property.
+Item:getProperty( key : string ) -> any  -- Get a generic property.
+Item:clone(  ) -> table  -- Deep-copy this item definition. field-by-field rebuild below so that arbitrary user-attached fields are preserved automatically.
 ```
 
-### `stack`
+### `Stack`
 
 ```lua
-stack:getItem(  ) -> table  -- Return the underlying InvItem.
-stack:getQuantity(  ) -> number  -- Return current quantity.
-stack:setQuantity( n : number )  -- Directly set quantity (clamped 0..max).
-stack:getStackLimit(  ) -> number  -- Return max quantity.
-stack:isFull(  ) -> boolean  -- Return true when stack holds max items.
-stack:isEmpty(  ) -> boolean  -- Return true when stack is empty.
-stack:add( n : number ) -> number  -- Add n items. Returns overflow (items that did not fit).
-stack:remove( n : number ) -> number  -- Remove n items. Returns count actually removed.
-stack:split( n : number ) -> table|nil  -- Split n items off into a new stack. Returns nil if n invalid.
-stack:merge( other : table ) -> number  -- Merge another stack into this one. Returns leftover count.
+Stack:getItem(  ) -> table  -- Return the underlying InvItem.
+Stack:getQuantity(  ) -> number  -- Return current quantity.
+Stack:setQuantity( n : number )  -- Directly set quantity (clamped 0..max).
+Stack:getStackLimit(  ) -> number  -- Return max quantity.
+Stack:isFull(  ) -> boolean  -- Return true when stack holds max items.
+Stack:isEmpty(  ) -> boolean  -- Return true when stack is empty.
+Stack:add( n : number ) -> number  -- Add n items. Returns overflow (items that did not fit).
+Stack:remove( n : number ) -> number  -- Remove n items. Returns count actually removed.
+Stack:split( n : number ) -> table|nil  -- Split n items off into a new stack. Returns nil if n invalid.
+Stack:merge( other : table ) -> number  -- Merge another stack into this one. Returns leftover count.
 ```
 
-### `slot`
+### `Slot`
 
 ```lua
-slot:getSlotType(  ) -> string  -- Return slot type filter.
-slot:getState(  ) -> string  -- Return current state.
-slot:setState( s : string )  -- Set state.
-slot:isEmpty(  ) -> boolean  -- Return true if no item is held.
-slot:getStack(  ) -> table|nil  -- Return the held ItemStack, or nil.
-slot:getItem(  ) -> table|nil  -- Return the held InvItem (unwrapped), or nil.
-slot:canAccept( item : table ) -> boolean  -- Return true if the item fits size constraints and type filter. Items are accepted if the slot type is "any", or the item type matches the slot type, or the item carries a tag matching the slot type.
-slot:setStack( s : table ) -> boolean  -- Place an ItemStack. Returns false if item not accepted.
-slot:takeStack(  ) -> table|nil  -- Remove and return the held stack.
-slot:clear(  )  -- Clear the slot.
+Slot:getSlotType(  ) -> string  -- Return slot type filter.
+Slot:getState(  ) -> string  -- Return current state.
+Slot:setState( s : string )  -- Set state.
+Slot:isEmpty(  ) -> boolean  -- Return true if no item is held.
+Slot:getStack(  ) -> table|nil  -- Return the held ItemStack, or nil.
+Slot:getItem(  ) -> table|nil  -- Return the held InvItem (unwrapped), or nil.
+Slot:canAccept( item : table ) -> boolean  -- Return true if the item fits size constraints and type filter. Items are accepted if the slot type is "any", or the item type matches the slot type, or the item carries a tag matching the slot type.
+Slot:setStack( s : table ) -> boolean  -- Place an ItemStack. Returns false if item not accepted.
+Slot:takeStack(  ) -> table|nil  -- Remove and return the held stack.
+Slot:clear(  )  -- Clear the slot.
 ```
 
-### `container`
+### `Container`
 
 ```lua
-container:getName(  ) -> string  -- Return the container name.
-container:getMode(  ) -> string  -- Return the container mode string.
-container:slotCount(  ) -> number  -- Return the number of slots.
-container:getCapacity(  ) -> number  -- Return max slot count. 0 = unbounded.
-container:setWeightLimit( w : number )  -- Set weight limit (must be non-negative). 0 = unlimited.
-container:getWeightLimit(  ) -> number  -- Return weight limit. 0 = unlimited.
-container:getCurrentWeight(  ) -> number  -- Return current total weight.
-container:totalWeight(  ) -> number  -- Alias for getCurrentWeight.
-container:isFull(  ) -> boolean  -- Return true if all slots are occupied (fixed/expandable) or weight limit reached.
-container:getSlot( idx : number ) -> table|nil  -- Get a slot by 1-based index.
-container:getSlots(  ) -> table  -- Return all slots array.
-container:addSlot( sl : table )  -- Add slot (respects mode limits).
-container:setCapacity( n : number )  -- Set the upper slot capacity (expandable mode only). Clamped so it cannot be less than the current slot count.
-container:expand( n : number ) -> boolean  -- Expand by n new empty slots (expandable mode only). Returns true if any added. Respects the max-slot capacity; stops adding once the limit is reached.
-container:addItem( inv_item : table, quantity : number ) -> boolean  -- Auto-place item quantity. Merges into ALL existing matching stacks first, then fills empty slots. For unlimited containers, auto-grows as needed.
-container:countItem( type_name : string ) -> number  -- Count all items of a given type across all slots.
-container:hasItem( type_name : string, qty : number ) -> boolean  -- Return true if >= qty of type_name present.
-container:removeItem( type_name : string, qty : number ) -> number  -- Remove up to qty items of type_name. Returns count removed.
-container:findByTag( tag : string ) -> table  -- Return all items with the given tag.
-container:toItemList(  ) -> table  -- Return a summary list of {type_name, quantity} aggregated across slots.
-container:removeSlot( idx : number ) -> boolean  -- Remove the slot at a 1-based index. Shifts subsequent slots down.
+Container:getName(  ) -> string  -- Return the container name.
+Container:getMode(  ) -> string  -- Return the container mode string.
+Container:slotCount(  ) -> number  -- Return the number of slots.
+Container:getCapacity(  ) -> number  -- Return max slot count. 0 = unbounded.
+Container:setWeightLimit( w : number )  -- Set weight limit (must be non-negative). 0 = unlimited.
+Container:getWeightLimit(  ) -> number  -- Return weight limit. 0 = unlimited.
+Container:getCurrentWeight(  ) -> number  -- Return current total weight.
+Container:totalWeight(  ) -> number  -- Alias for getCurrentWeight.
+Container:isFull(  ) -> boolean  -- Return true if all slots are occupied (fixed/expandable) or weight limit reached.
+Container:getSlot( idx : number ) -> table|nil  -- Get a slot by 1-based index.
+Container:getSlots(  ) -> table  -- Return all slots array.
+Container:addSlot( sl : table )  -- Add slot (respects mode limits).
+Container:setCapacity( n : number )  -- Set the upper slot capacity (expandable mode only). Clamped so it cannot be less than the current slot count.
+Container:expand( n : number ) -> boolean  -- Expand by n new empty slots (expandable mode only). Returns true if any added. Respects the max-slot capacity; stops adding once the limit is reached.
+Container:addItem( inv_item : table, quantity : number ) -> boolean  -- Auto-place item quantity. Merges into ALL existing matching stacks first, then fills empty slots. For unlimited containers, auto-grows as needed.
+Container:countItem( type_name : string ) -> number  -- Count all items of a given type across all slots.
+Container:hasItem( type_name : string, qty : number ) -> boolean  -- Return true if >= qty of type_name present.
+Container:removeItem( type_name : string, qty : number ) -> number  -- Remove up to qty items of type_name. Returns count removed.
+Container:findByTag( tag : string ) -> table  -- Return all items with the given tag.
+Container:toItemList(  ) -> table  -- Return a summary list of {type_name, quantity} aggregated across slots.
+Container:removeSlot( idx : number ) -> boolean  -- Remove the slot at a 1-based index. Shifts subsequent slots down.
 ```
 
-### `iset`
+### `ItemSet`
 
 ```lua
-iset:getName(  ) -> string  -- Return the set name.
-iset:addRequirement( tag : string, slot_filter : string )  -- Add a requirement: at least one equip slot must hold an item with `tag`.
-iset:getRequirements(  ) -> table  -- Return all requirements as array of {tag, slot_filter}.
-iset:isSatisfied( equip_slots : table ) -> boolean  -- Check if all requirements are satisfied given an equip_slots table {name -> Slot}.
+ItemSet:getName(  ) -> string  -- Return the set name.
+ItemSet:addRequirement( tag : string, slot_filter : string )  -- Add a requirement: at least one equip slot must hold an item with `tag`.
+ItemSet:getRequirements(  ) -> table  -- Return all requirements as array of {tag, slot_filter}.
+ItemSet:isSatisfied( equip_slots : table ) -> boolean  -- Check if all requirements are satisfied given an equip_slots table {name -> Slot}.
 ```
 
-### `inv`
+### `Inventory`
 
 ```lua
-inv:getEventBus(  ) -> table|nil  -- Return (or lazily create) an optional `lurek.patterns` EventBus that callers can subscribe to for inventory change notifications. Returns nil when the engine binding is unavailable. The library does not auto-emit events on this bus; callers may emit on it from their own wrappers without affecting baseline test behaviour.
-inv:addContainer( name : string, container : table )  -- Register a container. Replaces any existing container with the same name.
-inv:getContainer( name : string ) -> table|nil  -- Get a container by name.
-inv:removeContainer( name : string ) -> boolean  -- Remove a container. Returns true if it existed.
-inv:containerNames(  ) -> table  -- Return container names in insertion order.
-inv:addEquipSlot( name : string, slot : table )  -- Add or replace a named equip slot.
-inv:getEquipSlot( name : string ) -> table|nil  -- Get an equip slot by name.
-inv:removeEquipSlot( name : string ) -> boolean  -- Remove an equip slot. Returns true if it existed.
-inv:equipSlotNames(  ) -> table  -- Return equip slot names in insertion order.
-inv:equip( slot_name : string, stack : table ) -> boolean  -- Equip an ItemStack into the named slot. Returns false if slot missing or item rejected.
-inv:unequip( slot_name : string ) -> table|nil  -- Unequip a slot and return its InvItem (not the full stack). Returns nil if empty.
-inv:addItemSet( iset : table )  -- Register an item set.
-inv:getItemSets(  ) -> table  -- Return all registered item sets.
-inv:getActiveSets(  ) -> table  -- Return only the currently active item sets (all requirements met).
-inv:enableSubsystem( name : string )  -- Enable a named subsystem ("weight", "size", "stacking", "sets").
-inv:disableSubsystem( name : string )  -- Disable a named subsystem.
-inv:isSubsystemEnabled( name : string ) -> boolean  -- Return true if the named subsystem is active.
-inv:countItem( type_name : string ) -> number  -- Count items of a type across ALL containers.
-inv:hasItem( type_name : string, qty : number ) -> boolean  -- Return true if total count >= qty across all containers.
-inv:removeFromAny( type_name : string, qty : number ) -> boolean  -- Remove qty items of type_name from whichever containers have them.
-inv:transfer( from_name : string, from_idx : number, to_name : string, to_idx : number ) -> boolean  -- Transfer a stack from one container slot to another (1-based indices).
-inv:splitStack( container_name : string, slot_idx : number, quantity : number ) -> boolean  -- Split `quantity` items from the stack at `slot_idx` in `container_name` into the first empty compatible slot in the same container. Returns true if the split succeeded.
-inv:mergeStacks( container_name : string, from_slot : number, to_slot : number ) -> boolean  -- Merge the stack at `from_slot` into `to_slot` within `container_name`. If the destination is empty, the source stack is moved into it. Returns true if any items were merged or moved.
-inv:swap( container_a : string, slot_a : number, container_b : string, slot_b : number ) -> boolean  -- Swap items between two container slots (may be in different containers). Returns true on success.
+Inventory:getEventBus(  ) -> table|nil  -- Return (or lazily create) an optional `lurek.patterns` EventBus that callers can subscribe to for inventory change notifications. Returns nil when the engine binding is unavailable. The library does not auto-emit events on this bus; callers may emit on it from their own wrappers without affecting baseline test behaviour.
+Inventory:addContainer( name : string, container : table )  -- Register a container. Replaces any existing container with the same name.
+Inventory:getContainer( name : string ) -> table|nil  -- Get a container by name.
+Inventory:removeContainer( name : string ) -> boolean  -- Remove a container. Returns true if it existed.
+Inventory:containerNames(  ) -> table  -- Return container names in insertion order.
+Inventory:addEquipSlot( name : string, slot : table )  -- Add or replace a named equip slot.
+Inventory:getEquipSlot( name : string ) -> table|nil  -- Get an equip slot by name.
+Inventory:removeEquipSlot( name : string ) -> boolean  -- Remove an equip slot. Returns true if it existed.
+Inventory:equipSlotNames(  ) -> table  -- Return equip slot names in insertion order.
+Inventory:equip( slot_name : string, stack : table ) -> boolean  -- Equip an ItemStack into the named slot. Returns false if slot missing or item rejected.
+Inventory:unequip( slot_name : string ) -> table|nil  -- Unequip a slot and return its InvItem (not the full stack). Returns nil if empty.
+Inventory:addItemSet( iset : table )  -- Register an item set.
+Inventory:getItemSets(  ) -> table  -- Return all registered item sets.
+Inventory:getActiveSets(  ) -> table  -- Return only the currently active item sets (all requirements met).
+Inventory:enableSubsystem( name : string )  -- Enable a named subsystem ("weight", "size", "stacking", "sets").
+Inventory:disableSubsystem( name : string )  -- Disable a named subsystem.
+Inventory:isSubsystemEnabled( name : string ) -> boolean  -- Return true if the named subsystem is active.
+Inventory:countItem( type_name : string ) -> number  -- Count items of a type across ALL containers.
+Inventory:hasItem( type_name : string, qty : number ) -> boolean  -- Return true if total count >= qty across all containers.
+Inventory:removeFromAny( type_name : string, qty : number ) -> boolean  -- Remove qty items of type_name from whichever containers have them.
+Inventory:transfer( from_name : string, from_idx : number, to_name : string, to_idx : number ) -> boolean  -- Transfer a stack from one container slot to another (1-based indices).
+Inventory:splitStack( container_name : string, slot_idx : number, quantity : number ) -> boolean  -- Split `quantity` items from the stack at `slot_idx` in `container_name` into the first empty compatible slot in the same container. Returns true if the split succeeded.
+Inventory:mergeStacks( container_name : string, from_slot : number, to_slot : number ) -> boolean  -- Merge the stack at `from_slot` into `to_slot` within `container_name`. If the destination is empty, the source stack is moved into it. Returns true if any items were merged or moved.
+Inventory:swap( container_a : string, slot_a : number, container_b : string, slot_b : number ) -> boolean  -- Swap items between two container slots (may be in different containers). Returns true on success.
 ```
 
 ---
@@ -1386,20 +1376,16 @@ inv:swap( container_a : string, slot_a : number, container_b : string, slot_b : 
 ## `library.item` {#item}
 
 > Lurek2D item system - type catalog, items, stacks, pools, history, and analysis.
-
 A pure-Lua replacement for the former `lurek.item` Rust binding.
 Provides a type registry, Item objects with tags/stats/meta/owner, capacity-aware
 Stacks with positional access, weighted ItemPools with bulk draws, bounded StackHistory,
 a StackManager, and functional analysis helpers.
-
 Usage:
 local item = require("library.item")
 item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={"equippable"} })
 local it = item.newItem("sword")
 it:addTag("cursed")
 print(it:getStat("dmg"))  -- 10
-
-
 Note (P7 batch C, 0.6.0): the previous file split `M.newStack` and
 `M.newStackBuilder` into a base definition followed by a wrapper that
 monkey-patched extra methods onto the returned object (former lines
@@ -1431,157 +1417,157 @@ library.item.sortedIndicesByStat( items : table, stat : string, ascending : bool
 library.item.sortedIndicesByCategory( items : table ) -> table  -- Return 1-based indices sorted by category (alphabetical).
 ```
 
-### `it`
+### `ItemType`
 
 ```lua
-it:getType(  ) -> string  -- Return the type name.
-it:getCategory(  ) -> string  -- Return the category from the type registry.
-it:getStat( key : string ) -> number|nil  -- Return the value of a stat, or nil if not set.
-it:setStat( key : string, val : number )  -- Set or override a stat value.
-it:addStat( key : string, delta : number )  -- Add delta to an existing stat (creates stat at delta if absent).
-it:removeStat( key : string )  -- Remove a stat entirely.
-it:getStats(  ) -> table  -- Return all current stats as a shallow copy.
-it:hasTag( tag : string ) -> boolean  -- Return true if this item has the given tag.
-it:addTag( tag : string )  -- Add a tag (no-op if already present).
-it:removeTag( tag : string ) -> boolean  -- Remove a tag. Returns true if tag existed.
-it:getTags(  ) -> table  -- Return all tag names as a sorted array.
-it:setMeta( key : string, val : any )  -- Set a metadata value.
-it:getMeta( key : string ) -> any  -- Get a metadata value, or nil.
-it:setOwner( owner : any )  -- Set the owner reference.
-it:getOwner(  ) -> any  -- Return the owner reference.
-it:getName(  ) -> string  -- Return the display name (seeds from type def; may differ from type name).
-it:setName( n : string )  -- Set the display name.
-it:getSlot(  ) -> string  -- Return the current slot/position name.
-it:setSlot( s : string )  -- Set the slot/position name.
-it:getCounter( key : string ) -> number  -- Get a named integer counter (0 if not set).
-it:setCounter( key : string, val : number )  -- Set a named integer counter.
-it:addCounter( key : string, delta : number ) -> number  -- Add delta to a named counter and return the new value.
-it:removeCounter( key : string )  -- Remove a named counter entry.
-it:getCounters(  ) -> table  -- Return all counters as a shallow copy.
-it:clone(  ) -> table  -- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). TODO(P4 lift): replace with a shared deepCopy helper once that helper ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
+ItemType:getType(  ) -> string  -- Return the type name.
+ItemType:getCategory(  ) -> string  -- Return the category from the type registry.
+ItemType:getStat( key : string ) -> number|nil  -- Return the value of a stat, or nil if not set.
+ItemType:setStat( key : string, val : number )  -- Set or override a stat value.
+ItemType:addStat( key : string, delta : number )  -- Add delta to an existing stat (creates stat at delta if absent).
+ItemType:removeStat( key : string )  -- Remove a stat entirely.
+ItemType:getStats(  ) -> table  -- Return all current stats as a shallow copy.
+ItemType:hasTag( tag : string ) -> boolean  -- Return true if this item has the given tag.
+ItemType:addTag( tag : string )  -- Add a tag (no-op if already present).
+ItemType:removeTag( tag : string ) -> boolean  -- Remove a tag. Returns true if tag existed.
+ItemType:getTags(  ) -> table  -- Return all tag names as a sorted array.
+ItemType:setMeta( key : string, val : any )  -- Set a metadata value.
+ItemType:getMeta( key : string ) -> any  -- Get a metadata value, or nil.
+ItemType:setOwner( owner : any )  -- Set the owner reference.
+ItemType:getOwner(  ) -> any  -- Return the owner reference.
+ItemType:getName(  ) -> string  -- Return the display name (seeds from type def; may differ from type name).
+ItemType:setName( n : string )  -- Set the display name.
+ItemType:getSlot(  ) -> string  -- Return the current slot/position name.
+ItemType:setSlot( s : string )  -- Set the slot/position name.
+ItemType:getCounter( key : string ) -> number  -- Get a named integer counter (0 if not set).
+ItemType:setCounter( key : string, val : number )  -- Set a named integer counter.
+ItemType:addCounter( key : string, delta : number ) -> number  -- Add delta to a named counter and return the new value.
+ItemType:removeCounter( key : string )  -- Remove a named counter entry.
+ItemType:getCounters(  ) -> table  -- Return all counters as a shallow copy.
+ItemType:clone(  ) -> table  -- Deep-copy this item instance (stats, tags, meta, counters, slot, name - NOT owner). ships (P4 lift candidate). The local fallback below preserves identical behaviour and is safe on both LuaJIT and Lua 5.4.
 ```
 
-### `stack`
+### `Stack`
 
 ```lua
-stack:getName(  ) -> string  -- Return the stack name.
-stack:size(  ) -> number  -- Return number of items.
-stack:getCapacity(  ) -> number  -- Return capacity (0 = unlimited).
-stack:setCapacity( n : number )  -- Set or update capacity (0 = unlimited).
-stack:isFull(  ) -> boolean  -- Return true if at capacity.
-stack:clear(  )  -- Remove all items.
-stack:push( it : table ) -> boolean  -- Push item onto top (returns false if capacity full).
-stack:pushBottom( it : table ) -> boolean  -- Push item onto bottom. Returns false if full.
-stack:pop(  ) -> table|nil  -- Pop and return top item, or nil if empty.
-stack:popTop(  ) -> table|nil  -- Alias for pop.
-stack:popBottom(  ) -> table|nil  -- Remove and return bottom item, or nil if empty.
-stack:peekBottom(  ) -> table|nil  -- Peek at bottom item without removing it.
-stack:peek(  ) -> table|nil  -- Peek at top item without removing it.
-stack:getItem(  ) -> table|nil  -- Alias for peek (slot compat).
-stack:peekAt( idx : number ) -> table|nil  -- Peek at item at 1-based index without removing. Returns nil if out of range.
-stack:removeAt( idx : number ) -> table|nil  -- Remove and return item at 1-based index. Returns nil if out of range.
-stack:insertAt( idx : number, it : table ) -> boolean  -- Insert item at 1-based position. Returns false if full or index invalid.
-stack:findFirst( pred : function ) -> table|nil  -- Return the first item for which predicate(item) is true. Nil if none.
-stack:getItems(  ) -> table  -- Return a shallow copy of all items (bottom to top).
-stack:isEmpty(  ) -> boolean  -- Return true if the stack has no items.
-stack:popMany( n : number ) -> table  -- Pop n items from the top. Returns array of items (may be shorter if stack runs out).
-stack:moveWithin( from : number, to : number ) -> boolean  -- Move item at index `from` to index `to` (both 1-based). Returns false if invalid.
-stack:searchByType( type_name : string ) -> table  -- Return all items whose type matches. Uses item:getType().
-stack:searchByTag( tag : string ) -> table  -- Return all items that have the given tag.
-stack:searchByCategory( cat : string ) -> table  -- Return all items in the given category.
-stack:findByType( type_name : string ) -> table|nil  -- Return first item with the given type (or nil).
-stack:findByTag( tag : string ) -> table|nil  -- Return first item with the given tag (or nil).
-stack:countByType( type_name : string ) -> number  -- Count items with the given type.
-stack:countByCategory( cat : string ) -> number  -- Count items in the given category.
-stack:countByTag( tag : string ) -> number  -- Count items with the given tag.
-stack:sortByStat( stat : string )  -- Sort items ascending by a numeric stat. Items without the stat sort last.
-stack:sortByStatDesc( stat : string )  -- Sort items descending by a numeric stat.
-stack:sortByCategory(  )  -- Sort items by category (alphabetical).
-stack:sortByName(  )  -- Sort items by type name (alphabetical).
-stack:shuffle(  )  -- Shuffle items in-place (Fisher-Yates). TODO(P4 lift): replace with `lurek.math.shuffle(_items)` once that helper ships (P4 lift candidate; would also fix the LuaJIT vs Lua 5.4 RNG divergence noted in P4_lift_candidates.md).
-stack:peekTopNTypes( n : number ) -> table  -- Return the type names of the top n items (without removing).
+Stack:getName(  ) -> string  -- Return the stack name.
+Stack:size(  ) -> number  -- Return number of items.
+Stack:getCapacity(  ) -> number  -- Return capacity (0 = unlimited).
+Stack:setCapacity( n : number )  -- Set or update capacity (0 = unlimited).
+Stack:isFull(  ) -> boolean  -- Return true if at capacity.
+Stack:clear(  )  -- Remove all items.
+Stack:push( it : table ) -> boolean  -- Push item onto top (returns false if capacity full).
+Stack:pushBottom( it : table ) -> boolean  -- Push item onto bottom. Returns false if full.
+Stack:pop(  ) -> table|nil  -- Pop and return top item, or nil if empty.
+Stack:popTop(  ) -> table|nil  -- Alias for pop.
+Stack:popBottom(  ) -> table|nil  -- Remove and return bottom item, or nil if empty.
+Stack:peekBottom(  ) -> table|nil  -- Peek at bottom item without removing it.
+Stack:peek(  ) -> table|nil  -- Peek at top item without removing it.
+Stack:getItem(  ) -> table|nil  -- Alias for peek (slot compat).
+Stack:peekAt( idx : number ) -> table|nil  -- Peek at item at 1-based index without removing. Returns nil if out of range.
+Stack:removeAt( idx : number ) -> table|nil  -- Remove and return item at 1-based index. Returns nil if out of range.
+Stack:insertAt( idx : number, it : table ) -> boolean  -- Insert item at 1-based position. Returns false if full or index invalid.
+Stack:findFirst( pred : function ) -> table|nil  -- Return the first item for which predicate(item) is true. Nil if none.
+Stack:getItems(  ) -> table  -- Return a shallow copy of all items (bottom to top).
+Stack:isEmpty(  ) -> boolean  -- Return true if the stack has no items.
+Stack:popMany( n : number ) -> table  -- Pop n items from the top. Returns array of items (may be shorter if stack runs out).
+Stack:moveWithin( from : number, to : number ) -> boolean  -- Move item at index `from` to index `to` (both 1-based). Returns false if invalid.
+Stack:searchByType( type_name : string ) -> table  -- Return all items whose type matches. Uses item:getType().
+Stack:searchByTag( tag : string ) -> table  -- Return all items that have the given tag.
+Stack:searchByCategory( cat : string ) -> table  -- Return all items in the given category.
+Stack:findByType( type_name : string ) -> table|nil  -- Return first item with the given type (or nil).
+Stack:findByTag( tag : string ) -> table|nil  -- Return first item with the given tag (or nil).
+Stack:countByType( type_name : string ) -> number  -- Count items with the given type.
+Stack:countByCategory( cat : string ) -> number  -- Count items in the given category.
+Stack:countByTag( tag : string ) -> number  -- Count items with the given tag.
+Stack:sortByStat( stat : string )  -- Sort items ascending by a numeric stat. Items without the stat sort last.
+Stack:sortByStatDesc( stat : string )  -- Sort items descending by a numeric stat.
+Stack:sortByCategory(  )  -- Sort items by category (alphabetical).
+Stack:sortByName(  )  -- Sort items by type name (alphabetical).
+Stack:shuffle(  )  -- Shuffle items in-place (Fisher-Yates). helper ships (P4 lift candidate; would also fix the LuaJIT vs Lua 5.4 RNG divergence noted in P4_lift_candidates.md).
+Stack:peekTopNTypes( n : number ) -> table  -- Return the type names of the top n items (without removing).
 ```
 
-### `pool`
+### `ItemPool`
 
 ```lua
-pool:size(  ) -> number  -- Return number of entries.
-pool:isEmpty(  ) -> boolean  -- Return true if the pool has no entries.
-pool:totalWeight(  ) -> number  -- Return the sum of all entry weights.
-pool:getEntries(  ) -> table  -- Return all entries as array of {type_name, weight}.
-pool:addType( type_name : string, weight : number )  -- Add a type with a given weight. If type already present, adds another entry.
-pool:setWeight( type_name : string, weight : number ) -> boolean  -- Update the weight of the first matching entry. Returns false if not found.
-pool:remove( type_name : string ) -> boolean  -- Remove the first entry of type_name. Returns false if not found.
-pool:draw(  ) -> table|nil  -- Draw one random item (weighted). Returns nil if pool is empty or total weight is zero.
-pool:drawTypes( n : number ) -> table  -- Draw n items (with replacement). Entries from an empty pool are skipped (nil).
-pool:drawUniqueTypes( n : number ) -> table  -- Draw up to n unique type names (no type drawn twice), returns array of Items. If n exceeds the number of distinct types in the pool, returns all distinct types.
+ItemPool:size(  ) -> number  -- Return number of entries.
+ItemPool:isEmpty(  ) -> boolean  -- Return true if the pool has no entries.
+ItemPool:totalWeight(  ) -> number  -- Return the sum of all entry weights.
+ItemPool:getEntries(  ) -> table  -- Return all entries as array of {type_name, weight}.
+ItemPool:addType( type_name : string, weight : number )  -- Add a type with a given weight. If type already present, adds another entry.
+ItemPool:setWeight( type_name : string, weight : number ) -> boolean  -- Update the weight of the first matching entry. Returns false if not found.
+ItemPool:remove( type_name : string ) -> boolean  -- Remove the first entry of type_name. Returns false if not found.
+ItemPool:draw(  ) -> table|nil  -- Draw one random item (weighted). Returns nil if pool is empty or total weight is zero.
+ItemPool:drawTypes( n : number ) -> table  -- Draw n items (with replacement). Entries from an empty pool are skipped (nil).
+ItemPool:drawUniqueTypes( n : number ) -> table  -- Draw up to n unique type names (no type drawn twice), returns array of Items. If n exceeds the number of distinct types in the pool, returns all distinct types.
 ```
 
-### `builder`
+### `StackBuilder`
 
 ```lua
-builder:add( type_name : string, count : number )  -- Add items of a type to the recipe.
-builder:addWith( type_name : string, count : number, stat_overrides : table, extra_tags : table )  -- Add items with per-item stat overrides and extra tags. Unlike add(), overrides are applied immediately to pre-built item instances.
-builder:setShuffleOnBuild( enabled : boolean )  -- Enable or disable Fisher-Yates shuffle after build.
-builder:requireType( type_name : string )  -- Require that a specific type appears at least once.
-builder:banType( type_name : string )  -- Ban a specific type from appearing.
-builder:removeBannedType( type_name : string )  -- Remove a ban on a type.
-builder:build( name : string ) -> table  -- Build the stack from recipe entries plus addWith items. Applies shuffleOnBuild if enabled.
-builder:validateEntries(  ) -> string|nil  -- Validate the current recipe + addWith items against required/banned constraints. Returns nil on success, or an error string on failure.
-builder:validateStack( stack : table ) -> string|nil  -- Validate a pre-built stack against required/banned constraints. Returns nil on success, or an error string on failure.
-builder:buildNamed( name : string ) -> table  -- Build the stack with a custom name (alias for build).
+StackBuilder:add( type_name : string, count : number )  -- Add items of a type to the recipe.
+StackBuilder:addWith( type_name : string, count : number, stat_overrides : table, extra_tags : table )  -- Add items with per-item stat overrides and extra tags. Unlike add(), overrides are applied immediately to pre-built item instances.
+StackBuilder:setShuffleOnBuild( enabled : boolean )  -- Enable or disable Fisher-Yates shuffle after build.
+StackBuilder:requireType( type_name : string )  -- Require that a specific type appears at least once.
+StackBuilder:banType( type_name : string )  -- Ban a specific type from appearing.
+StackBuilder:removeBannedType( type_name : string )  -- Remove a ban on a type.
+StackBuilder:build( name : string ) -> table  -- Build the stack from recipe entries plus addWith items. Applies shuffleOnBuild if enabled.
+StackBuilder:validateEntries(  ) -> string|nil  -- Validate the current recipe + addWith items against required/banned constraints. Returns nil on success, or an error string on failure.
+StackBuilder:validateStack( stack : table ) -> string|nil  -- Validate a pre-built stack against required/banned constraints. Returns nil on success, or an error string on failure.
+StackBuilder:buildNamed( name : string ) -> table  -- Build the stack with a custom name (alias for build).
 ```
 
-### `history`
+### `StackHistory`
 
 ```lua
-history:recordPush( source : string, item_type : string, size_after : number )  -- Record a push action.
-history:recordPop( source : string, item_type : string, size_after : number )  -- Record a pop action.
-history:recordClear( source : string )  -- Record a clear action.
-history:recordCustom( source : string, label : string, size_after : number )  -- Record a custom event.
-history:entries(  ) -> table  -- Return all recorded entries (oldest first). Each entry has: action, source, item_type, size_after.
-history:getLastN( n : number ) -> table  -- Return the last n entries, or all if n > count.
-history:clear(  )  -- Clear all log entries.
-history:count(  ) -> number  -- Return number of entries.
-history:isEmpty(  ) -> boolean  -- Return true if no events have been recorded.
-history:last(  ) -> table|nil  -- Return the most recent entry, or nil if empty.
-history:entriesFor( source : string ) -> table  -- Return all entries matching a specific source name.
+StackHistory:recordPush( source : string, item_type : string, size_after : number )  -- Record a push action.
+StackHistory:recordPop( source : string, item_type : string, size_after : number )  -- Record a pop action.
+StackHistory:recordClear( source : string )  -- Record a clear action.
+StackHistory:recordCustom( source : string, label : string, size_after : number )  -- Record a custom event.
+StackHistory:entries(  ) -> table  -- Return all recorded entries (oldest first). Each entry has: action, source, item_type, size_after.
+StackHistory:getLastN( n : number ) -> table  -- Return the last n entries, or all if n > count.
+StackHistory:clear(  )  -- Clear all log entries.
+StackHistory:count(  ) -> number  -- Return number of entries.
+StackHistory:isEmpty(  ) -> boolean  -- Return true if no events have been recorded.
+StackHistory:last(  ) -> table|nil  -- Return the most recent entry, or nil if empty.
+StackHistory:entriesFor( source : string ) -> table  -- Return all entries matching a specific source name.
 ```
 
-### `manager`
+### `StackManager`
 
 ```lua
-manager:addStack( name : string, stack : table )  -- Register a stack.
-manager:getStack( name : string ) -> table|nil  -- Retrieve a stack by name.
-manager:removeStack( name : string ) -> boolean  -- Remove a stack. Returns true if existed.
-manager:keys(  ) -> table  -- Return all registered stack names.
-manager:hasStack( name : string ) -> boolean  -- Return true if a stack with this name exists.
-manager:createStack( name : string )  -- Create and register a new empty unlimited stack.
-manager:createStackCapped( name : string, capacity : number )  -- Create and register a new empty stack with a capacity limit.
-manager:totalItems(  ) -> number  -- Return total number of items across all stacks.
-manager:moveItem( from : string, index : number, to : string ) -> table|nil, string|nil  -- Move item at 1-based index from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
-manager:moveItemByType( from : string, item_type : string, to : string ) -> table|nil, string|nil  -- Move the first item of a given type from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
-manager:moveTop( from : string, to : string ) -> table|nil, string|nil  -- Move the top item from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
+StackManager:addStack( name : string, stack : table )  -- Register a stack.
+StackManager:getStack( name : string ) -> table|nil  -- Retrieve a stack by name.
+StackManager:removeStack( name : string ) -> boolean  -- Remove a stack. Returns true if existed.
+StackManager:keys(  ) -> table  -- Return all registered stack names.
+StackManager:hasStack( name : string ) -> boolean  -- Return true if a stack with this name exists.
+StackManager:createStack( name : string )  -- Create and register a new empty unlimited stack.
+StackManager:createStackCapped( name : string, capacity : number )  -- Create and register a new empty stack with a capacity limit.
+StackManager:totalItems(  ) -> number  -- Return total number of items across all stacks.
+StackManager:moveItem( from : string, index : number, to : string ) -> table|nil, string|nil  -- Move item at 1-based index from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
+StackManager:moveItemByType( from : string, item_type : string, to : string ) -> table|nil, string|nil  -- Move the first item of a given type from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
+StackManager:moveTop( from : string, to : string ) -> table|nil, string|nil  -- Move the top item from one stack to the top of another. Returns the moved item on success, or nil plus an error string on failure.
 ```
 
-### `slot`
+### `Slot`
 
 ```lua
-slot:getName(  ) -> string  -- Return the slot name.
-slot:size(  ) -> number  -- Return number of items in the slot.
-slot:isEmpty(  ) -> boolean  -- Return true if the slot is empty.
-slot:isFull(  ) -> boolean  -- Return true if the slot is at capacity.
-slot:getCapacity(  ) -> number  -- Return capacity (0 = unlimited).
-slot:setCapacity( n : number )  -- Set or update capacity (0 = unlimited).
-slot:push( it : table ) -> boolean  -- Add an item to the slot. Returns true on success, false if at capacity.
-slot:pop(  ) -> table|nil  -- Remove and return the last item, or nil if empty.
-slot:removeAt( index : number ) -> table|nil  -- Remove and return the item at 1-based index, or nil if out of range.
-slot:peek(  ) -> table|nil  -- Peek at the last item without removing it.
-slot:peekAt( index : number ) -> table|nil  -- Peek at item at 1-based index without removing it.
-slot:clear(  ) -> table  -- Remove all items and return them as an array.
-slot:items(  ) -> table  -- Return a shallow copy of all items.
-slot:hasItemWithTag( tag : string ) -> boolean  -- Return true if any item has the given tag.
-slot:hasItemOfType( item_type : string ) -> boolean  -- Return true if any item is of the given type.
+Slot:getName(  ) -> string  -- Return the slot name.
+Slot:size(  ) -> number  -- Return number of items in the slot.
+Slot:isEmpty(  ) -> boolean  -- Return true if the slot is empty.
+Slot:isFull(  ) -> boolean  -- Return true if the slot is at capacity.
+Slot:getCapacity(  ) -> number  -- Return capacity (0 = unlimited).
+Slot:setCapacity( n : number )  -- Set or update capacity (0 = unlimited).
+Slot:push( it : table ) -> boolean  -- Add an item to the slot. Returns true on success, false if at capacity.
+Slot:pop(  ) -> table|nil  -- Remove and return the last item, or nil if empty.
+Slot:removeAt( index : number ) -> table|nil  -- Remove and return the item at 1-based index, or nil if out of range.
+Slot:peek(  ) -> table|nil  -- Peek at the last item without removing it.
+Slot:peekAt( index : number ) -> table|nil  -- Peek at item at 1-based index without removing it.
+Slot:clear(  ) -> table  -- Remove all items and return them as an array.
+Slot:items(  ) -> table  -- Return a shallow copy of all items.
+Slot:hasItemWithTag( tag : string ) -> boolean  -- Return true if any item has the given tag.
+Slot:hasItemOfType( item_type : string ) -> boolean  -- Return true if any item is of the given type.
 ```
 
 ---
@@ -1589,23 +1575,17 @@ slot:hasItemOfType( item_type : string ) -> boolean  -- Return true if any item 
 ## `library.lobby` {#lobby}
 
 > Pure-Lua lobby and room management built on `lurek.network`.
-
 Provides room creation, joining, player tracking, ready-check
 coordination, host election, and password protection for multiplayer
 pre-game lobbies.
-
 Room lifecycle:
-
 1. Server creates a room via `createRoom(name, opts)`.
 2. Players join with `joinRoom(name, ...)`.  The first player becomes host.
 3. Players toggle ready state with `setReady(ready, ...)`.
 4. When `isAllReady()` returns true the host may start the game.
 5. Players leave with `leaveRoom(...)`; host is re-elected automatically.
 6. An empty room is removed automatically.
-
 Player states: **not-ready** (default on join) → **ready** (via setReady).
-
-
 Wire format note: messages between peers are encoded with
 `lurek.network.pack` / `lurek.network.unpack` (MessagePack — the canonical
 ENet payload format). For human-readable persistence (e.g. saved lobby
@@ -1654,14 +1634,11 @@ Lobby:_handle( peer_id : number, data : table, events : table )  -- Internal: ha
 ## `library.loot` {#loot}
 
 > Lurek2D loot library — designer-friendly weighted RNG, drop DSL, and pity timers.
-
 A pure-Lua loot table system built on `lurek.math.RandomGenerator`. Provides:
-
 * `LootTable` — Walker–Vose alias-method weighted RNG with O(1) sampling.
 * `DropSet`   — composable, conditional, multi-roll drop DSL.
 * `Pity`      — guaranteed-after-N-misses helper for streak protection.
 * `Modifier`  — luck/level/zone weight multipliers applied as a temporary view.
-
 Usage:
 local loot = require("library.loot")
 local tbl  = loot.fromList({
@@ -1732,14 +1709,11 @@ Modifier:apply( tbl : LootTable, context : table ) -> LootTable  -- Produce a te
 ## `library.narrative` *(partial)* {#narrative}
 
 > Lurek2D narrative library — Ink-flavoured branching narrative interpreter.
-
 Pure-Lua implementation of a usable subset of inkle's Ink scripting language.
 Supports knots, diverts, sticky/regular choices, variables, conditional
 choices, inline `{var}` and `{fn(arg)}` substitution, tags, visit counters,
 and save/resume.
-
 Supported Ink subset:
-
 === knot_name ===            -- knot header
 Plain prose lines.            -- emitted by continue()
 -> next_knot                  -- divert
@@ -1752,7 +1726,6 @@ Plain prose lines.            -- emitted by continue()
 VAR name = value              -- declare initial variable
 ~ name = expr                 -- run-line variable assignment
 // line comment               -- ignored
-
 Usage:
 local narrative = require("library.narrative")
 local story = narrative.compile([[
@@ -1810,34 +1783,27 @@ Story:resume( state )  -- Restore from a save blob.
 ## `library.netstate` {#netstate}
 
 > Pure-Lua network state synchronization and turn-based game support.
-
 Built on `lurek.network`, provides automatic state replication between peers
 with per-key versioning, change callbacks, authority control, delta updates,
 and turn-based game management.
-
 **Authority model**: One peer is the *authority* (typically the server).
 Only the authority can write state via `set()`. Non-authority peers receive
 delta updates and full-state snapshots. Authority is set at construction
 and can be toggled with `setAuthority()`.
-
 **Per-key versioning**: Each key maintains its own monotonically increasing
 version number. When a delta arrives, only entries whose version exceeds
 the locally stored per-key version are applied — preventing stale replays
 even under concurrent updates.
-
 **Turn-based protocol**: Optional. When `turnBased = true`, the authority
 manages a turn counter and a rotating peer order. `beginTurn()` advances
 the turn and broadcasts the change. Clients receive turn events via `onTurn`.
-
 **Wire format**: state deltas and full-state snapshots are encoded with
 `lurek.network.pack` / `lurek.network.unpack` (MessagePack — the canonical
 ENet payload format). For human-readable persistence (e.g. write a snapshot
 to disk for inspection), pair `:getAll()` with `lurek.serial.toJson`.
-
 **Hash helper**: `:hashState()` is a deterministic FNV-1a digest of all
 replicated keys/values; useful for desync detection. When a future
 `lurek.binary.hash` lift lands (P4 candidate), this should delegate.
-
 **Limitation**: `requestFullState()` has no built-in timeout. If the authority
 never responds, the client will not receive a snapshot. Callers should
 implement their own timer-based retry or use the `onFullStateTimeout`
@@ -1878,7 +1844,7 @@ NetState:isTurn( peer_id : number ) -> boolean  -- Check if it is a specific pee
 NetState:sync(  )  -- Broadcast all dirty state to connected peers. Call once per frame after all `set()` calls (e.g. at end of `lurek.process(dt)`). Requires a valid host; no-op if host is nil or instance is not authority.
 NetState:poll(  ) -> table  -- Process incoming state updates from the network. Call once per frame. Requires a valid host; returns empty table if host is nil.
 NetState:_markDirty( key : string )  -- Mark a key as dirty, respecting the maxDirtyKeys limit.
-NetState:hashState(  ) -> number  -- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). TODO(P4 lift): when `lurek.binary.hash` lands in the engine (P4 lift candidate), this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
+NetState:hashState(  ) -> number  -- Compute a deterministic FNV-1a 32-bit digest of the current synced state. Useful for desync detection between authority and clients (compare digests after a sync round; mismatch indicates state divergence). this method should delegate to it for the inner string-hashing step.  Until then a small inline FNV-1a implementation keeps the library self-contained and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
 NetState:toJson(  ) -> string|nil  -- Serialise the current state to a JSON string via `lurek.serial.toJson`. Suitable for human-readable persistence (NOT for the wire — use the normal `:sync()` MessagePack path for peer-to-peer traffic). Returns nil if `lurek.serial` is unavailable in this runtime.
 NetState:requestFullState(  ) -> boolean  -- Request a full state snapshot from the authority. Useful when a client joins mid-game. **Limitation**: This method has no built-in timeout. If the authority never responds, the client will not receive a snapshot. Callers should implement their own timer-based retry, e.g.: ns:requestFullState() local deadline = lurek.timer.getTime() + 5.0 -- In process loop: if lurek.timer.getTime() > deadline then retry or invoke --   ns:onFullStateTimeout callback
 ```
@@ -1891,17 +1857,14 @@ NetState:requestFullState(  ) -> boolean  -- Request a full state snapshot from 
 definitions, borders, event bus, map modes, positions, routing, and
 faction helpers. Self-contained � does not require any `lurek.*`
 module to operate.
-
 The optional `M.newFromPng(path, defs?)` constructor uses
 `lurek.image.newProvinceGrid` to load and adjacency-scan a PNG colour
 map in a single Rust pass (see that function for details). All other
 entry points are pure Lua.
-
 **Coordinate system**: Pixel coordinates are 0-based (x: 0..width-1,
 y: 0..height-1). Internally, `pixel_lookup` uses 1-based Lua array
 indexing: index = y * width + x + 1.  Province IDs are arbitrary
 non-negative integers (typically derived from RGB colour via `colorToId`).
-
 **Adjacency model**: Edges are undirected.  Both `adj_key` and
 `newAdjacencyEdge` normalise so that `province_a <= province_b`.
 `insertAdjacency` enforces the same invariant.  The canonical adjacency
@@ -2014,22 +1977,16 @@ EventBus:size(  ) -> number  -- Return the number of queued events.
 ## `library.quest` {#quest}
 
 > Lurek2D quest system � objectives, stages, journal, and quest log.
-
 A pure-Lua replacement for the former `lurek.quest` Rust binding.
 No engine dependencies; works in headless test VMs.
 Optional: uses `lurek.log.debug()` / `lurek.log.info()` when available for
 quest state-change tracing.
-
 **Quest lifecycle states and valid transitions**:
-
 available ? active  (via Quest:start)
 active    ? completed (via Quest:complete)
 active    ? failed    (via Quest:fail)
-
 All other transitions are rejected and return false.
-
 **Engine integrations** (all optional � inject from your game code):
-
 * Event bus: attach `lurek.patterns.newEventBus()` via `QuestLog:setEventBus`
 to receive `quest_started` / `quest_advanced` / `quest_completed` /
 `quest_failed` events.
@@ -2040,7 +1997,6 @@ that calls `M.toJson(log)` on save and `M.fromJson(str)` on load.
 * Time-limited objectives: drive expiry from a `lurek.timer.Scheduler` you
 create in your game loop (call `QuestLog:failQuest(id)` from the callback);
 this library does not require `lurek.timer` at runtime.
-
 Usage:
 local quest = require("library.quest")
 local log = quest.newQuestLog()
@@ -2140,13 +2096,10 @@ QuestLog:completedCount(  ) -> number  -- Count completed quests.
 ## `library.rhythm` {#rhythm}
 
 > Lurek2D rhythm library — BPM-locked event sequencer over `lurek.audio`.
-
 Turns audio playhead time into beat-grid scheduling for rhythm games and
 music-reactive levels. Two main pieces:
-
 * `Clock`  — beat clock with BPM, swing, ramp, and audio-source binding.
 * `M.judge` — judgement window scoring for player input timing.
-
 The clock is independent of `lurek.timer.Scheduler` (which is wall-time
 based) — beat math accounts for BPM ramps and audio source seeks.
 
@@ -2191,13 +2144,10 @@ Clock:dump(  ) -> table  -- Return a snapshot table of current clock state for s
 ## `library.roguelike` {#roguelike}
 
 > Lurek2D roguelike library — FOV, energy scheduler, and goal maps.
-
 Pure-Lua runtime queries that turn `lurek.tilemap` into a roguelike:
-
 * `Fov`       — symmetric recursive-shadowcasting field of view.
 * `Scheduler` — discrete energy/speed turn scheduler (not Δt-based).
 * `GoalMap`   — multi-source Dijkstra distance field with flee inversion.
-
 All three subsystems are independent — pick what you need.
 
 *32 functions documented, 3 classes*
@@ -2259,12 +2209,9 @@ GoalMap:flee( x, y, fear )  -- Unit step away from goals, scaled by `fear` (defa
 > Enables calling functions on remote peers over ENet with automatic
 JSON serialisation via `lurek.serial`. Supports request/response,
 fire-and-forget, and broadcast patterns.
-
 ## RPC Protocol
-
 Messages are serialised via `lurek.serial.toJson` / `lurek.serial.fromJson`.
 Three message types flow over the wire:
-
 - **rpc_call**: `{type="rpc_call", id=N, name="fn", args={...}}`
 Sender expects an `rpc_response` back with the matching `id`.
 - **rpc_response**: `{type="rpc_response", id=N, success=bool, result={...}}`
@@ -2272,16 +2219,12 @@ Returned by the callee after executing the handler for `rpc_call`.
 - **rpc_notify**: `{type="rpc_notify", name="fn", args={...}, peer_id=N}`
 Fire-and-forget; no response is sent back. `peer_id` is included so
 broadcast handlers can identify the originator.
-
 ## Error Handling
-
 Set a global error callback via `onError(fn)`. The callback receives a
 single string describing the error context (includes the method name when
 available). Handler exceptions during `rpc_call` are caught and sent back
 as `{success=false, result={error_string}}` to the caller.
-
 ## Request ID Limits
-
 The internal request ID counter is a Lua number. In LuaJIT (double-
 precision float) integers are exact up to 2^53. Call `resetIdCounter()`
 to reset to 1 if your application may exceed this range.
@@ -2317,16 +2260,12 @@ RPC:getHandlerCount(  ) -> number  -- Get the number of registered RPC handlers.
 ## `library.scene-objects` {#scene-objects}
 
 > Scene object container — layered draw and update loop for game objects.
-
 A pure-Lua runtime-agnostic container that holds any table with optional
 `draw`, `update`, and `layer` fields.  One container per scene; call
 `:update(dt)` and `:draw()` every frame from your scene callbacks.
-
 Objects are drawn in ascending `layer` order.  An object's `layer` defaults
 to 0 when not set.  Objects on the same layer are drawn in insertion order.
-
 No engine dependencies; the module works in headless test VMs.
-
 Usage:
 local sceneobj = require("library/scene-objects")
 local world = sceneobj.new()
@@ -2360,19 +2299,15 @@ ObjectContainer:has( obj : table ) -> boolean  -- Check whether a specific objec
 ## `library.scheduler` {#scheduler}
 
 > Lurek2D coroutine scheduler — a pure-Lua cooperative task runner.
-
 A pure-Lua coroutine scheduler that integrates with the engine's update loop.
 No engine dependencies; works in headless test VMs.
-
 Tasks are coroutine bodies that receive a `yield(seconds)` helper. Calling
 `yield(n)` suspends the task for `n` seconds of game time. When the wait
 elapses the scheduler resumes the coroutine. Tasks that return (or error)
 are automatically removed on the next `update()`.
-
 This is a **coroutine-frame** scheduler: timing is measured in units of `dt`
 you pass to `:update(dt)`. For wall-clock one-shots / repeats use the engine
 `lurek.timer.Scheduler` userdata (`:after`, `:every`, `:cancel`) instead.
-
 Usage:
 local scheduler = require("library.scheduler")
 local sched = scheduler.newScheduler()
@@ -2411,7 +2346,6 @@ sched:clear(  )  -- Remove all tasks immediately.
 
 > Sprite animation toolkit: SpriteAnimator for frame-by-frame playback,
 and AnimController for rule-based state-machine animation switching.
-
 ## Engine integrations
 
 *6 functions documented, 1 classes*
@@ -2437,9 +2371,7 @@ AnimController:getAnimator(  ) -> SpriteAnimator  -- Returns the underlying Spri
 > RPG character stat sheets with attributes, buffs, skills, perks, traits,
 XP/levelling, action points, morale, resistances, encumbrance and initiative.
 Pure-Lua port of src/stats/.
-
 ## Engine integrations
-
 The library is self-contained but plays well with the following `lurek.*`
 namespaces (consume from your own game code, not from this module):
 
@@ -2551,16 +2483,13 @@ Sheet:restore( snap : table )  -- Restore sheet state from a snapshot previously
 ## `library.tween_chain` {#tween_chain}
 
 > Lurek2D chainable tween sequences — a pure-Lua tweening system.
-
 Provides sequential and parallel tween chains with built-in easing,
 looping, callbacks, and pause/resume control. No engine runtime
 dependency; works in headless test VMs.
-
 A chain is a sequence of steps: property tweens (`to`), delays (`wait`),
 or instant callbacks (`call`). Steps execute one at a time. A parallel
 group runs all its sub-tweens simultaneously and completes when the
 longest one finishes.
-
 Usage:
 local TweenChain = require("library.tween_chain")
 local chain = TweenChain.new()
@@ -2627,7 +2556,6 @@ Chain:getProgress(  ) -> number  -- Get overall progress through the current loo
 > Fluent configuration builder for window setup and common window management
 patterns. Wraps lurek.window.* API with chainable setters, preset configs,
 and serialize/deserialize for settings persistence.
-
 ## Engine integrations
 
 *20 functions documented, 1 classes*

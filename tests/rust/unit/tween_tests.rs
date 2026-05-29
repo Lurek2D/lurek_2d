@@ -1,5 +1,4 @@
-//! INTERNAL ONLY: Lua-facing behavior is covered by Lua tests.
-//! This file keeps focused coverage for Rust-only tween internals.
+//! File: tests/rust/unit/tween_tests.rs
 
 mod state_tests {
     use lurek2d::tween::{builtin_easing_names, TweenState};

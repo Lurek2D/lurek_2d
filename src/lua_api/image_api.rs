@@ -1,11 +1,4 @@
-//! `lurek.image` -- Image bindings for pixel buffers, encoded image load/save, layered image stacks, DDS compressed metadata, palette lookup tables, province color grids, polygon extraction, shape rendering, and screen capture handoff.
-//!
-//! - Registers `lurek.image.*` functions and types via `register()`.
-//! - `LuaProvinceGrid`: userdata type exposed to Lua.
-//! - `LuaLayeredImage`: userdata type exposed to Lua.
-//! - `LuaCompressedImageData`: userdata type exposed to Lua.
-//! - `LuaPaletteLUT`: userdata type exposed to Lua.
-//! - Bridges 102 Lua-callable methods via `mlua`.
+//! File: src/lua_api/image_api.rs
 
 use super::SharedState;
 use crate::image::serial;

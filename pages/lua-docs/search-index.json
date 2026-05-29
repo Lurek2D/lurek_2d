@@ -4352,6 +4352,22 @@
     "keywords": "math cubicBezier function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number, t: number) -> number"
   },
   {
+    "kind": "function",
+    "module": "math",
+    "title": "lurek.math.newLootTable",
+    "subtitle": "Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.",
+    "href": "modules/math.html#fn-newloottable",
+    "keywords": "math newLootTable function newLootTable(seed: integer?) -> LLootTable"
+  },
+  {
+    "kind": "function",
+    "module": "math",
+    "title": "lurek.math.newPityTracker",
+    "subtitle": "Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.",
+    "href": "modules/math.html#fn-newpitytracker",
+    "keywords": "math newPityTracker function newPityTracker(target_id: string, threshold: integer) -> LPityTracker"
+  },
+  {
     "kind": "class",
     "module": "math",
     "title": "LVec2",
@@ -5568,6 +5584,174 @@
     "keywords": "LAabbTree typeOf method math typeOf(name: string) -> boolean"
   },
   {
+    "kind": "class",
+    "module": "math",
+    "title": "LLootTable",
+    "subtitle": "Lua-side wrapper for a Walker-Vose alias-method loot table.",
+    "href": "classes/LLootTable.html",
+    "keywords": "LLootTable class math userdata"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:add",
+    "subtitle": "Adds an entry to the table. Re-build is required before the next sample.",
+    "href": "classes/LLootTable.html#method-add",
+    "keywords": "LLootTable add method math add(id: string, weight: number, meta: table?)"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:remove",
+    "subtitle": "Removes an entry by id. Returns true when found.",
+    "href": "classes/LLootTable.html#method-remove",
+    "keywords": "LLootTable remove method math remove(id: string) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:setWeight",
+    "subtitle": "Updates the weight of an existing entry. Returns true when found.",
+    "href": "classes/LLootTable.html#method-setweight",
+    "keywords": "LLootTable setWeight method math setWeight(id: string, weight: number) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:build",
+    "subtitle": "Rebuilds the alias table after mutations. Call before sampling.",
+    "href": "classes/LLootTable.html#method-build",
+    "keywords": "LLootTable build method math build()"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:sample",
+    "subtitle": "Samples one entry in O(1). Returns nil when the table is empty.",
+    "href": "classes/LLootTable.html#method-sample",
+    "keywords": "LLootTable sample method math sample() -> table?"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:sampleN",
+    "subtitle": "Samples n entries with replacement. Returns an array table.",
+    "href": "classes/LLootTable.html#method-samplen",
+    "keywords": "LLootTable sampleN method math sampleN(n: integer) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:sampleUnique",
+    "subtitle": "Samples up to n unique entries (by id). Returns an array table.",
+    "href": "classes/LLootTable.html#method-sampleunique",
+    "keywords": "LLootTable sampleUnique method math sampleUnique(n: integer) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:setSeed",
+    "subtitle": "Sets the RNG seed. The alias table remains valid.",
+    "href": "classes/LLootTable.html#method-setseed",
+    "keywords": "LLootTable setSeed method math setSeed(seed: integer)"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:entryCount",
+    "subtitle": "Returns the number of entries in the table.",
+    "href": "classes/LLootTable.html#method-entrycount",
+    "keywords": "LLootTable entryCount method math entryCount() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:type",
+    "subtitle": "Returns the Lua-visible type name.",
+    "href": "classes/LLootTable.html#method-type",
+    "keywords": "LLootTable type method math type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LLootTable:typeOf",
+    "subtitle": "Returns whether this handle matches the given type name.",
+    "href": "classes/LLootTable.html#method-typeof",
+    "keywords": "LLootTable typeOf method math typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "math",
+    "title": "LPityTracker",
+    "subtitle": "Lua-side wrapper for a pity tracker.",
+    "href": "classes/LPityTracker.html",
+    "keywords": "LPityTracker class math userdata"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:notice",
+    "subtitle": "Notifies the tracker of a sample result id.",
+    "href": "classes/LPityTracker.html#method-notice",
+    "keywords": "LPityTracker notice method math notice(result_id: string) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:isPrimed",
+    "subtitle": "Returns true when the guaranteed drop is due.",
+    "href": "classes/LPityTracker.html#method-isprimed",
+    "keywords": "LPityTracker isPrimed method math isPrimed() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:reset",
+    "subtitle": "Resets counter and primed state.",
+    "href": "classes/LPityTracker.html#method-reset",
+    "keywords": "LPityTracker reset method math reset()"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:counter",
+    "subtitle": "Returns the current miss counter.",
+    "href": "classes/LPityTracker.html#method-counter",
+    "keywords": "LPityTracker counter method math counter() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:export",
+    "subtitle": "Serialises pity state to a binary blob.",
+    "href": "classes/LPityTracker.html#method-export",
+    "keywords": "LPityTracker export method math export() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:import",
+    "subtitle": "Restores pity state from a blob produced by `export`.",
+    "href": "classes/LPityTracker.html#method-import",
+    "keywords": "LPityTracker import method math import(blob: string)"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:type",
+    "subtitle": "Returns the Lua-visible type name.",
+    "href": "classes/LPityTracker.html#method-type",
+    "keywords": "LPityTracker type method math type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "math",
+    "title": "LPityTracker:typeOf",
+    "subtitle": "Returns whether this handle matches the given type name.",
+    "href": "classes/LPityTracker.html#method-typeof",
+    "keywords": "LPityTracker typeOf method math typeOf(name: string) -> boolean"
+  },
+  {
     "kind": "module",
     "module": "audio",
     "title": "lurek.audio",
@@ -6238,6 +6422,14 @@
     "subtitle": "Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.",
     "href": "modules/audio.html#fn-newpool",
     "keywords": "audio newPool function newPool(file_path: string, voice_count: integer) -> LSoundPool"
+  },
+  {
+    "kind": "function",
+    "module": "audio",
+    "title": "lurek.audio.newBeatClock",
+    "subtitle": "Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.",
+    "href": "modules/audio.html#fn-newbeatclock",
+    "keywords": "audio newBeatClock function newBeatClock(bpm: number, beats_per_bar: integer?) -> LBeatClock"
   },
   {
     "kind": "class",
@@ -7174,6 +7366,158 @@
     "subtitle": "Checks whether this object matches the given type name.",
     "href": "classes/LDecoder.html#method-typeof",
     "keywords": "LDecoder typeOf method audio typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "audio",
+    "title": "LBeatClock",
+    "subtitle": "Lua-side wrapper for a musical beat clock.",
+    "href": "classes/LBeatClock.html",
+    "keywords": "LBeatClock class audio userdata"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:start",
+    "subtitle": "Starts the clock.",
+    "href": "classes/LBeatClock.html#method-start",
+    "keywords": "LBeatClock start method audio start()"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:stop",
+    "subtitle": "Pauses the clock.",
+    "href": "classes/LBeatClock.html#method-stop",
+    "keywords": "LBeatClock stop method audio stop()"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:reset",
+    "subtitle": "Resets elapsed time to zero without changing running state.",
+    "href": "classes/LBeatClock.html#method-reset",
+    "keywords": "LBeatClock reset method audio reset()"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:tick",
+    "subtitle": "Advances the clock by `dt` seconds. Returns an array of whole-beat crossings.",
+    "href": "classes/LBeatClock.html#method-tick",
+    "keywords": "LBeatClock tick method audio tick(dt: number) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:position",
+    "subtitle": "Returns the current beat position.",
+    "href": "classes/LBeatClock.html#method-position",
+    "keywords": "LBeatClock position method audio position() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:bpm",
+    "subtitle": "Returns the current BPM.",
+    "href": "classes/LBeatClock.html#method-bpm",
+    "keywords": "LBeatClock bpm method audio bpm() -> number"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:setBpm",
+    "subtitle": "Sets a new BPM. Elapsed time is preserved.",
+    "href": "classes/LBeatClock.html#method-setbpm",
+    "keywords": "LBeatClock setBpm method audio setBpm(bpm: number)"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:beatsPerBar",
+    "subtitle": "Returns the number of beats per bar.",
+    "href": "classes/LBeatClock.html#method-beatsperbar",
+    "keywords": "LBeatClock beatsPerBar method audio beatsPerBar() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:setBeatsPerBar",
+    "subtitle": "Changes the time-signature beats-per-bar.",
+    "href": "classes/LBeatClock.html#method-setbeatsperbar",
+    "keywords": "LBeatClock setBeatsPerBar method audio setBeatsPerBar(beats: integer)"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:tap",
+    "subtitle": "Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).",
+    "href": "classes/LBeatClock.html#method-tap",
+    "keywords": "LBeatClock tap method audio tap(wall_time_secs: number) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:scheduleAt",
+    "subtitle": "Schedules a one-shot event at `beat`. Returns true when the beat is in the future.",
+    "href": "classes/LBeatClock.html#method-scheduleat",
+    "keywords": "LBeatClock scheduleAt method audio scheduleAt(beat: number) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:drainFired",
+    "subtitle": "Returns and removes all scheduled beats that have now passed.",
+    "href": "classes/LBeatClock.html#method-drainfired",
+    "keywords": "LBeatClock drainFired method audio drainFired() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:secondsPerBeat",
+    "subtitle": "Returns seconds-per-beat at the current BPM.",
+    "href": "classes/LBeatClock.html#method-secondsperbeat",
+    "keywords": "LBeatClock secondsPerBeat method audio secondsPerBeat() -> number"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:secondsToNextBeat",
+    "subtitle": "Returns seconds until the next whole beat boundary.",
+    "href": "classes/LBeatClock.html#method-secondstonextbeat",
+    "keywords": "LBeatClock secondsToNextBeat method audio secondsToNextBeat() -> number"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:isRunning",
+    "subtitle": "Returns true when the clock is running.",
+    "href": "classes/LBeatClock.html#method-isrunning",
+    "keywords": "LBeatClock isRunning method audio isRunning() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:quantise",
+    "subtitle": "Quantises `beat` to the nearest `grid` beat grid (static utility).",
+    "href": "classes/LBeatClock.html#method-quantise",
+    "keywords": "LBeatClock quantise method audio quantise(beat: number, grid: number) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:type",
+    "subtitle": "Returns the Lua-visible type name.",
+    "href": "classes/LBeatClock.html#method-type",
+    "keywords": "LBeatClock type method audio type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "audio",
+    "title": "LBeatClock:typeOf",
+    "subtitle": "Returns whether this handle matches the given type name.",
+    "href": "classes/LBeatClock.html#method-typeof",
+    "keywords": "LBeatClock typeOf method audio typeOf(name: string) -> boolean"
   },
   {
     "kind": "class",
@@ -39434,6 +39778,54 @@
   {
     "kind": "method",
     "module": "province",
+    "title": "LProvinceRegistry:findRoute",
+    "subtitle": "Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.",
+    "href": "classes/LProvinceRegistry.html#method-findroute",
+    "keywords": "LProvinceRegistry findRoute method province findRoute(from_id: integer, to_id: integer, cost_fn: function?) -> table?"
+  },
+  {
+    "kind": "method",
+    "module": "province",
+    "title": "LProvinceRegistry:findRoutes",
+    "subtitle": "Finds routes for a batch of `{from, to}` pairs.",
+    "href": "classes/LProvinceRegistry.html#method-findroutes",
+    "keywords": "LProvinceRegistry findRoutes method province findRoutes(pairs: table, cost_fn: function?) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "province",
+    "title": "LProvinceRegistry:getConnectedComponents",
+    "subtitle": "Returns connected components in the province adjacency graph.",
+    "href": "classes/LProvinceRegistry.html#method-getconnectedcomponents",
+    "keywords": "LProvinceRegistry getConnectedComponents method province getConnectedComponents() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "province",
+    "title": "LProvinceRegistry:findIsolatedProvinces",
+    "subtitle": "Returns provinces that have no adjacent province with the same owner attribute.",
+    "href": "classes/LProvinceRegistry.html#method-findisolatedprovinces",
+    "keywords": "LProvinceRegistry findIsolatedProvinces method province findIsolatedProvinces(owner_attr: string) -> integer[]"
+  },
+  {
+    "kind": "method",
+    "module": "province",
+    "title": "LProvinceRegistry:isConnected",
+    "subtitle": "Returns true when there is at least one route between two provinces.",
+    "href": "classes/LProvinceRegistry.html#method-isconnected",
+    "keywords": "LProvinceRegistry isConnected method province isConnected(from_id: integer, to_id: integer) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "province",
+    "title": "LProvinceRegistry:totalAttrForOwner",
+    "subtitle": "Sums a numeric attribute for all provinces with matching owner value.",
+    "href": "classes/LProvinceRegistry.html#method-totalattrforowner",
+    "keywords": "LProvinceRegistry totalAttrForOwner method province totalAttrForOwner(owner_attr: string, owner_val: string, sum_attr: string) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "province",
     "title": "LProvinceRegistry:getBorderType",
     "subtitle": "Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.",
     "href": "classes/LProvinceRegistry.html#method-getbordertype",
@@ -41872,6 +42264,14 @@
     "keywords": "tween spring function spring(target: table, fields: table, opts: table?) -> LSpring"
   },
   {
+    "kind": "function",
+    "module": "tween",
+    "title": "lurek.tween.newChain",
+    "subtitle": "Creates a sequential tween chain for cinematic value-interpolation sequences.",
+    "href": "modules/tween.html#fn-newchain",
+    "keywords": "tween newChain function newChain(looping: boolean?) -> LTweenChain"
+  },
+  {
     "kind": "class",
     "module": "tween",
     "title": "LTweenState",
@@ -41934,6 +42334,118 @@
     "subtitle": "Checks whether this object matches the given type name.",
     "href": "classes/LTweenState.html#method-typeof",
     "keywords": "LTweenState typeOf method tween typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "tween",
+    "title": "LTweenChain",
+    "subtitle": "Lua-side wrapper for a sequential tween chain.",
+    "href": "classes/LTweenChain.html",
+    "keywords": "LTweenChain class tween userdata"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:push",
+    "subtitle": "Appends a step to the chain.",
+    "href": "classes/LTweenChain.html#method-push",
+    "keywords": "LTweenChain push method tween push(opts: table) -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:tick",
+    "subtitle": "Advances the chain and returns an array of completed step events.",
+    "href": "classes/LTweenChain.html#method-tick",
+    "keywords": "LTweenChain tick method tween tick(dt: number) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:value",
+    "subtitle": "Returns the current interpolated value of the active step.",
+    "href": "classes/LTweenChain.html#method-value",
+    "keywords": "LTweenChain value method tween value() -> number"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:cursor",
+    "subtitle": "Returns the one-based index of the currently active step.",
+    "href": "classes/LTweenChain.html#method-cursor",
+    "keywords": "LTweenChain cursor method tween cursor() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:len",
+    "subtitle": "Returns the number of steps in the chain.",
+    "href": "classes/LTweenChain.html#method-len",
+    "keywords": "LTweenChain len method tween len() -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:reset",
+    "subtitle": "Resets the chain to step 0.",
+    "href": "classes/LTweenChain.html#method-reset",
+    "keywords": "LTweenChain reset method tween reset()"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:jumpTo",
+    "subtitle": "Jumps to the given step (one-based).",
+    "href": "classes/LTweenChain.html#method-jumpto",
+    "keywords": "LTweenChain jumpTo method tween jumpTo(step: integer)"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:setLooping",
+    "subtitle": "Enables or disables chain looping.",
+    "href": "classes/LTweenChain.html#method-setlooping",
+    "keywords": "LTweenChain setLooping method tween setLooping(looping: boolean)"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:isLooping",
+    "subtitle": "Returns true when the chain loops.",
+    "href": "classes/LTweenChain.html#method-islooping",
+    "keywords": "LTweenChain isLooping method tween isLooping() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:isFinished",
+    "subtitle": "Returns true when the non-looping chain has completed all steps.",
+    "href": "classes/LTweenChain.html#method-isfinished",
+    "keywords": "LTweenChain isFinished method tween isFinished() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:clear",
+    "subtitle": "Removes all steps and resets the cursor.",
+    "href": "classes/LTweenChain.html#method-clear",
+    "keywords": "LTweenChain clear method tween clear()"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:type",
+    "subtitle": "Returns the Lua-visible type name.",
+    "href": "classes/LTweenChain.html#method-type",
+    "keywords": "LTweenChain type method tween type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "tween",
+    "title": "LTweenChain:typeOf",
+    "subtitle": "Returns whether this handle matches the given type name.",
+    "href": "classes/LTweenChain.html#method-typeof",
+    "keywords": "LTweenChain typeOf method tween typeOf(name: string) -> boolean"
   },
   {
     "kind": "class",

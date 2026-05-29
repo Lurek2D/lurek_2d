@@ -1,15 +1,10 @@
-//! INTERNAL ONLY: Rust-only tests for effect helpers that are not directly asserted through
-//! `lurek.effect.*`.
-//!
-//! Public post-processing and effect control behaviour is covered by
-//! `tests/lua/unit/test_effect_unit.lua`. The remaining Rust tests keep image
-//! draw helpers, render-command generation, and lightweight weather structs.
+//! File: tests/rust/unit/effect_tests.rs
 
 use lurek2d::effect::stack::PostFxStack;
 use lurek2d::overlay::weather::WeatherParticle;
 use lurek2d::render::renderer::RenderCommand;
 
-// ── draw tests ──────────────────────────────────────────────────────────────
+// â”€â”€ draw tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod draw_tests {
     use super::*;
@@ -42,7 +37,7 @@ mod draw_tests {
     }
 }
 
-// ── render tests ────────────────────────────────────────────────────────────
+// â”€â”€ render tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use super::*;
@@ -87,7 +82,7 @@ mod render_tests {
     }
 }
 
-// ── weather tests ───────────────────────────────────────────────────────────
+// â”€â”€ weather tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod weather_tests {
     use super::*;

@@ -1,10 +1,4 @@
-//! `lurek.particle` -- Lua bindings for particle systems, trails, presets, TOML configs, physics collision, custom emission callbacks, death callbacks, and module-level forwarding helpers.
-//!
-//! - Registers `lurek.particle.*` functions and types via `register()`.
-//! - `LuaParticleSystem`: userdata type exposed to Lua.
-//! - `LuaTrail`: userdata type exposed to Lua.
-//! - Bridges 111 Lua-callable methods via `mlua`.
-//! - See `docs/specs/particle.md` for the full API specification.
+//! File: src/lua_api/particle_api.rs
 
 use super::callback_registry::CallbackRegistry;
 use super::physics_api::LuaWorld;

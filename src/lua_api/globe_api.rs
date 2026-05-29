@@ -1,10 +1,4 @@
-//! `lurek.globe` -- Spherical province-map bindings for globe registries, province graphs, sectors, heat layers, camera controls, picking, fog of war, markers, labels, render layers, arcs, pathfinding, exports, and coordinate math.
-//!
-//! - Registers `lurek.globe.*` functions and types via `register()`.
-//! - `LuaGlobe`: userdata type exposed to Lua.
-//! - `LuaGlobeRegistry`: userdata type exposed to Lua.
-//! - Bridges 83 Lua-callable methods via `mlua`.
-//! - See `docs/specs/globe.md` for the full API specification.
+//! File: src/lua_api/globe_api.rs
 
 use super::SharedState;
 use crate::globe::export::export_regions_to_obj;
@@ -1257,7 +1251,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
     /// Maximum number of provinces that can be registered in the globe.
     tbl.set("MAX_PROVINCES", MAX_REGIONS as u32)?;
-    /// Alias for MAX_PROVINCES — maximum number of regions that can be registered in the globe.
+    /// Alias for MAX_PROVINCES â€” maximum number of regions that can be registered in the globe.
     tbl.set("MAX_REGIONS", MAX_REGIONS as u32)?;
     /// LOD string constant for far-distance province rendering.
     tbl.set("LOD_FAR", "far")?;

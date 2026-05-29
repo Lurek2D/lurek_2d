@@ -65,7 +65,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LTweenSequence userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-await"><div class="item-row-main"><h3>await</h3><pre class="inline-signature">LTweenSequence:await()</pre><p>Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:799</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-await"><div class="item-row-main"><h3>await</h3><pre class="inline-signature">LTweenSequence:await()</pre><p>Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:920</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     local co = coroutine.create(function()
@@ -78,7 +78,7 @@ end</code></pre></details>
     coroutine.resume(co)
     lurek.tween.update(0.5)
     print(&quot;coroutine status = &quot; .. coroutine.status(co))
-end</code></pre></details></article><article class="item-row api-row" id="method-callback"><div class="item-row-main"><h3>callback</h3><pre class="inline-signature">LTweenSequence:callback(f: function) -&gt; LTweenSequence</pre><p>Appends a callback step to this sequence that fires when reached during playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:761</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-callback"><div class="item-row-main"><h3>callback</h3><pre class="inline-signature">LTweenSequence:callback(f: function) -&gt; LTweenSequence</pre><p>Appends a callback step to this sequence that fires when reached during playback.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:882</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { scale = 1 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { scale = 2 })
@@ -89,7 +89,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     lurek.tween.update(0.5)
     lurek.tween.update(0.5)
-end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTweenSequence:cancel()</pre><p>Cancels this sequence immediately and resumes any coroutines waiting on it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:780</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTweenSequence:cancel()</pre><p>Cancels this sequence immediately and resumes any coroutines waiting on it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:901</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
     seq:tween(1.0, obj, { w = 100 })
@@ -100,7 +100,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;progress at midpoint = &quot; .. seq:getProgress())
     seq:cancel()
     print(&quot;active after cancel = &quot; .. tostring(seq:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-delay"><div class="item-row-main"><h3>delay</h3><pre class="inline-signature">LTweenSequence:delay(seconds: number, cb: function?) -&gt; LTweenSequence</pre><p>Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:737</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-delay"><div class="item-row-main"><h3>delay</h3><pre class="inline-signature">LTweenSequence:delay(seconds: number, cb: function?) -&gt; LTweenSequence</pre><p>Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:858</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { alpha = 0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.3, obj, { alpha = 1 })
@@ -114,7 +114,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;after delay: alpha=&quot; .. obj.alpha)
     lurek.tween.update(0.3)
     print(&quot;fade out done: alpha=&quot; .. obj.alpha)
-end</code></pre></details></article><article class="item-row api-row" id="method-getprogress"><div class="item-row-main"><h3>getProgress</h3><pre class="inline-signature">LTweenSequence:getProgress() -&gt; number</pre><p>Returns the overall progress ratio of this sequence from 0.0 to 1.0.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:794</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getprogress"><div class="item-row-main"><h3>getProgress</h3><pre class="inline-signature">LTweenSequence:getProgress() -&gt; number</pre><p>Returns the overall progress ratio of this sequence from 0.0 to 1.0.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:915</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { w = 0 }
     local seq = lurek.tween.sequence()
     seq:tween(1.0, obj, { w = 100 })
@@ -125,14 +125,14 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;progress at midpoint = &quot; .. seq:getProgress())
     seq:cancel()
     print(&quot;active after cancel = &quot; .. tostring(seq:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTweenSequence:isActive() -&gt; boolean</pre><p>Returns whether this sequence is still running.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:789</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTweenSequence:isActive() -&gt; boolean</pre><p>Returns whether this sequence is still running.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:910</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, &quot;linear&quot;)
     print(&quot;seq active before = &quot; .. tostring(seq:isActive()))
     seq:start()
     print(&quot;seq active after = &quot; .. tostring(seq:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTweenSequence:onComplete(f: function) -&gt; LTweenSequence</pre><p>Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:825</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTweenSequence:onComplete(f: function) -&gt; LTweenSequence</pre><p>Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:946</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, &quot;linear&quot;)
@@ -140,7 +140,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     seq:start()
     lurek.tween.update(0.5)
     print(&quot;seq active = &quot; .. tostring(seq:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">LTweenSequence:start() -&gt; LTweenSequence</pre><p>Starts playback of this sequence from the first step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:773</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-start"><div class="item-row-main"><h3>start</h3><pre class="inline-signature">LTweenSequence:start() -&gt; LTweenSequence</pre><p>Starts playback of this sequence from the first step.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:894</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, &quot;linear&quot;)
@@ -148,7 +148,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;seq active = &quot; .. tostring(seq:isActive()))
     lurek.tween.update(0.5)
     print(&quot;seq x = &quot; .. obj.x)
-end</code></pre></details></article><article class="item-row api-row" id="method-tween"><div class="item-row-main"><h3>tween</h3><pre class="inline-signature">LTweenSequence:tween(duration: number, target: table, fields: table, easing: string?) -&gt; LTweenSequence</pre><p>Appends a tween step to this sequence that animates numeric fields on the target table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:697</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-tween"><div class="item-row-main"><h3>tween</h3><pre class="inline-signature">LTweenSequence:tween(duration: number, target: table, fields: table, easing: string?) -&gt; LTweenSequence</pre><p>Appends a tween step to this sequence that animates numeric fields on the target table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:818</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, &quot;linear&quot;)
@@ -157,11 +157,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     lurek.tween.update(0.5)
     print(&quot;seq x=&quot; .. obj.x)
     print(&quot;seq active = &quot; .. tostring(seq:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTweenSequence:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:842</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTweenSequence:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:963</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local seq = lurek.tween.sequence()
     print(&quot;seq type = &quot; .. seq:type())
     print(&quot;seq typeOf = &quot; .. tostring(seq:typeOf(&quot;LTweenSequence&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTweenSequence:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:848</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTweenSequence:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:969</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local seq = lurek.tween.sequence()
     print(&quot;typeOf LTweenSequence = &quot; .. tostring(seq:typeOf(&quot;LTweenSequence&quot;)))
     print(&quot;typeOf Object = &quot; .. tostring(seq:typeOf(&quot;Object&quot;)))

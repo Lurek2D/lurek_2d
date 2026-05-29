@@ -1,3 +1,5 @@
+//! File: tests/rust/unit/agent_tests.rs
+
 use lurek2d::agent::AgentState;
 
 #[test]

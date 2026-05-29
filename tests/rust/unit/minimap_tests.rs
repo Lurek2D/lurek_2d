@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for minimap render helpers that are not directly asserted
-//! through `lurek.minimap.*`.
-//!
-//! Public minimap state and control behaviour lives in
-//! `tests/lua/unit/test_minimap_unit.lua`. The remaining Rust tests keep the
-//! generated render-command shape for internal overlays and ping markers.
+//! File: tests/rust/unit/minimap_tests.rs
 
 use lurek2d::minimap::*;
 use lurek2d::raycaster::Raycaster2D;
@@ -68,7 +63,7 @@ mod cpu_image_tests {
     }
 }
 
-// ── render ────────────────────────────────────────────────────────────
+// â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use super::*;
@@ -153,7 +148,7 @@ mod render_tests {
     }
 }
 
-// ── raycaster_overlay ─────────────────────────────────────────────────
+// â”€â”€ raycaster_overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod raycaster_overlay_tests {
     use super::*;

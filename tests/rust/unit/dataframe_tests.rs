@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: public `lurek.dataframe.*` constructors, transforms, and SQL
-//! query behavior is covered by the Lua-first suite in
-//! `tests/lua/unit/test_dataframe_core_unit.lua`.
-//!
-//! The remaining Rust coverage keeps the row iterator contract, which is not
-//! exposed as a direct Lua API surface.
+//! File: tests/rust/unit/dataframe_tests.rs
 
 use lurek2d::dataframe::{CellValue, DataFrame};
 
@@ -34,7 +29,7 @@ fn test_iter_rows_streams_rows_in_order() {
     assert!(rows.next().is_none());
 }
 
-// ── rolling_window ────────────────────────────────────────────────────────────
+// â”€â”€ rolling_window â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod rolling_window_tests {
     use lurek2d::dataframe::{CellValue, DataFrame};
@@ -72,9 +67,9 @@ mod rolling_window_tests {
         let sum_col = result.get_column(ColRef::Name("sum2".to_string())).expect("sum2 col");
 
         // Window size 2:
-        // index 0: [Number(10)] → count=1 → Number(10)
-        // index 1: [Number(10), Nil] → count=1 → Number(10)
-        // index 2: [Nil, Nil] → count=0 → Nil
+        // index 0: [Number(10)] â†’ count=1 â†’ Number(10)
+        // index 1: [Number(10), Nil] â†’ count=1 â†’ Number(10)
+        // index 2: [Nil, Nil] â†’ count=0 â†’ Nil
         assert_number_near(&sum_col[0], 10.0);
         assert_number_near(&sum_col[1], 10.0);
         assert_eq!(sum_col[2], CellValue::Nil);
@@ -116,10 +111,10 @@ mod rolling_window_tests {
         let sum_col = result.get_column(ColRef::Name("sum3".to_string())).expect("sum3 col");
 
         // Window size 3:
-        // index 0: [5] → 5
-        // index 1: [5, 10] → 15
-        // index 2: [5, 10, Nil] → 15
-        // index 3: [10, Nil, 15] → 25
+        // index 0: [5] â†’ 5
+        // index 1: [5, 10] â†’ 15
+        // index 2: [5, 10, Nil] â†’ 15
+        // index 3: [10, Nil, 15] â†’ 25
         assert_number_near(&sum_col[0], 5.0);
         assert_number_near(&sum_col[1], 15.0);
         assert_number_near(&sum_col[2], 15.0);
@@ -140,9 +135,9 @@ mod rolling_window_tests {
 
         let result = df.rolling_mean(ColRef::Index(1), 2, "mean2").expect("rolling_mean should succeed");
         let mean_col = result.get_column(ColRef::Name("mean2".to_string())).expect("mean2 col");
-        // index 0: [6] → 6/1 = 6
-        // index 1: [6, 12] → 18/2 = 9
-        // index 2: [12, Nil] → 12/1 = 12
+        // index 0: [6] â†’ 6/1 = 6
+        // index 1: [6, 12] â†’ 18/2 = 9
+        // index 2: [12, Nil] â†’ 12/1 = 12
         assert_number_near(&mean_col[0], 6.0);
         assert_number_near(&mean_col[1], 9.0);
         assert_number_near(&mean_col[2], 12.0);

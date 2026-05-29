@@ -398,16 +398,16 @@ function lurek.init()
         colorStart = {0.6, 0.5, 0.4, 0.6},
         colorEnd   = {0.5, 0.4, 0.3, 0.0},
     })
-    
+
     lurek.ui.loadLayoutFile("content/games/rpg/adventure/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.room_banner = ui_root:findById("room_banner")
     app_ui.room_name = ui_root:findById("room_name")
-    
+
     app_ui.hotspot_desc_panel = ui_root:findById("hotspot_desc_panel")
     app_ui.hotspot_desc = ui_root:findById("hotspot_desc")
-    
+
     app_ui.inv_bar = ui_root:findById("inv_bar")
     app_ui.combine_mode_text = ui_root:findById("combine_mode_text")
     app_ui.inv_slots = {}
@@ -418,11 +418,11 @@ function lurek.init()
         app_ui.inv_sels[i] = ui_root:findById("inv_sel_" .. i)
         app_ui.inv_txts[i] = ui_root:findById("inv_txt_" .. i)
     end
-    
+
     app_ui.dialog_box = ui_root:findById("dialog_box")
     app_ui.dialog_text = ui_root:findById("dialog_text")
     app_ui.dialog_continue = ui_root:findById("dialog_continue")
-    
+
     app_ui.inv_screen = ui_root:findById("inv_screen")
     app_ui.inv_screen_no_items = ui_root:findById("inv_screen_no_items")
     app_ui.full_slots = {}
@@ -433,7 +433,7 @@ function lurek.init()
         app_ui.full_sels[i] = ui_root:findById("full_sel_" .. i)
         app_ui.full_txts[i] = ui_root:findById("full_txt_" .. i)
     end
-    
+
     app_ui.controls_hint = ui_root:findById("controls_hint")
 end
 
@@ -597,18 +597,18 @@ function lurek.process(dt)
     if app_ui then
         local in_game = (game_state ~= STATE.TITLE and game_state ~= STATE.WIN)
         local room = get_room()
-        
+
         app_ui.room_banner.visible = in_game
         if in_game then
             app_ui.room_name.text = room.name
         end
-        
+
         app_ui.hotspot_desc_panel.visible = (game_state == STATE.EXPLORING and selected_idx >= 1 and selected_idx <= #(room.hotspots))
         if app_ui.hotspot_desc_panel.visible then
             local hs = room.hotspots[selected_idx]
             app_ui.hotspot_desc.text = "[" .. selected_idx .. "] " .. hs.id .. ": " .. hs.desc
         end
-        
+
         app_ui.inv_bar.visible = in_game
         if in_game then
             app_ui.combine_mode_text.visible = combine_mode
@@ -623,7 +623,7 @@ function lurek.process(dt)
                 end
             end
         end
-        
+
         app_ui.dialog_box.visible = (game_state == STATE.DIALOG and dialog.active)
         if app_ui.dialog_box.visible then
             app_ui.dialog_text.text = dialog.shown
@@ -633,7 +633,7 @@ function lurek.process(dt)
             end
             app_ui.dialog_continue.visible = show_cont
         end
-        
+
         app_ui.inv_screen.visible = (game_state == STATE.INVENTORY)
         if app_ui.inv_screen.visible then
             app_ui.inv_screen_no_items.visible = (#inventory == 0)
@@ -648,7 +648,7 @@ function lurek.process(dt)
                 end
             end
         end
-        
+
         app_ui.controls_hint.visible = (game_state == STATE.EXPLORING)
     end
 end

@@ -394,7 +394,7 @@ function lurek.init()
     -- [removed: lurek.timer.setTargetFPS has no equivalent]
     _cam = lurek.camera.new()
     reset_fighters()
-    
+
     lurek.ui.loadLayoutFile("content/games/action/fighting_game/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}

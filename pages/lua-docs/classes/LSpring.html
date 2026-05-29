@@ -62,13 +62,13 @@ end</code></pre></details>
     <p>Instance methods exported from the LSpring userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LSpring:cancel()</pre><p>Cancels this spring animation and cleans up the on-settle callback if one was registered.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1040</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LSpring:cancel()</pre><p>Cancels this spring animation and cleans up the on-settle callback if one was registered.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1161</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { val = 0 }
     local spring = lurek.tween.spring(obj, { val = 100 })
     spring:update(1 / 60)
     spring:cancel()
     print(&quot;active after cancel = &quot; .. tostring(spring:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LSpring:getPosition(field: string) -&gt; LuaValue</pre><p>Returns the current position of the given spring axis, or `nil` if the axis does not exist.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1052</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LSpring:getPosition(field: string) -&gt; LuaValue</pre><p>Returns the current position of the given spring axis, or `nil` if the axis does not exist.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1173</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:update(1 / 10)
@@ -76,35 +76,35 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local pos = spring:getPosition(&quot;size&quot;)
     print(&quot;size = &quot; .. string.format(&quot;%.1f&quot;, obj.size))
     print(&quot;getPosition = &quot; .. tostring(pos))
-end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LSpring:isActive() -&gt; boolean</pre><p>Returns whether this spring is still actively animating.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1000</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LSpring:isActive() -&gt; boolean</pre><p>Returns whether this spring is still actively animating.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1121</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     sp:update(0.016)
     local active = sp:isActive()
     local settled = sp:isSettled()
     print(&quot;spring active:&quot;, active, &quot;settled:&quot;, settled)
-end</code></pre></details></article><article class="item-row api-row" id="method-issettled"><div class="item-row-main"><h3>isSettled</h3><pre class="inline-signature">LSpring:isSettled() -&gt; boolean</pre><p>Returns whether all spring axes have reached their targets within the precision threshold.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:995</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-issettled"><div class="item-row-main"><h3>isSettled</h3><pre class="inline-signature">LSpring:isSettled() -&gt; boolean</pre><p>Returns whether all spring axes have reached their targets within the precision threshold.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1116</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     sp:update(0.016)
     local active = sp:isActive()
     local settled = sp:isSettled()
     print(&quot;spring active:&quot;, active, &quot;settled:&quot;, settled)
-end</code></pre></details></article><article class="item-row api-row" id="method-setdamping"><div class="item-row-main"><h3>setDamping</h3><pre class="inline-signature">LSpring:setDamping(value: number)</pre><p>Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1030</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setdamping"><div class="item-row-main"><h3>setDamping</h3><pre class="inline-signature">LSpring:setDamping(value: number)</pre><p>Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1151</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setDamping(20)
     spring:update(1 / 10)
     print(&quot;size after damping = &quot; .. string.format(&quot;%.1f&quot;, obj.size))
     print(&quot;settled = &quot; .. tostring(spring:isSettled()))
-end</code></pre></details></article><article class="item-row api-row" id="method-setstiffness"><div class="item-row-main"><h3>setStiffness</h3><pre class="inline-signature">LSpring:setStiffness(value: number)</pre><p>Sets the spring stiffness for all axes. Higher values make the spring snap faster.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1019</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setstiffness"><div class="item-row-main"><h3>setStiffness</h3><pre class="inline-signature">LSpring:setStiffness(value: number)</pre><p>Sets the spring stiffness for all axes. Higher values make the spring snap faster.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1140</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setStiffness(300)
     spring:update(1 / 10)
     print(&quot;size after stronger spring = &quot; .. string.format(&quot;%.1f&quot;, obj.size))
     print(&quot;position = &quot; .. tostring(spring:getPosition(&quot;size&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="method-settarget"><div class="item-row-main"><h3>setTarget</h3><pre class="inline-signature">LSpring:setTarget(fields: table)</pre><p>Changes the spring target values for one or more axes. Re-activates the spring if it was settled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1005</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-settarget"><div class="item-row-main"><h3>setTarget</h3><pre class="inline-signature">LSpring:setTarget(fields: table)</pre><p>Changes the spring target values for one or more axes. Re-activates the spring if it was settled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1126</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { size = 50 }
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setStiffness(300)
@@ -123,19 +123,19 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local pos = spring:getPosition(&quot;size&quot;)
     print(&quot;retargeted size = &quot; .. string.format(&quot;%.1f&quot;, obj.size))
     print(&quot;getPosition = &quot; .. tostring(pos))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LSpring:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1059</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LSpring:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1180</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
     local t = sp:type()
     local ok = sp:typeOf(&quot;LSpring&quot;)
     print(&quot;spring type:&quot;, t, &quot;typeOf:&quot;, ok)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LSpring:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1065</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LSpring:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1186</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
     local t = sp:type()
     local ok = sp:typeOf(&quot;LSpring&quot;)
     print(&quot;spring type:&quot;, t, &quot;typeOf:&quot;, ok)
-end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LSpring:update(dt: number) -&gt; boolean</pre><p>Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:985</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-update"><div class="item-row-main"><h3>update</h3><pre class="inline-signature">LSpring:update(dt: number) -&gt; boolean</pre><p>Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:1106</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0 }
     local sp = lurek.tween.spring(obj, { x = 100 }, { stiffness = 200, damping = 20 })
     local still_active = sp:update(0.016)

@@ -1,8 +1,4 @@
-//! `lurek.window` - Provides window management with resizing, fullscreen, title, icon, DPI scaling, and display mode control.
-//!
-//! - Registers `lurek.window.*` functions and types via `register()`.
-//! - Bridges 55 Lua-callable methods via `mlua`.
-//! - See `docs/specs/window.md` for the full API specification.
+//! File: src/lua_api/window_api.rs
 
 use super::SharedState;
 use crate::window;

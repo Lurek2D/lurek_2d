@@ -15,27 +15,27 @@
 
 ## Summary
 
-The `dsp` module encapsulates all audio signal processing that is independent of the playback pipeline. It was extracted from `src/audio/` to clarify the boundary between "playing sounds" (audio) and "transforming signals" (dsp).
+The `dsp` module owns signal-processing logic independent from the playback scheduler. It provides real-time graph/effect components, offline processing helpers, waveform/synthesis tools, and analysis/visualization utilities, while audio transport and source lifecycle stay in the `audio` module.
 
-The module provides three capabilities:
+Submodule boundaries are functional: `effects` defines effect types and parameter/state wrappers, `graph` coordinates shared processing graph abstractions, `analysis` provides level/spectrum helpers, `offline` applies effect chains to file workflows, `synthesis` provides waveform/envelope generation helpers, and `visualizer` renders waveform/spectrogram outputs.
 
-1. **Real-time effects** (`effects.rs`, `graph.rs`) — A 17-variant `EffectType` enum (lowpass, highpass, reverb, delay, chorus, flanger, distortion, bitcrush, compressor, limiter, tremolo, vibrato, phaser, gain, bandpass, notch, stereowidener) with `AtomicParam`-based lock-free parameter updates. `SharedEffectGraph` and `DynamicEffectSource<I>` wrap any rodio `Source` to apply an ordered effects chain without blocking the audio thread.
+A key design requirement is thread-safe processing behavior for audio-thread usage, including non-blocking control paths for graph/effect updates. This enables dynamic effect changes without coupling control traffic to render/audio critical paths.
 
-2. **Offline processing** (`offline.rs`) — `process_offline()` applies an effect chain to a WAV file and writes the result to disk. `normalize_file()` performs peak normalization. Both operate file-to-file without real-time playback.
+In architecture terms, `dsp` should remain the transformation layer: it mutates and analyzes signal data. Playback orchestration and source routing should continue to be handled by neighboring audio runtime modules.
 
-3. **Visualization** (`visualizer.rs`) — `waveform_to_png()` and `spectrogram_to_png()` render audio data as PNG images for debug, editor, or asset-pipeline use.
+Implementation detail and boundary guarantees for dsp: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analysis.rs: Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.; effects.rs: Lock-free AtomicParam for sharing f32 parameters between the audio thread and Lua API.; graph.rs: DSP processing graph: nodes connected by typed audio-rate and control-rate edges.; mod.rs: Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.; offline.rs: Offline audio processing: apply DSP effect chains to files without real-time playback.; synthesis.rs: Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.; visualizer.rs: Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
 
-The `audio` module's bus system references `dsp::SharedEffectGraph` and `dsp::DynamicEffectSource` for its per-bus effect chains. Backward compatibility is maintained via re-exports in `src/audio/mod.rs`.
+## Files
 
-## Source Documentation
+### analysis.rs
 
-### `analysis.rs`
 - Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.
 - `LevelDetector` accumulates sum-of-squares and peak per sample; exposes RMS, peak, clipping flag, and dBFS conversion.
 - `SpectrumAnalyzer` delegates to `SoundData::analyze_dft` with a bounded bin count clamped to 1–512.
 - Used by audio subsystem and Lua DSP bindings to inspect signal levels and spectrum before mixing.
 
-### `effects.rs`
+### effects.rs
+
 - Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
 - `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
 - `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
@@ -47,7 +47,8 @@ The `audio` module's bus system references `dsp::SharedEffectGraph` and `dsp::Dy
 - Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
 - LFO-driven modulated delay for flanger and phaser with depth and rate controls.
 
-### `graph.rs`
+### graph.rs
+
 - DSP processing graph: nodes connected by typed audio-rate and control-rate edges.
 - `DspGraph` owns a topologically sorted list of `DspNode` processing units.
 - Edges carry either audio frames (f32 interleaved) or scalar control signals.
@@ -55,180 +56,182 @@ The `audio` module's bus system references `dsp::SharedEffectGraph` and `dsp::Dy
 - Graph mutation (add/remove node, patch edge) is performed from the game thread
 - via a lock-free command queue consumed at the start of each audio callback.
 
-### `mod.rs`
+### mod.rs
+
 - Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.
 - Provides a per-source processing graph evaluated on the audio thread.
 - Node types include: gain, pan, low-pass/high-pass filters, reverb, and delay.
 - Graph topology changes are sent via a lock-free command queue to avoid blocking.
 - Re-exported to Lua via `lurek.audio.dsp.*` through `audio_api.rs`.
 
-### `offline.rs`
+### offline.rs
+
 - Offline audio processing: apply DSP effect chains to files without real-time playback.
 - Peak normalisation with configurable target level.
 - WAV file decode to f32 and encode back to 16-bit PCM via rodio.
 - `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
 - Parent directory auto-creation for output paths.
 
-### `synthesis.rs`
-- DSP synthesis helpers for procedural waveforms and envelopes.
+### synthesis.rs
 
-### `visualizer.rs`
+- Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.
+- `Waveform` selects the oscillator shape — sine, square, sawtooth, triangle, or white noise — and exposes `parse()` for name-based construction from Lua configuration.
+- `AdsrEnvelope` applies attack, decay, sustain, and release amplitude shaping; `amplitude_at(elapsed)` returns the gain multiplier at any point in the note's lifetime.
+- `Synthesizer` combines a `Waveform` oscillator and an `AdsrEnvelope` to render a complete `SoundData` PCM buffer at a given frequency, duration, sample rate, and peak amplitude.
+- All rendering is CPU-side in a tight sample loop; the resulting `SoundData` is passed to `rodio` for device mixing via the audio subsystem.
+
+### visualizer.rs
+
 - Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
 - Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
 - Mono downmix helper for multi-channel input files.
 - Heat-colour mapping from normalised magnitude to RGBA.
 - Parent directory auto-creation for output image paths.
 
-## Types
+## Lua API Ref
 
-- `LevelDetector` (`struct`, `analysis.rs`): Structure for tracking real-time RMS and Peak volume levels.
-- `SpectrumAnalyzer` (`struct`, `analysis.rs`): Spectrum analyzer performing Fast Fourier Transform (FFT) for real-time input.
-- `AtomicParam` (`struct`, `effects.rs`): Lock-free f32 parameter shared between the audio thread and the Lua API via atomic bit-cast.
-- `EffectType` (`enum`, `effects.rs`): DSP effect algorithm applied by `ActiveEffect::process` per sample.
-- `EffectParams` (`struct`, `effects.rs`): Shared, lock-free parameter block for one DSP effect; shared between Lua API and audio thread.
-- `ActiveEffect` (`struct`, `effects.rs`): Per-source instantiation of a DSP effect with its own filter and delay-line state.
-- `SharedEffectGraph` (`struct`, `effects.rs`): Arc-wrapped effect parameter list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
-- `DynamicEffectSource` (`struct`, `effects.rs`): Rodio `Source` wrapper that applies the `SharedEffectGraph` effect chain sample by sample.
-- `NodeId` (`type`, `graph.rs`): Unique identifier for a node in the DSP graph.
-- `DspNodeType` (`enum`, `graph.rs`): Node types in the processing graph.
-- `DspNode` (`struct`, `graph.rs`): Represents a single processing node in the DSP graph.
-- `DspGraph` (`struct`, `graph.rs`): Dynamic connection graph processed topologically in real-time.
-- `OfflineEffect` (`struct`, `offline.rs`): Serializable DSP effect parameters for offline processing.
-- `Waveform` (`enum`, `synthesis.rs`): Waveform types for synthesis oscillators.
-- `AdsrEnvelope` (`struct`, `synthesis.rs`): ADSR (Attack, Decay, Sustain, Release) envelope generator for amplitude and filter control.
-- `Synthesizer` (`struct`, `synthesis.rs`): Sound synthesis generator supporting various oscillator types.
-
-## Functions
-
-- `LevelDetector::new` (`analysis.rs`): Create a detector with the provided clipping threshold.
-- `LevelDetector::process_sample` (`analysis.rs`): Process one sample and update detector state.
-- `LevelDetector::process_sound_data` (`analysis.rs`): Process an entire sound buffer and return `(rms, peak, clipping)`.
-- `LevelDetector::get_rms` (`analysis.rs`): Return the current RMS level.
-- `LevelDetector::get_peak` (`analysis.rs`): Return the current peak level.
-- `LevelDetector::is_clipping` (`analysis.rs`): Return whether any processed sample reached the clipping threshold.
-- `LevelDetector::to_db` (`analysis.rs`): Convert a linear amplitude to decibels full scale.
-- `LevelDetector::reset` (`analysis.rs`): Reset accumulated state.
-- `SpectrumAnalyzer::new` (`analysis.rs`): Create a spectrum analyzer with a bounded bin count.
-- `SpectrumAnalyzer::set_size` (`analysis.rs`): Set the analyzer bin count.
-- `SpectrumAnalyzer::analyze` (`analysis.rs`): Analyze a sound buffer and return `(frequency, magnitude)` bins.
-- `AtomicParam::new` (`effects.rs`): Create a new `AtomicParam` initialised to `val`.
-- `AtomicParam::get` (`effects.rs`): Return the current f32 value using `Relaxed` ordering.
-- `AtomicParam::set` (`effects.rs`): Store a new f32 value using `Relaxed` ordering.
-- `EffectParams::new` (`effects.rs`): Create new `EffectParams` with `id`, `typ`, and all parameters initialised to 0.0.
-- `EffectParams::set_param` (`effects.rs`): Set a named parameter on this effect; error if `param` is not valid for `typ`.
-- `add_effect_to_shared_chain` (`effects.rs`): Append an effect to a shared effect chain and return the assigned effect ID.
-- `remove_effect_from_shared_chain` (`effects.rs`): Remove the effect with `effect_id` from a shared effect chain.
-- `set_shared_chain_effect_param` (`effects.rs`): Set one named parameter on an existing effect inside a shared effect chain.
-- `ActiveEffect::new` (`effects.rs`): Allocate `ActiveEffect` for `params`, sizing `comb_buf` based on effect type and `sample_rate`.
-- `ActiveEffect::process` (`effects.rs`): Apply the effect to one `sample` on `channel`, returning the processed output sample.
-- `SharedEffectGraph::new` (`effects.rs`): Create an empty `SharedEffectGraph`.
-- `new` (`effects.rs`): Wrap `input` with the given `shared_graph`; captures sample rate and channel count.
-- `DspNodeType::parse` (`graph.rs`): Parse a Lua-facing node kind.
-- `DspNodeType::as_str` (`graph.rs`): Return the Lua-facing node kind.
-- `DspNode::new` (`graph.rs`): Create a node from a Lua-facing kind.
-- `DspNode::set_param` (`graph.rs`): Set a named node parameter.
-- `DspNode::get_param` (`graph.rs`): Get a named node parameter.
-- `DspNode::node_type` (`graph.rs`): Return this node's kind.
-- `DspGraph::new` (`graph.rs`): Create an empty DSP graph.
-- `DspGraph::add_node` (`graph.rs`): Add a node and return its stable ID.
-- `DspGraph::connect` (`graph.rs`): Connect two existing nodes.
-- `DspGraph::disconnect` (`graph.rs`): Disconnect two nodes.
-- `DspGraph::process` (`graph.rs`): Process a sound buffer through all nodes in insertion order.
-- `DspGraph::clear` (`graph.rs`): Clear all graph nodes and connections.
-- `process_offline` (`offline.rs`): Read `input_path`, apply `effects` sample-by-sample, and write 16-bit WAV to `output_path`.
-- `normalize_file` (`offline.rs`): Normalize peak amplitude of `input_path` to `target_level` and write result to `output_path`.
-- `Waveform::parse` (`synthesis.rs`): Parse a waveform name.
-- `Waveform::as_str` (`synthesis.rs`): Return the stable Lua-facing waveform name.
-- `Waveform::render` (`synthesis.rs`): Render a mono sound buffer for this waveform.
-- `AdsrEnvelope::new` (`synthesis.rs`): Create a new ADSR envelope.
-- `AdsrEnvelope::trigger_on` (`synthesis.rs`): Start the envelope attack phase.
-- `AdsrEnvelope::trigger_off` (`synthesis.rs`): Start the envelope release phase.
-- `AdsrEnvelope::next_sample` (`synthesis.rs`): Return the next envelope gain sample.
-- `AdsrEnvelope::is_idle` (`synthesis.rs`): Return true when the envelope is idle.
-- `AdsrEnvelope::apply` (`synthesis.rs`): Apply this envelope to a whole sound buffer.
-- `AdsrEnvelope::set_sample_rate` (`synthesis.rs`): Set the sample rate used by `next_sample`.
-- `Synthesizer::new` (`synthesis.rs`): Create a synthesizer using a sine waveform and no envelope.
-- `Synthesizer::with_envelope` (`synthesis.rs`): Return a copy of this synthesizer with an envelope attached.
-- `Synthesizer::set_waveform` (`synthesis.rs`): Set the oscillator waveform.
-- `Synthesizer::set_envelope` (`synthesis.rs`): Set the optional envelope.
-- `Synthesizer::generate` (`synthesis.rs`): Generate a sound buffer.
-- `waveform_to_png` (`visualizer.rs`): Render waveform overview of `input_wav` to `output_png` with given image size.
-- `spectrogram_to_png` (`visualizer.rs`): Render a spectrogram heatmap of `input_wav` to `output_png` using a Hann-windowed DFT.
-
-## Lua API Reference
-
-- Binding path(s): `src/lua_api/dsp_api.rs`
+- Binding: `src/lua_api/dsp_api.rs`
 - Namespace: `lurek.dsp`
 
-### Module Functions
-- `lurek.dsp.newEffectParams`: Creates an effect parameter descriptor table for use with offline processing.
-- `lurek.dsp.processOffline`: Processes an audio file offline through a chain of effects and writes the result to an output file.
-- `lurek.dsp.normalize`: Normalizes an audio file to a target peak amplitude and saves the result.
-- `lurek.dsp.waveformToPng`: Renders a waveform visualization of an audio file and saves it as a PNG image.
-- `lurek.dsp.spectrogramToPng`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
-- `lurek.dsp.applyLowpass`: Applies a lowpass filter in-place to the sound data.
-- `lurek.dsp.applyHighpass`: Applies a highpass filter in-place to the sound data.
+### Functions
+
+- `lurek.dsp.addEffectToBus`: Adds an effect to a named audio bus and returns its effect ID.
+- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
+- `lurek.dsp.analyzePeak`: Analyzes the Peak volume of a `SoundData` buffer.
+- `lurek.dsp.analyzeRms`: Analyzes the RMS volume of a `SoundData` buffer.
 - `lurek.dsp.applyBandpass`: Applies a bandpass filter in-place to the sound data.
 - `lurek.dsp.applyGain`: Applies a gain multiplier in-place to the sound data.
-- `lurek.dsp.analyzeRms`: Analyzes the RMS volume of a `SoundData` buffer.
-- `lurek.dsp.analyzePeak`: Analyzes the Peak volume of a `SoundData` buffer.
-- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
-- `lurek.dsp.analyzeFft`: Performs FFT analysis on a `SoundData` buffer and returns frequency bin magnitudes.
-- `lurek.dsp.addEffectToBus`: Adds an effect to a named audio bus and returns its effect ID.
+- `lurek.dsp.applyHighpass`: Applies a highpass filter in-place to the sound data.
+- `lurek.dsp.applyLowpass`: Applies a lowpass filter in-place to the sound data.
+- `lurek.dsp.newAdsrEnvelope`: Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.
+- `lurek.dsp.newEffectParams`: Creates an effect parameter descriptor table for use with offline processing.
+- `lurek.dsp.newGraph`: Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.
+- `lurek.dsp.newLevelDetector`: Creates a level detector object that tracks RMS, peak, and clipping state over samples.
+- `lurek.dsp.newNode`: Creates a DSP graph node object with a node kind and optional initial options.
+- `lurek.dsp.newSawtoothWave`: Generates a sawtooth wave as a `SoundData` buffer.
+- `lurek.dsp.newSineWave`: Generates a sine wave as a `SoundData` buffer.
+- `lurek.dsp.newSpectrumAnalyzer`: Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.
+- `lurek.dsp.newSquareWave`: Generates a square wave as a `SoundData` buffer.
+- `lurek.dsp.newSynthWave`: Generates a synthesized waveform with optional ADSR.
+- `lurek.dsp.newSynthesizer`: Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
+- `lurek.dsp.newTriangleWave`: Generates a triangle wave as a `SoundData` buffer.
+- `lurek.dsp.newWaveform`: Creates a waveform descriptor object that can render repeated procedural tones.
+- `lurek.dsp.newWhiteNoise`: Generates deterministic white noise as a `SoundData` buffer.
+- `lurek.dsp.normalize`: Normalizes an audio file to a target peak amplitude and saves the result.
+- `lurek.dsp.processOffline`: Processes an audio file offline through a chain of effects and writes the result to an output file.
 - `lurek.dsp.removeEffectFromBus`: Removes an effect from a named audio bus by effect ID.
 - `lurek.dsp.setEffectParam`: Sets a parameter value on an effect attached to a named audio bus.
-- `lurek.dsp.newSineWave`: Generates a sine wave as a `SoundData` buffer.
-- `lurek.dsp.newSquareWave`: Generates a square wave as a `SoundData` buffer.
-- `lurek.dsp.newSawtoothWave`: Generates a sawtooth wave as a `SoundData` buffer.
-- `lurek.dsp.newTriangleWave`: Generates a triangle wave as a `SoundData` buffer.
-- `lurek.dsp.newWhiteNoise`: Generates deterministic white noise as a `SoundData` buffer.
-- `lurek.dsp.newSynthWave`: Generates a synthesized waveform with optional ADSR.
-- `lurek.dsp.newLevelDetector`: Creates a level detector object that tracks RMS, peak, and clipping state over samples.
-- `lurek.dsp.newSpectrumAnalyzer`: Creates a spectrum analyzer object for bounded frequency-bin analysis on SoundData.
-- `lurek.dsp.newWaveform`: Creates a waveform descriptor object that can render repeated procedural tones.
-- `lurek.dsp.newAdsrEnvelope`: Creates an ADSR envelope object for procedural synthesis and buffer shaping workflows.
-- `lurek.dsp.newSynthesizer`: Creates a synthesizer object that combines waveform selection and optional ADSR shaping.
-- `lurek.dsp.newNode`: Creates a DSP graph node object with a node kind and optional initial options.
-- `lurek.dsp.newGraph`: Creates an empty DSP graph object for connecting nodes and processing SoundData buffers.
+- `lurek.dsp.spectrogramToPng`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+- `lurek.dsp.waveformToPng`: Renders a waveform visualization of an audio file and saves it as a PNG image.
 
-### `LAdsrEnvelope` Methods
-- `LAdsrEnvelope:trigger_on`: Starts the envelope attack phase for this ADSR object.
-- `LAdsrEnvelope:trigger_off`: Starts the envelope release phase.
-- `LAdsrEnvelope:next_sample`: Advances the envelope and returns the next gain sample.
-- `LAdsrEnvelope:is_idle`: Returns whether the envelope has fully completed and is idle.
+### Enums
+
+- No documented module-level enums/constants.
+
+### Types
+
+
+#### LAdsrEnvelope Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LAdsrEnvelope:apply`: Applies this ADSR envelope across an entire sound buffer in place.
+- `LAdsrEnvelope:is_idle`: Returns whether the envelope has fully completed and is idle.
+- `LAdsrEnvelope:next_sample`: Advances the envelope and returns the next gain sample.
+- `LAdsrEnvelope:trigger_off`: Starts the envelope release phase.
+- `LAdsrEnvelope:trigger_on`: Starts the envelope attack phase for this ADSR object.
 
-### `LDspGraph` Methods
+
+#### LDspGraph Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LDspGraph:addNode`: Adds a DSP node object to the graph and returns its stable node ID.
+- `LDspGraph:clear`: Clears all graph nodes and edges from this graph.
 - `LDspGraph:connect`: Connects two node IDs in this graph object.
 - `LDspGraph:disconnect`: Removes a connection between two node IDs.
 - `LDspGraph:process`: Processes a sound buffer through the graph and returns transformed data.
-- `LDspGraph:clear`: Clears all graph nodes and edges from this graph.
 
-### `LDspNode` Methods
-- `LDspNode:setParam`: Sets one named numeric parameter on the node.
+
+#### LDspNode Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LDspNode:getParam`: Returns one named numeric parameter from the node.
+- `LDspNode:setParam`: Sets one named numeric parameter on the node.
 - `LDspNode:type`: Returns the node type string used by this node.
 
-### `LLevelDetector` Methods
-- `LLevelDetector:process_sample`: Processes one audio sample and updates detector statistics incrementally.
-- `LLevelDetector:process`: Processes all samples in a sound buffer and returns aggregate level statistics.
-- `LLevelDetector:get_rms`: Returns the current RMS level accumulated by the detector.
+
+#### LLevelDetector Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LLevelDetector:get_peak`: Returns the current peak level accumulated by the detector.
-- `LLevelDetector:to_db`: Converts a linear amplitude value to decibels full scale.
+- `LLevelDetector:get_rms`: Returns the current RMS level accumulated by the detector.
+- `LLevelDetector:process`: Processes all samples in a sound buffer and returns aggregate level statistics.
+- `LLevelDetector:process_sample`: Processes one audio sample and updates detector statistics incrementally.
 - `LLevelDetector:reset`: Resets detector state so a new measurement window can begin.
+- `LLevelDetector:to_db`: Converts a linear amplitude value to decibels full scale.
 
-### `LSpectrumAnalyzer` Methods
-- `LSpectrumAnalyzer:setSize`: Sets the frequency-bin count used by subsequent spectrum analysis calls.
+
+#### LSpectrumAnalyzer Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LSpectrumAnalyzer:analyze`: Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
+- `LSpectrumAnalyzer:setSize`: Sets the frequency-bin count used by subsequent spectrum analysis calls.
 
-### `LSynthesizer` Methods
-- `LSynthesizer:setWaveform`: Sets the oscillator waveform using a kind string or waveform object.
-- `LSynthesizer:setEnvelope`: Attaches an ADSR envelope used by future render calls.
-- `LSynthesizer:render`: Renders a SoundData buffer using current synthesizer settings.
+
+#### LSynthesizer Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LSynthesizer:generate`: Generates a SoundData buffer; alias of `render` for compatibility.
+- `LSynthesizer:render`: Renders a SoundData buffer using current synthesizer settings.
+- `LSynthesizer:setEnvelope`: Attaches an ADSR envelope used by future render calls.
+- `LSynthesizer:setWaveform`: Sets the oscillator waveform using a kind string or waveform object.
 
-### `LWaveform` Methods
+
+#### LWaveform Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LWaveform:render`: Renders this waveform to a new SoundData buffer.
 - `LWaveform:type`: Returns the waveform identifier string.
 
@@ -236,7 +239,3 @@ The `audio` module's bus system references `dsp::SharedEffectGraph` and `dsp::Dy
 
 - `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
 - `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
-
-## Notes
-
-- None.

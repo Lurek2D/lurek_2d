@@ -1,14 +1,9 @@
-//! INTERNAL ONLY: Rust-only tests for compute internals that are not directly asserted through
-//! `lurek.compute.*`.
-//!
-//! Public ndarray/FFT/ops/spatial behaviour is covered by the Lua-first suite
-//! in `tests/lua/unit/test_compute_unit.lua`. The remaining Rust coverage here
-//! keeps lightweight type/layout invariants.
+//! File: tests/rust/unit/compute_tests.rs
 
 use lurek2d::compute::array::{DataType, NdArray};
 use lurek2d::compute::linalg;
 
-// ── array ──────────────────────────────────────────────────────────────────
+// â”€â”€ array â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod array_tests {
     use super::*;

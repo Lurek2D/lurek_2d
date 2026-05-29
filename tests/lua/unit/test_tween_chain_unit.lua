@@ -1,106 +1,117 @@
 -- tests/lua/unit/test_tween_chain_unit.lua
--- lurek.tween.newChain unit tests (TST-06)
 
 local T = ...
 local tween = lurek.tween
 
 T.group("lurek.tween.newChain", function()
-    T.test("creates empty chain", function()
+    T.test("newChain creates chain object", function()
         local ch = tween.newChain()
-        T.assert_equal(ch:len(), 0)
-        T.assert_false(ch:isFinished())
-        T.assert_false(ch:isLooping())
+        T.assert_equal(ch:type(), "LTweenChain")
+        T.assert_true(ch:typeOf("LTweenChain"))
+        T.assert_equal(ch:getProgress(), 0)
+        T.assert_equal(ch:getIteration(), 0)
     end)
 
-    T.test("push adds step and returns 1-based index", function()
+    T.test("to wait call builds and executes fluent sequence", function()
+        local obj = { x = 0 }
+        local called = false
+        local waited = false
+
         local ch = tween.newChain()
-        local idx = ch:push({ from = 0, to = 1, duration = 1.0 })
-        T.assert_equal(ch:len(), 1)
-        -- push returns 0-based Rust idx; we expose +1 for Lua but push returns raw
+            :to(obj, { x = 10 }, 0.2, "linear")
+            :wait(0.1, function() waited = true end)
+            :call(function() called = true end)
+            :start()
+
+        tween.update(0.2)
+        T.assert_true(obj.x > 9.9)
+        tween.update(0.2)
+        T.assert_true(waited)
+        T.assert_true(called)
+        T.assert_true(ch:isComplete())
+        T.assert_equal(ch:getProgress(), 1)
+    end)
+
+    T.test("start plus update animates target table", function()
+        local obj = { x = 0 }
+        local ch = tween.newChain():to(obj, { x = 100 }, 1.0, "linear")
+        ch:start()
+        tween.update(0.5)
+        T.assert_true(obj.x > 40 and obj.x < 60)
+        T.assert_true(ch:isActive())
+    end)
+
+    T.test("loop 3 performs three full passes", function()
+        local obj = { x = 0 }
+        local complete_calls = 0
+        local ch = tween.newChain()
+            :to(obj, { x = 1 }, 0.05, "linear")
+            :loop(3)
+            :onComplete(function() complete_calls = complete_calls + 1 end)
+            :start()
+
+        tween.update(0.3)
+        T.assert_true(ch:isComplete())
+        T.assert_equal(ch:getIteration(), 3)
+        T.assert_equal(complete_calls, 1)
+    end)
+
+    T.test("loop 0 runs infinite until stop", function()
+        local obj = { x = 0 }
+        local loop_seen = 0
+        local ch
+        ch = tween.newChain()
+            :to(obj, { x = 1 }, 0.02, "linear")
+            :loop(0)
+            :onLoop(function(iter)
+                loop_seen = iter
+                if iter >= 5 then
+                    ch:stop()
+                end
+            end)
+            :start()
+
+        tween.update(0.2)
+        T.assert_true(loop_seen >= 5)
+        T.assert_false(ch:isActive())
+        T.assert_false(ch:isComplete())
+    end)
+
+    T.test("onLoop receives iteration number", function()
+        local seen = {}
+        local ch = tween.newChain()
+            :to({ x = 0 }, { x = 1 }, 0.05)
+            :loop(3)
+            :onLoop(function(iter) seen[#seen + 1] = iter end)
+            :start()
+
+        tween.update(0.3)
+        T.assert_true(#seen >= 2)
+        T.assert_equal(seen[1], 2)
+    end)
+
+    T.test("pause and resume controls progress", function()
+        local obj = { x = 0 }
+        local ch = tween.newChain():to(obj, { x = 10 }, 1.0):start()
+        tween.update(0.3)
+        local before = obj.x
+        ch:pause()
+        tween.update(0.4)
+        T.assert_true(math.abs(obj.x - before) < 1e-6)
+        ch:resume()
+        tween.update(0.4)
+        T.assert_true(obj.x > before)
+    end)
+
+    T.test("legacy push and tick compatibility remains", function()
+        local ch = tween.newChain()
+        local idx = ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
         T.assert_not_nil(idx)
-    end)
-
-    T.test("value at start is from value", function()
-        local ch = tween.newChain()
-        ch:push({ from = 5.0, to = 10.0, duration = 2.0 })
-        T.assert_true(math.abs(ch:value() - 5.0) < 1e-6)
-    end)
-
-    T.test("tick advances and returns events on completion", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 1.0, label = "done" })
-        local events = ch:tick(1.5)
+        local events = ch:tick(0.2)
         T.assert_equal(#events, 1)
-        T.assert_equal(events[1].label, "done")
+        T.assert_equal(events[1].label, "a")
         T.assert_true(ch:isFinished())
     end)
-
-    T.test("intermediate tick does not finish chain", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 2.0 })
-        ch:tick(0.5)
-        T.assert_false(ch:isFinished())
-        local v = ch:value()
-        T.assert_true(v > 0.0 and v < 1.0)
-    end)
-
-    T.test("cursor tracks active step (1-based)", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 0.5 })
-        ch:push({ from = 1.0, to = 2.0, duration = 0.5 })
-        T.assert_equal(ch:cursor(), 1)
-        ch:tick(0.6) -- crosses first step
-        T.assert_equal(ch:cursor(), 2)
-    end)
-
-    T.test("reset goes back to step 1", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 0.5 })
-        ch:push({ from = 1.0, to = 2.0, duration = 0.5 })
-        ch:tick(0.6)
-        ch:reset()
-        T.assert_equal(ch:cursor(), 1)
-        T.assert_false(ch:isFinished())
-    end)
-
-    T.test("jumpTo changes cursor", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 1.0 })
-        ch:push({ from = 1.0, to = 2.0, duration = 1.0 })
-        ch:jumpTo(2)
-        T.assert_equal(ch:cursor(), 2)
-    end)
-
-    T.test("setLooping loops chain after last step", function()
-        local ch = tween.newChain(true)
-        T.assert_true(ch:isLooping())
-        ch:push({ from = 0.0, to = 1.0, duration = 0.5 })
-        ch:tick(1.0)
-        T.assert_false(ch:isFinished(), "looping chain must not finish")
-        T.assert_equal(ch:cursor(), 1, "should wrap to step 1")
-    end)
-
-    T.test("clear removes all steps", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 1.0 })
-        ch:clear()
-        T.assert_equal(ch:len(), 0)
-    end)
-
-    T.test("multi-step span fires multiple events in one tick", function()
-        local ch = tween.newChain()
-        ch:push({ from = 0.0, to = 1.0, duration = 0.1, label = "a" })
-        ch:push({ from = 1.0, to = 2.0, duration = 0.1, label = "b" })
-        local events = ch:tick(0.5)  -- both steps complete
-        T.assert_equal(#events, 2)
-        T.assert_equal(events[1].label, "a")
-        T.assert_equal(events[2].label, "b")
-    end)
-
-    T.test("typeOf returns LTweenChain", function()
-        local ch = tween.newChain()
-        T.assert_true(ch:typeOf("LTweenChain"))
-        T.assert_true(ch:typeOf("LObject"))
-        T.assert_false(ch:typeOf("LTween"))
-    end)
 end)
+
+test_summary()

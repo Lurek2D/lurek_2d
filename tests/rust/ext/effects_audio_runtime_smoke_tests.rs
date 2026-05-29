@@ -1,5 +1,4 @@
-//! Legacy integration target kept for Cargo.toml compatibility.
-//! Behavioral smoke coverage for this area is maintained in Lua tests.
+//! File: tests/rust/ext/effects_audio_runtime_smoke_tests.rs
 
 #[test]
 fn effects_audio_runtime_smoke_target_exists() {

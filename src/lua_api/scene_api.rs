@@ -1,9 +1,4 @@
-//! `lurek.scene` — Stack-based scene management with animated transitions, overlay support, shared data passing, lifecycle callbacks (enter/leave/pause/resume/ready/update/draw/render), and depth-sorted rendering via `LDepthSorter`.
-//!
-//! - Registers `lurek.scene.*` functions and types via `register()`.
-//! - `LuaDepthSorter`: userdata type exposed to Lua.
-//! - Bridges 70 Lua-callable methods via `mlua`.
-//! - See `docs/specs/scene.md` for the full API specification.
+//! File: src/lua_api/scene_api.rs
 
 use super::SharedState;
 use crate::scene::depth_sorter::DepthSorter;
@@ -77,7 +72,7 @@ impl LuaUserData for LuaDepthSorter {
         // -- add --
         /// Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
         /// @param | callback | function | A zero-argument draw function invoked during flush.
-        /// @param | depth | number | Numeric z-depth controlling draw order — lower values are drawn behind higher values.
+        /// @param | depth | number | Numeric z-depth controlling draw order â€” lower values are drawn behind higher values.
         methods.add_method("add", |lua, this, (callback, depth): (LuaFunction, f32)| {
             let key = lua.create_registry_value(callback)?;
             let mut cbs = this.callbacks.borrow_mut();
@@ -105,7 +100,7 @@ impl LuaUserData for LuaDepthSorter {
             Ok(())
         });
         // -- flush --
-        /// Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.
+        /// Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
         methods.add_method("flush", |lua, this, ()| {
             enum PendingDepthCall<'lua> {
                 Function(LuaFunction<'lua>),
@@ -304,7 +299,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         )?,
     )?;
     // -- switchTo --
-    /// Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).
+    /// Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).
     /// @param | scene | table | The replacement scene table.
     /// @param | transition | string? | Transition type name. Defaults to `"none"`.
     /// @param | duration | number? | Transition animation duration in seconds. Defaults to 0.
@@ -559,7 +554,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- draw --
     /// Call `draw(self)` on render-active scenes ordered by layer (lowest first).
     /// Engine-level render policy is single-scene: only the current top scene is rendered.
-    /// This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
+    /// This is the legacy draw callback â€” prefer `render` and `renderUi` for world-space and screen-space separation.
     let st = state.clone();
     tbl.set(
         "draw",
@@ -585,7 +580,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- render --
     /// Call `render(self)` on render-active scenes ordered by layer (lowest first).
     /// Engine-level render policy is single-scene: only the current top scene is rendered.
-    /// This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
+    /// This is the preferred world-space rendering callback â€” draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
     let st = state.clone();
     tbl.set(
         "render",
@@ -802,7 +797,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(move |_, name: String| Ok(st.borrow().stack.has_registered(&name)))?,
     )?;
     // -- unregisterScene --
-    /// Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.
+    /// Remove a scene registration by name. Does not pop the scene if it is currently active on the stack â€” it only removes the name mapping.
     /// @param | name | string | The registered name to remove.
     let st = state.clone();
     tbl.set(
@@ -821,7 +816,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_registered_names()))?,
     )?;
     // -- setData --
-    /// Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.
+    /// Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.
     /// @param | key | string | The key to store data under (e.g. `"selectedLevel"`, `"playerName"`).
     /// @param | value | any | Value to store under the scene data key.
     let st = state.clone();
@@ -952,7 +947,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress_eased()))?,
     )?;
     // -- pushOverlay --
-    /// Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
+    /// Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
     /// @param | scene | table | The overlay scene table.
     /// @param | transition | string? | Transition type name. Defaults to `"none"`.
     /// @param | duration | number? | Transition animation duration in seconds. Defaults to 0.
@@ -1204,7 +1199,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- preload --
-    /// Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
+    /// Register a deferred-loading function for a scene. The loader function is NOT called immediately â€” it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
     /// @param | name | string | Name to associate with the loader (must match the name used in `pushPreloaded`).
     /// @param | loader | function | A zero-argument function that creates and registers the scene via `registerScene` when called.
     let st = state.clone();

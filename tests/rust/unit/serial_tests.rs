@@ -1,10 +1,6 @@
-//! INTERNAL ONLY: public serial behavior is covered by the Lua-first suites in
-//! `tests/lua/unit/test_serial_unit.lua` and `tests/lua/golden/test_serial_golden.lua`.
-//!
-//! The Rust-only coverage that remains here is the low-level `SerialValue` <->
-//! `LuaValue` bridge used by the binding layer itself.
+//! File: tests/rust/unit/serial_tests.rs
 
-// ── lua_table ─────────────────────────────────────────────────────────────────
+// â”€â”€ lua_table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod lua_table_tests {
     use indexmap::IndexMap;

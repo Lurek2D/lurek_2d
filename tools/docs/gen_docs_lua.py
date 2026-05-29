@@ -35,6 +35,28 @@ _LUA_NAMESPACE = {
     "automation": "simulator",  # lurek.automation.* (registered as "simulator" in automation_api.rs)
 }
 
+_TODO_RE = re.compile(r"(?i)\bTODO(\([^)]+\))?:?.*")
+
+
+def _clean_public_description(text):
+    """Strip internal TODO/debt notes from user-facing docs text."""
+    if not text:
+        return ""
+    cleaned = []
+    for raw in text.splitlines():
+        if _TODO_RE.search(raw):
+            raw = _TODO_RE.sub("", raw).strip()
+        if raw:
+            cleaned.append(raw)
+    return " ".join(cleaned).strip()
+
+
+def _entry_dedupe_key(call):
+    """Normalize call signatures so name-only param variants collapse."""
+    normalized = re.sub(r"\b[a-zA-Z_]\w*\s*:\s*", ":", call)
+    normalized = re.sub(r"\s+", "", normalized)
+    return normalized
+
 
 def _parse_params(params_doc, inferred_sig):
     """Return list of (name, type, is_optional) from params_doc + inferred_sig."""
@@ -87,7 +109,7 @@ def _parse_return_type(returns_doc):
 
 def _build_call(fn, prefix):
     """Return (call_str, desc) for one function/method entry."""
-    desc = (fn.get("description", "") or "").rstrip(".")
+    desc = _clean_public_description((fn.get("description", "") or "")).rstrip(".")
 
     # Prefer explicitly typed params from @param docstring tags
     typed = fn.get("typed_params")  # None = field absent (old data), [] = no params
@@ -143,7 +165,7 @@ def _callbacks():
         ("function lurek.init()",                                                   "Called once when the engine initialises."),
         ("function lurek.ready()",                                                  "Called once after init, when the active runtime is ready."),
         ("function lurek.process_physics( dt : number )",                           "Called on the fixed physics step; dt = fixed-step seconds."),
-        ("function lurek.fixedUpdate( dt : number )",                               "Called on the fixed update step when configured."),
+        ("function lurek.fixedUpdate( dt : number )",                               "Deprecated alias for process_physics. Use lurek.process_physics(dt)."),
         ("function lurek.process( dt : number )",                                   "Called every frame for game logic; dt = elapsed seconds."),
         ("function lurek.process_late( dt : number )",                              "Called every frame after process for late updates."),
         ("function lurek.draw()",                                                   "Called every frame for rendering."),
@@ -183,7 +205,7 @@ def _render_module(mod_name, mod_data):
     anchor = mod_name.replace("_","-")
     out.append(f"## `lurek.{lua_ns}` {{#{anchor}}}")
     out.append("")
-    desc = (mod_data.get("description","") or "").strip()
+    desc = _clean_public_description((mod_data.get("description","") or "")).strip()
     if desc:
         for i, para in enumerate(desc.split("\n\n")[:2]):
             if i: out.append(">")
@@ -207,7 +229,15 @@ def _render_module(mod_name, mod_data):
 
     if fns:
         entries = [_build_call(fn, f"lurek.{lua_ns}.{fn['name']}") for fn in sorted(fns, key=lambda f:f["name"])]
-        out += _code_block(entries)
+        seen = set()
+        deduped = []
+        for call, desc in entries:
+            key = _entry_dedupe_key(call)
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append((call, desc))
+        out += _code_block(deduped)
         out.append("")
 
     for cls_name, cls_data in sorted(cls.items()):
@@ -229,7 +259,15 @@ def _render_module(mod_name, mod_data):
         methods = cls_data.get("methods",[])
         if methods:
             entries = [_build_call(m, f"{cls_name}:{m['name']}") for m in sorted(methods, key=lambda f:f["name"])]
-            out += _code_block(entries)
+            seen = set()
+            deduped = []
+            for call, desc in entries:
+                key = _entry_dedupe_key(call)
+                if key in seen:
+                    continue
+                seen.add(key)
+                deduped.append((call, desc))
+            out += _code_block(deduped)
             out.append("")
     return out
 

@@ -1,4 +1,4 @@
-//! Optional long-running load tests gated by the `long-load-tests` feature.
+//! File: tests/rust/stress/long_load_tests.rs
 
 #[cfg(feature = "long-load-tests")]
 mod long_load_tests {

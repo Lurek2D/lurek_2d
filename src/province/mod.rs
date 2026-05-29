@@ -30,6 +30,8 @@ pub mod map_modes;
 pub mod registry;
 /// RenderCommand generation for fills, borders, capitals, and text labels.
 pub mod render;
+/// Province graph routing helpers: shortest path, components, connectivity.
+pub mod routing;
 /// Province adjacency graph built from pixel-scan output.
 pub mod topology;
 /// Core types: ProvinceId, BorderType, BorderTypeConfig, ProvinceStyle, ProvinceSnapshot.

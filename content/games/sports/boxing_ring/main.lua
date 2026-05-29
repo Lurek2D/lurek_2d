@@ -359,26 +359,26 @@ function lurek.init()
     app_ui.hud = ui_root:findById("hud")
     app_ui.round_end_screen = ui_root:findById("round_end_screen")
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
-    
+
     app_ui.round_info = ui_root:findById("round_info")
     app_ui.timer_label = ui_root:findById("timer_label")
     app_ui.wins_label = ui_root:findById("wins_label")
     app_ui.score_label = ui_root:findById("score_label")
     app_ui.combo_label = ui_root:findById("combo_label")
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     app_ui.round_end_title = ui_root:findById("round_end_title")
     app_ui.round_end_damage = ui_root:findById("round_end_damage")
-    
+
     app_ui.game_over_winner = ui_root:findById("game_over_winner")
     app_ui.game_over_rounds = ui_root:findById("game_over_rounds")
     app_ui.game_over_score = ui_root:findById("game_over_score")
     app_ui.game_over_combo = ui_root:findById("game_over_combo")
-    
+
     app_ui.press_start = ui_root:findById("press_start")
     app_ui.press_continue = ui_root:findById("press_continue")
     app_ui.press_title = ui_root:findById("press_title")
-    
+
     local function handle_action_click()
         if current_state == STATE.TITLE then
             round_num   = 1
@@ -400,7 +400,7 @@ function lurek.init()
             current_state = STATE.TITLE
         end
     end
-    
+
     if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
     if app_ui.press_continue then app_ui.press_continue:setOnClick(handle_action_click) end
     if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
@@ -472,20 +472,20 @@ function lurek.process(dt)
     app_ui.round_end_screen.visible = (current_state == STATE.ROUND_END)
     app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
     app_ui.hud.visible = (current_state ~= STATE.TITLE)
-    
+
     app_ui.round_info.text = "Round " .. round_num .. "/" .. MAX_ROUNDS
     app_ui.timer_label.text = string.format("%d", math.ceil(math.max(0, round_timer)))
     app_ui.wins_label.text = round_wins[1] .. " - " .. round_wins[2]
     app_ui.score_label.text = "Score: " .. total_score
     app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
-    
+
     if combo_count > 1 then
         app_ui.combo_label.visible = true
         app_ui.combo_label.text = "Combo x" .. combo_count
     else
         app_ui.combo_label.visible = false
     end
-    
+
     if current_state == STATE.ROUND_END then
         if ko_winner then
             app_ui.round_end_title.text = ko_winner == "player" and "KNOCKOUT! YOU WIN!" or "KNOCKOUT! YOU LOSE!"
@@ -496,18 +496,18 @@ function lurek.process(dt)
         end
         app_ui.round_end_damage.text = "Damage: " .. round_dmg[1] .. " vs " .. round_dmg[2]
     end
-    
+
     if current_state == STATE.GAME_OVER then
         local winner = round_wins[1] > round_wins[2] and "YOU WIN!" or (round_wins[1] < round_wins[2] and "YOU LOSE!" or "DRAW!")
         local w_col  = round_wins[1] > round_wins[2] and COL_HP_GREEN or (round_wins[1] < round_wins[2] and COL_HP_RED or COL_GOLD)
-        
+
         app_ui.game_over_winner.text = winner
         app_ui.game_over_winner.color = w_col
         app_ui.game_over_rounds.text = "Rounds: " .. round_wins[1] .. " - " .. round_wins[2]
         app_ui.game_over_score.text = "Score: " .. total_score
         app_ui.game_over_combo.text = "Best combo: " .. best_combo
     end
-    
+
     if current_state ~= STATE.FIGHT then return end
 
     -- ── FIGHT ─────────────────────────────────────────────────

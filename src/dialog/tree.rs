@@ -1,10 +1,8 @@
-//! Dialogue tree types: topics, branches, and the AI selector.
-//!
-//! - Dialogue selection choosing topics and branches from weighted sets guarded by FSM and BT state.
-//! - Topic and branch records with optional gate keys and utility-score references.
-//! - Scoring and matching logic filtering by gates, folding utility, and returning best candidates.
-//! - Independent gating against FSM state and behavior-tree status for adaptive selection.
-//! - Base weight combined with optional utility scores for flexible priority ranking.
+//! - Provides the core dialogue graph data used to model selectable topics, branches, and authored node content.
+//! - Applies contextual filtering so only candidates compatible with current runtime state remain eligible.
+//! - Scores eligible options with base weights and optional utility signals to choose the strongest narrative path.
+//! - Keeps selection deterministic and inspectable by storing gating and scoring inputs directly in dialog records.
+//! - Serves as the central planning layer that higher-level dialogue state and scripting flows execute over time.
 
 use std::collections::HashMap;
 

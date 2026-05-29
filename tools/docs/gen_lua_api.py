@@ -478,6 +478,115 @@ def collect_class_descriptions(api_file: Path) -> Dict[str, str]:
     return result
 
 
+def collect_class_fields(api_file: Path) -> Dict[str, List[Dict[str, str]]]:
+    """Return {class_name: [{name,type,description}, ...]} from add_field_method_* calls.
+
+    Source of truth is Rust bindings in `add_fields(...)` for each LuaUserData impl.
+    No hardcoded class-name field tables.
+    """
+    try:
+        lines = api_file.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+
+    userdata_impl_re = re.compile(
+        r"impl(?:<[^>]*>)?\s+(?:(?:\w+::)*(?:LuaUserData|UserData))\s+for\s+(\w+)"
+    )
+    type_ret_re = re.compile(r'add_method\("type",\s*\|[^|]*\|\s*Ok\("(\w+)"(?:\.to_string\(\))?\)')
+    get_field_re = re.compile(r'fields\.add_field_method_get\(\s*"(\w+)"')
+    set_field_re = re.compile(r'fields\.add_field_method_set\(\s*"(\w+)"\s*,\s*\|[^|]*\|\s*\{?\s*[^|]*,\s*\w+\s*:\s*([^|)]+?)\|')
+    tagged_field_re = re.compile(r"@field\s*\|\s*(\w+)\s*\|\s*([^|]+?)\s*\|\s*(.+)")
+
+    # Build canonical type() name map (Lua-visible class names).
+    type_returns: Dict[str, str] = {}
+    cur_struct: Optional[str] = None
+    brace_depth = 0
+    for line in lines:
+        impl_m = userdata_impl_re.search(line)
+        if impl_m and "{" in line:
+            cur_struct = impl_m.group(1)
+            brace_depth = line.count("{") - line.count("}")
+            continue
+        if cur_struct:
+            brace_depth += line.count("{") - line.count("}")
+            if brace_depth <= 0:
+                cur_struct = None
+                brace_depth = 0
+                continue
+            tm = type_ret_re.search(line)
+            if tm:
+                type_returns[cur_struct] = tm.group(1)
+
+    def canonical_name(struct_name: str) -> str:
+        if struct_name in type_returns:
+            return type_returns[struct_name]
+        if struct_name.startswith("Lua"):
+            return "L" + struct_name[3:]
+        if struct_name.startswith("L"):
+            return struct_name
+        return "L" + struct_name
+
+    fields_by_class: Dict[str, Dict[str, Dict[str, str]]] = {}
+    current_impl: Optional[str] = None
+    brace_depth = 0
+
+    for idx, line in enumerate(lines):
+        stripped = line.strip()
+
+        impl_m = userdata_impl_re.search(stripped)
+        if impl_m and "{" in stripped:
+            current_impl = canonical_name(impl_m.group(1))
+            brace_depth = stripped.count("{") - stripped.count("}")
+            continue
+
+        if current_impl:
+            if not stripped.startswith("//"):
+                brace_depth += stripped.count("{") - stripped.count("}")
+            if brace_depth <= 0:
+                current_impl = None
+                brace_depth = 0
+                continue
+
+            get_m = get_field_re.search(stripped)
+            set_m = set_field_re.search(stripped)
+            if not get_m and not set_m:
+                continue
+
+            field_name = get_m.group(1) if get_m else set_m.group(1)
+            field_type = "any"
+            field_desc = ""
+
+            doc = _collect_docstring_above(lines, idx)
+            for doc_line in doc.splitlines():
+                tag_m = tagged_field_re.match(doc_line.strip())
+                if tag_m and tag_m.group(1) == field_name:
+                    field_type = tag_m.group(2).strip()
+                    field_desc = tag_m.group(3).strip()
+                    break
+
+            if field_type == "any" and set_m:
+                field_type = _rust_type_to_lua(set_m.group(2).strip())
+
+            fields_by_class.setdefault(current_impl, {})
+            if field_name not in fields_by_class[current_impl]:
+                fields_by_class[current_impl][field_name] = {
+                    "name": field_name,
+                    "type": field_type,
+                    "description": field_desc,
+                }
+            else:
+                existing = fields_by_class[current_impl][field_name]
+                if existing.get("type", "any") == "any" and field_type != "any":
+                    existing["type"] = field_type
+                if not existing.get("description") and field_desc:
+                    existing["description"] = field_desc
+
+    result: Dict[str, List[Dict[str, str]]] = {}
+    for class_name, field_map in fields_by_class.items():
+        result[class_name] = [field_map[name] for name in sorted(field_map.keys())]
+    return result
+
+
 def _infer_signature(lines: List[str], decl_line: int) -> str:
     """
     Attempt to infer a Lua-style parameter signature from the Rust closure
@@ -585,15 +694,6 @@ def _collect_module_doc(api_file: Path) -> str:
     return "\n".join(doc_parts).strip()
 
 
-# Maps Rust module names (derived from src/lua_api/<name>_api.rs) to the Lua
-# namespace key actually registered via lurek.set("<key>", ...).
-# Only entries that DIFFER from the Rust module name are listed here.
-_LUA_NAMESPACE_OVERRIDE: Dict[str, str] = {
-    # system_api.rs registers as lurek.set("runtime", ...) â€” not "system"
-    "system": "runtime",
-}
-
-
 def _determine_module_name(api_file: Path) -> str:
     stem = api_file.stem.replace("_api", "")
     return stem
@@ -601,7 +701,7 @@ def _determine_module_name(api_file: Path) -> str:
 
 def _lua_namespace(module: str) -> str:
     """Return the Lua-visible namespace key for a Rust module name."""
-    return _LUA_NAMESPACE_OVERRIDE.get(module, module)
+    return module
 
 
 def _collect_table_namespaces(lines: List[str]) -> Dict[str, str]:
@@ -715,7 +815,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
     set_inline_re = re.compile(r'(\w+)\.set\(\s*"(\w+)"\s*,\s*lua\.create_function')
     # NEW: named fn reference pattern â€” .set("luaName", lua.create_function(fn_name)?)
     set_named_fn_re = re.compile(
-        r'\.set\(\s*"(\w+)"\s*,\s*lua\.create_function\(\s*(\w+)\s*\??\)'
+        r'(\w+)\.set\(\s*"(\w+)"\s*,\s*lua\.create_function\(\s*(\w+)\s*\??\)'
     )
     name_next_re = re.compile(r'^\s*"(\w+)"\s*,')
     method_re = re.compile(r'methods\.add_method(?:_mut)?\(\s*"(\w+)"')
@@ -1102,13 +1202,15 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
         # NEW: .set("luaName", lua.create_function(named_fn)?) â€” named fn reference
         set_named_m = set_named_fn_re.search(stripped)
         if set_named_m:
-            func_name = set_named_m.group(1)    # Lua name (string key)
-            rust_fn   = set_named_m.group(2)    # Rust fn name reference
+            table_var = set_named_m.group(1)
+            func_name = set_named_m.group(2)    # Lua name (string key)
+            rust_fn   = set_named_m.group(3)    # Rust fn name reference
             # Skip if already handled by set_inline_re (anonymous closure)
             if not set_inline_re.search(stripped) or rust_fn:
-                owner = current_widget_type if current_widget_type else ""
+                table_namespace = table_namespaces.get(table_var)
+                owner = "" if table_namespace else (current_widget_type if current_widget_type else "")
                 kind = "method" if owner else "function"
-                lua_name = f"{owner}.{func_name}" if owner else f"lurek.{_lua_namespace(module)}.{func_name}"
+                lua_name = f"{owner}.{func_name}" if owner else f"{table_namespace or f'lurek.{_lua_namespace(module)}'}.{func_name}"
                 # Look up docstring from the named pub fn declaration
                 docstring = _find_pub_fn_docstring(rust_fn) or _collect_docstring_above(lines, i)
                 desc = _first_desc_line(docstring)

@@ -26,7 +26,7 @@ description: "Load this skill when validating, debugging, or maintaining CAG fil
 - Distinguishing content vs. validator defects: when validation fails, first confirm the rule exists in `cag_validate.py` source code. If the rule is correct and the file is wrong, fix the file. If the rule is outdated (removed agent name, old field), update the rule — but treat rule changes as a separate commit with a changelog entry.
 - `--baseline` flag produces a baseline snapshot for comparison. Use it when starting a large CAG sweep: baseline at start, validate again at end, diff to confirm only intended changes.
 - Common validator failures and their fixes: `unknown_agent_name` → agent file was deleted or renamed without updating references; `description_phrasing` → description does not start with "Load this skill when"; `section_missing` → one of the four required sections is absent or has the wrong heading.
-- SKILL.md files must not contain code blocks (triple-backtick) or inline code (single-backtick). The validator enforces this. If domain knowledge requires an exact command, write it in plain prose without backtick formatting.
+- SKILL.md files must not contain triple-backtick code fences. Single backticks are allowed for short inline command or path references when they improve clarity.
 - After the validator passes, update `docs/CHANGELOG.md` with a `docs` or `chore` entry describing the CAG change. CAG changes without a changelog entry fail the commit hygiene check.
 ## Companion File Index
 - None.

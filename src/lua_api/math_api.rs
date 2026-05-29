@@ -1,12 +1,4 @@
-//! `lurek.math` -- Math bindings for vectors, splines, random generators, transforms, curves, tweens, spatial queries, circles, AABB trees, rectangle packing, easing, geometry, polygon operations, and scalar helpers.
-//!
-//! - Registers `lurek.math.*` functions and types via `register()`.
-//! - Userdata types: `LuaVec2`, `LuaVec3`, `LuaCatmullRom`.
-//! - Userdata types: `LuaHermite`, `LuaRandomGenerator`, `LuaTransform`.
-//! - Userdata types: `LuaBezierCurve`, `LuaTween`, `LuaSpatialHash`.
-//! - Userdata types: `LuaCircle`, `LuaRectPacker`, `LuaAabbTree`.
-//! - Bridges 233 Lua-callable methods via `mlua`.
-//! - See `docs/specs/math.md` for the full API specification.
+//! File: src/lua_api/math_api.rs
 
 use super::SharedState;
 use crate::math::easing;
@@ -36,13 +28,13 @@ pub struct LuaVec2 {
 /// Provides Lua fields and methods for 2D vector math.
 impl LuaUserData for LuaVec2 {
     fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
-        /// X component of the vector — Lua userdata object exposed by the engine.
+        /// X component of the vector â€” Lua userdata object exposed by the engine.
         fields.add_field_method_get("x", |_, this| Ok(this.inner.x as f64));
         fields.add_field_method_set("x", |_, this, v: f64| {
             this.inner.x = v as f32;
             Ok(())
         });
-        /// Y component of the vector — Lua userdata object exposed by the engine.
+        /// Y component of the vector â€” Lua userdata object exposed by the engine.
         fields.add_field_method_get("y", |_, this| Ok(this.inner.y as f64));
         fields.add_field_method_set("y", |_, this, v: f64| {
             this.inner.y = v as f32;
@@ -208,13 +200,13 @@ pub struct LuaVec3 {
 /// Provides Lua fields and methods for 3D vector math.
 impl LuaUserData for LuaVec3 {
     fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
-        /// X component of the vector — Lua userdata object exposed by the engine.
+        /// X component of the vector â€” Lua userdata object exposed by the engine.
         fields.add_field_method_get("x", |_, this| Ok(this.inner.x));
         fields.add_field_method_set("x", |_, this, v: f32| {
             this.inner.x = v;
             Ok(())
         });
-        /// Y component of the vector — Lua userdata object exposed by the engine.
+        /// Y component of the vector â€” Lua userdata object exposed by the engine.
         fields.add_field_method_get("y", |_, this| Ok(this.inner.y));
         fields.add_field_method_set("y", |_, this, v: f32| {
             this.inner.y = v;
@@ -1420,16 +1412,14 @@ impl LuaUserData for LuaLootTable {
             Ok(())
         });
         // -- sample --
-        /// Samples one entry in O(1). Returns nil when the table is empty.
-        /// @return | table? | Table with `id` (string) and `weight` (number) fields, or nil.
+        /// Samples one entry in O(1), returning nil instead of a table when empty.
+        /// @return | table | Table with `id` (string) and `weight` (number) fields when present.
         methods.add_method("sample", |lua, this, ()| {
             let entry = this.inner.borrow_mut().sample().cloned();
             match entry {
                 None => Ok(LuaValue::Nil),
                 Some(e) => {
-                    let t = lua.create_table()?;
-                    t.set("id", e.id)?;
-                    t.set("weight", e.weight)?;
+                    let t = loot_entry_table(lua, &e)?;
                     Ok(LuaValue::Table(t))
                 }
             }
@@ -1442,9 +1432,7 @@ impl LuaUserData for LuaLootTable {
             let entries = this.inner.borrow_mut().sample_n(n);
             let out = lua.create_table()?;
             for (i, e) in entries.into_iter().enumerate() {
-                let t = lua.create_table()?;
-                t.set("id", e.id)?;
-                t.set("weight", e.weight)?;
+                let t = loot_entry_table(lua, &e)?;
                 out.set(i + 1, t)?;
             }
             Ok(out)
@@ -1457,12 +1445,18 @@ impl LuaUserData for LuaLootTable {
             let entries = this.inner.borrow_mut().sample_unique(n);
             let out = lua.create_table()?;
             for (i, e) in entries.into_iter().enumerate() {
-                let t = lua.create_table()?;
-                t.set("id", e.id)?;
-                t.set("weight", e.weight)?;
+                let t = loot_entry_table(lua, &e)?;
                 out.set(i + 1, t)?;
             }
             Ok(out)
+        });
+        // -- merge --
+        /// Merges entries from another loot table into this one.
+        /// @param | other | LLootTable | Source loot table.
+        methods.add_method("merge", |_, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaLootTable>()?;
+            this.inner.borrow_mut().merge(&other.inner.borrow());
+            Ok(())
         });
         // -- setSeed --
         /// Sets the RNG seed. The alias table remains valid.
@@ -1470,6 +1464,21 @@ impl LuaUserData for LuaLootTable {
         methods.add_method("setSeed", |_, this, seed: u64| {
             this.inner.borrow_mut().set_seed(seed);
             Ok(())
+        });
+        // -- save --
+        /// Serialises loot table state to a binary blob.
+        /// @return | string | Binary blob.
+        methods.add_method("save", |lua, this, ()| {
+            lua.create_string(this.inner.borrow().save())
+        });
+        // -- restore --
+        /// Restores loot table state from a blob produced by `save`.
+        /// @param | blob | string | Binary blob.
+        methods.add_method("restore", |_, this, blob: LuaString| {
+            this.inner
+                .borrow_mut()
+                .restore(blob.as_bytes())
+                .map_err(LuaError::external)
         });
         // -- entryCount --
         /// Returns the number of entries in the table.
@@ -1515,25 +1524,37 @@ impl LuaUserData for LuaPityTracker {
             Ok(this.inner.borrow().is_primed())
         });
         // -- reset --
-        /// Resets counter and primed state.
+        /// Resets the miss counter and clears primed guaranteed-drop state.
         methods.add_method("reset", |_, this, ()| {
             this.inner.borrow_mut().reset();
             Ok(())
         });
         // -- counter --
-        /// Returns the current miss counter.
+        /// Returns the current miss counter used by pity-prime progression logic.
         /// @return | integer | Current miss count.
         methods.add_method("counter", |_, this, ()| {
             Ok(this.inner.borrow().counter())
         });
-        // -- export --
+        // -- save --
         /// Serialises pity state to a binary blob.
+        /// @return | string | Binary blob.
+        methods.add_method("save", |lua, this, ()| {
+            lua.create_string(this.inner.borrow().save())
+        });
+        // -- restore --
+        /// Restores pity state from a blob produced by `save`.
+        /// @param | blob | string | Binary blob.
+        methods.add_method("restore", |_, this, blob: LuaString| {
+            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+        });
+        // -- export --
+        /// Compatibility alias for `save` that exports the same binary payload.
         /// @return | string | Binary blob.
         methods.add_method("export", |lua, this, ()| {
             lua.create_string(this.inner.borrow().save())
         });
         // -- import --
-        /// Restores pity state from a blob produced by `export`.
+        /// Compatibility alias for `restore`.
         /// @param | blob | string | Binary blob.
         methods.add_method("import", |_, this, blob: LuaString| {
             this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
@@ -2241,9 +2262,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(result)
         })?,
     )?;
-    /// The mathematical constant π ≈ 3.14159. Equivalent to `math.pi` in standard Lua.
+    /// The mathematical constant Ď€ â‰ 3.14159. Equivalent to `math.pi` in standard Lua.
     tbl.set("pi", std::f64::consts::PI)?;
-    /// The mathematical constant τ = 2π ≈ 6.28318.
+    /// The mathematical constant Ď„ = 2Ď€ â‰ 6.28318.
     tbl.set("tau", std::f64::consts::TAU)?;
     /// Positive infinity constant. Equivalent to `math.huge` in standard Lua.
     tbl.set("huge", f64::INFINITY)?;
@@ -2799,7 +2820,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?;
     /// Builds Voronoi cells from a polygon-style point table using geometric tessellation.
     tbl.set("geometricVoronoi", geometric_voronoi_fn.clone())?;
-    /// Alias for geometricVoronoi — builds Voronoi cells from a polygon-style point table.
+    /// Alias for geometricVoronoi â€” builds Voronoi cells from a polygon-style point table.
     tbl.set("voronoi", geometric_voronoi_fn)?; // backward compat alias
     // -- easingNames --
     /// Returns an array of all built-in easing function names.
@@ -2835,18 +2856,86 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(easing::cubic_bezier(p1x, p1y, p2x, p2y, t))
         })?,
     )?;
-    // ── LootTable / PityTracker ────────────────────────────────────────────
+    // â”€â”€ LootTable / PityTracker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // -- newLootTable --
     /// Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
-    /// @param | seed | integer? | Optional deterministic seed.
+    /// @param | opts | any | Optional nil, non-negative seed number, or options table `{ seed = integer }`.
     /// @return | LLootTable | New loot table handle.
     tbl.set(
         "newLootTable",
-        lua.create_function(|lua, seed: Option<u64>| {
+        lua.create_function(|lua, opts: Option<LuaValue>| {
+            let mut seed: Option<u64> = None;
+            if let Some(value) = opts {
+                match value {
+                    LuaValue::Integer(i) if i >= 0 => {
+                        seed = Some(i as u64);
+                    }
+                    LuaValue::Number(n) if n >= 0.0 => {
+                        seed = Some(n as u64);
+                    }
+                    LuaValue::Table(t) => {
+                        let maybe_seed: Option<i64> = t.get("seed")?;
+                        if let Some(s) = maybe_seed {
+                            if s < 0 {
+                                return Err(LuaError::RuntimeError(
+                                    "newLootTable: seed must be >= 0".into(),
+                                ));
+                            }
+                            seed = Some(s as u64);
+                        }
+                    }
+                    LuaValue::Nil => {}
+                    _ => {
+                        return Err(LuaError::RuntimeError(
+                            "newLootTable: expected nil, seed number, or options table".into(),
+                        ));
+                    }
+                }
+            }
+
             let inner = match seed {
                 Some(s) => crate::math::LootTable::with_seed(s),
-                None    => crate::math::LootTable::new(),
+                None => crate::math::LootTable::new(),
             };
+            lua.create_userdata(LuaLootTable {
+                inner: std::cell::RefCell::new(inner),
+            })
+        })?,
+    )?;
+    // -- lootFromList --
+    /// Creates a loot table from a Lua list of entry tables.
+    /// @param | entries | table | Array of `{ id=string, weight=number, meta=table? }`.
+    /// @return | LLootTable | New loot table handle.
+    tbl.set(
+        "lootFromList",
+        lua.create_function(|lua, entries_tbl: LuaTable| {
+            let mut inner = crate::math::LootTable::new();
+            for value in entries_tbl.sequence_values::<LuaTable>() {
+                let entry_tbl = value?;
+                let id: String = entry_tbl.get("id")?;
+                let weight: f64 = entry_tbl.get("weight")?;
+                let meta: Option<LuaTable> = entry_tbl.get("meta")?;
+                inner.add(&id, weight, lua_meta_to_map(meta)?);
+            }
+            if !inner.entries().is_empty() {
+                inner.build();
+            }
+            lua.create_userdata(LuaLootTable {
+                inner: std::cell::RefCell::new(inner),
+            })
+        })?,
+    )?;
+    // -- lootFromToml --
+    /// Loads a loot table from a TOML file path.
+    /// @param | path | string | TOML file path.
+    /// @return | LLootTable | New loot table handle.
+    tbl.set(
+        "lootFromToml",
+        lua.create_function(|lua, path: String| {
+            let src = std::fs::read_to_string(&path)
+                .map_err(|e| LuaError::RuntimeError(format!("lootFromToml read error: {e}")))?;
+            let inner = crate::math::LootTable::from_toml(&src)
+                .map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaLootTable {
                 inner: std::cell::RefCell::new(inner),
             })
@@ -2865,10 +2954,80 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+    // -- sampleWithPity --
+    /// Samples loot table with pity behavior: forced target when tracker is primed.
+    /// @param | loot_table | LLootTable | Loot table handle.
+    /// @param | pity | LPityTracker | Pity tracker handle.
+    /// @return | string | Selected item id when present; nil when table is empty.
+    /// @return | table | Selected metadata table when present; nil when table is empty.
+    tbl.set(
+        "sampleWithPity",
+        lua.create_function(
+            |lua, (loot_ud, pity_ud): (LuaAnyUserData, LuaAnyUserData)| {
+                let selected = {
+                    let mut loot = loot_ud.borrow_mut::<LuaLootTable>()?;
+                    let mut pity = pity_ud.borrow_mut::<LuaPityTracker>()?;
+                    crate::math::sample_with_pity(loot.inner.get_mut(), pity.inner.get_mut()).cloned()
+                };
+
+                match selected {
+                    None => Ok((LuaValue::Nil, LuaValue::Nil)),
+                    Some(e) => {
+                        let meta = map_to_lua_meta(lua, &e.meta)?;
+                        Ok((LuaValue::String(lua.create_string(&e.id)?), LuaValue::Table(meta)))
+                    }
+                }
+            },
+        )?,
+    )?;
     /// Performs the 'math' operation.
     luna.set("math", tbl)?;
     Ok(())
 }
+
+fn lua_meta_to_map(meta: Option<LuaTable>) -> LuaResult<std::collections::HashMap<String, String>> {
+    let mut out = std::collections::HashMap::new();
+    if let Some(t) = meta {
+        for pair in t.pairs::<String, LuaValue>() {
+            let (k, v) = pair?;
+            if let Some(value_str) = lua_value_to_string(&v) {
+                out.insert(k, value_str);
+            }
+        }
+    }
+    Ok(out)
+}
+
+fn map_to_lua_meta<'lua>(
+    lua: &'lua Lua,
+    meta: &std::collections::HashMap<String, String>,
+) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (k, v) in meta {
+        tbl.set(k.as_str(), v.as_str())?;
+    }
+    Ok(tbl)
+}
+
+fn loot_entry_table<'lua>(lua: &'lua Lua, entry: &crate::math::LootEntry) -> LuaResult<LuaTable<'lua>> {
+    let t = lua.create_table()?;
+    t.set("id", entry.id.as_str())?;
+    t.set("weight", entry.weight)?;
+    t.set("meta", map_to_lua_meta(lua, &entry.meta)?)?;
+    Ok(t)
+}
+
+fn lua_value_to_string(value: &LuaValue) -> Option<String> {
+    match value {
+        LuaValue::Nil => None,
+        LuaValue::Boolean(b) => Some(b.to_string()),
+        LuaValue::Integer(i) => Some(i.to_string()),
+        LuaValue::Number(n) => Some(n.to_string()),
+        LuaValue::String(s) => s.to_str().ok().map(|s| s.to_string()),
+        _ => None,
+    }
+}
+
 /// Converts a Lua table of `{x, y}` points into a Rust polygon vector.
 fn lua_table_to_poly(tbl: LuaTable) -> LuaResult<Vec<(f32, f32)>> {
     let mut pts = Vec::new();

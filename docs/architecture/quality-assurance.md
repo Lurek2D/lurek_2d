@@ -1,4 +1,4 @@
-# Lurek2D — Test Framework Architecture
+﻿# Lurek2D â€” Test Framework Architecture
 
 ## TL;DR
 
@@ -6,7 +6,7 @@
 
 
 
-Companion documents: [engine-architecture.md](engine-architecture.md) · [philosophy.md](philosophy.md)
+Companion documents: [engine-core.md](engine-core.md) Â· [philosophy.md](philosophy.md)
 
 ---
 
@@ -34,24 +34,24 @@ Companion documents: [engine-architecture.md](engine-architecture.md) · [philos
 
 Lurek2D uses a **two-layer test system** executed through `cargo test`:
 
-1. **Rust tests** — compiled test binaries exercising engine modules directly via crate imports (unit, stress, golden, config, security, ext).
-2. **Lua BDD tests** — `.lua` scripts using `describe`/`it`/`expect_*` framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).
+1. **Rust tests** â€” compiled test binaries exercising engine modules directly via crate imports (unit, stress, golden, config, security, ext).
+2. **Lua BDD tests** â€” `.lua` scripts using `describe`/`it`/`expect_*` framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).
 
-Both layers run **headless** — no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.
+Both layers run **headless** â€” no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.
 
 **Examples vs Demos:**
 
 | | `content/examples/` | `content/games/` |
 |---|---|---|
-| Purpose | Documentation — shows one `lurek.*` API in isolation | Fully functional game showcases |
-| Tested? | No — read-only reference scripts | Yes — every demo must have a test |
+| Purpose | Documentation â€” shows one `lurek.*` API in isolation | Fully functional game showcases |
+| Tested? | No â€” read-only reference scripts | Yes â€” every demo must have a test |
 | Format | Single-file, commented | Folder with `main.lua` + optional `conf.toml` |
 
 ---
 
 ## Test Placement Rules
 
-Constraints **TST-01** through **TST-06** from [philosophy.md § Testing Constraints](philosophy.md#testing-constraints) are binding. Summary:
+Constraints **TST-01** through **TST-06** from [philosophy.md Â§ Testing Constraints](philosophy.md#testing-constraints) are binding. Summary:
 
 | ID | Rule |
 |----|------|
@@ -66,13 +66,13 @@ Constraints **TST-01** through **TST-06** from [philosophy.md § Testing Constra
 
 ### Decision Tree
 
-1. **Reachable via any `lurek.*` function, userdata, or callback?** → Lua test in `tests/lua/unit/test_<module>.lua` (single module) or `tests/lua/integration/test_<a>_<b>.lua` (≥2 namespaces). This is TST-01 — the default path.
+1. **Reachable via any `lurek.*` function, userdata, or callback?** â†’ Lua test in `tests/lua/unit/test_<module>.lua` (single module) or `tests/lua/integration/test_<a>_<b>.lua` (â‰Ą2 namespaces). This is TST-01 â€” the default path.
 
-2. **Private internal helper** — no Lua exposure? → Rust unit test in `tests/rust/unit/<module>_tests.rs`. Register binary in `Cargo.toml`. TST-02.
+2. **Private internal helper** â€” no Lua exposure? â†’ Rust unit test in `tests/rust/unit/<module>_tests.rs`. Register binary in `Cargo.toml`. TST-02.
 
-3. **Test for a game demo in `content/games/`?** → Headless Lua test in `tests/lua/demos/test_<name>.lua` (TST-05) + `#[ignore]` screenshot test in `tests/demo_smoke_tests.rs`.
+3. **Test for a game demo in `content/games/`?** â†’ Headless Lua test in `tests/lua/demos/test_<name>.lua` (TST-05) + `#[ignore]` screenshot test in `tests/demo_smoke_tests.rs`.
 
-4. **Anything else** (integration, golden, stress, evidence, config, security) → choose the matching subfolder in `tests/rust/` or `tests/lua/`.
+4. **Anything else** (integration, golden, stress, evidence, config, security) â†’ choose the matching subfolder in `tests/rust/` or `tests/lua/`.
 
 When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to `pub(crate)` and cover through the Lua surface.
 
@@ -87,16 +87,16 @@ When both 1 and 2 apply, choose 1 (Lua-first). Promote private helpers to `pub(c
 | Demo tests in `tests/lua/unit/` | TST-05 | Move to `tests/lua/demos/` |
 | Split per-sub-feature test files | TST-06 | Merge into single canonical `test_<module>_<layer>.lua` |
 
-### Enforcement — Audit Scripts
+### Enforcement â€” Audit Scripts
 
 Under `tools/audit/`:
 
 | Script | Enforces |
 |--------|----------|
-| `inline_test_audit.py` | TST-02 — lists every inline `#[cfg(test)]` block with relocation target |
-| `thin_wrapper_audit.py` | TST-03 — flags business-logic violations inside `src/lua_api/` |
-| `thin_modrs_audit.py` | TST-04 — flags disallowed definitions inside any `mod.rs` |
-| `test_coverage.py` | TST-01 — reports undercovered `lurek.*` surface |
+| `inline_test_audit.py` | TST-02 â€” lists every inline `#[cfg(test)]` block with relocation target |
+| `thin_wrapper_audit.py` | TST-03 â€” flags business-logic violations inside `src/lua_api/` |
+| `thin_modrs_audit.py` | TST-04 â€” flags disallowed definitions inside any `mod.rs` |
+| `test_coverage.py` | TST-01 â€” reports undercovered `lurek.*` surface |
 | `lua_test_structure_audit.py` | BDD documentation standard |
 | `lua_evidence_golden_contract_audit.py` | Evidence/golden separation |
 | `gen_lua_contract_tests.py` | Generates periodic Lua contract smoke from `lua_api_data.json` |
@@ -113,30 +113,30 @@ Lua tests are registered **manually** in `tests/lua/harness.rs`. Auto-discovery 
 
 ```
 cargo test
-  │
-  ├── Rust test binaries ─────────────────────────────────────────
-  │   tests/rust/unit/          Engine module Rust contracts
-  │   tests/rust/stress/        Throughput + allocation tests
-  │   tests/rust/golden/        Snapshot: graphics/audio/text
-  │   tests/rust/config/        Config loading + validation
-  │   tests/rust/security/      Sandbox audit, path traversal
-  │   tests/rust/ext/           Cross-module Rust smoke tests
-  │
-  └── Lua BDD harness ────────────────────────────────────────────
+  â”‚
+  â”śâ”€â”€ Rust test binaries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  â”‚   tests/rust/unit/          Engine module Rust contracts
+  â”‚   tests/rust/stress/        Throughput + allocation tests
+  â”‚   tests/rust/golden/        Snapshot: graphics/audio/text
+  â”‚   tests/rust/config/        Config loading + validation
+  â”‚   tests/rust/security/      Sandbox audit, path traversal
+  â”‚   tests/rust/ext/           Cross-module Rust smoke tests
+  â”‚
+  â””â”€â”€ Lua BDD harness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       tests/lua/harness.rs
-      ├── unit/         One file per engine module (API surface)
-      ├── library/      One file per Lureksome library
-      ├── integration/  Tests between ≥2 modules
-      ├── stress/       Throughput + allocation from Lua
-      ├── security/     Sandboxing + input validation
-      ├── golden/       Deterministic output comparison
-      ├── config/       Configuration loading tests
-      └── demos/        One file per demo in content/games/
+      â”śâ”€â”€ unit/         One file per engine module (API surface)
+      â”śâ”€â”€ library/      One file per Lureksome library
+      â”śâ”€â”€ integration/  Tests between â‰Ą2 modules
+      â”śâ”€â”€ stress/       Throughput + allocation from Lua
+      â”śâ”€â”€ security/     Sandboxing + input validation
+      â”śâ”€â”€ golden/       Deterministic output comparison
+      â”śâ”€â”€ config/       Configuration loading tests
+      â””â”€â”€ demos/        One file per demo in content/games/
 ```
 
 **Why two layers:**
 - Rust tests cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness.
-- Lua tests cover the public `lurek.*` API surface from the user's perspective — the same VM game scripts use.
+- Lua tests cover the public `lurek.*` API surface from the user's perspective â€” the same VM game scripts use.
 - Library tests (`tests/lua/library/`) exclusively test Lureksome pure-Lua libraries.
 
 ---
@@ -145,40 +145,40 @@ cargo test
 
 ```
 tests/
-├── fixtures/            Shared test assets (images, audio, data files)
-├── output/              Evidence artefact output (git-ignored)
-├── samples/             Golden comparison baselines (committed)
-│
-├── rust/
-│   ├── unit/            One file per engine module (Rust contracts)
-│   │   ├── math_tests.rs
-│   │   ├── physics_tests.rs
-│   │   ├── render_tests.rs
-│   │   └── ...
-│   ├── stress/          Raw Rust-level throughput tests
-│   ├── golden/          Snapshot tests (harness.rs + expected/)
-│   ├── config/          TOML config loading + validation
-│   ├── security/        Sandbox + path-traversal audits
-│   └── ext/             Cross-module Rust smoke tests
-│
-└── lua/
-    ├── harness.rs       Rust harness — one #[test] per .lua file
-    ├── init.lua         BDD framework (describe/it/expect_*)
-    ├── unit/            One file per lurek.* namespace
-    ├── library/         One file per Lureksome library
-    ├── integration/     Tests between ≥2 modules
-    ├── stress/          Throughput + allocation from Lua
-    ├── security/        Sandboxing + input validation
-    ├── golden/          Deterministic output comparison
-    ├── config/          Config loading tests
-    └── demos/           One file per content/games/ demo
-        ├── _common_checks.lua
-        └── test_<name>.lua
+â”śâ”€â”€ fixtures/            Shared test assets (images, audio, data files)
+â”śâ”€â”€ output/              Evidence artefact output (git-ignored)
+â”śâ”€â”€ samples/             Golden comparison baselines (committed)
+â”‚
+â”śâ”€â”€ rust/
+â”‚   â”śâ”€â”€ unit/            One file per engine module (Rust contracts)
+â”‚   â”‚   â”śâ”€â”€ math_tests.rs
+â”‚   â”‚   â”śâ”€â”€ physics_tests.rs
+â”‚   â”‚   â”śâ”€â”€ render_tests.rs
+â”‚   â”‚   â””â”€â”€ ...
+â”‚   â”śâ”€â”€ stress/          Raw Rust-level throughput tests
+â”‚   â”śâ”€â”€ golden/          Snapshot tests (harness.rs + expected/)
+â”‚   â”śâ”€â”€ config/          TOML config loading + validation
+â”‚   â”śâ”€â”€ security/        Sandbox + path-traversal audits
+â”‚   â””â”€â”€ ext/             Cross-module Rust smoke tests
+â”‚
+â””â”€â”€ lua/
+    â”śâ”€â”€ harness.rs       Rust harness â€” one #[test] per .lua file
+    â”śâ”€â”€ init.lua         BDD framework (describe/it/expect_*)
+    â”śâ”€â”€ unit/            One file per lurek.* namespace
+    â”śâ”€â”€ library/         One file per Lureksome library
+    â”śâ”€â”€ integration/     Tests between â‰Ą2 modules
+    â”śâ”€â”€ stress/          Throughput + allocation from Lua
+    â”śâ”€â”€ security/        Sandboxing + input validation
+    â”śâ”€â”€ golden/          Deterministic output comparison
+    â”śâ”€â”€ config/          Config loading tests
+    â””â”€â”€ demos/           One file per content/games/ demo
+        â”śâ”€â”€ _common_checks.lua
+        â””â”€â”€ test_<name>.lua
 ```
 
 All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[test]]` sections. Unregistered `.rs` files in `tests/` are not discovered by `cargo test`.
 
-### tests/rust/game/ — Retired
+### tests/rust/game/ â€” Retired
 
 `tests/rust/game/` previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now pure-Lua libraries in `library/`. Their tests live in `tests/lua/library/`. Do not add new files there.
 
@@ -186,7 +186,7 @@ All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[te
 
 ## Rust Test Suites
 
-**Scope rule:** All public API methods must be tested in Lua. Rust tests cover private/internal code only — struct invariants, internal algorithms, resource lifecycle, and implementation details with no `lurek.*` surface.
+**Scope rule:** All public API methods must be tested in Lua. Rust tests cover private/internal code only â€” struct invariants, internal algorithms, resource lifecycle, and implementation details with no `lurek.*` surface.
 
 | Category | Path | Scope |
 |---|---|---|
@@ -211,11 +211,11 @@ All Lua tests use the custom BDD framework in `tests/lua/init.lua`, loaded autom
 |---|---|---|---|
 | Unit | `tests/lua/unit/` | One module per file | `test_<module>.lua` |
 | Library | `tests/lua/library/` | One Lureksome library | `test_library_<name>.lua` |
-| Integration | `tests/lua/integration/` | ≥2 modules | `test_<modA>_<modB>.lua` |
+| Integration | `tests/lua/integration/` | â‰Ą2 modules | `test_<modA>_<modB>.lua` |
 | Stress | `tests/lua/stress/` | Throughput + allocation | `test_<module>_stress.lua` |
-| Security | `tests/lua/security/` | Sandboxing + input validation | — |
+| Security | `tests/lua/security/` | Sandboxing + input validation | â€” |
 | Golden | `tests/lua/golden/` | Deterministic output | `test_<module>_golden.lua` |
-| Config | `tests/lua/config/` | Configuration loading | — |
+| Config | `tests/lua/config/` | Configuration loading | â€” |
 | Demos | `tests/lua/demos/` | One per `content/games/` demo | `test_<name>.lua` |
 
 ### Framework Functions
@@ -240,7 +240,7 @@ All Lua tests use the custom BDD framework in `tests/lua/init.lua`, loaded autom
 | `expect_deep_equal(expected, actual, msg)` | Recursive table equality |
 | `measure(name, count, fn)` | Run fn, print `[PERF]` line, return `elapsed, ops_per_sec` |
 | `expect_canvas_pixel(surface, x, y, r, g, b, a, tol, msg)` | Pixel RGBA check |
-| `test_summary()` | **Mandatory** — must be the last call in every file |
+| `test_summary()` | **Mandatory** â€” must be the last call in every file |
 
 ### Integration Test Rule
 
@@ -250,17 +250,17 @@ An integration test must exercise at least two distinct `lurek.*` module namespa
 
 ## Lua Test Documentation Standard
 
-Three comment layers — do not mix them:
+Three comment layers â€” do not mix them:
 
-1. **File header** — plain `-- ...` prose at top. Explains coverage and headless constraints. No `@description`.
-2. **Suite description** — one `-- @describe <text>` line immediately above each `describe()` block.
-3. **Case description** — optional plain comment lines above each `it()` block when needed for clarity.
+1. **File header** â€” plain `-- ...` prose at top. Explains coverage and headless constraints. No `@description`.
+2. **Suite description** â€” one `-- @describe <text>` line immediately above each `describe()` block.
+3. **Case description** â€” optional plain comment lines above each `it()` block when needed for clarity.
 
 **Rules:**
-- File header uses plain comments only — no `-- @description`, no `-- @category:`.
+- File header uses plain comments only â€” no `-- @description`, no `-- @category:`.
 - `-- @category: ...` markers are forbidden everywhere.
 - `test_summary()` must be the last non-empty line in every file.
-- `return test_summary()` is forbidden — use bare `test_summary()`.
+- `return test_summary()` is forbidden â€” use bare `test_summary()`.
 - Marker annotations belong on `it()` blocks and are folder-specific:
     - `tests/lua/unit/` -> `@covers`
     - `tests/lua/security/` -> `@security`
@@ -307,7 +307,7 @@ Golden tests compare evidence output against committed baseline samples.
 **Rules:**
 1. **Golden tests ONLY compare.** They read an evidence file and a golden sample, then assert they match. No content creation.
 2. **Evidence tests must run first.** If the evidence file does not exist, the golden test fails with a clear message.
-3. **Golden samples live in `tests/lua/golden/samples/<module>/`** — committed to git, human-reviewed.
+3. **Golden samples live in `tests/lua/golden/samples/<module>/`** â€” committed to git, human-reviewed.
 4. **Golden tests must not call `lurek.*` APIs, `savePNG`, `saveWAV`, or write files.** Content creation belongs in the evidence layer.
 5. **Every golden test uses BDD structure** and the `-- @golden` marker.
 6. Use `expect_golden_file_match()` for binary (PNG, WAV) or `expect_golden_text_match()` for text (normalises whitespace/line endings).
@@ -315,14 +315,14 @@ Golden tests compare evidence output against committed baseline samples.
 **Directory structure:**
 ```
 tests/lua/golden/
-├── test_<module>_golden.lua          Golden test script
-└── samples/                          Committed baseline files
-    ├── math/constants.txt
-    ├── physics/draw_debug.png
-    └── audio/sine_440hz.wav
+â”śâ”€â”€ test_<module>_golden.lua          Golden test script
+â””â”€â”€ samples/                          Committed baseline files
+    â”śâ”€â”€ math/constants.txt
+    â”śâ”€â”€ physics/draw_debug.png
+    â””â”€â”€ audio/sine_440hz.wav
 
 tests/lua/evidence/output/            Generated at test run (git-ignored)
-└── math/constants.txt
+â””â”€â”€ math/constants.txt
 ```
 
 **Golden test template:**
@@ -365,8 +365,8 @@ Never use `==` for floats. Use:
 |------|----------|------------------|
 | Lua test | `expect_near(expected, actual, tol)` | `1e-5` |
 | Rust test | `assert!((a - b).abs() < 1e-5)` | 1e-5 |
-| Physics positions | `1e-3` tolerance | — |
-| Render coordinates | `0.5` tolerance (half pixel) | — |
+| Physics positions | `1e-3` tolerance | â€” |
+| Render coordinates | `0.5` tolerance (half pixel) | â€” |
 
 ---
 
@@ -442,7 +442,7 @@ Evidence tests produce **artefacts** (images, text files, audio) from actual eng
 1. Evidence test runs, calls `lurek.*`, saves output to `output/<module>/`.
 2. Golden test reads saved output and committed sample, asserts they match.
 
-Never mix steps — an `it()` block must do either production or comparison, never both.
+Never mix steps â€” an `it()` block must do either production or comparison, never both.
 
 ---
 
@@ -467,8 +467,9 @@ cargo test --test demo_smoke_tests demo_smoke_globe_demo -- --include-ignored
 
 | Concern | Lua demo test | Screenshot test |
 |---------|--------------|----------------|
-| Runs headless? | Yes | No — needs GPU |
+| Runs headless? | Yes | No â€” needs GPU |
 | Runs in CI by default? | Yes | No (`#[ignore]`) |
 | Catches wrong callback names? | Yes (static analysis) | No |
 | Catches crash at frame 180? | No | Yes |
 | Verifies rendered output? | No | Yes (PNG magic + size) |
+

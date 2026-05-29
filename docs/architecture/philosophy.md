@@ -12,18 +12,24 @@ Companion documents: [engine-architecture.md](engine-architecture.md) · [test-f
 
 ## Table of Contents
 
-1. [The Zen of Lurek 2.0](#the-zen-of-lurek-20)
-2. [Core Idea](#core-idea)
-3. [Project Identity](#project-identity)
-4. [Decision Heuristics](#decision-heuristics)
-5. [Platform and Runtime Constraints](#platform-and-runtime-constraints)
-6. [Technology Stack Constraints](#technology-stack-constraints)
-7. [Active Module Group Constraints](#active-module-group-constraints)
-8. [API Design Constraints](#api-design-constraints)
-9. [Testing Constraints](#testing-constraints)
-10. [Quality Gate Constraints](#quality-gate-constraints)
-11. [Constraint Status Model](#constraint-status-model)
-12. [Retired Decisions](#retired-decisions)
+- [Lurek2D — Philosophy and Design Assumptions](#lurek2d--philosophy-and-design-assumptions)
+	- [TL;DR](#tldr)
+	- [Table of Contents](#table-of-contents)
+	- [The Zen of Lurek 2.0](#the-zen-of-lurek-20)
+	- [Core Idea](#core-idea)
+	- [Project Identity](#project-identity)
+	- [Decision Heuristics](#decision-heuristics)
+	- [Platform and Runtime Constraints](#platform-and-runtime-constraints)
+	- [Technology Stack Constraints](#technology-stack-constraints)
+	- [Active Module Group Constraints](#active-module-group-constraints)
+	- [API Design Constraints](#api-design-constraints)
+	- [Testing Constraints](#testing-constraints)
+	- [Quality Gate Constraints](#quality-gate-constraints)
+	- [Constraint Status Model](#constraint-status-model)
+	- [Retired Decisions](#retired-decisions)
+		- [Retired: Strict Tier Numbering](#retired-strict-tier-numbering)
+		- [Retired: Baseline → Tier 1 → Tier 2 → Tier 3 Naming](#retired-baseline--tier-1--tier-2--tier-3-naming)
+		- [Retired: Tier 4 as the Platform Integration Slot](#retired-tier-4-as-the-platform-integration-slot)
 
 ---
 

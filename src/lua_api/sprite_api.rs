@@ -1,8 +1,4 @@
-//! `lurek.sprite` - Provides sprite batch rendering, sprite sheets, quad management, and texture atlas operations for efficient 2D rendering.
-//!
-//! - Registers `lurek.sprite.*` functions and types via `register()`.
-//! - `LuaSpriteSheet`: userdata type exposed to Lua.
-//! - `LuaSpriteAtlas`: userdata type exposed to Lua.
+//! File: src/lua_api/sprite_api.rs
 
 use super::SharedState;
 use crate::math::Rect;
@@ -38,7 +34,7 @@ impl LuaUserData for LuaSpriteSheet {
         });
         // -- getFrameCount --
         /// Returns the total number of frames in this sprite sheet.
-        /// @return | integer | Total frame count (columns × rows).
+        /// @return | integer | Total frame count (columns Ă— rows).
         methods.add_method("getFrameCount", |_, this, ()| {
             Ok(this.inner.get_frame_count())
         });
@@ -309,7 +305,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
     // -- newRPGMakerSheet --
-    /// Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
+    /// Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
     /// @param | tw | integer | Full texture width in pixels.
     /// @param | th | integer | Full texture height in pixels.
     /// @return | LSpriteSheet | A new sprite sheet configured for RPG Maker character sprites.

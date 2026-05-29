@@ -1,4 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for docs internals not reachable via lurek.docs.*.
+//! File: tests/rust/unit/docs_tests.rs
 
 use std::fs;
 

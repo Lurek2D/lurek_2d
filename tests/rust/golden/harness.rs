@@ -1,15 +1,4 @@
-//! Golden file tests — verify deterministic binary output.
-//!
-//! Creates known inputs, generates outputs, and compares against stored baselines
-//! in `tests/rust/golden/expected/`. On first run, baselines are generated automatically.
-//! Subsequent runs verify the output matches byte-for-byte.
-//!
-//! ## Screenshot tests
-//!
-//! [`save_test_screenshot`] captures CPU-rendered `ImageData` as PNG files to
-//! `tests/rust/golden/screenshots/`. Screenshots are committed to the repository
-//! as visual evidence of what the engine's pixel-level rendering produces.
-//! They are not compared automatically — regenerate by re-running the tests.
+//! File: tests/rust/golden/harness.rs
 
 use lurek2d::image::ImageData;
 use lurek2d::raycaster::Raycaster2D;
@@ -62,7 +51,7 @@ fn assert_golden(name: &str, actual: &[u8]) {
 }
 
 fn assert_golden_text(name: &str, actual: &str) {
-    // Normalize CRLF → LF so golden files compare identically on Windows and Unix.
+    // Normalize CRLF â†’ LF so golden files compare identically on Windows and Unix.
     let normalized_actual = actual.replace("\r\n", "\n");
     let expected_path = format!("tests/rust/golden/expected/{}", name);
     let actual_path = format!("tests/rust/golden/actual/{}", name);
@@ -140,7 +129,7 @@ fn golden_png_encode_checkerboard() {
 // Raycaster: deterministic ray cast results
 // ===========================================================================
 
-/// Build a 5×5 grid with a wall ring and an open center.
+/// Build a 5Ă—5 grid with a wall ring and an open center.
 ///
 /// Layout (W=wall, .=empty):
 ///   W W W W W
@@ -192,7 +181,7 @@ fn golden_raycaster_ray_hits_north_wall() {
 
 #[test]
 fn golden_raycaster_ray_miss_no_wall() {
-    // Empty 3×3 grid — ray must return None
+    // Empty 3Ă—3 grid â€” ray must return None
     let rc = Raycaster2D::new(3, 3);
     let hit = rc.cast_ray(1.5, 1.5, 0.0, 0.5);
     assert!(hit.is_none(), "ray in empty grid must miss");
@@ -202,7 +191,7 @@ fn golden_raycaster_ray_miss_no_wall() {
 #[test]
 fn golden_raycaster_multi_ray_column_distances() {
     let rc = make_enclosed_5x5();
-    // Cast 5 rays from centre pointing East with slight spread (-2° to +2°)
+    // Cast 5 rays from centre pointing East with slight spread (-2Â° to +2Â°)
     let base_angle = 0.0_f32;
     let fov_step = std::f32::consts::PI / 180.0 * 1.0; // 1 degree per step
     let mut rows = Vec::new();
@@ -219,7 +208,7 @@ fn golden_raycaster_multi_ray_column_distances() {
 }
 
 // ===========================================================================
-// Screenshots — visual evidence of CPU-side rendering output
+// Screenshots â€” visual evidence of CPU-side rendering output
 // ===========================================================================
 
 #[test]
@@ -257,7 +246,7 @@ fn screenshot_procedural_gradient() {
 
 #[test]
 fn screenshot_raycaster_depth_map() {
-    // Render a 60-column depth map of the 5×5 enclosed grid as a grayscale strip.
+    // Render a 60-column depth map of the 5Ă—5 enclosed grid as a grayscale strip.
     // Each column's brightness encodes wall distance (closer = brighter).
     let rc = make_enclosed_5x5();
     let columns = 60u32;

@@ -1,21 +1,8 @@
-//! INTERNAL ONLY: Rust unit tests for the `scene` module — private internals not reachable
-//! from the `lurek.*` Lua API.
-//!
-//! Only tests that cannot be expressed via `lurek.*` live here:
-//! - `EasingType::apply(t)` — pure curve math with no Lua namespace
-//! - `EasingType::from_lua_str` / `TransitionType::from_lua_str` — enum-variant
-//!   equality that is unobservable from Lua
-//! - `ActiveTransition::get_easing()` — internal field access unavailable in Lua
-//!
-//! Tests observable via `lurek.scene.getTransitionProgress()` and
-//! `lurek.scene.getTransitionProgressEased()` live in
-//! `tests/lua/unit/test_scene_unit.lua`.
-//!
-//! Naming: `<subject>_<scenario>_<expected>` — no `test_` prefix.
+//! File: tests/rust/unit/scene_tests.rs
 
 use lurek2d::scene::transition::{ActiveTransition, EasingType, TransitionType};
 
-// ── EasingType ────────────────────────────────────────────────────────────────
+// â”€â”€ EasingType â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 #[test]
 fn easing_linear_identity() {
@@ -27,13 +14,13 @@ fn easing_linear_identity() {
 
 #[test]
 fn easing_ease_in_quadratic_at_half() {
-    // EaseIn = t² → at t=0.5 ⇒ 0.25
+    // EaseIn = tÂ˛ â†’ at t=0.5 â‡’ 0.25
     assert!((EasingType::EaseIn.apply(0.5) - 0.25).abs() < 1e-5);
 }
 
 #[test]
 fn easing_ease_out_quadratic_at_half() {
-    // EaseOut = 1-(1-t)² → at t=0.5 ⇒ 0.75
+    // EaseOut = 1-(1-t)Â˛ â†’ at t=0.5 â‡’ 0.75
     assert!((EasingType::EaseOut.apply(0.5) - 0.75).abs() < 1e-5);
 }
 
@@ -87,7 +74,7 @@ fn easing_from_lua_str_roundtrip() {
     assert_eq!(EasingType::from_lua_str("unknown"), EasingType::Linear);
 }
 
-// ── TransitionType ────────────────────────────────────────────────────────────
+// â”€â”€ TransitionType â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 #[test]
 fn transition_type_new_variants_parse() {
@@ -100,7 +87,7 @@ fn transition_type_new_variants_parse() {
     );
 }
 
-// ── ActiveTransition ──────────────────────────────────────────────────────────
+// â”€â”€ ActiveTransition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 #[test]
 fn active_transition_new_defaults_linear() {
@@ -118,16 +105,16 @@ fn active_transition_new_with_easing_stores_curve() {
 // active_transition_progress_eased_linear_matches_progress,
 // active_transition_progress_eased_ease_in_less_before_midpoint, and
 // scene_stack_get_transition_progress_eased_linear_matches were migrated to
-// tests/lua/unit/test_scene_unit.lua — they are observable via
+// tests/lua/unit/test_scene_unit.lua â€” they are observable via
 // lurek.scene.getTransitionProgress() and lurek.scene.getTransitionProgressEased().
 
-// ── stack (migrated from src/scene/stack.rs) ──────────────────────────────────
+// â”€â”€ stack (migrated from src/scene/stack.rs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod stack_tests {
     use lurek2d::scene::stack::SceneStack;
     use lurek2d::scene::transition::{EasingType, TransitionType};
 
-    // ── Scene IDs ─────────────────────────────────────────────────────────────
+    // â”€â”€ Scene IDs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn next_scene_id_increments() {
@@ -137,7 +124,7 @@ mod stack_tests {
         assert!(id2 > id1);
     }
 
-    // ── Push / Pop ────────────────────────────────────────────────────────────
+    // â”€â”€ Push / Pop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn pop_returns_pushed_id() {
@@ -158,7 +145,7 @@ mod stack_tests {
             .is_err());
     }
 
-    // ── Overlay ───────────────────────────────────────────────────────────────
+    // â”€â”€ Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn overlay_stress_all_scenes_active() {
@@ -224,7 +211,7 @@ mod stack_tests {
         assert_eq!(ordered, vec![b, c, a]);
     }
 
-    // ── Registry ───────────────────────────────────────────────────────────────
+    // â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     #[test]
     fn register_and_lookup_scene() {
@@ -241,7 +228,7 @@ mod stack_tests {
     }
 }
 
-// ── render (migrated from src/scene/render.rs) ────────────────────────────────
+// â”€â”€ render (migrated from src/scene/render.rs) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use lurek2d::scene::stack::SceneStack;

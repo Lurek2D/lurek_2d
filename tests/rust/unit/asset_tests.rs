@@ -1,8 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for asset cache internals not directly exposed
-//! through Lua behavior assertions.
-//!
-//! Lua-visible behavior for `lurek.asset.*` is covered in
-//! `tests/lua/unit/test_asset_core_unit.lua`.
+//! File: tests/rust/unit/asset_tests.rs
 
 use lurek2d::asset::{AssetCache, AssetType};
 

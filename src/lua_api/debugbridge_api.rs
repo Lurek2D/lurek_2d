@@ -1,8 +1,4 @@
-//! `lurek.debugbridge` -- Debug bridge bindings for starting the local TCP bridge, polling debugger requests, print capture, performance data, screenshots, protocol metadata, and hot reload flags.
-//!
-//! - Registers `lurek.debugbridge.*` functions and types via `register()`.
-//! - Bridges 16 Lua-callable methods via `mlua`.
-//! - See `docs/specs/debugbridge.md` for the full API specification.
+//! File: src/lua_api/debugbridge_api.rs
 
 use super::SharedState;
 use crate::debugbridge::{server_thread, BridgeShared, PendingRequest, PendingResponse};

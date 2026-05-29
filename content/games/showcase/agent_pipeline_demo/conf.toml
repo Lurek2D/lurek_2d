@@ -1,0 +1,8 @@
+[window]
+title = "Agent Pipeline Demo"
+width = 960
+height = 540
+vsync = true
+
+[engine]
+target_fps = 60

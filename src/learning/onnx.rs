@@ -1,14 +1,11 @@
 //! ONNX model loading and inference via tract-onnx.
 //!
 //! - Provides `OnnxModel` which loads and optimises an ONNX file into a runnable plan.
-//! - Provides `LurekTensor` which holds a flat f32 buffer with explicit shape metadata.
 //! - `OnnxModel::run` converts `LurekTensor` inputs to tract `Tensor` values, runs the
 //!   plan, and converts outputs back to `LurekTensor`, preserving output shapes.
-//! - `LurekTensor::to_tract_tensor` builds a row-major `ndarray::ArrayD<f32>` and converts
-//!   it to a tract `Tensor` using the standard `From` implementation.
 //! - Used exclusively by `src/lua_api/learning_api.rs`; no game-loop dependencies.
 
-use ndarray::ArrayD;
+use crate::learning::tensor::LurekTensor;
 use tract_onnx::prelude::*;
 
 /// Type alias for a runnable optimised tract ONNX plan.
@@ -85,65 +82,5 @@ impl OnnxModel {
     /// Number of output tensors produced by the model.
     pub fn output_count(&self) -> usize {
         self.output_count
-    }
-}
-
-/// Flat f32 tensor with explicit shape metadata.
-///
-/// Shapes use row-major (C) order. Indexing via `get_element` accepts one index per
-/// dimension. Used both as input to `OnnxModel::run` and as output from it.
-#[derive(Debug, Clone)]
-pub struct LurekTensor {
-    /// Dimension sizes in row-major order.
-    pub shape: Vec<usize>,
-    /// Flat element data in row-major order.
-    pub data: Vec<f32>,
-}
-
-impl LurekTensor {
-    /// Create a tensor with the given `shape` and flat `data`.
-    pub fn new(shape: Vec<usize>, data: Vec<f32>) -> Self {
-        Self { shape, data }
-    }
-
-    /// Returns the total number of tensor elements.
-    pub fn len(&self) -> usize {
-        self.data.len()
-    }
-
-    /// True when there are no elements.
-    pub fn is_empty(&self) -> bool {
-        self.data.is_empty()
-    }
-
-    /// Return the element at the given multi-dimensional indices (zero-based, row-major).
-    ///
-    /// Returns `None` if `indices` has the wrong rank or any index is out of range.
-    pub fn get_element(&self, indices: &[usize]) -> Option<f32> {
-        self.data.get(self.flat_index(indices)?).copied()
-    }
-
-    /// Convert multi-dimensional zero-based indices to a flat row-major offset.
-    fn flat_index(&self, indices: &[usize]) -> Option<usize> {
-        if indices.len() != self.shape.len() {
-            return None;
-        }
-        let mut idx = 0usize;
-        let mut stride = 1usize;
-        for (&i, &s) in indices.iter().zip(self.shape.iter()).rev() {
-            if i >= s {
-                return None;
-            }
-            idx += i * stride;
-            stride *= s;
-        }
-        Some(idx)
-    }
-
-    /// Build a tract `Tensor` from this handle for use as a model input.
-    pub fn to_tract_tensor(&self) -> Result<Tensor, String> {
-        let arr = ArrayD::<f32>::from_shape_vec(self.shape.clone(), self.data.clone())
-            .map_err(|e| e.to_string())?;
-        Ok(arr.into_tensor())
     }
 }

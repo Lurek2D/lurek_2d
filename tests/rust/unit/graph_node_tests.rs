@@ -1,7 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for graph node storage and parsing.
-//!
-//! Public graph behavior reachable through `lurek.graph.*` is covered in Lua tests.
-//! These Rust-only checks keep local node invariants and parsing behavior covered.
+//! File: tests/rust/unit/graph_node_tests.rs
 
 use lurek2d::flownet::{ConversionRule, FlowMode, Node, OverflowPolicy};
 use std::str::FromStr;

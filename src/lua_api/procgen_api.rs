@@ -1,11 +1,4 @@
-//! `lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, world graphs, and cellular world simulation.
-//!
-//! - Registers `lurek.procgen.*` functions and types via `register()`.
-//! - `LuaBiomeClassifier`: userdata type exposed to Lua.
-//! - `LuaNoiseGenerator`: userdata type exposed to Lua.
-//! - `LuaCellular`: userdata type exposed to Lua.
-//! - Bridges 67 Lua-callable methods via `mlua`.
-//! - See `docs/specs/procgen.md` for the full API specification.
+//! File: src/lua_api/procgen_api.rs
 
 use super::SharedState;
 use crate::procgen::biome::{BiomeClassifier, BiomeRules, BiomeType};
@@ -38,9 +31,9 @@ impl LuaUserData for LuaBiomeClassifier {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- classify --
         /// Classify a single point into a biome type based on its environmental parameters.
-        /// @param | height | number | Elevation value (0.0–1.0) of the terrain point.
-        /// @param | moisture | number | Moisture level (0.0–1.0) at the point.
-        /// @param | temperature | number | Temperature value (0.0–1.0) at the point.
+        /// @param | height | number | Elevation value (0.0â€“1.0) of the terrain point.
+        /// @param | moisture | number | Moisture level (0.0â€“1.0) at the point.
+        /// @param | temperature | number | Temperature value (0.0â€“1.0) at the point.
         /// @return | string | Biome name such as "ocean", "desert", "grassland", "taiga", etc.
         methods.add_method("classify", |_, this, (h, m, t): (f32, f32, f32)| {
             Ok(this.0.classify(h, m, t).as_str())
@@ -642,8 +635,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Generate a cave or organic map using cellular automata rules.
     /// @param | width | integer | Grid width in cells.
     /// @param | height | integer | Grid height in cells.
-    /// @param | opts | table? | Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
-    /// @return | integer[] | Flat array of cell values (0=empty, 1=wall) with length width×height.
+    /// @param | opts | table? | Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
+    /// @return | integer[] | Flat array of cell values (0=empty, 1=wall) with length widthĂ—height.
     tbl.set(
         "cellularAutomata",
         lua.create_function(|lua, (w, h, opts): (u32, u32, Option<LuaTable>)| {
@@ -668,7 +661,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param | startY | number | Start row (0-based).
     /// @param | threshold | number? | Value threshold (default 128).
     /// @param | above | boolean? | If true, fill cells >= threshold; if false (default), fill cells < threshold.
-    /// @return | integer[] | Flat array of fill values (1=filled, 0=not filled) with length width×height.
+    /// @return | integer[] | Flat array of fill values (1=filled, 0=not filled) with length widthĂ—height.
     tbl.set(
         "floodFill",
         lua.create_function(
@@ -1145,7 +1138,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- heightmap --
     /// Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
     /// @param | opts | table? | Options: width, height, scale, octaves, lacunarity, persistence, seed, erosion_passes.
-    /// @return | table | Table with .cells (flat f32 array 0.0–1.0), .width, .height.
+    /// @return | table | Table with .cells (flat f32 array 0.0â€“1.0), .width, .height.
     /// @field | cells | number[] | Heightmap values.
     /// @field | width | integer | Width.
     /// @field | height | integer | Height.
@@ -1760,10 +1753,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- biomeColor --
     /// Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
     /// @param | name | string | Biome name (e.g. "ocean", "desert", "taiga").
-    /// @return | number | Red component (0–255).
-    /// @return | number | Green component (0–255).
-    /// @return | number | Blue component (0–255).
-    /// @return | number | Alpha component (0–255).
+    /// @return | number | Red component (0â€“255).
+    /// @return | number | Green component (0â€“255).
+    /// @return | number | Blue component (0â€“255).
+    /// @return | number | Alpha component (0â€“255).
     tbl.set(
         "biomeColor",
         lua.create_function(|_, name: String| {
@@ -1786,17 +1779,17 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
-    /// Cell type constant: air — passable empty cell for cellular simulation.
+    /// Cell type constant: air â€” passable empty cell for cellular simulation.
     tbl.set("CELL_AIR", CellType::Air as u8)?;
-    /// Cell type constant: sand — granular solid that falls and piles.
+    /// Cell type constant: sand â€” granular solid that falls and piles.
     tbl.set("CELL_SAND", CellType::Sand as u8)?;
-    /// Cell type constant: water — liquid that flows and spreads.
+    /// Cell type constant: water â€” liquid that flows and spreads.
     tbl.set("CELL_WATER", CellType::Water as u8)?;
-    /// Cell type constant: rock — immovable solid barrier.
+    /// Cell type constant: rock â€” immovable solid barrier.
     tbl.set("CELL_ROCK", CellType::Rock as u8)?;
-    /// Cell type constant: fire — active combustion that spreads and consumes.
+    /// Cell type constant: fire â€” active combustion that spreads and consumes.
     tbl.set("CELL_FIRE", CellType::Fire as u8)?;
-    /// Cell type constant: gas — diffusing vapor that rises.
+    /// Cell type constant: gas â€” diffusing vapor that rises.
     tbl.set("CELL_GAS", CellType::Gas as u8)?;
     // -- setConstraintsFromLLM --
     /// Sends a natural-language prompt to the global LLM and returns WFC adjacency constraints as a Lua table.

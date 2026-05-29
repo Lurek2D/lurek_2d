@@ -236,27 +236,27 @@ function lurek.init()
     lurek.window.setTitle("Pinball — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.05)
     reset_targets()
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/pinball/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.title_flip_it = ui_root:findById("title_flip_it")
     app_ui.ball_lost_screen = ui_root:findById("ball_lost_screen")
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
-    
+
     app_ui.score_label = ui_root:findById("score_label")
     app_ui.high_score_label = ui_root:findById("high_score_label")
     app_ui.balls_label = ui_root:findById("balls_label")
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     app_ui.multiplier_label = ui_root:findById("multiplier_label")
-    
+
     app_ui.final_score = ui_root:findById("final_score")
     app_ui.new_high_score = ui_root:findById("new_high_score")
-    
+
     app_ui.press_start = ui_root:findById("press_start")
     app_ui.press_title = ui_root:findById("press_title")
-    
+
     local function handle_action_click()
         if state == STATE_TITLE then
             start_game()
@@ -264,7 +264,7 @@ function lurek.init()
             state = STATE_TITLE
         end
     end
-    
+
     if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
     if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
 end
@@ -334,24 +334,24 @@ function lurek.process(dt)
             end
         end
     end
-    
+
     -- UI Sync
     app_ui.title_screen.visible = (state == STATE_TITLE)
     app_ui.ball_lost_screen.visible = (state == STATE_BALL_LOST)
     app_ui.game_over_screen.visible = (state == STATE_GAME_OVER)
-    
+
     app_ui.score_label.text = string.format("SCORE: %d", display_score)
     app_ui.high_score_label.text = string.format("HI: %d", high_score)
     app_ui.balls_label.text = string.format("BALLS: %d", balls_left)
     app_ui.fps_label.text = string.format("FPS: %d", math.floor(lurek.timer.getFPS()))
-    
+
     if multiplier > 1 then
         app_ui.multiplier_label.visible = true
         app_ui.multiplier_label.text = string.format("%dX COMBO!", multiplier)
     else
         app_ui.multiplier_label.visible = false
     end
-    
+
     if state == STATE_TITLE then
         local alpha = 0.4 + 0.6 * math.abs(math.sin(title_blink * 2))
         app_ui.title_flip_it.color = {1, 1, 1, alpha}
@@ -363,7 +363,7 @@ function lurek.process(dt)
             app_ui.new_high_score.visible = false
         end
     end
-    
+
     if state == STATE_TITLE or state == STATE_GAME_OVER or state == STATE_BALL_LOST then return end
 
     -- ── Flipper control ──

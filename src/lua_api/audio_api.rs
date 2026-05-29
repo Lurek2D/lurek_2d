@@ -1,17 +1,8 @@
-//! `lurek.audio` - Audio playback, mixing, spatial sound, MIDI, and DSP processing for 2D games.
-//!
-//! - Registers `lurek.audio.*` functions and types via `register()`.
-//! - `LuaSource`: userdata type exposed to Lua.
-//! - `LuaBus`: userdata type exposed to Lua.
-//! - `LuaMidiPlayer`: userdata type exposed to Lua.
-//! - `LuaSoundPool`: userdata type exposed to Lua.
-//! - `LuaDecoder`: userdata type exposed to Lua.
-//! - Bridges 205 Lua-callable methods via `mlua`.
-//! - See `docs/specs/audio.md` for the full API specification.
+//! File: src/lua_api/audio_api.rs
 
 use super::SharedState;
 use crate::audio::sound_data::SoundData;
-use crate::audio::{Decoder, SourceType};
+use crate::audio::{BeatClockOpts, Decoder, JudgementResult, JudgementWindows, SourceType};
 use crate::log_msg;
 use crate::midi::MidiPlayer;
 use crate::runtime::log_messages::LA01_API_STUB;
@@ -20,6 +11,13 @@ use mlua::prelude::*;
 use slotmap::Key;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::{Mutex, OnceLock};
+
+static BEAT_CLOCK_WINDOWS: OnceLock<Mutex<JudgementWindows>> = OnceLock::new();
+
+fn default_beat_windows() -> &'static Mutex<JudgementWindows> {
+    BEAT_CLOCK_WINDOWS.get_or_init(|| Mutex::new(JudgementWindows::default()))
+}
 /// Resolves a Lua audio source handle or raw numeric identifier into the internal sound key.
 fn sound_key_from_value(val: &LuaValue) -> LuaResult<SoundKey> {
     match val {
@@ -104,6 +102,82 @@ fn extract_sound_data_args(args: LuaMultiValue) -> LuaResult<(Option<String>, us
         _ => 1,
     };
     Ok((path, count, rate, channels))
+}
+
+fn parse_beat_clock_opts(opts: Option<LuaTable>) -> LuaResult<BeatClockOpts> {
+    let mut parsed = BeatClockOpts::default();
+    if let Some(table) = opts {
+        if let Ok(subdivision) = table.get::<_, u32>("subdivision") {
+            parsed.subdivision = subdivision.max(1);
+        }
+        if let Ok(swing) = table.get::<_, f64>("swing") {
+            parsed.swing = swing;
+        }
+        if let Ok(latency_ms) = table.get::<_, f64>("latency_ms") {
+            parsed.latency = (latency_ms.max(0.0)) / 1000.0;
+        }
+    }
+    Ok(parsed)
+}
+
+fn parse_new_beat_clock_args(args: LuaMultiValue) -> LuaResult<(f64, u32, BeatClockOpts)> {
+    let mut it = args.into_iter();
+    let bpm = match it.next() {
+        Some(LuaValue::Integer(v)) => v as f64,
+        Some(LuaValue::Number(v)) => v,
+        _ => {
+            return Err(LuaError::RuntimeError(
+                "newBeatClock: bpm must be a number".into(),
+            ))
+        }
+    };
+
+    let second = it.next();
+    let third = it.next();
+
+    let mut beats_per_bar = 4u32;
+    let opts = match second {
+        Some(LuaValue::Integer(v)) => {
+            beats_per_bar = (v as u32).max(1);
+            match third {
+                Some(LuaValue::Table(t)) => parse_beat_clock_opts(Some(t))?,
+                None => BeatClockOpts::default(),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "newBeatClock: third argument must be an options table".into(),
+                    ))
+                }
+            }
+        }
+        Some(LuaValue::Number(v)) => {
+            beats_per_bar = (v as u32).max(1);
+            match third {
+                Some(LuaValue::Table(t)) => parse_beat_clock_opts(Some(t))?,
+                None => BeatClockOpts::default(),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "newBeatClock: third argument must be an options table".into(),
+                    ))
+                }
+            }
+        }
+        Some(LuaValue::Table(t)) => {
+            let mut parsed = parse_beat_clock_opts(Some(t))?;
+            if let Some(LuaValue::Table(t3)) = third {
+                let override_opts = parse_beat_clock_opts(Some(t3))?;
+                parsed = override_opts;
+            }
+            parsed
+        }
+        None => BeatClockOpts::default(),
+        _ => {
+            return Err(LuaError::RuntimeError(
+                "newBeatClock: second argument must be beats-per-bar or options table".into(),
+            ))
+        }
+    };
+
+    Ok((bpm, beats_per_bar, opts))
 }
 
 fn helper_new_source(s: Rc<RefCell<SharedState>>, args: LuaMultiValue) -> LuaResult<LuaSource> {
@@ -2293,41 +2367,341 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- newBeatClock --
     /// Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
     /// @param | bpm | number | Initial beats-per-minute (minimum 1).
-    /// @param | beats_per_bar | integer? | Number of beats per bar (default 4).
+    /// @param | beats_per_bar_or_opts | any | Beats per bar (legacy) or options table.
+    /// @param | opts | table? | Optional options table when second argument is numeric.
     /// @return | LBeatClock | New beat clock handle.
+    let s = state.clone();
     tbl.set(
         "newBeatClock",
-        lua.create_function(|lua, (bpm, beats_per_bar): (f64, Option<u32>)| {
+        lua.create_function(move |lua, args: LuaMultiValue| {
+            let (bpm, beats_per_bar, opts) = parse_new_beat_clock_args(args)?;
+            let mut inner = crate::audio::BeatClock::new_with_opts(bpm, beats_per_bar, opts);
+            let windows = *default_beat_windows()
+                .lock()
+                .map_err(|_| LuaError::RuntimeError("newBeatClock: windows lock poisoned".into()))?;
+            inner.set_judgement_windows(windows);
             lua.create_userdata(LuaBeatClock {
-                inner: std::cell::RefCell::new(crate::audio::BeatClock::new(
-                    bpm,
-                    beats_per_bar.unwrap_or(4),
-                )),
+                inner: std::cell::RefCell::new(inner),
+                state: s.clone(),
+                scheduler: std::cell::RefCell::new(BeatScheduler::default()),
             })
         })?,
+    )?;
+    let s = state.clone();
+    // -- beatClockFromSource --
+    /// Creates a new beat clock and synchronizes it to an audio source position.
+    /// @param | source | LSource|integer | Source handle or numeric source id.
+    /// @param | bpm | number | Initial BPM.
+    /// @param | opts | table? | Optional beat clock options.
+    /// @return | LBeatClock | New beat clock handle synced to source time.
+    tbl.set(
+        "beatClockFromSource",
+        lua.create_function(move |lua, (source, bpm, opts): (LuaValue, f64, Option<LuaTable>)| {
+            let mut inner = crate::audio::BeatClock::new_with_opts(
+                bpm,
+                4,
+                parse_beat_clock_opts(opts)?,
+            );
+            let windows = *default_beat_windows().lock().map_err(|_| {
+                LuaError::RuntimeError("beatClockFromSource: windows lock poisoned".into())
+            })?;
+            inner.set_judgement_windows(windows);
+
+            let st = s.borrow();
+            let key = require_sound_key(&st, &source, "lurek.audio.beatClockFromSource")?;
+            let pos = st.mixer.get_tell(key);
+            inner.sync_to_position(pos as f64);
+
+            lua.create_userdata(LuaBeatClock {
+                inner: std::cell::RefCell::new(inner),
+                state: s.clone(),
+                scheduler: std::cell::RefCell::new(BeatScheduler::default()),
+            })
+        })?,
+    )?;
+    // -- setJudgementWindows --
+    /// Sets global default timing windows used by beat-clock judgement.
+    /// @param | windows | table | Table with optional `perfect`, `great`, `good` in seconds.
+    tbl.set(
+        "setJudgementWindows",
+        lua.create_function(|_, windows: LuaTable| {
+            let mut guard = default_beat_windows().lock().map_err(|_| {
+                LuaError::RuntimeError("setJudgementWindows: windows lock poisoned".into())
+            })?;
+            if let Ok(v) = windows.get::<_, f64>("perfect") {
+                guard.perfect = v.max(0.0);
+            }
+            if let Ok(v) = windows.get::<_, f64>("great") {
+                guard.great = v.max(guard.perfect);
+            }
+            if let Ok(v) = windows.get::<_, f64>("good") {
+                guard.good = v.max(guard.great);
+            }
+            Ok(())
+        })?,
+    )?;
+    // -- getJudgementWindows --
+    /// Returns global default timing windows used by beat-clock judgement.
+    /// @return | table | Table with `perfect`, `great`, `good` in seconds.
+    tbl.set(
+        "getJudgementWindows",
+        lua.create_function(|lua, ()| {
+            let windows = *default_beat_windows().lock().map_err(|_| {
+                LuaError::RuntimeError("getJudgementWindows: windows lock poisoned".into())
+            })?;
+            let out = lua.create_table()?;
+            out.set("perfect", windows.perfect)?;
+            out.set("great", windows.great)?;
+            out.set("good", windows.good)?;
+            Ok(out)
+        })?,
+    )?;
+    // -- judgeBeat --
+    /// Judges timing against the nearest beat grid for a beat clock.
+    /// @param | clock | LBeatClock | Beat clock handle.
+    /// @param | division | integer? | Beat division (defaults to clock subdivision).
+    /// @param | hit_offset | number? | Signed hit offset in seconds.
+    /// @return | string | One of `perfect`, `great`, `good`, `miss`.
+    /// @return | number | Signed timing error in seconds.
+    tbl.set(
+        "judgeBeat",
+        lua.create_function(
+            |_, (clock_ud, division, hit_offset): (LuaAnyUserData, Option<u32>, Option<f64>)| {
+                let clock = clock_ud.borrow::<LuaBeatClock>()?;
+                let inner = clock.inner.borrow();
+                let div = division.unwrap_or(inner.subdivision());
+                let result = inner.judge(div, hit_offset.unwrap_or(0.0));
+                let (label, err) = match result {
+                    JudgementResult::Perfect(v) => ("perfect", v),
+                    JudgementResult::Great(v) => ("great", v),
+                    JudgementResult::Good(v) => ("good", v),
+                    JudgementResult::Miss(v) => ("miss", v),
+                };
+                Ok((label.to_string(), err))
+            },
+        )?,
     )?;
     /// Performs the 'audio' operation.
     lurek.set("audio", tbl)?;
     Ok(())
 }
 
+    enum BeatScheduleKind {
+        At {
+            beat: f64,
+            fired: bool,
+        },
+        Every {
+            division: u32,
+        },
+        Pattern {
+            slots: Vec<bool>,
+        },
+    }
+
+    struct BeatScheduleEntry {
+        id: u64,
+        callback: LuaRegistryKey,
+        kind: BeatScheduleKind,
+        cancelled: bool,
+    }
+
+    enum BeatScheduleCall {
+        Beat {
+            id: u64,
+            beat: f64,
+        },
+        Step {
+            id: u64,
+            step_index: i64,
+        },
+    }
+
+    #[derive(Default)]
+    struct BeatScheduler {
+        next_id: u64,
+        entries: Vec<BeatScheduleEntry>,
+    }
+
+    impl BeatScheduler {
+        fn alloc_id(&mut self) -> u64 {
+            self.next_id = self.next_id.saturating_add(1);
+            self.next_id
+        }
+
+        fn add_at(&mut self, beat: f64, callback: LuaRegistryKey) -> u64 {
+            let id = self.alloc_id();
+            self.entries.push(BeatScheduleEntry {
+                id,
+                callback,
+                kind: BeatScheduleKind::At { beat, fired: false },
+                cancelled: false,
+            });
+            id
+        }
+
+        fn add_every(&mut self, division: u32, callback: LuaRegistryKey) -> u64 {
+            let id = self.alloc_id();
+            self.entries.push(BeatScheduleEntry {
+                id,
+                callback,
+                kind: BeatScheduleKind::Every {
+                    division: division.max(1),
+                },
+                cancelled: false,
+            });
+            id
+        }
+
+        fn add_pattern(&mut self, slots: Vec<bool>, callback: LuaRegistryKey) -> u64 {
+            let id = self.alloc_id();
+            self.entries.push(BeatScheduleEntry {
+                id,
+                callback,
+                kind: BeatScheduleKind::Pattern { slots },
+                cancelled: false,
+            });
+            id
+        }
+
+        fn cancel(&mut self, id: u64) -> bool {
+            if let Some(entry) = self.entries.iter_mut().find(|entry| entry.id == id) {
+                entry.cancelled = true;
+                return true;
+            }
+            false
+        }
+
+        fn cancel_all(&mut self) {
+            for entry in &mut self.entries {
+                entry.cancelled = true;
+            }
+        }
+
+        fn collect_pending(&mut self, before: f64, after: f64) -> Vec<BeatScheduleCall> {
+            if after <= before {
+                return Vec::new();
+            }
+
+            let mut calls = Vec::new();
+            for entry in &mut self.entries {
+                if entry.cancelled {
+                    continue;
+                }
+                match &mut entry.kind {
+                    BeatScheduleKind::At { beat, fired } => {
+                        if !*fired && *beat > before && *beat <= after {
+                            *fired = true;
+                            entry.cancelled = true;
+                            calls.push(BeatScheduleCall::Beat {
+                                id: entry.id,
+                                beat: *beat,
+                            });
+                        }
+                    }
+                    BeatScheduleKind::Every { division } => {
+                        let steps = crate::audio::BeatClock::crossed_steps(before, after, *division);
+                        for step in steps {
+                            calls.push(BeatScheduleCall::Step {
+                                id: entry.id,
+                                step_index: step,
+                            });
+                        }
+                    }
+                    BeatScheduleKind::Pattern { slots } => {
+                        let len = slots.len() as i64;
+                        if len <= 0 {
+                            continue;
+                        }
+                        let steps = crate::audio::BeatClock::crossed_steps(before, after, len as u32);
+                        for step in steps {
+                            let slot_index = (step - 1).rem_euclid(len) as usize;
+                            if slots.get(slot_index).copied().unwrap_or(false) {
+                                calls.push(BeatScheduleCall::Step {
+                                    id: entry.id,
+                                    step_index: slot_index as i64 + 1,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            calls
+        }
+
+        fn sweep_cancelled(&mut self) {
+            self.entries.retain(|entry| !entry.cancelled);
+        }
+    }
+
+    fn beat_schedule_handle_id(handle: LuaValue) -> LuaResult<u64> {
+        match handle {
+            LuaValue::Integer(id) if id > 0 => Ok(id as u64),
+            LuaValue::Number(id) if id > 0.0 => Ok(id as u64),
+            LuaValue::Table(tbl) => {
+                let id: u64 = tbl.get("id")?;
+                if id == 0 {
+                    Err(LuaError::RuntimeError(
+                        "LBeatClock:cancel expects handle.id > 0".into(),
+                    ))
+                } else {
+                    Ok(id)
+                }
+            }
+            _ => Err(LuaError::RuntimeError(
+                "LBeatClock:cancel expects a scheduling handle or numeric id".into(),
+            )),
+        }
+    }
+
+    fn beat_pattern_slots(pattern: &str) -> LuaResult<Vec<bool>> {
+        let slots = pattern
+            .chars()
+            .filter_map(|ch| match ch {
+                'x' | 'X' | '1' | '*' => Some(true),
+                '.' | '_' | '-' | '0' => Some(false),
+                _ if ch.is_whitespace() => None,
+                _ => None,
+            })
+            .collect::<Vec<bool>>();
+
+        if slots.is_empty() {
+            Err(LuaError::RuntimeError(
+                "LBeatClock:pattern expects a non-empty pattern like 'x.x.'".into(),
+            ))
+        } else {
+            Ok(slots)
+        }
+    }
+
+    fn beat_schedule_handle(lua: &Lua, id: u64) -> LuaResult<LuaTable<'_>> {
+        let handle = lua.create_table()?;
+        handle.set("id", id)?;
+        Ok(handle)
+    }
+
 /// Lua-side wrapper for a musical beat clock.
 pub struct LuaBeatClock {
     /// Owned beat clock state.
     inner: std::cell::RefCell<crate::audio::BeatClock>,
+    /// Shared runtime state for optional source syncing.
+    state: Rc<RefCell<SharedState>>,
+        /// Callback scheduler for `every`, `at`, and `pattern` helpers.
+        scheduler: std::cell::RefCell<BeatScheduler>,
 }
 
 /// Provides Lua methods for beat-based timing.
 impl LuaUserData for LuaBeatClock {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- start --
-        /// Starts the clock.
+        /// Starts beat-clock playback so scheduled beat callbacks can begin firing.
         methods.add_method("start", |_, this, ()| {
             this.inner.borrow_mut().start();
             Ok(())
         });
         // -- stop --
-        /// Pauses the clock.
+        /// Stops beat-clock playback while preserving the current musical position.
         methods.add_method("stop", |_, this, ()| {
             this.inner.borrow_mut().stop();
             Ok(())
@@ -2350,6 +2724,65 @@ impl LuaUserData for LuaBeatClock {
             }
             Ok(out)
         });
+        // -- update --
+        /// Advances the clock by `dt` seconds and returns beat/bar transitions.
+        /// @param | dt | number | Delta time in seconds.
+        /// @return | table | Table with optional `beat` and `bar` integer fields.
+        methods.add_method("update", |lua, this, dt: f64| {
+            let (events, before_beat, after_beat) = {
+                let mut inner = this.inner.borrow_mut();
+                let before = inner.get_beat();
+                let events = inner.update(dt);
+                let after = inner.get_beat();
+                (events, before, after)
+            };
+
+            let pending = this
+                .scheduler
+                .borrow_mut()
+                .collect_pending(before_beat, after_beat);
+            for call in pending {
+                match call {
+                    BeatScheduleCall::Beat { id, beat } => {
+                        let callback = {
+                            let scheduler = this.scheduler.borrow();
+                            scheduler
+                                .entries
+                                .iter()
+                                .find(|entry| entry.id == id)
+                                .map(|entry| lua.registry_value::<LuaFunction>(&entry.callback))
+                        };
+                        if let Some(callback) = callback {
+                            callback?.call::<_, ()>(beat)?;
+                        }
+                    }
+                    BeatScheduleCall::Step { id, step_index } => {
+                        let callback = {
+                            let scheduler = this.scheduler.borrow();
+                            scheduler
+                                .entries
+                                .iter()
+                                .find(|entry| entry.id == id)
+                                .map(|entry| lua.registry_value::<LuaFunction>(&entry.callback))
+                        };
+                        if let Some(callback) = callback {
+                            callback?.call::<_, ()>(step_index)?;
+                        }
+                    }
+                }
+            }
+
+            this.scheduler.borrow_mut().sweep_cancelled();
+
+            let out = lua.create_table()?;
+            if let Some(beat) = events.new_beat {
+                out.set("beat", beat)?;
+            }
+            if let Some(bar) = events.new_bar {
+                out.set("bar", bar)?;
+            }
+            Ok(out)
+        });
         // -- position --
         /// Returns the current beat position.
         /// @return | table | Table with `beat`, `bar`, `beat_in_bar`, `phase` fields.
@@ -2363,14 +2796,33 @@ impl LuaUserData for LuaBeatClock {
             Ok(t)
         });
         // -- bpm --
-        /// Returns the current BPM.
+        /// Returns the current tempo as beats-per-minute for this clock.
         /// @return | number | Beats-per-minute.
         methods.add_method("bpm", |_, this, ()| Ok(this.inner.borrow().bpm()));
+        // -- getBpm --
+        /// Returns the current tempo as beats-per-minute for this clock.
+        /// @return | number | Beats-per-minute.
+        methods.add_method("getBpm", |_, this, ()| Ok(this.inner.borrow().bpm()));
         // -- setBpm --
         /// Sets a new BPM. Elapsed time is preserved.
-        /// @param | bpm | number | New BPM (clamped to ≥1).
+        /// @param | bpm | number | New BPM (clamped to â‰Ą1).
         methods.add_method("setBpm", |_, this, bpm: f64| {
             this.inner.borrow_mut().set_bpm(bpm);
+            Ok(())
+        });
+        // -- rampBpm --
+        /// Ramps BPM linearly to a target value over time.
+        /// @param | target | number | Target BPM.
+        /// @param | seconds | number | Ramp duration in seconds.
+        methods.add_method("rampBpm", |_, this, (target, seconds): (f64, f64)| {
+            this.inner.borrow_mut().ramp_bpm(target, seconds);
+            Ok(())
+        });
+        // -- setSwing --
+        /// Sets rhythmic swing amount in `[0.0, 0.5]` for off-beat timing feel.
+        /// @param | amount | number | Swing amount.
+        methods.add_method("setSwing", |_, this, amount: f64| {
+            this.inner.borrow_mut().set_swing(amount);
             Ok(())
         });
         // -- beatsPerBar --
@@ -2379,10 +2831,57 @@ impl LuaUserData for LuaBeatClock {
         methods.add_method("beatsPerBar", |_, this, ()| Ok(this.inner.borrow().beats_per_bar()));
         // -- setBeatsPerBar --
         /// Changes the time-signature beats-per-bar.
-        /// @param | beats | integer | New beats per bar (clamped to ≥1).
+        /// @param | beats | integer | New beats per bar (clamped to â‰Ą1).
         methods.add_method("setBeatsPerBar", |_, this, beats: u32| {
             this.inner.borrow_mut().set_beats_per_bar(beats);
             Ok(())
+        });
+        // -- getBeat --
+        /// Returns fractional beat position.
+        /// @return | number | Fractional beat.
+        methods.add_method("getBeat", |_, this, ()| Ok(this.inner.borrow().get_beat()));
+        // -- getBar --
+        /// Returns the current fractional bar position across elapsed musical time.
+        /// @return | number | Fractional bar.
+        methods.add_method("getBar", |_, this, ()| Ok(this.inner.borrow().get_bar()));
+        // -- getPhase --
+        /// Returns phase within the current division in [0, 1).
+        /// @param | division | integer? | Beat division.
+        /// @return | number | Phase value.
+        methods.add_method("getPhase", |_, this, division: Option<u32>| {
+            let inner = this.inner.borrow();
+            Ok(inner.get_phase(division.unwrap_or(inner.subdivision())))
+        });
+        // -- beatTimeRemaining --
+        /// Returns seconds until the next division boundary.
+        /// @param | division | integer? | Beat division.
+        /// @return | number | Seconds remaining.
+        methods.add_method("beatTimeRemaining", |_, this, division: Option<u32>| {
+            let inner = this.inner.borrow();
+            Ok(inner.beat_time_remaining(division.unwrap_or(inner.subdivision())))
+        });
+        // -- isOnBeat --
+        /// Returns true when the clock is near a beat boundary.
+        /// @param | division | integer? | Beat division.
+        /// @param | tolerance | number? | Tolerance in seconds (default 0.05).
+        /// @return | boolean | True when within tolerance.
+        methods.add_method(
+            "isOnBeat",
+            |_, this, (division, tolerance): (Option<u32>, Option<f64>)| {
+                let inner = this.inner.borrow();
+                Ok(inner.is_on_beat(
+                    division.unwrap_or(inner.subdivision()),
+                    tolerance.unwrap_or(0.05),
+                ))
+            },
+        );
+        // -- nearestBeat --
+        /// Returns nearest beat and signed timing error in seconds.
+        /// @param | division | integer? | Beat division.
+        /// @return | number, number | Nearest beat and signed error in seconds.
+        methods.add_method("nearestBeat", |_, this, division: Option<u32>| {
+            let inner = this.inner.borrow();
+            Ok(inner.nearest_beat(division.unwrap_or(inner.subdivision())))
         });
         // -- tap --
         /// Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).
@@ -2390,6 +2889,55 @@ impl LuaUserData for LuaBeatClock {
         /// @return | number | Estimated BPM, or 0.0 when not enough taps.
         methods.add_method("tap", |_, this, t: f64| {
             Ok(this.inner.borrow_mut().tap(t))
+        });
+        // -- every --
+        /// Registers a callback fired on each crossed step of `division`.
+        /// @param | division | integer | Beat division grid (e.g. 4 for quarter-beat steps).
+        /// @param | fn | function | Callback receiving `step_index`.
+        /// @return | table | Handle table usable with `cancel`.
+        methods.add_method("every", |lua, this, (division, callback): (u32, LuaFunction)| {
+            let key = lua.create_registry_value(callback)?;
+            let id = this.scheduler.borrow_mut().add_every(division, key);
+            beat_schedule_handle(lua, id)
+        });
+        // -- at --
+        /// Registers a one-shot callback fired when `beat` is crossed.
+        /// @param | beat | number | Beat value threshold.
+        /// @param | fn | function | Callback receiving the scheduled beat.
+        /// @return | table | Handle table usable with `cancel`.
+        methods.add_method("at", |lua, this, (beat, callback): (f64, LuaFunction)| {
+            let key = lua.create_registry_value(callback)?;
+            let id = this.scheduler.borrow_mut().add_at(beat, key);
+            beat_schedule_handle(lua, id)
+        });
+        // -- pattern --
+        /// Registers a repeating pattern callback where `x` triggers and `.` skips.
+        /// @param | pattern | string | Pattern string like `x.x.`.
+        /// @param | fn | function | Callback receiving 1-based pattern step index.
+        /// @return | table | Handle table usable with `cancel`.
+        methods.add_method(
+            "pattern",
+            |lua, this, (pattern, callback): (String, LuaFunction)| {
+                let slots = beat_pattern_slots(&pattern)?;
+                let key = lua.create_registry_value(callback)?;
+                let id = this.scheduler.borrow_mut().add_pattern(slots, key);
+                beat_schedule_handle(lua, id)
+            },
+        );
+        // -- cancel --
+        /// Cancels a scheduled callback handle.
+        /// @param | handle | any | Handle table returned by `every`/`at`/`pattern` or numeric id.
+        /// @return | boolean | True when a schedule was cancelled.
+        methods.add_method("cancel", |_, this, handle: LuaValue| {
+            let id = beat_schedule_handle_id(handle)?;
+            Ok(this.scheduler.borrow_mut().cancel(id))
+        });
+        // -- cancelAll --
+        /// Cancels all scheduled callback handles registered on this clock.
+        /// @return | boolean | Always true.
+        methods.add_method("cancelAll", |_, this, ()| {
+            this.scheduler.borrow_mut().cancel_all();
+            Ok(true)
         });
         // -- scheduleAt --
         /// Schedules a one-shot event at `beat`. Returns true when the beat is in the future.
@@ -2426,6 +2974,29 @@ impl LuaUserData for LuaBeatClock {
         /// @return | boolean | Running state.
         methods.add_method("isRunning", |_, this, ()| {
             Ok(this.inner.borrow().is_running())
+        });
+        // -- syncToSource --
+        /// Synchronizes beat position to an audio source playback position.
+        /// @param | source | LSource|integer | Source handle or source id.
+        methods.add_method("syncToSource", |_, this, source: LuaValue| {
+            let st = this.state.borrow();
+            let key = require_sound_key(&st, &source, "LBeatClock:syncToSource")?;
+            let pos = st.mixer.get_tell(key);
+            this.inner.borrow_mut().sync_to_position(pos as f64);
+            Ok(())
+        });
+        // -- dump --
+        /// Returns a snapshot of clock state for debug and HUDs.
+        /// @return | table | Table with bpm, beat, bar, phase, and running.
+        methods.add_method("dump", |lua, this, ()| {
+            let inner = this.inner.borrow();
+            let out = lua.create_table()?;
+            out.set("bpm", inner.bpm())?;
+            out.set("beat", inner.get_beat())?;
+            out.set("bar", inner.get_bar())?;
+            out.set("phase", inner.get_phase(inner.subdivision()))?;
+            out.set("running", inner.is_running())?;
+            Ok(out)
         });
         // -- quantise --
         /// Quantises `beat` to the nearest `grid` beat grid (static utility).

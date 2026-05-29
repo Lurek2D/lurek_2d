@@ -51,7 +51,8 @@ Update all linked artifacts in the same commit:
 
 **Architecture & CAG source of truth:**
 - `docs/architecture/philosophy.md` — full design assumptions, module groups, and binding constraint rationale.
-- `docs/architecture/cag-system.md` — CAG file types, WHY/HOW/WHAT layer doctrine, worked examples, and validator contract.
+- `docs/architecture/cag-system.md` — compatibility pointer for CAG doctrine location (canonical content is in `developer-ecosystem.md`).
+- `docs/architecture/developer-ecosystem.md` — VS Code + MCP + CAG + RAG developer ecosystem and WHY/HOW/WHAT layer doctrine.
 
 **CAG layer — how to find the right context:**
 - Layer intent: **Agents → WHY** (scope, ownership, mission) · **Skills → HOW** (domain knowledge, patterns) · **Prompts → WHAT** (concrete steps, output criteria). A prompt must not duplicate a skill or agent workflow.
@@ -61,7 +62,7 @@ Update all linked artifacts in the same commit:
 - Agents are autonomous — they work until done, blocked, or out of scope, then return to Manager. Single-agent mode: complete requests directly. Multi-agent mode: Manager routes; load `manager.agent.md` + `agent-routing` skill.
 
 **Key references:**
-- `docs/architecture/test-framework.md` — test placement rules and Lua-vs-Rust decision tree.
+- `docs/architecture/quality-assurance.md` — test placement rules and Lua-vs-Rust decision tree.
 - `docs/specs/README.md` — module-spec catalog: where to add or rename specs.
 - `tools/README.md` — tool inventory: generators, validators, audits.
 - `docs/handbook.md` — contributor workflow, setup, and quality expectations.

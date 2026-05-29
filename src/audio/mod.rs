@@ -37,3 +37,7 @@ pub use crate::midi::{MidiPlayer, MidiState};
 /// Musical beat clock: BPM tracking, tap-tempo, beat scheduling, quantisation.
 pub mod beat_clock;
 pub use beat_clock::BeatClock;
+pub use beat_clock::BeatClockEvents;
+pub use beat_clock::BeatClockOpts;
+pub use beat_clock::JudgementResult;
+pub use beat_clock::JudgementWindows;

@@ -1,8 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for particle visualization and callback internals
-//! that are not directly asserted through `lurek.particle.*`.
-//!
-//! Public particle system and trail behavior is covered by
-//! `tests/lua/unit/test_particle_unit.lua`.
+//! File: tests/rust/unit/particle_tests.rs
 
 use lurek2d::particle::visualization::draw_to_image;
 use lurek2d::particle::{AreaDistribution, ParticleConfig, ParticleSystem};

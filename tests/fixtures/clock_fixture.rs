@@ -1,13 +1,10 @@
-//! Frame-based clock for measuring delta time, FPS, and total elapsed time.
-//!
-//! The `Clock` struct is updated once per frame by calling `Clock::tick()`.
-//! All time values are `f32` for direct use in physics and animation math.
+//! File: tests/fixtures/clock_fixture.rs
 
 use std::time::Instant;
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Clock
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Frame-based clock tracking delta time, total elapsed time, and FPS.
 ///
@@ -15,9 +12,9 @@ use std::time::Instant;
 /// through the getter methods until the next tick.
 ///
 /// # Fields
-/// - `dt` — `f32`. Delta time in seconds for the current frame.
-/// - `total` — `f32`. Total elapsed time in seconds since the clock was created.
-/// - `fps` — `f32`. Smoothed frames-per-second counter.
+/// - `dt` â€” `f32`. Delta time in seconds for the current frame.
+/// - `total` â€” `f32`. Total elapsed time in seconds since the clock was created.
+/// - `fps` â€” `f32`. Smoothed frames-per-second counter.
 pub struct Clock {
     pub dt: f32,
     pub total: f32,
@@ -51,7 +48,7 @@ impl Clock {
     /// Must be called exactly once at the start of each frame.
     ///
     /// # Parameters
-    /// - `override_dt` — `Option<f32>`. Optional fixed delta override for deterministic stepping.
+    /// - `override_dt` â€” `Option<f32>`. Optional fixed delta override for deterministic stepping.
     pub fn tick(&mut self, override_dt: Option<f32>) {
         let now = Instant::now();
         let raw = override_dt.unwrap_or_else(|| now.duration_since(self.last).as_secs_f32());
@@ -95,31 +92,31 @@ impl Clock {
     /// A scale of `2.0` makes the game run at double speed; `0.5` at half speed.
     ///
     /// # Parameters
-    /// - `scale` — `f32`. Multiplier applied to each raw delta.
+    /// - `scale` â€” `f32`. Multiplier applied to each raw delta.
     pub fn set_time_scale(&mut self, scale: f32) {
         self.time_scale = scale.max(0.0);
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // ClockMode
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Precision modes for `Clock` measurement.
 ///
 /// # Variants
-/// - `High` — High-precision wall-clock using `Instant::now()` (default).
-/// - `Fixed` — Fixed timestep for deterministic simulation and tests.
-/// - `Relaxed` — Lower-overhead mode for non-critical animations.
+/// - `High` â€” High-precision wall-clock using `Instant::now()` (default).
+/// - `Fixed` â€” Fixed timestep for deterministic simulation and tests.
+/// - `Relaxed` â€” Lower-overhead mode for non-critical animations.
 pub enum ClockMode {
     High,
     Fixed,
     Relaxed,
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Free functions
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Creates a new `Clock` with the given precision mode.
 ///
@@ -127,7 +124,7 @@ pub enum ClockMode {
 /// precision control.
 ///
 /// # Parameters
-/// - `mode` — `ClockMode`. Controls measurement precision.
+/// - `mode` â€” `ClockMode`. Controls measurement precision.
 ///
 /// # Returns
 /// `Clock`
@@ -139,7 +136,7 @@ pub fn new_clock(mode: ClockMode) -> Clock {
 /// Suspends the current thread for the given number of seconds.
 ///
 /// # Parameters
-/// - `seconds` — `f64`. Duration to sleep.
+/// - `seconds` â€” `f64`. Duration to sleep.
 pub fn sleep(seconds: f64) {
     std::thread::sleep(std::time::Duration::from_secs_f64(seconds));
 }

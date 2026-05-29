@@ -1,9 +1,15 @@
-// build.rs — Lurek2D build script
+//! File-level documentation for build.rs.
+//!
+//! - Provides core functionality implemented in build.
+//! - Defines internal runtime behavior and integration helpers for this file.
+//! - Keeps responsibilities focused in this file and delegates cross-cutting behavior to sibling modules.
+
+// build.rs Ă˘â‚¬â€ť Lurek2D build script
 //
 // Responsibilities:
-//   1. If assets/splash.png exists → set cfg(lurek2d_has_splash) so app.rs
+//   1. If assets/splash.png exists Ă˘â€ â€™ set cfg(lurek2d_has_splash) so app.rs
 //      can use the embedded PNG instead of the procedural fallback.
-//   2. On Windows — embed assets/icon.ico into the .exe via winresource
+//   2. On Windows Ă˘â‚¬â€ť embed assets/icon.ico into the .exe via winresource
 //      (requires:  [build-dependencies] winresource = "0.1" in Cargo.toml).
 
 use std::env;
@@ -12,10 +18,10 @@ use std::path::Path;
 fn main() {
     let manifest = env::var("CARGO_MANIFEST_DIR").unwrap();
 
-    // ── Declare custom cfg so rustc doesn't warn about unexpected names ───────
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ Declare custom cfg so rustc doesn't warn about unexpected names Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     println!("cargo:rustc-check-cfg=cfg(lurek2d_has_splash)");
 
-    // ── 1. Splash PNG detection ──────────────────────────────────────────────
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ 1. Splash PNG detection Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     let splash = Path::new(&manifest).join("assets").join("splash.png");
     if splash.exists() {
         println!("cargo:rustc-cfg=lurek2d_has_splash");
@@ -23,10 +29,10 @@ fn main() {
         println!("cargo:rerun-if-changed=assets/splash.png");
     }
 
-    // ── 2. Always rerun if icon changes ─────────────────────────────────────
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ 2. Always rerun if icon changes Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     println!("cargo:rerun-if-changed=assets/favicon.ico");
 
-    // ── 3. Windows icon embedding ───────────────────────────────────────────
+    // Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ 3. Windows icon embedding Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
     #[cfg(target_os = "windows")]
     {
         let icon = Path::new(&manifest).join("assets").join("favicon.ico");
@@ -44,7 +50,7 @@ fn main() {
             }
         } else {
             eprintln!(
-                "cargo:warning=assets/favicon.ico not found — place your ICO file at assets/favicon.ico"
+                "cargo:warning=assets/favicon.ico not found Ă˘â‚¬â€ť place your ICO file at assets/favicon.ico"
             );
         }
     }

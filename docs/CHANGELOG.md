@@ -2,6 +2,44 @@
 
 ## Unreleased
 
+ - fix(api,docs): harden API doc generation at the source — `tools/docs/gen_docs_lua.py` now filters internal `TODO(...)` notes from public descriptions and deduplicates repeated signatures in module output; `tools/docs/gen_docs_rust.py` and `tools/docs/gen_lib_docs.py` also strip TODO debt lines from generated public docs; `tools/docs/gen_lib_docs.py` normalizes shorthand receiver class names (`seq`, `part`, `tmpl`, `doll`, `inv`, `iset`, `it`, `pool`) to stable PascalCase API class names in `lureksome` outputs.
+
+ - fix(runtime,api): deprecate `lurek.fixedUpdate(dt)` in favor of `lurek.process_physics(dt)` — callback docs/extension metadata now mark `fixedUpdate` as deprecated, and runtime logs a one-time warning when a game still defines `lurek.fixedUpdate`.
+
+ - fix(api,stubs): stabilize LuaCATS shape in generated engine API stubs — `tools/docs/gen_luadoc.py` now pre-declares all `@field`-derived result classes near the top of `docs/api/lurek.lua` (instead of emitting `@class` blocks inline mid-file next to individual functions), emits canonical `L*` result type names (no mixed non-`L` class names), normalizes legacy non-`L` type references to canonical `L*` types where possible, and multi-return annotations no longer inject synthetic return names like `a/b/c/d`.
+
+ - fix(api,docs): sanitize `src/lua_api/province_api.rs` `@param` description text to avoid extra `|` separators inside prose (`flags accepts a single string or an array of strings`), preventing malformed LuaCATS parameter type rendering in generated stubs.
+
+ - fix(api,stubs): restore `@return` descriptions in generated LuaCATS stubs for multi-return APIs without re-introducing synthetic return variable names; when source docs omit per-return description, generator now emits fallback description text instead of empty `@return` lines.
+
+ - feat(learning,apps): close remaining learning expansion gaps — add missing `content/examples/learning.lua` API markers for advanced layer forward/apply methods so module example coverage reaches 100%; add two concrete app demos with colocated tests: `content/games/apps/learning_sales_forecast_lab` (deterministic sales + pricing recommendation pipeline) and `content/games/apps/learning_route_attention_lab` (deterministic risk-map conv/pool + attention/transformer routing pipeline).
+
+ - fix(build): retune the Rust profiles for local development and release packaging — `dev` now drops debug symbols for a lighter, faster edit/build/run loop, `release` keeps performance-focused optimizations with a 30-50 MB raw target on Windows, and the UPX packaging notes now target a 10-15 MB packed executable.
+
+ - feat(learning): expand `src/learning/` with tensor backbone (`tensor.rs` + `gemm`), flat-parameter contract (`evolutionary.rs`), spatial/recurrent/attention/transformer blocks (`conv.rs`, `recurrent.rs`, `attention.rs`, `transformer.rs`), and heterogeneous genome packing via `engine.rs` (`LurekNeuralEngine`, `NeuralBlock`); refactor ONNX path to reuse shared `LurekTensor`; expose new Lua constructors in `lurek.learning` (`newLstm`, `newGru`, `newConv2D`, `newMaxPool2D`, `newPositionalEncoding`, `newMultiHeadAttention`, `newTransformerEncoder`, `newTransformerDecoder`) with userdata wrappers (`LLSTM`, `LGRU`, `LConv2D`, `LMaxPool2D`, `LPositionalEncoding`, `LMultiHeadAttention`, `LTransformerEncoder`, `LTransformerDecoder`); extend Rust/Lua learning tests and learning examples/spec.
+
+ - fix(build): cap the default Cargo job fan-out on Windows in `tools/dev/parallel_cargo.py` so normal builds and warm-builds stop spawning a large pile of concurrent `link.exe` processes; explicit `--jobs` still overrides the cap.
+
+ - docs(architecture): consolidate architecture docs into a 7-file core set (`engine-core`, `render-pipeline`, `scripting-bridge`, `modularity-plugins`, `developer-ecosystem`, `quality-assurance`, `philosophy`) with updated index and reading order; retire superseded split docs (`engine-architecture`, `binary-entry`, `render-command-architecture`, `lua-rust-boundary`, `lua-api-file-standard`, `advanced-feature-surfaces`, `plugins`, `vscode-architecture`, `cag-system`, `rag-system`, `test-framework`).
+
+ - docs(cag): relax SKILL.md formatting guidance to allow single backticks for inline references, add manager fast-track handling for one-file single-specialist tasks, and allow read-only consultation between specialists through Manager without ownership transfer.
+
+ - fix(audio,test): ensure `LBeatClock:at` callbacks fire on crossed beats by deferring cancelled-schedule cleanup until after callback dispatch in `src/lua_api/audio_api.rs`; `lua_unit_beat_clock_unit` now passes the one-shot callback assertion.
+
+ - fix(test,tween): add missing harness mapping `lua_unit_tween_chain_unit` -> `tests/lua/unit/test_tween_chain_unit.lua` in `tests/lua/harness.rs`, so filtered Phase 3 gate executes tween-chain tests instead of `0 filtered` no-op; fix fluent chain loop semantics so `:stop()` called from `onLoop` keeps `:isComplete()` false (manual stop is not natural completion).
+
+ - feat(tween): Phase 3 F3-A fluent chain parity — extend `lurek.tween.newChain` with fluent builder methods (`to`, `wait`, `call`, `loop`, `onLoop`, `onComplete`), lifecycle controls (`start`, `stop`, `pause`, `resume`), and query helpers (`getProgress`, `isComplete`, `isActive`, `getIteration`) while keeping legacy `LTweenChain` scalar `push/tick/value` compatibility; wire fluent chains into `lurek.tween.update`; add/refresh coverage in `tests/lua/unit/test_tween_chain_unit.lua` and fluent usage stubs in `content/examples/tween.lua`; sync `docs/specs/tween.md`.
+
+ - feat(audio): Phase 2 F2-B beat clock parity slice — extended `src/audio/beat_clock.rs` with options-driven construction, beat/bar/phase queries, `update`, `rampBpm`, `setSwing`, `syncToPosition`, judgement windows, and scheduling step helpers; exposed `lurek.audio.newBeatClock`, `beatClockFromSource`, `judgeBeat`, `setJudgementWindows`, and `getJudgementWindows` in `src/lua_api/audio_api.rs`; added `LBeatClock:every`, `LBeatClock:at`, `LBeatClock:pattern`, `LBeatClock:cancel`, and `LBeatClock:cancelAll`; expanded `tests/lua/unit/test_beat_clock_unit.lua` and beat clock example stubs in `content/examples/audio.lua`; updated `docs/specs/audio.md`.
+
+ - test(app,runtime): add startup-path coverage for all requested launch cases — new Rust tests for drag-and-drop classification (`folder with main.lua`, dropped `main.lua` file resolving to parent folder, `.lurek` archive, unsupported inputs) and CLI startup path helpers (`.lurek` extension detection, explicit-folder `main.lua` resolution, and explicit `main.lua` path remaining unsupported); refactor keeps behavior unchanged by extracting `classify_drop_startup_target`, `is_lurek_archive_path`, and `cli_startup_main_path`.
+
+ - feat(demo): add `content/games/showcase/agent_pipeline_demo` — simple windowed Lua demo that initializes the full `lurek.agent` stack in `lurek.init` (Ollama manager startup + optional model pull, global `configure`, 3 agents, `LAgentManager`, `LAISystem`, instructions, keyword skills, memory/template usage), then dispatches sequential async prompts (`prompt`, `promptBatch`, `runAll`, `system:prompt`, `system:runAll`, `completeAsync`) with visible `[agent-demo]` console logs and on-screen status lines; include headless contract test `tests/lua/demos/test_agent_pipeline_demo.lua`.
+
+ - fix(test,math): Phase 1b verifier F2-A follow-up — wire `lua_unit_loot_unit` in `tests/lua/harness.rs` to execute `tests/lua/unit/test_loot_unit.lua` under harness filtering, and align `lurek.math.newLootTable` docstring with accepted inputs (`nil`, non-negative seed number, or options table with `seed`).
+
+ - feat(math): F2-A LootTable + Pity parity slice under `lurek.math` for low-risk compatibility — added `lurek.math.lootFromList`, `lurek.math.lootFromToml`, and `lurek.math.sampleWithPity`; extended `LLootTable` with `merge`, `save`, `restore` and metadata-preserving sample payloads; added `LootTable::save/restore` and `LootTable::from_toml` in Rust core; added `LPityTracker:save/restore` aliases while keeping `export/import`; expanded `tests/lua/unit/test_loot_unit.lua` and `content/examples/math.lua`; updated `docs/specs/math.md`.
+
  - fix(test): stabilize Lua and Rust test runs for local distribution builds — make `test_debugbridge_core_unit.lua` choose a free high port, normalize migrated TOML golden sample line endings, restore missing Rust ext test targets, and skip `content/games/retro/commando/main.lua` in `games_load_test` due LuaJIT upvalue-limit parsing constraints.
 
  - test(ext,lua): migrate API-level `effects_audio_runtime_smoke` to `tests/lua/unit/test_effects_audio_runtime_smoke_unit.lua`, then remove remaining `tests/rust/ext/*` files and ext wiring in `tests/engine_tests.rs`.

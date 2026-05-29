@@ -66,7 +66,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LTween userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-await"><div class="item-row-main"><h3>await</h3><pre class="inline-signature">LTween:await()</pre><p>Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:588</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-await"><div class="item-row-main"><h3>await</h3><pre class="inline-signature">LTween:await()</pre><p>Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:709</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     local co = coroutine.create(function()
@@ -77,7 +77,7 @@ end</code></pre></details>
     coroutine.resume(co)
     lurek.tween.update(1.0)
     print(&quot;coroutine status = &quot; .. coroutine.status(co))
-end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTween:cancel()</pre><p>Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:507</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-cancel"><div class="item-row-main"><h3>cancel</h3><pre class="inline-signature">LTween:cancel()</pre><p>Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:628</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { w = 100 }
     local tw = lurek.tween.tween(1.0, obj, { w = 200 })
 
@@ -87,57 +87,57 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;active after cancel = &quot; .. tostring(tw:isActive()))
     lurek.tween.update(1.0)
     print(&quot;after update: w=&quot; .. obj.w)
-end</code></pre></details></article><article class="item-row api-row" id="method-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">LTween:getDuration() -&gt; number</pre><p>Returns the total duration of this tween in seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:552</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getduration"><div class="item-row-main"><h3>getDuration</h3><pre class="inline-signature">LTween:getDuration() -&gt; number</pre><p>Returns the total duration of this tween in seconds.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:673</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     print(&quot;duration=&quot; .. tw:getDuration())
     print(&quot;remaining=&quot; .. tw:getRemaining())
-end</code></pre></details></article><article class="item-row api-row" id="method-getelapsed"><div class="item-row-main"><h3>getElapsed</h3><pre class="inline-signature">LTween:getElapsed() -&gt; number</pre><p>Returns the number of seconds that have elapsed since the tween started.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:547</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getelapsed"><div class="item-row-main"><h3>getElapsed</h3><pre class="inline-signature">LTween:getElapsed() -&gt; number</pre><p>Returns the number of seconds that have elapsed since the tween started.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:668</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     lurek.tween.update(0.25)
     print(&quot;elapsed=&quot; .. tw:getElapsed())
     print(&quot;x=&quot; .. target.x)
-end</code></pre></details></article><article class="item-row api-row" id="method-getfields"><div class="item-row-main"><h3>getFields</h3><pre class="inline-signature">LTween:getFields() -&gt; string[]</pre><p>Returns an array of field names being tweened on the target table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:561</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getfields"><div class="item-row-main"><h3>getFields</h3><pre class="inline-signature">LTween:getFields() -&gt; string[]</pre><p>Returns an array of field names being tweened on the target table.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:682</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { a = 0, b = 0, c = 0 }
     ---@type LTween
     local tw = lurek.tween.tween(1.0, obj, { a = 1, b = 2, c = 3 })
     local fields = tw:getFields()
     print(&quot;fields: &quot; .. table.concat(fields, &quot;, &quot;))
-end</code></pre></details></article><article class="item-row api-row" id="method-getprogress"><div class="item-row-main"><h3>getProgress</h3><pre class="inline-signature">LTween:getProgress() -&gt; number</pre><p>Returns the eased progress of this tween as a value from 0.0 to 1.0.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:542</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getprogress"><div class="item-row-main"><h3>getProgress</h3><pre class="inline-signature">LTween:getProgress() -&gt; number</pre><p>Returns the eased progress of this tween as a value from 0.0 to 1.0.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:663</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     lurek.tween.update(0.5)
     print(&quot;progress=&quot; .. tw:getProgress())
     print(&quot;x=&quot; .. target.x)
-end</code></pre></details></article><article class="item-row api-row" id="method-getremaining"><div class="item-row-main"><h3>getRemaining</h3><pre class="inline-signature">LTween:getRemaining() -&gt; number</pre><p>Returns the number of seconds remaining until this tween completes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:557</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getremaining"><div class="item-row-main"><h3>getRemaining</h3><pre class="inline-signature">LTween:getRemaining() -&gt; number</pre><p>Returns the number of seconds remaining until this tween completes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:678</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     lurek.tween.update(0.25)
     print(&quot;remaining=&quot; .. tw:getRemaining())
     print(&quot;active=&quot; .. tostring(tw:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTween:isActive() -&gt; boolean</pre><p>Returns whether this tween is still running (not cancelled or completed).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:537</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isactive"><div class="item-row-main"><h3>isActive</h3><pre class="inline-signature">LTween:isActive() -&gt; boolean</pre><p>Returns whether this tween is still running (not cancelled or completed).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:658</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     print(&quot;active before = &quot; .. tostring(tw:isActive()))
     tw:cancel()
     print(&quot;active after = &quot; .. tostring(tw:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-oncancel"><div class="item-row-main"><h3>onCancel</h3><pre class="inline-signature">LTween:onCancel(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:663</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-oncancel"><div class="item-row-main"><h3>onCancel</h3><pre class="inline-signature">LTween:onCancel(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:784</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
     tw:onCancel(function() print(&quot;  cancelled&quot;) end)
     tw:cancel()
-end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTween:onComplete(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween completes. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:628</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-oncomplete"><div class="item-row-main"><h3>onComplete</h3><pre class="inline-signature">LTween:onComplete(f: function) -&gt; LTween</pre><p>Sets a callback to fire when the tween completes. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:749</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
     tw:onComplete(function() print(&quot;  completed! scale=&quot; .. obj.scale) end)
     lurek.tween.update(0.5)
-end</code></pre></details></article><article class="item-row api-row" id="method-onupdate"><div class="item-row-main"><h3>onUpdate</h3><pre class="inline-signature">LTween:onUpdate(f: function) -&gt; LTween</pre><p>Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:647</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-onupdate"><div class="item-row-main"><h3>onUpdate</h3><pre class="inline-signature">LTween:onUpdate(f: function) -&gt; LTween</pre><p>Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:768</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { scale = 1 }
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
     tw:onUpdate(function(t) print(&quot;  update t=&quot; .. string.format(&quot;%.2f&quot;, t)) end)
     lurek.tween.update(0.5)
-end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LTween:pause()</pre><p>Pauses this tween so it stops advancing until resumed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:522</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-pause"><div class="item-row-main"><h3>pause</h3><pre class="inline-signature">LTween:pause()</pre><p>Pauses this tween so it stops advancing until resumed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:643</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
 
@@ -146,13 +146,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     tw:pause()
     lurek.tween.update(1.0)
     print(&quot;while paused: &quot; .. obj.rotation)
-end</code></pre></details></article><article class="item-row api-row" id="method-relative"><div class="item-row-main"><h3>relative</h3><pre class="inline-signature">LTween:relative(enabled: boolean) -&gt; LTween</pre><p>Chainable version of `setRelative`. Returns the tween for fluent API usage.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:580</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-relative"><div class="item-row-main"><h3>relative</h3><pre class="inline-signature">LTween:relative(enabled: boolean) -&gt; LTween</pre><p>Chainable version of `setRelative`. Returns the tween for fluent API usage.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:701</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 50, y = 50 }
     ---@type LTween
     local tw = lurek.tween.tween(1.0, obj, { x = 30, y = -20 }):relative(true)
     lurek.tween.update(1.0)
     print(&quot;relative result: x=&quot; .. obj.x .. &quot; y=&quot; .. obj.y)
-end</code></pre></details></article><article class="item-row api-row" id="method-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">LTween:resume()</pre><p>Resumes a paused tween so it continues advancing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:529</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-resume"><div class="item-row-main"><h3>resume</h3><pre class="inline-signature">LTween:resume()</pre><p>Resumes a paused tween so it continues advancing.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:650</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { rotation = 0 }
     local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
 
@@ -165,14 +165,14 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     tw:resume()
     lurek.tween.update(0.5)
     print(&quot;after resume: &quot; .. obj.rotation)
-end</code></pre></details></article><article class="item-row api-row" id="method-setrelative"><div class="item-row-main"><h3>setRelative</h3><pre class="inline-signature">LTween:setRelative(enabled: boolean)</pre><p>Sets whether the tween end values are relative to the start values instead of absolute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:571</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setrelative"><div class="item-row-main"><h3>setRelative</h3><pre class="inline-signature">LTween:setRelative(enabled: boolean)</pre><p>Sets whether the tween end values are relative to the start values instead of absolute.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:692</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 10.0 }
     local tw = lurek.tween.to(target, { x = 5 }, 1.0, &quot;linear&quot;)
     tw:setRelative(true)
     lurek.tween.update(1.0)
     print(&quot;relative x=&quot; .. target.x)
     print(&quot;type=&quot; .. tw:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-setrepeat"><div class="item-row-main"><h3>setRepeat</h3><pre class="inline-signature">LTween:setRepeat(n: integer)</pre><p>Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:611</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setrepeat"><div class="item-row-main"><h3>setRepeat</h3><pre class="inline-signature">LTween:setRepeat(n: integer)</pre><p>Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:732</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0 }
     ---@type LTween
     local tw = lurek.tween.tween(0.5, obj, { x = 100 })
@@ -216,18 +216,18 @@ do
     print(&quot;midpoint: r=&quot; .. string.format(&quot;%.2f&quot;, color.r) .. &quot; g=&quot; .. string.format(&quot;%.2f&quot;, color.g) .. &quot; b=&quot; .. string.format(&quot;%.2f&quot;, color.b))
     lurek.tween.update(1.0)
     print(&quot;end: r=&quot; .. color.r .. &quot; b=&quot; .. color.b)
-end</code></pre></details></article><article class="item-row api-row" id="method-setyoyo"><div class="item-row-main"><h3>setYoyo</h3><pre class="inline-signature">LTween:setYoyo(enabled: boolean)</pre><p>Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:619</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setyoyo"><div class="item-row-main"><h3>setYoyo</h3><pre class="inline-signature">LTween:setYoyo(enabled: boolean)</pre><p>Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:740</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local obj = { x = 0 }
     ---@type LTween
     local tw = lurek.tween.tween(0.5, obj, { x = 100 })
     tw:setYoyo(true)
     print(&quot;yoyo set&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTween:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:677</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTween:type() -&gt; string</pre><p>Returns the type name of this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:798</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     print(&quot;type=&quot; .. tw:type())
     print(&quot;active=&quot; .. tostring(tw:isActive()))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTween:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:683</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTween:typeOf(name: string) -&gt; boolean</pre><p>Checks whether this object matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/tween_api.rs:804</span></div><details class="example-block"><summary>Example · Exact example · tween.lua</summary><pre><code>do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, &quot;linear&quot;)
     print(&quot;typeOf LTween = &quot; .. tostring(tw:typeOf(&quot;LTween&quot;)))

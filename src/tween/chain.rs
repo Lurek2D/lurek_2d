@@ -75,6 +75,12 @@ pub struct TweenChain {
     looping: bool,
     /// Whether the chain has finished (non-looping only).
     finished: bool,
+    /// Whether the chain is currently active.
+    active: bool,
+    /// Whether the active chain is paused.
+    paused: bool,
+    /// Completed loop iterations. Starts at 0 before first run.
+    iteration: u32,
 }
 
 impl TweenChain {
@@ -85,7 +91,34 @@ impl TweenChain {
             cursor: 0,
             looping: false,
             finished: false,
+            active: true,
+            paused: false,
+            iteration: 1,
         }
+    }
+
+    /// Start playback from the beginning.
+    pub fn start(&mut self) {
+        self.reset();
+        self.active = true;
+        self.paused = false;
+        self.iteration = 1;
+    }
+
+    /// Stop playback immediately.
+    pub fn stop(&mut self) {
+        self.active = false;
+        self.paused = false;
+    }
+
+    /// Pause playback.
+    pub fn pause(&mut self) {
+        self.paused = true;
+    }
+
+    /// Resume playback.
+    pub fn resume(&mut self) {
+        self.paused = false;
     }
 
     /// Set whether the chain should restart after the last step.
@@ -103,6 +136,10 @@ impl TweenChain {
         let idx = self.steps.len();
         self.steps.push(step);
         self.finished = false;
+        self.active = true;
+        if self.iteration == 0 {
+            self.iteration = 1;
+        }
         idx
     }
 
@@ -111,6 +148,9 @@ impl TweenChain {
         self.steps.clear();
         self.cursor = 0;
         self.finished = false;
+        self.active = false;
+        self.paused = false;
+        self.iteration = 0;
     }
 
     /// True when the chain has no steps.
@@ -159,10 +199,48 @@ impl TweenChain {
         self.finished
     }
 
+    /// True when the chain is currently active.
+    pub fn is_active(&self) -> bool {
+        self.active
+    }
+
+    /// Current iteration (1-based while running, 0 before start).
+    pub fn iteration(&self) -> u32 {
+        self.iteration
+    }
+
+    /// Overall progress in [0.0, 1.0] for the current pass.
+    pub fn progress(&self) -> f64 {
+        if self.steps.is_empty() {
+            return if self.finished { 1.0 } else { 0.0 };
+        }
+        if self.finished {
+            return 1.0;
+        }
+        let total: f64 = self.steps.iter().map(|s| s.duration).sum();
+        if total <= f64::EPSILON {
+            return if self.cursor >= self.steps.len().saturating_sub(1) {
+                1.0
+            } else {
+                0.0
+            };
+        }
+        let mut elapsed = 0.0;
+        for (idx, step) in self.steps.iter().enumerate() {
+            if idx < self.cursor {
+                elapsed += step.duration;
+            } else if idx == self.cursor {
+                elapsed += step.elapsed.min(step.duration);
+                break;
+            }
+        }
+        (elapsed / total).clamp(0.0, 1.0)
+    }
+
     /// Advance the chain by `dt` seconds. Returns events for all steps completed
     /// during this tick (multiple if `dt` spans more than one short step).
     pub fn tick(&mut self, dt: f64) -> Vec<ChainEvent> {
-        if self.finished || self.steps.is_empty() {
+        if self.finished || self.steps.is_empty() || !self.active || self.paused {
             return Vec::new();
         }
 
@@ -187,10 +265,12 @@ impl TweenChain {
                 self.cursor += 1;
                 if self.cursor >= self.steps.len() {
                     if self.looping {
+                        self.iteration = self.iteration.saturating_add(1);
                         self.reset();
                     } else {
                         self.cursor = self.steps.len() - 1;
                         self.finished = true;
+                        self.active = false;
                     }
                 } else if let Some(next) = self.steps.get_mut(self.cursor) {
                     next.elapsed = 0.0;

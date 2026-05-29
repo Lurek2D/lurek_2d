@@ -310,12 +310,12 @@ function lurek.init()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.title_press_start = ui_root:findById("title_press_start")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.go_score = ui_root:findById("go_score")
     app_ui.go_dist = ui_root:findById("go_dist")
     app_ui.go_press_start = ui_root:findById("go_press_start")
-    
+
     app_ui.hud_screen = ui_root:findById("hud_screen")
     app_ui.hud_hp = ui_root:findById("hud_hp")
     app_ui.hud_score = ui_root:findById("hud_score")
@@ -761,27 +761,27 @@ function lurek.process(dt)
             reset_game()
         end
     end
-    
+
     -- Sync UI
     local pulse = 0.5 + 0.5 * math.abs(math.sin(lurek.timer.getTime() * 2.5))
     app_ui.title_screen.visible = (current_state == STATE.TITLE)
     if current_state == STATE.TITLE then
         app_ui.title_press_start.color = {0.8, 0.6, 0.9, pulse}
     end
-    
+
     app_ui.game_over_screen.visible = (current_state == STATE.GAME_OVER)
     if current_state == STATE.GAME_OVER then
         app_ui.go_score.text = "Score: " .. score
         app_ui.go_dist.text = "Distance: " .. math.floor(distance)
         app_ui.go_press_start.color = {0.6, 0.5, 0.7, pulse}
     end
-    
+
     app_ui.hud_screen.visible = (current_state == STATE.PLAYING)
     if current_state == STATE.PLAYING then
         app_ui.hud_hp.text = "HP: " .. player.hp .. " / " .. PLAYER_MAX_HP
         app_ui.hud_score.text = "SCORE: " .. score
         app_ui.hud_dist.text = "DIST: " .. math.floor(distance)
-        
+
         if boss_active then
             local flash = math.abs(math.sin(lurek.timer.getTime() * 4))
             app_ui.hud_boss_warning.visible = true

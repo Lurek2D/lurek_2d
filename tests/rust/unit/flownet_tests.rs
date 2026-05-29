@@ -1,12 +1,8 @@
-//! INTERNAL ONLY: Rust-only tests for the flownet module.
-//!
-//! Public flownet behavior reachable through \lurek.graph.*\ is covered in
-//! \tests/lua/unit/test_flownet_unit.lua\. The remaining Rust-only coverage here
-//! keeps render helpers and simulation edge-cases that are easier to assert in Rust.
+//! File: tests/rust/unit/flownet_tests.rs
 
 use lurek2d::flownet::Graph;
 
-// ── render ─────────────────────────────────────────────────────────────────
+// â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use super::*;
@@ -34,7 +30,7 @@ mod render_tests {
     }
 }
 
-// ── simulation ────────────────────────────────────────────────────────────
+// â”€â”€ simulation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod simulation_tests {
     use super::*;

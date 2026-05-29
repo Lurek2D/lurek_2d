@@ -1,14 +1,10 @@
-//! INTERNAL ONLY: Rust-only tests for pipeline scheduler internals that are not directly
-//! asserted through `lurek.pipeline.*`.
-//!
-//! Public pipeline behaviour is covered by `tests/lua/unit/test_pipeline_unit.lua`.
-//! The remaining Rust tests keep scheduler state transitions and delay handling.
+//! File: tests/rust/unit/pipeline_tests.rs
 
 use lurek2d::pipeline::dag::Pipeline;
 use lurek2d::pipeline::scheduler::PipelineScheduler;
 use lurek2d::pipeline::step::PipelineStep;
 
-// ── scheduler tests ─────────────────────────────────────────────────────────
+// â”€â”€ scheduler tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod scheduler_tests {
     use super::*;

@@ -12,10 +12,8 @@ Manual sections preserved from the existing spec when present:
 - Notes
 
 Auto-collected sections rebuilt from source code and Lua binding data:
-- Source Documentation
-- Types
-- Functions
-- Lua API Reference
+- Files
+- Lua API Ref
 - References
 
 Usage:
@@ -125,8 +123,8 @@ SECTION_ALIASES = {
     "summary": ["Summary", "Module Purpose", "Purpose"],
     "source_docs": ["Source Documentation", "File Descriptions"],
     "types": ["Types", "Key Types"],
-    "functions": ["Functions"],
-    "lua_api": ["Lua API Reference", "Lua API", "Lua API Summary"],
+    "functions": ["Methods", "Functions"],
+    "lua_api": ["Lua API Ref", "Lua API Reference", "Lua API", "Lua API Summary"],
     "references": ["References"],
     "notes": ["Notes", "Constraints"],
     "tldr": ["TL;DR"],
@@ -148,7 +146,14 @@ IMPL_RE = re.compile(
     r'(?:(?:[A-Za-z_][A-Za-z0-9_:<>]+)\s+for\s+)?'
     r'([A-Za-z_][A-Za-z0-9_:<>]*)'
 )
+PUB_FIELD_RE = re.compile(
+    r'^\s*pub(?:\([^)]*\))?\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*([^,]+),?'
+)
+ENUM_VARIANT_RE = re.compile(
+    r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?:\(|\{|=|,|$)'
+)
 SET_RE = re.compile(r'\b(?:lurek|lurek)\.set\(\s*"([^\"]+)"')
+LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 
 
 def load_lua_parser():
@@ -318,6 +323,50 @@ def normalize_impl_target(raw: str) -> str:
     return target.split("::")[-1]
 
 
+def extract_public_struct_fields(lines: list[str], start_index: int) -> list[str]:
+    start_line = lines[start_index]
+    if "{" not in start_line:
+        return []
+
+    fields: list[str] = []
+    depth = start_line.count("{") - start_line.count("}")
+    i = start_index + 1
+    while i < len(lines) and depth > 0:
+        line = lines[i]
+        stripped = line.strip()
+        if depth == 1 and stripped and not stripped.startswith("//") and not stripped.startswith("#"):
+            match = PUB_FIELD_RE.match(line)
+            if match:
+                field_name = match.group(1)
+                field_type = normalize_space(match.group(2))
+                fields.append(f"{field_name}: {field_type}")
+        depth += line.count("{") - line.count("}")
+        i += 1
+    return fields
+
+
+def extract_enum_variants(lines: list[str], start_index: int) -> list[str]:
+    start_line = lines[start_index]
+    if "{" not in start_line:
+        return []
+
+    variants: list[str] = []
+    depth = start_line.count("{") - start_line.count("}")
+    i = start_index + 1
+    while i < len(lines) and depth > 0:
+        line = lines[i]
+        stripped = line.strip()
+        if depth == 1 and stripped and not stripped.startswith("//") and not stripped.startswith("#"):
+            match = ENUM_VARIANT_RE.match(stripped)
+            if match:
+                variant = match.group(1)
+                if variant != "pub":
+                    variants.append(variant)
+        depth += line.count("{") - line.count("}")
+        i += 1
+    return variants
+
+
 def scan_module_sources(module: str) -> dict:
     module_dir = SRC / module
     file_info = []
@@ -358,12 +407,17 @@ def scan_module_sources(module: str) -> dict:
                 if type_match:
                     kind, name = type_match.group(1), type_match.group(2)
                     desc = collect_doc_above(lines, idx)
+                    fields = extract_public_struct_fields(lines, idx) if kind == "struct" else []
+                    variants = extract_enum_variants(lines, idx) if kind == "enum" else []
                     types_by_file[rel].append(
                         {
                             "kind": kind,
                             "name": name,
                             "description": desc,
                             "qualified": f"{module}::{Path(rel).stem}::{name}",
+                            "fields": fields,
+                            "variants": variants,
+                            "methods": [],
                         }
                     )
                     if kind in counts:
@@ -378,6 +432,8 @@ def scan_module_sources(module: str) -> dict:
                     functions_by_file[rel].append(
                         {
                             "name": label,
+                            "short_name": fn_name,
+                            "owner": owner,
                             "description": desc,
                             "qualified": f"{module}::{Path(rel).stem}::{label}",
                         }
@@ -397,6 +453,23 @@ def scan_module_sources(module: str) -> dict:
             while impl_stack and brace_depth < int(impl_stack[-1]["depth"]):
                 impl_stack.pop()
 
+    methods_by_owner: dict[str, list[dict]] = defaultdict(list)
+    for items in functions_by_file.values():
+        for fn in items:
+            owner = fn.get("owner")
+            if owner:
+                methods_by_owner[owner].append(
+                    {
+                        "name": fn["short_name"],
+                        "description": fn["description"],
+                    }
+                )
+
+    for items in types_by_file.values():
+        for item in items:
+            owner_methods = methods_by_owner.get(item["name"], [])
+            item["methods"] = sorted(owner_methods, key=lambda m: m["name"])
+
     return {
         "files": file_info,
         "file_docs": file_docs,
@@ -408,26 +481,90 @@ def scan_module_sources(module: str) -> dict:
 
 
 def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
-    all_functions = lua_parser.collect_all_functions(ROOT / "src" / "lua_api")
-    funcs = all_functions.get(module, [])
     module_functions = []
-    classes: dict[str, list[dict]] = defaultdict(list)
+    classes: dict[str, dict] = {}
+    module_enums: list[dict] = []
+    module_constants: list[dict] = []
     namespace_prefixes: list[str] = []
 
-    for fn in funcs:
-        if fn.lua_name and "." in fn.lua_name:
-            namespace_prefixes.append(fn.lua_name.rsplit(".", 1)[0])
+    if LUA_API_JSON.exists():
+        data = json.loads(read_text(LUA_API_JSON))
+        module_data = (data.get("lua_api", {}).get("modules", {}) or {}).get(module, {})
+        for fn in module_data.get("functions", []) or []:
+            lua_name = fn.get("lua_name") or fn.get("name")
+            if lua_name and "." in lua_name:
+                namespace_prefixes.append(lua_name.rsplit(".", 1)[0])
+            module_functions.append(
+                {
+                    "name": fn.get("name") or "",
+                    "lua_name": lua_name,
+                    "description": fn.get("description") or "Lua-facing function documented in the binding source.",
+                }
+            )
 
-        entry = {
-            "name": fn.name,
-            "lua_name": fn.lua_name,
-            "description": fn.description or "Lua-facing function documented in the binding source.",
-        }
-        if fn.kind == "function":
-            module_functions.append(entry)
-        else:
-            owner = fn.owner_type or "Object"
-            classes[owner].append(entry)
+        for cls_name, cls in (module_data.get("classes") or {}).items():
+            fields = []
+            for field in cls.get("fields", []) or []:
+                fields.append(
+                    {
+                        "name": field.get("name") or "",
+                        "type": field.get("type") or "any",
+                        "description": field.get("description") or "Lua-visible field.",
+                    }
+                )
+
+            methods = []
+            for method in cls.get("methods", []) or []:
+                methods.append(
+                    {
+                        "name": method.get("name") or "",
+                        "lua_name": method.get("lua_name") or f"{cls_name}:{method.get('name','')}",
+                        "description": method.get("description") or "Lua-visible method.",
+                    }
+                )
+
+            classes[cls_name] = {
+                "description": cls.get("description") or "Lua-visible object type.",
+                "fields": methods and fields or fields,
+                "methods": methods,
+            }
+
+        # Optional module-scoped constants/enums if present in source JSON shape.
+        for const in module_data.get("constants", []) or []:
+            module_constants.append(
+                {
+                    "name": const.get("name") or "",
+                    "value": const.get("value"),
+                    "description": const.get("description") or "Lua-visible constant.",
+                }
+            )
+        for enum in module_data.get("enums", []) or []:
+            module_enums.append(
+                {
+                    "name": enum.get("name") or "",
+                    "values": enum.get("values") or [],
+                    "description": enum.get("description") or "Lua-visible enum.",
+                }
+            )
+    else:
+        # Fallback for environments without generated JSON.
+        all_functions = lua_parser.collect_all_functions(ROOT / "src" / "lua_api")
+        funcs = all_functions.get(module, [])
+        for fn in funcs:
+            if fn.lua_name and "." in fn.lua_name:
+                namespace_prefixes.append(fn.lua_name.rsplit(".", 1)[0])
+            entry = {
+                "name": fn.name,
+                "lua_name": fn.lua_name,
+                "description": fn.description or "Lua-facing function documented in the binding source.",
+            }
+            if fn.kind == "function":
+                module_functions.append(entry)
+            else:
+                owner = fn.owner_type or "Object"
+                if owner not in classes:
+                    classes[owner] = {"description": "Lua-visible object type.", "fields": [], "methods": []}
+                classes[owner]["methods"].append(entry)
 
     namespace = namespace_prefixes[0] if namespace_prefixes else ""
     for text in seed_texts:
@@ -461,8 +598,17 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
     return {
         "namespace": namespace,
         "binding_path": binding_path,
-        "module_functions": module_functions,
-        "classes": dict(classes),
+        "module_functions": sorted(module_functions, key=lambda item: item["lua_name"] or item["name"]),
+        "module_constants": sorted(module_constants, key=lambda item: item["name"]),
+        "module_enums": sorted(module_enums, key=lambda item: item["name"]),
+        "classes": {
+            k: {
+                "description": v.get("description") or "Lua-visible object type.",
+                "fields": sorted(v.get("fields", []), key=lambda item: item["name"]),
+                "methods": sorted(v.get("methods", []), key=lambda item: item["name"]),
+            }
+            for k, v in sorted(classes.items())
+        },
     }
 
 
@@ -555,15 +701,22 @@ def format_general_info(module: str, group: str, rust_tests: str, lua_tests: str
 def format_files(file_rows: list[dict], overrides: dict[str, str]) -> str:
     lines = []
     for row in file_rows:
-        desc = resolve_item_description(overrides, row["file"], fallback=row["purpose"])
-        lines.append(f"- `{row['file']}`: {desc}")
-    return "\n".join(lines)
+        lines.extend([f"### {row['file']}", ""])
+        doc_lines = row.get("doc_lines") or []
+        if doc_lines:
+            for doc_line in doc_lines:
+                lines.append(f"- {doc_line}")
+        else:
+            desc = resolve_item_description(overrides, row["file"], fallback=row["purpose"])
+            lines.append(f"- {desc}")
+        lines.append("")
+    return "\n".join(lines).strip()
 
 
 def format_source_docs(file_docs: dict[str, list[str]]) -> str:
-    """Format the //! file-level documentation as bullet points grouped by file."""
+    """Unused in current output layout; retained as helper for future migrations."""
     if not file_docs:
-        return "- No file-level `//!` documentation found in this module's source files."
+        return ""
     lines: list[str] = []
     for rel_path, docs in sorted(file_docs.items()):
         lines.append(f"### `{rel_path}`")
@@ -584,7 +737,19 @@ def format_types(module: str, file_rows: list[dict], types_by_file: dict[str, li
                 item["name"],
                 fallback=item["description"] or f"Public {item['kind']} in `{row['file']}`.",
             )
-            lines.append(f"- `{item['name']}` (`{item['kind']}`, `{row['file']}`): {desc}")
+            desc = re.split(r"\s+Details:\s+", desc, maxsplit=1)[0].strip()
+            detail_parts: list[str] = []
+            if item.get("fields"):
+                detail_parts.append("fields: " + ", ".join(item["fields"]))
+            if item.get("variants"):
+                detail_parts.append("variants: " + ", ".join(item["variants"]))
+            if item.get("methods"):
+                method_labels = [
+                    f"{m['name']} ({m['description'] or 'public method'})" for m in item["methods"]
+                ]
+                detail_parts.append("methods: " + "; ".join(method_labels))
+            details = f" Details: {' | '.join(detail_parts)}" if detail_parts else ""
+            lines.append(f"- `{item['name']}` (`{item['kind']}`, `{row['file']}`): {desc}{details}")
     if not lines:
         return "- No public Rust types are currently exposed from this module."
     return "\n".join(lines)
@@ -601,6 +766,7 @@ def format_functions(module: str, file_rows: list[dict], functions_by_file: dict
                 item["name"],
                 fallback=item["description"] or f"Public function or method declared in `{row['file']}`.",
             )
+            desc = re.split(r"\s+Details:\s+", desc, maxsplit=1)[0].strip()
             lines.append(f"- `{item['name']}` (`{row['file']}`): {desc}")
     if not lines:
         return "- No public Rust functions are currently exposed from this module."
@@ -608,25 +774,68 @@ def format_functions(module: str, file_rows: list[dict], functions_by_file: dict
 
 
 def format_lua_api(lua_api: dict) -> str:
-    if not lua_api["namespace"] and not lua_api["module_functions"] and not lua_api["classes"]:
+    if (
+        not lua_api["namespace"]
+        and not lua_api["module_functions"]
+        and not lua_api["module_constants"]
+        and not lua_api["module_enums"]
+        and not lua_api["classes"]
+    ):
         return "- No dedicated direct `lurek.*` namespace is exposed by this module."
 
     lines: list[str] = []
-    if lua_api["binding_path"]:
-        lines.append(f"- Binding path(s): `{lua_api['binding_path']}`")
-    if lua_api["namespace"]:
-        lines.append(f"- Namespace: `{lua_api['namespace']}`")
+    lines.append(f"- Binding: `{lua_api['binding_path']}`" if lua_api["binding_path"] else "- Binding: None direct")
+    lines.append(f"- Namespace: `{lua_api['namespace']}`" if lua_api["namespace"] else "- Namespace: None direct")
 
+    lines.extend(["", "### Functions", ""])
     if lua_api["module_functions"]:
-        lines.extend(["", "### Module Functions"])
         for fn in lua_api["module_functions"]:
             label = fn["lua_name"] or fn["name"]
             lines.append(f"- `{label}`: {fn['description']}")
+    else:
+        lines.append("- No documented module-level functions.")
 
-    for class_name, methods in sorted(lua_api["classes"].items()):
-        lines.extend(["", f"### `{class_name}` Methods"])
-        for method in methods:
-            lines.append(f"- `{class_name}:{method['name']}`: {method['description']}")
+    lines.extend(["", "### Enums", ""])
+    emitted_any_enum_like = False
+    for const in lua_api["module_constants"]:
+        emitted_any_enum_like = True
+        value = const.get("value")
+        value_str = f" = {value}" if value is not None else ""
+        lines.append(f"- `{const['name']}`{value_str}: {const['description']}")
+    for enum in lua_api["module_enums"]:
+        emitted_any_enum_like = True
+        values = enum.get("values") or []
+        value_text = ", ".join(str(v) for v in values) if values else "(no values)"
+        lines.append(f"- `{enum['name']}`: {enum['description']} Values: {value_text}")
+    if not emitted_any_enum_like:
+        lines.append("- No documented module-level enums/constants.")
+
+    lines.extend(["", "### Types", ""])
+    if lua_api["classes"]:
+        for class_name, class_meta in sorted(lua_api["classes"].items()):
+            lines.extend(["", f"#### {class_name} Type", ""])
+
+            lines.extend(["", "##### Fields", ""])
+            fields = class_meta.get("fields", [])
+            if fields:
+                for field in fields:
+                    lines.append(
+                        f"- `{field['name']}` (`{field['type']}`): {field['description']}"
+                    )
+            else:
+                lines.append("- No documented fields.")
+
+            lines.extend(["", "##### Methods", ""])
+            methods = class_meta.get("methods", [])
+            if methods:
+                for method in methods:
+                    label = method.get("lua_name") or f"{class_name}:{method.get('name','')}"
+                    lines.append(f"- `{label}`: {method.get('description') or 'Lua-visible method.'}")
+            else:
+                lines.append("- No documented methods.")
+            lines.append("")
+    else:
+        lines.append("- No documented module types.")
 
     return "\n".join(lines).strip()
 
@@ -653,13 +862,7 @@ def format_references(group: str, refs: list[str], overrides: dict[str, str]) ->
 
 
 def build_default_notes(module: str, lua_api: dict) -> str:
-    lines = [
-        f"- Keep this module reference synchronized with `src/{module}/` and any matching Lua bindings.",
-        "- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.",
-    ]
-    if not lua_api["namespace"]:
-        lines.append("- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.")
-    return "\n".join(lines)
+    return ""
 
 
 def build_spec(module: str, lua_parser) -> tuple[str, dict]:
@@ -693,20 +896,26 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     elif "\n\n" not in summary_text:
         summary_text = summary_text + "\n\n" + build_scope_boundary(module, source["references"], group)
 
-    type_overrides = combine_pair_maps(spec_sections["types"], agent_sections["types"], legacy_sections["types"])
-    function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
+    # Methods and Types are fully auto-generated from source and should not reuse
+    # old section text; this avoids stale or duplicated details across reruns.
     reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
-    notes_text = first_non_empty(spec_sections.get("notes", ""), legacy_sections.get("notes", ""))
-    if not notes_text or "AGENT" in notes_text:
-        notes_text = build_default_notes(module, lua_api)
+    # Notes section removed per current spec layout requirements.
 
     tldr_text = first_non_empty(spec_sections.get("tldr", ""), agent_sections.get("tldr", ""), legacy_sections.get("tldr", ""))
 
     general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
-    source_docs_text = format_source_docs(source["file_docs"])
-    files_text = format_files(source["files"], {})
-    types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
-    functions_text = format_functions(module, source["files"], source["functions_by_file"], function_overrides)
+    # Files should include file-level docs inline, no dedicated Source Documentation section.
+    files_with_docs: list[dict] = []
+    for row in source["files"]:
+        file_key = row["file"]
+        docs = source["file_docs"].get(file_key, [])
+        files_with_docs.append({
+            "file": file_key,
+            "purpose": row["purpose"],
+            "doc_lines": docs,
+        })
+
+    files_text = format_files(files_with_docs, {})
     lua_api_text = format_lua_api(lua_api)
     references_text = format_references(group, source["references"], reference_overrides)
 
@@ -728,29 +937,13 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
 {files_text}
 
-## Source Documentation
-
-{source_docs_text}
-
-## Types
-
-{types_text}
-
-## Functions
-
-{functions_text}
-
-## Lua API Reference
+## Lua API Ref
 
 {lua_api_text}
 
 ## References
 
 {references_text}
-
-## Notes
-
-{notes_text}
 """
 
     inventory = {

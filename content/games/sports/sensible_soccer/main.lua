@@ -154,14 +154,14 @@ function lurek.init()
     lurek.input.bind("down",  { "s", "down" })
     lurek.input.bind("kick",  "space")
     reset_positions(1)
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/sensible_soccer/ui.toml")
     app_ui = {}
     app_ui.hud = ui_root:findById("hud")
     app_ui.score_1_label = ui_root:findById("score_1_label")
     app_ui.score_2_label = ui_root:findById("score_2_label")
     app_ui.clock_label = ui_root:findById("clock_label")
-    
+
     app_ui.kickoff_overlay = ui_root:findById("kickoff_overlay")
     app_ui.goal_overlay = ui_root:findById("goal_overlay")
     app_ui.ft_overlay = ui_root:findById("ft_overlay")
@@ -298,18 +298,18 @@ function lurek.update(dt)
     if state == STATE.KICKOFF and lurek.input.wasActionPressed("kick") then
         state = STATE.PLAY
     end
-    
+
     -- UI Sync
     app_ui.score_1_label.text = tostring(score[1])
     app_ui.score_2_label.text = tostring(score[2])
-    
+
     local remaining = math.max(0, MATCH_LEN - match_time)
     app_ui.clock_label.text = string.format("%d'", math.floor(remaining))
-    
+
     app_ui.kickoff_overlay.visible = (state == STATE.KICKOFF)
     app_ui.goal_overlay.visible = (state == STATE.GOAL)
     app_ui.ft_overlay.visible = (state == STATE.FT)
-    
+
     if state == STATE.FT then
         app_ui.ft_score_label.text = string.format("Final: %d - %d  (Esc to quit)", score[1], score[2])
     end

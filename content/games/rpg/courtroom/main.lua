@@ -282,18 +282,18 @@ end
 function lurek.init()
     lurek.window.setTitle("Courtroom Drama — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.1, 0.08)
-    
+
     lurek.ui.loadLayoutFile("content/games/rpg/courtroom/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.title_start = ui_root:findById("title_start")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.go_title = ui_root:findById("go_title")
     app_ui.go_desc = ui_root:findById("go_desc")
     app_ui.go_hint = ui_root:findById("go_hint")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.case_info_text = ui_root:findById("case_info_text")
     app_ui.jury_fill = ui_root:findById("jury_fill")
@@ -301,32 +301,32 @@ function lurek.init()
     app_ui.cred_fill = ui_root:findById("cred_fill")
     app_ui.cred_text = ui_root:findById("cred_text")
     app_ui.stmt_text = ui_root:findById("stmt_text")
-    
+
     app_ui.speaker_text = ui_root:findById("speaker_text")
     app_ui.typewriter_text = ui_root:findById("typewriter_text")
     app_ui.advance_prompt = ui_root:findById("advance_prompt")
     app_ui.controls_hint = ui_root:findById("controls_hint")
-    
+
     app_ui.question_panel = ui_root:findById("question_panel")
     app_ui.qp_opts = {}
     for i=1, 3 do app_ui.qp_opts[i] = ui_root:findById("qp_opt_" .. i) end
-    
+
     app_ui.objection_panel = ui_root:findById("objection_panel")
     app_ui.op_ev_n = {}
     app_ui.op_ev_d = {}
-    for i=1, 3 do 
+    for i=1, 3 do
         app_ui.op_ev_n[i] = ui_root:findById("op_ev_n_" .. i)
         app_ui.op_ev_d[i] = ui_root:findById("op_ev_d_" .. i)
     end
-    
+
     app_ui.evidence_panel = ui_root:findById("evidence_panel")
     app_ui.ep_ev_n = {}
     app_ui.ep_ev_d = {}
-    for i=1, 3 do 
+    for i=1, 3 do
         app_ui.ep_ev_n[i] = ui_root:findById("ep_ev_n_" .. i)
         app_ui.ep_ev_d[i] = ui_root:findById("ep_ev_d_" .. i)
     end
-    
+
     app_ui.verdict_text = ui_root:findById("verdict_text")
 end
 
@@ -525,14 +525,14 @@ function lurek.process(dt)
     elseif state == "GAME_OVER" then
         -- state transitions handled by UI click callbacks
     end
-    
+
     -- UI Sync
     if app_ui then
         app_ui.title_screen.visible = (state == "TITLE")
         if app_ui.title_screen.visible then
             app_ui.title_start.color = {0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4}
         end
-        
+
         app_ui.game_over_screen.visible = (state == "GAME_OVER")
         if app_ui.game_over_screen.visible then
             if game_result == "WIN" then
@@ -547,11 +547,11 @@ function lurek.process(dt)
             app_ui.go_desc.text = typewriter_text
             app_ui.go_hint.color = {0.6, 0.5, 0.3, 0.6 + math.sin(lurek.timer.getTime() * 3) * 0.4}
         end
-        
+
         app_ui.hud.visible = (state ~= "TITLE" and state ~= "GAME_OVER")
         if app_ui.hud.visible then
             app_ui.case_info_text.text = "Case " .. current_case .. ": " .. cases[current_case].name
-            
+
             local jury_w = 180
             local fill_w = (jury_display / 100) * jury_w
             app_ui.jury_fill.width = fill_w
@@ -559,7 +559,7 @@ function lurek.process(dt)
             local jg = 0.3 + 0.7 * (jury_display / 100)
             app_ui.jury_fill.background = {jr, jg, 0.2, 1}
             app_ui.jury_text.text = "Jury: " .. math.floor(jury_display) .. "%"
-            
+
             local cr_w = 95
             local cr_fill = (cred_display / 100) * cr_w
             app_ui.cred_fill.width = cr_fill
@@ -567,12 +567,12 @@ function lurek.process(dt)
             local cr_g = 0.8 * (cred_display / 100)
             app_ui.cred_fill.background = {cr_r, cr_g, 0.15, 1}
             app_ui.cred_text.text = "Cred:" .. math.floor(cred_display)
-            
+
             app_ui.stmt_text.visible = (state == "TESTIMONY")
             if app_ui.stmt_text.visible then
                 app_ui.stmt_text.text = "Statement " .. testimony_line .. "/" .. #cases[current_case].testimony
             end
-            
+
             if state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "" then
                 app_ui.speaker_text.text = cases[current_case].witness .. ":"
                 app_ui.speaker_text.color = {1, 0.85, 0.3, 1}
@@ -582,16 +582,16 @@ function lurek.process(dt)
             else
                 app_ui.speaker_text.text = ""
             end
-            
+
             app_ui.typewriter_text.text = typewriter_text
-            
+
             app_ui.advance_prompt.visible = (#typewriter_text >= #typewriter_target and not question_mode and not objection_mode and objection_result == "")
             if app_ui.advance_prompt.visible then
                 app_ui.advance_prompt.color = {0.5, 0.4, 0.3, 0.5 + math.sin(lurek.timer.getTime() * 4) * 0.3}
             end
-            
+
             app_ui.controls_hint.visible = (state == "TESTIMONY" and not question_mode and not objection_mode and objection_result == "")
-            
+
             app_ui.question_panel.visible = question_mode
             if question_mode then
                 local questions = cases[current_case].questions
@@ -604,7 +604,7 @@ function lurek.process(dt)
                     end
                 end
             end
-            
+
             app_ui.objection_panel.visible = objection_mode
             if objection_mode then
                 local ev = cases[current_case].evidence
@@ -620,7 +620,7 @@ function lurek.process(dt)
                     end
                 end
             end
-            
+
             app_ui.evidence_panel.visible = (show_evidence and not objection_mode)
             if app_ui.evidence_panel.visible then
                 local ev = cases[current_case].evidence
@@ -636,7 +636,7 @@ function lurek.process(dt)
                     end
                 end
             end
-            
+
             app_ui.verdict_text.visible = (state == "VERDICT")
             if app_ui.verdict_text.visible then
                 if case_won then
@@ -746,7 +746,7 @@ function lurek.draw_ui()
             rect("fill", c.x, c.y, c.size, c.size)
         end
     end
-    
+
     if state == "VERDICT" then
         -- Confetti (particles)
         for _, c in ipairs(verdict_confetti) do

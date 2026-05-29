@@ -333,7 +333,7 @@ function lurek.init()
         combo_particles:setSizes(6, 2)
         combo_particles:setSpread(math.pi * 2)
     end
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/rhythm_game/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
@@ -341,7 +341,7 @@ function lurek.init()
     app_ui.song_select_screen = ui_root:findById("song_select_screen")
     app_ui.results_screen = ui_root:findById("results_screen")
     app_ui.hud = ui_root:findById("hud")
-    
+
     app_ui.song_labels = {
         ui_root:findById("song_1"),
         ui_root:findById("song_2"),
@@ -352,24 +352,24 @@ function lurek.init()
         ui_root:findById("song_2_stats"),
         ui_root:findById("song_3_stats")
     }
-    
+
     app_ui.grade_label = ui_root:findById("grade_label")
     app_ui.score_result_label = ui_root:findById("score_result_label")
     app_ui.max_combo_label = ui_root:findById("max_combo_label")
     app_ui.hits_label = ui_root:findById("hits_label")
     app_ui.best_mult_label = ui_root:findById("best_mult_label")
-    
+
     app_ui.score_label = ui_root:findById("score_label")
     app_ui.combo_label = ui_root:findById("combo_label")
     app_ui.combo_mult_label = ui_root:findById("combo_mult_label")
     app_ui.life_fill = ui_root:findById("life_fill")
     app_ui.progress_fill = ui_root:findById("progress_fill")
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     app_ui.press_start = ui_root:findById("press_start")
     app_ui.press_select = ui_root:findById("press_select")
     app_ui.press_results = ui_root:findById("press_results")
-    
+
     local function handle_action_click()
         if current_state == STATE_TITLE then
             current_state = STATE_SONG_SELECT
@@ -379,7 +379,7 @@ function lurek.init()
             current_state = STATE_SONG_SELECT
         end
     end
-    
+
     if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
     if app_ui.press_select then app_ui.press_select:setOnClick(handle_action_click) end
     if app_ui.press_results then app_ui.press_results:setOnClick(handle_action_click) end
@@ -451,7 +451,7 @@ function lurek.process(dt)
     app_ui.song_select_screen.visible = (current_state == STATE_SONG_SELECT)
     app_ui.results_screen.visible = (current_state == STATE_RESULTS)
     app_ui.hud.visible = (current_state == STATE_PLAYING)
-    
+
     if current_state == STATE_TITLE then
         local alpha = clamp(math.sin(title_timer * 1.5) * 0.3 + 0.7, 0.4, 1)
         app_ui.title_feel.color = {0.7, 0.5, 0.9, alpha}
@@ -473,16 +473,16 @@ function lurek.process(dt)
         local gc = grade_colors[result_grade] or { 1, 1, 1 }
         app_ui.grade_label.text = result_grade
         app_ui.grade_label.color = {gc[1], gc[2], gc[3], 1}
-        
+
         app_ui.score_result_label.text = string.format("Score: %d", score)
         app_ui.max_combo_label.text = string.format("Max Combo: %d", max_combo)
         app_ui.hits_label.text = string.format("Perfect: %d  Good: %d  Miss: %d", perfects, goods, misses)
-        
+
         local mult_text = string.format("Best Multiplier: %dx", (max_combo >= 50 and 4) or (max_combo >= 25 and 3) or (max_combo >= 10 and 2) or 1)
         app_ui.best_mult_label.text = mult_text
     elseif current_state == STATE_PLAYING then
         app_ui.score_label.text = string.format("SCORE: %d", math.floor(display_score))
-        
+
         if combo > 0 then
             local mult = get_multiplier()
             local combo_alpha = clamp(0.6 + combo * 0.01, 0.6, 1)
@@ -490,11 +490,11 @@ function lurek.process(dt)
             if mult >= 4 then cr, cg, cb = 1, 0.85, 0.2
             elseif mult >= 3 then cr, cg, cb = 0.9, 0.5, 1
             elseif mult >= 2 then cr, cg, cb = 0.3, 0.9, 1 end
-            
+
             app_ui.combo_label.visible = true
             app_ui.combo_label.text = string.format("%d COMBO", combo)
             app_ui.combo_label.color = {cr, cg, cb, combo_alpha}
-            
+
             if mult > 1 then
                 app_ui.combo_mult_label.visible = true
                 app_ui.combo_mult_label.text = string.format("%dx", mult)
@@ -506,14 +506,14 @@ function lurek.process(dt)
             app_ui.combo_label.visible = false
             app_ui.combo_mult_label.visible = false
         end
-        
+
         local life_pct = clamp(display_life / LIFE_MAX, 0, 1)
         local lr, lg, lb = 0.2, 0.8, 0.3
         if life_pct < 0.3 then lr, lg, lb = 0.9, 0.2, 0.2
         elseif life_pct < 0.6 then lr, lg, lb = 0.9, 0.7, 0.2 end
         app_ui.life_fill.width = 200 * life_pct
         app_ui.life_fill.bg_color = {lr, lg, lb, 0.9}
-        
+
         local progress = 0
         if total_notes_in_song > 0 then
             progress = clamp((perfects + goods + misses) / total_notes_in_song, 0, 1)

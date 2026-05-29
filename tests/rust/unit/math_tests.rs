@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for math helpers that are not directly asserted through the
-//! Lua-facing API surface.
-//!
-//! Public `lurek.math.*` behaviour is covered by `tests/lua/unit/test_math_unit.lua`.
-//! The remaining Rust tests keep low-level color/matrix/geometry helper
-//! invariants that are easier to validate directly in Rust.
+//! File: tests/rust/unit/math_tests.rs
 
 mod color_tests {
     use lurek2d::color::{gamma_to_linear, linear_to_gamma, Color};

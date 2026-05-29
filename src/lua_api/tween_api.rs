@@ -1,11 +1,4 @@
-//! `lurek.tween` - Provides value tweening with easing functions, sequences, parallel groups, and property animation for smooth game transitions.
-//!
-//! - Registers `lurek.tween.*` functions and types via `register()`.
-//! - `LuaTweenState`: userdata type exposed to Lua.
-//! - `LuaTween`: userdata type exposed to Lua.
-//! - `LuaTweenSequence`: userdata type exposed to Lua.
-//! - `LuaTweenParallel`: userdata type exposed to Lua.
-//! - `LuaSpring`: userdata type exposed to Lua.
+//! File: src/lua_api/tween_api.rs
 
 use super::SharedState;
 use crate::tween::{
@@ -15,6 +8,27 @@ use crate::tween::{
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::collections::HashSet;
+use std::sync::{Mutex, OnceLock};
+
+static PENDING_TWEEN_CHAIN_STOPS: OnceLock<Mutex<HashSet<usize>>> = OnceLock::new();
+
+fn pending_tween_chain_stops() -> &'static Mutex<HashSet<usize>> {
+    PENDING_TWEEN_CHAIN_STOPS.get_or_init(|| Mutex::new(HashSet::new()))
+}
+
+fn queue_tween_chain_stop(ptr: usize) {
+    if let Ok(mut pending) = pending_tween_chain_stops().lock() {
+        pending.insert(ptr);
+    }
+}
+
+fn take_tween_chain_stop(ptr: usize) -> bool {
+    if let Ok(mut pending) = pending_tween_chain_stops().lock() {
+        return pending.remove(&ptr);
+    }
+    false
+}
 
 /// Lua-exposed standalone tween state for manual interpolation without automatic property updates.
 pub struct LuaTweenState {
@@ -119,10 +133,12 @@ impl LuaSpring {
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let engine = Rc::new(RefCell::new(TweenEngine::new()));
+    let active_chains: Rc<RefCell<Vec<LuaRegistryKey>>> = Rc::new(RefCell::new(Vec::new()));
     // -- update --
     /// Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
     /// @param | dt | number | Delta time in seconds since the last frame.
     let s = engine.clone();
+    let c = active_chains.clone();
     tbl.set(
         "update",
         lua.create_function(move |lua, dt: f64| {
@@ -146,6 +162,61 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 }
             }
             s.borrow_mut().active_springs = still_active;
+
+            let chain_keys = {
+                let mut keys = c.borrow_mut();
+                std::mem::take(&mut *keys)
+            };
+            let mut still_active_chains = Vec::with_capacity(chain_keys.len());
+            for key in chain_keys {
+                let ud: LuaAnyUserData = lua.registry_value(&key)?;
+                let ud_ptr = ud.to_pointer() as usize;
+                let (done, pending_loop_iters) = {
+                    let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                    let done = ch.tick_with(lua, dt)?;
+                    let pending_loop_iters = std::mem::take(&mut ch.pending_loop_iters);
+                    if done {
+                        ch.registered = false;
+                    }
+                    (done, pending_loop_iters)
+                };
+
+                for iter in pending_loop_iters {
+                    let callback = {
+                        let ch = ud.borrow::<LuaTweenChain>()?;
+                        ch.on_loop
+                            .as_ref()
+                            .and_then(|k| lua.registry_value::<LuaFunction>(k).ok())
+                    };
+                    if let Some(f) = callback {
+                        let _ = f.call::<_, ()>(iter);
+                    }
+                }
+
+                if take_tween_chain_stop(ud_ptr) {
+                    let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                    ch.active = false;
+                    ch.paused = false;
+                    ch.complete = false;
+                }
+
+                let should_remove = {
+                    let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                    if done || !ch.active {
+                        ch.registered = false;
+                        true
+                    } else {
+                        false
+                    }
+                };
+
+                if should_remove {
+                    lua.remove_registry_value(key)?;
+                } else {
+                    still_active_chains.push(key);
+                }
+            }
+            *c.borrow_mut() = still_active_chains;
             Ok(())
         })?,
     )?;
@@ -242,6 +313,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- cancelAll --
     /// Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
     let s = engine.clone();
+    let c = active_chains.clone();
     tbl.set(
         "cancelAll",
         lua.create_function(move |lua, ()| {
@@ -258,6 +330,21 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 }
                 lua.remove_registry_value(key)?;
             }
+
+            let chain_keys = {
+                let mut keys = c.borrow_mut();
+                std::mem::take(&mut *keys)
+            };
+            for key in chain_keys {
+                let ud: LuaAnyUserData = lua.registry_value(&key)?;
+                {
+                    let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                    ch.active = false;
+                    ch.paused = false;
+                    ch.registered = false;
+                }
+                lua.remove_registry_value(key)?;
+            }
             Ok(())
         })?,
     )?;
@@ -265,9 +352,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Returns the total number of currently active tweens, sequences, and parallels.
     /// @return | number | Count of active tween objects.
     let s = engine.clone();
+    let c = active_chains.clone();
     tbl.set(
         "getActiveCount",
-        lua.create_function(move |_, ()| Ok(s.borrow().active_count()))?,
+        lua.create_function(move |_, ()| Ok(s.borrow().active_count() + c.borrow().len()))?,
     )?;
     // -- registerEasing --
     /// Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
@@ -499,44 +587,503 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Creates a sequential tween chain for cinematic value-interpolation sequences.
     /// @param | looping | boolean? | True to loop back to step 0 after the last step (default false).
     /// @return | LTweenChain | New tween chain handle.
+    let c = active_chains.clone();
     tbl.set(
         "newChain",
-        lua.create_function(|lua, looping: Option<bool>| {
-            let mut chain = crate::tween::TweenChain::new();
-            chain.set_looping(looping.unwrap_or(false));
-            lua.create_userdata(LuaTweenChain {
-                inner: RefCell::new(chain),
-            })
+        lua.create_function(move |lua, looping: Option<bool>| {
+            lua.create_userdata(LuaTweenChain::new(looping.unwrap_or(false), c.clone()))
         })?,
     )?;
     /// Performs the 'tween' operation.
     lurek.set("tween", tbl)?;
     Ok(())
 }
+enum FluentChainStep {
+    Tween {
+        target_key: LuaRegistryKey,
+        fields: Vec<String>,
+        end_values: Vec<f64>,
+        duration: f64,
+        easing: String,
+        elapsed: f64,
+        start_values: Vec<f64>,
+        starts_captured: bool,
+    },
+    Wait {
+        duration: f64,
+        elapsed: f64,
+        callback: Option<LuaRegistryKey>,
+        fired: bool,
+    },
+    Call {
+        callback: LuaRegistryKey,
+        fired: bool,
+    },
+}
+
 /// Lua-side wrapper for a sequential tween chain.
 pub struct LuaTweenChain {
-    /// Owned chain state.
+    /// Legacy scalar chain state kept for backward compatibility.
     inner: RefCell<crate::tween::TweenChain>,
+    /// Fluent runtime steps.
+    steps: Vec<FluentChainStep>,
+    /// Current fluent step index.
+    cursor: usize,
+    /// Current fluent iteration (1-based while active, 0 before first start).
+    iteration: u32,
+    /// Loop count (`0` means infinite, `1` means play once).
+    loop_count: u32,
+    /// Whether fluent playback is active.
+    active: bool,
+    /// Whether fluent playback is paused.
+    paused: bool,
+    /// Whether fluent playback completed naturally.
+    complete: bool,
+    /// Elapsed time in the current iteration.
+    elapsed_in_iteration: f64,
+    /// Optional callback fired when a new loop iteration starts.
+    on_loop: Option<LuaRegistryKey>,
+    /// Iterations queued for `onLoop` callback dispatch after mutable borrow is released.
+    pending_loop_iters: Vec<i64>,
+    /// Optional callback fired after the final iteration completes.
+    on_complete: Option<LuaRegistryKey>,
+    /// Whether this chain is currently registered for update ticks.
+    registered: bool,
+    /// Shared active-chain registry keys consumed by `lurek.tween.update`.
+    active_keys: Rc<RefCell<Vec<LuaRegistryKey>>>,
 }
+
+impl LuaTweenChain {
+    fn new(looping: bool, active_keys: Rc<RefCell<Vec<LuaRegistryKey>>>) -> Self {
+        let mut legacy = crate::tween::TweenChain::new();
+        legacy.set_looping(looping);
+        Self {
+            inner: RefCell::new(legacy),
+            steps: Vec::new(),
+            cursor: 0,
+            iteration: 0,
+            loop_count: if looping { 0 } else { 1 },
+            active: false,
+            paused: false,
+            complete: false,
+            elapsed_in_iteration: 0.0,
+            on_loop: None,
+            pending_loop_iters: Vec::new(),
+            on_complete: None,
+            registered: false,
+            active_keys,
+        }
+    }
+
+    fn reset_runtime_for_iteration(&mut self) {
+        self.cursor = 0;
+        self.elapsed_in_iteration = 0.0;
+        for step in &mut self.steps {
+            match step {
+                FluentChainStep::Tween {
+                    elapsed,
+                    start_values,
+                    starts_captured,
+                    ..
+                } => {
+                    *elapsed = 0.0;
+                    start_values.clear();
+                    *starts_captured = false;
+                }
+                FluentChainStep::Wait { elapsed, fired, .. } => {
+                    *elapsed = 0.0;
+                    *fired = false;
+                }
+                FluentChainStep::Call { fired, .. } => {
+                    *fired = false;
+                }
+            }
+        }
+    }
+
+    fn total_iteration_duration(&self) -> f64 {
+        self.steps
+            .iter()
+            .map(|s| match s {
+                FluentChainStep::Tween { duration, .. } => *duration,
+                FluentChainStep::Wait { duration, .. } => *duration,
+                FluentChainStep::Call { .. } => 0.0,
+            })
+            .sum()
+    }
+
+    fn current_iteration_progress(&self) -> f64 {
+        let total = self.total_iteration_duration();
+        if total <= f64::EPSILON {
+            if self.complete || (self.active && self.cursor >= self.steps.len()) {
+                1.0
+            } else {
+                0.0
+            }
+        } else {
+            (self.elapsed_in_iteration / total).clamp(0.0, 1.0)
+        }
+    }
+
+    fn progress(&self) -> f64 {
+        if self.complete {
+            return 1.0;
+        }
+        if self.iteration == 0 {
+            return 0.0;
+        }
+        let iter_progress = self.current_iteration_progress();
+        if self.loop_count == 0 {
+            return iter_progress;
+        }
+        let done_iters = self.iteration.saturating_sub(1) as f64;
+        ((done_iters + iter_progress) / self.loop_count as f64).clamp(0.0, 1.0)
+    }
+
+    fn register_for_updates(&mut self, lua: &Lua, ud: &LuaAnyUserData) -> LuaResult<()> {
+        if self.registered {
+            return Ok(());
+        }
+        let key = lua.create_registry_value(ud.clone())?;
+        self.active_keys.borrow_mut().push(key);
+        self.registered = true;
+        Ok(())
+    }
+
+    fn tick_with(&mut self, lua: &Lua, dt: f64) -> LuaResult<bool> {
+        if !self.active {
+            return Ok(true);
+        }
+        if self.paused {
+            return Ok(false);
+        }
+
+        let mut remaining = dt.max(0.0);
+        while remaining > 0.0 && self.active {
+            if self.cursor >= self.steps.len() {
+                let has_next = self.loop_count == 0 || self.iteration < self.loop_count;
+                if has_next {
+                    self.iteration = self.iteration.saturating_add(1);
+                    self.reset_runtime_for_iteration();
+                    self.pending_loop_iters.push(self.iteration as i64);
+                    continue;
+                }
+                self.active = false;
+                self.complete = true;
+                if let Some(k) = self.on_complete.take() {
+                    if let Ok(f) = lua.registry_value::<LuaFunction>(&k) {
+                        let _ = f.call::<_, ()>(());
+                    }
+                    lua.remove_registry_value(k)?;
+                }
+                return Ok(true);
+            }
+
+            match &mut self.steps[self.cursor] {
+                FluentChainStep::Tween {
+                    target_key,
+                    fields,
+                    end_values,
+                    duration,
+                    easing,
+                    elapsed,
+                    start_values,
+                    starts_captured,
+                } => {
+                    if !*starts_captured {
+                        let table: LuaTable = lua.registry_value(target_key)?;
+                        start_values.clear();
+                        for field in fields.iter() {
+                            let v: f64 = table.get(field.as_str()).unwrap_or(0.0);
+                            start_values.push(v);
+                        }
+                        *starts_captured = true;
+                    }
+
+                    let left = (*duration - *elapsed).max(0.0);
+                    let advance = remaining.min(left);
+                    *elapsed += advance;
+                    remaining -= advance;
+                    self.elapsed_in_iteration += advance;
+
+                    let raw_t = (*elapsed / *duration).clamp(0.0, 1.0) as f32;
+                    let eased = crate::math::easing::apply(easing, raw_t).unwrap_or(raw_t) as f64;
+                    let table: LuaTable = lua.registry_value(target_key)?;
+                    for (idx, field) in fields.iter().enumerate() {
+                        let start = start_values.get(idx).copied().unwrap_or(0.0);
+                        let end = end_values.get(idx).copied().unwrap_or(start);
+                        table.set(field.as_str(), start + (end - start) * eased)?;
+                    }
+
+                    if *elapsed + f64::EPSILON >= *duration {
+                        self.cursor += 1;
+                    }
+                }
+                FluentChainStep::Wait {
+                    duration,
+                    elapsed,
+                    callback,
+                    fired,
+                } => {
+                    let left = (*duration - *elapsed).max(0.0);
+                    let advance = remaining.min(left);
+                    *elapsed += advance;
+                    remaining -= advance;
+                    self.elapsed_in_iteration += advance;
+
+                    if *elapsed + f64::EPSILON >= *duration {
+                        if !*fired {
+                            if let Some(key) = callback {
+                                if let Ok(f) = lua.registry_value::<LuaFunction>(key) {
+                                    let _ = f.call::<_, ()>(());
+                                }
+                            }
+                            *fired = true;
+                        }
+                        self.cursor += 1;
+                    }
+                }
+                FluentChainStep::Call { callback, fired } => {
+                    if !*fired {
+                        if let Ok(f) = lua.registry_value::<LuaFunction>(callback) {
+                            let _ = f.call::<_, ()>(());
+                        }
+                        *fired = true;
+                    }
+                    self.cursor += 1;
+                }
+            }
+        }
+
+        Ok(false)
+    }
+}
+
 /// Provides Lua methods for step-by-step value interpolation chains.
 impl LuaUserData for LuaTweenChain {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- push --
-        /// Appends a step to the chain.
+        /// Appends a legacy scalar step to the compatibility chain.
         /// @param | opts | table | Step descriptor: `from`, `to`, `duration`, `easing?`, `label?`.
         /// @return | integer | Zero-based index of the new step.
         methods.add_method("push", |_, this, opts: LuaTable| {
-            let from: f64     = opts.get("from")?;
-            let to: f64       = opts.get("to")?;
+            let from: f64 = opts.get("from")?;
+            let to: f64 = opts.get("to")?;
             let duration: f64 = opts.get("duration")?;
-            let easing: String = opts.get::<_, Option<String>>("easing")?.unwrap_or_else(|| "linear".into());
+            let easing: String = opts
+                .get::<_, Option<String>>("easing")?
+                .unwrap_or_else(|| "linear".into());
             let label: Option<String> = opts.get::<_, Option<String>>("label")?;
             let step = crate::tween::ChainStep::new(from, to, duration, &easing, label);
             Ok(this.inner.borrow_mut().push(step))
         });
+
+        // -- to --
+        /// Adds a fluent tween step to this chain.
+        /// @param | target | table | Target table.
+        /// @param | fields | table | Field-to-value map.
+        /// @param | dur | number | Duration in seconds.
+        /// @param | easing | string? | Easing name (default `linear`).
+        /// @return | LTweenChain | This chain.
+        methods.add_function(
+            "to",
+            |lua,
+             (ud, target, fields_tbl, dur, easing): (
+                LuaAnyUserData,
+                LuaTable,
+                LuaTable,
+                f64,
+                Option<String>,
+            )| {
+                let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                let mut fields = Vec::new();
+                let mut end_values = Vec::new();
+                for pair in fields_tbl.pairs::<String, f64>() {
+                    let (k, v) = pair?;
+                    fields.push(k);
+                    end_values.push(v);
+                }
+                ch.steps.push(FluentChainStep::Tween {
+                    target_key: lua.create_registry_value(target)?,
+                    fields,
+                    end_values,
+                    duration: dur.max(f64::EPSILON),
+                    easing: easing.unwrap_or_else(|| "linear".to_string()),
+                    elapsed: 0.0,
+                    start_values: Vec::new(),
+                    starts_captured: false,
+                });
+                ch.complete = false;
+                drop(ch);
+                Ok(ud)
+            },
+        );
+
+        // -- wait --
+        /// Adds a fluent delay step to the chain timeline and keeps fluent chaining enabled.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @param | seconds | number | Delay duration.
+        /// @param | callback | function? | Optional callback fired after wait.
+        /// @return | LTweenChain | This chain.
+        methods.add_function(
+            "wait",
+            |lua, (ud, seconds, callback): (LuaAnyUserData, f64, Option<LuaFunction>)| {
+                let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+                let callback = callback
+                    .map(|f| lua.create_registry_value(f))
+                    .transpose()?;
+                ch.steps.push(FluentChainStep::Wait {
+                    duration: seconds.max(0.0),
+                    elapsed: 0.0,
+                    callback,
+                    fired: false,
+                });
+                ch.complete = false;
+                drop(ch);
+                Ok(ud)
+            },
+        );
+
+        // -- call --
+        /// Adds a fluent callback step that executes once at this point in the chain.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @param | fn | function | Callback to execute.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("call", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            ch.steps.push(FluentChainStep::Call {
+                callback: lua.create_registry_value(f)?,
+                fired: false,
+            });
+            ch.complete = false;
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- loop --
+        /// Sets fluent loop count where `0` means infinite looping behavior.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @param | n | integer | Number of passes.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("loop", |_, (ud, n): (LuaAnyUserData, u32)| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            ch.loop_count = n;
+            ch.inner.borrow_mut().set_looping(n == 0);
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- onLoop --
+        /// Sets callback fired when entering the next fluent loop iteration.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @param | fn | function | Callback receiving iteration number.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("onLoop", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            if let Some(old) = ch.on_loop.take() {
+                lua.remove_registry_value(old)?;
+            }
+            ch.on_loop = Some(lua.create_registry_value(f)?);
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- onComplete --
+        /// Sets callback fired after the final fluent pass fully completes.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @param | fn | function | Completion callback.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("onComplete", |lua, (ud, f): (LuaAnyUserData, LuaFunction)| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            if let Some(old) = ch.on_complete.take() {
+                lua.remove_registry_value(old)?;
+            }
+            ch.on_complete = Some(lua.create_registry_value(f)?);
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- start --
+        /// Starts fluent chain playback and registers this chain in the update queue.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("start", |lua, ud: LuaAnyUserData| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            ch.active = true;
+            ch.paused = false;
+            ch.complete = false;
+            ch.iteration = 1;
+            ch.reset_runtime_for_iteration();
+            ch.register_for_updates(lua, &ud)?;
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- stop --
+        /// Stops fluent playback and leaves the chain ready for a later restart.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("stop", |_, ud: LuaAnyUserData| {
+            match ud.borrow_mut::<LuaTweenChain>() {
+                Ok(mut ch) => {
+                    ch.active = false;
+                    ch.paused = false;
+                    ch.complete = false;
+                    drop(ch);
+                }
+                Err(_) => {
+                    queue_tween_chain_stop(ud.to_pointer() as usize);
+                }
+            }
+            Ok(ud)
+        });
+
+        // -- pause --
+        /// Pauses fluent playback while preserving timeline progress and cursor state.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("pause", |_, ud: LuaAnyUserData| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            ch.paused = true;
+            ch.inner.borrow_mut().pause();
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- resume --
+        /// Resumes fluent playback from the previously paused timeline position.
+        /// @param | self | LTweenChain | Chain instance.
+        /// @return | LTweenChain | This chain.
+        methods.add_function("resume", |_, ud: LuaAnyUserData| {
+            let mut ch = ud.borrow_mut::<LuaTweenChain>()?;
+            ch.paused = false;
+            ch.inner.borrow_mut().resume();
+            drop(ch);
+            Ok(ud)
+        });
+
+        // -- getProgress --
+        /// Returns normalized fluent chain progress in range `[0, 1]`.
+        /// @return | number | Progress ratio.
+        methods.add_method("getProgress", |_, this, ()| Ok(this.progress()));
+
+        // -- isComplete --
+        /// Returns whether fluent playback reached final completion.
+        /// @return | boolean | Completion flag.
+        methods.add_method("isComplete", |_, this, ()| Ok(this.complete));
+
+        // -- isActive --
+        /// Returns whether fluent playback is active.
+        /// @return | boolean | Active flag.
+        methods.add_method("isActive", |_, this, ()| Ok(this.active));
+
+        // -- getIteration --
+        /// Returns current iteration number.
+        /// @return | integer | Iteration (0 before first start).
+        methods.add_method("getIteration", |_, this, ()| Ok(this.iteration as i64));
+
         // -- tick --
-        /// Advances the chain and returns an array of completed step events.
-        /// Each event table has `step` (integer), `label` (string or nil), `value` (number).
+        /// Advances the legacy scalar chain and returns completion events.
         /// @param | dt | number | Delta time in seconds.
         /// @return | table | Array of event tables.
         methods.add_method("tick", |lua, this, dt: f64| {
@@ -544,73 +1091,86 @@ impl LuaUserData for LuaTweenChain {
             let out = lua.create_table()?;
             for (i, ev) in events.into_iter().enumerate() {
                 let t = lua.create_table()?;
-                t.set("step",  ev.step + 1)?; // one-based for Lua
+                t.set("step", ev.step + 1)?;
                 t.set("label", ev.label)?;
                 t.set("value", ev.value)?;
                 out.set(i + 1, t)?;
             }
             Ok(out)
         });
+
         // -- value --
-        /// Returns the current interpolated value of the active step.
+        /// Returns current legacy scalar value.
         /// @return | number | Current value.
-        methods.add_method("value", |_, this, ()| {
-            Ok(this.inner.borrow().value())
-        });
+        methods.add_method("value", |_, this, ()| Ok(this.inner.borrow().value()));
+
         // -- cursor --
-        /// Returns the one-based index of the currently active step.
-        /// @return | integer | Current step (one-based).
-        methods.add_method("cursor", |_, this, ()| {
-            Ok(this.inner.borrow().cursor() + 1)
-        });
+        /// Returns one-based current legacy step index.
+        /// @return | integer | Step index.
+        methods.add_method("cursor", |_, this, ()| Ok(this.inner.borrow().cursor() + 1));
+
         // -- len --
-        /// Returns the number of steps in the chain.
+        /// Returns legacy step count currently stored in this tween chain.
         /// @return | integer | Step count.
-        methods.add_method("len", |_, this, ()| {
-            Ok(this.inner.borrow().len())
-        });
+        methods.add_method("len", |_, this, ()| Ok(this.inner.borrow().len()));
+
         // -- reset --
-        /// Resets the chain to step 0.
-        methods.add_method("reset", |_, this, ()| {
+        /// Resets both fluent and legacy playback cursors.
+        methods.add_method_mut("reset", |_, this, ()| {
             this.inner.borrow_mut().reset();
+            this.reset_runtime_for_iteration();
+            this.iteration = if this.active { 1 } else { 0 };
+            this.complete = false;
             Ok(())
         });
+
         // -- jumpTo --
-        /// Jumps to the given step (one-based).
+        /// Jumps legacy chain cursor to given one-based step.
         /// @param | step | integer | Step index (one-based).
         methods.add_method("jumpTo", |_, this, step: usize| {
             this.inner.borrow_mut().jump_to(step.saturating_sub(1));
             Ok(())
         });
+
         // -- setLooping --
-        /// Enables or disables chain looping.
-        /// @param | looping | boolean | True to loop, false to stop at end.
-        methods.add_method("setLooping", |_, this, looping: bool| {
+        /// Enables/disables infinite loop compatibility mode.
+        /// @param | looping | boolean | Looping flag.
+        methods.add_method_mut("setLooping", |_, this, looping: bool| {
             this.inner.borrow_mut().set_looping(looping);
+            if looping {
+                this.loop_count = 0;
+            } else if this.loop_count == 0 {
+                this.loop_count = 1;
+            }
             Ok(())
         });
+
         // -- isLooping --
-        /// Returns true when the chain loops.
+        /// Returns whether chain is in infinite loop mode.
         /// @return | boolean | Looping flag.
-        methods.add_method("isLooping", |_, this, ()| {
-            Ok(this.inner.borrow().is_looping())
-        });
+        methods.add_method("isLooping", |_, this, ()| Ok(this.loop_count == 0));
+
         // -- isFinished --
-        /// Returns true when the non-looping chain has completed all steps.
-        /// @return | boolean | True when finished.
-        methods.add_method("isFinished", |_, this, ()| {
-            Ok(this.inner.borrow().is_finished())
-        });
+        /// Returns whether legacy playback reached completion for the active pass.
+        /// @return | boolean | Finished flag.
+        methods.add_method("isFinished", |_, this, ()| Ok(this.inner.borrow().is_finished()));
+
         // -- clear --
-        /// Removes all steps and resets the cursor.
-        methods.add_method("clear", |_, this, ()| {
+        /// Clears all fluent and legacy steps.
+        methods.add_method_mut("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
+            this.steps.clear();
+            this.cursor = 0;
+            this.elapsed_in_iteration = 0.0;
+            this.complete = false;
             Ok(())
         });
+
         // -- type --
         /// Returns the Lua-visible type name.
         /// @return | string | The string `LTweenChain`.
         methods.add_method("type", |_, _, ()| Ok("LTweenChain"));
+
         // -- typeOf --
         /// Returns whether this handle matches the given type name.
         /// @param | name | string | Type name to check.

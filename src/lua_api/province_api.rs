@@ -1,15 +1,11 @@
-//! `lurek.province` — Province-based strategic map system with grid regions, borders, ownership tracking, adjacency queries, and map-mode rendering.
-//!
-//! - Registers `lurek.province.*` functions and types via `register()`.
-//! - `LuaProvinceRegistry`: userdata type exposed to Lua.
-//! - Bridges 54 Lua-callable methods via `mlua`.
-//! - See `docs/specs/province.md` for the full API specification.
+//! File: src/lua_api/province_api.rs
 
 use super::SharedState;
 use crate::image::ProvinceGrid;
 use crate::province::events::ProvinceChange;
 use crate::province::map_modes::MapModeConfig;
 use crate::province::registry::ProvinceRegistry;
+use crate::province::routing;
 use crate::province::render::{
     generate_render_commands, ProvinceRenderOptions, ProvinceZoomMode,
 };
@@ -23,6 +19,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use std::collections::HashMap;
 /// Resolves a province asset path against the active game directory when the path is relative.
 fn resolve_game_path(state: &Rc<RefCell<SharedState>>, path: &str) -> String {
     let st = state.borrow();
@@ -418,6 +415,215 @@ impl LuaUserData for LuaProvinceRegistry {
             }
             Ok(out)
         });
+        // -- findRoute --
+        /// Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.
+        /// @param | from_id | integer | Start province id.
+        /// @param | to_id | integer | Target province id.
+        /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number`.
+        /// @return | table | Array of province ids from start to target; nil when unreachable.
+        methods.add_method("findRoute", |lua, this, (from_id, to_id, cost_fn): (u32, u32, Option<LuaFunction>)| {
+            let (pairs, all_ids) = this.with_registry(|r| {
+                let pairs: Vec<(u32, u32)> = r
+                    .adjacency_pairs()
+                    .into_iter()
+                    .map(|(a, b)| (a.0, b.0))
+                    .collect();
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                (pairs, ids)
+            })?;
+
+            let adjacency = routing::build_adjacency_map(&pairs);
+            let has_from = all_ids.contains(&from_id);
+            let has_to = all_ids.contains(&to_id);
+            if !has_from || !has_to {
+                return Ok(LuaValue::Nil);
+            }
+
+            let route = if let Some(f) = cost_fn {
+                let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
+                for (a, b) in pairs {
+                    let ab = f.call::<_, Option<f64>>((a, b))?.unwrap_or(1.0).max(0.000_001);
+                    let ba = f.call::<_, Option<f64>>((b, a))?.unwrap_or(1.0).max(0.000_001);
+                    edge_cost.insert((a, b), ab);
+                    edge_cost.insert((b, a), ba);
+                }
+                routing::find_route_dijkstra(&adjacency, from_id, to_id, &|a, b| {
+                    edge_cost.get(&(a, b)).copied().unwrap_or(1.0)
+                })
+            } else {
+                routing::find_route_bfs(&adjacency, from_id, to_id)
+            };
+
+            if let Some(path) = route {
+                let out = lua.create_table()?;
+                for (i, id) in path.into_iter().enumerate() {
+                    out.set(i + 1, id)?;
+                }
+                Ok(LuaValue::Table(out))
+            } else {
+                Ok(LuaValue::Nil)
+            }
+        });
+        // -- findRoutes --
+        /// Finds routes for a batch of `{from, to}` pairs.
+        /// @param | pairs | table | Array of `{from=integer, to=integer}` tables.
+        /// @param | cost_fn | function? | Optional cost callback `fn(from_id, to_id) -> number?`.
+        /// @return | table | Array of route arrays (or nil for unreachable entries).
+        methods.add_method("findRoutes", |lua, this, (pairs_tbl, cost_fn): (LuaTable, Option<LuaFunction>)| {
+            let (pairs, all_ids) = this.with_registry(|r| {
+                let pairs: Vec<(u32, u32)> = r
+                    .adjacency_pairs()
+                    .into_iter()
+                    .map(|(a, b)| (a.0, b.0))
+                    .collect();
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                (pairs, ids)
+            })?;
+            let adjacency = routing::build_adjacency_map(&pairs);
+
+            let mut edge_cost: HashMap<(u32, u32), f64> = HashMap::new();
+            if let Some(ref f) = cost_fn {
+                for &(a, b) in &pairs {
+                    let ab = f.call::<_, Option<f64>>((a, b))?.unwrap_or(1.0).max(0.000_001);
+                    let ba = f.call::<_, Option<f64>>((b, a))?.unwrap_or(1.0).max(0.000_001);
+                    edge_cost.insert((a, b), ab);
+                    edge_cost.insert((b, a), ba);
+                }
+            }
+
+            let out = lua.create_table()?;
+            for (i, pair_val) in pairs_tbl.sequence_values::<LuaTable>().enumerate() {
+                let t = pair_val?;
+                let from_id: u32 = t.get("from")?;
+                let to_id: u32 = t.get("to")?;
+
+                let route = if !all_ids.contains(&from_id) || !all_ids.contains(&to_id) {
+                    None
+                } else if cost_fn.is_some() {
+                    routing::find_route_dijkstra(&adjacency, from_id, to_id, &|a, b| {
+                        edge_cost.get(&(a, b)).copied().unwrap_or(1.0)
+                    })
+                } else {
+                    routing::find_route_bfs(&adjacency, from_id, to_id)
+                };
+
+                if let Some(path) = route {
+                    let row = lua.create_table()?;
+                    for (j, id) in path.into_iter().enumerate() {
+                        row.set(j + 1, id)?;
+                    }
+                    out.set(i + 1, LuaValue::Table(row))?;
+                } else {
+                    out.set(i + 1, LuaValue::Nil)?;
+                }
+            }
+            Ok(out)
+        });
+        // -- getConnectedComponents --
+        /// Returns connected components in the province adjacency graph.
+        /// @return | table | Array of arrays of province ids.
+        methods.add_method("getConnectedComponents", |lua, this, ()| {
+            let (pairs, ids) = this.with_registry(|r| {
+                let pairs: Vec<(u32, u32)> = r
+                    .adjacency_pairs()
+                    .into_iter()
+                    .map(|(a, b)| (a.0, b.0))
+                    .collect();
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                (pairs, ids)
+            })?;
+            let adjacency = routing::build_adjacency_map(&pairs);
+            let comps = routing::connected_components(&adjacency, &ids);
+            let out = lua.create_table()?;
+            for (i, comp) in comps.into_iter().enumerate() {
+                let row = lua.create_table()?;
+                for (j, id) in comp.into_iter().enumerate() {
+                    row.set(j + 1, id)?;
+                }
+                out.set(i + 1, row)?;
+            }
+            Ok(out)
+        });
+        // -- findIsolatedProvinces --
+        /// Returns provinces that have no adjacent province with the same owner attribute.
+        /// @param | owner_attr | string | Attribute key (for example `faction`).
+        /// @return | integer[] | Array of isolated province ids.
+        methods.add_method("findIsolatedProvinces", |lua, this, owner_attr: String| {
+            let (pairs, ids, owner_by_id) = this.with_registry(|r| {
+                let pairs: Vec<(u32, u32)> = r
+                    .adjacency_pairs()
+                    .into_iter()
+                    .map(|(a, b)| (a.0, b.0))
+                    .collect();
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                let mut owner_by_id = HashMap::new();
+                for id in &ids {
+                    if let Some(snap) = r.get_province(ProvinceId(*id)) {
+                        let v = snap.attrs.get(owner_attr.as_str()).cloned().unwrap_or_default();
+                        owner_by_id.insert(*id, v);
+                    }
+                }
+                (pairs, ids, owner_by_id)
+            })?;
+
+            let adjacency = routing::build_adjacency_map(&pairs);
+            let mut isolated = routing::find_isolated_provinces(&adjacency, &owner_by_id);
+            isolated.retain(|id| ids.contains(id));
+
+            let out = lua.create_table()?;
+            for (i, id) in isolated.into_iter().enumerate() {
+                out.set(i + 1, id)?;
+            }
+            Ok(out)
+        });
+        // -- isConnected --
+        /// Returns true when there is at least one route between two provinces.
+        /// @param | from_id | integer | Start province id.
+        /// @param | to_id | integer | Target province id.
+        /// @return | boolean | True when connected.
+        methods.add_method("isConnected", |_, this, (from_id, to_id): (u32, u32)| {
+            let (pairs, ids) = this.with_registry(|r| {
+                let pairs: Vec<(u32, u32)> = r
+                    .adjacency_pairs()
+                    .into_iter()
+                    .map(|(a, b)| (a.0, b.0))
+                    .collect();
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                (pairs, ids)
+            })?;
+            if !ids.contains(&from_id) || !ids.contains(&to_id) {
+                return Ok(false);
+            }
+            let adjacency = routing::build_adjacency_map(&pairs);
+            Ok(routing::is_connected(&adjacency, from_id, to_id))
+        });
+        // -- totalAttrForOwner --
+        /// Sums a numeric attribute for all provinces with matching owner value.
+        /// @param | owner_attr | string | Owner attribute key.
+        /// @param | owner_val | string | Owner attribute value to filter by.
+        /// @param | sum_attr | string | Numeric attribute key to sum.
+        /// @return | number | Total numeric sum.
+        methods.add_method("totalAttrForOwner", |_, this, (owner_attr, owner_val, sum_attr): (String, String, String)| {
+            let (owner_by_id, value_by_id) = this.with_registry(|r| {
+                let ids: Vec<u32> = r.province_ids().into_iter().map(|id| id.0).collect();
+                let mut owner_by_id = HashMap::new();
+                let mut value_by_id = HashMap::new();
+                for id in ids {
+                    if let Some(snap) = r.get_province(ProvinceId(id)) {
+                        let owner = snap.attrs.get(owner_attr.as_str()).cloned().unwrap_or_default();
+                        owner_by_id.insert(id, owner);
+                        let value = snap
+                            .attrs
+                            .get(sum_attr.as_str())
+                            .and_then(|s| s.parse::<f64>().ok())
+                            .unwrap_or(0.0);
+                        value_by_id.insert(id, value);
+                    }
+                }
+                (owner_by_id, value_by_id)
+            })?;
+            Ok(routing::total_numeric_attr_for_owner(&owner_by_id, &value_by_id, owner_val.as_str()))
+        });
         // -- getBorderType --
         /// Returns the border type ID (0-255) between two adjacent provinces, or nil if not set.
         /// @param | a | integer | First province ID.
@@ -495,7 +701,7 @@ impl LuaUserData for LuaProvinceRegistry {
         /// Sets the style override for a specific adjacency pair, including optional color, thickness, and semantic flags.
         /// @param | a | integer | First province ID.
         /// @param | b | integer | Second province ID.
-        /// @param | style | table | Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string|string[].
+        /// @param | style | table | Style table with optional fields: color={r,g,b,a}, thickness=number, flags accepts a single string or an array of strings.
         /// @return | boolean | True when style was applied.
         methods.add_method_mut(
             "setBorderPairStyle",
@@ -535,9 +741,9 @@ impl LuaUserData for LuaProvinceRegistry {
         // -- setPoliticalColor --
         /// Sets the political map color for a province. Used in political map mode rendering and change tracking.
         /// @param | id | integer | Province ID.
-        /// @param | r | number | Red component (0.0–1.0).
-        /// @param | g | number | Green component (0.0–1.0).
-        /// @param | b | number | Blue component (0.0–1.0).
+        /// @param | r | number | Red component (0.0â€“1.0).
+        /// @param | g | number | Green component (0.0â€“1.0).
+        /// @param | b | number | Blue component (0.0â€“1.0).
         /// @param | a | number? | Alpha component (default 1.0).
         /// @return | boolean | True if the province ID exists.
         methods.add_method_mut(
@@ -1202,9 +1408,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     )?;
     let s = state.clone();
     // -- setFlag --
-    /// Sets a single flag bit (0–63) on a province.
+    /// Sets a single flag bit (0â€“63) on a province.
     /// @param | id | integer | Province ID.
-    /// @param | bit | integer | Flag bit index (0–63).
+    /// @param | bit | integer | Flag bit index (0â€“63).
     /// @param | value | boolean | True to set, false to clear.
     tbl.set(
         "setFlag",
@@ -1219,7 +1425,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- hasFlag --
     /// Checks whether a flag bit is set on a province.
     /// @param | id | integer | Province ID.
-    /// @param | bit | integer | Flag bit index (0–63).
+    /// @param | bit | integer | Flag bit index (0â€“63).
     /// @return | boolean | True if the flag bit is set.
     tbl.set(
         "hasFlag",

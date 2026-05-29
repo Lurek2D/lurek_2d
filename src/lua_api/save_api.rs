@@ -1,9 +1,4 @@
-//! `lurek.save` — Persistent game save/load system with named slots, schema versioning, auto-save, compression, and migration support.
-//!
-//! - Registers `lurek.save.*` functions and types via `register()`.
-//! - `LuaSaveManager`: userdata type exposed to Lua.
-//! - Bridges 28 Lua-callable methods via `mlua`.
-//! - See `docs/specs/save.md` for the full API specification.
+//! File: src/lua_api/save_api.rs
 
 use super::SharedState;
 use crate::save::{
@@ -336,7 +331,7 @@ impl LuaUserData for LuaSaveManager {
         /// @return | boolean | True if an auto-save was triggered during this update.
         methods.add_method_mut("update", |_, this, dt: f64| Ok(this.manager.update(dt)));
         // -- setSummary --
-        /// Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
+        /// Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
         /// This appears in slot listings so players can identify saves without loading them.
         /// @param | summary | string | Short description of the current game progress.
         methods.add_method_mut("setSummary", |_, this, summary: String| {

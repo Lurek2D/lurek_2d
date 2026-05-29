@@ -68,6 +68,66 @@ T.group("lurek.math.newLootTable", function()
         T.assert_true(ok)
     end)
 
+    T.test("merge combines entries from another table", function()
+        local a = math.newLootTable(5)
+        a:add("sword", 1.0)
+        local b = math.newLootTable(6)
+        b:add("shield", 1.0)
+        a:merge(b)
+        T.assert_equal(a:entryCount(), 2)
+    end)
+
+    T.test("lootFromList creates table with entries", function()
+        local lt = math.lootFromList({
+            { id = "common", weight = 10.0, meta = { tier = "c" } },
+            { id = "rare", weight = 1.0, meta = { tier = "r" } },
+        })
+        T.assert_equal(lt:entryCount(), 2)
+        local sample = lt:sample()
+        T.assert_not_nil(sample)
+        T.assert_not_nil(sample.meta)
+    end)
+
+    T.test("lootFromToml loads entries from file", function()
+        local path = "save/loot_table_unit_test.toml"
+        local toml_src = [=[
+seed = 42
+
+[[entries]]
+id = "common"
+weight = 10
+
+[entries.meta]
+tier = "c"
+
+[[entries]]
+id = "rare"
+weight = 1
+    ]=]
+        lurek.filesystem.write(path, toml_src)
+
+        local lt = math.lootFromToml(path)
+        T.assert_equal(lt:entryCount(), 2)
+        local sample = lt:sample()
+        T.assert_not_nil(sample)
+        T.assert_not_nil(sample.id)
+    end)
+
+    T.test("save / restore round-trips loot table state", function()
+        local lt = math.newLootTable(123)
+        lt:add("a", 1.0)
+        lt:add("b", 2.0)
+        lt:build()
+        local blob = lt:save()
+        T.assert_not_nil(blob)
+
+        local restored = math.newLootTable()
+        restored:restore(blob)
+        T.assert_equal(restored:entryCount(), 2)
+        local s = restored:sample()
+        T.assert_not_nil(s)
+    end)
+
     T.test("setSeed makes results deterministic", function()
         local function make_and_sample(seed)
             local lt = math.newLootTable(seed)
@@ -88,6 +148,8 @@ T.group("lurek.math.newLootTable", function()
         T.assert_false(lt:typeOf("LSprite"))
     end)
 end)
+
+test_summary()
 
 T.group("lurek.math.newPityTracker", function()
     T.test("creates tracker with zero counter", function()
@@ -129,11 +191,27 @@ T.group("lurek.math.newPityTracker", function()
         local pt = math.newPityTracker("gold", 4)
         pt:notice("silver")
         pt:notice("silver")
-        local blob = pt:export()
+        local blob = pt:save()
         T.assert_not_nil(blob)
         local pt2 = math.newPityTracker("gold", 4)
-        pt2:import(blob)
+        pt2:restore(blob)
         T.assert_equal(pt2:counter(), 2)
+    end)
+
+    T.test("sampleWithPity forces target when primed", function()
+        local lt = math.newLootTable(2)
+        lt:add("common", 100.0)
+        lt:add("rare", 0.0, { tier = "r" })
+        lt:build()
+
+        local pity = math.newPityTracker("rare", 1)
+        pity:notice("common")
+        T.assert_true(pity:isPrimed())
+
+        local id, meta = math.sampleWithPity(lt, pity)
+        T.assert_equal(id, "rare")
+        T.assert_not_nil(meta)
+        T.assert_equal(meta.tier, "r")
     end)
 
     T.test("typeOf returns LPityTracker", function()

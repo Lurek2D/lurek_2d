@@ -1,13 +1,4 @@
-//! `lurek.dataframe` -- DataFrame bindings for tabular rows, columns, grouping, joins, SQL queries, lazy pipelines, databases, vectorized frames, serialization, and statistics.
-//!
-//! - Registers `lurek.dataframe.*` functions and types via `register()`.
-//! - `LuaGroupedFrame`: userdata type exposed to Lua.
-//! - `LuaDataFrameTask`: userdata type exposed to Lua.
-//! - `LuaDataFrame`: userdata type exposed to Lua.
-//! - `LuaLazyQuery`: userdata type exposed to Lua.
-//! - `LuaDatabase`: userdata type exposed to Lua.
-//! - `LuaVecFrame`: userdata type exposed to Lua.
-//! - Bridges 159 Lua-callable methods via `mlua`.
+//! File: src/lua_api/dataframe_api.rs
 
 use super::SharedState;
 use crate::dataframe::file_io::{self, DataFrameFileError};
@@ -1030,7 +1021,7 @@ impl LuaUserData for LuaDataFrame {
             },
         );
         // -- parFilter --
-        /// Parallel filter — automatically parallelizes when frame has 10,000+ rows.
+        /// Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
         /// @param | col | any | Column name string or one-based column index.
         /// @param | op | string | Comparison operator (==, !=, <, >, <=, >=, contains).
         /// @param | val | any | Value to compare against.
@@ -1046,7 +1037,7 @@ impl LuaUserData for LuaDataFrame {
             },
         );
         // -- parGroupAgg --
-        /// Parallel group-by aggregation — partitions and aggregates in parallel.
+        /// Parallel group-by aggregation â€” partitions and aggregates in parallel.
         /// @param | group_col | any | Column name string or one-based column index.
         /// @param | agg_col | any | Column name string or one-based column index.
         /// @param | fn_name | string | Aggregation function (sum, mean, count, min, max, first, last).

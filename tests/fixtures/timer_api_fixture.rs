@@ -1,7 +1,4 @@
-﻿//! `lurek.time` — Frame timing and scheduled callback API.
-//!
-//! Provides delta time, total elapsed time, FPS tracking, and a Scheduler
-//! object for delayed and repeating Lua callbacks.
+//! File: tests/fixtures/timer_api_fixture.rs
 
 use super::SharedState;
 use crate::timer::{Clock, Scheduler};

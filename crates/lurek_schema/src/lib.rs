@@ -1,3 +1,11 @@
+//! File-level documentation for lib.rs.
+//!
+//! - Provides core functionality implemented in lib.
+//! - Provides line-level guidance for maintainers and reviewers of this file.
+//! - Provides these key functions/test entries:
+//! -   - from_str
+//! -   - new
+
 use std::collections::{BTreeMap, BTreeSet};
 
 pub type SchemaError = String;

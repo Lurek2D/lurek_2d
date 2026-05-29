@@ -25,6 +25,21 @@ The module offers seamless integration with external tools and formats. An Asepr
 
 Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. Lua bindings expose `LAnimation:draw` and `LAnimStateMachine:draw` as ergonomic helpers over the same current-frame rectangle returned by `getQuad`; these helpers queue one draw command when a frame is active, return `false` without mutating playback when no frame is active, and leave broader `lurek.render.draw` polymorphism unchanged. Both `:draw` methods accept two call forms: `draw(image, x, y, opts)` for explicit atlas passing and `draw(x, y, opts)` when a spritesheet has been stored in advance with `:setImage(image)`. The API is thoroughly exposed to Lua via the `lurek.animation` namespace, providing script developers with constructors for state machines, curves, blend layers, and synchronization groups, along with methods to advance playback and poll animation events. By importing only the `math` module and avoiding cyclic dependencies, the animation runtime remains fully headless-testable and architecturally isolated within the Feature Systems group.
 
+## Files
+
+- `aseprite.rs`: Loads Aseprite JSON exports into engine animation metadata.
+- `blend.rs`: Defines blend masks and named blend layers for multi-clip animation mixing.
+- `clip.rs`: Defines named animation clips as reusable frame-index ranges.
+- `controller.rs`: Owns the runtime animation player for frame-based clips.
+- `curve.rs`: Defines keyed numeric curves and sparse multi-property timelines for animation data.
+- `event.rs`: Defines the animation events emitted while clip playback advances.
+- `frame.rs`: Defines the single-frame record used by the animation runtime to pair a source rectangle with optional per-frame timing.
+- `mod.rs`: Provides frame-based sprite animation with clips, playback modes, and named events.
+- `render.rs`: Converts the current animation frame quad into a textured draw command.
+- `spine_bridge.rs`: Bridges a Spine skeleton to an animation state machine via name mapping.
+- `state_machine.rs`: Implements a named-state animation FSM driven by typed parameters and parsed conditions.
+- `sync_group.rs`: Groups animation slot-map keys that should stay synchronised during playback.
+
 ## Source Documentation
 
 ### `aseprite.rs`

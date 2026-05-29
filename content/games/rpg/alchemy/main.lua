@@ -262,7 +262,7 @@ function lurek.init()
         lurek.input.bind("ingredient" .. i, tostring(i))
     end
     _cam:reset()
-    
+
     lurek.ui.loadLayoutFile("content/games/rpg/alchemy/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
@@ -271,21 +271,21 @@ function lurek.init()
     app_ui.gold_text = ui_root:findById("gold_text")
     app_ui.potions_text = ui_root:findById("potions_text")
     app_ui.discovered_text = ui_root:findById("discovered_text")
-    
+
     app_ui.cauldron_elements = ui_root:findById("cauldron_elements")
     app_ui.elem_fire = ui_root:findById("elem_fire")
     app_ui.elem_water = ui_root:findById("elem_water")
     app_ui.elem_earth = ui_root:findById("elem_earth")
     app_ui.elem_air = ui_root:findById("elem_air")
-    
+
     app_ui.recipe_book = ui_root:findById("recipe_book")
     app_ui.recipes = {}
     for i=1, 5 do app_ui.recipes[i] = ui_root:findById("recipe_" .. i) end
-    
+
     app_ui.msg_panel = ui_root:findById("msg_panel")
     app_ui.msg_text = ui_root:findById("msg_text")
     app_ui.controls_hint = ui_root:findById("controls_hint")
-    
+
     app_ui.shop_screen = ui_root:findById("shop_screen")
     app_ui.shop_gold = ui_root:findById("shop_gold")
     app_ui.shop_buy = {}
@@ -293,7 +293,7 @@ function lurek.init()
     app_ui.shop_sell_none = ui_root:findById("shop_sell_none")
     app_ui.shop_sell = {}
     for i=1, 4 do app_ui.shop_sell[i] = ui_root:findById("shop_sell_" .. i) end
-    
+
     app_ui.discovery_screen = ui_root:findById("discovery_screen")
     app_ui.disc_title = ui_root:findById("disc_title")
     app_ui.disc_name = ui_root:findById("disc_name")
@@ -519,7 +519,7 @@ function lurek.process(delta)
             clear_workbench()
         end
     end
-    
+
     -- UI Sync
     if app_ui then
         app_ui.hud.visible = (state ~= STATE_TITLE and state ~= STATE_DISCOVERY)
@@ -528,7 +528,7 @@ function lurek.process(delta)
             app_ui.gold_text.text = "Gold: " .. gold
             app_ui.potions_text.text = "Potions: " .. #inventory
             app_ui.discovered_text.text = "Discovered: " .. #discovered .. "/5"
-            
+
             if cauldron then
                 app_ui.cauldron_elements.visible = true
                 app_ui.elem_fire.text = "Fire:  " .. cauldron.fire
@@ -538,7 +538,7 @@ function lurek.process(delta)
             else
                 app_ui.cauldron_elements.visible = false
             end
-            
+
             for i, rec in ipairs(recipes) do
                 local found = false
                 for _, d in ipairs(discovered) do
@@ -552,7 +552,7 @@ function lurek.process(delta)
                     app_ui.recipes[i].color = {0.4, 0.4, 0.4, 0.6}
                 end
             end
-            
+
             if message_timer > 0 then
                 app_ui.msg_panel.visible = true
                 local a = math.min(message_timer, 1)
@@ -563,7 +563,7 @@ function lurek.process(delta)
                 app_ui.msg_panel.visible = false
             end
         end
-        
+
         app_ui.shop_screen.visible = (state == STATE_SHOP)
         if app_ui.shop_screen.visible then
             app_ui.shop_gold.text = "Gold: " .. gold
@@ -576,7 +576,7 @@ function lurek.process(delta)
                 if ing.air > 0 then props = props .. "A" .. ing.air .. " " end
                 app_ui.shop_buy[i].text = string.format("%d. %s   %dg   %s   stock:%d", i, ing.name, ing.cost, props, stock[i])
             end
-            
+
             if #inventory == 0 then
                 app_ui.shop_sell_none.visible = true
                 for i=1, 4 do app_ui.shop_sell[i].visible = false end
@@ -593,7 +593,7 @@ function lurek.process(delta)
                 end
             end
         end
-        
+
         app_ui.discovery_screen.visible = (state == STATE_DISCOVERY)
         if app_ui.discovery_screen.visible then
             local s = anim.disc_scale

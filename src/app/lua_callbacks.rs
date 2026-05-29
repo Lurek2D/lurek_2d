@@ -20,6 +20,14 @@ pub fn call_lua_callback_checked<'a, A: IntoLuaMulti<'a>>(
 ) -> Result<(), mlua::Error> {
     call_lua_callback_checked_with_timeout(lua, name, args, None)
 }
+
+/// Return true when `lurek.<name>` exists and is callable in the active Lua VM.
+pub fn has_lua_callback(lua: &Lua, name: &str) -> bool {
+    if let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") {
+        return lurek.get::<_, LuaFunction>(name).is_ok();
+    }
+    false
+}
 /// Call `lurek.<name>(...)` with optional timeout and log failures.
 pub fn call_lua_callback_with_timeout<'a, A: IntoLuaMulti<'a>>(
     lua: &'a Lua,

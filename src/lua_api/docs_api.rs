@@ -1,11 +1,4 @@
-//! `lurek.docs` -- Documentation tooling bindings for live API reflection, editable catalogs, quality reports, schema validation, and export helpers that produce editor and Markdown artifacts from Lua-visible API metadata.
-//!
-//! - Registers `lurek.docs.*` functions and types via `register()`.
-//! - `LuaSchema`: userdata type exposed to Lua.
-//! - `DocEntry`: userdata type exposed to Lua.
-//! - `ApiCatalog`: userdata type exposed to Lua.
-//! - `ValidationReport`: userdata type exposed to Lua.
-//! - `QualityReport`: userdata type exposed to Lua.
+//! File: src/lua_api/docs_api.rs
 
 use super::SharedState;
 use crate::docs;

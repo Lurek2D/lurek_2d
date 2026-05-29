@@ -1,8 +1,4 @@
-//! `lurek.agent` -- Agent bindings for LLM and VM integration.
-//!
-//! - Registers `lurek.agent.*` functions and types via `register()`.
-//! - Bridges 43 Lua-callable methods via `mlua`.
-//! - See `docs/specs/agent.md` for the full API specification.
+//! File: src/lua_api/agent_api.rs
 
 use crate::agent::{
     AgentBatchTask, AgentMemory, EpisodicMemory, GlobalLlmConfig, LlmChat, LlmTemplate,
@@ -17,7 +13,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-// ─── LuaAgent ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAgent â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for a single LLM Agent.
 pub struct LuaAgent {
@@ -26,7 +22,7 @@ pub struct LuaAgent {
 
 impl UserData for LuaAgent {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── addSkill ───
+        // â”€â”€â”€ addSkill â”€â”€â”€
         /// Appends a named skill prompt to the agent's context block.
         /// @param | name | string | Unique skill identifier shown in the injected context.
         /// @param | prompt | string | Instruction text appended to the system block.
@@ -36,7 +32,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── clearSkills ───
+        // â”€â”€â”€ clearSkills â”€â”€â”€
         /// Removes all registered skills from the agent's context.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clearSkills", |_, this, ()| {
@@ -44,7 +40,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setOption ───
+        // â”€â”€â”€ setOption â”€â”€â”€
         /// Sets a single model option forwarded to the LLM backend.
         /// @param | key | string | Option name (e.g. `"temperature"`, `"seed"`, `"num_ctx"`).
         /// @param | value | any | Option value forwarded as JSON.
@@ -55,7 +51,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setFormat ───
+        // â”€â”€â”€ setFormat â”€â”€â”€
         /// Changes the response format for future prompts.
         /// @param | format | string | One of `"json"`, `"csv"`, or `"text"`.
         /// @return | nil | No value is returned.
@@ -64,7 +60,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setMaxRetries ───
+        // â”€â”€â”€ setMaxRetries â”€â”€â”€
         /// Sets the maximum retry count on transient network or timeout errors.
         /// @param | n | integer | Number of retries (0 disables retry).
         /// @return | nil | No value is returned.
@@ -73,7 +69,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setContextSize ───
+        // â”€â”€â”€ setContextSize â”€â”€â”€
         /// Sets the token context window size forwarded to the LLM backend.
         /// @param | n | integer | Context size in tokens (e.g. 4096).
         /// @return | nil | No value is returned.
@@ -82,7 +78,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setTemperature ───
+        // â”€â”€â”€ setTemperature â”€â”€â”€
         /// Sets the sampling temperature forwarded to the LLM backend.
         /// @param | t | number | Temperature value (e.g. 0.7). Higher = more random.
         /// @return | nil | No value is returned.
@@ -91,7 +87,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setName ───
+        // â”€â”€â”€ setName â”€â”€â”€
         /// Sets the agent's name identifier used when added to an AISystem.
         /// @param | name | string | Agent name.
         /// @return | nil | No value is returned.
@@ -100,7 +96,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setDescription ───
+        // â”€â”€â”€ setDescription â”€â”€â”€
         /// Sets the agent's role description injected after the system prompt when routed through an AISystem.
         /// @param | description | string | Role description text.
         /// @return | nil | No value is returned.
@@ -109,7 +105,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setModel ───
+        // â”€â”€â”€ setModel â”€â”€â”€
         /// Changes the model identifier for future prompts.
         /// @param | model | string | Model name (e.g. `"llama3"`, `"mistral"`).
         /// @return | nil | No value is returned.
@@ -118,7 +114,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setUrl ───
+        // â”€â”€â”€ setUrl â”€â”€â”€
         /// Changes the LLM endpoint URL for future prompts.
         /// @param | url | string | Full endpoint URL (e.g. `"http://127.0.0.1:11434/api/generate"`).
         /// @return | nil | No value is returned.
@@ -127,7 +123,7 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── setTimeout ───
+        // â”€â”€â”€ setTimeout â”€â”€â”€
         /// Sets the per-request timeout in seconds (0 uses the default 60 s).
         /// @param | secs | integer | Timeout in seconds.
         /// @return | nil | No value is returned.
@@ -136,42 +132,42 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── getName ───
+        // â”€â”€â”€ getName â”€â”€â”€
         /// Returns the agent's name identifier.
         /// @return | string | Agent name, or `""` if not set.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.runtime.get_name().to_string())
         });
 
-        // ─── getDescription ───
+        // â”€â”€â”€ getDescription â”€â”€â”€
         /// Returns the agent's role description.
         /// @return | string | Role description, or `""` if not set.
         methods.add_method("getDescription", |_, this, ()| {
             Ok(this.runtime.get_description().to_string())
         });
 
-        // ─── getModel ───
+        // â”€â”€â”€ getModel â”€â”€â”€
         /// Returns the current model identifier.
         /// @return | string | Model name.
         methods.add_method("getModel", |_, this, ()| {
             Ok(this.runtime.get_model().to_string())
         });
 
-        // ─── getUrl ───
+        // â”€â”€â”€ getUrl â”€â”€â”€
         /// Returns the current LLM endpoint URL.
         /// @return | string | Endpoint URL.
         methods.add_method("getUrl", |_, this, ()| {
             Ok(this.runtime.get_url().to_string())
         });
 
-        // ─── getFormat ───
+        // â”€â”€â”€ getFormat â”€â”€â”€
         /// Returns the current response format string.
         /// @return | string | One of `"json"`, `"csv"`, or `"text"`.
         methods.add_method("getFormat", |_, this, ()| {
             Ok(this.runtime.get_format().to_string())
         });
 
-        // ─── hasSkill ───
+        // â”€â”€â”€ hasSkill â”€â”€â”€
         /// Returns `true` if a skill with `name` is registered.
         /// @param | name | string | Skill name to check.
         /// @return | boolean | `true` if the skill exists.
@@ -179,14 +175,14 @@ impl UserData for LuaAgent {
             Ok(this.runtime.has_skill(&name))
         });
 
-        // ─── skillCount ───
+        // â”€â”€â”€ skillCount â”€â”€â”€
         /// Returns the number of registered skills.
         /// @return | integer | Skill count.
         methods.add_method("skillCount", |_, this, ()| {
             Ok(this.runtime.skill_count())
         });
 
-        // ─── listSkills ───
+        // â”€â”€â”€ listSkills â”€â”€â”€
         /// Returns a list of registered skill names in insertion order.
         /// @return | table | String array of skill names.
         methods.add_method("listSkills", |lua, this, ()| {
@@ -198,7 +194,7 @@ impl UserData for LuaAgent {
             Ok(tbl)
         });
 
-        // ─── prompt ───
+        // â”€â”€â”€ prompt â”€â”€â”€
         /// Sends an instructional prompt to the LLM asynchronously.
         /// @param | instruction | string | The specific task instruction for the agent.
         /// @param | callback | function | Function called with `(success, data, err_info)` when complete.
@@ -210,7 +206,7 @@ impl UserData for LuaAgent {
             },
         );
 
-        // ─── promptBatch ───
+        // â”€â”€â”€ promptBatch â”€â”€â”€
         /// Sends a batch of prompts to the LLM asynchronously.
         /// @param | instructions | table | Ordered list of instruction strings.
         /// @param | callback | function | Function called with a results table when all complete.
@@ -222,7 +218,7 @@ impl UserData for LuaAgent {
             },
         );
 
-        // ─── cancel ───
+        // â”€â”€â”€ cancel â”€â”€â”€
         /// Cancels an in-flight or pending request by callback ID.
         /// @param | callback_id | integer | ID returned by `prompt` or `promptBatch`.
         /// @return | nil | No value is returned.
@@ -231,19 +227,19 @@ impl UserData for LuaAgent {
             Ok(())
         });
 
-        // ─── pendingCount ───
+        // â”€â”€â”€ pendingCount â”€â”€â”€
         /// Returns the number of in-flight requests that have not yet completed.
         /// @return | integer | Number of pending requests.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.runtime.pending_count())
         });
 
-        // ─── update ───
+        // â”€â”€â”€ update â”€â”€â”€
         /// Polls the background client for completed LLM requests and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
 
-        // ─── evalCode ───
+        // â”€â”€â”€ evalCode â”€â”€â”€
         /// Evaluates a Lua code string inside the active VM.
         /// @param | code | string | The Lua code to execute.
         /// @return | boolean | `true` on success, raises an error on failure.
@@ -253,7 +249,7 @@ impl UserData for LuaAgent {
     }
 }
 
-// ─── LuaAgentManager ─────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAgentManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for managing multiple LLM Agents in parallel.
 pub struct LuaAgentManager {
@@ -262,7 +258,7 @@ pub struct LuaAgentManager {
 
 impl UserData for LuaAgentManager {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── runAll ───
+        // â”€â”€â”€ runAll â”€â”€â”€
         /// Runs multiple agent tasks in parallel and calls a single callback when all finish.
         /// @param | tasks | table | List of `{ agent = LAgent, instruction = string }` tables.
         /// @param | callback | function | Function called with a results table when all tasks complete.
@@ -282,14 +278,14 @@ impl UserData for LuaAgentManager {
             },
         );
 
-        // ─── update ───
+        // â”€â”€â”€ update â”€â”€â”€
         /// Polls the manager's background client for completed tasks and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
     }
 }
 
-// ─── LuaAISystem ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAISystem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for an AISystem multi-agent orchestrator.
 pub struct LuaAISystem {
@@ -298,7 +294,7 @@ pub struct LuaAISystem {
 
 impl UserData for LuaAISystem {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── addAgent ───
+        // â”€â”€â”€ addAgent â”€â”€â”€
         /// Registers a named agent in the system.
         /// @param | name | string | Unique agent name used for routing.
         /// @param | agent | LAgent | The agent instance to register.
@@ -309,7 +305,7 @@ impl UserData for LuaAISystem {
             Ok(())
         });
 
-        // ─── removeAgent ───
+        // â”€â”€â”€ removeAgent â”€â”€â”€
         /// Removes a registered agent by name.
         /// @param | name | string | Agent name to remove.
         /// @return | boolean | `true` if the agent was found and removed.
@@ -317,7 +313,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_agent(&name))
         });
 
-        // ─── listAgents ───
+        // â”€â”€â”€ listAgents â”€â”€â”€
         /// Returns a sorted list of all registered agent names.
         /// @return | table | String array of agent names.
         methods.add_method("listAgents", |lua, this, ()| {
@@ -329,7 +325,7 @@ impl UserData for LuaAISystem {
             Ok(tbl)
         });
 
-        // ─── hasAgent ───
+        // â”€â”€â”€ hasAgent â”€â”€â”€
         /// Returns `true` if an agent with `name` is registered.
         /// @param | name | string | Agent name to check.
         /// @return | boolean | `true` if the agent exists.
@@ -337,14 +333,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_agent(&name))
         });
 
-        // ─── agentCount ───
+        // â”€â”€â”€ agentCount â”€â”€â”€
         /// Returns the number of registered agents.
         /// @return | integer | Agent count.
         methods.add_method("agentCount", |_, this, ()| {
             Ok(this.runtime.agent_count())
         });
 
-        // ─── addInstruction ───
+        // â”€â”€â”€ addInstruction â”€â”€â”€
         /// Adds a named instruction block the user can explicitly include per prompt.
         /// @param | key | string | Unique instruction identifier.
         /// @param | text | string | Instruction text injected into the system block.
@@ -354,7 +350,7 @@ impl UserData for LuaAISystem {
             Ok(())
         });
 
-        // ─── removeInstruction ───
+        // â”€â”€â”€ removeInstruction â”€â”€â”€
         /// Removes an instruction block by key.
         /// @param | key | string | Instruction key to remove.
         /// @return | boolean | `true` if the instruction was found and removed.
@@ -362,7 +358,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_instruction(key))
         });
 
-        // ─── hasInstruction ───
+        // â”€â”€â”€ hasInstruction â”€â”€â”€
         /// Returns `true` if an instruction with `key` is registered.
         /// @param | key | string | Instruction key to check.
         /// @return | boolean | `true` if the instruction exists.
@@ -370,14 +366,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_instruction(&key))
         });
 
-        // ─── instructionCount ───
+        // â”€â”€â”€ instructionCount â”€â”€â”€
         /// Returns the number of registered instruction blocks.
         /// @return | integer | Instruction count.
         methods.add_method("instructionCount", |_, this, ()| {
             Ok(this.runtime.instruction_count())
         });
 
-        // ─── listInstructions ───
+        // â”€â”€â”€ listInstructions â”€â”€â”€
         /// Returns a list of registered instruction keys in insertion order.
         /// @return | table | String array of instruction keys.
         methods.add_method("listInstructions", |lua, this, ()| {
@@ -389,7 +385,7 @@ impl UserData for LuaAISystem {
             Ok(tbl)
         });
 
-        // ─── addSkill ───
+        // â”€â”€â”€ addSkill â”€â”€â”€
         /// Adds a keyword-gated system skill that Lurek auto-injects when the prompt overlaps with its keywords.
         /// @param | name | string | Skill identifier shown in the injected context.
         /// @param | keywords | table | String array of trigger keywords (case-insensitive match).
@@ -408,7 +404,7 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // ─── removeSkill ───
+        // â”€â”€â”€ removeSkill â”€â”€â”€
         /// Removes a registered system skill by exact name.
         /// @param | name | string | Skill name to remove.
         /// @return | boolean | `true` if the skill was found and removed.
@@ -416,7 +412,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.remove_system_skill(name))
         });
 
-        // ─── hasSkill ───
+        // â”€â”€â”€ hasSkill â”€â”€â”€
         /// Returns `true` if a system skill with `name` is registered.
         /// @param | name | string | Skill name to check.
         /// @return | boolean | `true` if the skill exists.
@@ -424,14 +420,14 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.has_system_skill(&name))
         });
 
-        // ─── skillCount ───
+        // â”€â”€â”€ skillCount â”€â”€â”€
         /// Returns the number of registered system skills.
         /// @return | integer | Skill count.
         methods.add_method("skillCount", |_, this, ()| {
             Ok(this.runtime.system_skill_count())
         });
 
-        // ─── buildContext ───
+        // â”€â”€â”€ buildContext â”€â”€â”€
         /// Builds and returns the full context string that would be sent for a given prompt.
         /// @param | instruction | string | The prompt text used for keyword matching.
         /// @param | opts | table | Optional table with `agent` (string) and `instructions` (table) keys.
@@ -453,7 +449,7 @@ impl UserData for LuaAISystem {
             Ok(this.runtime.build_context(&instruction, &include, agent_name.as_deref()))
         });
 
-        // ─── prompt ───
+        // â”€â”€â”€ prompt â”€â”€â”€
         /// Sends a prompt to a named agent through the system, auto-injecting matching context.
         /// @param | agent_name | string | Name of the agent to query.
         /// @param | instruction | string | The task instruction for the agent.
@@ -483,7 +479,7 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // ─── runAll ───
+        // â”€â”€â”€ runAll â”€â”€â”€
         /// Dispatches multiple named-agent tasks in parallel through the system.
         /// @param | tasks | table | List of `{ agent = string, instruction = string, instructions = table? }`.
         /// @param | callback | function | Function called with a results table when all tasks complete.
@@ -514,14 +510,14 @@ impl UserData for LuaAISystem {
             },
         );
 
-        // ─── update ───
+        // â”€â”€â”€ update â”€â”€â”€
         /// Polls the system's background client for completed requests and dispatches callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| this.runtime.update(lua));
     }
 }
 
-// ─── LuaOllamaManager ───────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaOllamaManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for managing a local Ollama server lifecycle and models.
 pub struct LuaOllamaManager {
@@ -533,28 +529,28 @@ pub struct LuaOllamaManager {
 
 impl UserData for LuaOllamaManager {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── isRunning ───
+        // â”€â”€â”€ isRunning â”€â”€â”€
         /// Returns `true` if the Ollama HTTP server responds within 5 seconds.
         /// @return | boolean | `true` if Ollama is reachable.
         methods.add_method("isRunning", |_, this, ()| {
             Ok(this.manager.is_running())
         });
 
-        // ─── version ───
+        // â”€â”€â”€ version â”€â”€â”€
         /// Returns the Ollama version string, or an empty string if not running.
         /// @return | string | Ollama version or `""`.
         methods.add_method("version", |_, this, ()| {
             Ok(this.manager.version())
         });
 
-        // ─── baseUrl ───
+        // â”€â”€â”€ baseUrl â”€â”€â”€
         /// Returns the base URL this manager was created with.
         /// @return | string | Base URL (e.g. `"http://127.0.0.1:11434"`).
         methods.add_method("baseUrl", |_, this, ()| {
             Ok(this.manager.base_url().to_string())
         });
 
-        // ─── listModels ───
+        // â”€â”€â”€ listModels â”€â”€â”€
         /// Returns a table of locally available models, each with `name` and `size_gb` fields.
         /// @return | table | Array of `{ name = string, size_gb = number }` tables.
         methods.add_method("listModels", |lua, this, ()| {
@@ -569,7 +565,7 @@ impl UserData for LuaOllamaManager {
             Ok(tbl)
         });
 
-        // ─── modelNames ───
+        // â”€â”€â”€ modelNames â”€â”€â”€
         /// Returns a string array of locally available model names; empty if Ollama is not running.
         /// @return | table | String array of model names.
         methods.add_method("modelNames", |lua, this, ()| {
@@ -581,7 +577,7 @@ impl UserData for LuaOllamaManager {
             Ok(tbl)
         });
 
-        // ─── hasModel ───
+        // â”€â”€â”€ hasModel â”€â”€â”€
         /// Returns `true` if a model with the given name (or name prefix) is available locally.
         /// @param | name | string | Model name to check (e.g. `"llama3"` or `"llama3:latest"`).
         /// @return | boolean | `true` if found locally.
@@ -589,28 +585,28 @@ impl UserData for LuaOllamaManager {
             Ok(this.manager.has_model(&name))
         });
 
-        // ─── start ───
+        // â”€â”€â”€ start â”€â”€â”€
         /// Spawns `ollama serve` as a managed child process. Returns `true` on success.
         /// @return | boolean | `true` if the process started.
         methods.add_method_mut("start", |_, this, ()| {
             Ok(this.manager.start())
         });
 
-        // ─── stop ───
+        // â”€â”€â”€ stop â”€â”€â”€
         /// Kills the Ollama process started by this manager. Returns `true` if it was running.
         /// @return | boolean | `true` if the process was running under this manager.
         methods.add_method_mut("stop", |_, this, ()| {
             Ok(this.manager.stop())
         });
 
-        // ─── restart ───
+        // â”€â”€â”€ restart â”€â”€â”€
         /// Stops then restarts the managed Ollama process. Returns `true` on success.
         /// @return | boolean | `true` if the restart succeeded.
         methods.add_method_mut("restart", |_, this, ()| {
             Ok(this.manager.restart())
         });
 
-        // ─── pullModel ───
+        // â”€â”€â”€ pullModel â”€â”€â”€
         /// Dispatches an async model download; calls `callback(success, err_msg)` on completion.
         /// @param | name | string | Model name to download (e.g. `"llama3"`).
         /// @param | callback | function | Called with `(success, err_msg)` on completion.
@@ -625,7 +621,7 @@ impl UserData for LuaOllamaManager {
             },
         );
 
-        // ─── deleteModel ───
+        // â”€â”€â”€ deleteModel â”€â”€â”€
         /// Sends `DELETE /api/delete` to remove a model from local Ollama storage.
         /// @param | name | string | Model name to delete (e.g. `"llama3:latest"`).
         /// @return | boolean | `true` if the request succeeded.
@@ -633,14 +629,14 @@ impl UserData for LuaOllamaManager {
             Ok(this.manager.delete_model(&name))
         });
 
-        // ─── pendingCount ───
+        // â”€â”€â”€ pendingCount â”€â”€â”€
         /// Returns the number of in-flight model pull operations.
         /// @return | integer | Number of pending pulls.
         methods.add_method("pendingCount", |_, this, ()| {
             Ok(this.manager.in_flight_count())
         });
 
-        // ─── update ───
+        // â”€â”€â”€ update â”€â”€â”€
         /// Polls completed pull operations and dispatches registered callbacks.
         /// @return | nil | No value is returned.
         methods.add_method_mut("update", |lua, this, ()| {
@@ -660,7 +656,7 @@ impl UserData for LuaOllamaManager {
     }
 }
 
-// ─── LuaAgentChat ────────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAgentChat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for a stateful LLM chat session.
 pub struct LuaAgentChat {
@@ -669,7 +665,7 @@ pub struct LuaAgentChat {
 
 impl UserData for LuaAgentChat {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── setSystemPrompt ───
+        // â”€â”€â”€ setSystemPrompt â”€â”€â”€
         /// Sets the system prompt used for all completions in this session.
         /// @param | prompt | string | System prompt text.
         /// @return | nil | No value is returned.
@@ -678,7 +674,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // ─── addMessage ───
+        // â”€â”€â”€ addMessage â”€â”€â”€
         /// Appends a message to the chat history without sending a completion.
         /// @param | role | string | Role identifier: `"user"`, `"assistant"`, or `"system"`.
         /// @param | content | string | Message content.
@@ -688,7 +684,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // ─── complete ───
+        // â”€â”€â”€ complete â”€â”€â”€
         /// Sends the current history to the LLM and returns the assistant reply.
         ///
         /// The assistant reply is automatically appended to the history.
@@ -701,7 +697,7 @@ impl UserData for LuaAgentChat {
                 .map_err(mlua::Error::RuntimeError)
         });
 
-        // ─── clear ───
+        // â”€â”€â”€ clear â”€â”€â”€
         /// Clears all stored chat history messages.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clear", |_, this, ()| {
@@ -709,7 +705,7 @@ impl UserData for LuaAgentChat {
             Ok(())
         });
 
-        // ─── getHistory ───
+        // â”€â”€â”€ getHistory â”€â”€â”€
         /// Returns the chat history as an array of `{role, content}` tables.
         /// @return | table | Array of `{ role = string, content = string }` tables.
         methods.add_method("getHistory", |lua, this, ()| {
@@ -725,7 +721,7 @@ impl UserData for LuaAgentChat {
     }
 }
 
-// ─── LuaAgentTemplate ────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAgentTemplate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for a `{key}` placeholder prompt template.
 pub struct LuaAgentTemplate {
@@ -734,9 +730,9 @@ pub struct LuaAgentTemplate {
 
 impl UserData for LuaAgentTemplate {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── render ───
+        // â”€â”€â”€ render â”€â”€â”€
         /// Renders the template by substituting `{key}` placeholders from `values`.
-        /// @param | values | table | Map of key → string substitutions.
+        /// @param | values | table | Map of key â†’ string substitutions.
         /// @return | string | Rendered string, or raises an error if a key is missing.
         methods.add_method("render", |_, this, values: mlua::Table| {
             let mut map = HashMap::new();
@@ -756,7 +752,7 @@ impl UserData for LuaAgentTemplate {
     }
 }
 
-// ─── LuaWorkingMemory ─────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaWorkingMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for a bounded FIFO working memory.
 pub struct LuaWorkingMemory {
@@ -795,7 +791,7 @@ fn json_to_lua<'lua>(lua: &'lua Lua, val: serde_json::Value) -> LuaResult<mlua::
 
 impl UserData for LuaWorkingMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── push ───
+        // â”€â”€â”€ push â”€â”€â”€
         /// Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
         /// @param | key | string | Entry key.
         /// @param | value | any | Entry value (any serialisable Lua value).
@@ -806,7 +802,7 @@ impl UserData for LuaWorkingMemory {
             Ok(())
         });
 
-        // ─── get ───
+        // â”€â”€â”€ get â”€â”€â”€
         /// Returns the value for `key`, or `nil` if not found.
         /// @param | key | string | Entry key.
         /// @return | table | Stored value converted from JSON when present; returns nil when missing.
@@ -817,7 +813,7 @@ impl UserData for LuaWorkingMemory {
             }
         });
 
-        // ─── forget ───
+        // â”€â”€â”€ forget â”€â”€â”€
         /// Removes the entry with `key`.  Returns `true` if it existed.
         /// @param | key | string | Entry key.
         /// @return | boolean | `true` if the entry was removed.
@@ -825,7 +821,7 @@ impl UserData for LuaWorkingMemory {
             Ok(this.mem.forget(&key))
         });
 
-        // ─── getRecent ───
+        // â”€â”€â”€ getRecent â”€â”€â”€
         /// Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
         /// @param | n | integer | Maximum number of entries to return.
         /// @return | table | Array of `{ key = string, value = any }` tables.
@@ -840,19 +836,19 @@ impl UserData for LuaWorkingMemory {
             Ok(tbl)
         });
 
-        // ─── len ───
+        // â”€â”€â”€ len â”€â”€â”€
         /// Returns the current number of entries.
         /// @return | integer | Entry count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
 
-        // ─── capacity ───
+        // â”€â”€â”€ capacity â”€â”€â”€
         /// Returns the configured capacity (0 = unlimited).
         /// @return | integer | Capacity.
         methods.add_method("capacity", |_, this, ()| Ok(this.mem.capacity()));
     }
 }
 
-// ─── LuaEpisodicMemory ────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaEpisodicMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for append-only episodic memory.
 pub struct LuaEpisodicMemory {
@@ -861,7 +857,7 @@ pub struct LuaEpisodicMemory {
 
 impl UserData for LuaEpisodicMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── record ───
+        // â”€â”€â”€ record â”€â”€â”€
         /// Records a new episode at `tick` with `data`.
         /// @param | tick | integer | Logical tick or frame counter for this episode.
         /// @param | data | table | Key-value payload stored with the episode.
@@ -876,7 +872,7 @@ impl UserData for LuaEpisodicMemory {
             Ok(())
         });
 
-        // ─── query ───
+        // â”€â”€â”€ query â”€â”€â”€
         /// Returns all episodes whose data matches every key-value pair in `filter`.
         /// @param | filter | table | Key-value filter table (empty = return all).
         /// @return | table | Array of `{ tick = integer, data = table }` episode tables.
@@ -901,7 +897,7 @@ impl UserData for LuaEpisodicMemory {
             Ok(tbl)
         });
 
-        // ─── forgetBefore ───
+        // â”€â”€â”€ forgetBefore â”€â”€â”€
         /// Removes all episodes with tick < `cutoff`.
         /// @param | cutoff | integer | Tick threshold; episodes older than this are removed.
         /// @return | nil | No value is returned.
@@ -910,23 +906,23 @@ impl UserData for LuaEpisodicMemory {
             Ok(())
         });
 
-        // ─── len ───
+        // â”€â”€â”€ len â”€â”€â”€
         /// Returns the number of stored episodes.
         /// @return | integer | Episode count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
     }
 }
 
-// ─── LuaSemanticMemory ────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaSemanticMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-/// Lua-side handle for an unbounded key → value fact store.
+/// Lua-side handle for an unbounded key â†’ value fact store.
 pub struct LuaSemanticMemory {
     mem: SemanticMemory,
 }
 
 impl UserData for LuaSemanticMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── learn ───
+        // â”€â”€â”€ learn â”€â”€â”€
         /// Inserts or replaces a fact at `key`.
         /// @param | key | string | Fact key.
         /// @param | value | any | Fact value.
@@ -936,7 +932,7 @@ impl UserData for LuaSemanticMemory {
             Ok(())
         });
 
-        // ─── recall ───
+        // â”€â”€â”€ recall â”€â”€â”€
         /// Returns the fact for `key`, or `nil` if not found.
         /// @param | key | string | Fact key.
         /// @return | table | Stored fact converted from JSON when present; returns nil when missing.
@@ -947,7 +943,7 @@ impl UserData for LuaSemanticMemory {
             }
         });
 
-        // ─── forget ───
+        // â”€â”€â”€ forget â”€â”€â”€
         /// Removes the fact at `key`.  Returns `true` if it existed.
         /// @param | key | string | Fact key.
         /// @return | boolean | `true` if the fact was removed.
@@ -955,7 +951,7 @@ impl UserData for LuaSemanticMemory {
             Ok(this.mem.forget(&key))
         });
 
-        // ─── query ───
+        // â”€â”€â”€ query â”€â”€â”€
         /// Returns all facts whose value matches every key-value pair in `filter`.
         /// @param | filter | table | Key-value filter applied to each fact's value object (empty = return all).
         /// @return | table | Array of `{ key = string, value = any }` tables.
@@ -976,14 +972,14 @@ impl UserData for LuaSemanticMemory {
             Ok(tbl)
         });
 
-        // ─── len ───
+        // â”€â”€â”€ len â”€â”€â”€
         /// Returns the number of stored facts.
         /// @return | integer | Fact count.
         methods.add_method("len", |_, this, ()| Ok(this.mem.len()));
     }
 }
 
-// ─── LuaAgentMemory ──────────────────────────────────────────────────────────
+// â”€â”€â”€ LuaAgentMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
 pub struct LuaAgentMemory {
@@ -992,35 +988,35 @@ pub struct LuaAgentMemory {
 
 impl UserData for LuaAgentMemory {
     fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ─── working ───
+        // â”€â”€â”€ working â”€â”€â”€
         /// Returns the working memory component.
         /// @return | LWorkingMemory | Working memory handle.
         methods.add_method("working", |_, this, ()| {
             Ok(LuaWorkingMemory { mem: WorkingMemory::new(this.mem.working.capacity()) })
         });
 
-        // ─── episodic ───
+        // â”€â”€â”€ episodic â”€â”€â”€
         /// Returns the episodic memory component.
         /// @return | LEpisodicMemory | Episodic memory handle.
         methods.add_method("episodic", |_, _this, ()| {
             Ok(LuaEpisodicMemory { mem: EpisodicMemory::new() })
         });
 
-        // ─── semantic ───
+        // â”€â”€â”€ semantic â”€â”€â”€
         /// Returns the semantic memory component.
         /// @return | LSemanticMemory | Semantic memory handle.
         methods.add_method("semantic", |_, _this, ()| {
             Ok(LuaSemanticMemory { mem: SemanticMemory::new() })
         });
 
-        // ─── save ───
+        // â”€â”€â”€ save â”€â”€â”€
         /// Serialises all memory banks to the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method("save", |_, this, ()| {
             this.mem.save().map(|_| true).map_err(mlua::Error::RuntimeError)
         });
 
-        // ─── load ───
+        // â”€â”€â”€ load â”€â”€â”€
         /// Deserialises memory state from the configured persist_path.
         /// @return | boolean | `true` on success, raises an error on failure.
         methods.add_method_mut("load", |_, this, ()| {
@@ -1029,13 +1025,13 @@ impl UserData for LuaAgentMemory {
     }
 }
 
-// ─── register ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ register â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Registers the `lurek.agent` API in the global environment.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let agent_table = lua.create_table()?;
 
-    // ─── new ───
+    // â”€â”€â”€ new â”€â”€â”€
     /// Creates a new configurable LLM Agent runtime instance.
     /// @param | config | table | Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
     /// @return | LAgent | A new agent object.
@@ -1048,7 +1044,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newManager ───
+    // â”€â”€â”€ newManager â”€â”€â”€
     /// Creates a new Agent Manager for batching multiple LLM agents over a shared client.
     /// @return | LAgentManager | A new agent manager object.
     agent_table.set(
@@ -1060,7 +1056,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newSystem ───
+    // â”€â”€â”€ newSystem â”€â”€â”€
     /// Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
     /// @param | config | table | Config with `system_prompt` for the shared system context.
     /// @return | LAISystem | A new AI system object.
@@ -1073,7 +1069,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newOllama ───
+    // â”€â”€â”€ newOllama â”€â”€â”€
     /// Creates an Ollama infrastructure manager for server lifecycle and model management.
     /// @param | config | table? | Optional config with `url` (default `"http://127.0.0.1:11434"`).
     /// @return | LOllamaManager | A new Ollama manager object.
@@ -1091,7 +1087,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── configure ───
+    // â”€â”€â”€ configure â”€â”€â”€
     /// Configures the global LLM provider settings used by module-level functions.
     /// @param | config | table | Config with `provider`, `base_url`, `model`, `timeout_ms`, and `api_key` fields.
     /// @return | nil | No value is returned.
@@ -1111,7 +1107,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── complete ───
+    // â”€â”€â”€ complete â”€â”€â”€
     /// Sends a single prompt to the global LLM and returns the response text.
     /// @param | prompt | string | Prompt text.
     /// @return | string | Response text, or raises an error on failure.
@@ -1125,7 +1121,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── completeAsync ───
+    // â”€â”€â”€ completeAsync â”€â”€â”€
     /// Sends a prompt asynchronously using a background thread; calls `callback(text, err)` on completion.
     /// @param | prompt | string | Prompt text.
     /// @param | callback | function | Called with `(text, err)` on completion (`err` is `nil` on success).
@@ -1168,7 +1164,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newChat ───
+    // â”€â”€â”€ newChat â”€â”€â”€
     /// Creates a new stateful chat session using the global LLM config.
     /// @return | LAgentChat | A new chat session object.
     agent_table.set(
@@ -1178,7 +1174,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newTemplate ───
+    // â”€â”€â”€ newTemplate â”€â”€â”€
     /// Creates a new `{key}` placeholder prompt template.
     /// @param | pattern | string | Template string with `{key}` placeholders.
     /// @return | LAgentTemplate | A new template object.
@@ -1189,7 +1185,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── completeJson ───
+    // â”€â”€â”€ completeJson â”€â”€â”€
     /// Sends a prompt requesting a JSON-format response and returns a parsed Lua table.
     /// @param | prompt | string | Prompt text.
     /// @return | table | Parsed JSON response as a Lua table, or raises an error on failure.
@@ -1204,7 +1200,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── embed ───
+    // â”€â”€â”€ embed â”€â”€â”€
     /// Returns an embedding vector for `text` from the global LLM.
     /// @param | text | string | Text to embed.
     /// @return | table | Number array of float embedding values, or raises an error on failure.
@@ -1223,7 +1219,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── isAvailable ───
+    // â”€â”€â”€ isAvailable â”€â”€â”€
     /// Returns `true` if the configured LLM server responds within 5 seconds.
     /// @return | boolean | `true` if the server is reachable.
     agent_table.set(
@@ -1234,7 +1230,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── listModels ───
+    // â”€â”€â”€ listModels â”€â”€â”€
     /// Returns a list of available model names from the configured LLM server.
     /// @return | table | String array of model names; empty if the server is unreachable.
     agent_table.set(
@@ -1251,7 +1247,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newWorkingMemory ───
+    // â”€â”€â”€ newWorkingMemory â”€â”€â”€
     /// Creates a new bounded FIFO working memory with the given capacity.
     /// @param | capacity | integer | Maximum number of key-value slots (0 = unlimited).
     /// @return | LWorkingMemory | A new working memory object.
@@ -1262,7 +1258,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newEpisodicMemory ───
+    // â”€â”€â”€ newEpisodicMemory â”€â”€â”€
     /// Creates a new episodic memory for recording time-stamped events.
     /// @return | LEpisodicMemory | A new episodic memory object.
     agent_table.set(
@@ -1272,7 +1268,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newSemanticMemory ───
+    // â”€â”€â”€ newSemanticMemory â”€â”€â”€
     /// Creates a new semantic memory for storing named facts.
     /// @return | LSemanticMemory | A new semantic memory object.
     agent_table.set(
@@ -1282,7 +1278,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ─── newAgentMemory ───
+    // â”€â”€â”€ newAgentMemory â”€â”€â”€
     /// Creates a bundled working+episodic+semantic memory with optional disk persistence.
     /// @param | config | table? | Config with `working_capacity` (integer) and `persist_path` (string?) fields.
     /// @return | LAgentMemory | A new agent memory object.

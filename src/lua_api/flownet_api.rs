@@ -1,11 +1,4 @@
-//! `lurek.flownet` -- Logistics flow-network bindings for nodes, directed edges, typed items, capacities, queues, conversion rules, supply and demand, pathfinding, reachability, graph algorithms, events, and Lua callbacks.
-//!
-//! - Registers `lurek.flownet.*` functions and types via `register()`.
-//! - `LuaGraphItem`: userdata type exposed to Lua.
-//! - `LuaEdge`: userdata type exposed to Lua.
-//! - `LuaNode`: userdata type exposed to Lua.
-//! - `LuaGraph`: userdata type exposed to Lua.
-//! - Bridges 131 Lua-callable methods via `mlua`.
+//! File: src/lua_api/flownet_api.rs
 
 use crate::flownet::pathfinding::PathResult;
 use crate::flownet::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};

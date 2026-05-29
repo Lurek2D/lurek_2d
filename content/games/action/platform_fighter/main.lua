@@ -520,20 +520,20 @@ function lurek.init()
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
     app_ui.hud = ui_root:findById("hud")
-    
+
     app_ui.p1_dmg_text = ui_root:findById("p1_dmg_text")
     app_ui.p1_stocks_text = ui_root:findById("p1_stocks_text")
     app_ui.p1_cd_fill = ui_root:findById("p1_cd_fill")
     app_ui.p1_cd_bg = ui_root:findById("p1_cd_bg")
-    
+
     app_ui.p2_dmg_text = ui_root:findById("p2_dmg_text")
     app_ui.p2_stocks_text = ui_root:findById("p2_stocks_text")
     app_ui.p2_cd_fill = ui_root:findById("p2_cd_fill")
     app_ui.p2_cd_bg = ui_root:findById("p2_cd_bg")
-    
+
     app_ui.ko_screen = ui_root:findById("ko_screen")
     app_ui.ko_who_text = ui_root:findById("ko_who_text")
-    
+
     app_ui.match_over_screen = ui_root:findById("match_over_screen")
     app_ui.winner_text = ui_root:findById("winner_text")
 end
@@ -649,11 +649,11 @@ function lurek.process(dt)
             local p1_g = math.max(0, 1.0 - p1.damage_pct / 150)
             local p1_b = math.max(0, 1.0 - p1.damage_pct / 100)
             app_ui.p1_dmg_text.color = {p1_r, p1_g, p1_b, 1}
-            
+
             local s1 = ""
             for i=1, MAX_STOCKS do if i <= p1.stocks then s1 = s1 .. "O " else s1 = s1 .. "X " end end
             app_ui.p1_stocks_text.text = s1
-            
+
             if p1.special_cd > 0 then
                 app_ui.p1_cd_bg.visible = true
                 app_ui.p1_cd_fill.visible = true
@@ -663,17 +663,17 @@ function lurek.process(dt)
                 app_ui.p1_cd_bg.visible = false
                 app_ui.p1_cd_fill.visible = false
             end
-            
+
             app_ui.p2_dmg_text.text = string.format("%.0f%%", p2.damage_pct)
             local p2_r = 1
             local p2_g = math.max(0, 1.0 - p2.damage_pct / 150)
             local p2_b = math.max(0, 1.0 - p2.damage_pct / 100)
             app_ui.p2_dmg_text.color = {p2_r, p2_g, p2_b, 1}
-            
+
             local s2 = ""
             for i=1, MAX_STOCKS do if i <= p2.stocks then s2 = s2 .. "O " else s2 = s2 .. "X " end end
             app_ui.p2_stocks_text.text = s2
-            
+
             if p2.special_cd > 0 then
                 app_ui.p2_cd_bg.visible = true
                 app_ui.p2_cd_fill.visible = true

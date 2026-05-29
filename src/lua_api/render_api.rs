@@ -1,12 +1,4 @@
-//! `lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management.
-//!
-//! - Registers `lurek.render.*` functions and types via `register()`.
-//! - Userdata types: `LuaImageData`, `LuaNineSlice`, `LuaImage`.
-//! - Userdata types: `LuaFont`, `LuaCanvas`, `LuaSpriteBatch`.
-//! - Userdata types: `LuaMesh`, `LuaShader`, `LuaQuad`.
-//! - Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`.
-//! - Bridges 217 Lua-callable methods via `mlua`.
-//! - See `docs/specs/render.md` for the full API specification.
+//! File: src/lua_api/render_api.rs
 
 use super::SharedState;
 use crate::image::ImageData;
@@ -96,7 +88,7 @@ impl LuaUserData for LuaImageData {
         });
         // -- mapPixels --
         /// Iterates over every pixel and replaces its color with the return value of the callback.
-        /// @param | callback | function | Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
+        /// @param | callback | function | Called as callback(x, y, r, g, b, a) â†’ (r, g, b, a) for each pixel.
         methods.add_method_mut("mapPixels", |_lua, this, callback: LuaFunction| {
             let w = this.inner.width();
             let h = this.inner.height();
@@ -922,10 +914,10 @@ impl LuaUserData for LuaShape {
         });
         // -- setColor --
         /// Sets the drawing color for subsequent shape commands.
-        /// @param | r | number | Red channel (0–1).
-        /// @param | g | number | Green channel (0–1).
-        /// @param | b | number | Blue channel (0–1).
-        /// @param | a | number? | Alpha channel (0–1, default 1).
+        /// @param | r | number | Red channel (0â€“1).
+        /// @param | g | number | Green channel (0â€“1).
+        /// @param | b | number | Blue channel (0â€“1).
+        /// @param | a | number? | Alpha channel (0â€“1, default 1).
         methods.add_method(
             "setColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
@@ -1291,10 +1283,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setColor --
     /// Sets the active drawing color for all subsequent draw operations.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @param | a | number? | Alpha channel (0–1, default 1).
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @param | a | number? | Alpha channel (0â€“1, default 1).
     graphics.set(
         "setColor",
         lua.create_function(move |_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
@@ -1308,7 +1300,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getColor --
     /// Returns the current drawing color.
-    /// @return | number, number, number, number | Red, green, blue, alpha channels (0–1).
+    /// @return | number, number, number, number | Red, green, blue, alpha channels (0â€“1).
     graphics.set(
         "getColor",
         lua.create_function(move |_, ()| {
@@ -1319,9 +1311,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- setBackgroundColor --
     /// Sets the background clear color used at the start of each frame.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
     graphics.set(
         "setBackgroundColor",
         lua.create_function(move |_, (r, g, b): (f32, f32, f32)| {
@@ -1332,7 +1324,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     let s = state.clone();
     // -- getBackgroundColor --
     /// Returns the current background clear color.
-    /// @return | number, number, number, number | Red, green, blue, alpha channels (0–1).
+    /// @return | number, number, number, number | Red, green, blue, alpha channels (0â€“1).
     graphics.set(
         "getBackgroundColor",
         lua.create_function(move |_, ()| {
@@ -4245,7 +4237,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- pushLayer --
     /// Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
     /// @param | id | integer | Layer identifier (must match the popLayer call).
-    /// @param | alpha | number? | Layer opacity (0–1, default 1).
+    /// @param | alpha | number? | Layer opacity (0â€“1, default 1).
     /// @param | blendMode | string? | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
     graphics.set(
         "pushLayer",
@@ -4785,7 +4777,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
     // -- pushLayer --
     /// Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
     /// @param | id | integer | Layer identifier (must match the popLayer call).
-    /// @param | alpha | number? | Layer opacity (0–1, default 1).
+    /// @param | alpha | number? | Layer opacity (0â€“1, default 1).
     /// @param | blendMode | string? | Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
     graphics.set(
         "pushLayer",
@@ -4994,7 +4986,7 @@ impl LuaUserData for LObjModel {
         /// Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
         /// @param | width | integer | Output image width in pixels.
         /// @param | height | integer | Output image height in pixels.
-        /// @param | rotation | number? | Rotation step (0–3, each step = 90 degrees, default 0).
+        /// @param | rotation | number? | Rotation step (0â€“3, each step = 90 degrees, default 0).
         /// @return | LImage | The rendered image handle.
         methods.add_method_mut(
             "renderToImage",

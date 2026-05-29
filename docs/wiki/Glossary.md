@@ -53,6 +53,7 @@ The glossary collects terms that appear across module and API pages.
 - `LBandit` ([lurek.learning](Module-learning)) - Lua handle for multi-armed bandit action selection.
 - `LBarChart` ([lurek.charts](Module-charts)) - Lua userdata for rendering a vertical bar series chart.
 - `LBarChart` ([lurek.ui](Module-ui)) - Lua-exposed bar chart for data visualization.
+- `LBeatClock` ([lurek.audio](Module-audio)) - Lua-side wrapper for a musical beat clock.
 - `LBehaviorTree` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree root and its most recent execution status.
 - `LBehaviorTree` ([lurek.patterns](Module-patterns)) - Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
 - `LBezierCurve` ([lurek.math](Module-math)) - Lua-side wrapper for a Bezier curve.
@@ -143,4 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LImageWidget` ([lurek.ui](Module-ui)) - Adds image-widget-specific methods to an image widget table.
 - `LInfluenceMap` ([lurek.ai](Module-ai)) - Lua handle for a grid-based influence map with named layers.
 - `LInputRecording` ([lurek.input](Module-input)) - Lua-side handle for serialized input recording data.
-- `LIsoMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.

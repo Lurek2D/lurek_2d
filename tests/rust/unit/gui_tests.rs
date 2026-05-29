@@ -1,19 +1,11 @@
-//! INTERNAL ONLY: Rust unit tests for private UI internals not reachable through the `lurek.*` Lua API.
-//!
-//! **Rule**: If behaviour can be observed via `lurek.ui.*` it MUST be tested in
-//! `tests/lua/unit/test_gui.lua` instead. Only struct-field defaults, non-public
-//! helpers, and pure-Rust invariants that cannot survive the Lua call boundary
-//! belong here.
-//!
-//! Naming convention: `<subject>_<scenario>_<expected>` — no `test_` prefix.
-//! Float comparisons use `(a - b).abs() < 1e-5` — never `assert_eq!` on floats.
+//! File: tests/rust/unit/gui_tests.rs
 
 use lurek2d::ui::context::GuiContext;
 use lurek2d::ui::controls::Switch;
 use lurek2d::ui::theme::{Theme, WidgetStyle};
 use lurek2d::ui::widget::{WidgetBase, WidgetType};
 
-// ─── WidgetStyle field defaults ───────────────────────────────────────────────
+// â”€â”€â”€ WidgetStyle field defaults â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // WidgetStyle is an internal struct with no Lua getter; its default values are
 // invisible to the script layer and must be confirmed here.
 
@@ -52,7 +44,7 @@ fn widget_style_default_shadow_offset_is_zero() {
     assert!((s.shadow_offset[1]).abs() < 1e-5);
 }
 
-// ─── WidgetType::default_size ─────────────────────────────────────────────────
+// â”€â”€â”€ WidgetType::default_size â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // default_size() is not exposed as a Lua function; it only drives WidgetBase::new().
 
 #[test]
@@ -80,9 +72,9 @@ fn widget_type_badge_default_size_is_positive() {
     assert!(w > 0.0 && h > 0.0);
 }
 
-// ─── WidgetBase::new sizing ───────────────────────────────────────────────────
-// The fact that WidgetBase uses default_size (not a 100×30 hardcode) is a
-// pure-Rust invariant — Lua cannot observe the raw width/height before any
+// â”€â”€â”€ WidgetBase::new sizing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// The fact that WidgetBase uses default_size (not a 100Ă—30 hardcode) is a
+// pure-Rust invariant â€” Lua cannot observe the raw width/height before any
 // geometry call.
 
 #[test]
@@ -99,9 +91,9 @@ fn widget_base_new_height_matches_type_default_size() {
     assert!((base.height - expected_h).abs() < 1e-5);
 }
 
-// ─── Switch::thumb_t ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Switch::thumb_t â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // `thumb_t` is a private animation field not exposed via the Lua `Switch`
-// userdata — it drives the thumb animation only inside Rust.
+// userdata â€” it drives the thumb animation only inside Rust.
 
 #[test]
 fn switch_new_off_has_thumb_t_zero() {
@@ -118,7 +110,7 @@ fn switch_new_on_has_thumb_t_one() {
     );
 }
 
-// ─── Theme::default_dark ──────────────────────────────────────────────────────
+// â”€â”€â”€ Theme::default_dark â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // The Theme struct's style map is not surfaced through any `lurek.ui.*` getter;
 // its content can only be inspected at the Rust level.
 
@@ -218,7 +210,7 @@ fn theme_default_dark_has_normal_style_for_every_widget_type() {
     }
 }
 
-// ─── GuiContext private internals ─────────────────────────────────────────────
+// â”€â”€â”€ GuiContext private internals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // GuiContext fields (dirty, viewport_w/h, theme, widget pool) are not exposed
 // via `lurek.ui.*`; only the effects of mutation are observable from Lua.
 
@@ -280,7 +272,7 @@ fn gui_context_add_spin_box_returns_valid_index() {
     );
 }
 
-// ─── EasingFunction evaluations ────────────────────────────────────────────────
+// â”€â”€â”€ EasingFunction evaluations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 use lurek2d::ui::widget::EasingFunction;
 
@@ -349,7 +341,7 @@ fn easing_parse_str_invalid_returns_none() {
     assert_eq!(EasingFunction::parse_str(""), None);
 }
 
-// ─── WidgetBase new field defaults ─────────────────────────────────────────────
+// â”€â”€â”€ WidgetBase new field defaults â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 #[test]
 fn widget_base_default_scale_is_one() {
@@ -373,7 +365,7 @@ fn widget_base_default_color_tint_is_white() {
     assert!((base.color_tint[3] - 1.0).abs() < 1e-5);
 }
 
-// ─── GuiContext new field defaults ─────────────────────────────────────────────
+// â”€â”€â”€ GuiContext new field defaults â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 #[test]
 fn gui_context_default_base_resolution() {

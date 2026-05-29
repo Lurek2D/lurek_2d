@@ -1,14 +1,10 @@
-//! `lurek.learning` - Lua bindings for machine learning and evolutionary computation algorithms.
-//!
-//! - Registers `lurek.learning.*` functions and types via `register()`.
-//! - Userdata types: `LuaQLearner`, `LuaNeuralNet`, `LuaGeneticAlgorithm`.
-//! - Userdata types: `LuaBandit`, `LuaNeuroevolution`, `LuaModel`.
-//! - Bridges 67 Lua-callable methods via `mlua`.
+//! File: src/lua_api/learning_api.rs
 
 use super::SharedState;
 use crate::learning::{
-    Activation, Bandit, BanditStrategy, FrameStack, GeneticAlgorithm, LurekTensor, NeuralNet,
-    Neuroevolution, OnnxModel, QLearner, SpaceSpec,
+    Activation, Bandit, BanditStrategy, Conv2D, EvolutionaryLayer, FrameStack, GeneticAlgorithm,
+    GruLayer, LstmLayer, LurekTensor, MaxPool2D, MultiHeadAttention, NeuralNet, Neuroevolution, OnnxModel, PositionalEncoding,
+    QLearner, SpaceSpec, TransformerDecoderBlock, TransformerEncoderBlock,
 };
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -552,7 +548,7 @@ impl LuaUserData for LuaModel {
 }
 
 // ---------------------------------------------------------------------------
-// LuaEnv — gym-compatible RL environment wrapper
+// LuaEnv â€” gym-compatible RL environment wrapper
 // ---------------------------------------------------------------------------
 
 /// Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
@@ -718,7 +714,7 @@ impl LuaUserData for LuaEnv {
 }
 
 // ---------------------------------------------------------------------------
-// LuaFrameStack — ring-buffer for stacking observations
+// LuaFrameStack â€” ring-buffer for stacking observations
 // ---------------------------------------------------------------------------
 
 /// Lua handle wrapping a frame-stacking ring buffer.
@@ -739,7 +735,7 @@ impl LuaUserData for LuaFrameStack {
         });
         // -- get --
         /// Returns the flattened observation stack, zero-padded when not yet full.
-        /// @return | number[] | Flattened frame-stack vector of length capacity × obs_dim.
+        /// @return | number[] | Flattened frame-stack vector of length capacity Ă— obs_dim.
         methods.add_method("get", |lua, this, ()| {
             let flat = this.inner.borrow().get();
             let t = lua.create_table()?;
@@ -804,8 +800,438 @@ fn parse_space_spec(tbl: &LuaTable) -> LuaResult<SpaceSpec> {
     Ok(SpaceSpec { shape, low, high, n })
 }
 
+fn vec_to_lua_f32<'lua>(lua: &'lua Lua, values: &[f32]) -> LuaResult<LuaTable<'lua>> {
+    let tbl = lua.create_table()?;
+    for (i, &v) in values.iter().enumerate() {
+        tbl.raw_set(i + 1, v as f64)?;
+    }
+    Ok(tbl)
+}
+
+fn tensor_ud_to_owned(ud: &LuaAnyUserData) -> LuaResult<LurekTensor> {
+    let t = ud.borrow::<LuaTensor>()?;
+    let tensor = t.0.borrow().clone();
+    Ok(tensor)
+}
+
+/// Stateful Lua wrapper over `LstmLayer` with recurrent hidden and cell state buffers.
+#[derive(Clone)]
+pub(crate) struct LuaLstm {
+    pub(crate) inner: Rc<RefCell<LstmLayer>>,
+    pub(crate) hidden_state: Rc<RefCell<Vec<f32>>>,
+    pub(crate) cell_state: Rc<RefCell<Vec<f32>>>,
+}
+
+impl LuaUserData for LuaLstm {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs one LSTM recurrent step on input data and returns next hidden state values.
+        /// @param | input | table | Input vector with length equal to layer input_size.
+        /// @return | table | Hidden-state vector with length equal to hidden_size.
+        methods.add_method_mut("forward", |lua, this, input: Vec<f32>| {
+            let layer = this.inner.borrow();
+            let prev_h = this.hidden_state.borrow();
+            let prev_c = this.cell_state.borrow();
+            let (next_h, next_c) = layer.step(&input, &prev_h, &prev_c).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.lstm.forward: {}", e))
+            })?;
+            drop(layer);
+            drop(prev_h);
+            drop(prev_c);
+            *this.hidden_state.borrow_mut() = next_h.clone();
+            *this.cell_state.borrow_mut() = next_c;
+            vec_to_lua_f32(lua, &next_h)
+        });
+        // -- reset --
+        /// Resets both hidden and cell recurrent state buffers to zeros.
+        /// @return | nil | No return value.
+        methods.add_method_mut("reset", |_, this, ()| {
+            let hidden = this.inner.borrow().hidden_size;
+            *this.hidden_state.borrow_mut() = vec![0.0; hidden];
+            *this.cell_state.borrow_mut() = vec![0.0; hidden];
+            Ok(())
+        });
+        // -- setWeights --
+        /// Loads flattened layer weights and biases into the wrapped LSTM layer.
+        /// @param | weights | table | Flat float genome in LSTM parameter order.
+        /// @return | boolean | True when weight count matches this layer geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.inner.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened layer weights and biases from the wrapped LSTM layer.
+        /// @return | table | Flat float genome in deterministic LSTM parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.inner.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this LSTM layer.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.inner.borrow().param_count() as i64)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LLSTM`.
+        methods.add_method("type", |_, _, ()| Ok("LLSTM"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LLSTM` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LLSTM" || name == "LObject")
+        });
+    }
+}
+
+/// Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
+#[derive(Clone)]
+pub(crate) struct LuaGru {
+    pub(crate) inner: Rc<RefCell<GruLayer>>,
+    pub(crate) hidden_state: Rc<RefCell<Vec<f32>>>,
+}
+
+impl LuaUserData for LuaGru {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs one GRU recurrent step on input data and returns next hidden state values.
+        /// @param | input | table | Input vector with length equal to layer input_size.
+        /// @return | table | Hidden-state vector with length equal to hidden_size.
+        methods.add_method_mut("forward", |lua, this, input: Vec<f32>| {
+            let layer = this.inner.borrow();
+            let prev_h = this.hidden_state.borrow();
+            let next_h = layer.step(&input, &prev_h).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.gru.forward: {}", e))
+            })?;
+            drop(layer);
+            drop(prev_h);
+            *this.hidden_state.borrow_mut() = next_h.clone();
+            vec_to_lua_f32(lua, &next_h)
+        });
+        // -- reset --
+        /// Resets the recurrent hidden state buffer to zeros.
+        /// @return | nil | No return value.
+        methods.add_method_mut("reset", |_, this, ()| {
+            let hidden = this.inner.borrow().hidden_size;
+            *this.hidden_state.borrow_mut() = vec![0.0; hidden];
+            Ok(())
+        });
+        // -- setWeights --
+        /// Loads flattened layer weights and biases into the wrapped GRU layer.
+        /// @param | weights | table | Flat float genome in GRU parameter order.
+        /// @return | boolean | True when weight count matches this layer geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.inner.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened layer weights and biases from the wrapped GRU layer.
+        /// @return | table | Flat float genome in deterministic GRU parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.inner.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this GRU layer.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.inner.borrow().param_count() as i64)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LGRU`.
+        methods.add_method("type", |_, _, ()| Ok("LGRU"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LGRU` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LGRU" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
+#[derive(Clone)]
+pub(crate) struct LuaConv2D(pub(crate) Rc<RefCell<Conv2D>>);
+
+impl LuaUserData for LuaConv2D {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs convolution over an input tensor shaped as `[channels,height,width]`.
+        /// @param | input | LTensor | Input tensor for spatial convolution.
+        /// @return | LTensor | Output tensor produced by this convolution layer.
+        methods.add_method("forward", |_, this, input: LuaAnyUserData| {
+            let t = tensor_ud_to_owned(&input)?;
+            let out = this
+                .0
+                .borrow()
+                .forward(&t)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.conv2d.forward: {}", e)))?;
+            Ok(LuaTensor(Rc::new(RefCell::new(out))))
+        });
+        // -- setWeights --
+        /// Loads flattened convolution weights and biases into this layer.
+        /// @param | weights | table | Flat float genome in Conv2D parameter order.
+        /// @return | boolean | True when weight count matches this layer geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.0.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened convolution weights and biases from this layer.
+        /// @return | table | Flat float genome in deterministic Conv2D parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.0.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this Conv2D layer.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LConv2D`.
+        methods.add_method("type", |_, _, ()| Ok("LConv2D"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LConv2D` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LConv2D" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `MaxPool2D` for deterministic non-trainable spatial downsampling.
+#[derive(Clone)]
+pub(crate) struct LuaMaxPool2D(pub(crate) Rc<RefCell<MaxPool2D>>);
+
+impl LuaUserData for LuaMaxPool2D {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs max-pooling over an input tensor shaped as `[channels,height,width]`.
+        /// @param | input | LTensor | Input tensor for max-pooling.
+        /// @return | LTensor | Output tensor after max-pooling reduction.
+        methods.add_method("forward", |_, this, input: LuaAnyUserData| {
+            let t = tensor_ud_to_owned(&input)?;
+            let out = this
+                .0
+                .borrow()
+                .forward(&t)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.maxpool2d.forward: {}", e)))?;
+            Ok(LuaTensor(Rc::new(RefCell::new(out))))
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LMaxPool2D`.
+        methods.add_method("type", |_, _, ()| Ok("LMaxPool2D"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LMaxPool2D` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LMaxPool2D" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `MultiHeadAttention`.
+#[derive(Clone)]
+pub(crate) struct LuaMha(pub(crate) Rc<RefCell<MultiHeadAttention>>);
+
+impl LuaUserData for LuaMha {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs multi-head self-attention over an input tensor shaped as `[seq_len,d_model]`.
+        /// @param | input | LTensor | Input sequence tensor for attention.
+        /// @return | LTensor | Output sequence tensor after attention projection.
+        methods.add_method("forward", |_, this, input: LuaAnyUserData| {
+            let t = tensor_ud_to_owned(&input)?;
+            let out = this
+                .0
+                .borrow()
+                .forward(&t)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.mha.forward: {}", e)))?;
+            Ok(LuaTensor(Rc::new(RefCell::new(out))))
+        });
+        // -- setWeights --
+        /// Loads flattened projection weights and biases into this MHA block.
+        /// @param | weights | table | Flat float genome in MHA parameter order.
+        /// @return | boolean | True when weight count matches this block geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.0.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened projection weights and biases from this MHA block.
+        /// @return | table | Flat float genome in deterministic MHA parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.0.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this MHA block.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LMultiHeadAttention`.
+        methods.add_method("type", |_, _, ()| Ok("LMultiHeadAttention"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LMultiHeadAttention` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LMultiHeadAttention" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `PositionalEncoding`.
+#[derive(Clone)]
+pub(crate) struct LuaPositionalEncoding(pub(crate) Rc<RefCell<PositionalEncoding>>);
+
+impl LuaUserData for LuaPositionalEncoding {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- apply --
+        /// Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.
+        /// @param | input | LTensor | Input sequence tensor to encode.
+        /// @return | LTensor | Encoded sequence tensor with added positional values.
+        methods.add_method("apply", |_, this, input: LuaAnyUserData| {
+            let mut t = tensor_ud_to_owned(&input)?;
+            this.0
+                .borrow()
+                .apply(&mut t)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.positional.apply: {}", e)))?;
+            Ok(LuaTensor(Rc::new(RefCell::new(t))))
+        });
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LPositionalEncoding`.
+        methods.add_method("type", |_, _, ()| Ok("LPositionalEncoding"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LPositionalEncoding` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LPositionalEncoding" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `TransformerEncoderBlock`.
+#[derive(Clone)]
+pub(crate) struct LuaTransformerEncoder(pub(crate) Rc<RefCell<TransformerEncoderBlock>>);
+
+impl LuaUserData for LuaTransformerEncoder {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs one transformer encoder block over an input `[seq_len,d_model]` tensor.
+        /// @param | input | LTensor | Input sequence tensor for encoder processing.
+        /// @return | LTensor | Output sequence tensor after encoder block operations.
+        methods.add_method("forward", |_, this, input: LuaAnyUserData| {
+            let t = tensor_ud_to_owned(&input)?;
+            let out = this
+                .0
+                .borrow()
+                .forward(&t)
+                .map_err(|e| LuaError::RuntimeError(format!("lurek.learning.transformer.encoder.forward: {}", e)))?;
+            Ok(LuaTensor(Rc::new(RefCell::new(out))))
+        });
+        // -- setWeights --
+        /// Loads flattened trainable parameters for this encoder block.
+        /// @param | weights | table | Flat float genome in encoder parameter order.
+        /// @return | boolean | True when weight count matches this block geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.0.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened trainable parameters for this encoder block.
+        /// @return | table | Flat float genome in deterministic encoder parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.0.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this encoder block.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LTransformerEncoder`.
+        methods.add_method("type", |_, _, ()| Ok("LTransformerEncoder"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LTransformerEncoder` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTransformerEncoder" || name == "LObject")
+        });
+    }
+}
+
+/// Lua wrapper over `TransformerDecoderBlock`.
+#[derive(Clone)]
+pub(crate) struct LuaTransformerDecoder(pub(crate) Rc<RefCell<TransformerDecoderBlock>>);
+
+impl LuaUserData for LuaTransformerDecoder {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- forward --
+        /// Runs one transformer decoder block over input and encoder-output tensors.
+        /// @param | input | LTensor | Decoder input sequence tensor.
+        /// @param | encoder_out | LTensor | Encoder output sequence tensor.
+        /// @return | LTensor | Output sequence tensor after decoder block operations.
+        methods.add_method(
+            "forward",
+            |_, this, (input, encoder_out): (LuaAnyUserData, LuaAnyUserData)| {
+                let t = tensor_ud_to_owned(&input)?;
+                let e = tensor_ud_to_owned(&encoder_out)?;
+                let out = this
+                    .0
+                    .borrow()
+                    .forward(&t, &e)
+                    .map_err(|err| {
+                        LuaError::RuntimeError(format!(
+                            "lurek.learning.transformer.decoder.forward: {}",
+                            err
+                        ))
+                    })?;
+                Ok(LuaTensor(Rc::new(RefCell::new(out))))
+            },
+        );
+        // -- setWeights --
+        /// Loads flattened trainable parameters for this decoder block.
+        /// @param | weights | table | Flat float genome in decoder parameter order.
+        /// @return | boolean | True when weight count matches this block geometry.
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.0.borrow_mut().set_weights(&weights))
+        });
+        // -- getWeights --
+        /// Exports flattened trainable parameters for this decoder block.
+        /// @return | table | Flat float genome in deterministic decoder parameter order.
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.0.borrow().get_weights();
+            vec_to_lua_f32(lua, &w)
+        });
+        // -- paramCount --
+        /// Returns trainable parameter count for this decoder block.
+        /// @return | integer | Total number of trainable scalar parameters.
+        methods.add_method("paramCount", |_, this, ()| Ok(this.0.borrow().param_count() as i64));
+        // -- type --
+        /// Returns the Lua-visible type name for this wrapper.
+        /// @return | string | The string `LTransformerDecoder`.
+        methods.add_method("type", |_, _, ()| Ok("LTransformerDecoder"));
+        // -- typeOf --
+        /// Returns whether this userdata matches the requested type string.
+        /// @param | name | string | Type string to compare against this userdata.
+        /// @return | boolean | True when name is `LTransformerDecoder` or `LObject`.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTransformerDecoder" || name == "LObject")
+        });
+    }
+}
+
 // ---------------------------------------------------------------------------
-// LuaTensor — flat f32 tensor with shape metadata
+// LuaTensor â€” flat f32 tensor with shape metadata
 // ---------------------------------------------------------------------------
 
 /// Flat tensor handle exposing shape, element access, and tract conversion to Lua.
@@ -875,7 +1301,7 @@ impl LuaUserData for LuaTensor {
 }
 
 // ---------------------------------------------------------------------------
-// LuaOnnxModel — loaded and optimised ONNX inference model
+// LuaOnnxModel â€” loaded and optimised ONNX inference model
 // ---------------------------------------------------------------------------
 
 /// ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
@@ -1190,6 +1616,150 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
                 })
                 .collect::<LuaResult<Vec<f32>>>()?;
             Ok(LuaTensor(Rc::new(RefCell::new(LurekTensor::new(shape, data)))))
+        })?,
+    )?;
+
+    // -- newLstm --
+    /// Creates a stateful LSTM layer wrapper.
+    /// @param | input_size | integer | Input vector size for each step.
+    /// @param | hidden_size | integer | Hidden state size.
+    /// @return | LLSTM | New LSTM layer handle with internal recurrent state.
+    tbl.set(
+        "newLstm",
+        lua.create_function(|_, (input_size, hidden_size): (usize, usize)| {
+            Ok(LuaLstm {
+                inner: Rc::new(RefCell::new(LstmLayer::new(input_size, hidden_size))),
+                hidden_state: Rc::new(RefCell::new(vec![0.0; hidden_size])),
+                cell_state: Rc::new(RefCell::new(vec![0.0; hidden_size])),
+            })
+        })?,
+    )?;
+
+    // -- newGru --
+    /// Creates a stateful GRU layer wrapper.
+    /// @param | input_size | integer | Input vector size for each step.
+    /// @param | hidden_size | integer | Hidden state size.
+    /// @return | LGRU | New GRU layer handle with internal recurrent state.
+    tbl.set(
+        "newGru",
+        lua.create_function(|_, (input_size, hidden_size): (usize, usize)| {
+            Ok(LuaGru {
+                inner: Rc::new(RefCell::new(GruLayer::new(input_size, hidden_size))),
+                hidden_state: Rc::new(RefCell::new(vec![0.0; hidden_size])),
+            })
+        })?,
+    )?;
+
+    // -- newConv2D --
+    /// Creates a Conv2D layer wrapper for deterministic CPU spatial inference.
+    /// @param | in_channels | integer | Input channel count.
+    /// @param | out_channels | integer | Output channel count.
+    /// @param | kernel_h | integer | Kernel height.
+    /// @param | kernel_w | integer | Kernel width.
+    /// @param | stride_h | integer | Vertical stride.
+    /// @param | stride_w | integer | Horizontal stride.
+    /// @param | pad_h | integer | Vertical zero-padding.
+    /// @param | pad_w | integer | Horizontal zero-padding.
+    /// @return | LConv2D | New Conv2D layer handle.
+    tbl.set(
+        "newConv2D",
+        lua.create_function(
+            |_, (in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w): (
+                usize,
+                usize,
+                usize,
+                usize,
+                usize,
+                usize,
+                usize,
+                usize,
+            )| {
+                Ok(LuaConv2D(Rc::new(RefCell::new(Conv2D::new(
+                    in_channels,
+                    out_channels,
+                    (kernel_h, kernel_w),
+                    (stride_h, stride_w),
+                    (pad_h, pad_w),
+                )))))
+            },
+        )?,
+    )?;
+
+    // -- newMaxPool2D --
+    /// Creates a MaxPool2D layer wrapper.
+    /// @param | kernel_h | integer | Kernel height.
+    /// @param | kernel_w | integer | Kernel width.
+    /// @param | stride_h | integer | Vertical stride.
+    /// @param | stride_w | integer | Horizontal stride.
+    /// @return | LMaxPool2D | New MaxPool2D layer handle.
+    tbl.set(
+        "newMaxPool2D",
+        lua.create_function(|_, (kernel_h, kernel_w, stride_h, stride_w): (usize, usize, usize, usize)| {
+            Ok(LuaMaxPool2D(Rc::new(RefCell::new(MaxPool2D::new(
+                (kernel_h, kernel_w),
+                (stride_h, stride_w),
+            )))))
+        })?,
+    )?;
+
+    // -- newPositionalEncoding --
+    /// Creates a sinusoidal positional encoding helper.
+    /// @param | d_model | integer | Embedding width.
+    /// @param | max_len | integer | Maximum supported sequence length.
+    /// @return | LPositionalEncoding | New positional encoding handle.
+    tbl.set(
+        "newPositionalEncoding",
+        lua.create_function(|_, (d_model, max_len): (usize, usize)| {
+            Ok(LuaPositionalEncoding(Rc::new(RefCell::new(PositionalEncoding::new(
+                d_model, max_len,
+            )))))
+        })?,
+    )?;
+
+    // -- newMultiHeadAttention --
+    /// Creates a multi-head attention block.
+    /// @param | d_model | integer | Model width.
+    /// @param | num_heads | integer | Number of attention heads.
+    /// @return | LMultiHeadAttention | New MHA handle.
+    tbl.set(
+        "newMultiHeadAttention",
+        lua.create_function(|_, (d_model, num_heads): (usize, usize)| {
+            let mha = MultiHeadAttention::new(d_model, num_heads).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.newMultiHeadAttention: {}", e))
+            })?;
+            Ok(LuaMha(Rc::new(RefCell::new(mha))))
+        })?,
+    )?;
+
+    // -- newTransformerEncoder --
+    /// Creates a transformer encoder block.
+    /// @param | d_model | integer | Model width.
+    /// @param | num_heads | integer | Number of attention heads.
+    /// @param | d_ff | integer | Feed-forward hidden width.
+    /// @return | LTransformerEncoder | New encoder block handle.
+    tbl.set(
+        "newTransformerEncoder",
+        lua.create_function(|_, (d_model, num_heads, d_ff): (usize, usize, usize)| {
+            let block = TransformerEncoderBlock::new(d_model, num_heads, d_ff).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.newTransformerEncoder: {}", e))
+            })?;
+            Ok(LuaTransformerEncoder(Rc::new(RefCell::new(block))))
+        })?,
+    )?;
+
+    // -- newTransformerDecoder --
+    /// Creates a transformer decoder block.
+    /// @param | d_model | integer | Model width.
+    /// @param | num_heads | integer | Number of attention heads.
+    /// @param | d_ff | integer | Feed-forward hidden width.
+    /// @return | LTransformerDecoder | New decoder block handle.
+    tbl.set(
+        "newTransformerDecoder",
+        lua.create_function(|_, (d_model, num_heads, d_ff): (usize, usize, usize)| {
+            let block = TransformerDecoderBlock::new(d_model, num_heads, d_ff).map_err(|e| {
+                LuaError::RuntimeError(format!("lurek.learning.newTransformerDecoder: {}", e))
+            })?;
+            Ok(LuaTransformerDecoder(Rc::new(RefCell::new(block))))
         })?,
     )?;
 

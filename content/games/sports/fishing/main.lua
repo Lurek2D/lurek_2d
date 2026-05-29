@@ -243,22 +243,22 @@ end
 
 function lurek.init()
   math.randomseed(os.time())
-  
+
   local ui_root = lurek.ui.loadLayoutFile("content/games/sports/fishing/ui.toml")
   app_ui = {}
   app_ui.title_screen = ui_root:findById("title_screen")
   app_ui.game_over_screen = ui_root:findById("game_over_screen")
   app_ui.bucket_screen = ui_root:findById("bucket_screen")
   app_ui.hud = ui_root:findById("hud")
-  
+
   app_ui.game_over_title = ui_root:findById("game_over_title")
   app_ui.game_over_reason = ui_root:findById("game_over_reason")
   app_ui.game_over_stats = ui_root:findById("game_over_stats")
   app_ui.game_over_bucket = ui_root:findById("game_over_bucket")
-  
+
   app_ui.bucket_stats = ui_root:findById("bucket_stats")
   app_ui.bucket_list = ui_root:findById("bucket_list")
-  
+
   app_ui.fps_label = ui_root:findById("fps_label")
   app_ui.bait_label = ui_root:findById("bait_label")
   app_ui.bucket_label = ui_root:findById("bucket_label")
@@ -266,19 +266,19 @@ function lurek.init()
   app_ui.day_night_label = ui_root:findById("day_night_label")
   app_ui.weather_label = ui_root:findById("weather_label")
   app_ui.message_label = ui_root:findById("message_label")
-  
+
   app_ui.power_panel = ui_root:findById("power_panel")
   app_ui.power_fill = ui_root:findById("power_fill")
-  
+
   app_ui.tension_panel = ui_root:findById("tension_panel")
   app_ui.tension_fill = ui_root:findById("tension_fill")
   app_ui.fish_name_label = ui_root:findById("fish_name_label")
   app_ui.strain_warning = ui_root:findById("strain_warning")
-  
+
   app_ui.press_start = ui_root:findById("press_start")
   app_ui.press_title = ui_root:findById("press_title")
   app_ui.press_resume = ui_root:findById("press_resume")
-  
+
   local function handle_action_click()
     if state == STATES.TITLE then
       start_game()
@@ -289,7 +289,7 @@ function lurek.init()
       reset_cast()
     end
   end
-  
+
   if app_ui.press_start then app_ui.press_start:setOnClick(handle_action_click) end
   if app_ui.press_title then app_ui.press_title:setOnClick(handle_action_click) end
   if app_ui.press_resume then app_ui.press_resume:setOnClick(handle_action_click) end
@@ -384,7 +384,7 @@ function lurek.process(delta)
   app_ui.game_over_screen.visible = (state == STATES.GAMEOVER)
   app_ui.bucket_screen.visible = (state == STATES.BUCKET)
   app_ui.hud.visible = (state == STATES.FISHING or state == STATES.CATCHING)
-  
+
   if state == STATES.GAMEOVER then
     if game_won then
       app_ui.game_over_title.text = "YOU WIN!"
@@ -397,7 +397,7 @@ function lurek.process(delta)
       app_ui.game_over_reason.visible = false
     end
     app_ui.game_over_stats.text = "Fish caught: " .. #bucket .. "\nTotal points: " .. total_points
-    
+
     local blist = ""
     for i, f in ipairs(bucket) do
       if i <= 8 then
@@ -409,7 +409,7 @@ function lurek.process(delta)
     end
     app_ui.game_over_bucket.text = blist
   end
-  
+
   if state == STATES.BUCKET then
     app_ui.bucket_stats.text = "Fish: " .. #bucket .. "/" .. C.WIN_COUNT .. "  Points: " .. total_points
     local blist = ""
@@ -422,7 +422,7 @@ function lurek.process(delta)
     end
     app_ui.bucket_list.text = blist
   end
-  
+
   if state == STATES.FISHING or state == STATES.CATCHING then
     app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
     app_ui.bait_label.text = "Bait: " .. BAITS[bait_index].name
@@ -430,30 +430,30 @@ function lurek.process(delta)
     app_ui.points_label.text = "Points: " .. total_points
     app_ui.day_night_label.text = is_night and "Night" or "Day"
     app_ui.weather_label.visible = raining
-    
+
     app_ui.message_label.text = message
-    
+
     app_ui.power_panel.visible = charging
     if charging then
       local pr = power / 100
       app_ui.power_fill.width = pr * 196
       app_ui.power_fill.bg_color = {pr, 1.0 - pr * 0.5, 0.1, 0.9}
     end
-    
+
     app_ui.tension_panel.visible = (state == STATES.CATCHING)
     if state == STATES.CATCHING then
       app_ui.tension_fill.width = tension * 196
       app_ui.tension_fill.bg_color = {tension, 1.0 - tension, 0.1, 0.9}
-      
+
       if hooked_fish then
         app_ui.fish_name_label.text = hooked_fish.name
         app_ui.fish_name_label.color = {hooked_fish.color[1], hooked_fish.color[2], hooked_fish.color[3], 1.0}
       end
-      
+
       app_ui.strain_warning.visible = (tension > C.TENSION_SNAP and math.sin(day_timer * 10) > 0)
     end
   end
-  
+
   if state ~= STATES.FISHING and state ~= STATES.CATCHING then return end
 
   -- Day/night cycle

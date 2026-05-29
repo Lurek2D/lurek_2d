@@ -1,11 +1,6 @@
-//! INTERNAL ONLY: public `lurek.terminal.*` behavior is covered by the Lua-first suite in
-//! `tests/lua/unit/test_terminal_unit.lua` plus targeted integration tests.
-//!
-//! The Rust coverage that remains here focuses on lower-level ANSI helpers,
-//! render-command generation, and widget internals that are more direct to
-//! assert outside the Lua binding layer.
+//! File: tests/rust/unit/terminal_tests.rs
 
-// ── cell ──────────────────────────────────────────────────────────────────────
+// â”€â”€ cell â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod cell_tests {
     use lurek2d::terminal::TCell;
@@ -24,7 +19,7 @@ mod cell_tests {
     }
 }
 
-// ── ansi ──────────────────────────────────────────────────────────────────────
+// â”€â”€ ansi â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod ansi_tests {
     use lurek2d::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
@@ -89,7 +84,7 @@ mod ansi_tests {
     }
 }
 
-// ── widget ────────────────────────────────────────────────────────────────────
+// â”€â”€ widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod widget_tests {
     use lurek2d::terminal::{BorderStyle, WidgetBase};
@@ -117,11 +112,11 @@ mod widget_tests {
     }
 }
 
-// ── terminal_state ────────────────────────────────────────────────────────────
+// â”€â”€ terminal_state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod terminal_state_tests {}
 
-// ── render ────────────────────────────────────────────────────────────────────
+// â”€â”€ render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod render_tests {
     use lurek2d::render::{DrawMode, RenderCommand};
@@ -176,7 +171,7 @@ mod render_tests {
             .iter()
             .any(|cmd| matches!(cmd, RenderCommand::Print { text, .. } if text.contains("OK")));
         let has_frame = cmds.iter().any(|cmd| {
-            matches!(cmd, RenderCommand::Print { text, .. } if text.contains('┌') || text.contains('└'))
+            matches!(cmd, RenderCommand::Print { text, .. } if text.contains('â”Ś') || text.contains('â””'))
         });
         assert!(has_background, "button should emit a visible background");
         assert!(has_label, "button should emit its label");
@@ -237,7 +232,7 @@ mod render_tests {
     }
 }
 
-// ── completion ────────────────────────────────────────────────────────────────
+// â”€â”€ completion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 mod completion_tests {
     use lurek2d::terminal::completion::CompletionEngine;

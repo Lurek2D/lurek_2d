@@ -3086,6 +3086,125 @@
           "returnType": "LSoundPool",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newBeatClock",
+          "fullPath": "lurek.audio.newBeatClock",
+          "signature": "(...)",
+          "description": "Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.",
+          "parameters": [
+            {
+              "name": "bpm",
+              "type": "number",
+              "description": "Initial beats-per-minute (minimum 1).",
+              "optional": false
+            },
+            {
+              "name": "beats_per_bar_or_opts",
+              "type": "any",
+              "description": "Beats per bar (legacy) or options table.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional options table when second argument is numeric.",
+              "optional": true
+            }
+          ],
+          "returns": "LBeatClock",
+          "returnType": "LBeatClock",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "beatClockFromSource",
+          "fullPath": "lurek.audio.beatClockFromSource",
+          "signature": "(source, bpm, [opts])",
+          "description": "Creates a new beat clock and synchronizes it to an audio source position.",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "LSource|integer",
+              "description": "Source handle or numeric source id.",
+              "optional": false
+            },
+            {
+              "name": "bpm",
+              "type": "number",
+              "description": "Initial BPM.",
+              "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Optional beat clock options.",
+              "optional": true
+            }
+          ],
+          "returns": "LBeatClock",
+          "returnType": "LBeatClock",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setJudgementWindows",
+          "fullPath": "lurek.audio.setJudgementWindows",
+          "signature": "(windows)",
+          "description": "Sets global default timing windows used by beat-clock judgement.",
+          "parameters": [
+            {
+              "name": "windows",
+              "type": "table",
+              "description": "Table with optional `perfect`, `great`, `good` in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getJudgementWindows",
+          "fullPath": "lurek.audio.getJudgementWindows",
+          "signature": "()",
+          "description": "Returns global default timing windows used by beat-clock judgement.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "judgeBeat",
+          "fullPath": "lurek.audio.judgeBeat",
+          "signature": "(clock_ud, [division], [hit_offset])",
+          "description": "Judges timing against the nearest beat grid for a beat clock.",
+          "parameters": [
+            {
+              "name": "clock",
+              "type": "LBeatClock",
+              "description": "Beat clock handle.",
+              "optional": false
+            },
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division (defaults to clock subdivision).",
+              "optional": true
+            },
+            {
+              "name": "hit_offset",
+              "type": "number",
+              "description": "Signed hit offset in seconds.",
+              "optional": true
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -13205,6 +13324,258 @@
           "returnType": "LTensor",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newLstm",
+          "fullPath": "lurek.learning.newLstm",
+          "signature": "(input_size, hidden_size)",
+          "description": "Creates a stateful LSTM layer wrapper.",
+          "parameters": [
+            {
+              "name": "input_size",
+              "type": "integer",
+              "description": "Input vector size for each step.",
+              "optional": false
+            },
+            {
+              "name": "hidden_size",
+              "type": "integer",
+              "description": "Hidden state size.",
+              "optional": false
+            }
+          ],
+          "returns": "LLSTM",
+          "returnType": "LLSTM",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newGru",
+          "fullPath": "lurek.learning.newGru",
+          "signature": "(input_size, hidden_size)",
+          "description": "Creates a stateful GRU layer wrapper.",
+          "parameters": [
+            {
+              "name": "input_size",
+              "type": "integer",
+              "description": "Input vector size for each step.",
+              "optional": false
+            },
+            {
+              "name": "hidden_size",
+              "type": "integer",
+              "description": "Hidden state size.",
+              "optional": false
+            }
+          ],
+          "returns": "LGRU",
+          "returnType": "LGRU",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newConv2D",
+          "fullPath": "lurek.learning.newConv2D",
+          "signature": "lurek.learning.newConv2D(in_channels, out_channels, kernel_h, kernel_w, stride_h, stride_w, pad_h, pad_w)",
+          "description": "Creates a Conv2D layer wrapper for deterministic CPU spatial inference.",
+          "parameters": [
+            {
+              "name": "in_channels",
+              "type": "integer",
+              "description": "Input channel count.",
+              "optional": false
+            },
+            {
+              "name": "out_channels",
+              "type": "integer",
+              "description": "Output channel count.",
+              "optional": false
+            },
+            {
+              "name": "kernel_h",
+              "type": "integer",
+              "description": "Kernel height.",
+              "optional": false
+            },
+            {
+              "name": "kernel_w",
+              "type": "integer",
+              "description": "Kernel width.",
+              "optional": false
+            },
+            {
+              "name": "stride_h",
+              "type": "integer",
+              "description": "Vertical stride.",
+              "optional": false
+            },
+            {
+              "name": "stride_w",
+              "type": "integer",
+              "description": "Horizontal stride.",
+              "optional": false
+            },
+            {
+              "name": "pad_h",
+              "type": "integer",
+              "description": "Vertical zero-padding.",
+              "optional": false
+            },
+            {
+              "name": "pad_w",
+              "type": "integer",
+              "description": "Horizontal zero-padding.",
+              "optional": false
+            }
+          ],
+          "returns": "LConv2D",
+          "returnType": "LConv2D",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newMaxPool2D",
+          "fullPath": "lurek.learning.newMaxPool2D",
+          "signature": "(kernel_h, kernel_w, stride_h, stride_w)",
+          "description": "Creates a MaxPool2D layer wrapper.",
+          "parameters": [
+            {
+              "name": "kernel_h",
+              "type": "integer",
+              "description": "Kernel height.",
+              "optional": false
+            },
+            {
+              "name": "kernel_w",
+              "type": "integer",
+              "description": "Kernel width.",
+              "optional": false
+            },
+            {
+              "name": "stride_h",
+              "type": "integer",
+              "description": "Vertical stride.",
+              "optional": false
+            },
+            {
+              "name": "stride_w",
+              "type": "integer",
+              "description": "Horizontal stride.",
+              "optional": false
+            }
+          ],
+          "returns": "LMaxPool2D",
+          "returnType": "LMaxPool2D",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newPositionalEncoding",
+          "fullPath": "lurek.learning.newPositionalEncoding",
+          "signature": "(d_model, max_len)",
+          "description": "Creates a sinusoidal positional encoding helper.",
+          "parameters": [
+            {
+              "name": "d_model",
+              "type": "integer",
+              "description": "Embedding width.",
+              "optional": false
+            },
+            {
+              "name": "max_len",
+              "type": "integer",
+              "description": "Maximum supported sequence length.",
+              "optional": false
+            }
+          ],
+          "returns": "LPositionalEncoding",
+          "returnType": "LPositionalEncoding",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newMultiHeadAttention",
+          "fullPath": "lurek.learning.newMultiHeadAttention",
+          "signature": "(d_model, num_heads)",
+          "description": "Creates a multi-head attention block.",
+          "parameters": [
+            {
+              "name": "d_model",
+              "type": "integer",
+              "description": "Model width.",
+              "optional": false
+            },
+            {
+              "name": "num_heads",
+              "type": "integer",
+              "description": "Number of attention heads.",
+              "optional": false
+            }
+          ],
+          "returns": "LMultiHeadAttention",
+          "returnType": "LMultiHeadAttention",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newTransformerEncoder",
+          "fullPath": "lurek.learning.newTransformerEncoder",
+          "signature": "(d_model, num_heads, d_ff)",
+          "description": "Creates a transformer encoder block.",
+          "parameters": [
+            {
+              "name": "d_model",
+              "type": "integer",
+              "description": "Model width.",
+              "optional": false
+            },
+            {
+              "name": "num_heads",
+              "type": "integer",
+              "description": "Number of attention heads.",
+              "optional": false
+            },
+            {
+              "name": "d_ff",
+              "type": "integer",
+              "description": "Feed-forward hidden width.",
+              "optional": false
+            }
+          ],
+          "returns": "LTransformerEncoder",
+          "returnType": "LTransformerEncoder",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newTransformerDecoder",
+          "fullPath": "lurek.learning.newTransformerDecoder",
+          "signature": "(d_model, num_heads, d_ff)",
+          "description": "Creates a transformer decoder block.",
+          "parameters": [
+            {
+              "name": "d_model",
+              "type": "integer",
+              "description": "Model width.",
+              "optional": false
+            },
+            {
+              "name": "num_heads",
+              "type": "integer",
+              "description": "Number of attention heads.",
+              "optional": false
+            },
+            {
+              "name": "d_ff",
+              "type": "integer",
+              "description": "Feed-forward hidden width.",
+              "optional": false
+            }
+          ],
+          "returns": "LTransformerDecoder",
+          "returnType": "LTransformerDecoder",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -16597,6 +16968,108 @@
           ],
           "returns": "number",
           "returnType": "number",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newLootTable",
+          "fullPath": "lurek.math.newLootTable",
+          "signature": "([opts])",
+          "description": "Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "Optional nil, non-negative seed number, or options table `{ seed = integer }`.",
+              "optional": true
+            }
+          ],
+          "returns": "LLootTable",
+          "returnType": "LLootTable",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "lootFromList",
+          "fullPath": "lurek.math.lootFromList",
+          "signature": "(entries_tbl)",
+          "description": "Creates a loot table from a Lua list of entry tables.",
+          "parameters": [
+            {
+              "name": "entries",
+              "type": "table",
+              "description": "Array of `{ id=string, weight=number, meta=table? }`.",
+              "optional": false
+            }
+          ],
+          "returns": "LLootTable",
+          "returnType": "LLootTable",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "lootFromToml",
+          "fullPath": "lurek.math.lootFromToml",
+          "signature": "(path)",
+          "description": "Loads a loot table from a TOML file path.",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string",
+              "description": "TOML file path.",
+              "optional": false
+            }
+          ],
+          "returns": "LLootTable",
+          "returnType": "LLootTable",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "newPityTracker",
+          "fullPath": "lurek.math.newPityTracker",
+          "signature": "(target_id, threshold)",
+          "description": "Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.",
+          "parameters": [
+            {
+              "name": "target_id",
+              "type": "string",
+              "description": "Item id that resets the miss counter on a hit.",
+              "optional": false
+            },
+            {
+              "name": "threshold",
+              "type": "integer",
+              "description": "Number of consecutive misses before the tracker primes.",
+              "optional": false
+            }
+          ],
+          "returns": "LPityTracker",
+          "returnType": "LPityTracker",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "sampleWithPity",
+          "fullPath": "lurek.math.sampleWithPity",
+          "signature": "(loot_ud, pity_ud)",
+          "description": "Samples loot table with pity behavior: forced target when tracker is primed.",
+          "parameters": [
+            {
+              "name": "loot_table",
+              "type": "LLootTable",
+              "description": "Loot table handle.",
+              "optional": false
+            },
+            {
+              "name": "pity",
+              "type": "LPityTracker",
+              "description": "Pity tracker handle.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
           "isMethod": false,
           "objectType": null
         }
@@ -28199,6 +28672,24 @@
           "returnType": "LSpring",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newChain",
+          "fullPath": "lurek.tween.newChain",
+          "signature": "([looping])",
+          "description": "Creates a sequential tween chain for cinematic value-interpolation sequences.",
+          "parameters": [
+            {
+              "name": "looping",
+              "type": "boolean",
+              "description": "True to loop back to step 0 after the last step (default false).",
+              "optional": true
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -39233,6 +39724,566 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LBarChart"
+        }
+      ]
+    },
+    {
+      "name": "LBeatClock",
+      "description": "Lua-side wrapper for a musical beat clock.",
+      "methods": [
+        {
+          "name": "start",
+          "fullPath": "LBeatClock:start",
+          "signature": "()",
+          "description": "Starts beat-clock playback so scheduled beat callbacks can begin firing.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "stop",
+          "fullPath": "LBeatClock:stop",
+          "signature": "()",
+          "description": "Stops beat-clock playback while preserving the current musical position.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LBeatClock:reset",
+          "signature": "()",
+          "description": "Resets elapsed time to zero without changing running state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "tick",
+          "fullPath": "LBeatClock:tick",
+          "signature": "(dt)",
+          "description": "Advances the clock by `dt` seconds. Returns an array of whole-beat crossings.",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Delta time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "update",
+          "fullPath": "LBeatClock:update",
+          "signature": "(dt)",
+          "description": "Advances the clock by `dt` seconds and returns beat/bar transitions.",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Delta time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "position",
+          "fullPath": "LBeatClock:position",
+          "signature": "()",
+          "description": "Returns the current beat position.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "bpm",
+          "fullPath": "LBeatClock:bpm",
+          "signature": "()",
+          "description": "Returns the current tempo as beats-per-minute for this clock.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "getBpm",
+          "fullPath": "LBeatClock:getBpm",
+          "signature": "()",
+          "description": "Returns the current tempo as beats-per-minute for this clock.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "setBpm",
+          "fullPath": "LBeatClock:setBpm",
+          "signature": "(bpm)",
+          "description": "Sets a new BPM. Elapsed time is preserved.",
+          "parameters": [
+            {
+              "name": "bpm",
+              "type": "number",
+              "description": "New BPM (clamped to ≥1).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "rampBpm",
+          "fullPath": "LBeatClock:rampBpm",
+          "signature": "(target, seconds)",
+          "description": "Ramps BPM linearly to a target value over time.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "number",
+              "description": "Target BPM.",
+              "optional": false
+            },
+            {
+              "name": "seconds",
+              "type": "number",
+              "description": "Ramp duration in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "setSwing",
+          "fullPath": "LBeatClock:setSwing",
+          "signature": "(amount)",
+          "description": "Sets rhythmic swing amount in `[0.0, 0.5]` for off-beat timing feel.",
+          "parameters": [
+            {
+              "name": "amount",
+              "type": "number",
+              "description": "Swing amount.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "beatsPerBar",
+          "fullPath": "LBeatClock:beatsPerBar",
+          "signature": "()",
+          "description": "Returns the number of beats per bar.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "setBeatsPerBar",
+          "fullPath": "LBeatClock:setBeatsPerBar",
+          "signature": "(beats)",
+          "description": "Changes the time-signature beats-per-bar.",
+          "parameters": [
+            {
+              "name": "beats",
+              "type": "integer",
+              "description": "New beats per bar (clamped to ≥1).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "getBeat",
+          "fullPath": "LBeatClock:getBeat",
+          "signature": "()",
+          "description": "Returns fractional beat position.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "getBar",
+          "fullPath": "LBeatClock:getBar",
+          "signature": "()",
+          "description": "Returns the current fractional bar position across elapsed musical time.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "getPhase",
+          "fullPath": "LBeatClock:getPhase",
+          "signature": "([division])",
+          "description": "Returns phase within the current division in [0, 1).",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division.",
+              "optional": true
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "beatTimeRemaining",
+          "fullPath": "LBeatClock:beatTimeRemaining",
+          "signature": "([division])",
+          "description": "Returns seconds until the next division boundary.",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division.",
+              "optional": true
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "isOnBeat",
+          "fullPath": "LBeatClock:isOnBeat",
+          "signature": "([division], [tolerance])",
+          "description": "Returns true when the clock is near a beat boundary.",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division.",
+              "optional": true
+            },
+            {
+              "name": "tolerance",
+              "type": "number",
+              "description": "Tolerance in seconds (default 0.05).",
+              "optional": true
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "nearestBeat",
+          "fullPath": "LBeatClock:nearestBeat",
+          "signature": "([division])",
+          "description": "Returns nearest beat and signed timing error in seconds.",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division.",
+              "optional": true
+            }
+          ],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "tap",
+          "fullPath": "LBeatClock:tap",
+          "signature": "(t)",
+          "description": "Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).",
+          "parameters": [
+            {
+              "name": "wall_time_secs",
+              "type": "number",
+              "description": "Current real-world time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "every",
+          "fullPath": "LBeatClock:every",
+          "signature": "(division, callback)",
+          "description": "Registers a callback fired on each crossed step of `division`.",
+          "parameters": [
+            {
+              "name": "division",
+              "type": "integer",
+              "description": "Beat division grid (e.g. 4 for quarter-beat steps).",
+              "optional": false
+            },
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback receiving `step_index`.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "at",
+          "fullPath": "LBeatClock:at",
+          "signature": "(beat, callback)",
+          "description": "Registers a one-shot callback fired when `beat` is crossed.",
+          "parameters": [
+            {
+              "name": "beat",
+              "type": "number",
+              "description": "Beat value threshold.",
+              "optional": false
+            },
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback receiving the scheduled beat.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "pattern",
+          "fullPath": "LBeatClock:pattern",
+          "signature": "(pattern, callback)",
+          "description": "Registers a repeating pattern callback where `x` triggers and `.` skips.",
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": "string",
+              "description": "Pattern string like `x.x.`.",
+              "optional": false
+            },
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback receiving 1-based pattern step index.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "cancel",
+          "fullPath": "LBeatClock:cancel",
+          "signature": "(handle)",
+          "description": "Cancels a scheduled callback handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "any",
+              "description": "Handle table returned by `every`/`at`/`pattern` or numeric id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "cancelAll",
+          "fullPath": "LBeatClock:cancelAll",
+          "signature": "()",
+          "description": "Cancels all scheduled callback handles registered on this clock.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "scheduleAt",
+          "fullPath": "LBeatClock:scheduleAt",
+          "signature": "(beat)",
+          "description": "Schedules a one-shot event at `beat`. Returns true when the beat is in the future.",
+          "parameters": [
+            {
+              "name": "beat",
+              "type": "number",
+              "description": "Beat number to schedule.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "drainFired",
+          "fullPath": "LBeatClock:drainFired",
+          "signature": "()",
+          "description": "Returns and removes all scheduled beats that have now passed.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "secondsPerBeat",
+          "fullPath": "LBeatClock:secondsPerBeat",
+          "signature": "()",
+          "description": "Returns seconds-per-beat at the current BPM.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "secondsToNextBeat",
+          "fullPath": "LBeatClock:secondsToNextBeat",
+          "signature": "()",
+          "description": "Returns seconds until the next whole beat boundary.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "isRunning",
+          "fullPath": "LBeatClock:isRunning",
+          "signature": "()",
+          "description": "Returns true when the clock is running.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "syncToSource",
+          "fullPath": "LBeatClock:syncToSource",
+          "signature": "(source)",
+          "description": "Synchronizes beat position to an audio source playback position.",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "LSource|integer",
+              "description": "Source handle or source id.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "dump",
+          "fullPath": "LBeatClock:dump",
+          "signature": "()",
+          "description": "Returns a snapshot of clock state for debug and HUDs.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "quantise",
+          "fullPath": "LBeatClock:quantise",
+          "signature": "(beat, grid)",
+          "description": "Quantises `beat` to the nearest `grid` beat grid (static utility).",
+          "parameters": [
+            {
+              "name": "beat",
+              "type": "number",
+              "description": "Beat value to quantise.",
+              "optional": false
+            },
+            {
+              "name": "grid",
+              "type": "number",
+              "description": "Grid size (e.g. 0.25 for 16th notes).",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "type",
+          "fullPath": "LBeatClock:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBeatClock"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LBeatClock:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBeatClock"
         }
       ]
     },
@@ -50558,6 +51609,99 @@
       ]
     },
     {
+      "name": "LConv2D",
+      "description": "Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LConv2D:forward",
+          "signature": "(input)",
+          "description": "Runs convolution over an input tensor shaped as `[channels,height,width]`.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Input tensor for spatial convolution.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LConv2D:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened convolution weights and biases into this layer.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in Conv2D parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LConv2D:getWeights",
+          "signature": "()",
+          "description": "Exports flattened convolution weights and biases from this layer.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LConv2D:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this Conv2D layer.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        },
+        {
+          "name": "type",
+          "fullPath": "LConv2D:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LConv2D:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LConv2D"
+        }
+      ]
+    },
+    {
       "name": "LCursor",
       "description": "Lua-side cursor handle for system and custom cursor requests.",
       "methods": [
@@ -61119,6 +62263,110 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LGOAPPlanner"
+        }
+      ]
+    },
+    {
+      "name": "LGRU",
+      "description": "Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LGRU:forward",
+          "signature": "(input)",
+          "description": "Runs one GRU recurrent step on input data and returns next hidden state values.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "table",
+              "description": "Input vector with length equal to layer input_size.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LGRU:reset",
+          "signature": "()",
+          "description": "Resets the recurrent hidden state buffer to zeros.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LGRU:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened layer weights and biases into the wrapped GRU layer.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in GRU parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LGRU:getWeights",
+          "signature": "()",
+          "description": "Exports flattened layer weights and biases from the wrapped GRU layer.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LGRU:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this GRU layer.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "type",
+          "fullPath": "LGRU:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGRU"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LGRU:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGRU"
         }
       ]
     },
@@ -74793,6 +76041,110 @@
       ]
     },
     {
+      "name": "LLSTM",
+      "description": "Stateful Lua wrapper over `LstmLayer` with recurrent hidden and cell state buffers.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LLSTM:forward",
+          "signature": "(input)",
+          "description": "Runs one LSTM recurrent step on input data and returns next hidden state values.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "table",
+              "description": "Input vector with length equal to layer input_size.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LLSTM:reset",
+          "signature": "()",
+          "description": "Resets both hidden and cell recurrent state buffers to zeros.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LLSTM:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened layer weights and biases into the wrapped LSTM layer.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in LSTM parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LLSTM:getWeights",
+          "signature": "()",
+          "description": "Exports flattened layer weights and biases from the wrapped LSTM layer.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LLSTM:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this LSTM layer.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "type",
+          "fullPath": "LLSTM:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LLSTM:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLSTM"
+        }
+      ]
+    },
+    {
       "name": "LLabel",
       "description": "Adds label-specific methods (setText, getText) to a label widget table.",
       "methods": [
@@ -81359,6 +82711,247 @@
       ]
     },
     {
+      "name": "LLootTable",
+      "description": "Lua-side wrapper for a Walker-Vose alias-method loot table.",
+      "methods": [
+        {
+          "name": "add",
+          "fullPath": "LLootTable:add",
+          "signature": "(id, weight, [meta])",
+          "description": "Adds an entry to the table. Re-build is required before the next sample.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Unique item identifier.",
+              "optional": false
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "description": "Relative drop weight (positive).",
+              "optional": false
+            },
+            {
+              "name": "meta",
+              "type": "table",
+              "description": "Optional key-value metadata table.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "remove",
+          "fullPath": "LLootTable:remove",
+          "signature": "(id)",
+          "description": "Removes an entry by id. Returns true when found.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Item identifier.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "setWeight",
+          "fullPath": "LLootTable:setWeight",
+          "signature": "(id, weight)",
+          "description": "Updates the weight of an existing entry. Returns true when found.",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "description": "Item identifier.",
+              "optional": false
+            },
+            {
+              "name": "weight",
+              "type": "number",
+              "description": "New weight.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "build",
+          "fullPath": "LLootTable:build",
+          "signature": "()",
+          "description": "Rebuilds the alias table after mutations. Call before sampling.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "sample",
+          "fullPath": "LLootTable:sample",
+          "signature": "()",
+          "description": "Samples one entry in O(1), returning nil instead of a table when empty.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "sampleN",
+          "fullPath": "LLootTable:sampleN",
+          "signature": "(n)",
+          "description": "Samples n entries with replacement. Returns an array table.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Number of samples.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "sampleUnique",
+          "fullPath": "LLootTable:sampleUnique",
+          "signature": "(n)",
+          "description": "Samples up to n unique entries (by id). Returns an array table.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Maximum number of unique entries.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "merge",
+          "fullPath": "LLootTable:merge",
+          "signature": "(other)",
+          "description": "Merges entries from another loot table into this one.",
+          "parameters": [
+            {
+              "name": "other",
+              "type": "LLootTable",
+              "description": "Source loot table.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "setSeed",
+          "fullPath": "LLootTable:setSeed",
+          "signature": "(seed)",
+          "description": "Sets the RNG seed. The alias table remains valid.",
+          "parameters": [
+            {
+              "name": "seed",
+              "type": "integer",
+              "description": "New seed value.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "save",
+          "fullPath": "LLootTable:save",
+          "signature": "()",
+          "description": "Serialises loot table state to a binary blob.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LLootTable:restore",
+          "signature": "(blob)",
+          "description": "Restores loot table state from a blob produced by `save`.",
+          "parameters": [
+            {
+              "name": "blob",
+              "type": "string",
+              "description": "Binary blob.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "entryCount",
+          "fullPath": "LLootTable:entryCount",
+          "signature": "()",
+          "description": "Returns the number of entries in the table.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "type",
+          "fullPath": "LLootTable:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LLootTable:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LLootTable"
+        }
+      ]
+    },
+    {
       "name": "LMCTSEngine",
       "description": "Lua handle for Monte Carlo tree search over Lua-defined game states and actions.",
       "methods": [
@@ -82904,6 +84497,59 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LMapScript"
+        }
+      ]
+    },
+    {
+      "name": "LMaxPool2D",
+      "description": "Lua wrapper over `MaxPool2D` for deterministic non-trainable spatial downsampling.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LMaxPool2D:forward",
+          "signature": "(input)",
+          "description": "Runs max-pooling over an input tensor shaped as `[channels,height,width]`.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Input tensor for max-pooling.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LMaxPool2D"
+        },
+        {
+          "name": "type",
+          "fullPath": "LMaxPool2D:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMaxPool2D"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LMaxPool2D:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMaxPool2D"
         }
       ]
     },
@@ -89046,6 +90692,99 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LModel"
+        }
+      ]
+    },
+    {
+      "name": "LMultiHeadAttention",
+      "description": "Lua wrapper over `MultiHeadAttention`.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LMultiHeadAttention:forward",
+          "signature": "(input)",
+          "description": "Runs multi-head self-attention over an input tensor shaped as `[seq_len,d_model]`.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Input sequence tensor for attention.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LMultiHeadAttention:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened projection weights and biases into this MHA block.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in MHA parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LMultiHeadAttention:getWeights",
+          "signature": "()",
+          "description": "Exports flattened projection weights and biases from this MHA block.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LMultiHeadAttention:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this MHA block.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
+        },
+        {
+          "name": "type",
+          "fullPath": "LMultiHeadAttention:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LMultiHeadAttention:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LMultiHeadAttention"
         }
       ]
     },
@@ -100785,6 +102524,150 @@
       ]
     },
     {
+      "name": "LPityTracker",
+      "description": "Lua-side wrapper for a pity tracker.",
+      "methods": [
+        {
+          "name": "notice",
+          "fullPath": "LPityTracker:notice",
+          "signature": "(result_id)",
+          "description": "Notifies the tracker of a sample result id.",
+          "parameters": [
+            {
+              "name": "result_id",
+              "type": "string",
+              "description": "The item id that was sampled.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "isPrimed",
+          "fullPath": "LPityTracker:isPrimed",
+          "signature": "()",
+          "description": "Returns true when the guaranteed drop is due.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LPityTracker:reset",
+          "signature": "()",
+          "description": "Resets the miss counter and clears primed guaranteed-drop state.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "counter",
+          "fullPath": "LPityTracker:counter",
+          "signature": "()",
+          "description": "Returns the current miss counter used by pity-prime progression logic.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "save",
+          "fullPath": "LPityTracker:save",
+          "signature": "()",
+          "description": "Serialises pity state to a binary blob.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LPityTracker:restore",
+          "signature": "(blob)",
+          "description": "Restores pity state from a blob produced by `save`.",
+          "parameters": [
+            {
+              "name": "blob",
+              "type": "string",
+              "description": "Binary blob.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "export",
+          "fullPath": "LPityTracker:export",
+          "signature": "()",
+          "description": "Compatibility alias for `save` that exports the same binary payload.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "import",
+          "fullPath": "LPityTracker:import",
+          "signature": "(blob)",
+          "description": "Compatibility alias for `restore`.",
+          "parameters": [
+            {
+              "name": "blob",
+              "type": "string",
+              "description": "Binary blob.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "type",
+          "fullPath": "LPityTracker:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LPityTracker:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPityTracker"
+        }
+      ]
+    },
+    {
       "name": "LPlacementGrid",
       "description": "Lua-facing placement grid exposed by the lurek engine.",
       "methods": [
@@ -101001,6 +102884,59 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LPointLight"
+        }
+      ]
+    },
+    {
+      "name": "LPositionalEncoding",
+      "description": "Lua wrapper over `PositionalEncoding`.",
+      "methods": [
+        {
+          "name": "apply",
+          "fullPath": "LPositionalEncoding:apply",
+          "signature": "(input)",
+          "description": "Applies sinusoidal positional encoding values to a `[seq_len,d_model]` tensor.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Input sequence tensor to encode.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LPositionalEncoding"
+        },
+        {
+          "name": "type",
+          "fullPath": "LPositionalEncoding:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LPositionalEncoding"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LPositionalEncoding:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LPositionalEncoding"
         }
       ]
     },
@@ -103748,6 +105684,143 @@
           "objectType": "LProvinceRegistry"
         },
         {
+          "name": "findRoute",
+          "fullPath": "LProvinceRegistry:findRoute",
+          "signature": "(from_id, to_id, [cost_fn])",
+          "description": "Finds a route between two provinces using BFS or Dijkstra when `cost_fn` is supplied.",
+          "parameters": [
+            {
+              "name": "from_id",
+              "type": "integer",
+              "description": "Start province id.",
+              "optional": false
+            },
+            {
+              "name": "to_id",
+              "type": "integer",
+              "description": "Target province id.",
+              "optional": false
+            },
+            {
+              "name": "cost_fn",
+              "type": "function",
+              "description": "Optional cost callback `fn(from_id, to_id) -> number`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "findRoutes",
+          "fullPath": "LProvinceRegistry:findRoutes",
+          "signature": "(pairs_tbl, [cost_fn])",
+          "description": "Finds routes for a batch of `{from, to}` pairs.",
+          "parameters": [
+            {
+              "name": "pairs",
+              "type": "table",
+              "description": "Array of `{from=integer, to=integer}` tables.",
+              "optional": false
+            },
+            {
+              "name": "cost_fn",
+              "type": "function",
+              "description": "Optional cost callback `fn(from_id, to_id) -> number?`.",
+              "optional": true
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "getConnectedComponents",
+          "fullPath": "LProvinceRegistry:getConnectedComponents",
+          "signature": "()",
+          "description": "Returns connected components in the province adjacency graph.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "findIsolatedProvinces",
+          "fullPath": "LProvinceRegistry:findIsolatedProvinces",
+          "signature": "(owner_attr)",
+          "description": "Returns provinces that have no adjacent province with the same owner attribute.",
+          "parameters": [
+            {
+              "name": "owner_attr",
+              "type": "string",
+              "description": "Attribute key (for example `faction`).",
+              "optional": false
+            }
+          ],
+          "returns": "integer[]",
+          "returnType": "integer[]",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "isConnected",
+          "fullPath": "LProvinceRegistry:isConnected",
+          "signature": "(from_id, to_id)",
+          "description": "Returns true when there is at least one route between two provinces.",
+          "parameters": [
+            {
+              "name": "from_id",
+              "type": "integer",
+              "description": "Start province id.",
+              "optional": false
+            },
+            {
+              "name": "to_id",
+              "type": "integer",
+              "description": "Target province id.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
+          "name": "totalAttrForOwner",
+          "fullPath": "LProvinceRegistry:totalAttrForOwner",
+          "signature": "(owner_attr, owner_val, sum_attr)",
+          "description": "Sums a numeric attribute for all provinces with matching owner value.",
+          "parameters": [
+            {
+              "name": "owner_attr",
+              "type": "string",
+              "description": "Owner attribute key.",
+              "optional": false
+            },
+            {
+              "name": "owner_val",
+              "type": "string",
+              "description": "Owner attribute value to filter by.",
+              "optional": false
+            },
+            {
+              "name": "sum_attr",
+              "type": "string",
+              "description": "Numeric attribute key to sum.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LProvinceRegistry"
+        },
+        {
           "name": "getBorderType",
           "fullPath": "LProvinceRegistry:getBorderType",
           "signature": "(a, b)",
@@ -103899,8 +105972,8 @@
             },
             {
               "name": "style",
-              "type": "table|Style table with optional fields: color={r,g,b,a}, thickness=number, flags=string",
-              "description": "string[].",
+              "type": "table",
+              "description": "Style table with optional fields: color={r,g,b,a}, thickness=number, flags accepts a single string or an array of strings.",
               "optional": false
             }
           ],
@@ -138305,6 +140378,198 @@
       ]
     },
     {
+      "name": "LTransformerDecoder",
+      "description": "Lua wrapper over `TransformerDecoderBlock`.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LTransformerDecoder:forward",
+          "signature": "(input, encoder_out)",
+          "description": "Runs one transformer decoder block over input and encoder-output tensors.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Decoder input sequence tensor.",
+              "optional": false
+            },
+            {
+              "name": "encoder_out",
+              "type": "LTensor",
+              "description": "Encoder output sequence tensor.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LTransformerDecoder:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened trainable parameters for this decoder block.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in decoder parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LTransformerDecoder:getWeights",
+          "signature": "()",
+          "description": "Exports flattened trainable parameters for this decoder block.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LTransformerDecoder:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this decoder block.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTransformerDecoder:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTransformerDecoder:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTransformerDecoder"
+        }
+      ]
+    },
+    {
+      "name": "LTransformerEncoder",
+      "description": "Lua wrapper over `TransformerEncoderBlock`.",
+      "methods": [
+        {
+          "name": "forward",
+          "fullPath": "LTransformerEncoder:forward",
+          "signature": "(input)",
+          "description": "Runs one transformer encoder block over an input `[seq_len,d_model]` tensor.",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "LTensor",
+              "description": "Input sequence tensor for encoder processing.",
+              "optional": false
+            }
+          ],
+          "returns": "LTensor",
+          "returnType": "LTensor",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        },
+        {
+          "name": "setWeights",
+          "fullPath": "LTransformerEncoder:setWeights",
+          "signature": "(weights)",
+          "description": "Loads flattened trainable parameters for this encoder block.",
+          "parameters": [
+            {
+              "name": "weights",
+              "type": "table",
+              "description": "Flat float genome in encoder parameter order.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        },
+        {
+          "name": "getWeights",
+          "fullPath": "LTransformerEncoder:getWeights",
+          "signature": "()",
+          "description": "Exports flattened trainable parameters for this encoder block.",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        },
+        {
+          "name": "paramCount",
+          "fullPath": "LTransformerEncoder:paramCount",
+          "signature": "()",
+          "description": "Returns trainable parameter count for this encoder block.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTransformerEncoder:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this wrapper.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTransformerEncoder:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this userdata matches the requested type string.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type string to compare against this userdata.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTransformerEncoder"
+        }
+      ]
+    },
+    {
       "name": "LTreeView",
       "description": "Registers tree-view-specific Lua methods on a widget method table.",
       "methods": [
@@ -140341,6 +142606,410 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LTween"
+        }
+      ]
+    },
+    {
+      "name": "LTweenChain",
+      "description": "Lua-side wrapper for a sequential tween chain.",
+      "methods": [
+        {
+          "name": "push",
+          "fullPath": "LTweenChain:push",
+          "signature": "(opts)",
+          "description": "Appends a legacy scalar step to the compatibility chain.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "Step descriptor: `from`, `to`, `duration`, `easing?`, `label?`.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "to",
+          "fullPath": "LTweenChain:to",
+          "signature": "LTweenChain:to(target, fields, dur, [easing])",
+          "description": "Adds a fluent tween step to this chain.",
+          "parameters": [
+            {
+              "name": "target",
+              "type": "table",
+              "description": "Target table.",
+              "optional": false
+            },
+            {
+              "name": "fields",
+              "type": "table",
+              "description": "Field-to-value map.",
+              "optional": false
+            },
+            {
+              "name": "dur",
+              "type": "number",
+              "description": "Duration in seconds.",
+              "optional": false
+            },
+            {
+              "name": "easing",
+              "type": "string",
+              "description": "Easing name (default `linear`).",
+              "optional": true
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "wait",
+          "fullPath": "LTweenChain:wait",
+          "signature": "(seconds, [callback])",
+          "description": "Adds a fluent delay step to the chain timeline and keeps fluent chaining enabled.",
+          "parameters": [
+            {
+              "name": "seconds",
+              "type": "number",
+              "description": "Delay duration.",
+              "optional": false
+            },
+            {
+              "name": "callback",
+              "type": "function",
+              "description": "Optional callback fired after wait.",
+              "optional": true
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "call",
+          "fullPath": "LTweenChain:call",
+          "signature": "(f)",
+          "description": "Adds a fluent callback step that executes once at this point in the chain.",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback to execute.",
+              "optional": false
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "loop",
+          "fullPath": "LTweenChain:loop",
+          "signature": "(n)",
+          "description": "Sets fluent loop count where `0` means infinite looping behavior.",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "integer",
+              "description": "Number of passes.",
+              "optional": false
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "onLoop",
+          "fullPath": "LTweenChain:onLoop",
+          "signature": "(f)",
+          "description": "Sets callback fired when entering the next fluent loop iteration.",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback receiving iteration number.",
+              "optional": false
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "onComplete",
+          "fullPath": "LTweenChain:onComplete",
+          "signature": "(f)",
+          "description": "Sets callback fired after the final fluent pass fully completes.",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Completion callback.",
+              "optional": false
+            }
+          ],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "start",
+          "fullPath": "LTweenChain:start",
+          "signature": "()",
+          "description": "Starts fluent chain playback and registers this chain in the update queue.",
+          "parameters": [],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "stop",
+          "fullPath": "LTweenChain:stop",
+          "signature": "()",
+          "description": "Stops fluent playback and leaves the chain ready for a later restart.",
+          "parameters": [],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "pause",
+          "fullPath": "LTweenChain:pause",
+          "signature": "()",
+          "description": "Pauses fluent playback while preserving timeline progress and cursor state.",
+          "parameters": [],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "resume",
+          "fullPath": "LTweenChain:resume",
+          "signature": "()",
+          "description": "Resumes fluent playback from the previously paused timeline position.",
+          "parameters": [],
+          "returns": "LTweenChain",
+          "returnType": "LTweenChain",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "getProgress",
+          "fullPath": "LTweenChain:getProgress",
+          "signature": "()",
+          "description": "Returns normalized fluent chain progress in range `[0, 1]`.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "isComplete",
+          "fullPath": "LTweenChain:isComplete",
+          "signature": "()",
+          "description": "Returns whether fluent playback reached final completion.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "isActive",
+          "fullPath": "LTweenChain:isActive",
+          "signature": "()",
+          "description": "Returns whether fluent playback is active.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "getIteration",
+          "fullPath": "LTweenChain:getIteration",
+          "signature": "()",
+          "description": "Returns current iteration number.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "tick",
+          "fullPath": "LTweenChain:tick",
+          "signature": "(dt)",
+          "description": "Advances the legacy scalar chain and returns completion events.",
+          "parameters": [
+            {
+              "name": "dt",
+              "type": "number",
+              "description": "Delta time in seconds.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "value",
+          "fullPath": "LTweenChain:value",
+          "signature": "()",
+          "description": "Returns current legacy scalar value.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "cursor",
+          "fullPath": "LTweenChain:cursor",
+          "signature": "()",
+          "description": "Returns one-based current legacy step index.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "len",
+          "fullPath": "LTweenChain:len",
+          "signature": "()",
+          "description": "Returns legacy step count currently stored in this tween chain.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "reset",
+          "fullPath": "LTweenChain:reset",
+          "signature": "()",
+          "description": "Resets both fluent and legacy playback cursors.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "jumpTo",
+          "fullPath": "LTweenChain:jumpTo",
+          "signature": "(step)",
+          "description": "Jumps legacy chain cursor to given one-based step.",
+          "parameters": [
+            {
+              "name": "step",
+              "type": "integer",
+              "description": "Step index (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "setLooping",
+          "fullPath": "LTweenChain:setLooping",
+          "signature": "(looping)",
+          "description": "Enables/disables infinite loop compatibility mode.",
+          "parameters": [
+            {
+              "name": "looping",
+              "type": "boolean",
+              "description": "Looping flag.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "isLooping",
+          "fullPath": "LTweenChain:isLooping",
+          "signature": "()",
+          "description": "Returns whether chain is in infinite loop mode.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "isFinished",
+          "fullPath": "LTweenChain:isFinished",
+          "signature": "()",
+          "description": "Returns whether legacy playback reached completion for the active pass.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "clear",
+          "fullPath": "LTweenChain:clear",
+          "signature": "()",
+          "description": "Clears all fluent and legacy steps.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "type",
+          "fullPath": "LTweenChain:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LTweenChain"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LTweenChain:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this handle matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LTweenChain"
         }
       ]
     },
@@ -149338,7 +152007,7 @@
     {
       "name": "fixedUpdate",
       "signature": "function lurek.fixedUpdate(dt)",
-      "description": "Alias for process_physics — called at fixed timestep rate.",
+      "description": "Deprecated alias for process_physics. Use lurek.process_physics(dt).",
       "parameters": [
         {
           "name": "dt",

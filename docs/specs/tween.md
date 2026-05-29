@@ -21,9 +21,17 @@ To handle complex animation choreography, the module provides powerful combinato
 
 The entire system is driven by a centralized `TweenEngine` that efficiently updates all active tweens, sequences, parallels, and springs every frame. The module is fully integrated with Lua coroutines via the `await()` method, allowing developers to yield execution until an animation completes, drastically simplifying sequential scripting without callback hell. Exposed via the comprehensive `lurek.tween.*` Lua API, this module is an essential tool for bringing fluid, polished motion to Lurek2D games.
 
-## Source Documentation
+## Files
 
-### `engine.rs`
+### chain.rs
+
+- Tween chain — sequential and parallel tween composition for cinematic sequences.
+- `TweenChain` plays tweens one after another (or in parallel groups).
+- Each step carries an optional label for event-based Lua callbacks.
+- `tick(dt)` advances the chain and returns completed step labels.
+
+### engine.rs
+
 - Tween engine: per-tick interpolation of numeric table fields on Lua objects.
 - `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
 - Each job targets a Lua registry key and a list of field names to animate.
@@ -31,7 +39,8 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `on_settle` callback fires once the job reaches its target value within epsilon.
 - Updated synchronously inside `lua_tick`; no background threads.
 
-### `handle.rs`
+### handle.rs
+
 - Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
 - Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
 - Tick-driven interpolation writes computed values directly into Lua tables each frame.
@@ -40,209 +49,211 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - Parallel groups advance all lanes simultaneously and complete when every lane finishes.
 - Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
 
-### `interpolator.rs`
+### interpolator.rs
+
 - Multi-channel tween interpolator that drives values from start to target over a fixed duration.
 - Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
 - Each tween holds an independent clock, supports reset, seek, and completion query.
 - Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
 - Falls back to linear when an unknown easing name is provided.
 
-### `mod.rs`
+### mod.rs
+
 - Smooth value interpolation with configurable easing curves.
 - Sequence and parallel combinators for complex multi-step animations.
 - Spring-based physics tweening for natural motion.
 - Shared tween engine driving all active tweens each frame.
 - Multi-channel interpolator driven by easing functions over a fixed duration.
 
-### `spring.rs`
+### spring.rs
+
 - Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
 - Named spring system aggregating multiple axes under shared default parameters.
 - Euler integration with snap-to-target on settle to eliminate micro-oscillation.
 
-### `state.rs`
+### state.rs
+
 - Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
 - Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
 - Built-in easing catalog query used by tooling and Lua autocomplete.
 
-## Types
+## Lua API Ref
 
-- `TweenEngine` (`struct`, `engine.rs`): The active tween pool that updates all registered tweens, sequences, and parallel groups each frame.
-- `LuaTween` (`struct`, `handle.rs`): The single-property-group tween handle that animates named numeric fields on a Lua table.
-- `SequenceStep` (`enum`, `handle.rs`): The enum-like workflow step container used inside sequences.
-- `LuaTweenSequence` (`struct`, `handle.rs`): The ordered step runner that executes tween, delay, and callback steps one after another.
-- `ParallelEntry` (`struct`, `handle.rs`): The per-arm tween record stored inside a parallel group.
-- `LuaTweenParallel` (`struct`, `handle.rs`): The grouped runner that executes multiple tween entries at the same time.
-- `TweenValue` (`struct`, `interpolator.rs`): Start/target pair for a single channel managed by a `Tween`.
-- `Tween` (`struct`, `interpolator.rs`): Multi-channel tween interpolator driven by an easing function over a fixed duration.
-- `SpringAxis` (`struct`, `spring.rs`): Single-axis spring simulation driven by a damped differential equation.
-- `SpringSystem` (`struct`, `spring.rs`): Named collection of [`SpringAxis`] values that all share the same parameters.
-- `TweenState` (`struct`, `state.rs`): The pure timing and easing core that tracks elapsed time, completion, and interpolation progress without Lua dependencies.
-
-## Functions
-
-- `TweenEngine::new` (`engine.rs`): Create an empty engine with no active animations and no custom easings.
-- `TweenEngine::update` (`engine.rs`): Advance all active tweens, sequences, and parallels by `dt` seconds;.
-- `TweenEngine::cancel_all` (`engine.rs`): Cancel and remove all active tweens, sequences, and parallels; fires `on_cancel` callbacks; return error on Lua fault.
-- `TweenEngine::active_count` (`engine.rs`): Return the total count of active tweens, sequences, parallels, and springs.
-- `LuaTween::new` (`handle.rs`): Create a new active tween targeting `fields` of `target` over `duration` seconds using `easing_name`.
-- `LuaTween::tick_with` (`handle.rs`): Advance the tween by `dt` seconds, write interpolated values to the target table,.
-- `LuaTween::fire_on_complete` (`handle.rs`): Consume and call the `on_complete` registry callback if one is set.
-- `LuaTween::set_relative` (`handle.rs`): Set whether `end_values` are absolute targets or offsets from start; resets start capture.
-- `LuaTween::add_waiter` (`handle.rs`): Push a coroutine registry key to be resumed when this tween completes.
-- `LuaTween::resume_waiters` (`handle.rs`): Resume all registered waiter coroutines and remove their registry entries.
-- `LuaTween::progress` (`handle.rs`): Return the raw (uneased) progress in [0.0, 1.0] as of the last tick.
-- `LuaTween::elapsed` (`handle.rs`): Return elapsed seconds since the tween started.
-- `LuaTween::remaining` (`handle.rs`): Return seconds remaining until the tween completes; clamped to >= 0.0.
-- `LuaTweenSequence::new` (`handle.rs`): Create an empty, inactive sequence with no steps or callbacks.
-- `LuaTweenSequence::tick_with` (`handle.rs`): Advance the sequence by `dt` seconds, consuming as many steps as time allows; return true when all steps are done.
-- `LuaTweenSequence::progress_ratio` (`handle.rs`): Return the fraction [0.0, 1.0] of steps completed; 1.0 when inactive or empty.
-- `LuaTweenSequence::add_waiter` (`handle.rs`): Push a coroutine registry key to be resumed when this sequence completes.
-- `LuaTweenSequence::resume_waiters` (`handle.rs`): Resume all registered waiter coroutines and remove their registry entries.
-- `LuaTweenParallel::new` (`handle.rs`): Create an empty, inactive parallel group.
-- `LuaTweenParallel::tick_with` (`handle.rs`): Advance all incomplete lanes by `dt` seconds; return true when every lane is done.
-- `Tween::new` (`interpolator.rs`): Create a new Tween with the given `duration` (seconds) and named easing; falls back to linear when name is unknown.
-- `Tween::add_value` (`interpolator.rs`): Register a `(start, target)` channel and return its index.
-- `Tween::update` (`interpolator.rs`): Advance the clock by `dt` seconds; returns true when the tween has completed.
-- `Tween::get_value` (`interpolator.rs`): Return the interpolated value for channel `index`; returns 0.0 for out-of-range index.
-- `Tween::get_all_values` (`interpolator.rs`): Return interpolated values for all registered channels.
-- `Tween::reset` (`interpolator.rs`): Reset the clock to zero without clearing channels.
-- `Tween::set_time` (`interpolator.rs`): Set the clock to a specific time `t`, clamped to `[0, duration]`.
-- `Tween::is_complete` (`interpolator.rs`): Return true when the clock has reached or passed the duration.
-- `Tween::value_count` (`interpolator.rs`): Return the number of registered value channels.
-- `Tween::easing_name` (`interpolator.rs`): Return the easing name string this tween was constructed with.
-- `Tween::duration` (`interpolator.rs`): Return the total duration in seconds.
-- `Tween::clock` (`interpolator.rs`): Return the current elapsed clock time in seconds.
-- `SpringAxis::new` (`spring.rs`): Create a new spring axis; `settled` is set immediately if `|position - target| < precision`.
-- `SpringAxis::update` (`spring.rs`): Advance the spring by `dt` seconds; snap to target and zero velocity when settled.
-- `SpringAxis::is_settled` (`spring.rs`): Return true if the spring has settled within `precision` of its target.
-- `SpringAxis::reset` (`spring.rs`): Teleport the spring to `position`, set a new `target`, and clear velocity.
-- `SpringAxis::set_target` (`spring.rs`): Update the target and mark the spring as unsettled so simulation resumes.
-- `SpringSystem::new` (`spring.rs`): Create a new spring system with the given default parameters and no axes.
-- `SpringSystem::add_axis` (`spring.rs`): Add a named axis with `position` and `target`, using the system's default spring parameters.
-- `SpringSystem::update` (`spring.rs`): Advance all axes by `dt` seconds.
-- `SpringSystem::is_settled` (`spring.rs`): Return true if every axis in the system has settled.
-- `SpringSystem::set_target` (`spring.rs`): Set the target for the axis named `key`; no-op if the key does not exist.
-- `SpringSystem::get_position` (`spring.rs`): Return the current position of the axis named `key`, or `None` if not found.
-- `TweenState::new` (`state.rs`): Create a new state with the given `duration` and easing name; falls back to linear on unknown names.
-- `TweenState::tick` (`state.rs`): Advance elapsed time by `dt` when not paused; return true if the tween has reached or passed its duration.
-- `TweenState::reset` (`state.rs`): Reset `elapsed` to zero so the tween plays from the beginning.
-- `TweenState::t_raw` (`state.rs`): Return raw (uneased) progress in [0.0, 1.0]; returns 1.0 when duration is zero.
-- `TweenState::t_eased` (`state.rs`): Return eased progress in [0.0, 1.0] by applying the resolved easing function to `t_raw`.
-- `TweenState::lerp` (`state.rs`): Return `start + (end - start) * t_eased()`.
-- `TweenState::is_complete` (`state.rs`): Return true when elapsed >= duration.
-- `resolve_easing` (`state.rs`): Resolves a named easing function to a function pointer.
-- `builtin_easing_names` (`state.rs`): Returns all built-in easing names as a static slice.
-
-## Lua API Reference
-
-- Binding path(s): `src/lua_api/tween_api.rs`
+- Binding: `src/lua_api/tween_api.rs`
 - Namespace: `lurek.tween`
 
-### Module Functions
-- `lurek.tween.update`: Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
-- `lurek.tween.tween`: Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
-- `lurek.tween.sequence`: Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
-- `lurek.tween.parallel`: Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
-- `lurek.tween.delay`: Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
+### Functions
+
 - `lurek.tween.cancelAll`: Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
+- `lurek.tween.delay`: Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
 - `lurek.tween.getActiveCount`: Returns the total number of currently active tweens, sequences, and parallels.
-- `lurek.tween.registerEasing`: Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
 - `lurek.tween.getEasingNames`: Returns an array of all available easing function names, including both built-in and custom-registered easings.
+- `lurek.tween.newChain`: Creates a sequential tween chain for cinematic value-interpolation sequences.
 - `lurek.tween.newState`: Creates a standalone tween state for manual interpolation. Useful when you need eased progress without automatic property updates.
+- `lurek.tween.parallel`: Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
+- `lurek.tween.registerEasing`: Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
+- `lurek.tween.sequence`: Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
+- `lurek.tween.spring`: Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior.
 - `lurek.tween.to`: Creates and starts a property tween with a different parameter order: target first, then fields, duration, easing.
+- `lurek.tween.tween`: Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 - `lurek.tween.tweenChain`: Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `fields`, optional `easing`, optional `callback`, or a `delay` key for pauses.
 - `lurek.tween.tweenColor`: Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
-- `lurek.tween.spring`: Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior.
+- `lurek.tween.update`: Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
 
-### `LSpring` Methods
-- `LSpring:update`: Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
-- `LSpring:isSettled`: Returns whether all spring axes have reached their targets within the precision threshold.
-- `LSpring:isActive`: Returns whether this spring is still actively animating.
-- `LSpring:setTarget`: Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
-- `LSpring:setStiffness`: Sets the spring stiffness for all axes. Higher values make the spring snap faster.
-- `LSpring:setDamping`: Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
+### Enums
+
+- No documented module-level enums/constants.
+
+### Types
+
+
+#### LSpring Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LSpring:cancel`: Cancels this spring animation and cleans up the on-settle callback if one was registered.
 - `LSpring:getPosition`: Returns the current position of the given spring axis, or `nil` if the axis does not exist.
+- `LSpring:isActive`: Returns whether this spring is still actively animating.
+- `LSpring:isSettled`: Returns whether all spring axes have reached their targets within the precision threshold.
+- `LSpring:setDamping`: Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
+- `LSpring:setStiffness`: Sets the spring stiffness for all axes. Higher values make the spring snap faster.
+- `LSpring:setTarget`: Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
 - `LSpring:type`: Returns the type name of this object.
 - `LSpring:typeOf`: Checks whether this object matches the given type name.
+- `LSpring:update`: Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
 
-### `LTween` Methods
-- `LTween:cancel`: Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
-- `LTween:pause`: Pauses this tween so it stops advancing until resumed.
-- `LTween:resume`: Resumes a paused tween so it continues advancing.
-- `LTween:isActive`: Returns whether this tween is still running (not cancelled or completed).
-- `LTween:getProgress`: Returns the eased progress of this tween as a value from 0.0 to 1.0.
-- `LTween:getElapsed`: Returns the number of seconds that have elapsed since the tween started.
-- `LTween:getDuration`: Returns the total duration of this tween in seconds.
-- `LTween:getRemaining`: Returns the number of seconds remaining until this tween completes.
-- `LTween:getFields`: Returns an array of field names being tweened on the target table.
-- `LTween:setRelative`: Sets whether the tween end values are relative to the start values instead of absolute.
-- `LTween:relative`: Chainable version of `setRelative`. Returns the tween for fluent API usage.
+
+#### LTween Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LTween:await`: Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
-- `LTween:setRepeat`: Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
-- `LTween:setYoyo`: Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
+- `LTween:cancel`: Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
+- `LTween:getDuration`: Returns the total duration of this tween in seconds.
+- `LTween:getElapsed`: Returns the number of seconds that have elapsed since the tween started.
+- `LTween:getFields`: Returns an array of field names being tweened on the target table.
+- `LTween:getProgress`: Returns the eased progress of this tween as a value from 0.0 to 1.0.
+- `LTween:getRemaining`: Returns the number of seconds remaining until this tween completes.
+- `LTween:isActive`: Returns whether this tween is still running (not cancelled or completed).
+- `LTween:onCancel`: Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
 - `LTween:onComplete`: Sets a callback to fire when the tween completes. Returns the tween for chaining.
 - `LTween:onUpdate`: Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
-- `LTween:onCancel`: Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
+- `LTween:pause`: Pauses this tween so it stops advancing until resumed.
+- `LTween:relative`: Chainable version of `setRelative`. Returns the tween for fluent API usage.
+- `LTween:resume`: Resumes a paused tween so it continues advancing.
+- `LTween:setRelative`: Sets whether the tween end values are relative to the start values instead of absolute.
+- `LTween:setRepeat`: Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
+- `LTween:setYoyo`: Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
 - `LTween:type`: Returns the type name of this object.
 - `LTween:typeOf`: Checks whether this object matches the given type name.
 
-### `LTweenParallel` Methods
+
+#### LTweenChain Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
+- `LTweenChain:call`: Adds a fluent callback step that executes once at this point in the chain.
+- `LTweenChain:clear`: Clears all fluent and legacy steps.
+- `LTweenChain:cursor`: Returns one-based current legacy step index.
+- `LTweenChain:getIteration`: Returns current iteration number.
+- `LTweenChain:getProgress`: Returns normalized fluent chain progress in range `[0, 1]`.
+- `LTweenChain:isActive`: Returns whether fluent playback is active.
+- `LTweenChain:isComplete`: Returns whether fluent playback reached final completion.
+- `LTweenChain:isFinished`: Returns whether legacy playback reached completion for the active pass.
+- `LTweenChain:isLooping`: Returns whether chain is in infinite loop mode.
+- `LTweenChain:jumpTo`: Jumps legacy chain cursor to given one-based step.
+- `LTweenChain:len`: Returns legacy step count currently stored in this tween chain.
+- `LTweenChain:loop`: Sets fluent loop count where `0` means infinite looping behavior.
+- `LTweenChain:onComplete`: Sets callback fired after the final fluent pass fully completes.
+- `LTweenChain:onLoop`: Sets callback fired when entering the next fluent loop iteration.
+- `LTweenChain:pause`: Pauses fluent playback while preserving timeline progress and cursor state.
+- `LTweenChain:push`: Appends a legacy scalar step to the compatibility chain.
+- `LTweenChain:reset`: Resets both fluent and legacy playback cursors.
+- `LTweenChain:resume`: Resumes fluent playback from the previously paused timeline position.
+- `LTweenChain:setLooping`: Enables/disables infinite loop compatibility mode.
+- `LTweenChain:start`: Starts fluent chain playback and registers this chain in the update queue.
+- `LTweenChain:stop`: Stops fluent playback and leaves the chain ready for a later restart.
+- `LTweenChain:tick`: Advances the legacy scalar chain and returns completion events.
+- `LTweenChain:to`: Adds a fluent tween step to this chain.
+- `LTweenChain:type`: Returns the Lua-visible type name.
+- `LTweenChain:typeOf`: Returns whether this handle matches the given type name.
+- `LTweenChain:value`: Returns current legacy scalar value.
+- `LTweenChain:wait`: Adds a fluent delay step to the chain timeline and keeps fluent chaining enabled.
+
+
+#### LTweenParallel Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LTweenParallel:add`: Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
-- `LTweenParallel:tween`: Creates and adds a new tween step directly to this parallel group.
-- `LTweenParallel:start`: Starts all tweens in this parallel group simultaneously.
 - `LTweenParallel:cancel`: Cancels all tweens in this parallel group immediately.
 - `LTweenParallel:isActive`: Returns whether this parallel group is still running.
 - `LTweenParallel:onComplete`: Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
+- `LTweenParallel:start`: Starts all tweens in this parallel group simultaneously.
+- `LTweenParallel:tween`: Creates and adds a new tween step directly to this parallel group.
 - `LTweenParallel:type`: Returns the type name of this object.
 - `LTweenParallel:typeOf`: Checks whether this object matches the given type name.
 
-### `LTweenSequence` Methods
-- `LTweenSequence:tween`: Appends a tween step to this sequence that animates numeric fields on the target table.
-- `LTweenSequence:delay`: Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
-- `LTweenSequence:callback`: Appends a callback step to this sequence that fires when reached during playback.
-- `LTweenSequence:start`: Starts playback of this sequence from the first step.
-- `LTweenSequence:cancel`: Cancels this sequence immediately and resumes any coroutines waiting on it.
-- `LTweenSequence:isActive`: Returns whether this sequence is still running.
-- `LTweenSequence:getProgress`: Returns the overall progress ratio of this sequence from 0.0 to 1.0.
+
+#### LTweenSequence Type
+
+
+##### Fields
+
+- No documented fields.
+
+##### Methods
+
 - `LTweenSequence:await`: Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
+- `LTweenSequence:callback`: Appends a callback step to this sequence that fires when reached during playback.
+- `LTweenSequence:cancel`: Cancels this sequence immediately and resumes any coroutines waiting on it.
+- `LTweenSequence:delay`: Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
+- `LTweenSequence:getProgress`: Returns the overall progress ratio of this sequence from 0.0 to 1.0.
+- `LTweenSequence:isActive`: Returns whether this sequence is still running.
 - `LTweenSequence:onComplete`: Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
+- `LTweenSequence:start`: Starts playback of this sequence from the first step.
+- `LTweenSequence:tween`: Appends a tween step to this sequence that animates numeric fields on the target table.
 - `LTweenSequence:type`: Returns the type name of this object.
 - `LTweenSequence:typeOf`: Checks whether this object matches the given type name.
 
-### `LTweenState` Methods
-- `LTweenState:tick`: Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
+
+#### LTweenState Type
+
+
+##### Fields
+
+- `paused` (`any`): Lua-visible field.
+
+##### Methods
+
 - `LTweenState:isComplete`: Returns whether this tween state has finished its full duration.
-- `LTweenState:t`: Returns the raw (un-eased) progress value from 0.0 to 1.0.
 - `LTweenState:lerp`: Linearly interpolates between two values using the current eased progress.
 - `LTweenState:reset`: Resets the tween state to the beginning so it can be replayed.
+- `LTweenState:t`: Returns the raw (un-eased) progress value from 0.0 to 1.0.
+- `LTweenState:tick`: Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
 - `LTweenState:type`: Returns the type name of this object.
 - `LTweenState:typeOf`: Checks whether this object matches the given type name.
 
 ## References
 
 - `math`: Imports or references `math` from `src/math/`.
-
-## Notes
-
-- Keep this module reference synchronized with `src/tween/` and any matching Lua bindings.
-- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
-
-### Recent sync (1.0.9-fix.73)
-
-- Added relative tween mode:
-  - `LTween:setRelative(enabled)` and chain alias `LTween:relative(enabled)`.
-  - Relative mode interprets tween field values as deltas from captured start values.
-- Added runtime introspection for active tweens:
-  - `LTween:getElapsed`, `LTween:getDuration`, `LTween:getRemaining`, `LTween:getFields`.
-- Added coroutine completion waits:
-  - `LTween:await()` and `LTweenSequence:await()` resume suspended coroutine when object completes/cancels.
-  - `LTweenSequence:getProgress()` exposes step-completion ratio.
-- Added helper constructors:
-  - `lurek.tween.tweenChain(steps)` for declarative sequences.
-  - `lurek.tween.tweenColor(duration, target, color, easing?)` for RGBA animation.
-- Reliability update:
-  - explicit waiter cleanup/resume on tween and sequence cancel/complete paths.
-- Boundary clarification (`tween` vs `animation`):
-  - `tween` owns runtime numeric interpolation and per-frame easing.
-  - `animation` owns clip/timeline playback authoring semantics.

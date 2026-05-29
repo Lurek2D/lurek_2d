@@ -1,13 +1,4 @@
-//! `lurek.patterns` — Design pattern utilities: event buses, object pools, state machines, command stacks, observers, mediators, factories, data structures, behavior trees, and graphs.
-//!
-//! - Registers `lurek.patterns.*` functions and types via `register()`.
-//! - Userdata types: `LuaEventBus`, `LuaObjectPool`, `LuaCommandStack`.
-//! - Userdata types: `LuaServiceLocator`, `LuaFactory`, `LuaSimpleState`.
-//! - Userdata types: `LuaBlackboard`, `LuaObserver`, `LuaThrottle`.
-//! - Userdata types: `LuaDebounce`, `LuaPriorityQueue`, `LuaRing`.
-//! - Userdata types: `LuaFunnel`, `LuaRelationshipManager`, `LuaMediator`.
-//! - Userdata types: `LuaStrategy`, `LuaStack`, `LuaQueue`.
-//! - Userdata types: `LuaList`, `LuaSet`, `LuaMap`.
+//! File: src/lua_api/patterns_api.rs
 
 use crate::lua_api::lua_types::{add_type_methods, LurekType};
 use crate::runtime::SharedState;
@@ -2654,7 +2645,7 @@ impl LuaUserData for LuaBehaviorTree {
             },
         );
         // -- addInverter --
-        /// Create a decorator node that inverts its child's result (success ↔ failure).
+        /// Create a decorator node that inverts its child's result (success â†” failure).
         /// @param | label | string? | Optional debug label.
         /// @return | number | The node ID.
         methods.add_method("addInverter", |_, this, label: Option<String>| {

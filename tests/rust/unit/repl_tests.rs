@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: public `lurek.repl.*` behavior is covered by the Lua-first
-//! suite in `tests/lua/unit/test_repl_core_unit.lua`.
-//!
-//! The remaining Rust tests keep internal `ReplResult` and `ReplCommand`
-//! variant contracts that are not directly observable through the Lua binding
-//! surface.
+//! File: tests/rust/unit/repl_tests.rs
 
 use lurek2d::repl::{ReplCommand, ReplResult, ReplSession};
 

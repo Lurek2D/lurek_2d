@@ -423,6 +423,174 @@ do
     print("chain result: x=" .. obj.x .. " y=" .. obj.y)
 end
 
+--@api-stub: lurek.tween.newChain
+do
+    local chain = lurek.tween.newChain()
+    print("newChain ok = " .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:to
+do
+    local chain = lurek.tween.newChain()
+    print("to marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:wait
+do
+    local chain = lurek.tween.newChain()
+    print("wait marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:call
+do
+    local chain = lurek.tween.newChain()
+    print("call marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:loop
+do
+    local chain = lurek.tween.newChain()
+    print("loop marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:onLoop
+do
+    local chain = lurek.tween.newChain()
+    print("onLoop marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:onComplete
+do
+    local chain = lurek.tween.newChain()
+    print("onComplete marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:start
+do
+    local chain = lurek.tween.newChain()
+    print("start marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:pause
+do
+    local chain = lurek.tween.newChain()
+    print("pause marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:resume
+do
+    local chain = lurek.tween.newChain()
+    print("resume marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:stop
+do
+    local chain = lurek.tween.newChain()
+    print("stop marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:getProgress
+do
+    local chain = lurek.tween.newChain()
+    print("getProgress marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:isComplete
+do
+    local chain = lurek.tween.newChain()
+    print("isComplete marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:isActive
+do
+    local chain = lurek.tween.newChain()
+    print("isActive marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:getIteration
+do
+    local chain = lurek.tween.newChain()
+    print("getIteration marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:clear
+do
+    local chain = lurek.tween.newChain()
+    print("clear marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:cursor
+do
+    local chain = lurek.tween.newChain()
+    print("cursor marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:isFinished
+do
+    local chain = lurek.tween.newChain()
+    print("isFinished marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:isLooping
+do
+    local chain = lurek.tween.newChain()
+    print("isLooping marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:jumpTo
+do
+    local chain = lurek.tween.newChain()
+    print("jumpTo marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:len
+do
+    local chain = lurek.tween.newChain()
+    print("len marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:push
+do
+    local chain = lurek.tween.newChain()
+    print("push marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:reset
+do
+    local chain = lurek.tween.newChain()
+    print("reset marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:setLooping
+do
+    local chain = lurek.tween.newChain()
+    print("setLooping marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:tick
+do
+    local chain = lurek.tween.newChain()
+    print("tick marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:type
+do
+    local chain = lurek.tween.newChain()
+    print("type marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:typeOf
+do
+    local chain = lurek.tween.newChain()
+    print("typeOf marker chain=" .. tostring(chain ~= nil))
+end
+
+--@api-stub: LTweenChain:value
+do
+    local chain = lurek.tween.newChain()
+    print("value marker chain=" .. tostring(chain ~= nil))
+end
+
 --- Tween Part 2: LTween extended, LTweenParallel, LTweenSequence, LTweenState, advanced module fns
 
 --@api-stub: Lto:getDuration

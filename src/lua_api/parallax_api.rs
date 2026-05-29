@@ -1,9 +1,4 @@
-//! `lurek.parallax` -- Lua bindings for parallax layers, parallax sets, presets, automatic camera rendering, tiling, blend modes, and effect chains.
-//!
-//! - Registers `lurek.parallax.*` functions and types via `register()`.
-//! - `LuaParallaxLayer`: userdata type exposed to Lua.
-//! - `LuaParallaxSet`: userdata type exposed to Lua.
-//! - Bridges 51 Lua-callable methods via `mlua`.
+//! File: src/lua_api/parallax_api.rs
 
 use super::SharedState;
 use crate::lua_api::render_api::LuaImage;
@@ -233,10 +228,10 @@ impl LuaUserData for LuaParallaxLayer {
         methods.add_method("getOpacity", |_, this, ()| Ok(this.layer.borrow().opacity));
         // -- setTint --
         /// Sets layer tint color for this object.
-        /// @param | r | number | Red channel (0–1).
-        /// @param | g | number | Green channel (0–1).
-        /// @param | b | number | Blue channel (0–1).
-        /// @param | a | number | Alpha channel (0–1).
+        /// @param | r | number | Red channel (0â€“1).
+        /// @param | g | number | Green channel (0â€“1).
+        /// @param | b | number | Blue channel (0â€“1).
+        /// @param | a | number | Alpha channel (0â€“1).
         methods.add_method("setTint", |_, this, (r, g, b, a): (f32, f32, f32, f32)| {
             this.layer.borrow_mut().tint = [r, g, b, a];
             Ok(())

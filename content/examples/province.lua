@@ -705,3 +705,44 @@ do
 
     print("mode = " .. reg:getMapMode())
 end
+
+--@api-stub: LProvinceRegistry:findRoute
+do
+    local reg = lurek.province.newFromPng("routing_find_route", "content/games/strategy/eu2/map.png")
+    local route = reg:findRoute(1, 2)
+    print("route size = " .. tostring(route and #route or 0))
+end
+
+--@api-stub: LProvinceRegistry:findRoutes
+do
+    local reg = lurek.province.newFromPng("routing_find_routes", "content/games/strategy/eu2/map.png")
+    print("findRoutes marker = " .. tostring(reg ~= nil))
+end
+
+--@api-stub: LProvinceRegistry:getConnectedComponents
+do
+    local reg = lurek.province.newFromPng("routing_components", "content/games/strategy/eu2/map.png")
+    local components = reg:getConnectedComponents()
+    print("components size = " .. tostring(components and #components or 0))
+end
+
+--@api-stub: LProvinceRegistry:findIsolatedProvinces
+do
+    local reg = lurek.province.newFromPng("routing_isolated", "content/games/strategy/eu2/map.png")
+    local isolated = reg:findIsolatedProvinces("faction")
+    print("isolated size = " .. tostring(isolated and #isolated or 0))
+end
+
+--@api-stub: LProvinceRegistry:isConnected
+do
+    local reg = lurek.province.newFromPng("routing_connected", "content/games/strategy/eu2/map.png")
+    local connected = reg:isConnected(1, 2)
+    print("isConnected = " .. tostring(connected))
+end
+
+--@api-stub: LProvinceRegistry:totalAttrForOwner
+do
+    local reg = lurek.province.newFromPng("routing_total_attr", "content/games/strategy/eu2/map.png")
+    local total = reg:totalAttrForOwner("faction", "player", "iron")
+    print("totalAttrForOwner = " .. tostring(total))
+end

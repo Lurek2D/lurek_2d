@@ -104,24 +104,30 @@ lurek.process(function(dt)
     end
 
     -- Render tiles
-    lurek.draw.clear({ r=0.05, g=0.05, b=0.08, a=1 })
+    lurek.render.setBackgroundColor(0.05, 0.05, 0.08)
+    lurek.render.clear()
     for y = 1, H do
         for x = 1, W do
             local c = color_for_tile(x, y)
-            lurek.draw.rectangle((x-1)*TILE, (y-1)*TILE, TILE, TILE, c)
+            lurek.render.setColor(c.r, c.g, c.b, c.a)
+            lurek.render.rectangle("fill", (x-1)*TILE, (y-1)*TILE, TILE, TILE)
         end
     end
 
     -- Draw player
     local pc = detected and {r=1,g=0,b=0,a=1} or {r=0.2,g=0.8,b=1,a=1}
-    lurek.draw.circle((player.x-1)*TILE+TILE/2, (player.y-1)*TILE+TILE/2, TILE/2-3, pc)
+    lurek.render.setColor(pc.r, pc.g, pc.b, pc.a)
+    lurek.render.circle("fill", (player.x-1)*TILE+TILE/2, (player.y-1)*TILE+TILE/2, TILE/2-3)
 
     -- Draw guard
-    lurek.draw.circle((guard.x-1)*TILE+TILE/2, (guard.y-1)*TILE+TILE/2, TILE/2-2, {r=1,g=0.5,b=0,a=1})
+    lurek.render.setColor(1, 0.5, 0, 1)
+    lurek.render.circle("fill", (guard.x-1)*TILE+TILE/2, (guard.y-1)*TILE+TILE/2, TILE/2-2)
 
     -- HUD
     local msg = detected and "! DETECTED !" or "Stay out of the light"
     local hc  = detected and {r=1,g=0.2,b=0.2,a=1} or {r=0.8,g=0.8,b=0.8,a=1}
-    lurek.draw.text(4, 4, msg, hc)
-    lurek.draw.text(4, 20, "Arrows to move  |  Guard range: " .. RANGE, {r=0.5,g=0.5,b=0.5,a=1})
+    lurek.render.setColor(hc.r, hc.g, hc.b, hc.a)
+    lurek.render.print(msg, 4, 4)
+    lurek.render.setColor(0.5, 0.5, 0.5, 1)
+    lurek.render.print("Arrows to move  |  Guard range: " .. RANGE, 4, 20)
 end)

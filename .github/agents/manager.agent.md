@@ -32,8 +32,8 @@ tools: [vscode/memory, vscode/askQuestions, execute/getTerminalOutput, execute/r
 - **Setup**:
   - Normalize the request into goal, constraints, out-of-scope items, and proof needed.
   - Load [agent-routing](../skills/agent-routing/SKILL.md) first on every task needing ownership choice or handoff shaping — this load is mandatory for Manager.
-  - Confirm branch; create work/{session}/, handovers/, and logs/agent_log.jsonl for every task — single-phase or multi-phase. All plans, reports, scripts, and temp artifacts go there, never outside.
-  - Single-specialist tasks still get a work/{session}/ folder; skip multi-phase handover files but keep logs/agent_log.jsonl.
+  - Confirm branch; create work/{session}/, handovers/, and logs/agent_log.jsonl for every multi-phase task. All plans, reports, scripts, and temp artifacts go there, never outside.
+  - Fast-track single-file tasks that touch no src/ files and need only one specialist: skip handovers, skip extra session folders, and keep the interaction to one owner plus one binary gate.
 - **Per-phase**:
   - Define one binary gate per phase.
   - Build the smallest handoff: current goal, touched files, required checks, blockers.

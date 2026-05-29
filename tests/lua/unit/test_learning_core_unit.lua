@@ -281,6 +281,107 @@ describe("lurek.learning", function()
         expect_true(not ok, "missing file should return error")
         expect_true(err ~= nil, "error message not nil")
     end)
+
+    -- @covers lurek.learning.newLstm
+    it("newLstm creates LLSTM and supports forward/reset", function()
+        local lstm = lurek.learning.newLstm(2, 3)
+        expect_true(lstm ~= nil, "lstm should be created")
+        expect_equal(lstm:type(), "LLSTM")
+        local out = lstm:forward({0.1, -0.2})
+        expect_equal(#out, 3)
+        lstm:reset()
+        local params = lstm:paramCount()
+        local zeros = {}
+        for i = 1, params do
+            zeros[i] = 0.0
+        end
+        expect_true(lstm:setWeights(zeros), "setWeights should accept exact param count")
+    end)
+
+    -- @covers lurek.learning.newGru
+    it("newGru creates LGRU and supports forward/reset", function()
+        local gru = lurek.learning.newGru(2, 3)
+        expect_true(gru ~= nil, "gru should be created")
+        expect_equal(gru:type(), "LGRU")
+        local out = gru:forward({0.1, -0.2})
+        expect_equal(#out, 3)
+        gru:reset()
+    end)
+
+    -- @covers lurek.learning.newConv2D
+    it("newConv2D forward returns tensor", function()
+        local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+        expect_true(conv ~= nil, "conv should be created")
+        local input = lurek.learning.newTensor({1, 2, 2}, {1.0, 2.0, 3.0, 4.0})
+        local out = conv:forward(input)
+        expect_true(out ~= nil, "conv forward should return tensor")
+        local shape = out:shape()
+        expect_equal(shape[1], 1)
+        expect_equal(shape[2], 2)
+        expect_equal(shape[3], 2)
+    end)
+
+    -- @covers lurek.learning.newMaxPool2D
+    it("newMaxPool2D forward downsamples tensor", function()
+        local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+        expect_true(pool ~= nil, "pool should be created")
+        local input = lurek.learning.newTensor({1, 4, 4}, {
+            1, 5, 2, 3,
+            7, 4, 0, 6,
+            9, 1, 8, 2,
+            3, 2, 4, 1,
+        })
+        local out = pool:forward(input)
+        local shape = out:shape()
+        expect_equal(shape[1], 1)
+        expect_equal(shape[2], 2)
+        expect_equal(shape[3], 2)
+    end)
+
+    -- @covers lurek.learning.newPositionalEncoding
+    it("newPositionalEncoding apply returns encoded tensor", function()
+        local pe = lurek.learning.newPositionalEncoding(4, 16)
+        expect_true(pe ~= nil, "positional encoding should be created")
+        local x = lurek.learning.newTensor({2, 4}, {0, 0, 0, 0, 0, 0, 0, 0})
+        local encoded = pe:apply(x)
+        expect_true(encoded ~= nil, "encoded tensor should be returned")
+        local d = encoded:data()
+        expect_true(math.abs(d[1]) > 0 or math.abs(d[2]) > 0, "encoding should change values")
+    end)
+
+    -- @covers lurek.learning.newMultiHeadAttention
+    it("newMultiHeadAttention forward returns tensor", function()
+        local mha = lurek.learning.newMultiHeadAttention(4, 2)
+        expect_true(mha ~= nil, "mha should be created")
+        local x = lurek.learning.newTensor({2, 4}, {1, 0, 0, 1, 0, 1, 1, 0})
+        local out = mha:forward(x)
+        local shape = out:shape()
+        expect_equal(shape[1], 2)
+        expect_equal(shape[2], 4)
+    end)
+
+    -- @covers lurek.learning.newTransformerEncoder
+    it("newTransformerEncoder forward returns tensor", function()
+        local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+        expect_true(enc ~= nil, "encoder should be created")
+        local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
+        local out = enc:forward(x)
+        local shape = out:shape()
+        expect_equal(shape[1], 2)
+        expect_equal(shape[2], 4)
+    end)
+
+    -- @covers lurek.learning.newTransformerDecoder
+    it("newTransformerDecoder forward returns tensor", function()
+        local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+        expect_true(dec ~= nil, "decoder should be created")
+        local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
+        local e = lurek.learning.newTensor({2, 4}, {0, 1, 0, 1, 1, 0, 1, 0})
+        local out = dec:forward(x, e)
+        local shape = out:shape()
+        expect_equal(shape[1], 2)
+        expect_equal(shape[2], 4)
+    end)
 end)
 
 test_summary()

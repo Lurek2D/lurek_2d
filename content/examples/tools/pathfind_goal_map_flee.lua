@@ -42,32 +42,31 @@ local function draw_grid()
             local d = gm:distanceAt(x, y)
             local t = math.min(d, 10)
             local shade = math.floor(255 * (1 - t / 10))
-            lurek.draw.rectangle(
-                (x - 1) * TILE, (y - 1) * TILE, TILE, TILE,
-                { r = shade / 255, g = 0, b = (255 - shade) / 255, a = 0.25 }
-            )
+            local c = { r = shade / 255, g = 0, b = (255 - shade) / 255, a = 0.25 }
+            lurek.render.setColor(c.r, c.g, c.b, c.a)
+            lurek.render.rectangle("fill", (x - 1) * TILE, (y - 1) * TILE, TILE, TILE)
         end
     end
 end
 
 -- Draw player
 local function draw_player()
-    lurek.draw.circle(
+    lurek.render.setColor(1, 1, 0, 1)
+    lurek.render.circle("fill",
         (player.x - 1) * TILE + TILE / 2,
         (player.y - 1) * TILE + TILE / 2,
-        TILE / 2 - 2,
-        { r = 1, g = 1, b = 0, a = 1 }
+        TILE / 2 - 2
     )
 end
 
 -- Draw guards
 local function draw_guards()
     for _, g in ipairs(guards) do
-        lurek.draw.circle(
+        lurek.render.setColor(1, 0.2, 0.2, 1)
+        lurek.render.circle("fill",
             (g.x - 1) * TILE + TILE / 2,
             (g.y - 1) * TILE + TILE / 2,
-            TILE / 2 - 4,
-            { r = 1, g = 0.2, b = 0.2, a = 1 }
+            TILE / 2 - 4
         )
     end
 end
@@ -103,12 +102,12 @@ lurek.process(function(dt)
     end
 
     -- Render
-    lurek.draw.clear({ r = 0.05, g = 0.05, b = 0.1, a = 1 })
+    lurek.render.setBackgroundColor(0.05, 0.05, 0.1)
+    lurek.render.clear()
     draw_grid()
     draw_player()
     draw_guards()
 
-    lurek.draw.text(4, 4,
-        string.format("Player: (%d,%d)  Arrows to move", player.cx, player.cy),
-        { r = 1, g = 1, b = 1, a = 1 })
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.print(string.format("Player: (%d,%d)  Arrows to move", player.cx, player.cy), 4, 4)
 end)

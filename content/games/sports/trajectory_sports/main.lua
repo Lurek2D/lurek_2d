@@ -689,24 +689,24 @@ function lurek.init()
     lurek.window.setTitle("Trajectory Sports — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.1, 0.15)
     _cam = lurek.camera.new()
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/trajectory_sports/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.select_screen = ui_root:findById("select_screen")
     app_ui.sel_1 = ui_root:findById("sel_1")
     app_ui.sel_2 = ui_root:findById("sel_2")
     app_ui.sel_3 = ui_root:findById("sel_3")
     app_ui.sel_4 = ui_root:findById("sel_4")
     app_ui.completed_label = ui_root:findById("completed_label")
-    
+
     app_ui.round_end_screen = ui_root:findById("round_end_screen")
     app_ui.re_title = ui_root:findById("re_title")
     app_ui.re_score = ui_root:findById("re_score")
     app_ui.re_medal = ui_root:findById("re_medal")
-    
+
     app_ui.final_screen = ui_root:findById("final_screen")
     app_ui.fs_1 = ui_root:findById("fs_1")
     app_ui.fs_2 = ui_root:findById("fs_2")
@@ -714,23 +714,23 @@ function lurek.init()
     app_ui.fs_4 = ui_root:findById("fs_4")
     app_ui.fs_rank = ui_root:findById("fs_rank")
     app_ui.press_restart = ui_root:findById("press_restart")
-    
+
     app_ui.hud_screen = ui_root:findById("hud_screen")
     app_ui.hud_sport_name = ui_root:findById("hud_sport_name")
-    
+
     app_ui.arch_panel = ui_root:findById("arch_panel")
     app_ui.arch_score = ui_root:findById("arch_score")
     app_ui.arch_arrows = ui_root:findById("arch_arrows")
     app_ui.arch_angle = ui_root:findById("arch_angle")
     app_ui.arch_wind = ui_root:findById("arch_wind")
     app_ui.arch_power_fill = ui_root:findById("arch_power_fill")
-    
+
     app_ui.bball_panel = ui_root:findById("bball_panel")
     app_ui.bball_score = ui_root:findById("bball_score")
     app_ui.bball_shots = ui_root:findById("bball_shots")
     app_ui.bball_angle = ui_root:findById("bball_angle")
     app_ui.bball_power_fill = ui_root:findById("bball_power_fill")
-    
+
     app_ui.bowl_panel = ui_root:findById("bowl_panel")
     app_ui.bowl_frame = ui_root:findById("bowl_frame")
     app_ui.bowl_throw = ui_root:findById("bowl_throw")
@@ -738,15 +738,15 @@ function lurek.init()
     app_ui.bowl_total = ui_root:findById("bowl_total")
     app_ui.bowl_power_bg = ui_root:findById("bowl_power_bg")
     app_ui.bowl_power_fill = ui_root:findById("bowl_power_fill")
-    
+
     app_ui.dart_panel = ui_root:findById("dart_panel")
     app_ui.dart_remaining = ui_root:findById("dart_remaining")
     app_ui.dart_turn = ui_root:findById("dart_turn")
     app_ui.dart_darts = ui_root:findById("dart_darts")
     app_ui.dart_last = ui_root:findById("dart_last")
-    
+
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     if app_ui.press_start then
         app_ui.press_start:setOnClick(function()
             if state == S_TITLE then state = S_SPORT_SELECT end
@@ -837,21 +837,21 @@ function lurek.process(dt)
             state = S_TITLE
         end
     end
-    
+
     -- Sync UI
     app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
-    
+
     app_ui.title_screen.visible = (state == S_TITLE)
     app_ui.select_screen.visible = (state == S_SPORT_SELECT)
     app_ui.round_end_screen.visible = (state == S_ROUND_END)
     app_ui.final_screen.visible = (state == S_FINAL_SCORES)
     app_ui.hud_screen.visible = (state == S_PLAYING)
-    
+
     if state == S_TITLE then
         local blink_a = 0.5 + 0.5 * math.sin(title_blink * 2)
         app_ui.press_start.color = {0.7, 0.7, 0.7, blink_a}
     end
-    
+
     if state == S_SPORT_SELECT then
         local items = {
             "[1] ARCHERY    - Bow & Target",
@@ -870,7 +870,7 @@ function lurek.process(dt)
         for i = 1, 4 do if medals[i] ~= "" then done = done + 1 end end
         app_ui.completed_label.text = string.format("Completed: %d/4", done)
     end
-    
+
     if state == S_ROUND_END then
         app_ui.re_title.text = sport_names[sport] .. " COMPLETE!"
         if sport == 4 then
@@ -884,7 +884,7 @@ function lurek.process(dt)
         app_ui.re_medal.text = "Medal: " .. medals[sport]
         app_ui.re_medal.color = mc
     end
-    
+
     if state == S_FINAL_SCORES then
         local uis = {app_ui.fs_1, app_ui.fs_2, app_ui.fs_3, app_ui.fs_4}
         for i = 1, 4 do
@@ -895,14 +895,14 @@ function lurek.process(dt)
         local blink_a = 0.5 + 0.5 * math.sin(title_blink * 2)
         app_ui.press_restart.color = {0.6, 0.6, 0.6, blink_a}
     end
-    
+
     if state == S_PLAYING then
         app_ui.hud_sport_name.text = sport_names[sport]
         app_ui.arch_panel.visible = (sport == 1)
         app_ui.bball_panel.visible = (sport == 2)
         app_ui.bowl_panel.visible = (sport == 3)
         app_ui.dart_panel.visible = (sport == 4)
-        
+
         if sport == 1 then
             app_ui.arch_score.text = string.format("Score: %d", math.floor(arch.display_score))
             app_ui.arch_arrows.text = string.format("Arrows: %d", arch.arrows_left)

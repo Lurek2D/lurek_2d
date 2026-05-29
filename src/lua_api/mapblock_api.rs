@@ -1,9 +1,4 @@
-//! `lurek.mapblock` — Block-based map assembly system.
-//!
-//! - Registers `lurek.mapblock.*` functions and types via `register()`.
-//! - Userdata types: `LuaMapBlockConfig`, `LuaMapBlock`, `LuaMapGroup`.
-//! - Userdata types: `LuaMapScript`, `LuaNeighborRules`, `LuaPlacementGrid`.
-//! - Userdata types: `LuaMapBlockGenerator`, `LuaMapBlockResult`, `LuaTilesetRef`.
+//! File: src/lua_api/mapblock_api.rs
 
 use super::SharedState;
 use crate::mapblock::{
@@ -14,7 +9,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-// ─── Lua wrappers ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Lua wrappers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-facing map block configuration.
 struct LuaMapBlockConfig {
@@ -64,7 +59,7 @@ struct LuaMapBlockResult {
 impl LuaUserData for LuaMapBlockConfig {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addSlot --
-        /// Add a slot definition — Lua userdata object exposed by the engine.
+        /// Add a slot definition â€” Lua userdata object exposed by the engine.
         /// @param | name | string | Slot name.
         /// @param | required | boolean | Whether this slot is required.
         /// @param | default_gid | integer | Default GID when empty.
@@ -109,7 +104,7 @@ impl LuaUserData for LuaMapBlockConfig {
 impl LuaUserData for LuaMapBlock {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setTile --
-        /// Set a tile slot value — Lua userdata object exposed by the engine.
+        /// Set a tile slot value â€” Lua userdata object exposed by the engine.
         /// @param | layer | integer | Layer index (0-based).
         /// @param | x | integer | Tile X position.
         /// @param | y | integer | Tile Y position.
@@ -258,7 +253,7 @@ impl LuaUserData for LuaMapGroup {
 impl LuaUserData for LuaMapScript {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addStep --
-        /// Add a generation step — Lua userdata object exposed by the engine.
+        /// Add a generation step â€” Lua userdata object exposed by the engine.
         /// @param | step_type | string | Step type name.
         /// @param | opts | table | Step configuration options.
         methods.add_method_mut("addStep", |_, this, (step_type_str, opts): (String, Option<LuaTable>)| {
@@ -403,7 +398,7 @@ impl LuaUserData for LuaNeighborRules {
 impl LuaUserData for LuaPlacementGrid {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addPosition --
-        /// Add a position to the grid — Lua userdata object exposed by the engine.
+        /// Add a position to the grid â€” Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
         methods.add_method_mut("addPosition", |_, this, (x, y): (i32, i32)| {
@@ -439,7 +434,7 @@ impl LuaUserData for LuaPlacementGrid {
 impl LuaUserData for LuaMapBlockGenerator {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setRectShape --
-        /// Set rectangular map shape — Lua userdata object exposed by the engine.
+        /// Set rectangular map shape â€” Lua userdata object exposed by the engine.
         /// @param | width | integer | Grid width.
         /// @param | height | integer | Grid height.
         methods.add_method_mut("setRectShape", |_, this, (w, h): (u32, u32)| {
@@ -544,7 +539,7 @@ impl LuaUserData for LuaMapBlockResult {
         methods.add_method("getWidth", |_, this, ()| Ok(this.inner.width));
 
         // -- getHeight --
-        /// Get total height in tiles — Lua userdata object exposed by the engine.
+        /// Get total height in tiles â€” Lua userdata object exposed by the engine.
         /// @return | integer | Height.
         methods.add_method("getHeight", |_, this, ()| Ok(this.inner.height));
 
@@ -590,7 +585,7 @@ impl LuaUserData for LuaTilesetRef {
         methods.add_method("getId", |_, this, ()| Ok(this.inner.borrow().id()));
 
         // -- getName --
-        /// Get tileset name — Lua userdata object exposed by the engine.
+        /// Get tileset name â€” Lua userdata object exposed by the engine.
         /// @return | string | Tileset name.
         methods.add_method("getName", |_, this, ()| {
             Ok(this.inner.borrow().name().to_string())
@@ -606,13 +601,13 @@ impl LuaUserData for LuaTilesetRef {
     }
 }
 
-// ─── Module registration ────────────────────────────────────────────────────
+// â”€â”€â”€ Module registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Register the `lurek.mapblock` module.
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let module = lua.create_table()?;
 
-    // ─── Constructors ───────────────────────────────────────────────────────
+    // â”€â”€â”€ Constructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Create a new map block configuration with default slots.
     /// @return | MapBlockConfig | New configuration.

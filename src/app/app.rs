@@ -13,7 +13,7 @@
 use super::debug_overlay::DebugOverlay;
 use super::error_screen::ErrorScreen;
 use super::lua_callbacks::{
-    call_lua_callback_checked_with_timeout, call_lua_callback_with_timeout,
+    call_lua_callback_checked_with_timeout, call_lua_callback_with_timeout, has_lua_callback,
 };
 use super::splash_screen::{load_splash_branding, make_splash_commands, SplashBranding};
 use crate::event::EventArg;
@@ -116,6 +116,43 @@ pub fn fit_contain_size(src_w: u32, src_h: u32, max_w: f32, max_h: f32) -> (f32,
     let scale = (max_w.max(1.0) / src_w).min(max_h.max(1.0) / src_h);
     (src_w * scale, src_h * scale)
 }
+
+/// Startup target inferred from a drag-and-drop path.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DropStartupTarget {
+    /// Dropped archive with `.lurek` extension.
+    Archive,
+    /// Resolved game directory containing `main.lua`.
+    GameDir(PathBuf),
+    /// Path that does not resolve to a launchable game target.
+    Unsupported,
+}
+
+/// Classify a dropped path into archive, game directory, or unsupported input.
+pub fn classify_drop_startup_target(path: &Path) -> DropStartupTarget {
+    let is_lurek_archive = path
+        .extension()
+        .map(|e| e.eq_ignore_ascii_case("lurek"))
+        .unwrap_or(false);
+    if is_lurek_archive {
+        return DropStartupTarget::Archive;
+    }
+
+    if path.is_dir() {
+        if path.join("main.lua").exists() {
+            return DropStartupTarget::GameDir(path.to_path_buf());
+        }
+        return DropStartupTarget::Unsupported;
+    }
+
+    if let Some(parent) = path.parent() {
+        if parent.join("main.lua").exists() {
+            return DropStartupTarget::GameDir(parent.to_path_buf());
+        }
+    }
+
+    DropStartupTarget::Unsupported
+}
 /// Central app runtime state shared by winit callbacks and frame update/render flow.
 pub struct LurekApp {
     /// Loaded game configuration from conf.toml.
@@ -152,6 +189,8 @@ pub struct LurekApp {
     physics_accumulator: f64,
     /// Accumulated time for fixed-rate game update stepping.
     fixed_update_accumulator: f64,
+    /// One-shot guard for `lurek.fixedUpdate` deprecation warning.
+    fixed_update_deprecation_warned: bool,
     /// Previous-frame mouse button states for edge detection.
     prev_mouse: [bool; 5],
     /// Current game-space mouse X position.
@@ -287,6 +326,7 @@ impl LurekApp {
             ready_fired: false,
             physics_accumulator: 0.0,
             fixed_update_accumulator: 0.0,
+            fixed_update_deprecation_warned: false,
             prev_mouse: [false; 5],
             mouse_x: 0.0,
             mouse_y: 0.0,
@@ -570,6 +610,7 @@ impl LurekApp {
         self.ready_fired = false;
         self.physics_accumulator = 0.0;
         self.fixed_update_accumulator = 0.0;
+        self.fixed_update_deprecation_warned = false;
         if let Some(conf_err) = self.conf_error.take() {
             self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
                 "Configuration Error\n{}",
@@ -910,6 +951,12 @@ impl LurekApp {
             let phase_start = Instant::now();
             let fixed_dt = state.borrow().physics_run.fixed_update_dt;
             if fixed_dt > 0.0 {
+                if !self.fixed_update_deprecation_warned && has_lua_callback(lua, "fixedUpdate") {
+                    log::warn!(
+                        "lurek.fixedUpdate(dt) is deprecated; use lurek.process_physics(dt)"
+                    );
+                    self.fixed_update_deprecation_warned = true;
+                }
                 self.fixed_update_accumulator += dt;
                 let max_steps = 8;
                 let mut steps = 0;
@@ -2795,38 +2842,35 @@ impl ApplicationHandler for LurekApp {
                     }
                 }
                 if !self.has_game {
-                    let main_lua = path.join("main.lua");
-                    let is_lurek_archive = path
-                        .extension()
-                        .map(|e| e.eq_ignore_ascii_case("lurek"))
-                        .unwrap_or(false);
-                    if is_lurek_archive {
-                        log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
-                        match LurekApp::extract_lurek_archive(&path) {
-                            Ok((dir, td)) => {
-                                self.lurek_temp_dir = Some(td);
-                                self.game_dir = dir;
-                                self.explicit_game_dir = true;
-                                self.restart_game();
-                            }
-                            Err(e) => {
-                                log_msg!(warn, L084_DROP_ARCHIVE_FAIL, "{}: {}", path.display(), e);
+                    match classify_drop_startup_target(&path) {
+                        DropStartupTarget::Archive => {
+                            log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
+                            match LurekApp::extract_lurek_archive(&path) {
+                                Ok((dir, td)) => {
+                                    self.lurek_temp_dir = Some(td);
+                                    self.game_dir = dir;
+                                    self.explicit_game_dir = true;
+                                    self.restart_game();
+                                }
+                                Err(e) => {
+                                    log_msg!(warn, L084_DROP_ARCHIVE_FAIL, "{}: {}", path.display(), e);
+                                }
                             }
                         }
-                    } else if path.is_dir() && main_lua.exists() {
-                        log_msg!(info, L044_DROP_GAME, "{}", path.display());
-                        self.game_dir = path;
-                        self.explicit_game_dir = true;
-                        self.restart_game();
-                    } else if path.is_dir() {
-                        log_msg!(warn, L007_NO_MAIN_LUA, "no main.lua in: {}", path.display());
-                    } else if let Some(parent) = path.parent() {
-                        let parent_main = parent.join("main.lua");
-                        if parent_main.exists() {
-                            log_msg!(info, L044_DROP_GAME, "parent folder: {}", parent.display());
-                            self.game_dir = parent.to_path_buf();
+                        DropStartupTarget::GameDir(dir) => {
+                            if dir == path {
+                                log_msg!(info, L044_DROP_GAME, "{}", path.display());
+                            } else {
+                                log_msg!(info, L044_DROP_GAME, "parent folder: {}", dir.display());
+                            }
+                            self.game_dir = dir;
                             self.explicit_game_dir = true;
                             self.restart_game();
+                        }
+                        DropStartupTarget::Unsupported => {
+                            if path.is_dir() {
+                                log_msg!(warn, L007_NO_MAIN_LUA, "no main.lua in: {}", path.display());
+                            }
                         }
                     }
                 } else {

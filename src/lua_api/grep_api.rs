@@ -1,8 +1,4 @@
-//! `lurek.grep` - Pattern-based file search across game content: literal, regex, multi-pattern, and log search.
-//!
-//! - Registers `lurek.grep.*` functions and types via `register()`.
-//! - `LuaGrepEngine`: userdata type exposed to Lua.
-//! - `LuaFileFilter`: userdata type exposed to Lua.
+//! File: src/lua_api/grep_api.rs
 
 use super::SharedState;
 use crate::grep::{
@@ -94,7 +90,7 @@ struct LuaFileFilter {
 impl LuaUserData for LuaFileFilter {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addExtension --
-        /// Add allowed file extensions — Lua userdata object exposed by the engine.
+        /// Add allowed file extensions â€” Lua userdata object exposed by the engine.
         /// @param | ext | string | Extension (without dot).
         methods.add_method("addExtension", |_, this, ext: String| {
             this.inner.borrow_mut().extensions.push(ext);

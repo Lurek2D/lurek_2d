@@ -1,8 +1,4 @@
-//! `lurek.i18n` -- Localization bindings for in-memory catalogs, locale selection, fallback lists, translation lookup, interpolation, plural and gender variants, search indexes, formatting helpers, locale validation, and coverage gap reports.
-//!
-//! - Registers `lurek.i18n.*` functions and types via `register()`.
-//! - Bridges 36 Lua-callable methods via `mlua`.
-//! - See `docs/specs/i18n.md` for the full API specification.
+//! File: src/lua_api/i18n_api.rs
 
 use crate::i18n::format::{format_date, format_number, locale_separators};
 use crate::i18n::{

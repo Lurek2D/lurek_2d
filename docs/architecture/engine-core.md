@@ -1,4 +1,4 @@
-﻿# Lurek2D â€” Engine Architecture
+﻿# Lurek2D - Engine Core Architecture
 
 ## TL;DR
 
@@ -6,9 +6,9 @@
 
 
 
-Companion documents: [philosophy.md](philosophy.md) Â· [render-command-architecture.md](render-command-architecture.md) Â· [test-framework.md](test-framework.md)
+Companion documents: [philosophy.md](philosophy.md) · [render-pipeline.md](render-pipeline.md) · [quality-assurance.md](quality-assurance.md)
 
-`philosophy.md` defines *why* and *what constraints*. This document defines *how the engine is structured*. `render-command-architecture.md` defines the rendering pipeline in detail. All four documents must remain in sync.
+`philosophy.md` defines *why* and *what constraints*. This document defines *how the engine is structured*. `render-pipeline.md` defines the rendering pipeline in detail. All four documents must remain in sync.
 
 ---
 
@@ -224,6 +224,34 @@ Use these names when needed. Do not invent alternatives (`helpers.rs`, `utils.rs
 
 ## Boot Sequence
 
+## Entry Points
+### Primary Executable
+
+[../../src/main.rs](../../src/main.rs) is the `lurek2d` executable entry point declared in [../../Cargo.toml](../../Cargo.toml). On Windows it raises the timer resolution before delegating to `lurek2d::lurek_run()`. It returns the process exit code produced by the shared runtime bootstrap.
+
+### Shared Runtime Bootstrap
+
+`lurek2d::lurek_run()` in [../../src/lib.rs](../../src/lib.rs) is the common startup path used by the primary executable and launcher variants. It owns top-level process concerns such as panic reporting, command-line argument parsing, runtime mode selection, screenshot options, hidden-window options, and final delegation into the application runtime.
+
+The bootstrap path must stay above engine subsystems. It coordinates startup, but game logic, rendering, audio, physics, and Lua API behavior remain in their owning modules.
+
+### Headless Helper
+
+[../../src/bin/lurek_headless.rs](../../src/bin/lurek_headless.rs) is a standalone CLI tool for automation and packaging workflows. It supports:
+
+- `validate [game_dir]` - invokes the Python game validator script.
+- `pack <game_dir> <output.lurek>` - compresses a game directory into a distributable `.lurek` archive after checking for `main.lua`.
+- `screenshot-batch <games_root> <output_dir> [frames]` - runs the engine for each valid game folder and captures PNG screenshots.
+
+The `validate` and `pack` commands do not require a GPU surface or OS window. `screenshot-batch` spawns engine instances to capture frames.
+
+### Console-Less Launcher
+
+[../../src/bin/lurekc.rs](../../src/bin/lurekc.rs) is a launcher variant for Windows GUI distribution. It applies the Windows GUI subsystem attribute so a terminal window does not open beside the game window, then calls the same `lurek2d::lurek_run()` bootstrap as the primary executable.
+
+It must preserve standard runtime modes and return the same process exit codes as `lurek2d`.
+
+
 ```mermaid
 flowchart TD
     A[CLI args] --> B[Config::load_from_conf_lua]
@@ -346,21 +374,7 @@ All engine resources (textures, fonts, meshes, canvases, shaders, sprite batches
 
 ## Rendering Pipeline
 
-The rendering pipeline is defined in full detail in [render-command-architecture.md](render-command-architecture.md).
-
-**Summary â€” Three-Layer Model:**
-
-1. **Layer 1 â€” CPU Domain Modules**: Prepare data and push `RenderCommand` variants into a queue. No GPU calls.
-2. **Layer 2 â€” App Coordinator** (`src/app/`): Orchestrates the frame â€” polls input, runs callbacks, collects commands, passes everything to the renderer.
-3. **Layer 3 â€” GPU Renderer** (`src/render/gpu_renderer.rs`): The only code that issues wgpu draw calls. Receives `Vec<RenderCommand>` plus structured data (lights, post-FX) and produces the frame.
-
-Key facts:
-- `RenderCommand` is a flat enum with 46+ variants (draw primitives, transform stack, batching, stencil, post-FX, etc.)
-- GPU code is confined to `src/render/gpu_renderer.rs` and `src/render/shader.rs` â€” no other module imports wgpu
-- Light data (`Light2D`, `Occluder`) and post-FX data (`PostFxEffect`) flow as structured data alongside the command list â€” they are not `RenderCommand` variants
-- `camera/`, `effect/`, `light/` are top-level CPU domain modules, not subdirectories of `src/render/`
-
----
+Detailed rendering pipe implementation is governed separately under [render-pipeline.md](render-pipeline.md).
 
 ## Lua Binding Architecture
 
@@ -613,4 +627,5 @@ lurek2d/
 â”śâ”€â”€ Cargo.toml              Crate manifest
 â””â”€â”€ build.rs                Build script (asset watching)
 ```
+
 

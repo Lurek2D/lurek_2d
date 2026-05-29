@@ -399,13 +399,13 @@ function lurek.init()
     })
 
     load_level(1)
-    
+
     lurek.ui.loadLayoutFile("content/games/action/stealth/ui.toml")
     local ui_root = lurek.ui.getRoot()
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.hud = ui_root:findById("hud")
     app_ui.keys_text = ui_root:findById("keys_text")
     app_ui.level_text = ui_root:findById("level_text")
@@ -415,7 +415,7 @@ function lurek.init()
     app_ui.crouch_text = ui_root:findById("crouch_text")
     app_ui.hidden_text = ui_root:findById("hidden_text")
     app_ui.message_text = ui_root:findById("message_text")
-    
+
     app_ui.game_over_screen = ui_root:findById("game_over_screen")
     app_ui.level_complete_screen = ui_root:findById("level_complete_screen")
     app_ui.lc_text = ui_root:findById("lc_text")
@@ -693,17 +693,17 @@ function lurek.process(dt)
             local show = math.floor(title_blink * 2) % 2 == 0
             app_ui.press_start.visible = show
         end
-        
+
         app_ui.hud.visible = (game_state == STATE.PLAYING)
         if app_ui.hud.visible then
             app_ui.keys_text.text = "KEYS: " .. player.keys_collected .. "/3"
             app_ui.level_text.text = "LEVEL " .. current_level
-            
+
             if susp_bar.value > 0 then
                 app_ui.suspicion_bg.visible = true
                 app_ui.suspicion_fill.visible = true
                 app_ui.suspicion_text.visible = true
-                
+
                 local fill = (susp_bar.value / SUSPICION_ALERT) * 100
                 app_ui.suspicion_fill.width = fill
                 if susp_bar.value >= SUSPICION_ALERT then
@@ -718,16 +718,16 @@ function lurek.process(dt)
                 app_ui.suspicion_fill.visible = false
                 app_ui.suspicion_text.visible = false
             end
-            
+
             app_ui.crouch_text.visible = (player.crouching and not player.hidden)
             app_ui.hidden_text.visible = player.hidden
-            
+
             app_ui.message_text.text = message.text
             app_ui.message_text.color = {1, 1, 1, message.alpha}
         end
-        
+
         app_ui.game_over_screen.visible = (game_state == STATE.GAME_OVER)
-        
+
         app_ui.level_complete_screen.visible = (game_state == STATE.LEVEL_COMPLETE)
         if game_state == STATE.LEVEL_COMPLETE then
             if current_level >= #LEVELS then

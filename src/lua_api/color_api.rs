@@ -1,8 +1,4 @@
-//! `lurek.color` -- Color bindings for RGBA construction, color-space conversions, blending modes, palettes, and utility operations.
-//!
-//! - Registers `lurek.color.*` functions and types via `register()`.
-//! - Bridges 19 Lua-callable methods via `mlua`.
-//! - See `docs/specs/color.md` for the full API specification.
+//! File: src/lua_api/color_api.rs
 
 use super::SharedState;
 use crate::color::{
@@ -40,7 +36,7 @@ fn color_struct_to_table<'lua>(lua: &'lua Lua, c: &Color) -> LuaResult<LuaTable<
 pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── Constants ────────────────────────────────────────────────────────────
+    // â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     tbl.set("WHITE", color_to_table(lua, 1.0, 1.0, 1.0, 1.0)?)?;
     tbl.set("BLACK", color_to_table(lua, 0.0, 0.0, 0.0, 1.0)?)?;
     tbl.set("RED", color_to_table(lua, 1.0, 0.0, 0.0, 1.0)?)?;
@@ -51,14 +47,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     tbl.set("MAGENTA", color_to_table(lua, 1.0, 0.0, 1.0, 1.0)?)?;
     tbl.set("TRANSPARENT", color_to_table(lua, 0.0, 0.0, 0.0, 0.0)?)?;
 
-    // ── Constructors ─────────────────────────────────────────────────────────
+    // â”€â”€ Constructors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- new --
-    /// Creates an RGBA color from 0–1 float components. Alpha defaults to 1.0.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @param | a | number? | Alpha channel (0–1); defaults to 1.0.
+    /// Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @param | a | number? | Alpha channel (0â€“1); defaults to 1.0.
     /// @return | table | Color table {r, g, b, a}.
     tbl.set(
         "new",
@@ -68,12 +64,12 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // -- fromU8 --
-    /// Creates a color from 0–255 integer components. Alpha defaults to 255.
-    /// @param | r | integer | Red channel (0–255).
-    /// @param | g | integer | Green channel (0–255).
-    /// @param | b | integer | Blue channel (0–255).
-    /// @param | a | integer? | Alpha channel (0–255); defaults to 255.
-    /// @return | table | Color table {r, g, b, a} with values normalised to 0–1.
+    /// Creates a color from 0â€“255 integer components. Alpha defaults to 255.
+    /// @param | r | integer | Red channel (0â€“255).
+    /// @param | g | integer | Green channel (0â€“255).
+    /// @param | b | integer | Blue channel (0â€“255).
+    /// @param | a | integer? | Alpha channel (0â€“255); defaults to 255.
+    /// @return | table | Color table {r, g, b, a} with values normalised to 0â€“1.
     tbl.set(
         "fromU8",
         lua.create_function(|lua, (r, g, b, a): (u8, u8, u8, Option<u8>)| {
@@ -97,9 +93,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- fromHsl --
     /// Creates a color from HSL components. Returns an opaque color (alpha = 1).
-    /// @param | h | number | Hue in degrees (0–360).
-    /// @param | s | number | Saturation (0–1).
-    /// @param | l | number | Lightness (0–1).
+    /// @param | h | number | Hue in degrees (0â€“360).
+    /// @param | s | number | Saturation (0â€“1).
+    /// @param | l | number | Lightness (0â€“1).
     /// @return | table | Color table {r, g, b, a}.
     tbl.set(
         "fromHsl",
@@ -111,9 +107,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- fromHsv --
     /// Creates a color from HSV components. Returns an opaque color (alpha = 1).
-    /// @param | h | number | Hue in degrees (0–360).
-    /// @param | s | number | Saturation (0–1).
-    /// @param | v | number | Value/brightness (0–1).
+    /// @param | h | number | Hue in degrees (0â€“360).
+    /// @param | s | number | Saturation (0â€“1).
+    /// @param | v | number | Value/brightness (0â€“1).
     /// @return | table | Color table {r, g, b, a}.
     tbl.set(
         "fromHsv",
@@ -123,14 +119,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ── Conversions ──────────────────────────────────────────────────────────
+    // â”€â”€ Conversions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- toHsl --
     /// Convert RGB color components to HSL color representation.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @return | number, number, number | Hue (0–360), saturation (0–1), lightness (0–1).
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @return | number, number, number | Hue (0â€“360), saturation (0â€“1), lightness (0â€“1).
     tbl.set(
         "toHsl",
         lua.create_function(|_, (r, g, b): (f32, f32, f32)| {
@@ -142,10 +138,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- toHex --
     /// Converts RGBA components to a hex string ("#RRGGBB" or "#RRGGBBAA" if alpha < 1).
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @param | a | number? | Alpha channel (0–1); defaults to 1.0.
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @param | a | number? | Alpha channel (0â€“1); defaults to 1.0.
     /// @return | string | Hex color string.
     tbl.set(
         "toHex",
@@ -155,13 +151,13 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ── Blending ─────────────────────────────────────────────────────────────
+    // â”€â”€ Blending â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- lerp --
-    /// Linearly interpolates between two color tables by factor t (clamped to 0–1).
+    /// Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
     /// @param | c1 | table | Start color {r, g, b, a}.
     /// @param | c2 | table | End color {r, g, b, a}.
-    /// @param | t | number | Interpolation factor (0–1).
+    /// @param | t | number | Interpolation factor (0â€“1).
     /// @return | table | Interpolated color table.
     tbl.set(
         "lerp",
@@ -227,7 +223,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     )?;
 
     // -- additive --
-    /// Additive blend of two colors (clamped to 0–1 per channel).
+    /// Additive blend of two colors (clamped to 0â€“1 per channel).
     /// @param | c1 | table | First color {r, g, b, a}.
     /// @param | c2 | table | Second color {r, g, b, a}.
     /// @return | table | Additively blended color table.
@@ -260,14 +256,14 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
-    // ── Utilities ────────────────────────────────────────────────────────────
+    // â”€â”€ Utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- invert --
     /// Inverts the RGB channels of a color, keeping alpha unchanged.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @param | a | number? | Alpha channel (0–1); defaults to 1.0.
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @param | a | number? | Alpha channel (0â€“1); defaults to 1.0.
     /// @return | table | Inverted color table.
     tbl.set(
         "invert",
@@ -280,10 +276,10 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- brightness --
     /// Computes perceived luminance (ITU-R BT.601) of an RGB color.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
-    /// @return | number | Perceived brightness (0–1).
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
+    /// @return | number | Perceived brightness (0â€“1).
     tbl.set(
         "brightness",
         lua.create_function(|_, (r, g, b): (f32, f32, f32)| {
@@ -294,11 +290,11 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- withAlpha --
     /// Returns a color with the alpha channel replaced.
-    /// @param | r | number | Red channel (0–1).
-    /// @param | g | number | Green channel (0–1).
-    /// @param | b | number | Blue channel (0–1).
+    /// @param | r | number | Red channel (0â€“1).
+    /// @param | g | number | Green channel (0â€“1).
+    /// @param | b | number | Blue channel (0â€“1).
     /// @param | a | number | Original alpha (ignored in output).
-    /// @param | newAlpha | number | New alpha channel value (0–1).
+    /// @param | newAlpha | number | New alpha channel value (0â€“1).
     /// @return | table | Color table with the new alpha.
     tbl.set(
         "withAlpha",
@@ -309,7 +305,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- gammaToLinear --
     /// Converts a single sRGB gamma-encoded component to linear space.
-    /// @param | c | number | Gamma-encoded value (0–1).
+    /// @param | c | number | Gamma-encoded value (0â€“1).
     /// @return | number | Linear value.
     tbl.set(
         "gammaToLinear",
@@ -318,7 +314,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
 
     // -- linearToGamma --
     /// Converts a single linear component to sRGB gamma-encoded space.
-    /// @param | c | number | Linear value (0–1).
+    /// @param | c | number | Linear value (0â€“1).
     /// @return | number | Gamma-encoded value.
     tbl.set(
         "linearToGamma",

@@ -426,6 +426,382 @@ do
     print("LNeuroevolution:typeOf LObject", tostring(is_object))
 end
 
+--@api-stub: lurek.learning.newLstm
+do
+    local lstm = lurek.learning.newLstm(2, 3)
+    print("lurek.learning.newLstm type", lstm:type())
+end
+
+--@api-stub: LLSTM:forward
+do
+    local lstm = lurek.learning.newLstm(2, 3)
+    local out = lstm:forward({ 0.1, -0.2 })
+    print("LLSTM:forward outLen", #out)
+end
+
+--@api-stub: lurek.learning.newGru
+do
+    local gru = lurek.learning.newGru(2, 3)
+    print("lurek.learning.newGru type", gru:type())
+end
+
+--@api-stub: LGRU:forward
+do
+    local gru = lurek.learning.newGru(2, 3)
+    local out = gru:forward({ 0.1, -0.2 })
+    print("LGRU:forward outLen", #out)
+end
+
+--@api-stub: lurek.learning.newConv2D
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    print("lurek.learning.newConv2D type", conv:type())
+end
+
+--@api-stub: LConv2D:forward
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local input = lurek.learning.newTensor({1, 2, 2}, {1, 2, 3, 4})
+    local out = conv:forward(input)
+    print("LConv2D:forward outW", out:shape()[3])
+end
+
+--@api-stub: lurek.learning.newMaxPool2D
+do
+    local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+    print("lurek.learning.newMaxPool2D type", pool:type())
+end
+
+--@api-stub: LMaxPool2D:forward
+do
+    local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+    local input = lurek.learning.newTensor({1, 4, 4}, {
+        1, 5, 2, 3,
+        7, 4, 0, 6,
+        9, 1, 8, 2,
+        3, 2, 4, 1,
+    })
+    local out = pool:forward(input)
+    print("LMaxPool2D:forward outH", out:shape()[2])
+end
+
+--@api-stub: lurek.learning.newPositionalEncoding
+do
+    local pe = lurek.learning.newPositionalEncoding(4, 8)
+    print("lurek.learning.newPositionalEncoding type", pe:type())
+end
+
+--@api-stub: LPositionalEncoding:apply
+do
+    local pe = lurek.learning.newPositionalEncoding(4, 8)
+    local x = lurek.learning.newTensor({2, 4}, {0, 0, 0, 0, 0, 0, 0, 0})
+    local out = pe:apply(x)
+    print("LPositionalEncoding:apply d1", out:data()[1])
+end
+
+--@api-stub: lurek.learning.newMultiHeadAttention
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    print("lurek.learning.newMultiHeadAttention type", mha:type())
+end
+
+--@api-stub: LMultiHeadAttention:forward
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local x = lurek.learning.newTensor({2, 4}, {1, 0, 0, 1, 0, 1, 1, 0})
+    local out = mha:forward(x)
+    print("LMultiHeadAttention:forward outShape", out:shape()[2])
+end
+
+--@api-stub: lurek.learning.newTransformerEncoder
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    print("lurek.learning.newTransformerEncoder type", enc:type())
+end
+
+--@api-stub: LTransformerEncoder:forward
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
+    local out = enc:forward(x)
+    print("LTransformerEncoder:forward outRows", out:shape()[1])
+end
+
+--@api-stub: lurek.learning.newTransformerDecoder
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    print("lurek.learning.newTransformerDecoder type", dec:type())
+end
+
+--@api-stub: LTransformerDecoder:forward
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local x = lurek.learning.newTensor({2, 4}, {1, 2, 3, 4, 4, 3, 2, 1})
+    local e = lurek.learning.newTensor({2, 4}, {0, 1, 0, 1, 1, 0, 1, 0})
+    local out = dec:forward(x, e)
+    print("LTransformerDecoder:forward outRows", out:shape()[1])
+end
+
+--@api-stub: LLSTM:reset
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    lstm:reset()
+    print("LLSTM:reset ok")
+end
+
+--@api-stub: LLSTM:setWeights
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    local count = lstm:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    lstm:setWeights(weights)
+    print("LLSTM:setWeights count", count)
+end
+
+--@api-stub: LLSTM:getWeights
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    local got = lstm:getWeights()
+    print("LLSTM:getWeights", #got)
+end
+
+--@api-stub: LLSTM:paramCount
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    print("LLSTM:paramCount", lstm:paramCount())
+end
+
+--@api-stub: LLSTM:type
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    print("LLSTM:type", lstm:type())
+end
+
+--@api-stub: LLSTM:typeOf
+do
+    local lstm = lurek.learning.newLstm(2, 2)
+    print("LLSTM:typeOf", tostring(lstm:typeOf("LObject")))
+end
+
+--@api-stub: LGRU:reset
+do
+    local gru = lurek.learning.newGru(2, 2)
+    gru:reset()
+    print("LGRU:reset ok")
+end
+
+--@api-stub: LGRU:setWeights
+do
+    local gru = lurek.learning.newGru(2, 2)
+    local count = gru:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    gru:setWeights(weights)
+    print("LGRU:setWeights count", count)
+end
+
+--@api-stub: LGRU:getWeights
+do
+    local gru = lurek.learning.newGru(2, 2)
+    local got = gru:getWeights()
+    print("LGRU:getWeights", #got)
+end
+
+--@api-stub: LGRU:paramCount
+do
+    local gru = lurek.learning.newGru(2, 2)
+    print("LGRU:paramCount", gru:paramCount())
+end
+
+--@api-stub: LGRU:type
+do
+    local gru = lurek.learning.newGru(2, 2)
+    print("LGRU:type", gru:type())
+end
+
+--@api-stub: LGRU:typeOf
+do
+    local gru = lurek.learning.newGru(2, 2)
+    print("LGRU:typeOf", tostring(gru:typeOf("LObject")))
+end
+
+--@api-stub: LConv2D:setWeights
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local count = conv:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    conv:setWeights(weights)
+    print("LConv2D:setWeights count", count)
+end
+
+--@api-stub: LConv2D:getWeights
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    local got = conv:getWeights()
+    print("LConv2D:getWeights", #got)
+end
+
+--@api-stub: LConv2D:paramCount
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    print("LConv2D:paramCount", conv:paramCount())
+end
+
+--@api-stub: LConv2D:type
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    print("LConv2D:type", conv:type())
+end
+
+--@api-stub: LConv2D:typeOf
+do
+    local conv = lurek.learning.newConv2D(1, 1, 1, 1, 1, 1, 0, 0)
+    print("LConv2D:typeOf", tostring(conv:typeOf("LObject")))
+end
+
+--@api-stub: LMaxPool2D:type
+do
+    local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+    print("LMaxPool2D:type", pool:type())
+end
+
+--@api-stub: LMaxPool2D:typeOf
+do
+    local pool = lurek.learning.newMaxPool2D(2, 2, 2, 2)
+    print("LMaxPool2D:typeOf", tostring(pool:typeOf("LObject")))
+end
+
+--@api-stub: LPositionalEncoding:type
+do
+    local pe = lurek.learning.newPositionalEncoding(4, 8)
+    print("LPositionalEncoding:type", pe:type())
+end
+
+--@api-stub: LPositionalEncoding:typeOf
+do
+    local pe = lurek.learning.newPositionalEncoding(4, 8)
+    print("LPositionalEncoding:typeOf", tostring(pe:typeOf("LObject")))
+end
+
+--@api-stub: LMultiHeadAttention:setWeights
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local count = mha:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    mha:setWeights(weights)
+    print("LMultiHeadAttention:setWeights count", count)
+end
+
+--@api-stub: LMultiHeadAttention:getWeights
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    local got = mha:getWeights()
+    print("LMultiHeadAttention:getWeights", #got)
+end
+
+--@api-stub: LMultiHeadAttention:paramCount
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    print("LMultiHeadAttention:paramCount", mha:paramCount())
+end
+
+--@api-stub: LMultiHeadAttention:type
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    print("LMultiHeadAttention:type", mha:type())
+end
+
+--@api-stub: LMultiHeadAttention:typeOf
+do
+    local mha = lurek.learning.newMultiHeadAttention(4, 2)
+    print("LMultiHeadAttention:typeOf", tostring(mha:typeOf("LObject")))
+end
+
+--@api-stub: LTransformerEncoder:setWeights
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local count = enc:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    enc:setWeights(weights)
+    print("LTransformerEncoder:setWeights count", count)
+end
+
+--@api-stub: LTransformerEncoder:getWeights
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    local got = enc:getWeights()
+    print("LTransformerEncoder:getWeights", #got)
+end
+
+--@api-stub: LTransformerEncoder:paramCount
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    print("LTransformerEncoder:paramCount", enc:paramCount())
+end
+
+--@api-stub: LTransformerEncoder:type
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    print("LTransformerEncoder:type", enc:type())
+end
+
+--@api-stub: LTransformerEncoder:typeOf
+do
+    local enc = lurek.learning.newTransformerEncoder(4, 2, 8)
+    print("LTransformerEncoder:typeOf", tostring(enc:typeOf("LObject")))
+end
+
+--@api-stub: LTransformerDecoder:setWeights
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local count = dec:paramCount()
+    local weights = {}
+    for i = 1, count do
+        weights[i] = 0.0
+    end
+    dec:setWeights(weights)
+    print("LTransformerDecoder:setWeights count", count)
+end
+
+--@api-stub: LTransformerDecoder:getWeights
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    local got = dec:getWeights()
+    print("LTransformerDecoder:getWeights", #got)
+end
+
+--@api-stub: LTransformerDecoder:paramCount
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    print("LTransformerDecoder:paramCount", dec:paramCount())
+end
+
+--@api-stub: LTransformerDecoder:type
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    print("LTransformerDecoder:type", dec:type())
+end
+
+--@api-stub: LTransformerDecoder:typeOf
+do
+    local dec = lurek.learning.newTransformerDecoder(4, 2, 8)
+    print("LTransformerDecoder:typeOf", tostring(dec:typeOf("LObject")))
+end
+
 --@api-stub: LQLearner:bestAction
 do
     local learner = lurek.learning.newQLearner(5, 3)

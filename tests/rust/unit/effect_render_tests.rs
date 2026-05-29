@@ -1,6 +1,4 @@
-//! INTERNAL ONLY: renderer command generation for postfx stacks is covered here because Lua only
-//! queues commands indirectly through shared runtime state and cannot assert raw `RenderCommand`
-//! payloads one-to-one.
+//! File: tests/rust/unit/effect_render_tests.rs
 
 use lurek2d::effect::stack::PostFxStack;
 use lurek2d::render::renderer::RenderCommand;

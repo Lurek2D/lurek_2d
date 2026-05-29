@@ -506,14 +506,14 @@ function lurek.init()
   init_league()
   init_schedule()
   refresh_market()
-  
+
   local ui_root = lurek.ui.loadLayoutFile("content/games/sports/sports_manager/ui.toml")
   app_ui = {}
   app_ui.fps_label = ui_root:findById("fps_label")
-  
+
   app_ui.title_screen = ui_root:findById("title_screen")
   app_ui.press_start = ui_root:findById("press_start")
-  
+
   app_ui.office_screen = ui_root:findById("office_screen")
   app_ui.office_title = ui_root:findById("office_title")
   app_ui.office_info_1 = ui_root:findById("office_info_1")
@@ -521,11 +521,11 @@ function lurek.init()
   app_ui.office_train = ui_root:findById("office_train")
   app_ui.league_rows = ui_root:findById("league_rows")
   app_ui.office_next_match = ui_root:findById("office_next_match")
-  
+
   app_ui.roster_screen = ui_root:findById("roster_screen")
   app_ui.roster_rows = ui_root:findById("roster_rows")
   app_ui.roster_return = ui_root:findById("roster_return")
-  
+
   app_ui.match_screen = ui_root:findById("match_screen")
   app_ui.match_home_team = ui_root:findById("match_home_team")
   app_ui.match_away_team = ui_root:findById("match_away_team")
@@ -536,20 +536,20 @@ function lurek.init()
       ui_root:findById("match_event_2"),
       ui_root:findById("match_event_3")
   }
-  
+
   app_ui.training_screen = ui_root:findById("training_screen")
   app_ui.train_return = ui_root:findById("train_return")
-  
+
   app_ui.transfer_screen = ui_root:findById("transfer_screen")
   app_ui.transfer_info = ui_root:findById("transfer_info")
   app_ui.transfer_rows = ui_root:findById("transfer_rows")
   app_ui.transfer_return = ui_root:findById("transfer_return")
-  
+
   app_ui.season_end_screen = ui_root:findById("season_end_screen")
   app_ui.season_result_label = ui_root:findById("season_result_label")
   app_ui.season_league_rows = ui_root:findById("season_league_rows")
   app_ui.season_restart = ui_root:findById("season_restart")
-  
+
   local function click_to_start()
       if state == STATE_TITLE then state = STATE_OFFICE end
   end
@@ -580,7 +580,7 @@ function lurek.init()
           training_done = false
       end
   end
-  
+
   if app_ui.press_start then app_ui.press_start:setOnClick(click_to_start) end
   if app_ui.roster_return then app_ui.roster_return:setOnClick(click_roster_return) end
   if app_ui.train_return then app_ui.train_return:setOnClick(click_train_return) end
@@ -774,7 +774,7 @@ function lurek.process(delta)
       training_done = false
     end
   end
-  
+
   -- Sync UI
   app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
   app_ui.title_screen.visible = (state == STATE_TITLE)
@@ -784,7 +784,7 @@ function lurek.process(delta)
   app_ui.training_screen.visible = (state == STATE_TRAINING)
   app_ui.transfer_screen.visible = (state == STATE_TRANSFER)
   app_ui.season_end_screen.visible = (state == STATE_SEASON_END)
-  
+
   if state == STATE_TITLE then
       local blink_a = 0.5 + 0.5 * math.sin(title_blink * 3)
       app_ui.press_start.color = {1, 1, 1, blink_a}
@@ -800,7 +800,7 @@ function lurek.process(delta)
           app_ui.office_train.text = "[T] Train"
           app_ui.office_train.color = {0.8, 1, 0.8, 1}
       end
-      
+
       -- Render league table into the panel
       app_ui.league_rows.children = {}
       sort_league()
@@ -809,10 +809,10 @@ function lurek.process(delta)
           local y_offset = (i - 1) * 22
           local text_color = {0.8, 0.8, 0.8, 1}
           if i <= 3 then text_color = {0.3, 1, 0.5, 1} end
-          
+
           local pts_show = math.floor((t.display_pts or t.pts) + 0.5)
           local line = string.format("%-3d %-16s %3d %3d %3d %3d %3d  %3d", i, t.name, t.w, t.d, t.l, t.gf, t.ga, pts_show)
-          
+
           if is_me then
               table.insert(app_ui.league_rows.children, {
                   type = "panel",
@@ -823,7 +823,7 @@ function lurek.process(delta)
                   y = y_offset - 2
               })
           end
-          
+
           table.insert(app_ui.league_rows.children, {
               type = "label",
               text = line,
@@ -833,7 +833,7 @@ function lurek.process(delta)
               y = y_offset
           })
       end
-      
+
       if week <= SEASON_WEEKS then
           local round = schedule[week]
           if round then
@@ -864,7 +864,7 @@ function lurek.process(delta)
                   y = y_offset - 2
               })
           end
-          
+
           local text_color = {0.5, 0.5, 0.5, 1}
           if p.injured > 0 then
               text_color = {0.8, 0.3, 0.3, 1}
@@ -872,12 +872,12 @@ function lurek.process(delta)
               local c = POS_COLORS[p.pos] or {1, 1, 1}
               text_color = {c[1], c[2], c[3], 1}
           end
-          
+
           local status = p.starter and "START" or "BENCH"
           if p.injured > 0 then status = "INJ(" .. p.injured .. "w)" end
-          
+
           local line = string.format("%-20s %-4s %3d    %3d    %3d     %s", p.name, p.pos, p.skill, p.stamina, p.morale, status)
-          
+
           table.insert(app_ui.roster_rows.children, {
               type = "label",
               text = line,
@@ -886,7 +886,7 @@ function lurek.process(delta)
               x = 0,
               y = y_offset
           })
-          
+
           local bar_x = 560
           local bar_w = 80
           local bar_h = 10
@@ -899,7 +899,7 @@ function lurek.process(delta)
               x = bar_x,
               y = y_offset + 4
           })
-          
+
           local morale_color = {0.8, 0.2, 0.2, 0.8}
           if p.morale > 70 then
               morale_color = {0.2, 0.8, 0.3, 0.8}
@@ -921,10 +921,10 @@ function lurek.process(delta)
       local h_disp = math.floor(score_display.home + 0.5)
       local a_disp = math.floor(score_display.away + 0.5)
       app_ui.match_score.text = h_disp .. " - " .. a_disp
-      
+
       local progress = clamp(match_timer / MATCH_DURATION, 0, 1)
       app_ui.match_progress_fill.width = 400 * progress
-      
+
       for i = 1, 3 do app_ui.match_events[i].text = "" end
       local ev_idx = 1
       for i = math.max(1, match_event_index - 2), match_event_index do
@@ -935,7 +935,7 @@ function lurek.process(delta)
               elseif ev.type == "goal_away" then color = {1, 0.4, 0.4, 1}
               elseif ev.type == "injury" then color = {1, 0.6, 0.2, 1}
               elseif ev.type == "red_card" then color = {1, 0.2, 0.2, 1} end
-              
+
               app_ui.match_events[ev_idx].text = ev.time .. "' - " .. ev.text
               app_ui.match_events[ev_idx].color = color
               ev_idx = ev_idx + 1
@@ -981,7 +981,7 @@ function lurek.process(delta)
           app_ui.season_result_label.color = {0.8, 0.3, 0.3, 1}
       end
       app_ui.season_result_label.text = season_result
-      
+
       sort_league()
       app_ui.season_league_rows.children = {}
       for i, t in ipairs(league) do
@@ -1009,7 +1009,7 @@ function lurek.process(delta)
               y = y_offset
           })
       end
-      
+
       app_ui.season_restart.color = {1, 1, 1, 0.5 + 0.5 * math.sin(title_blink * 3)}
   end
 end

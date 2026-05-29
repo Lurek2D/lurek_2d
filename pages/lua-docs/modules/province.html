@@ -56,7 +56,7 @@
     <p>Standalone namespace functions registered under lurek.province.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="fn-clearproperties"><div class="item-row-main"><h3>clearProperties</h3><pre class="inline-signature">lurek.province.clearProperties(id: integer)</pre><p>Removes all properties, attributes, and flags for a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1234</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+    <article class="item-row api-row" id="fn-clearproperties"><div class="item-row-main"><h3>clearProperties</h3><pre class="inline-signature">lurek.province.clearProperties(id: integer)</pre><p>Removes all properties, attributes, and flags for a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1445</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;prop_clear&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -68,17 +68,17 @@
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;temp_val = &quot; .. tostring(province_id and lurek.province.getProperty(province_id, &quot;temp_val&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-exists"><div class="item-row-main"><h3>exists</h3><pre class="inline-signature">lurek.province.exists(name: string) -&gt; boolean</pre><p>Checks whether a province registry with the given name exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1066</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-exists"><div class="item-row-main"><h3>exists</h3><pre class="inline-signature">lurek.province.exists(name: string) -&gt; boolean</pre><p>Checks whether a province registry with the given name exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1277</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     lurek.province.newFromPng(&quot;check_reg_exists&quot;, &quot;assets/textures/province_map.png&quot;)
 
     print(&quot;exists = &quot; .. tostring(lurek.province.exists(&quot;check_reg_exists&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">lurek.province.get(name: string) -&gt; LProvinceRegistry</pre><p>Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1047</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">lurek.province.get(name: string) -&gt; LProvinceRegistry</pre><p>Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1258</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     lurek.province.newFromPng(&quot;check_reg_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local reg = lurek.province.get(&quot;check_reg_get&quot;)
 
     print(&quot;found = &quot; .. tostring(reg ~= nil))
     print(&quot;name = &quot; .. tostring(reg and reg:getName()))
-end</code></pre></details></article><article class="item-row api-row" id="fn-getactive"><div class="item-row-main"><h3>getActive</h3><pre class="inline-signature">lurek.province.getActive() -&gt; LProvinceRegistry</pre><p>Returns the currently active province registry, or nil if none is set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1109</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getactive"><div class="item-row-main"><h3>getActive</h3><pre class="inline-signature">lurek.province.getActive() -&gt; LProvinceRegistry</pre><p>Returns the currently active province registry, or nil if none is set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1320</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     lurek.province.newFromPng(&quot;check_reg_active&quot;, &quot;assets/textures/province_map.png&quot;)
     lurek.province.setActive(&quot;check_reg_active&quot;)
 
@@ -86,7 +86,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
 
     print(&quot;active exists = &quot; .. tostring(reg ~= nil))
     print(&quot;active name = &quot; .. tostring(reg and reg:getName()))
-end</code></pre></details></article><article class="item-row api-row" id="fn-getattr"><div class="item-row-main"><h3>getAttr</h3><pre class="inline-signature">lurek.province.getAttr(id: integer, key: string) -&gt; string</pre><p>Gets a string attribute from a province. Returns nil if not set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1194</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getattr"><div class="item-row-main"><h3>getAttr</h3><pre class="inline-signature">lurek.province.getAttr(id: integer, key: string) -&gt; string</pre><p>Gets a string attribute from a province. Returns nil if not set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1405</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;attr_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -97,7 +97,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;climate = &quot; .. tostring(province_id and lurek.province.getAttr(province_id, &quot;climate&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-getproperty"><div class="item-row-main"><h3>getProperty</h3><pre class="inline-signature">lurek.province.getProperty(id: integer, key: string) -&gt; number</pre><p>Gets a numeric property from a province. Returns nil if not set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1167</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getproperty"><div class="item-row-main"><h3>getProperty</h3><pre class="inline-signature">lurek.province.getProperty(id: integer, key: string) -&gt; number</pre><p>Gets a numeric property from a province. Returns nil if not set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1378</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;prop_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -108,7 +108,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;population = &quot; .. tostring(province_id and lurek.province.getProperty(province_id, &quot;population&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-hasflag"><div class="item-row-main"><h3>hasFlag</h3><pre class="inline-signature">lurek.province.hasFlag(id: integer, bit: integer) -&gt; boolean</pre><p>Checks whether a flag bit is set on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1224</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-hasflag"><div class="item-row-main"><h3>hasFlag</h3><pre class="inline-signature">lurek.province.hasFlag(id: integer, bit: integer) -&gt; boolean</pre><p>Checks whether a flag bit is set on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1435</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;flag_get&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -119,19 +119,19 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-has
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;flag 2 = &quot; .. tostring(province_id and lurek.province.hasFlag(province_id, 2)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-newfrompng"><div class="item-row-main"><h3>newFromPng</h3><pre class="inline-signature">lurek.province.newFromPng(name: string, png_path: string) -&gt; LProvinceRegistry</pre><p>Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:997</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfrompng"><div class="item-row-main"><h3>newFromPng</h3><pre class="inline-signature">lurek.province.newFromPng(name: string, png_path: string) -&gt; LProvinceRegistry</pre><p>Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1208</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;world&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
 
     print(&quot;registry = &quot; .. reg:getName())
     print(&quot;province count = &quot; .. tostring(#ids))
-end</code></pre></details></article><article class="item-row api-row" id="fn-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">lurek.province.remove(name: string) -&gt; boolean</pre><p>Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1077</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-remove"><div class="item-row-main"><h3>remove</h3><pre class="inline-signature">lurek.province.remove(name: string) -&gt; boolean</pre><p>Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1288</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     lurek.province.newFromPng(&quot;check_reg_remove&quot;, &quot;assets/textures/province_map.png&quot;)
     local removed = lurek.province.remove(&quot;check_reg_remove&quot;)
 
     print(&quot;removed = &quot; .. tostring(removed))
     print(&quot;exists after = &quot; .. tostring(lurek.province.exists(&quot;check_reg_remove&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-sanitizemarkedpng"><div class="item-row-main"><h3>sanitizeMarkedPng</h3><pre class="inline-signature">lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, opts: table?) -&gt; table</pre><p>Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1023</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-sanitizemarkedpng"><div class="item-row-main"><h3>sanitizeMarkedPng</h3><pre class="inline-signature">lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, opts: table?) -&gt; table</pre><p>Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1234</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local summary = lurek.province.sanitizeMarkedPng(
         &quot;content/examples/assets/images/sample_texture.png&quot;,
         &quot;save/province_sanitized.png&quot;,
@@ -140,7 +140,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-san
 
     print(&quot;replaced pixels = &quot; .. tostring(summary.replaced_pixels))
     print(&quot;unresolved pixels = &quot; .. tostring(summary.unresolved_pixels))
-end</code></pre></details></article><article class="item-row api-row" id="fn-setactive"><div class="item-row-main"><h3>setActive</h3><pre class="inline-signature">lurek.province.setActive(name: string) -&gt; boolean</pre><p>Sets the named registry as the active province registry. Returns false if no registry with that name exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1093</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setactive"><div class="item-row-main"><h3>setActive</h3><pre class="inline-signature">lurek.province.setActive(name: string) -&gt; boolean</pre><p>Sets the named registry as the active province registry. Returns false if no registry with that name exists.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1304</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     lurek.province.newFromPng(&quot;map_a&quot;, &quot;assets/textures/province_map.png&quot;)
     lurek.province.newFromPng(&quot;map_b&quot;, &quot;assets/textures/province_map.png&quot;)
 
@@ -151,7 +151,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-set
 
     print(&quot;set map_a = &quot; .. tostring(set_a) .. &quot; -&gt; &quot; .. tostring(active_a and active_a:getName()))
     print(&quot;set map_b = &quot; .. tostring(set_b) .. &quot; -&gt; &quot; .. tostring(active_b and active_b:getName()))
-end</code></pre></details></article><article class="item-row api-row" id="fn-setattr"><div class="item-row-main"><h3>setAttr</h3><pre class="inline-signature">lurek.province.setAttr(id: integer, key: string, value: string)</pre><p>Sets a string attribute on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1179</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setattr"><div class="item-row-main"><h3>setAttr</h3><pre class="inline-signature">lurek.province.setAttr(id: integer, key: string, value: string)</pre><p>Sets a string attribute on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1390</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;attr_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -162,7 +162,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-set
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;terrain = &quot; .. tostring(province_id and lurek.province.getAttr(province_id, &quot;terrain&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-setflag"><div class="item-row-main"><h3>setFlag</h3><pre class="inline-signature">lurek.province.setFlag(id: integer, bit: integer, value: boolean)</pre><p>Sets a single flag bit (0–63) on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1209</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setflag"><div class="item-row-main"><h3>setFlag</h3><pre class="inline-signature">lurek.province.setFlag(id: integer, bit: integer, value: boolean)</pre><p>Sets a single flag bit (0–63) on a province.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;flag_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -173,7 +173,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-set
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;flag 1 = &quot; .. tostring(province_id and lurek.province.hasFlag(province_id, 1)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-setproperty"><div class="item-row-main"><h3>setProperty</h3><pre class="inline-signature">lurek.province.setProperty(id: integer, key: string, value: number)</pre><p>Sets a numeric property on a province. Game logic defines the semantics of each key.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1152</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setproperty"><div class="item-row-main"><h3>setProperty</h3><pre class="inline-signature">lurek.province.setProperty(id: integer, key: string, value: number)</pre><p>Sets a numeric property on a province. Game logic defines the semantics of each key.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1363</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local reg = lurek.province.newFromPng(&quot;prop_set&quot;, &quot;assets/textures/province_map.png&quot;)
     local ids = reg:provinceIds()
     local province_id = ids[1]
@@ -184,7 +184,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-set
 
     print(&quot;province_id = &quot; .. tostring(province_id))
     print(&quot;tax_rate = &quot; .. tostring(province_id and lurek.province.getProperty(province_id, &quot;tax_rate&quot;)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-zoomcameraat"><div class="item-row-main"><h3>zoomCameraAt</h3><pre class="inline-signature">lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -&gt; number, number</pre><p>Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1128</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-zoomcameraat"><div class="item-row-main"><h3>zoomCameraAt</h3><pre class="inline-signature">lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -&gt; number, number</pre><p>Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/province_api.rs:1339</span></div><details class="example-block"><summary>Example · Exact example · province.lua</summary><pre><code>do
     local cam_x = 100
     local cam_y = 80
     local new_cam_x, new_cam_y = lurek.province.zoomCameraAt(400, 300, cam_x, cam_y, 1.0, 2.0)
@@ -201,7 +201,7 @@ end</code></pre></details></article>
     <p>Lua userdata types that expose methods through this module.</p>
   </div>
     <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LProvinceRegistry.html">LProvinceRegistry</a></h3><p>Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.</p></div><div class="item-row-meta"><span>39 methods</span><span>module province</span></div><div class="card-note">Example: province.lua</div></article>
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LProvinceRegistry.html">LProvinceRegistry</a></h3><p>Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.</p></div><div class="item-row-meta"><span>45 methods</span><span>module province</span></div><div class="card-note">Example: province.lua</div></article>
   </div>
 </section>
 

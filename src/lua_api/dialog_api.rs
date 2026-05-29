@@ -1,8 +1,4 @@
-//! `lurek.dialog` — Lua bindings for the dialog system (topics, branches, state, speakers).
-//!
-//! - Registers `lurek.dialog.*` functions and types via `register()`.
-//! - Userdata types: `LuaDialogueAI`, `LuaDialogueState`, `LuaSpeakerRegistry`.
-//! - Bridges 33 Lua-callable methods via `mlua`.
+//! File: src/lua_api/dialog_api.rs
 
 use crate::dialog::{DialogueAI, DialogueState, Speaker, SpeakerRegistry};
 use crate::runtime::SharedState;

@@ -1,11 +1,4 @@
-//! `lurek.pathfind` - Lua bindings for navigation grids, unit pathfinding, flow fields, path grids, hex grids, JPS grids, nav meshes, range maps, and tilemap-derived path data.
-//!
-//! - Registers `lurek.pathfind.*` functions and types via `register()`.
-//! - Userdata types: `LuaNavGrid`, `LuaUnitPathfinder`, `LuaFlowField`.
-//! - Userdata types: `LuaPathGrid`, `LuaAiFlowField`, `LuaHexGrid`.
-//! - Userdata types: `LuaJpsGrid`, `LuaNavMesh`.
-//! - Bridges 102 Lua-callable methods via `mlua`.
-//! - See `docs/specs/pathfind.md` for the full API specification.
+//! File: src/lua_api/pathfind_api.rs
 
 use super::tilemap_api::LuaTileMap;
 use super::SharedState;
@@ -93,7 +86,7 @@ impl LuaUserData for LuaNavGrid {
         /// Sets movement cost at a one-based grid cell.
         /// @param | x | integer | One-based column.
         /// @param | y | integer | One-based row.
-        /// @param | cost | integer | Movement cost (0–255).
+        /// @param | cost | integer | Movement cost (0â€“255).
         methods.add_method("setCost", |_, this, (x, y, cost): (u32, u32, u8)| {
             this.inner.borrow_mut().set_cost(x - 1, y - 1, cost);
             Ok(())
@@ -143,7 +136,7 @@ impl LuaUserData for LuaNavGrid {
         );
         // -- fill --
         /// Fills the entire grid with a uniform movement cost.
-        /// @param | cost | integer | Movement cost (0–255).
+        /// @param | cost | integer | Movement cost (0â€“255).
         methods.add_method("fill", |_, this, cost: u8| {
             this.inner.borrow_mut().fill(cost);
             Ok(())
@@ -154,7 +147,7 @@ impl LuaUserData for LuaNavGrid {
         /// @param | y | integer | One-based row of the top-left corner.
         /// @param | w | integer | Rectangle width in cells.
         /// @param | h | integer | Rectangle height in cells.
-        /// @param | cost | integer | Movement cost (0–255).
+        /// @param | cost | integer | Movement cost (0â€“255).
         methods.add_method(
             "fillRect",
             |_, this, (x, y, w, h, cost): (u32, u32, u32, u32, u8)| {

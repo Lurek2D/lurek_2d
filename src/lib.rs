@@ -162,6 +162,25 @@ pub mod visibility;
 /// Exposes the window subsystem module.
 pub mod window;
 
+/// Return true when `path` has the `.lurek` archive extension (case-insensitive).
+pub fn is_lurek_archive_path(path: &std::path::Path) -> bool {
+    path.extension()
+        .map(|e| e.eq_ignore_ascii_case("lurek"))
+        .unwrap_or(false)
+}
+
+/// Resolve startup `main.lua` path for CLI mode when a game directory was explicitly provided.
+pub fn cli_startup_main_path(
+    game_dir: &std::path::Path,
+    explicit_game_dir: bool,
+) -> Option<std::path::PathBuf> {
+    if !explicit_game_dir {
+        return None;
+    }
+    let main = game_dir.join("main.lua");
+    if main.exists() { Some(main) } else { None }
+}
+
 /// Starts the Lurek2D runtime using the current CLI arguments and active game path.
 pub fn lurek_run() -> std::process::ExitCode {
     use app::{App, AppRunOptions};
@@ -333,11 +352,7 @@ pub fn lurek_run() -> std::process::ExitCode {
     let mut _lurek_temp_dir: Option<tempfile::TempDir> = None;
     let game_dir = if let Some(ref arg) = game_arg {
         let path = std::path::PathBuf::from(arg);
-        if path
-            .extension()
-            .map(|e| e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("lurek"))
-            .unwrap_or(false)
-        {
+        if is_lurek_archive_path(&path) {
             match extract_lurek_archive(&path) {
                 Ok(td) => {
                     let dir = td.path().to_path_buf();
@@ -466,12 +481,7 @@ pub fn lurek_run() -> std::process::ExitCode {
             config.modules.window = true;
             config.modules.terminal = true;
             config.modules.validate_and_fix();
-            let startup_main = if explicit_game_dir {
-                let main = game_dir.join("main.lua");
-                if main.exists() { Some(main) } else { None }
-            } else {
-                None
-            };
+            let startup_main = cli_startup_main_path(&game_dir, explicit_game_dir);
             let script = build_builtin_cli_script(&config, startup_main.as_deref());
             let (mode_dir, temp_dir) = match create_builtin_game_dir("cli", script) {
                 Ok((dir, temp)) => (dir, temp),

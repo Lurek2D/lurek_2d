@@ -9,7 +9,7 @@
 do
     local agent = lurek.agent.new({
         url          = "http://localhost:11434/api/generate",
-        model        = "llama3",
+        model        = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         system_prompt = "You are a helpful game AI.",
         format       = "json",
         name         = "helper",
@@ -65,9 +65,9 @@ end
 
 --@api-stub: LAgent:setModel
 do
-    local agent = lurek.agent.new({ model = "llama3" })
-    agent:setModel("mistral")
-    print("Agent model changed to mistral.")
+    local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
+    agent:setModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
+    print("Agent model changed to SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M.")
 end
 
 -- ─── LAgent:setUrl ───────────────────────────────────────────────────────────
@@ -112,7 +112,7 @@ end
 
 --@api-stub: LAgent:getModel
 do
-    local agent = lurek.agent.new({ model = "llama3" })
+    local agent = lurek.agent.new({ model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M" })
     local m     = agent:getModel()
     print("Agent model:", m)
 end
@@ -240,7 +240,7 @@ end
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
 
@@ -261,7 +261,7 @@ end
 do
     local agent = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
 
@@ -287,7 +287,7 @@ end
 do
     local agent = lurek.agent.new({
         url = "http://localhost:11434/api/generate",
-        model = "llama3",
+        model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
     })
     local id = agent:prompt("Long-running request.", function() end)
     agent:cancel(id)
@@ -328,8 +328,8 @@ end
 do
     local manager = lurek.agent.newManager()
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
 
     local id = manager:runAll({
         { agent = writer,   instruction = "Write a boss intro monologue." },
@@ -358,7 +358,7 @@ end
 do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game design AI." })
 
-    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local npc = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
     npc:setDescription("Writes NPC dialogue with emotional depth and regional accents.")
 
     system:addAgent("npc_writer", npc)
@@ -544,7 +544,7 @@ do
 
     local designer = lurek.agent.new({
         url    = "http://localhost:11434/api/generate",
-        model  = "llama3",
+        model  = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         format = "json",
     })
     designer:setDescription("Visual design specialist focusing on sprites and environments.")
@@ -574,8 +574,8 @@ do
     local system = lurek.agent.newSystem({ system_prompt = "You are a game AI team." })
     system:addInstruction("art_style", "16-bit pixel art.")
 
-    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
-    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "llama3", format = "json" })
+    local writer   = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
+    local designer = lurek.agent.new({ url = "http://localhost:11434/api/generate", model = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", format = "json" })
     writer:setDescription("Writes story and NPC dialogue.")
     designer:setDescription("Designs levels and visual assets.")
 
@@ -666,8 +666,8 @@ end
 --@api-stub: LOllamaManager:hasModel
 do
     local ollama = lurek.agent.newOllama()
-    local found  = ollama:hasModel("llama3")
-    print("llama3 available:", found)
+    local found  = ollama:hasModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
+    print("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M available:", found)
 end
 
 -- ─── LOllamaManager:start ────────────────────────────────────────────────────
@@ -702,7 +702,7 @@ end
 --@api-stub: LOllamaManager:pullModel
 do
     local ollama = lurek.agent.newOllama()
-    local id     = ollama:pullModel("llama3", function(success, err_msg)
+    local id     = ollama:pullModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M", function(success, err_msg)
         if success then
             print("Model downloaded successfully.")
         else
@@ -717,7 +717,7 @@ end
 --@api-stub: LOllamaManager:deleteModel
 do
     local ollama = lurek.agent.newOllama()
-    local ok     = ollama:deleteModel("llama3:latest")
+    local ok     = ollama:deleteModel("SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M")
     print("Model deleted:", ok)
 end
 
@@ -746,7 +746,7 @@ do
     lurek.agent.configure({
         provider    = "ollama",
         base_url    = "http://127.0.0.1:11434",
-        model       = "llama3",
+        model       = "SpeakLeash/bielik-11b-v3.0-instruct:Q4_K_M",
         timeout_ms  = 30000,
         api_key     = nil,
     })

@@ -1,8 +1,4 @@
-//! `lurek.visibility` -- Lua bindings for universal fog-of-war, discovery, and line-of-sight.
-//!
-//! - Registers `lurek.visibility.*` functions and types via `register()`.
-//! - `LuaVisibilityGrid`: userdata type exposed to Lua.
-//! - Bridges 16 Lua-callable methods via `mlua`.
+//! File: src/lua_api/visibility_api.rs
 
 use super::SharedState;
 use crate::visibility::{FogConfig, TileFov, VisibilityEvent, VisibilityFlags, VisibilityGrid};

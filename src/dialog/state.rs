@@ -1,9 +1,6 @@
-//! Dialog FSM state: tracks the current node, visited history, and variable bindings.
-//!
-//! - `DialogState` is the mutable context passed through the dialog engine each tick.
-//! - Tracks the current node ID, conversation ID, and per-run variable map.
-//! - `visited` set prevents re-entering nodes marked as non-repeatable.
-//! - Serialisable via `Save` system for checkpoint-save mid-conversation support.
+//! - Provides mutable conversation state that tracks active position, visit history, and per-run variables.
+//! - Supports lifecycle transitions for starting, advancing, ending, and resetting dialogue progression.
+//! - Preserves narrative continuity data in a compact structure that runtime systems can read each tick.
 
 use std::collections::{HashMap, HashSet};
 

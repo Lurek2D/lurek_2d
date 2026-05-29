@@ -17,13 +17,13 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8736 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29738 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8824 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (30023 lines)
 
 ## Coverage
 
 - 68 modules
-- 5438 functions and methods
+- 5498 functions and methods
 - 100.0% documented
 
 ## API Module Index
@@ -34,7 +34,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.ai](Module-ai) | 36 | 23 | Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU. |
 | [lurek.animation](Module-animation) | 7 | 5 | Sprite animation: source-rect changes over time. Imports only math; headless-testable. |
 | [lurek.asset](Module-asset) | 23 | 1 | Ref-counted media cache: load images, fonts, audio, and text assets by path; hold LAssetHandle values to keep them alive. |
-| [lurek.audio](Module-audio) | 83 | 6 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
+| [lurek.audio](Module-audio) | 84 | 7 | Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState. |
 | [lurek.automation](Module-automation) | 32 | 0 | Automated input simulation for headless tests, QA replay, recorded sessions. |
 | [lurek.binary](Module-binary) | 22 | 4 | Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack. |
 | [lurek.camera](Module-camera) | 3 | 2 | 2D camera and viewport types. Pure data; no GPU resources. |
@@ -66,7 +66,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.light](Module-light) | 20 | 2 | 2D point-light data model. Pure container; renderer owns all GPU work. |
 | [lurek.log](Module-log) | 18 | 0 | Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG. |
 | [lurek.mapblock](Module-mapblock) | 10 | 9 | Procedural map block generation: configurable tiles, constraints, multi-level, scripted pipelines. |
-| [lurek.math](Module-math) | 92 | 12 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
+| [lurek.math](Module-math) | 94 | 14 | Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph. |
 | [lurek.midi](Module-midi) | 4 | 0 | MIDI file playback via software synthesis using SoundFont data; transport and per-channel controls. |
 | [lurek.minimap](Module-minimap) | 1 | 1 | Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay. |
 | [lurek.mods](Module-mods) | 4 | 3 | Mod-loading framework: virtual filesystem mounts + sandboxed runtime config. |
@@ -93,7 +93,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.thread](Module-thread) | 7 | 4 | Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared). |
 | [lurek.tilemap](Module-tilemap) | 28 | 10 | Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort. |
 | [lurek.timer](Module-timer) | 21 | 1 | Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler). |
-| [lurek.tween](Module-tween) | 14 | 5 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
+| [lurek.tween](Module-tween) | 15 | 6 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [lurek.ui](Module-ui) | 91 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.validator](Module-validator) | 3 | 1 | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
 | [lurek.visibility](Module-visibility) | 2 | 2 | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |

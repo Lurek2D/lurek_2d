@@ -22,6 +22,7 @@ description: "Load this skill when routing work between CAG agents, choosing own
 
 ## Domain Knowledge
 - Routing authority: only Manager routes between agents. Specialists return one of three signals: DONE (work complete, artifacts ready), BLOCKED (need input or a missing resource), SCOPE-MISMATCH (task is outside this agent's owned surface). Manager interprets signals; specialists do not re-route to peers.
+- Read-only consultation: if a specialist only needs a convention check or signature clarification, Manager may broker a short question-only consultation without changing ownership. No files move, no phase handoff is created, and the consulted agent returns guidance only.
 - Single-specialist mode: when a request clearly maps to one agent with no handoff needed, Manager assigns and waits for DONE. No routing overhead is needed for single-owner tasks.
 - Planner first: route to Planner when work spans 3+ agents, 5+ files, or the phase order is genuinely unclear. Planner returns a phase plan with each phase having one owner and one Done-When gate. Architect gets involved only when the phase plan reveals an architectural decision (module boundary, dependency direction, API shape) that must be resolved before implementation can start.
 - Artifact ownership matrix for routing decisions:

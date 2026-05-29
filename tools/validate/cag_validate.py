@@ -483,7 +483,7 @@ def check_skill(path: Path, *, skills: set[str]) -> list[Violation]:
     body_offset_lines = text[: fm.body_offset].count("\n")
     for fl in find_fenced_block_lines(body):
         out.append(Violation(rel, "E201", "error",
-                             "Triple-backtick fence is forbidden in SKILL.md",
+                             "Triple-backtick fence is forbidden in SKILL.md; inline backticks are allowed",
                              fl + body_offset_lines))
 
     # related_skills now lives in the ## CAG Metadata body section (optional)

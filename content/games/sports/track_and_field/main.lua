@@ -784,12 +784,12 @@ function lurek.init()
     lurek.window.setTitle("Track & Field — Lurek2D")
     camera = lurek.camera.new()
     init_particles()
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/track_and_field/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
     app_ui.press_start = ui_root:findById("press_start")
-    
+
     app_ui.final_screen = ui_root:findById("final_screen")
     app_ui.final_rows = ui_root:findById("final_rows")
     app_ui.final_gold = ui_root:findById("final_gold")
@@ -797,18 +797,18 @@ function lurek.init()
     app_ui.final_bronze = ui_root:findById("final_bronze")
     app_ui.final_total = ui_root:findById("final_total")
     app_ui.press_restart = ui_root:findById("press_restart")
-    
+
     app_ui.intro_screen = ui_root:findById("intro_screen")
     app_ui.intro_event_num = ui_root:findById("intro_event_num")
     app_ui.intro_event_name = ui_root:findById("intro_event_name")
     app_ui.intro_countdown = ui_root:findById("intro_countdown")
-    
+
     app_ui.result_screen = ui_root:findById("result_screen")
     app_ui.result_title = ui_root:findById("result_title")
     app_ui.result_medal = ui_root:findById("result_medal")
     app_ui.result_points = ui_root:findById("result_points")
     app_ui.result_bonus = ui_root:findById("result_bonus")
-    
+
     app_ui.hud_screen = ui_root:findById("hud_screen")
     app_ui.hud_event_name = ui_root:findById("hud_event_name")
     app_ui.speed_bar_fill = ui_root:findById("speed_bar_fill")
@@ -817,9 +817,9 @@ function lurek.init()
     app_ui.hud_info_2 = ui_root:findById("hud_info_2")
     app_ui.hud_info_3 = ui_root:findById("hud_info_3")
     app_ui.hud_medals = ui_root:findById("hud_medals")
-    
+
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     local function click_action()
         if current_state == STATE.TITLE then
             p_stamina = p_max_stamina
@@ -945,7 +945,7 @@ function lurek.process(dt)
     app_ui.intro_screen.visible = (current_state == STATE.EVENT_INTRO)
     app_ui.result_screen.visible = (current_state == STATE.EVENT_RESULT)
     app_ui.hud_screen.visible = (current_state == STATE.RUNNING or current_state == STATE.JUMPING or current_state == STATE.THROWING)
-    
+
     if current_state == STATE.FINAL then
         app_ui.final_rows.children = {}
         local y_off = 0
@@ -1003,11 +1003,11 @@ function lurek.process(dt)
         local sg = lerp(0.8, 0.2, speed_pct)
         app_ui.speed_bar_fill.bg_color = {sr, sg, 0.2, 1}
         app_ui.stamina_bar_fill.width = 120 * (p_stamina / p_max_stamina)
-        
+
         app_ui.hud_info_1.text = ""
         app_ui.hud_info_2.text = ""
         app_ui.hud_info_3.text = ""
-        
+
         if current_event == EVENT.SPRINT_100 or current_event == EVENT.HURDLES_110 then
             app_ui.hud_info_1.text = string.format("Time: %.2fs", event_timer + hurdle_penalty)
             if current_event == EVENT.HURDLES_110 then
@@ -1030,7 +1030,7 @@ function lurek.process(dt)
         elseif current_event == EVENT.HIGH_JUMP then
             app_ui.hud_info_1.text = string.format("Bar: %.2fm  Fails: %d/3", hj_bar_height, hj_failures)
         end
-        
+
         app_ui.hud_medals.text = string.format("G:%d  S:%d  B:%d  Pts:%d", medals.gold, medals.silver, medals.bronze, total_points)
     end
 end

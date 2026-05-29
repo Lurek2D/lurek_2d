@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: public `lurek.event.*` queue and signal behavior is covered
-//! by the Lua-first suite in `tests/lua/unit/test_event_core_unit.lua`.
-//!
-//! The remaining Rust coverage keeps one wildcard-helper edge case that is not
-//! reachable via `LSignal:connect`, because the Lua API only routes names with
-//! `*` or `?` through wildcard registration.
+//! File: tests/rust/unit/event_tests.rs
 
 use lurek2d::event::Signal;
 

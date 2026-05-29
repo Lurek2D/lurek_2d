@@ -20,6 +20,8 @@ description: "Load this skill when writing or reviewing Rust engine code. It own
 ## Domain Knowledge
 - mod.rs in src/ must contain only `pub mod`, `pub use`, doc comments, and `#[allow]` attributes. Definitions belong in sibling files. If a mod.rs has function or struct bodies, that is a defect to fix.
 - No `#[cfg(test)]` blocks in src/. Unit tests for private code go in `tests/rust/unit/<module>_tests.rs`, named `<module>_tests.rs` not `<module>_test.rs`. If you see `#[cfg(test)]` in src/, move it.
+- When external tests need a private seam, prefer `pub(crate)` over `pub` and keep the exposed item narrow. Treat it as a testability boundary, not a public API expansion.
+- If a `pub(crate)` seam exists only for tests, keep its doc comment explicit about that intent so future refactors do not promote it accidentally.
 - `src/lua_api/*_api.rs` must stay thin: `LuaUserData` impls, `add_methods`, registration, and type conversions only. Business logic belongs in `src/<module>/`. A binding file that starts accumulating `if/match/for` logic is drifting.
 - Never hold `borrow_mut()` or `RefCell::borrow_mut()` across a Lua callback invocation. The pattern is: extract all needed values while holding the borrow, release it, then invoke Lua. Re-entry during borrow causes a runtime panic.
 - SharedState access rule: `{ let guard = state.borrow(); let val = guard.field.clone(); } /* borrow released */ call_lua(val)`. The guard must be dropped before any call that might re-enter Rust.

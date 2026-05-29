@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for lighting helpers that are not directly asserted through
-//! `lurek.light.*`.
-//!
-//! Public light/world behaviour is covered by `tests/lua/unit/test_light_unit.lua`.
-//! The remaining Rust tests keep attenuation/flicker math and light-world
-//! helper invariants.
+//! File: tests/rust/unit/light_tests.rs
 
 use lurek2d::light::attenuation::Attenuation;
 use lurek2d::light::flicker::FlickerConfig;

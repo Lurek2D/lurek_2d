@@ -3,6 +3,8 @@
 //! - Layer-local forward evaluation, activation application, and parameter counting.
 //! - Network-level operations: append layers, run forward passes, load/export weight buffers.
 
+use crate::learning::EvolutionaryLayer;
+
 /// Activation function used by a layer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Activation {
@@ -110,6 +112,30 @@ impl NeuralLayer {
             out[o] = sum;
         }
         self.activation.apply(&mut out);
+        out
+    }
+}
+
+impl EvolutionaryLayer for NeuralLayer {
+    fn param_count(&self) -> usize {
+        NeuralLayer::param_count(self)
+    }
+
+    fn set_weights(&mut self, weights: &[f32]) -> bool {
+        if weights.len() != self.param_count() {
+            return false;
+        }
+
+        let w_count = self.inputs * self.outputs;
+        self.weights.copy_from_slice(&weights[..w_count]);
+        self.biases.copy_from_slice(&weights[w_count..]);
+        true
+    }
+
+    fn get_weights(&self) -> Vec<f32> {
+        let mut out = Vec::with_capacity(self.param_count());
+        out.extend_from_slice(&self.weights);
+        out.extend_from_slice(&self.biases);
         out
     }
 }

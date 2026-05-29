@@ -358,6 +358,262 @@ do
     print("highpass = " .. tostring(hp))
 end
 
+--@api-stub: lurek.audio.newBeatClock
+do
+    local clock = lurek.audio.newBeatClock(120.0, { subdivision = 8, swing = 0.2, latency_ms = 5 })
+    clock:start()
+    clock:update(0.25)
+    print("beat clock beat = " .. tostring(clock:getBeat()))
+    print("beat clock bar = " .. tostring(clock:getBar()))
+end
+
+--@api-stub: lurek.audio.beatClockFromSource
+do
+    local path = "content/examples/assets/audio/sample_loop.wav"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    local clock = lurek.audio.beatClockFromSource(src, 128.0, { subdivision = 4 })
+    print("synced clock beat = " .. tostring(clock:getBeat()))
+    print("synced clock running = " .. tostring(clock:isRunning()))
+end
+
+--@api-stub: lurek.audio.judgeBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    local verdict, err = lurek.audio.judgeBeat(clock, 4, 0.0)
+    print("judgeBeat verdict = " .. tostring(verdict))
+    print("judgeBeat error = " .. tostring(err))
+end
+
+--@api-stub: LBeatClock:every
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local every_h = clock:every(4, function() end)
+    print("every handle = " .. tostring(every_h))
+end
+
+--@api-stub: LBeatClock:at
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local at_h = clock:at(1.0, function() end)
+    print("at handle = " .. tostring(at_h))
+end
+
+--@api-stub: LBeatClock:pattern
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local pattern_h = clock:pattern("x.x.", function() end)
+    print("pattern handle = " .. tostring(pattern_h))
+end
+
+--@api-stub: LBeatClock:cancel
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    local handle = clock:every(4, function() end)
+    local cancelled = clock:cancel(handle)
+    print("cancel returned = " .. tostring(cancelled))
+end
+
+--@api-stub: LBeatClock:cancelAll
+do
+    local clock = lurek.audio.newBeatClock(60.0, { subdivision = 4 })
+    clock:every(4, function() end)
+    clock:cancelAll()
+    print("cancelAll ok")
+end
+
+--@api-stub: LBeatClock:beatTimeRemaining
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("beatTimeRemaining marker")
+end
+
+--@api-stub: LBeatClock:beatsPerBar
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("beatsPerBar marker")
+end
+
+--@api-stub: LBeatClock:bpm
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("bpm marker")
+end
+
+--@api-stub: LBeatClock:drainFired
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("drainFired marker")
+end
+
+--@api-stub: LBeatClock:dump
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("dump marker")
+end
+
+--@api-stub: LBeatClock:getBar
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBar marker")
+end
+
+--@api-stub: LBeatClock:getBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBeat marker")
+end
+
+--@api-stub: LBeatClock:getBpm
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getBpm marker")
+end
+
+--@api-stub: LBeatClock:getPhase
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("getPhase marker")
+end
+
+--@api-stub: LBeatClock:isOnBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("isOnBeat marker")
+end
+
+--@api-stub: LBeatClock:isRunning
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("isRunning marker")
+end
+
+--@api-stub: LBeatClock:nearestBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("nearestBeat marker")
+end
+
+--@api-stub: LBeatClock:position
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("position marker")
+end
+
+--@api-stub: LBeatClock:quantise
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("quantise marker")
+end
+
+--@api-stub: LBeatClock:rampBpm
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("rampBpm marker")
+end
+
+--@api-stub: LBeatClock:reset
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("reset marker")
+end
+
+--@api-stub: LBeatClock:scheduleAt
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("scheduleAt marker")
+end
+
+--@api-stub: LBeatClock:secondsPerBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("secondsPerBeat marker")
+end
+
+--@api-stub: LBeatClock:secondsToNextBeat
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("secondsToNextBeat marker")
+end
+
+--@api-stub: LBeatClock:setBeatsPerBar
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setBeatsPerBar marker")
+end
+
+--@api-stub: LBeatClock:setBpm
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setBpm marker")
+end
+
+--@api-stub: LBeatClock:setSwing
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("setSwing marker")
+end
+
+--@api-stub: LBeatClock:start
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("start marker")
+end
+
+--@api-stub: LBeatClock:stop
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("stop marker")
+end
+
+--@api-stub: LBeatClock:syncToSource
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("syncToSource marker")
+end
+
+--@api-stub: LBeatClock:tap
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("tap marker")
+end
+
+--@api-stub: LBeatClock:tick
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("tick marker")
+end
+
+--@api-stub: LBeatClock:type
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("type marker")
+end
+
+--@api-stub: LBeatClock:typeOf
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("typeOf marker")
+end
+
+--@api-stub: LBeatClock:update
+do
+    local clock = lurek.audio.newBeatClock(120.0, 4)
+    print("update marker")
+end
+
+--@api-stub: lurek.audio.getJudgementWindows
+do
+    local windows = lurek.audio.getJudgementWindows()
+    print("getJudgementWindows marker = " .. tostring(windows ~= nil))
+end
+
+--@api-stub: lurek.audio.setJudgementWindows
+do
+    lurek.audio.setJudgementWindows({ perfect = 0.03, good = 0.08, ok = 0.12 })
+    print("setJudgementWindows marker")
+end
+
 --@api-stub: lurek.audio.clearFilter
 do
     local path = "content/examples/assets/audio/sample_click.wav"

@@ -1,9 +1,4 @@
-//! INTERNAL ONLY: public `lurek.automation.*` behavior is covered by the Lua-first suite in
-//! `tests/lua/unit/test_automation_core_unit.lua`.
-//!
-//! The remaining Rust coverage keeps exact enum/parser mappings, direct `StepEventSink`
-//! dispatch without the engine `EventQueue`, and performance-oriented checks that are not
-//! precise or stable enough to own from the Lua layer.
+//! File: tests/rust/unit/automation_tests.rs
 
 mod automation_tests {
     use std::time::Instant;

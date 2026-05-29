@@ -331,7 +331,7 @@ function lurek.init()
     net_particles:setSpeed(10, 40)
     net_particles:setColors({1.0, 1.0, 1.0, 1.0}, {1.0, 1.0, 1.0, 0.0})
     net_particles:setSizes(2, 1)
-    
+
     local ui_root = lurek.ui.loadLayoutFile("content/games/sports/tennis_classic/ui.toml")
     app_ui = {}
     app_ui.title_screen = ui_root:findById("title_screen")
@@ -347,7 +347,7 @@ function lurek.init()
     app_ui.serve_screen = ui_root:findById("serve_screen")
     app_ui.serve_label = ui_root:findById("serve_label")
     app_ui.fps_label = ui_root:findById("fps_label")
-    
+
     if app_ui.press_start then
         app_ui.press_start:setOnClick(function()
             if state == ST.TITLE then
@@ -706,19 +706,19 @@ function lurek.process(dt)
             ai_react_timer = 0
         end
     end
-    
+
     -- Sync UI
     app_ui.fps_label.text = "FPS: " .. tostring(math.floor(lurek.timer.getFPS()))
     app_ui.title_screen.visible = (state == ST.TITLE)
     app_ui.hud_screen.visible = (state ~= ST.TITLE)
     app_ui.msg_screen.visible = (state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END)
     app_ui.serve_screen.visible = (state == ST.SERVING and server == 1)
-    
+
     if state == ST.TITLE then
         local blink_a = 0.5 + 0.5 * math.sin(title_timer * 2)
         app_ui.press_start.color = {1, 1, 1, blink_a}
     end
-    
+
     if state ~= ST.TITLE then
         local score_str
         if deuce then
@@ -730,7 +730,7 @@ function lurek.process(dt)
         end
         local server_str = (server == 1) and " [P serve]" or " [O serve]"
         app_ui.score_label.text = "Score: " .. score_str .. server_str
-        
+
         local sets_str = ""
         for i = 1, current_set do
             local g = games[i]
@@ -740,7 +740,7 @@ function lurek.process(dt)
             end
         end
         app_ui.sets_label.text = sets_str
-        
+
         if rally_count > 0 and state == ST.PLAYING then
             app_ui.rally_label.visible = true
             app_ui.rally_label.text = "Rally: " .. rally_count
@@ -748,11 +748,11 @@ function lurek.process(dt)
             app_ui.rally_label.visible = false
         end
     end
-    
+
     if state == ST.POINT or state == ST.SET_END or state == ST.MATCH_END then
         app_ui.point_msg_label.text = point_msg
     end
-    
+
     if score_popup.alpha > 0 then
         app_ui.popup_screen.visible = true
         app_ui.popup_label.text = score_popup.text
@@ -762,7 +762,7 @@ function lurek.process(dt)
     else
         app_ui.popup_screen.visible = false
     end
-    
+
     if state == ST.SERVING and server == 1 then
         local msg = (serve_phase == 0) and "Press SPACE to toss" or "Press SPACE to hit!"
         if serve_count == 1 then msg = "Second serve - " .. msg end

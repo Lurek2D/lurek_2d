@@ -1,9 +1,4 @@
-//! `lurek.cursor` - Cursor appearance, system cursors, custom image cursors, animated cursors, and context-sensitive switching.
-//!
-//! - Registers `lurek.cursor.*` functions and types via `register()`.
-//! - `LuaCursorManager`: userdata type exposed to Lua.
-//! - `LuaCustomCursor`: userdata type exposed to Lua.
-//! - `LuaAnimatedCursor`: userdata type exposed to Lua.
+//! File: src/lua_api/cursor_api.rs
 
 use super::SharedState;
 use crate::cursor::{
@@ -209,7 +204,7 @@ struct LuaCustomCursor {
 impl LuaUserData for LuaCustomCursor {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setPixel --
-        /// Set a pixel color — Lua userdata object exposed by the engine.
+        /// Set a pixel color â€” Lua userdata object exposed by the engine.
         /// @param | x | integer | X coordinate.
         /// @param | y | integer | Y coordinate.
         /// @param | r | integer | Red (0-255).

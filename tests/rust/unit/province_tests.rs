@@ -1,4 +1,4 @@
-//! INTERNAL ONLY: Rust-only tests for province engine internals.
+//! File: tests/rust/unit/province_tests.rs
 
 use std::path::{Path, PathBuf};
 
