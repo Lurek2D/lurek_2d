@@ -1030,12 +1030,27 @@ LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend lay
 [Module page](Module-asset)
 
 ```lua
+lurek.asset.addTag(handle: LAssetHandle, tag: string) -- Adds a tag to the tag set of an asset handle.
 lurek.asset.clear()
+lurek.asset.findByGroup(group: any)
+lurek.asset.findByName(substr: any)
+lurek.asset.findByTag(tag: any)
+lurek.asset.findByType(type_str: any)
 lurek.asset.get(handle: any)
+lurek.asset.getGroup(handle: LAssetHandle) -> string -- Returns the group label for an asset handle.
+lurek.asset.getInfo(handle: any)
+lurek.asset.getName(handle: LAssetHandle) -> string -- Returns the display name of an asset handle.
+lurek.asset.getPath(handle: LAssetHandle) -> string -- Returns the filesystem path for the asset associated with a handle.
+lurek.asset.getTags(handle: LAssetHandle) -> table -- Returns an array of all tags for an asset handle.
+lurek.asset.getType(handle: LAssetHandle) -> string -- Returns the type string for the asset associated with a handle.
+lurek.asset.hasTag(handle: LAssetHandle, tag: string) -> boolean -- Returns true when an asset handle has the given tag in its tag set.
 lurek.asset.isLoaded(handle: LAssetHandle) -> boolean -- Returns true when the asset for the given handle is still in the cache.
-lurek.asset.load(path: any, type_str: any)
+lurek.asset.load(path: any, type_str: any, [opts]: any)
 lurek.asset.preload(paths: any, callback: any)
 lurek.asset.refcount(handle: LAssetHandle) -> integer -- Returns the current ref count for a handle, or 0 when it is no longer loaded.
+lurek.asset.removeTag(handle: LAssetHandle, tag: string) -> boolean -- Removes a tag from the tag set of an asset handle.
+lurek.asset.setGroup(handle: LAssetHandle, group: string) -- Assigns an asset handle to a named group.
+lurek.asset.setName(handle: LAssetHandle, name: string) -- Sets the display name for an asset handle.
 lurek.asset.stats()
 lurek.asset.unload(handle: LAssetHandle) -- Decrements the ref count for a cached asset; removes the entry when it reaches zero.
 ```

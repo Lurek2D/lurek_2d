@@ -26803,7 +26803,7 @@
     "kind": "module",
     "module": "asset",
     "title": "lurek.asset",
-    "subtitle": "`lurek.asset` — ref-counted media cache bindings. - Registers `lurek.asset.*` functions and types via `register()`. - Bridges 8 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`. - See `docs/specs/asset.md` for the full API specification.",
+    "subtitle": "`lurek.asset` — asset registry and ref-counted media cache bindings. Registers `lurek.asset.*` into the global `lurek` table via `register()`. Bridges 23 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`. Supported asset types: `image`, `font`, `audio`, `music`, `text`, `toml`, `json`, `obj`, `shader`, `lua`. Text-like types have their file content read and cached; binary types store a path reference only. Assets can be annotated with a display name, a group label, and a tag set. Query functions (`findByName`, `findByGroup`, `findByTag`, `findByType`) return arrays of `LAssetHandle` values that can be iterated by scripts. See `docs/specs/asset.md` for the full API specification.",
     "href": "modules/asset.html",
     "keywords": "lurek asset module"
   },
@@ -26813,7 +26813,7 @@
     "title": "lurek.asset.load",
     "subtitle": "Lua function",
     "href": "modules/asset.html#fn-load",
-    "keywords": "asset load function load(path: any, type_str: any)"
+    "keywords": "asset load function load(path: any, type_str: any, opts: any)"
   },
   {
     "kind": "function",
@@ -26870,6 +26870,126 @@
     "subtitle": "Lua function",
     "href": "modules/asset.html#fn-clear",
     "keywords": "asset clear function clear()"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getPath",
+    "subtitle": "Returns the filesystem path for the asset associated with a handle.",
+    "href": "modules/asset.html#fn-getpath",
+    "keywords": "asset getPath function getPath(handle: LAssetHandle) -> string"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getType",
+    "subtitle": "Returns the type string for the asset associated with a handle.",
+    "href": "modules/asset.html#fn-gettype",
+    "keywords": "asset getType function getType(handle: LAssetHandle) -> string"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getInfo",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-getinfo",
+    "keywords": "asset getInfo function getInfo(handle: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.setName",
+    "subtitle": "Sets the display name for an asset handle.",
+    "href": "modules/asset.html#fn-setname",
+    "keywords": "asset setName function setName(handle: LAssetHandle, name: string) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getName",
+    "subtitle": "Returns the display name of an asset handle.",
+    "href": "modules/asset.html#fn-getname",
+    "keywords": "asset getName function getName(handle: LAssetHandle) -> string"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.setGroup",
+    "subtitle": "Assigns an asset handle to a named group.",
+    "href": "modules/asset.html#fn-setgroup",
+    "keywords": "asset setGroup function setGroup(handle: LAssetHandle, group: string) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getGroup",
+    "subtitle": "Returns the group label for an asset handle.",
+    "href": "modules/asset.html#fn-getgroup",
+    "keywords": "asset getGroup function getGroup(handle: LAssetHandle) -> string"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.addTag",
+    "subtitle": "Adds a tag to the tag set of an asset handle.",
+    "href": "modules/asset.html#fn-addtag",
+    "keywords": "asset addTag function addTag(handle: LAssetHandle, tag: string) -> nil"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.removeTag",
+    "subtitle": "Removes a tag from the tag set of an asset handle.",
+    "href": "modules/asset.html#fn-removetag",
+    "keywords": "asset removeTag function removeTag(handle: LAssetHandle, tag: string) -> boolean"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.getTags",
+    "subtitle": "Returns an array of all tags for an asset handle.",
+    "href": "modules/asset.html#fn-gettags",
+    "keywords": "asset getTags function getTags(handle: LAssetHandle) -> table"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.hasTag",
+    "subtitle": "Returns true when an asset handle has the given tag in its tag set.",
+    "href": "modules/asset.html#fn-hastag",
+    "keywords": "asset hasTag function hasTag(handle: LAssetHandle, tag: string) -> boolean"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.findByName",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-findbyname",
+    "keywords": "asset findByName function findByName(substr: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.findByGroup",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-findbygroup",
+    "keywords": "asset findByGroup function findByGroup(group: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.findByTag",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-findbytag",
+    "keywords": "asset findByTag function findByTag(tag: any)"
+  },
+  {
+    "kind": "function",
+    "module": "asset",
+    "title": "lurek.asset.findByType",
+    "subtitle": "Lua function",
+    "href": "modules/asset.html#fn-findbytype",
+    "keywords": "asset findByType function findByType(type_str: any)"
   },
   {
     "kind": "class",

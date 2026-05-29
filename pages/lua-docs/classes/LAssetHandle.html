@@ -48,9 +48,9 @@
   <p>Lua-side handle for a single cached asset entry.</p>
   <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/asset.html">lurek.asset</a></div>
   <details class="example-block"><summary>Class Example · Exact example · asset.lua</summary><pre><code>do
-    local handle = lurek.asset.load(&quot;assets/fonts/bitmap_fonts.json&quot;, &quot;text&quot;)
-    print(&quot;type = &quot; .. handle:type())
-    lurek.asset.unload(handle)
+    local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
+    print(&quot;type=&quot; .. h:type())                    -- &quot;LAssetHandle&quot;
+    lurek.asset.unload(h)
 end</code></pre></details>
 </header>
 
@@ -60,14 +60,16 @@ end</code></pre></details>
     <p>Instance methods exported from the LAssetHandle userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAssetHandle:type() -&gt; string</pre><p>Returns the Lua-visible type name for this asset handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/asset_api.rs:31</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
-    local handle = lurek.asset.load(&quot;assets/fonts/bitmap_fonts.json&quot;, &quot;text&quot;)
-    print(&quot;type = &quot; .. handle:type())
-    lurek.asset.unload(handle)
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAssetHandle:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/asset_api.rs:37</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
-    local handle = lurek.asset.load(&quot;assets/fonts/bitmap_fonts.json&quot;, &quot;text&quot;)
-    print(&quot;typeOf LAssetHandle = &quot; .. tostring(handle:typeOf(&quot;LAssetHandle&quot;)))
-    lurek.asset.unload(handle)
+    <article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAssetHandle:type() -&gt; string</pre><p>Returns the Lua-visible type name for this asset handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/asset_api.rs:40</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+    local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
+    print(&quot;type=&quot; .. h:type())                    -- &quot;LAssetHandle&quot;
+    lurek.asset.unload(h)
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAssetHandle:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/asset_api.rs:46</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+    local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
+    print(&quot;typeOf LAssetHandle=&quot; .. tostring(h:typeOf(&quot;LAssetHandle&quot;)))
+    print(&quot;typeOf LObject=&quot;      .. tostring(h:typeOf(&quot;LObject&quot;)))
+    print(&quot;typeOf other=&quot;        .. tostring(h:typeOf(&quot;other&quot;)))
+    lurek.asset.unload(h)
 end</code></pre></details></article>
   </div>
 </section>

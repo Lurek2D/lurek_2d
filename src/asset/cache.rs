@@ -1,62 +1,151 @@
-//! Ref-counted asset cache.
-//! Stores asset entries keyed by numeric handle IDs.
+//! Ref-counted asset cache for `lurek.asset`.
+//!
+//! ## Responsibilities
+//!
+//! `AssetCache` is the sole owner of all registered game-asset entries.
+//! It provides:
+//!
+//! - Unique `u64` handle IDs for each registered entry.
+//! - Reference counting: entries are removed when their ref count reaches zero.
+//! - Optional display names, group labels, and tag sets per entry.
+//! - Query methods: find entries by name substring, exact group, exact tag, or type string.
+//!
+//! ## Asset types
+//!
+//! | Type string | Storage          | `get()` resolution                    |
+//! |-------------|------------------|---------------------------------------|
+//! | `image`     | path ref         | `lurek.image.loadImage(path)`         |
+//! | `font`      | path ref         | `lurek.font.load(path, 16)`           |
+//! | `audio`     | path ref         | `lurek.audio.newSource(path)`         |
+//! | `music`     | path ref         | `lurek.audio.newSource(path)`         |
+//! | `text`      | cached text      | returns content string directly       |
+//! | `toml`      | cached text      | returns raw TOML string               |
+//! | `json`      | cached text      | returns raw JSON string               |
+//! | `obj`       | cached text      | returns raw OBJ geometry string       |
+//! | `shader`    | cached text      | returns shader source string          |
+//! | `lua`       | cached text      | returns Lua source string             |
+//!
+//! ## Design notes
+//!
+//! The cache is a plain in-process store — it records *where* an asset lives on disk
+//! and *how it is classified*, not the decoded GPU resource itself. Decoded resources
+//! (textures, fonts, audio sources) are owned by the respective `lurek.*` sub-modules;
+//! `lurek.asset` is the lightweight registry and search layer.
+//!
+//! One cache instance is created per Lua VM during `asset_api::register()`.
+//! Worker VMs created by `lurek.thread` each get their own independent cache.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
-/// Discriminant for a cached asset type.
+/// Asset type discriminant.
+///
+/// Governs how `get()` resolves the underlying resource and which
+/// `lurek.*` constructor is called on the Lua side.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AssetType {
+    /// Raster image; resolved via `lurek.image.loadImage`.
     Image,
+    /// Bitmap or TTF font; resolved via `lurek.font.load`.
     Font,
+    /// Short-form sound effect; resolved via `lurek.audio.newSource`.
     Audio,
+    /// Long-form background music; resolved via `lurek.audio.newSource`.
+    Music,
+    /// Plain text file; content is read and cached as a Rust `String`.
     Text,
+    /// TOML configuration file; content is read and cached as raw TOML text.
+    Toml,
+    /// JSON data file; content is read and cached as raw JSON text.
+    Json,
+    /// Wavefront OBJ geometry; content is read and cached as raw text.
+    /// Useful for 2-D collision geometry, minimap outlines, or AI nav meshes.
+    Obj,
+    /// WGSL or custom shader source text.
+    Shader,
+    /// Lua script source text (for modding or data-driven logic).
+    Lua,
+    /// Unrecognised type string; stored by path reference only.
     Unknown(String),
 }
 
 impl AssetType {
-    /// Parses the Lua-facing type string into an `AssetType` variant.
+    /// Parses the Lua-facing lowercase type string into the matching variant.
     pub fn from_type_str(s: &str) -> Self {
         match s {
-            "image" => Self::Image,
-            "font" => Self::Font,
-            "audio" => Self::Audio,
-            "text" => Self::Text,
-            other => Self::Unknown(other.to_string()),
+            "image"  => Self::Image,
+            "font"   => Self::Font,
+            "audio"  => Self::Audio,
+            "music"  => Self::Music,
+            "text"   => Self::Text,
+            "toml"   => Self::Toml,
+            "json"   => Self::Json,
+            "obj"    => Self::Obj,
+            "shader" => Self::Shader,
+            "lua"    => Self::Lua,
+            other    => Self::Unknown(other.to_string()),
         }
     }
 
-    /// Returns the canonical string representation used in stats tables.
+    /// Returns `true` when the type stores its content as in-process text.
+    ///
+    /// Text-like types (`text`, `toml`, `json`, `obj`, `shader`, `lua`) are read
+    /// from disk and stored in `AssetEntry::text_content`. Binary types (`image`,
+    /// `font`, `audio`, `music`) store only the path reference.
+    pub fn is_text_like(&self) -> bool {
+        matches!(
+            self,
+            Self::Text | Self::Toml | Self::Json | Self::Obj | Self::Shader | Self::Lua
+        )
+    }
+
+    /// Returns the canonical lowercase string used in stats tables and Lua-side queries.
     pub fn as_str(&self) -> &str {
         match self {
-            Self::Image => "image",
-            Self::Font => "font",
-            Self::Audio => "audio",
-            Self::Text => "text",
-            Self::Unknown(s) => s.as_str(),
+            Self::Image       => "image",
+            Self::Font        => "font",
+            Self::Audio       => "audio",
+            Self::Music       => "music",
+            Self::Text        => "text",
+            Self::Toml        => "toml",
+            Self::Json        => "json",
+            Self::Obj         => "obj",
+            Self::Shader      => "shader",
+            Self::Lua         => "lua",
+            Self::Unknown(s)  => s.as_str(),
         }
     }
 }
 
-/// A single cached asset entry.
+/// A single registered asset entry.
 pub struct AssetEntry {
-    /// Filesystem path for this asset.
+    /// Filesystem path to the asset.
     pub path: String,
     /// Asset type discriminant.
     pub asset_type: AssetType,
-    /// Current reference count. Entry is removed when this reaches zero.
+    /// Reference count; the entry is removed when this reaches zero.
     pub ref_count: usize,
-    /// Cached text content for `AssetType::Text` assets; `None` for all others.
+    /// Cached file content for text-like types; `None` for binary types.
     pub text_content: Option<String>,
+    /// Optional human-readable display name. Defaults to the path file-stem.
+    pub name: Option<String>,
+    /// Optional group label for bulk operations (e.g. `"ui"`, `"level_1"`).
+    pub group: Option<String>,
+    /// Searchable tag set (e.g. `"enemy"`, `"sfx"`, `"hud"`).
+    pub tags: HashSet<String>,
 }
 
-/// Ref-counted asset cache keyed by handle IDs.
+/// Ref-counted asset cache keyed by `u64` handle IDs.
+///
+/// All mutation is performed through `&mut self` methods. Interior mutability
+/// is provided by the `Rc<RefCell<AssetCache>>` wrapper created in
+/// `asset_api::register()`.
 pub struct AssetCache {
     entries: HashMap<u64, AssetEntry>,
     next_id: u64,
 }
 
 impl AssetCache {
-    /// Creates an empty cache.
+    /// Creates an empty cache with the ID counter starting at `1`.
     pub fn new() -> Self {
         Self {
             entries: HashMap::new(),
@@ -64,9 +153,10 @@ impl AssetCache {
         }
     }
 
-    /// Registers a new asset entry and returns its unique handle ID.
+    /// Registers a new entry and returns its unique handle ID.
     ///
-    /// The initial ref count is 1.
+    /// The initial ref count is `1`. Name, group, and tags can be set after
+    /// registration with the corresponding setter methods.
     pub fn register(
         &mut self,
         path: String,
@@ -82,6 +172,9 @@ impl AssetCache {
                 asset_type,
                 ref_count: 1,
                 text_content,
+                name: None,
+                group: None,
+                tags: HashSet::new(),
             },
         );
         id
@@ -109,6 +202,51 @@ impl AssetCache {
         self.entries.get(&id)
     }
 
+    /// Sets the display name for the entry with the given ID.
+    ///
+    /// Does nothing when `id` is not present.
+    pub fn set_name(&mut self, id: u64, name: String) {
+        if let Some(e) = self.entries.get_mut(&id) {
+            e.name = Some(name);
+        }
+    }
+
+    /// Sets the group label for the entry with the given ID.
+    ///
+    /// Does nothing when `id` is not present.
+    pub fn set_group(&mut self, id: u64, group: String) {
+        if let Some(e) = self.entries.get_mut(&id) {
+            e.group = Some(group);
+        }
+    }
+
+    /// Adds `tag` to the tag set of the entry with the given ID.
+    ///
+    /// Does nothing when `id` is not present.
+    pub fn add_tag(&mut self, id: u64, tag: &str) {
+        if let Some(e) = self.entries.get_mut(&id) {
+            e.tags.insert(tag.to_string());
+        }
+    }
+
+    /// Removes `tag` from the tag set of the entry with the given ID.
+    ///
+    /// Returns `true` when the tag was present and removed.
+    pub fn remove_tag(&mut self, id: u64, tag: &str) -> bool {
+        if let Some(e) = self.entries.get_mut(&id) {
+            e.tags.remove(tag)
+        } else {
+            false
+        }
+    }
+
+    /// Returns `true` when the entry with the given ID has the given tag.
+    pub fn has_tag(&self, id: u64, tag: &str) -> bool {
+        self.entries
+            .get(&id)
+            .is_some_and(|e| e.tags.contains(tag))
+    }
+
     /// Returns the current ref count for `id`, or `0` when not present.
     pub fn ref_count(&self, id: u64) -> usize {
         self.entries.get(&id).map_or(0, |e| e.ref_count)
@@ -129,7 +267,80 @@ impl AssetCache {
         self.entries.values().map(|e| e.ref_count).sum()
     }
 
-    /// Removes all entries from the cache.
+    /// Returns all IDs whose display name contains `substr` (case-insensitive).
+    ///
+    /// When no explicit name is set, the path file-stem is used for comparison.
+    pub fn find_by_name(&self, substr: &str) -> Vec<u64> {
+        let lower = substr.to_lowercase();
+        let mut ids: Vec<u64> = self
+            .entries
+            .iter()
+            .filter(|(_, e)| {
+                let stem = e.name.as_deref().unwrap_or_else(|| {
+                    // Safe: path is always a valid string; worst case empty str.
+                    std::path::Path::new(e.path.as_str())
+                        .file_stem()
+                        .and_then(|s| s.to_str())
+                        .unwrap_or("")
+                });
+                stem.to_lowercase().contains(&lower)
+            })
+            .map(|(id, _)| *id)
+            .collect();
+        ids.sort_unstable();
+        ids
+    }
+
+    /// Returns all IDs whose group label exactly matches `group`.
+    pub fn find_by_group(&self, group: &str) -> Vec<u64> {
+        let mut ids: Vec<u64> = self
+            .entries
+            .iter()
+            .filter(|(_, e)| e.group.as_deref() == Some(group))
+            .map(|(id, _)| *id)
+            .collect();
+        ids.sort_unstable();
+        ids
+    }
+
+    /// Returns all IDs that have `tag` in their tag set.
+    pub fn find_by_tag(&self, tag: &str) -> Vec<u64> {
+        let mut ids: Vec<u64> = self
+            .entries
+            .iter()
+            .filter(|(_, e)| e.tags.contains(tag))
+            .map(|(id, _)| *id)
+            .collect();
+        ids.sort_unstable();
+        ids
+    }
+
+    /// Returns all IDs whose asset type string matches `type_str` exactly.
+    pub fn find_by_type(&self, type_str: &str) -> Vec<u64> {
+        let mut ids: Vec<u64> = self
+            .entries
+            .iter()
+            .filter(|(_, e)| e.asset_type.as_str() == type_str)
+            .map(|(id, _)| *id)
+            .collect();
+        ids.sort_unstable();
+        ids
+    }
+
+    /// Returns all unique group labels currently in the cache (sorted).
+    pub fn unique_groups(&self) -> Vec<String> {
+        let mut groups: Vec<String> = self
+            .entries
+            .values()
+            .filter_map(|e| e.group.clone())
+            .collect::<std::collections::HashSet<_>>()
+            .into_iter()
+            .collect();
+        groups.sort();
+        groups
+    }
+
+    /// Removes all entries from the cache, regardless of ref counts.
     pub fn clear(&mut self) {
         self.entries.clear();
     }

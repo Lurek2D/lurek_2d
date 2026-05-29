@@ -707,7 +707,7 @@ pub fn make_splash_commands()  // Build render commands for splash screen brandi
 
 ### `asset`
 
-> `lurek.asset` — ref-counted media cache for images, fonts, audio, and text assets.
+> `lurek.asset` — ref-counted media cache for images, fonts, audio, and text assets. Asset registry module for `lurek.asset`.  Re-exports [`AssetCache`], [`AssetEntry`], and [`AssetType`] from `cache.rs`.  All business logic lives in `cache.rs`; `asset_api.rs` contains only the thin Lua bindings.
 
 *[src/asset/mod.rs](src/asset/mod.rs) — 0/1 documented (0%)*
 
@@ -717,14 +717,14 @@ pub mod cache  // (undocumented)
 
 ### `asset::cache`
 
-> Ref-counted asset cache. Stores asset entries keyed by numeric handle IDs.
+> Ref-counted asset cache for `lurek.asset`.  ## Responsibilities  `AssetCache` is the sole owner of all registered game-asset entries. It provides:  - Unique `u64` handle IDs for each registered entry. - Reference counting: entries are removed when their ref count reaches zero. - Optional display names, group labels, and tag sets per entry. - Query methods: find entries by name substring, exact group, exact tag, or type string.  ## Asset types  | Type string | Storage          | `get()` resolution                    | |-------------|------------------|---------------------------------------| | `image`     | path ref         | `lurek.image.loadImage(path)`         | | `font`      | path ref         | `lurek.font.load(path, 16)`           | | `audio`     | path ref         | `lurek.audio.newSource(path)`         | | `music`     | path ref         | `lurek.audio.newSource(path)`         | | `text`      | cached text      | returns content string directly       | | `toml`      | cached text      | returns raw TOML string               | | `json`      | cached text      | returns raw JSON string               | | `obj`       | cached text      | returns raw OBJ geometry string       | | `shader`    | cached text      | returns shader source string          | | `lua`       | cached text      | returns Lua source string             |  ## Design notes  The cache is a plain in-process store — it records *where* an asset lives on disk and *how it is classified*, not the decoded GPU resource itself. Decoded resources (textures, fonts, audio sources) are owned by the respective `lurek.*` sub-modules; `lurek.asset` is the lightweight registry and search layer.  One cache instance is created per Lua VM during `asset_api::register()`. Worker VMs created by `lurek.thread` each get their own independent cache.
 
 *[src/asset/cache.rs](src/asset/cache.rs) — 3/3 documented (100%)*
 
 ```rust
-pub struct AssetCache  // Ref-counted asset cache keyed by handle IDs.
-pub struct AssetEntry  // A single cached asset entry.
-pub enum AssetType  // Discriminant for a cached asset type.
+pub struct AssetCache  // Ref-counted asset cache keyed by `u64` handle IDs.  All mutation is performed through `...
+pub struct AssetEntry  // A single registered asset entry.
+pub enum AssetType  // Asset type discriminant.  Governs how `get()` resolves the underlying resource and whic...
 ```
 
 ## `audio` {#audio}

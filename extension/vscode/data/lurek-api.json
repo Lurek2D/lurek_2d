@@ -990,12 +990,12 @@
     },
     {
       "name": "asset",
-      "description": "`lurek.asset` — ref-counted media cache bindings.\n\n- Registers `lurek.asset.*` functions and types via `register()`.\n- Bridges 8 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`.\n- See `docs/specs/asset.md` for the full API specification.",
+      "description": "`lurek.asset` — asset registry and ref-counted media cache bindings.\n\nRegisters `lurek.asset.*` into the global `lurek` table via `register()`.\nBridges 23 Lua-callable functions and 2 `LAssetHandle` methods via `mlua`.\n\nSupported asset types: `image`, `font`, `audio`, `music`, `text`, `toml`,\n`json`, `obj`, `shader`, `lua`. Text-like types have their file content\nread and cached; binary types store a path reference only.\n\nAssets can be annotated with a display name, a group label, and a tag set.\nQuery functions (`findByName`, `findByGroup`, `findByTag`, `findByType`)\nreturn arrays of `LAssetHandle` values that can be iterated by scripts.\n\nSee `docs/specs/asset.md` for the full API specification.",
       "functions": [
         {
           "name": "load",
           "fullPath": "lurek.asset.load",
-          "signature": "(path, type_str)",
+          "signature": "(path, type_str, [opts])",
           "description": "",
           "parameters": [
             {
@@ -1009,6 +1009,12 @@
               "type": "any",
               "description": "",
               "optional": false
+            },
+            {
+              "name": "opts",
+              "type": "any",
+              "description": "",
+              "optional": true
             }
           ],
           "returns": "nil",
@@ -1129,6 +1135,306 @@
           "signature": "()",
           "description": "",
           "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getPath",
+          "fullPath": "lurek.asset.getPath",
+          "signature": "(handle)",
+          "description": "Returns the filesystem path for the asset associated with a handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getType",
+          "fullPath": "lurek.asset.getType",
+          "signature": "(handle)",
+          "description": "Returns the type string for the asset associated with a handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to inspect.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getInfo",
+          "fullPath": "lurek.asset.getInfo",
+          "signature": "(handle)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setName",
+          "fullPath": "lurek.asset.setName",
+          "signature": "(handle, name)",
+          "description": "Sets the display name for an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to update.",
+              "optional": false
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Display name to assign.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getName",
+          "fullPath": "lurek.asset.getName",
+          "signature": "(handle)",
+          "description": "Returns the display name of an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to query.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "setGroup",
+          "fullPath": "lurek.asset.setGroup",
+          "signature": "(handle, group)",
+          "description": "Assigns an asset handle to a named group.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to update.",
+              "optional": false
+            },
+            {
+              "name": "group",
+              "type": "string",
+              "description": "Group label to assign.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getGroup",
+          "fullPath": "lurek.asset.getGroup",
+          "signature": "(handle)",
+          "description": "Returns the group label for an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to query.",
+              "optional": false
+            }
+          ],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "addTag",
+          "fullPath": "lurek.asset.addTag",
+          "signature": "(handle, tag)",
+          "description": "Adds a tag to the tag set of an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to update.",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag string to add.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "removeTag",
+          "fullPath": "lurek.asset.removeTag",
+          "signature": "(handle, tag)",
+          "description": "Removes a tag from the tag set of an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to update.",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag string to remove.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "getTags",
+          "fullPath": "lurek.asset.getTags",
+          "signature": "(handle)",
+          "description": "Returns an array of all tags for an asset handle.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to query.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "hasTag",
+          "fullPath": "lurek.asset.hasTag",
+          "signature": "(handle, tag)",
+          "description": "Returns true when an asset handle has the given tag in its tag set.",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "LAssetHandle",
+              "description": "Asset handle to check.",
+              "optional": false
+            },
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag string to test.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "findByName",
+          "fullPath": "lurek.asset.findByName",
+          "signature": "(substr)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "substr",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "findByGroup",
+          "fullPath": "lurek.asset.findByGroup",
+          "signature": "(group)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "group",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "findByTag",
+          "fullPath": "lurek.asset.findByTag",
+          "signature": "(tag)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "tag",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": false,
+          "objectType": null
+        },
+        {
+          "name": "findByType",
+          "fullPath": "lurek.asset.findByType",
+          "signature": "(type_str)",
+          "description": "",
+          "parameters": [
+            {
+              "name": "type_str",
+              "type": "any",
+              "description": "",
+              "optional": false
+            }
+          ],
           "returns": "nil",
           "returnType": "nil",
           "isMethod": false,

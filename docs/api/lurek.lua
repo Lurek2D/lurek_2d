@@ -2555,10 +2555,62 @@ function LAssetHandle:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LAssetHandle:typeOf(name) end
 
+--- Adds a tag to the tag set of an asset handle.
+---@param handle LAssetHandle Asset handle to update.
+---@param tag string Tag string to add.
+---@return nil No value is returned.
+lurek.asset.addTag = function(handle, tag) end
+
 lurek.asset.clear = function() end
+
+---@param group any
+lurek.asset.findByGroup = function(group) end
+
+---@param substr any
+lurek.asset.findByName = function(substr) end
+
+---@param tag any
+lurek.asset.findByTag = function(tag) end
+
+---@param type_str any
+lurek.asset.findByType = function(type_str) end
 
 ---@param handle any
 lurek.asset.get = function(handle) end
+
+--- Returns the group label for an asset handle.
+---@param handle LAssetHandle Asset handle to query.
+---@return string Group label or empty string.
+lurek.asset.getGroup = function(handle) end
+
+---@param handle any
+lurek.asset.getInfo = function(handle) end
+
+--- Returns the display name of an asset handle.
+---@param handle LAssetHandle Asset handle to query.
+---@return string Display name or path file-stem.
+lurek.asset.getName = function(handle) end
+
+--- Returns the filesystem path for the asset associated with a handle.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return string Path that was passed to `lurek.asset.load`.
+lurek.asset.getPath = function(handle) end
+
+--- Returns an array of all tags for an asset handle.
+---@param handle LAssetHandle Asset handle to query.
+---@return table Array of tag strings.
+lurek.asset.getTags = function(handle) end
+
+--- Returns the type string for the asset associated with a handle.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return string Type string, for example `"image"`, `"audio"`, `"toml"`.
+lurek.asset.getType = function(handle) end
+
+--- Returns true when an asset handle has the given tag in its tag set.
+---@param handle LAssetHandle Asset handle to check.
+---@param tag string Tag string to test.
+---@return boolean True when the tag is present.
+lurek.asset.hasTag = function(handle, tag) end
 
 --- Returns true when the asset for the given handle is still in the cache.
 ---@param handle LAssetHandle Asset handle to check.
@@ -2567,7 +2619,8 @@ lurek.asset.isLoaded = function(handle) end
 
 ---@param path any
 ---@param type_str any
-lurek.asset.load = function(path, type_str) end
+---@param opts? any
+lurek.asset.load = function(path, type_str, opts) end
 
 ---@param paths any
 ---@param callback any
@@ -2577,6 +2630,24 @@ lurek.asset.preload = function(paths, callback) end
 ---@param handle LAssetHandle Asset handle to inspect.
 ---@return number Current reference count.
 lurek.asset.refcount = function(handle) end
+
+--- Removes a tag from the tag set of an asset handle.
+---@param handle LAssetHandle Asset handle to update.
+---@param tag string Tag string to remove.
+---@return boolean True when the tag was present and removed.
+lurek.asset.removeTag = function(handle, tag) end
+
+--- Assigns an asset handle to a named group.
+---@param handle LAssetHandle Asset handle to update.
+---@param group string Group label to assign.
+---@return nil No value is returned.
+lurek.asset.setGroup = function(handle, group) end
+
+--- Sets the display name for an asset handle.
+---@param handle LAssetHandle Asset handle to update.
+---@param name string Display name to assign.
+---@return nil No value is returned.
+lurek.asset.setName = function(handle, name) end
 
 lurek.asset.stats = function() end
 
