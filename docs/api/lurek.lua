@@ -13,27 +13,6 @@ LSpacer = {}
 ---@class LThread
 LThread = {}
 
----@class LuaAnimatedCursor
-LuaAnimatedCursor = {}
-
----@class LuaAreaChart
-LuaAreaChart = {}
-
----@class LuaBarChart
-LuaBarChart = {}
-
----@class LuaCustomCursor
-LuaCustomCursor = {}
-
----@class LuaLineChart
-LuaLineChart = {}
-
----@class LuaPieChart
-LuaPieChart = {}
-
----@class LuaScatterPlot
-LuaScatterPlot = {}
-
 ---@alias MapBlock LMapBlock
 
 ---@alias MapBlockConfig LMapBlockConfig
@@ -4659,27 +4638,27 @@ lurek.charts.defaultPalette = function() end
 
 --- Create a new area chart exposed by the lurek engine.
 ---@param config? table Optional chart configuration table.
----@return LuaAreaChart A area chart userdata object.
+---@return LAreaChart A area chart userdata object.
 lurek.charts.newArea = function(config) end
 
 --- Create a new bar chart exposed by the lurek engine.
 ---@param config? table Optional chart configuration table.
----@return LuaBarChart A bar chart userdata object.
+---@return LBarChart A bar chart userdata object.
 lurek.charts.newBar = function(config) end
 
 --- Create a new line chart exposed by the lurek engine.
 ---@param config? table Optional chart configuration table.
----@return LuaLineChart A line chart userdata object.
+---@return LLineChart A line chart userdata object.
 lurek.charts.newLine = function(config) end
 
 --- Create a new pie chart exposed by the lurek engine.
 ---@param config? table Optional chart configuration table.
----@return LuaPieChart A pie chart userdata object.
+---@return LPieChart A pie chart userdata object.
 lurek.charts.newPie = function(config) end
 
 --- Create a new scatter plot exposed by the lurek engine.
 ---@param config? table Optional chart configuration table.
----@return LuaScatterPlot A scatter plot userdata object.
+---@return LScatterPlot A scatter plot userdata object.
 lurek.charts.newScatter = function(config) end
 
 --- Get a palette color by 1-based index (wraps around for index > 8).
@@ -5322,7 +5301,7 @@ lurek.cursor = {}
 LAnimatedCursor = {}
 
 --- Add a frame from a custom cursor image.
----@param cursor LuaCustomCursor Frame image.
+---@param cursor LCustomCursor Frame image.
 ---@param duration_ms number Frame duration in milliseconds.
 function LAnimatedCursor:addFrame(cursor, duration_ms) end
 
@@ -5410,7 +5389,7 @@ function LCursorManager:isVisible() end
 function LCursorManager:removeRule(ctx) end
 
 --- Set the active cursor to an animated cursor.
----@param cursor LuaAnimatedCursor Animated cursor object.
+---@param cursor LAnimatedCursor Animated cursor object.
 function LCursorManager:setAnimated(cursor) end
 
 --- Set the current context for context-sensitive switching.
@@ -5418,7 +5397,7 @@ function LCursorManager:setAnimated(cursor) end
 function LCursorManager:setContext(ctx) end
 
 --- Set the active cursor to a custom image cursor.
----@param cursor LuaCustomCursor Custom cursor object.
+---@param cursor LCustomCursor Custom cursor object.
 function LCursorManager:setCustom(cursor) end
 
 --- Lock the cursor position using the system grab mode.

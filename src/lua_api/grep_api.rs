@@ -170,20 +170,20 @@ fn result_to_table<'lua>(lua: &'lua Lua, result: &crate::grep::result::SearchRes
 ///
 /// ### newEngine (see lurek Lua API reference for details).
 /// Create a new grep search engine with default settings.
-/// @return | LuaGrepEngine | Grep engine instance.
+/// @return | LGrepEngine | Grep engine instance.
 ///
 /// ### newEngineOpts (see lurek Lua API reference for details).
 /// Create a grep engine with custom options.
 /// @param | opts | table | Options: threads (integer), case_sensitive (boolean), whole_word (boolean), max_file_size (integer).
-/// @return | LuaGrepEngine | Grep engine instance.
+/// @return | LGrepEngine | Grep engine instance.
 ///
 /// ### newFilter (see lurek Lua API reference for details).
 /// Create an empty file filter exposed by the lurek engine.
-/// @return | LuaFileFilter | File filter instance.
+/// @return | LFileFilter | File filter instance.
 ///
 /// ### luaFilter (see lurek Lua API reference for details).
 /// Create a filter for Lua files only.
-/// @return | LuaFileFilter | Pre-configured Lua filter.
+/// @return | LFileFilter | Pre-configured Lua filter.
 ///
 /// ### search (see lurek Lua API reference for details).
 /// Quick search a directory for a literal pattern in game content files.

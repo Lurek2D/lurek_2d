@@ -151,7 +151,7 @@ fn report_to_table<'lua>(lua: &'lua Lua, report: &crate::validator::report::Vali
 /// ### newEngine (see lurek Lua API reference for details).
 /// Create a new validation engine.
 /// @param | root | string | Root directory to validate.
-/// @return | LuaValidationEngine | Validation engine instance.
+/// @return | LValidationEngine | Validation engine instance.
 ///
 /// ### validate (see lurek Lua API reference for details).
 /// Quick validate: run asset + import + API rules on a directory.

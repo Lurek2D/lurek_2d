@@ -1278,7 +1278,6 @@ do
     print("events", #world:getZoneEvents())
 end
 
---@api-stub: lurek.procgen.newCellular
 do
     local grid = lurek.procgen.newCellular(64, 64)
     grid:setCell(32, 0, lurek.procgen.CELL_SAND)
@@ -1287,7 +1286,6 @@ do
     print("type", grid:type())
 end
 
---@api-stub: LCellular:fillRect
 do
     local grid = lurek.procgen.newCellular(128, 128)
     grid:fillRect(10, 10, 20, 5, lurek.procgen.CELL_WATER)
@@ -1295,7 +1293,6 @@ do
     print("type", grid:type())
 end
 
---@api-stub: LCellular:fillCircle
 do
     local grid = lurek.procgen.newCellular(128, 128)
     grid:fillCircle(64, 64, 15, lurek.procgen.CELL_FIRE)
@@ -1303,7 +1300,6 @@ do
     print("type", grid:type())
 end
 
---@api-stub: LCellular:stepN
 do
     local grid = lurek.procgen.newCellular(32, 32)
     grid:fillRect(14, 0, 4, 2, lurek.procgen.CELL_SAND)
@@ -1312,7 +1308,6 @@ do
     print("type", grid:type())
 end
 
---@api-stub: LCellular:findCells
 do
     local grid = lurek.procgen.newCellular(32, 32)
     grid:fillRect(14, 0, 4, 2, lurek.procgen.CELL_SAND)
@@ -1323,7 +1318,6 @@ do
     end
 end
 
---@api-stub: LCellular:toImageData
 do
     local grid = lurek.procgen.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.procgen.CELL_SAND)
@@ -1332,7 +1326,6 @@ do
     print("count", grid:countCells(lurek.procgen.CELL_SAND))
 end
 
---@api-stub: LCellular:toBytes
 do
     local grid = lurek.procgen.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.procgen.CELL_SAND)
@@ -1341,7 +1334,6 @@ do
     print("type", grid:type())
 end
 
---@api-stub: LCellular:loadFromBytes
 do
     local grid = lurek.procgen.newCellular(32, 32)
     grid:fillCircle(16, 16, 8, lurek.procgen.CELL_SAND)
@@ -1676,7 +1668,6 @@ do
     print("x", body:getX())
 end
 
---@api-stub: LCellular:countCells
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -1684,7 +1675,6 @@ do
     print("type", ca:type())
 end
 
---@api-stub: LCellular:getCell
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -1692,7 +1682,6 @@ do
     print("count", ca:countCells(lurek.procgen.CELL_SAND))
 end
 
---@api-stub: LCellular:setCell
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -1700,7 +1689,6 @@ do
     print("type", ca:type())
 end
 
---@api-stub: LCellular:step
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -1709,7 +1697,6 @@ do
     print("type", ca:type())
 end
 
---@api-stub: LCellular:toImageDataRegion
 do
     local ca = lurek.procgen.newCellular(32, 32)
     ca:setCell(5, 5, lurek.procgen.CELL_SAND)
@@ -1718,14 +1705,12 @@ do
     print("type", ca:type())
 end
 
---@api-stub: LCellular:type
 do
     local ca = lurek.procgen.newCellular(32, 32)
     print("type", ca:type())
     print("type_of", ca:typeOf("LCellular"))
 end
 
---@api-stub: LCellular:typeOf
 do
     local ca = lurek.procgen.newCellular(32, 32)
     print("type_of", ca:typeOf("LCellular"), ca:typeOf("LObject"))

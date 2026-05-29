@@ -47,7 +47,7 @@
   <h1>lurek.render</h1>
   <p>`lurek.render` - Provides 2D drawing primitives, texture rendering, text output, blend modes, and render state management. - Registers `lurek.render.*` functions and types via `register()`. - Userdata types: `LuaImageData`, `LuaNineSlice`, `LuaImage`. - Userdata types: `LuaFont`, `LuaCanvas`, `LuaSpriteBatch`. - Userdata types: `LuaMesh`, `LuaShader`, `LuaQuad`. - Userdata types: `LuaShape`, `LuaDrawLayer`, `LObjModel`. - Bridges 217 Lua-callable methods via `mlua`. - See `docs/specs/render.md` for the full API specification.</p>
   <div class="api-meta api-meta-header"><span>130 functions</span><span>12 classes</span><span>src/lua_api/render_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 217</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 218</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
 </header>
 
 <section class="section-block" id="functions">
@@ -496,7 +496,13 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
     lurek.render.draw(canvas, 10, 70)
     print(&quot;canvas size = &quot; .. w .. &quot;x&quot; .. h)
     print(&quot;canvas rendered and drawn back&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="fn-newdepthsorter"><div class="item-row-main"><h3>newDepthSorter</h3><pre class="inline-signature">lurek.render.newDepthSorter() -&gt; LDepthSorter</pre><p>Performs the &#x27;render&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4954</span></div></article><article class="item-row api-row" id="fn-newdrawlayer"><div class="item-row-main"><h3>newDrawLayer</h3><pre class="inline-signature">lurek.render.newDrawLayer() -&gt; LDrawLayer</pre><p>Creates a new z-ordered draw layer for sorting draw callbacks by depth.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3724</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdepthsorter"><div class="item-row-main"><h3>newDepthSorter</h3><pre class="inline-signature">lurek.render.newDepthSorter() -&gt; LDepthSorter</pre><p>Performs the &#x27;render&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:4954</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
+    local sorter = lurek.render.newDepthSorter()
+    sorter:add(function() print(&quot;draw layer A&quot;) end, 10)
+    sorter:add(function() print(&quot;draw layer B&quot;) end, 5)
+    sorter:flush()
+    print(&quot;depth sorter type = &quot; .. sorter:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newdrawlayer"><div class="item-row-main"><h3>newDrawLayer</h3><pre class="inline-signature">lurek.render.newDrawLayer() -&gt; LDrawLayer</pre><p>Creates a new z-ordered draw layer for sorting draw callbacks by depth.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/render_api.rs:3724</span></div><details class="example-block"><summary>Example · Exact example · render.lua</summary><pre><code>do
     local layer = lurek.render.newDrawLayer()
     layer:queue(10, function()
         lurek.render.rectangle(&quot;fill&quot;, 180, 310, 20, 20)

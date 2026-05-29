@@ -37,7 +37,7 @@ impl LuaUserData for LuaCursorManager {
 
         // -- setCustom --
         /// Set the active cursor to a custom image cursor.
-        /// @param | cursor | LuaCustomCursor | Custom cursor object.
+        /// @param | cursor | LCustomCursor | Custom cursor object.
         methods.add_method("setCustom", |_, this, cursor: LuaAnyUserData| {
             let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
             this.inner.borrow_mut().set_custom(cursor.inner.borrow().clone());
@@ -46,7 +46,7 @@ impl LuaUserData for LuaCursorManager {
 
         // -- setAnimated --
         /// Set the active cursor to an animated cursor.
-        /// @param | cursor | LuaAnimatedCursor | Animated cursor object.
+        /// @param | cursor | LAnimatedCursor | Animated cursor object.
         methods.add_method("setAnimated", |_, this, cursor: LuaAnyUserData| {
             let cursor = cursor.borrow::<LuaAnimatedCursor>()?.clone();
             this.inner.borrow_mut().set_animated(cursor.inner.borrow().clone());
@@ -270,7 +270,7 @@ impl LuaUserData for LuaAnimatedCursor {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addFrame --
         /// Add a frame from a custom cursor image.
-        /// @param | cursor | LuaCustomCursor | Frame image.
+        /// @param | cursor | LCustomCursor | Frame image.
         /// @param | duration_ms | integer | Frame duration in milliseconds.
         methods.add_method("addFrame", |_, this, (cursor, dur): (LuaAnyUserData, u32)| {
             let cursor = cursor.borrow::<LuaCustomCursor>()?.clone();
@@ -348,7 +348,7 @@ impl LuaUserData for LuaAnimatedCursor {
 ///
 /// ### newManager (see lurek Lua API reference for details).
 /// Create a new cursor manager exposed by the lurek engine.
-/// @return | LuaCursorManager | Cursor manager instance.
+/// @return | LCursorManager | Cursor manager instance.
 ///
 /// ### newCustom (see lurek Lua API reference for details).
 /// Create a blank custom cursor image.
@@ -356,12 +356,12 @@ impl LuaUserData for LuaAnimatedCursor {
 /// @param | height | integer | Image height in pixels.
 /// @param | hotspot_x | integer | Hotspot X offset.
 /// @param | hotspot_y | integer | Hotspot Y offset.
-/// @return | LuaCustomCursor | Custom cursor instance.
+/// @return | LCustomCursor | Custom cursor instance.
 ///
 /// ### newAnimated (see lurek Lua API reference for details).
 /// Create a new animated cursor exposed by the lurek engine.
 /// @param | looping | boolean | Whether the animation loops.
-/// @return | LuaAnimatedCursor | Animated cursor instance.
+/// @return | LAnimatedCursor | Animated cursor instance.
 ///
 /// ### systemCursors (see lurek Lua API reference for details).
 /// Get list of available system cursor names.

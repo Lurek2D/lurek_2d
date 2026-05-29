@@ -3878,8 +3878,8 @@
               "optional": true
             }
           ],
-          "returns": "LuaLineChart",
-          "returnType": "LuaLineChart",
+          "returns": "LLineChart",
+          "returnType": "LLineChart",
           "isMethod": false,
           "objectType": null
         },
@@ -3896,8 +3896,8 @@
               "optional": true
             }
           ],
-          "returns": "LuaBarChart",
-          "returnType": "LuaBarChart",
+          "returns": "LBarChart",
+          "returnType": "LBarChart",
           "isMethod": false,
           "objectType": null
         },
@@ -3914,8 +3914,8 @@
               "optional": true
             }
           ],
-          "returns": "LuaScatterPlot",
-          "returnType": "LuaScatterPlot",
+          "returns": "LScatterPlot",
+          "returnType": "LScatterPlot",
           "isMethod": false,
           "objectType": null
         },
@@ -3932,8 +3932,8 @@
               "optional": true
             }
           ],
-          "returns": "LuaPieChart",
-          "returnType": "LuaPieChart",
+          "returns": "LPieChart",
+          "returnType": "LPieChart",
           "isMethod": false,
           "objectType": null
         },
@@ -3950,8 +3950,8 @@
               "optional": true
             }
           ],
-          "returns": "LuaAreaChart",
-          "returnType": "LuaAreaChart",
+          "returns": "LAreaChart",
+          "returnType": "LAreaChart",
           "isMethod": false,
           "objectType": null
         },
@@ -34580,7 +34580,7 @@
           "parameters": [
             {
               "name": "cursor",
-              "type": "LuaCustomCursor",
+              "type": "LCustomCursor",
               "description": "Frame image.",
               "optional": false
             },
@@ -50290,7 +50290,7 @@
           "parameters": [
             {
               "name": "cursor",
-              "type": "LuaCustomCursor",
+              "type": "LCustomCursor",
               "description": "Custom cursor object.",
               "optional": false
             }
@@ -50308,7 +50308,7 @@
           "parameters": [
             {
               "name": "cursor",
-              "type": "LuaAnimatedCursor",
+              "type": "LAnimatedCursor",
               "description": "Animated cursor object.",
               "optional": false
             }

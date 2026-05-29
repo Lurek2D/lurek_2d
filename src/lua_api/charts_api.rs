@@ -488,7 +488,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newLine --
     /// Create a new line chart exposed by the lurek engine.
     /// @param | config | table|nil | Optional chart configuration table.
-    /// @return | LuaLineChart | A line chart userdata object.
+    /// @return | LLineChart | A line chart userdata object.
     charts.set(
         "newLine",
         lua.create_function(|_, config: Option<LuaTable>| {
@@ -503,7 +503,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newBar --
     /// Create a new bar chart exposed by the lurek engine.
     /// @param | config | table|nil | Optional chart configuration table.
-    /// @return | LuaBarChart | A bar chart userdata object.
+    /// @return | LBarChart | A bar chart userdata object.
     charts.set(
         "newBar",
         lua.create_function(|_, config: Option<LuaTable>| {
@@ -518,7 +518,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newScatter --
     /// Create a new scatter plot exposed by the lurek engine.
     /// @param | config | table|nil | Optional chart configuration table.
-    /// @return | LuaScatterPlot | A scatter plot userdata object.
+    /// @return | LScatterPlot | A scatter plot userdata object.
     charts.set(
         "newScatter",
         lua.create_function(|_, config: Option<LuaTable>| {
@@ -533,7 +533,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newPie --
     /// Create a new pie chart exposed by the lurek engine.
     /// @param | config | table|nil | Optional chart configuration table.
-    /// @return | LuaPieChart | A pie chart userdata object.
+    /// @return | LPieChart | A pie chart userdata object.
     charts.set(
         "newPie",
         lua.create_function(|_, config: Option<LuaTable>| {
@@ -548,7 +548,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     // -- newArea --
     /// Create a new area chart exposed by the lurek engine.
     /// @param | config | table|nil | Optional chart configuration table.
-    /// @return | LuaAreaChart | A area chart userdata object.
+    /// @return | LAreaChart | A area chart userdata object.
     charts.set(
         "newArea",
         lua.create_function(|_, config: Option<LuaTable>| {

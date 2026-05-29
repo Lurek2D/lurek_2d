@@ -47,7 +47,7 @@
   <h1>lurek.procgen</h1>
   <p>`lurek.procgen` — Procedural generation tools: noise, dungeon generators, wave function collapse, heightmaps, L-systems, name generation, voronoi, biomes, world graphs, and cellular world simulation. - Registers `lurek.procgen.*` functions and types via `register()`. - `LuaBiomeClassifier`: userdata type exposed to Lua. - `LuaNoiseGenerator`: userdata type exposed to Lua. - `LuaCellular`: userdata type exposed to Lua. - Bridges 67 Lua-callable methods via `mlua`. - See `docs/specs/procgen.md` for the full API specification.</p>
   <div class="api-meta api-meta-header"><span>33 functions</span><span>3 classes</span><span>src/lua_api/procgen_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 69</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 70</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
 </header>
 
 <section class="section-block" id="functions">
@@ -177,7 +177,12 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
 
     print(&quot;newBiomeClassifier biome=&quot; .. biome)
     print(&quot;newBiomeClassifier type=&quot; .. classifier:type())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newcellular"><div class="item-row-main"><h3>newCellular</h3><pre class="inline-signature">lurek.procgen.newCellular(width: integer, height: integer) -&gt; LCellular</pre><p>Performs the &#x27;procgen&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1781</span></div></article><article class="item-row api-row" id="fn-newnoisegenerator"><div class="item-row-main"><h3>newNoiseGenerator</h3><pre class="inline-signature">lurek.procgen.newNoiseGenerator(seed: integer?) -&gt; LNoiseGenerator</pre><p>Creates a procedural noise generator with an optional seed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1651</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newcellular"><div class="item-row-main"><h3>newCellular</h3><pre class="inline-signature">lurek.procgen.newCellular(width: integer, height: integer) -&gt; LCellular</pre><p>Performs the &#x27;procgen&#x27; operation.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1781</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
+    local ca = lurek.procgen.newCellular(32, 32)
+    ca:setCell(5, 5, lurek.procgen.CELL_SAND)
+    ca:step()
+    print(&quot;cellular type = &quot; .. ca:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnoisegenerator"><div class="item-row-main"><h3>newNoiseGenerator</h3><pre class="inline-signature">lurek.procgen.newNoiseGenerator(seed: integer?) -&gt; LNoiseGenerator</pre><p>Creates a procedural noise generator with an optional seed.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/procgen_api.rs:1651</span></div><details class="example-block"><summary>Example · Exact example · procgen.lua</summary><pre><code>do
     local generator = lurek.procgen.newNoiseGenerator(777)
 
     print(&quot;lurek.procgen.newNoiseGenerator type=&quot; .. generator:type())
@@ -344,7 +349,7 @@ end</code></pre></details></article>
     <p>Lua userdata types that expose methods through this module.</p>
   </div>
     <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBiomeClassifier.html">LBiomeClassifier</a></h3><p>Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.</p></div><div class="item-row-meta"><span>4 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCellular.html">LCellular</a></h3><p>A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.</p></div><div class="item-row-meta"><span>14 methods</span><span>module procgen</span></div><div class="card-note">Example: physics.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNoiseGenerator.html">LNoiseGenerator</a></h3><p>Lua-side wrapper for a procedural noise generator.</p></div><div class="item-row-meta"><span>19 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article>
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LBiomeClassifier.html">LBiomeClassifier</a></h3><p>Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.</p></div><div class="item-row-meta"><span>4 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LCellular.html">LCellular</a></h3><p>A cellular automaton simulation grid (sand, water, fire, gas, rock) for per-cell falling-sand style simulation.</p></div><div class="item-row-meta"><span>14 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNoiseGenerator.html">LNoiseGenerator</a></h3><p>Lua-side wrapper for a procedural noise generator.</p></div><div class="item-row-meta"><span>19 methods</span><span>module procgen</span></div><div class="card-note">Example: procgen.lua</div></article>
   </div>
 </section>
 

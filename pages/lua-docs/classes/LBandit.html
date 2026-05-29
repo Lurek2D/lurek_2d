@@ -75,7 +75,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     bandit:update(2, 0.4)
 
     print(&quot;LBandit:bestArm&quot;, bandit:bestArm())
-end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LBandit:predict() -&gt; integer</pre><p>Alias for `select`. Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:423</span></div></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LBandit:reset()</pre><p>Resets all bandit arm statistics. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LBandit:predict() -&gt; integer</pre><p>Alias for `select`. Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:423</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local b = lurek.learning.newBandit(3)
+    local action = b:predict(0)
+    print(&quot;bandit predict = &quot; .. action)
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LBandit:reset()</pre><p>Resets all bandit arm statistics. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;thompson&quot;, 0.1, 3)
     local selected_arm = bandit:select()
     bandit:update(selected_arm, 0.5)

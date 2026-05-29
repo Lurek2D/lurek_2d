@@ -28517,7 +28517,7 @@
     "title": "lurek.charts.newLine",
     "subtitle": "Create a new line chart exposed by the lurek engine.",
     "href": "modules/charts.html#fn-newline",
-    "keywords": "charts newLine function newLine(config: table|nil) -> LuaLineChart"
+    "keywords": "charts newLine function newLine(config: table|nil) -> LLineChart"
   },
   {
     "kind": "function",
@@ -28525,7 +28525,7 @@
     "title": "lurek.charts.newBar",
     "subtitle": "Create a new bar chart exposed by the lurek engine.",
     "href": "modules/charts.html#fn-newbar",
-    "keywords": "charts newBar function newBar(config: table|nil) -> LuaBarChart"
+    "keywords": "charts newBar function newBar(config: table|nil) -> LBarChart"
   },
   {
     "kind": "function",
@@ -28533,7 +28533,7 @@
     "title": "lurek.charts.newScatter",
     "subtitle": "Create a new scatter plot exposed by the lurek engine.",
     "href": "modules/charts.html#fn-newscatter",
-    "keywords": "charts newScatter function newScatter(config: table|nil) -> LuaScatterPlot"
+    "keywords": "charts newScatter function newScatter(config: table|nil) -> LScatterPlot"
   },
   {
     "kind": "function",
@@ -28541,7 +28541,7 @@
     "title": "lurek.charts.newPie",
     "subtitle": "Create a new pie chart exposed by the lurek engine.",
     "href": "modules/charts.html#fn-newpie",
-    "keywords": "charts newPie function newPie(config: table|nil) -> LuaPieChart"
+    "keywords": "charts newPie function newPie(config: table|nil) -> LPieChart"
   },
   {
     "kind": "function",
@@ -28549,7 +28549,7 @@
     "title": "lurek.charts.newArea",
     "subtitle": "Create a new area chart exposed by the lurek engine.",
     "href": "modules/charts.html#fn-newarea",
-    "keywords": "charts newArea function newArea(config: table|nil) -> LuaAreaChart"
+    "keywords": "charts newArea function newArea(config: table|nil) -> LAreaChart"
   },
   {
     "kind": "function",
@@ -29085,7 +29085,7 @@
     "title": "LCursorManager:setCustom",
     "subtitle": "Set the active cursor to a custom image cursor.",
     "href": "classes/LCursorManager.html#method-setcustom",
-    "keywords": "LCursorManager setCustom method cursor setCustom(cursor: LuaCustomCursor)"
+    "keywords": "LCursorManager setCustom method cursor setCustom(cursor: LCustomCursor)"
   },
   {
     "kind": "method",
@@ -29093,7 +29093,7 @@
     "title": "LCursorManager:setAnimated",
     "subtitle": "Set the active cursor to an animated cursor.",
     "href": "classes/LCursorManager.html#method-setanimated",
-    "keywords": "LCursorManager setAnimated method cursor setAnimated(cursor: LuaAnimatedCursor)"
+    "keywords": "LCursorManager setAnimated method cursor setAnimated(cursor: LAnimatedCursor)"
   },
   {
     "kind": "method",
@@ -29269,7 +29269,7 @@
     "title": "LAnimatedCursor:addFrame",
     "subtitle": "Add a frame from a custom cursor image.",
     "href": "classes/LAnimatedCursor.html#method-addframe",
-    "keywords": "LAnimatedCursor addFrame method cursor addFrame(cursor: LuaCustomCursor, duration_ms: integer)"
+    "keywords": "LAnimatedCursor addFrame method cursor addFrame(cursor: LCustomCursor, duration_ms: integer)"
   },
   {
     "kind": "method",

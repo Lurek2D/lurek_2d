@@ -1538,11 +1538,11 @@ LCameraRig:updateAll(dt: number) -- Advances every camera in this rig. This meth
 
 ```lua
 lurek.charts.defaultPalette() -> table -- Get the default 8-color series palette.
-lurek.charts.newArea([config]: table|nil) -> LuaAreaChart -- Create a new area chart exposed by the lurek engine.
-lurek.charts.newBar([config]: table|nil) -> LuaBarChart -- Create a new bar chart exposed by the lurek engine.
-lurek.charts.newLine([config]: table|nil) -> LuaLineChart -- Create a new line chart exposed by the lurek engine.
-lurek.charts.newPie([config]: table|nil) -> LuaPieChart -- Create a new pie chart exposed by the lurek engine.
-lurek.charts.newScatter([config]: table|nil) -> LuaScatterPlot -- Create a new scatter plot exposed by the lurek engine.
+lurek.charts.newArea([config]: table|nil) -> LAreaChart -- Create a new area chart exposed by the lurek engine.
+lurek.charts.newBar([config]: table|nil) -> LBarChart -- Create a new bar chart exposed by the lurek engine.
+lurek.charts.newLine([config]: table|nil) -> LLineChart -- Create a new line chart exposed by the lurek engine.
+lurek.charts.newPie([config]: table|nil) -> LPieChart -- Create a new pie chart exposed by the lurek engine.
+lurek.charts.newScatter([config]: table|nil) -> LScatterPlot -- Create a new scatter plot exposed by the lurek engine.
 lurek.charts.seriesColor(index: integer) -> table -- Get a palette color by 1-based index (wraps around for index > 8).
 ```
 
@@ -1748,7 +1748,7 @@ lurek.cursor.systemCursors() -> table -- Returns a list of all available system 
 ### LAnimatedCursor
 
 ```lua
-LAnimatedCursor:addFrame(cursor: LuaCustomCursor, duration_ms: integer) -- Add a frame from a custom cursor image.
+LAnimatedCursor:addFrame(cursor: LCustomCursor, duration_ms: integer) -- Add a frame from a custom cursor image.
 LAnimatedCursor:clearPulse() -- Disable pulse animation for this object.
 LAnimatedCursor:currentIndex() -> integer -- Get current frame index for this object.
 LAnimatedCursor:currentScale() -> number -- Get current scale from pulse animation.
@@ -1772,9 +1772,9 @@ LCursorManager:getPosition() -> number -- Get cursor position for this object.
 LCursorManager:isLocked() -> boolean -- Get cursor lock state for this object.
 LCursorManager:isVisible() -> boolean -- Get cursor visibility for this object.
 LCursorManager:removeRule(ctx: string) -- Remove a context rule for this object.
-LCursorManager:setAnimated(cursor: LuaAnimatedCursor) -- Set the active cursor to an animated cursor.
+LCursorManager:setAnimated(cursor: LAnimatedCursor) -- Set the active cursor to an animated cursor.
 LCursorManager:setContext(ctx: string) -- Set the current context for context-sensitive switching.
-LCursorManager:setCustom(cursor: LuaCustomCursor) -- Set the active cursor to a custom image cursor.
+LCursorManager:setCustom(cursor: LCustomCursor) -- Set the active cursor to a custom image cursor.
 LCursorManager:setLocked(locked: boolean) -- Lock the cursor position using the system grab mode.
 LCursorManager:setSystem(name: string) -- Set the active cursor to a system cursor by name.
 LCursorManager:setVisible(visible: boolean) -- Set cursor visibility for this object.

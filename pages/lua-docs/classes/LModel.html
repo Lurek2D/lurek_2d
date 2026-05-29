@@ -47,7 +47,12 @@
   <h1>LModel</h1>
   <p>Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.</p>
   <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/learning.html">lurek.learning</a></div>
-  
+  <details class="example-block"><summary>Class Example · Exact example · learning.lua</summary><pre><code>do
+    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local model = lurek.learning.wrap(qlearner)
+    local action = model:predict(0)
+    print(&quot;model predict = &quot; .. action)
+end</code></pre></details>
 </header>
 
 <section class="section-block">
@@ -56,7 +61,20 @@
     <p>Instance methods exported from the LModel userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LModel:predict(input: any)</pre><p>Runs the wrapped model&#x27;s prediction. Delegates to `chooseAction`, `forward`, or `select`</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:520</span></div></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LModel:type() -&gt; string</pre><p>Returns the type name `&quot;LModel&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:543</span></div></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LModel:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this model wrapper matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:548</span></div></article>
+    <article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LModel:predict(input: any)</pre><p>Runs the wrapped model&#x27;s prediction. Delegates to `chooseAction`, `forward`, or `select`</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local model = lurek.learning.wrap(qlearner)
+    local action = model:predict(0)
+    print(&quot;model predict = &quot; .. action)
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LModel:type() -&gt; string</pre><p>Returns the type name `&quot;LModel&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:543</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local model = lurek.learning.wrap(qlearner)
+    print(&quot;model type = &quot; .. model:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LModel:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this model wrapper matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:548</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local model = lurek.learning.wrap(qlearner)
+    print(&quot;model typeOf LModel = &quot; .. tostring(model:typeOf(&quot;LModel&quot;)))
+end</code></pre></details></article>
   </div>
 </section>
 

@@ -193,7 +193,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- getDefault --
     /// Returns the default engine font as a LuaFont userdata. This function is available to Lua scripts.
-    /// @return | LuaFont | The default font handle.
+    /// @return | LFont | The default font handle.
     {
         let s = state.clone();
         /// Returns the default engine font as an LFont userdata handle.
@@ -219,7 +219,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// Loads a TTF/OTF font file at the given point size and returns a LuaFont handle. This function is available to Lua scripts.
     /// @param | path | string | Relative path to the font file.
     /// @param | size | number | Point size for rasterisation.
-    /// @return | LuaFont | The loaded font handle.
+    /// @return | LFont | The loaded font handle.
     {
         let s = state.clone();
         /// Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
@@ -292,7 +292,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
     /// @param | path | string | Relative path to the PNG atlas.
     /// @param | cellWidth | integer | Cell width in pixels.
     /// @param | cellHeight | integer | Cell height in pixels.
-    /// @return | LuaFont | The loaded bitmap font handle.
+    /// @return | LFont | The loaded bitmap font handle.
     {
         let s = state.clone();
         /// Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
@@ -411,7 +411,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- measure --
     /// Measures text dimensions using a font at the given scale. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle to measure with.
+    /// @param | font | LFont | Font handle to measure with.
     /// @param | text | string | Text to measure.
     /// @param | scale | number | Scale factor.
     /// @return | number, number | Width and height in pixels.
@@ -447,7 +447,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- measureLine --
     /// Measures a single line of text. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle to measure with.
+    /// @param | font | LFont | Font handle to measure with.
     /// @param | text | string | Single-line text to measure.
     /// @param | scale | number | Scale factor.
     /// @return | number, number | Width and height in pixels.
@@ -483,7 +483,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- wrapText --
     /// Wraps text into lines fitting within a maximum width. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle.
+    /// @param | font | LFont | Font handle.
     /// @param | text | string | Text to wrap.
     /// @param | maxWidth | number | Maximum line width in pixels.
     /// @param | scale | number | Scale factor.
@@ -538,7 +538,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- shapeText --
     /// Shapes text into aligned, wrapped lines with offset data. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle.
+    /// @param | font | LFont | Font handle.
     /// @param | text | string | Text to shape.
     /// @param | maxWidth | number | Maximum line width in pixels.
     /// @param | scale | number | Scale factor.
@@ -641,7 +641,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- charAdvance --
     /// Returns the horizontal advance width of a single character. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle.
+    /// @param | font | LFont | Font handle.
     /// @param | char | string | A single-character string.
     /// @param | scale | number | Scale factor.
     /// @return | number | Advance width in pixels.
@@ -677,7 +677,7 @@ pub fn register_font_api(lua: &Lua, state: Rc<RefCell<SharedState>>) -> LuaResul
 
     // -- lineHeight --
     /// Returns the line height of a font in pixels. This function is available to Lua scripts.
-    /// @param | font | LuaFont | Font handle.
+    /// @param | font | LFont | Font handle.
     /// @return | number | Line height in pixels.
     {
         let s = state.clone();
