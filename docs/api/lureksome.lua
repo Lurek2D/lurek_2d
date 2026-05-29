@@ -3088,7 +3088,7 @@ function RecipeGroup:getOrder() end
 ---@class library.dialog
 library.dialog = {}
 
---- Create a new dialog sequencer. The sequencer runs a list of dialog nodes one at a time, revealing typewriter-style text, pausing for choices, and firing named callbacks. States: "idle"    ��� no script loaded or sequence ended, not started "typing"  ��� revealing the current line character by character "waiting" ��� current line fully revealed, waiting for advance() "choice"  ��� waiting for the player to call choose(index) "paused"  ��� a "wait" node is counting down "done"    ��� sequence finished
+--- Create a new dialog sequencer. The sequencer runs a list of dialog nodes one at a time, revealing typewriter-style text, pausing for choices, and firing named callbacks. States: "idle"    - no script loaded or sequence ended, not started "typing"  - revealing the current line character by character "waiting" - current line fully revealed, waiting for advance() "choice"  - waiting for the player to call choose(index) "paused"  - a "wait" node is counting down "done"    - sequence finished
 ---@return table
 function library.dialog.newSequencer() end
 

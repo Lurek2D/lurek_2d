@@ -64,12 +64,12 @@ end</code></pre></details>
     <p>Instance methods exported from the LHexGrid userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-distance"><div class="item-row-main"><h3>distance</h3><pre class="inline-signature">LHexGrid:distance(c1: integer, r1: integer, c2: integer, r2: integer) -&gt; number</pre><p>Returns hex distance between two one-based hex cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1081</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-distance"><div class="item-row-main"><h3>distance</h3><pre class="inline-signature">LHexGrid:distance(c1: integer, r1: integer, c2: integer, r2: integer) -&gt; number</pre><p>Returns hex distance between two one-based hex cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1082</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
     print(&quot;dist_1_1_to_5_5 = &quot; .. hex:distance(1, 1, 5, 5))
     print(&quot;dist_1_1_to_1_1 = &quot; .. hex:distance(1, 1, 1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-fieldofview"><div class="item-row-main"><h3>fieldOfView</h3><pre class="inline-signature">LHexGrid:fieldOfView(col: integer, row: integer, max_range: integer) -&gt; table</pre><p>Returns visible hex cells within range from an origin.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1028</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fieldofview"><div class="item-row-main"><h3>fieldOfView</h3><pre class="inline-signature">LHexGrid:fieldOfView(col: integer, row: integer, max_range: integer) -&gt; table</pre><p>Returns visible hex cells within range from an origin.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1029</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(15, 15)
 
     hex:setBlocked(8, 8, true)
@@ -79,7 +79,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     if #visible &gt; 0 then
         print(&quot;first = &quot; .. visible[1].col .. &quot;,&quot; .. visible[1].row)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LHexGrid:findPath(fc: integer, fr: integer, tc: integer, tr: integer) -&gt; table</pre><p>Finds a path between one-based hex cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:982</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LHexGrid:findPath(fc: integer, fr: integer, tc: integer, tr: integer) -&gt; table</pre><p>Finds a path between one-based hex cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:983</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
     hex:setBlocked(5, 3, true)
@@ -94,14 +94,14 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;steps = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LHexGrid:isBlocked(col: integer, row: integer) -&gt; boolean</pre><p>Returns whether a one-based hex cell is blocked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:970</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LHexGrid:isBlocked(col: integer, row: integer) -&gt; boolean</pre><p>Returns whether a one-based hex cell is blocked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:971</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(12, 10, &quot;flat&quot;)
 
     hex:setBlocked(4, 4, true)
 
     print(&quot;blocked_4_4 = &quot; .. tostring(hex:isBlocked(4, 4)))
     print(&quot;blocked_4_5 = &quot; .. tostring(hex:isBlocked(4, 5)))
-end</code></pre></details></article><article class="item-row api-row" id="method-lineofsight"><div class="item-row-main"><h3>lineOfSight</h3><pre class="inline-signature">LHexGrid:lineOfSight(fc: integer, fr: integer, tc: integer, tr: integer) -&gt; boolean</pre><p>Returns whether two one-based hex cells have line of sight.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1011</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-lineofsight"><div class="item-row-main"><h3>lineOfSight</h3><pre class="inline-signature">LHexGrid:lineOfSight(fc: integer, fr: integer, tc: integer, tr: integer) -&gt; boolean</pre><p>Returns whether two one-based hex cells have line of sight.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1012</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(10, 10)
 
     local clear = hex:lineOfSight(1, 1, 10, 10)
@@ -110,7 +110,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;clear = &quot; .. tostring(clear))
     print(&quot;blocked = &quot; .. tostring(blocked))
-end</code></pre></details></article><article class="item-row api-row" id="method-rangeofmovement"><div class="item-row-main"><h3>rangeOfMovement</h3><pre class="inline-signature">LHexGrid:rangeOfMovement(col: integer, row: integer, budget: number) -&gt; table</pre><p>Returns reachable hex cells within a movement budget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1055</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-rangeofmovement"><div class="item-row-main"><h3>rangeOfMovement</h3><pre class="inline-signature">LHexGrid:rangeOfMovement(col: integer, row: integer, budget: number) -&gt; table</pre><p>Returns reachable hex cells within a movement budget.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1056</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(12, 12)
 
     hex:setCost(6, 6, 3)
@@ -120,7 +120,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     if #reachable &gt; 0 then
         print(&quot;first = &quot; .. reachable[1].col .. &quot;,&quot; .. reachable[1].row)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-setblocked"><div class="item-row-main"><h3>setBlocked</h3><pre class="inline-signature">LHexGrid:setBlocked(col: integer, row: integer, blocked: boolean)</pre><p>Sets blocked state for a one-based hex cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:947</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setblocked"><div class="item-row-main"><h3>setBlocked</h3><pre class="inline-signature">LHexGrid:setBlocked(col: integer, row: integer, blocked: boolean)</pre><p>Sets blocked state for a one-based hex cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:948</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(12, 10, &quot;flat&quot;)
 
     hex:setBlocked(5, 5, true)
@@ -128,7 +128,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;blocked_5_5 = &quot; .. tostring(hex:isBlocked(5, 5)))
     print(&quot;blocked_6_5 = &quot; .. tostring(hex:isBlocked(6, 5)))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LHexGrid:setCost(col: integer, row: integer, cost: number)</pre><p>Sets movement cost for a one-based hex cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:961</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LHexGrid:setCost(col: integer, row: integer, cost: number)</pre><p>Sets movement cost for a one-based hex cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:962</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(8, 8)
 
     hex:setCost(4, 4, 4)
@@ -139,11 +139,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     if #reachable &gt; 0 then
         print(&quot;first = &quot; .. reachable[1].col .. &quot;,&quot; .. reachable[1].row)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LHexGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this hex grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1093</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LHexGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this hex grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1094</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(5, 5, &quot;pointy&quot;)
 
     print(&quot;type = &quot; .. hex:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LHexGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this hex grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1098</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LHexGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this hex grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1099</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(5, 5, &quot;pointy&quot;)
 
     print(&quot;is_hex_grid = &quot; .. tostring(hex:typeOf(&quot;LHexGrid&quot;)))

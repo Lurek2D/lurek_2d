@@ -62,7 +62,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LTerrain userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-collapsecolumns"><div class="item-row-main"><h3>collapseColumns</h3><pre class="inline-signature">LTerrain:collapseColumns() -&gt; integer</pre><p>Optimizes terrain by merging vertically adjacent solid cells into larger colliders.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1420</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-collapsecolumns"><div class="item-row-main"><h3>collapseColumns</h3><pre class="inline-signature">LTerrain:collapseColumns() -&gt; integer</pre><p>Optimizes terrain by merging vertically adjacent solid cells into larger colliders.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1421</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -70,45 +70,45 @@ end</code></pre></details>
     terrain:flush()
     print(&quot;collapsed&quot;, terrain:collapseColumns())
     print(&quot;dirty&quot;, terrain:isDirty())
-end</code></pre></details></article><article class="item-row api-row" id="method-fillall"><div class="item-row-main"><h3>fillAll</h3><pre class="inline-signature">LTerrain:fillAll(solid: boolean)</pre><p>Sets all terrain cells to either solid or empty.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1399</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fillall"><div class="item-row-main"><h3>fillAll</h3><pre class="inline-signature">LTerrain:fillAll(solid: boolean)</pre><p>Sets all terrain cells to either solid or empty.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1400</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     print(&quot;dirty&quot;, terrain:isDirty())
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-fillcircle"><div class="item-row-main"><h3>fillCircle</h3><pre class="inline-signature">LTerrain:fillCircle(wx: number, wy: number, radius: number, solid: boolean)</pre><p>Fills or clears a circular region of terrain cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1375</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fillcircle"><div class="item-row-main"><h3>fillCircle</h3><pre class="inline-signature">LTerrain:fillCircle(wx: number, wy: number, radius: number, solid: boolean)</pre><p>Fills or clears a circular region of terrain cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1376</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     terrain:fillCircle(256, 256, 50, false)
     print(&quot;dirty&quot;, terrain:isDirty())
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-fillrect"><div class="item-row-main"><h3>fillRect</h3><pre class="inline-signature">LTerrain:fillRect(wx: number, wy: number, w: number, h: number, solid: boolean)</pre><p>Fills or clears a rectangular region of terrain cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1389</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-fillrect"><div class="item-row-main"><h3>fillRect</h3><pre class="inline-signature">LTerrain:fillRect(wx: number, wy: number, w: number, h: number, solid: boolean)</pre><p>Fills or clears a rectangular region of terrain cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1390</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:fillRect(80, 80, 40, 40, false)
     print(&quot;dirty&quot;, terrain:isDirty())
     print(&quot;cell&quot;, terrain:getCell(10, 10))
-end</code></pre></details></article><article class="item-row api-row" id="method-flush"><div class="item-row-main"><h3>flush</h3><pre class="inline-signature">LTerrain:flush()</pre><p>Regenerates physics colliders from the current terrain grid state. Call after modifying cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1405</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-flush"><div class="item-row-main"><h3>flush</h3><pre class="inline-signature">LTerrain:flush()</pre><p>Regenerates physics colliders from the current terrain grid state. Call after modifying cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1406</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     terrain:flush()
     print(&quot;dirty&quot;, terrain:isDirty())
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-getcell"><div class="item-row-main"><h3>getCell</h3><pre class="inline-signature">LTerrain:getCell(cx: integer, cy: integer) -&gt; boolean</pre><p>Returns whether a cell is solid. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1366</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcell"><div class="item-row-main"><h3>getCell</h3><pre class="inline-signature">LTerrain:getCell(cx: integer, cy: integer) -&gt; boolean</pre><p>Returns whether a cell is solid. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1367</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
     print(&quot;cell&quot;, terrain:getCell(5, 5))
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-isdirty"><div class="item-row-main"><h3>isDirty</h3><pre class="inline-signature">LTerrain:isDirty() -&gt; boolean</pre><p>Returns true if terrain cells have been modified since the last flush.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1414</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isdirty"><div class="item-row-main"><h3>isDirty</h3><pre class="inline-signature">LTerrain:isDirty() -&gt; boolean</pre><p>Returns true if terrain cells have been modified since the last flush.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1415</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     terrain:fillAll(true)
     print(&quot;dirty&quot;, terrain:isDirty())
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-loadfrombytes"><div class="item-row-main"><h3>loadFromBytes</h3><pre class="inline-signature">LTerrain:loadFromBytes(data: string) -&gt; boolean</pre><p>Restores terrain grid state from binary data previously produced by toBytes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1499</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-loadfrombytes"><div class="item-row-main"><h3>loadFromBytes</h3><pre class="inline-signature">LTerrain:loadFromBytes(data: string) -&gt; boolean</pre><p>Restores terrain grid state from binary data previously produced by toBytes.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1500</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -116,13 +116,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local clone = lurek.physics.newTerrain(32, 32, 4, world)
     print(&quot;loaded&quot;, clone:loadFromBytes(bytes))
     print(&quot;cell&quot;, clone:getCell(0, 0))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcell"><div class="item-row-main"><h3>setCell</h3><pre class="inline-signature">LTerrain:setCell(cx: integer, cy: integer, solid: boolean)</pre><p>Sets a single terrain cell to solid or empty.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1357</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcell"><div class="item-row-main"><h3>setCell</h3><pre class="inline-signature">LTerrain:setCell(cx: integer, cy: integer, solid: boolean)</pre><p>Sets a single terrain cell to solid or empty.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1358</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(64, 64, 8, world)
     terrain:setCell(5, 5, true)
     print(&quot;cell&quot;, terrain:getCell(5, 5))
     print(&quot;dirty&quot;, terrain:isDirty())
-end</code></pre></details></article><article class="item-row api-row" id="method-solidpositions"><div class="item-row-main"><h3>solidPositions</h3><pre class="inline-signature">LTerrain:solidPositions() -&gt; table</pre><p>Returns all solid cell positions as a table of {x, y} entries.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1428</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-solidpositions"><div class="item-row-main"><h3>solidPositions</h3><pre class="inline-signature">LTerrain:solidPositions() -&gt; table</pre><p>Returns all solid cell positions as a table of {x, y} entries.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1429</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -132,7 +132,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     if solids[1] then
         print(&quot;first&quot;, solids[1].x, solids[1].y)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-spawndebris"><div class="item-row-main"><h3>spawnDebris</h3><pre class="inline-signature">LTerrain:spawnDebris(positions: table, mass: number, restitution: number) -&gt; integer[]</pre><p>Spawns small dynamic debris bodies at the given positions (for destruction effects).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1447</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-spawndebris"><div class="item-row-main"><h3>spawnDebris</h3><pre class="inline-signature">LTerrain:spawnDebris(positions: table, mass: number, restitution: number) -&gt; integer[]</pre><p>Spawns small dynamic debris bodies at the given positions (for destruction effects).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1448</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 8, world)
     terrain:fillAll(true)
@@ -140,7 +140,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local debris = terrain:spawnDebris({ { x = 64, y = 64 }, { x = 72, y = 64 } }, 1.0, 0.2)
     print(&quot;count&quot;, #debris)
     print(&quot;body_count&quot;, world:getBodyCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-tobytes"><div class="item-row-main"><h3>toBytes</h3><pre class="inline-signature">LTerrain:toBytes() -&gt; string</pre><p>Serializes the terrain grid to a compact binary format for saving.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1492</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-tobytes"><div class="item-row-main"><h3>toBytes</h3><pre class="inline-signature">LTerrain:toBytes() -&gt; string</pre><p>Serializes the terrain grid to a compact binary format for saving.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1493</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -148,7 +148,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local bytes = terrain:toBytes()
     print(&quot;bytes&quot;, #bytes)
     print(&quot;dirty&quot;, terrain:isDirty())
-end</code></pre></details></article><article class="item-row api-row" id="method-toimagedata"><div class="item-row-main"><h3>toImageData</h3><pre class="inline-signature">LTerrain:toImageData(sr: integer, sg: integer, sb: integer, er: integer, eg: integer, eb: integer) -&gt; string</pre><p>Renders the terrain grid to raw RGBA pixel data with solid and empty colors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1479</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-toimagedata"><div class="item-row-main"><h3>toImageData</h3><pre class="inline-signature">LTerrain:toImageData(sr: integer, sg: integer, sb: integer, er: integer, eg: integer, eb: integer) -&gt; string</pre><p>Renders the terrain grid to raw RGBA pixel data with solid and empty colors.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1480</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local terrain = lurek.physics.newTerrain(32, 32, 4, world)
     terrain:fillAll(true)
@@ -156,12 +156,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local pixels = terrain:toImageData(255, 255, 255, 0, 0, 0)
     print(&quot;bytes&quot;, #pixels)
     print(&quot;type&quot;, terrain:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTerrain:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LTerrain&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1505</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LTerrain:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LTerrain&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1506</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     print(&quot;type&quot;, terrain:type())
     print(&quot;type_of&quot;, terrain:typeOf(&quot;LTerrain&quot;))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTerrain:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1510</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LTerrain:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1511</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local terrain = lurek.physics.newTerrain(32, 32, 16, world)
     print(&quot;type_of&quot;, terrain:typeOf(&quot;LTerrain&quot;), terrain:typeOf(&quot;LObject&quot;))

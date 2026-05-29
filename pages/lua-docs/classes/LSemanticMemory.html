@@ -77,7 +77,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     sm:learn(&quot;fact_b&quot;, { category = &quot;geo&quot; })
     local geo_facts = sm:query({ category = &quot;geo&quot; })
     print(&quot;Geo facts:&quot;, #geo_facts)
-end</code></pre></details></article><article class="item-row api-row" id="method-recall"><div class="item-row-main"><h3>recall</h3><pre class="inline-signature">LSemanticMemory:recall(key: string)</pre><p>Returns the fact for `key`, or `nil` if not found.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:943</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-recall"><div class="item-row-main"><h3>recall</h3><pre class="inline-signature">LSemanticMemory:recall(key: string) -&gt; table</pre><p>Returns the fact for `key`, or `nil` if not found.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:943</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local sm = lurek.agent.newSemanticMemory()
     sm:learn(&quot;color&quot;, { hex = &quot;#FF0000&quot; })
     local fact = sm:recall(&quot;color&quot;)

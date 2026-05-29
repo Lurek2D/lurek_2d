@@ -61,7 +61,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LPathGrid userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LPathGrid:findPath(sx: integer, sy: integer, gx: integer, gy: integer) -&gt; table</pre><p>Finds a path between one-based path grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:784</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LPathGrid:findPath(sx: integer, sy: integer, gx: integer, gy: integer) -&gt; table</pre><p>Finds a path between one-based path grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:785</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(10, 10, 32)
 
     for y = 1, 10 do
@@ -77,7 +77,7 @@ end</code></pre></details>
     else
         print(&quot;steps = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-findpathsmoothed"><div class="item-row-main"><h3>findPathSmoothed</h3><pre class="inline-signature">LPathGrid:findPathSmoothed(sx: integer, sy: integer, gx: integer, gy: integer) -&gt; table</pre><p>Finds a smoothed path between one-based path grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:817</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpathsmoothed"><div class="item-row-main"><h3>findPathSmoothed</h3><pre class="inline-signature">LPathGrid:findPathSmoothed(sx: integer, sy: integer, gx: integer, gy: integer) -&gt; table</pre><p>Finds a smoothed path between one-based path grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:818</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(20, 20, 16)
 
     grid:setWalkable(10, 5, false)
@@ -92,54 +92,54 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;points = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-getcellsize"><div class="item-row-main"><h3>getCellSize</h3><pre class="inline-signature">LPathGrid:getCellSize() -&gt; number</pre><p>Returns path grid cell size from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:738</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcellsize"><div class="item-row-main"><h3>getCellSize</h3><pre class="inline-signature">LPathGrid:getCellSize() -&gt; number</pre><p>Returns path grid cell size from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:739</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
     print(&quot;cell_size = &quot; .. pg:getCellSize())
     print(&quot;dims = &quot; .. pg:getWidth() .. &quot;x&quot; .. pg:getHeight())
-end</code></pre></details></article><article class="item-row api-row" id="method-getcost"><div class="item-row-main"><h3>getCost</h3><pre class="inline-signature">LPathGrid:getCost(x: integer, y: integer) -&gt; number</pre><p>Returns movement cost at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:772</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcost"><div class="item-row-main"><h3>getCost</h3><pre class="inline-signature">LPathGrid:getCost(x: integer, y: integer) -&gt; number</pre><p>Returns movement cost at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:773</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
 
     grid:setCost(6, 2, 2.5)
 
     print(&quot;cost_6_2 = &quot; .. grid:getCost(6, 2))
     print(&quot;cost_1_1 = &quot; .. grid:getCost(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LPathGrid:getHeight() -&gt; integer</pre><p>Returns grid height from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:732</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LPathGrid:getHeight() -&gt; integer</pre><p>Returns grid height from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:733</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
     print(&quot;height = &quot; .. pg:getHeight())
     print(&quot;cell_size = &quot; .. pg:getCellSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LPathGrid:getWidth() -&gt; integer</pre><p>Returns grid width from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:726</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LPathGrid:getWidth() -&gt; integer</pre><p>Returns grid width from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:727</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(10, 10, 32)
 
     print(&quot;width = &quot; .. pg:getWidth())
     print(&quot;cell_size = &quot; .. pg:getCellSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-iswalkable"><div class="item-row-main"><h3>isWalkable</h3><pre class="inline-signature">LPathGrid:isWalkable(x: integer, y: integer) -&gt; boolean</pre><p>Returns walkability at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:755</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-iswalkable"><div class="item-row-main"><h3>isWalkable</h3><pre class="inline-signature">LPathGrid:isWalkable(x: integer, y: integer) -&gt; boolean</pre><p>Returns walkability at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:756</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
     grid:setWalkable(4, 4, false)
 
     print(&quot;walkable_4_4 = &quot; .. tostring(grid:isWalkable(4, 4)))
     print(&quot;walkable_4_5 = &quot; .. tostring(grid:isWalkable(4, 5)))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LPathGrid:setCost(x: integer, y: integer, cost: number)</pre><p>Sets movement cost at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:763</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcost"><div class="item-row-main"><h3>setCost</h3><pre class="inline-signature">LPathGrid:setCost(x: integer, y: integer, cost: number)</pre><p>Sets movement cost at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:764</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
 
     grid:setCost(3, 3, 5)
 
     print(&quot;cost_3_3 = &quot; .. grid:getCost(3, 3))
     print(&quot;cost_3_4 = &quot; .. grid:getCost(3, 4))
-end</code></pre></details></article><article class="item-row api-row" id="method-setwalkable"><div class="item-row-main"><h3>setWalkable</h3><pre class="inline-signature">LPathGrid:setWalkable(x: integer, y: integer, w: boolean)</pre><p>Sets walkability at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:746</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setwalkable"><div class="item-row-main"><h3>setWalkable</h3><pre class="inline-signature">LPathGrid:setWalkable(x: integer, y: integer, w: boolean)</pre><p>Sets walkability at a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:747</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
     grid:setWalkable(5, 5, false)
 
     print(&quot;walkable_5_5 = &quot; .. tostring(grid:isWalkable(5, 5)))
     print(&quot;walkable_5_6 = &quot; .. tostring(grid:isWalkable(5, 6)))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LPathGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this path grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:844</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LPathGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this path grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:845</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
 
     print(&quot;type = &quot; .. grid:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LPathGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this path grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:849</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LPathGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this path grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:850</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
 
     print(&quot;is_path_grid = &quot; .. tostring(grid:typeOf(&quot;LPathGrid&quot;)))

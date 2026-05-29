@@ -2,172 +2,161 @@
 
 ## TL;DR
 
-The `asset` module is a ref-counted registry for game-asset metadata. Scripts load
-assets by path and type; each `LAssetHandle` keeps the entry alive. Assets can be
-annotated with a display name, a group label, and an arbitrary tag set. Query
-functions (`findByName`, `findByGroup`, `findByTag`, `findByType`) return handle
-arrays for batch iteration.
+`lurek.asset` is a ref-counted asset registry with metadata and search. It tracks
+paths and type classification (not decoded GPU/audio resources), supports tags and
+groups, and exposes query helpers for scripts.
 
 ## General Info
 
-- **Module group:** `Feature Systems`
-- **Source path:** `src/asset/`
-- **Lua API path(s):** `src/lua_api/asset_api.rs`
-- **Primary Lua namespace:** `lurek.asset`
-- **Lua test path(s):** `tests/lua/unit/test_asset_core_unit.lua`
-- **Example stubs:** `content/examples/asset.lua`
+- Module group: `Feature Systems`
+- Source path: `src/asset/`
+- Lua API path(s): `src/lua_api/asset_api.rs`
+- Primary Lua namespace: `lurek.asset`
+- Rust test path(s): tests/rust/unit/asset_tests.rs
+- Lua test path(s): tests/lua/unit/test_asset_core_unit.lua
 
 ## Summary
 
-The `asset` module records *where* an asset lives on disk and *how it is classified*.
-It does not own decoded GPU resources; those are managed by `lurek.image`, `lurek.font`,
-and `lurek.audio`. The cache is a lightweight per-VM registry and search layer.
+The module is intentionally lightweight: it stores entry metadata and file source
+content for text-like assets, while delegating decoded runtime objects to domain
+modules (`lurek.image`, `lurek.font`, `lurek.audio`).
 
-Scripts call `lurek.asset.load(path, type, opts?)` to register an entry. The returned
-`LAssetHandle` keeps the entry alive. `lurek.asset.unload(handle)` decrements the ref
-count and removes the entry when it reaches zero. `lurek.asset.clear()` drops all
-entries unconditionally.
+Supported asset types:
 
-### Text-like vs binary types
+- Binary/path-only: `image`, `font`, `audio`, `music`
+- Text-like/in-memory source: `text`, `toml`, `json`, `obj`, `shader`, `lua`
 
-Text-like types (`text`, `toml`, `json`, `obj`, `shader`, `lua`) read the file into
-memory at load time. `lurek.asset.get(handle)` returns the cached string.
+Each entry can have:
 
-Binary types (`image`, `font`, `audio`, `music`) store only the path reference.
-`lurek.asset.get(handle)` calls the appropriate Lua constructor each time:
+- display name (`name`)
+- group (`group`)
+- tags (`tags[]`)
 
-| Type     | `get()` calls                |
-|----------|------------------------------|
-| `image`  | `lurek.image.loadImage(path)`|
-| `font`   | `lurek.font.load(path, 16)`  |
-| `audio`  | `lurek.audio.newSource(path)`|
-| `music`  | `lurek.audio.newSource(path)`|
+Search APIs return arrays of `LAssetHandle`:
 
-### Metadata
-
-Each entry supports an optional display name, a group label, and a tag set. All three
-are set either at load time via the `opts` table or later with the setter functions.
+- `findByName`
+- `findByGroup`
+- `findByTag`
+- `findByType`
 
 ## Files
 
-- `mod.rs`: Module manifest and public re-exports.
-- `cache.rs`: `AssetCache`, `AssetEntry`, and `AssetType` types; all business logic.
+- `cache.rs`: Ref-counted asset cache for `lurek.asset`.
+- `mod.rs`: `lurek.asset` — ref-counted media cache for images, fonts, audio, and text assets.
+
+## Source Documentation
+
+### `cache.rs`
+- Ref-counted asset cache for `lurek.asset`.
+- ## Responsibilities
+- `AssetCache` is the sole owner of all registered game-asset entries.
+- It provides:
+- Unique `u64` handle IDs for each registered entry.
+- Reference counting: entries are removed when their ref count reaches zero.
+- Optional display names, group labels, and tag sets per entry.
+- Query methods: find entries by name substring, exact group, exact tag, or type string.
+- ## Asset types
+- | Type string | Storage          | `get()` resolution                    |
+- |-------------|------------------|---------------------------------------|
+- | `image`     | path ref         | `lurek.image.loadImage(path)`         |
+- | `font`      | path ref         | `lurek.font.load(path, 16)`           |
+- | `audio`     | path ref         | `lurek.audio.newSource(path)`         |
+- | `music`     | path ref         | `lurek.audio.newSource(path)`         |
+- | `text`      | cached text      | returns content string directly       |
+- | `toml`      | cached text      | returns raw TOML string               |
+- | `json`      | cached text      | returns raw JSON string               |
+- | `obj`       | cached text      | returns raw OBJ geometry string       |
+- | `shader`    | cached text      | returns shader source string          |
+- | `lua`       | cached text      | returns Lua source string             |
+- ## Design notes
+- The cache is a plain in-process store — it records *where* an asset lives on disk
+- and *how it is classified*, not the decoded GPU resource itself. Decoded resources
+- (textures, fonts, audio sources) are owned by the respective `lurek.*` sub-modules;
+- `lurek.asset` is the lightweight registry and search layer.
+- One cache instance is created per Lua VM during `asset_api::register()`.
+- Worker VMs created by `lurek.thread` each get their own independent cache.
+
+### `mod.rs`
+- `lurek.asset` — ref-counted media cache for images, fonts, audio, and text assets.
+- Asset registry module for `lurek.asset`.
+- Re-exports [`AssetCache`], [`AssetEntry`], and [`AssetType`] from
+- `cache.rs`.  All business logic lives in `cache.rs`; `asset_api.rs`
+- contains only the thin Lua bindings.
 
 ## Types
 
-### `AssetType` (enum, `cache.rs`)
+- `AssetType` (`enum`, `cache.rs`): type discriminant for registry behavior.
+- `AssetEntry` (`struct`, `cache.rs`): one registered entry (path/type/refcount/name/group/tags/content).
+- `AssetCache` (`struct`, `cache.rs`): ID-keyed map with ref counting and search helpers.
 
-Variants: `Image`, `Font`, `Audio`, `Music`, `Text`, `Toml`, `Json`, `Obj`, `Shader`,
-`Lua`, `Unknown(String)`. The `is_text_like()` method returns `true` for
-`Text | Toml | Json | Obj | Shader | Lua`.
+## Functions
 
-### `AssetEntry` (struct, `cache.rs`)
-
-Fields: `path: String`, `asset_type: AssetType`, `ref_count: usize`,
-`text_content: Option<String>`, `name: Option<String>`, `group: Option<String>`,
-`tags: HashSet<String>`.
-
-### `AssetCache` (struct, `cache.rs`)
-
-Ref-counted map from `u64` handle IDs to `AssetEntry`. One instance per Lua VM.
-
-## Rust API
-
-| Method            | Signature                                                  |
-|-------------------|------------------------------------------------------------|
-| `new`             | `() -> Self`                                               |
-| `register`        | `(&mut self, path, type, text) -> u64`                     |
-| `inc_ref`         | `(&mut self, id: u64)`                                     |
-| `dec_ref`         | `(&mut self, id: u64)`                                     |
-| `get`             | `(&self, id: u64) -> Option<&AssetEntry>`                  |
-| `set_name`        | `(&mut self, id: u64, name: String)`                       |
-| `set_group`       | `(&mut self, id: u64, group: String)`                      |
-| `add_tag`         | `(&mut self, id: u64, tag: &str)`                          |
-| `remove_tag`      | `(&mut self, id: u64, tag: &str) -> bool`                  |
-| `has_tag`         | `(&self, id: u64, tag: &str) -> bool`                      |
-| `ref_count`       | `(&self, id: u64) -> usize`                                |
-| `is_loaded`       | `(&self, id: u64) -> bool`                                 |
-| `loaded_count`    | `(&self) -> usize`                                         |
-| `total_refs`      | `(&self) -> usize`                                         |
-| `find_by_name`    | `(&self, substr: &str) -> Vec<u64>`                        |
-| `find_by_group`   | `(&self, group: &str) -> Vec<u64>`                         |
-| `find_by_tag`     | `(&self, tag: &str) -> Vec<u64>`                           |
-| `find_by_type`    | `(&self, type_str: &str) -> Vec<u64>`                      |
-| `unique_groups`   | `(&self) -> Vec<String>`                                   |
-| `clear`           | `(&mut self)`                                              |
-| `iter`            | `(&self) -> impl Iterator<Item=(&u64,&AssetEntry)>`        |
+- `AssetType::from_type_str` (`cache.rs`): Parses the Lua-facing lowercase type string into the matching variant.
+- `AssetType::is_text_like` (`cache.rs`): Returns `true` when the type stores its content as in-process text.
+- `AssetType::as_str` (`cache.rs`): Returns the canonical lowercase string used in stats tables and Lua-side queries.
+- `AssetCache::new` (`cache.rs`): Creates an empty cache with the ID counter starting at `1`.
+- `AssetCache::register` (`cache.rs`): Registers a new entry and returns its unique handle ID.
+- `AssetCache::inc_ref` (`cache.rs`): Increments the ref count for `id`.
+- `AssetCache::dec_ref` (`cache.rs`): Decrements the ref count for `id`; removes the entry when it reaches zero.
+- `AssetCache::get` (`cache.rs`): Returns a reference to the entry with the given ID, or `None`.
+- `AssetCache::set_name` (`cache.rs`): Sets the display name for the entry with the given ID.
+- `AssetCache::set_group` (`cache.rs`): Sets the group label for the entry with the given ID.
+- `AssetCache::add_tag` (`cache.rs`): Adds `tag` to the tag set of the entry with the given ID.
+- `AssetCache::remove_tag` (`cache.rs`): Removes `tag` from the tag set of the entry with the given ID.
+- `AssetCache::has_tag` (`cache.rs`): Returns `true` when the entry with the given ID has the given tag.
+- `AssetCache::ref_count` (`cache.rs`): Returns the current ref count for `id`, or `0` when not present.
+- `AssetCache::is_loaded` (`cache.rs`): Returns `true` if `id` is still present in the cache.
+- `AssetCache::loaded_count` (`cache.rs`): Total number of live entries.
+- `AssetCache::total_refs` (`cache.rs`): Sum of all ref counts across all live entries.
+- `AssetCache::find_by_name` (`cache.rs`): Returns all IDs whose display name contains `substr` (case-insensitive).
+- `AssetCache::find_by_group` (`cache.rs`): Returns all IDs whose group label exactly matches `group`.
+- `AssetCache::find_by_tag` (`cache.rs`): Returns all IDs that have `tag` in their tag set.
+- `AssetCache::find_by_type` (`cache.rs`): Returns all IDs whose asset type string matches `type_str` exactly.
+- `AssetCache::unique_groups` (`cache.rs`): Returns all unique group labels currently in the cache (sorted).
+- `AssetCache::clear` (`cache.rs`): Removes all entries from the cache, regardless of ref counts.
+- `AssetCache::iter` (`cache.rs`): Returns an iterator over all `(id, entry)` pairs.
 
 ## Lua API Reference
 
-### Core load/unload
+- Binding path(s): `src/lua_api/asset_api.rs`
+- Namespace: `lurek.asset`
 
-| Symbol                     | Signature                                              | Notes                                      |
-|----------------------------|--------------------------------------------------------|--------------------------------------------|
-| `lurek.asset.load`         | `(path, type, opts?) → LAssetHandle`                   | `opts`: `{name?, group?, tags?}`.          |
-| `lurek.asset.unload`       | `(handle) → nil`                                       | Decrements ref; removes entry at 0.        |
-| `lurek.asset.get`          | `(handle) → any`                                       | String for text-like; Lua obj for binary.  |
-| `lurek.asset.preload`      | `(paths: table, cb: function) → nil`                   | Sync batch; calls `cb(i,n)` per item.      |
-| `lurek.asset.refcount`     | `(handle) → integer`                                   | 0 when entry is not present.               |
-| `lurek.asset.isLoaded`     | `(handle) → boolean`                                   | True while entry is alive.                 |
-| `lurek.asset.stats`        | `() → table`                                           | `{loaded, total_refs, types, groups}`.     |
-| `lurek.asset.clear`        | `() → nil`                                             | Removes all entries unconditionally.       |
+### Module Functions
+- `lurek.asset.load`: Loads and caches an asset by path and type, returning a ref-counted handle.
+- `lurek.asset.unload`: Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+- `lurek.asset.get`: Returns the underlying asset value for a cached handle.
+- `lurek.asset.preload`: Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
+- `lurek.asset.refcount`: Returns the current ref count for a handle, or 0 when it is no longer loaded.
+- `lurek.asset.isLoaded`: Returns true when the asset for the given handle is still in the cache.
+- `lurek.asset.stats`: Returns a snapshot table describing the current cache state.
+- `lurek.asset.clear`: Removes all entries from the cache immediately, regardless of ref counts.
+- `lurek.asset.getPath`: Returns the filesystem path for the asset associated with a handle.
+- `lurek.asset.getType`: Returns the type string for the asset associated with a handle.
+- `lurek.asset.getInfo`: Returns a table containing all metadata for an asset handle.
+- `lurek.asset.setName`: Sets the display name for an asset handle.
+- `lurek.asset.getName`: Returns the display name of an asset handle.
+- `lurek.asset.setGroup`: Assigns an asset handle to a named group.
+- `lurek.asset.getGroup`: Returns the group label for an asset handle.
+- `lurek.asset.addTag`: Adds a tag to the tag set of an asset handle.
+- `lurek.asset.removeTag`: Removes a tag from the tag set of an asset handle.
+- `lurek.asset.getTags`: Returns an array of all tags for an asset handle.
+- `lurek.asset.hasTag`: Returns true when an asset handle has the given tag in its tag set.
+- `lurek.asset.findByName`: Returns an array of asset handles whose display name contains the substring.
+- `lurek.asset.findByGroup`: Returns an array of asset handles whose group label exactly matches `group`.
+- `lurek.asset.findByTag`: Returns an array of asset handles that have the given tag in their tag set.
+- `lurek.asset.findByType`: Returns an array of asset handles whose type exactly matches `type_str`.
 
-### Path / type inspection
+### `LAssetHandle` Methods
+- `LAssetHandle:type`: Returns the Lua-visible type name for this asset handle.
+- `LAssetHandle:typeOf`: Returns whether this handle matches a supported type name.
 
-| Symbol                     | Signature                    | Notes                                         |
-|----------------------------|------------------------------|-----------------------------------------------|
-| `lurek.asset.getPath`      | `(handle) → string`          | Path supplied to `load`.                      |
-| `lurek.asset.getType`      | `(handle) → string`          | Type string, e.g. `"toml"`, `"music"`.        |
-| `lurek.asset.getInfo`      | `(handle) → table`           | `{path, type, name, group, tags, refcount}`.  |
+## References
 
-### Name and group
-
-| Symbol                     | Signature                              | Notes                                         |
-|----------------------------|----------------------------------------|-----------------------------------------------|
-| `lurek.asset.setName`      | `(handle, name: string) → nil`         | Sets display name.                            |
-| `lurek.asset.getName`      | `(handle) → string`                    | Returns name or path file-stem.               |
-| `lurek.asset.setGroup`     | `(handle, group: string) → nil`        | Assigns group label.                          |
-| `lurek.asset.getGroup`     | `(handle) → string`                    | Returns group or `""` when unset.             |
-
-### Tags
-
-| Symbol                     | Signature                              | Notes                                         |
-|----------------------------|----------------------------------------|-----------------------------------------------|
-| `lurek.asset.addTag`       | `(handle, tag: string) → nil`          | Adds tag to the set.                          |
-| `lurek.asset.removeTag`    | `(handle, tag: string) → boolean`      | True when tag was present and removed.        |
-| `lurek.asset.getTags`      | `(handle) → table`                     | Array of tag strings.                         |
-| `lurek.asset.hasTag`       | `(handle, tag: string) → boolean`      | True when tag is in the set.                  |
-
-### Search
-
-| Symbol                     | Signature                              | Notes                                                         |
-|----------------------------|----------------------------------------|---------------------------------------------------------------|
-| `lurek.asset.findByName`   | `(substr: string) → table`             | Case-insensitive; uses file-stem when no explicit name set.   |
-| `lurek.asset.findByGroup`  | `(group: string) → table`              | Exact match on group label.                                   |
-| `lurek.asset.findByTag`    | `(tag: string) → table`                | All handles that have `tag` in their set.                     |
-| `lurek.asset.findByType`   | `(type: string) → table`               | Exact match on type string.                                   |
-
-### LAssetHandle methods
-
-| Symbol               | Signature              | Notes                                  |
-|----------------------|------------------------|----------------------------------------|
-| `LAssetHandle:type`  | `() → string`          | Returns `"LAssetHandle"`.              |
-| `LAssetHandle:typeOf`| `(name) → boolean`     | True for `LAssetHandle` or `LObject`.  |
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Notes
 
-- The cache is **per-VM**. Worker VMs created by `lurek.thread` each have their own
-  independent `AssetCache`; assets are not shared across Lua VMs.
-- `preload` is **synchronous** — it iterates inline and is not deferred.
-  The callback is called once per item with `(i, n)` and once more with `(nil, nil)`
-  to signal completion.
-- For `image`, `font`, `audio`, and `music` types, `get()` constructs the Lua object
-  on every call. The cache stores only the path; there is no GPU/audio handle cache.
-  This keeps `AssetCache` free of `mlua` lifetimes.
-- `font` assets retrieved via `get()` are loaded at a fixed size of 16 pt.
-- Ref-count management is **entirely manual**: dropping a Lua variable holding an
-  `LAssetHandle` does **not** decrement the ref count. Always call
-  `lurek.asset.unload(handle)` or `lurek.asset.clear()` when assets are no longer needed.
-- `lurek.asset` does not replace `lurek.sprite`, `lurek.image`, or `lurek.audio`.
-  Those modules own decoded resources; `lurek.asset` is the registry and tagging
-  layer that sits in front of them.
+- Cache scope is per Lua VM.
+- `preload` is synchronous.
+- Ref counting is manual (`unload`/`clear`); Lua variable drop does not decrement.
+- The module does not replace `lurek.image`, `lurek.font`, `lurek.audio`, or `lurek.sprite`.

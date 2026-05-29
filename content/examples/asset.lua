@@ -56,7 +56,6 @@ do
     lurek.asset.unload(ha)
 end
 
---@api-stub: lurek.asset.load
 do
     -- load with opts: name, group, and tags supplied inline.
     local h = lurek.asset.load(PATH_TOML, "toml", {

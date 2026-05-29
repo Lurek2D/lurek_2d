@@ -22,21 +22,22 @@ end
 test("lurek.image.newImageData works", function()
   -- Source line 81: local next = lurek.image.newImageData(w, h)
   -- TODO: Add proper test assertion
-  local result = lurek.image.newImageData()
+  local result = lurek.image.newImageData(4, 4)
   assert(result ~= nil, "lurek.image.newImageData should return a value")
 end)
 
 test("lurek.image.loadImage works", function()
   -- Source line 115: local src = lurek.image.loadImage(MAP_IN)
   -- TODO: Add proper test assertion
-  local result = lurek.image.loadImage()
+  local result = lurek.image.loadImage("assets/textures/sample.png")
   assert(result ~= nil, "lurek.image.loadImage should return a value")
 end)
 
 test("lurek.image.savePNG works", function()
   -- Source line 303: lurek.image.savePNG(out, MAP_OUT)
   -- TODO: Add proper test assertion
-  local result = lurek.image.savePNG()
+  local out = lurek.image.newImageData(4, 4)
+  local result = lurek.image.savePNG(out, "save/test_process_map_out.png")
   assert(result ~= nil, "lurek.image.savePNG should return a value")
 end)
 
@@ -54,14 +55,14 @@ end)
 test("lurek.render.clear works", function()
   -- Source line 311: lurek.render.clear(0, 0, 0)
   -- TODO: Add proper test assertion
-  local result = lurek.render.clear()
+  local result = lurek.render.clear(0, 0, 0)
   assert(result ~= nil, "lurek.render.clear should return a value")
 end)
 
 test("lurek.render.print works", function()
   -- Source line 312: lurek.render.print("[process_map] Przetwarzanie... sprawdź konsolę.", 10, 10)
   -- TODO: Add proper test assertion
-  local result = lurek.render.print()
+  local result = lurek.render.print("[process_map] Przetwarzanie... sprawdź konsolę.", 10, 10)
   assert(result ~= nil, "lurek.render.print should return a value")
 end)
 

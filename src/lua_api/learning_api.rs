@@ -516,7 +516,7 @@ impl LuaUserData for LuaModel {
         /// depending on the wrapped type. Input is interpreted as `integer` for QLearner/Bandit
         /// and as a `table` of numbers for NeuralNet.
         /// @param | input | any | State index (integer) for QLearner/Bandit, or number array table for NeuralNet.
-        /// @return | any | Action index (integer) for QLearner/Bandit, or number array for NeuralNet.
+        /// @return | integer, table | Action index for QLearner/Bandit, or number-array table for NeuralNet.
         methods.add_method_mut("predict", |lua, this, input: LuaValue| {
             match this {
                 LuaModel::QLearner(q) => {
@@ -538,7 +538,7 @@ impl LuaUserData for LuaModel {
             }
         });
         // -- type --
-        /// Returns the type name `"LModel"`.
+        /// Returns this wrapper's stable type name `"LModel"`.
         /// @return | string | The string `LModel`.
         methods.add_method("type", |_, _, ()| Ok("LModel"));
         // -- typeOf --
@@ -704,7 +704,7 @@ impl LuaUserData for LuaEnv {
             Self::space_to_table(lua, &this.action_space)
         });
         // -- type --
-        /// Returns the type name `"LEnv"`.
+        /// Returns this environment wrapper's type name `"LEnv"`.
         /// @return | string | The string `LEnv`.
         methods.add_method("type", |_, _, ()| Ok("LEnv"));
         // -- typeOf --
@@ -749,7 +749,7 @@ impl LuaUserData for LuaFrameStack {
             Ok(t)
         });
         // -- reset --
-        /// Clears all stored frames.
+        /// Clears all stored observation frames from the stack.
         methods.add_method("reset", |_, this, ()| {
             this.inner.borrow_mut().reset();
             Ok(())

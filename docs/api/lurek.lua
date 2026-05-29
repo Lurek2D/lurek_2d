@@ -282,7 +282,7 @@ function LAISystem:removeAgent(name) end
 ---@return boolean `true` if the instruction was found and removed.
 function LAISystem:removeInstruction(key) end
 
---- Removes a system skill by name.
+--- Removes a registered system skill by exact name.
 ---@param name string Skill name to remove.
 ---@return boolean `true` if the skill was found and removed.
 function LAISystem:removeSkill(name) end
@@ -439,7 +439,7 @@ LAgentChat = {}
 ---@return nil No value is returned.
 function LAgentChat:addMessage(role, content) end
 
---- Clears the chat history.
+--- Clears all stored chat history messages.
 ---@return nil No value is returned.
 function LAgentChat:clear() end
 
@@ -613,7 +613,7 @@ function LSemanticMemory:query(filter) end
 
 --- Returns the fact for `key`, or `nil` if not found.
 ---@param key string Fact key.
----@return any Stored fact, or `nil`.
+---@return table Stored fact converted from JSON when present; returns nil when missing.
 function LSemanticMemory:recall(key) end
 
 --- Lua-side handle for a bounded FIFO working memory.
@@ -631,7 +631,7 @@ function LWorkingMemory:forget(key) end
 
 --- Returns the value for `key`, or `nil` if not found.
 ---@param key string Entry key.
----@return any Stored value, or `nil`.
+---@return table Stored value converted from JSON when present; returns nil when missing.
 function LWorkingMemory:get(key) end
 
 --- Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
@@ -683,7 +683,7 @@ lurek.agent.isAvailable = function() end
 ---@return table String array of model names; empty if the server is unreachable.
 lurek.agent.listModels = function() end
 
---- Creates a new LLM Agent instance.
+--- Creates a new configurable LLM Agent runtime instance.
 ---@param config table Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
 ---@return LAgent A new agent object.
 lurek.agent.new = function(config) end
@@ -888,7 +888,7 @@ LAIWorld = {}
 
 --- Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 ---@param name string Unique agent name used by later lookup, tags, custom callbacks, and squad membership references.
----@return LAgent Lua handle for the newly inserted agent.
+---@return LBot Lua handle for the newly inserted bot.
 function LAIWorld:addAgent(name) end
 
 --- Returns the named agent handle when it exists in this world.
@@ -905,7 +905,7 @@ function LAIWorld:getAgentCount() end
 function LAIWorld:getGlobalBlackboard() end
 
 --- Removes an agent from this world by using an existing agent handle.
----@param agent LAgent Agent handle whose stored name identifies the world entry to remove.
+---@param agent LBot Bot handle whose stored name identifies the world entry to remove.
 function LAIWorld:removeAgent(agent) end
 
 --- Returns the Lua-visible type name for this AI world handle.
@@ -920,96 +920,6 @@ function LAIWorld:typeOf(name) end
 --- Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
 ---@param dt number Elapsed simulation time in seconds for this update step.
 function LAIWorld:update(dt) end
-
---- Lua handle for a named agent stored inside an AI world.
----@class LAgent
-LAgent = {}
-
---- Adds a tag string to this agent when the agent still exists in its world.
----@param tag string Tag name to insert into the agent tag set.
-function LAgent:addTag(tag) end
-
---- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
----@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
-function LAgent:getBlackboard() end
-
---- Returns this agent's decision model name or the default model name for a missing agent.
----@return string Current decision model name.
-function LAgent:getDecisionModel() end
-
---- Returns this agent's maximum steering force or the default force for a missing agent.
----@return number Maximum steering force value.
-function LAgent:getMaxForce() end
-
---- Returns this agent's maximum movement speed or the default speed for a missing agent.
----@return number Maximum speed in world units per second.
-function LAgent:getMaxSpeed() end
-
---- Returns this agent's stable world name.
----@return string Agent name stored in the handle.
-function LAgent:getName() end
-
---- Returns this agent's world position or the origin when the agent has been removed.
----@return number a X and Y position in world units.
----@return number b X and Y position in world units.
-function LAgent:getPosition() end
-
---- Returns this agent's integer priority or zero when the agent has been removed.
----@return number Current priority value.
-function LAgent:getPriority() end
-
---- Returns this agent's velocity vector or zero velocity when the agent has been removed.
----@return number a X and Y velocity in world units per second.
----@return number b X and Y velocity in world units per second.
-function LAgent:getVelocity() end
-
---- Returns whether this agent currently has the given tag.
----@param tag string Tag name to check in the agent tag set.
----@return boolean True when the tag exists on the agent.
-function LAgent:hasTag(tag) end
-
---- Removes a tag string from this agent when the agent still exists in its world.
----@param tag string Tag name to remove from the agent tag set.
-function LAgent:removeTag(tag) end
-
---- Installs a Lua callback as this agent's decision model and stores it in the callback registry.
----@param callback function Function called during world updates with `(agent, blackboard, dt)` for this agent.
-function LAgent:setCustomModel(callback) end
-
---- Sets this agent's built-in decision model from a string name when the name is recognized.
----@param model string Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.
-function LAgent:setDecisionModel(model) end
-
---- Sets this agent's maximum steering force when the agent still exists in its world.
----@param v number Maximum steering force applied during steering calculations.
-function LAgent:setMaxForce(v) end
-
---- Sets this agent's maximum movement speed when the agent still exists in its world.
----@param v number Maximum speed in world units per second.
-function LAgent:setMaxSpeed(v) end
-
---- Sets this agent's world position when the agent still exists in its world.
----@param x number New X position in world units.
----@param y number New Y position in world units.
-function LAgent:setPosition(x, y) end
-
---- Sets this agent's integer priority when the agent still exists in its world.
----@param p number Priority value used by game-side AI scheduling or ordering logic.
-function LAgent:setPriority(p) end
-
---- Sets this agent's velocity vector when the agent still exists in its world.
----@param x number New X velocity in world units per second.
----@param y number New Y velocity in world units per second.
-function LAgent:setVelocity(x, y) end
-
---- Returns the Lua-visible type name for this agent handle.
----@return string The string `LAgent`.
-function LAgent:type() end
-
---- Returns whether this agent handle matches a supported type name.
----@param name string Type name to compare against `Agent` and `Object`.
----@return boolean True when the supplied type name matches this handle.
-function LAgent:typeOf(name) end
 
 --- Lua handle for a behavior tree node that can be assembled into composites and decorators.
 ---@class LBTNode
@@ -1087,6 +997,96 @@ function LBehaviorTree:type() end
 ---@param name string Type name to compare against `BehaviorTree` and `Object`.
 ---@return boolean True when the supplied type name matches this handle.
 function LBehaviorTree:typeOf(name) end
+
+--- Lua handle for a named agent stored inside an AI world.
+---@class LBot
+LBot = {}
+
+--- Adds a tag string to this agent when the agent still exists in its world.
+---@param tag string Tag name to insert into the agent tag set.
+function LBot:addTag(tag) end
+
+--- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+---@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
+function LBot:getBlackboard() end
+
+--- Returns this agent's decision model name or the default model name for a missing agent.
+---@return string Current decision model name.
+function LBot:getDecisionModel() end
+
+--- Returns this agent's maximum steering force or the default force for a missing agent.
+---@return number Maximum steering force value.
+function LBot:getMaxForce() end
+
+--- Returns this agent's maximum movement speed or the default speed for a missing agent.
+---@return number Maximum speed in world units per second.
+function LBot:getMaxSpeed() end
+
+--- Returns this agent's stable world name.
+---@return string Agent name stored in the handle.
+function LBot:getName() end
+
+--- Returns this agent's world position or the origin when the agent has been removed.
+---@return number a X and Y position in world units.
+---@return number b X and Y position in world units.
+function LBot:getPosition() end
+
+--- Returns this agent's integer priority or zero when the agent has been removed.
+---@return number Current priority value.
+function LBot:getPriority() end
+
+--- Returns this agent's velocity vector or zero velocity when the agent has been removed.
+---@return number a X and Y velocity in world units per second.
+---@return number b X and Y velocity in world units per second.
+function LBot:getVelocity() end
+
+--- Returns whether this agent currently has the given tag.
+---@param tag string Tag name to check in the agent tag set.
+---@return boolean True when the tag exists on the agent.
+function LBot:hasTag(tag) end
+
+--- Removes a tag string from this agent when the agent still exists in its world.
+---@param tag string Tag name to remove from the agent tag set.
+function LBot:removeTag(tag) end
+
+--- Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+---@param callback function Function called during world updates with `(agent, blackboard, dt)` for this agent.
+function LBot:setCustomModel(callback) end
+
+--- Sets this agent's built-in decision model from a string name when the name is recognized.
+---@param model string Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.
+function LBot:setDecisionModel(model) end
+
+--- Sets this agent's maximum steering force when the agent still exists in its world.
+---@param v number Maximum steering force applied during steering calculations.
+function LBot:setMaxForce(v) end
+
+--- Sets this agent's maximum movement speed when the agent still exists in its world.
+---@param v number Maximum speed in world units per second.
+function LBot:setMaxSpeed(v) end
+
+--- Sets this agent's world position when the agent still exists in its world.
+---@param x number New X position in world units.
+---@param y number New Y position in world units.
+function LBot:setPosition(x, y) end
+
+--- Sets this agent's integer priority when the agent still exists in its world.
+---@param p number Priority value used by game-side AI scheduling or ordering logic.
+function LBot:setPriority(p) end
+
+--- Sets this agent's velocity vector when the agent still exists in its world.
+---@param x number New X velocity in world units per second.
+---@param y number New Y velocity in world units per second.
+function LBot:setVelocity(x, y) end
+
+--- Returns the Lua-visible type name for this agent handle.
+---@return string The string `LBot`.
+function LBot:type() end
+
+--- Returns whether this agent handle matches a supported type name.
+---@param name string Type name to compare against `Agent` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBot:typeOf(name) end
 
 --- Lua handle for a command queue that stores ordered callback-backed commands.
 ---@class LCommandQueue
@@ -1719,7 +1719,7 @@ function LSteeringManager:addSeek(tx, ty, weight) end
 function LSteeringManager:addWander(radius, dist, jitter, weight) end
 
 --- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
----@param agent LAgent Agent handle passed through to every custom steering callback.
+---@param agent LBot Bot handle passed through to every custom steering callback.
 ---@param dt number Elapsed time in seconds passed to every custom steering callback.
 ---@return number a Combined custom X and Y steering force.
 ---@return number b Combined custom X and Y steering force.
@@ -2561,21 +2561,34 @@ function LAssetHandle:typeOf(name) end
 ---@return nil No value is returned.
 lurek.asset.addTag = function(handle, tag) end
 
+--- Removes all entries from the cache immediately, regardless of ref counts.
+---@return nil No value is returned.
 lurek.asset.clear = function() end
 
----@param group any
+--- Returns an array of asset handles whose group label exactly matches `group`.
+---@param group string Group label to match.
+---@return table Array of `LAssetHandle` values in the given group.
 lurek.asset.findByGroup = function(group) end
 
----@param substr any
+--- Returns an array of asset handles whose display name contains the substring.
+---@param substr string Substring to search for in display names.
+---@return table Array of `LAssetHandle` values whose name contains `substr`.
 lurek.asset.findByName = function(substr) end
 
----@param tag any
+--- Returns an array of asset handles that have the given tag in their tag set.
+---@param tag string Tag string to match.
+---@return table Array of `LAssetHandle` values tagged with `tag`.
 lurek.asset.findByTag = function(tag) end
 
----@param type_str any
+--- Returns an array of asset handles whose type exactly matches `type_str`.
+---@param type_str string Type string such as `"image"`, `"audio"`, `"toml"`.
+---@return table Array of `LAssetHandle` values of that type.
 lurek.asset.findByType = function(type_str) end
 
----@param handle any
+--- Returns the underlying asset value for a cached handle.
+---@param handle LAssetHandle Asset handle to retrieve.
+---@return string Source text for text-like asset types.
+---@overload fun(handle: LAssetHandle): table # Runtime object returned by image/font/audio loaders for binary types.
 lurek.asset.get = function(handle) end
 
 --- Returns the group label for an asset handle.
@@ -2583,7 +2596,17 @@ lurek.asset.get = function(handle) end
 ---@return string Group label or empty string.
 lurek.asset.getGroup = function(handle) end
 
----@param handle any
+---@class AssetGetInfoResult
+---@field path string Filesystem path to the asset.
+---@field type string Asset type string.
+---@field name string Display name, or the path file-stem when none is set.
+---@field group string Group label, or empty string when none is set.
+---@field tags table Array of tag strings.
+---@field refcount number Current reference count.
+
+--- Returns a table containing all metadata for an asset handle.
+---@param handle LAssetHandle Asset handle to inspect.
+---@return AssetGetInfoResult Metadata table; see fields below.
 lurek.asset.getInfo = function(handle) end
 
 --- Returns the display name of an asset handle.
@@ -2617,13 +2640,17 @@ lurek.asset.hasTag = function(handle, tag) end
 ---@return boolean True when the asset is still cached.
 lurek.asset.isLoaded = function(handle) end
 
----@param path any
----@param type_str any
----@param opts? any
-lurek.asset.load = function(path, type_str, opts) end
+--- Loads and caches an asset by path and type, returning a ref-counted handle.
+---@param path string Filesystem path to the asset file.
+---@param asset_type string Asset type string; see above for valid values.
+---@param opts? table Optional metadata: `{name, group, tags}`.
+---@return LAssetHandle Handle that keeps the asset alive in the cache.
+lurek.asset.load = function(path, asset_type, opts) end
 
----@param paths any
----@param callback any
+--- Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
+---@param paths table Array of `{path, type}` pairs (or `{path=…, type=…}` tables).
+---@param callback any Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.
+---@return nil No value is returned.
 lurek.asset.preload = function(paths, callback) end
 
 --- Returns the current ref count for a handle, or 0 when it is no longer loaded.
@@ -2649,6 +2676,14 @@ lurek.asset.setGroup = function(handle, group) end
 ---@return nil No value is returned.
 lurek.asset.setName = function(handle, name) end
 
+---@class AssetStatsResult
+---@field loaded number Number of distinct assets currently cached.
+---@field total_refs number Sum of all ref counts across all cached assets.
+---@field types table Per-type entry counts keyed by type string.
+---@field groups table Sorted array of unique group labels in the cache.
+
+--- Returns a snapshot table describing the current cache state.
+---@return AssetStatsResult Table with `loaded`, `total_refs`, `types`, and `groups` fields.
 lurek.asset.stats = function() end
 
 --- Decrements the ref count for a cached asset; removes the entry when it reaches zero.
@@ -12046,7 +12081,7 @@ function LEnv:reset() end
 ---@return table d Extra info table.
 function LEnv:step(action) end
 
---- Returns the type name `"LEnv"`.
+--- Returns this environment wrapper's type name `"LEnv"`.
 ---@return string The string `LEnv`.
 function LEnv:type() end
 
@@ -12071,7 +12106,7 @@ function LFrameStack:get() end
 ---@param obs number[] Observation vector to push.
 function LFrameStack:push(obs) end
 
---- Clears all stored frames.
+--- Clears all stored observation frames from the stack.
 function LFrameStack:reset() end
 
 --- Returns the type name `"LFrameStack"`.
@@ -12127,10 +12162,11 @@ LModel = {}
 
 --- Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
 ---@param input any State index (integer) for QLearner/Bandit, or number array table for NeuralNet.
----@return any Action index (integer) for QLearner/Bandit, or number array for NeuralNet.
+---@return number a Action index for QLearner/Bandit, or number-array table for NeuralNet.
+---@return table b Action index for QLearner/Bandit, or number-array table for NeuralNet.
 function LModel:predict(input) end
 
---- Returns the type name `"LModel"`.
+--- Returns this wrapper's stable type name `"LModel"`.
 ---@return string The string `LModel`.
 function LModel:type() end
 
@@ -15792,7 +15828,7 @@ function LSseStream:close() end
 function LSseStream:isOpen() end
 
 --- Polls for the next available event from the SSE stream (non-blocking).
----@return table? Event table `{ id?, event?, data }`, or nil when no event is ready.
+---@return table Event table `{ id?, event?, data }` when available; returns nil when no event is ready.
 function LSseStream:next() end
 
 --- Returns the Lua-visible type name for this SSE stream handle.
@@ -17411,6 +17447,79 @@ function LFlowField:type() end
 ---@return boolean True when the supplied type name matches this handle.
 function LFlowField:typeOf(name) end
 
+--- Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
+---@class LGoalMap
+LGoalMap = {}
+
+--- Registers a source cell for this goal map. Coordinates are one-based.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param weight? number Relative weight (default 1). Lower = stronger pull.
+function LGoalMap:addSource(x, y, weight) end
+
+--- Runs multi-source Dijkstra to build the distance field using the registered blocker.
+function LGoalMap:bake() end
+
+--- Removes all registered source cells.
+function LGoalMap:clearSources() end
+
+--- Returns the minimum cost from (x, y) to the nearest source.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Distance value; max-int means unreachable.
+function LGoalMap:distanceAt(x, y) end
+
+--- Returns a normalised direction vector pointing away from sources (for fleeing NPCs).
+---@param x number One-based column.
+---@param y number One-based row.
+---@param fear? number Scale factor (default 1.0).
+---@return number a dx component.
+---@return number b dy component.
+function LGoalMap:flee(x, y, fear) end
+
+--- Returns all cells reachable from (cx, cy) within `threshold` steps.
+---@param cx number One-based center column.
+---@param cy number One-based center row.
+---@param threshold number Maximum distance to include.
+---@return table Array of `{x, y}` tables (one-based).
+function LGoalMap:floodFill(cx, cy, threshold) end
+
+--- Returns a normalised direction vector pointing toward the nearest source.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number a dx component.
+---@return number b dy component.
+function LGoalMap:gradientAt(x, y) end
+
+--- Returns true when the distance field has been baked and not invalidated.
+---@return boolean True when the field is ready for queries.
+function LGoalMap:isReady() end
+
+--- Restores a distance field from a blob produced by `save`.
+---@param blob string Serialised blob.
+function LGoalMap:restore(blob) end
+
+--- Serialises the current distance field to a binary blob string.
+---@return string Serialised blob.
+function LGoalMap:save() end
+
+--- Sets a Lua predicate called during `bake` to determine blocked cells.
+---@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
+function LGoalMap:setBlocker(fn) end
+
+--- Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.
+---@param sources table Array of `{x, y, weight?}` tables.
+function LGoalMap:setSources(sources) end
+
+--- Returns the Lua-visible type name for this goal map handle.
+---@return string The string `LGoalMap`.
+function LGoalMap:type() end
+
+--- Returns whether this goal map handle matches a supported type name.
+---@param name string Type name to check.
+---@return boolean True when the name matches.
+function LGoalMap:typeOf(name) end
+
 --- Lua-side wrapper for a hexagonal grid.
 ---@class LHexGrid
 LHexGrid = {}
@@ -17899,6 +18008,12 @@ lurek.pathfind.getThreadCount = function() end
 ---@param grid_ud LNavGrid Navigation grid to compute flow field from.
 ---@return LFlowField New flow field handle.
 lurek.pathfind.newFlowField = function(grid_ud) end
+
+--- Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@return LGoalMap New goal map ready for source registration and baking.
+lurek.pathfind.newGoalMap = function(width, height) end
 
 --- Creates a hex grid with the given dimensions.
 ---@param width number Grid width in hex columns.
@@ -23072,7 +23187,7 @@ lurek.render.loadObj = function(path) end
 ---@return LCanvas The created canvas handle.
 lurek.render.newCanvas = function(width, height) end
 
---- Performs the 'render' operation.
+--- Registers the depth-sorted drawing helper constructor in the render module.
 ---@return LDepthSorter A fresh depth sorter with no queued entries.
 lurek.render.newDepthSorter = function() end
 
@@ -29205,6 +29320,63 @@ lurek.validator.validateFile = function(path) end
 ---@class lurek.visibility
 lurek.visibility = {}
 
+--- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+---@class LFov
+LFov = {}
+
+--- Runs recursive shadowcasting from the observer position.
+---@param ox number Observer column (one-based).
+---@param oy number Observer row (one-based).
+function LFov:compute(ox, oy) end
+
+--- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+---@param fn function Callback receiving column and row integers.
+function LFov:eachVisible(fn) end
+
+--- Serialises the visible and explored masks to a binary blob.
+---@return string Binary blob.
+function LFov:export() end
+
+--- Restores visible and explored masks from a blob produced by `export`.
+---@param blob string Binary blob.
+function LFov:import(blob) end
+
+--- Returns true if the cell has ever been visible.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when explored.
+function LFov:isExplored(x, y) end
+
+--- Returns true if the cell is visible in the current frame.
+---@param x number Column (one-based).
+---@param y number Row (one-based).
+---@return boolean True when visible.
+function LFov:isVisible(x, y) end
+
+--- Clears the explored mask so all cells appear unexplored.
+function LFov:resetExplored() end
+
+--- Sets the Lua predicate that determines which cells are opaque.
+---@param fn function `fn(x: integer, y: integer) -> boolean` (one-based).
+function LFov:setBlocker(fn) end
+
+--- Changes the visibility radius for subsequent compute calls.
+---@param range number Maximum sight radius in cells.
+function LFov:setRange(range) end
+
+--- Returns the Lua-visible type name for this FOV handle.
+---@return string The string `LFov`.
+function LFov:type() end
+
+--- Returns whether this FOV handle matches the given type name.
+---@param name string Type name to check.
+---@return boolean True when the name matches.
+function LFov:typeOf(name) end
+
+--- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+---@return table Array of cell position tables.
+function LFov:visibleCells() end
+
 --- Lua-side wrapper for a visibility grid instance.
 ---@class LVisibilityGrid
 LVisibilityGrid = {}
@@ -29289,6 +29461,11 @@ function LVisibilityGrid:sharesVisibility(player_a, player_b) end
 ---@param config table Configuration table with `regions` (integer) and `players` (integer) fields. Optional `fog` sub-table with `discovered` (number), `hidden` (number), `smooth` (boolean), `speed` (number).
 ---@return LVisibilityGrid New visibility grid handle.
 lurek.visibility.new = function(config) end
+
+--- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+---@param opts table `{ range=integer, light_walls=boolean? }` (default light_walls=true).
+---@return LFov New FOV handle ready for blocker assignment and compute calls.
+lurek.visibility.newFov = function(opts) end
 
 ---@class lurek.window
 lurek.window = {}

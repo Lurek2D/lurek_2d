@@ -101,7 +101,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
   steer:addWander(25, 50, 8, 0.5)
   local fx, fy = steer:calculate(100, 100, 10, 0, 80, 150, 1 / 60)
   print(&quot;LSteeringManager:addWander: fx=&quot; .. tostring(fx) .. &quot; fy=&quot; .. tostring(fy))
-end</code></pre></details></article><article class="item-row api-row" id="method-applycustomsteering"><div class="item-row-main"><h3>applyCustomSteering</h3><pre class="inline-signature">LSteeringManager:applyCustomSteering(agent: LAgent, dt: number) -&gt; number, number</pre><p>Runs enabled custom steering callbacks for an agent and returns the weighted combined force.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:1044</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-applycustomsteering"><div class="item-row-main"><h3>applyCustomSteering</h3><pre class="inline-signature">LSteeringManager:applyCustomSteering(agent: LBot, dt: number) -&gt; number, number</pre><p>Runs enabled custom steering callbacks for an agent and returns the weighted combined force.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:1044</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent(&quot;pusher&quot;)
   npc:setPosition(100, 100)
@@ -183,8 +183,8 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LSteeringManager:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this steering manager handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:1000</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
   local steer = lurek.ai.newSteeringManager()
   local is_steer = steer:typeOf(&quot;LSteeringManager&quot;)
-  local is_other = steer:typeOf(&quot;LAgent&quot;)
-  print(&quot;LSteeringManager:typeOf: LSteeringManager=&quot; .. tostring(is_steer) .. &quot; LAgent=&quot; .. tostring(is_other))
+  local is_other = steer:typeOf(&quot;LBot&quot;)
+  print(&quot;LSteeringManager:typeOf: LSteeringManager=&quot; .. tostring(is_steer) .. &quot; LBot=&quot; .. tostring(is_other))
 end</code></pre></details></article>
   </div>
 </section>

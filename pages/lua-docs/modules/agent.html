@@ -87,7 +87,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-isa
 end</code></pre></details></article><article class="item-row api-row" id="fn-listmodels"><div class="item-row-main"><h3>listModels</h3><pre class="inline-signature">lurek.agent.listModels() -&gt; table</pre><p>Returns a list of available model names from the configured LLM server.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/agent_api.rs:1240</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local models = lurek.agent.listModels()
     print(&quot;Available models:&quot;, #models)
-end</code></pre></details></article><article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.agent.new(config: table) -&gt; LAgent</pre><p>Creates a new LLM Agent instance.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/agent_api.rs:1042</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-new"><div class="item-row-main"><h3>new</h3><pre class="inline-signature">lurek.agent.new(config: table) -&gt; LAgent</pre><p>Creates a new configurable LLM Agent runtime instance.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/agent_api.rs:1042</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local agent = lurek.agent.new({
         url          = &quot;http://localhost:11434/api/generate&quot;,
         model        = &quot;llama3&quot;,

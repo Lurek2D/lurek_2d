@@ -447,7 +447,7 @@ end
 --@api-stub: lurek.input.wasReleased
 do
     -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased("space")
+    local v = lurek.input.wasReleased()
     print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
     print("space released = " .. tostring(v))
 end

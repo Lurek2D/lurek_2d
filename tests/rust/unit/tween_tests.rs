@@ -2,7 +2,7 @@
 //! This file keeps focused coverage for Rust-only tween internals.
 
 mod state_tests {
-    use lurek2d::tween::{resolve_easing, TweenState};
+    use lurek2d::tween::{builtin_easing_names, TweenState};
 
     #[test]
     fn tween_state_zero_duration_clamps_and_completes() {
@@ -25,9 +25,9 @@ mod state_tests {
     }
 
     #[test]
-    fn resolve_easing_falls_back_for_unknown_name() {
-        assert!(resolve_easing("linear").is_some());
-        assert!(resolve_easing("does_not_exist").is_none());
+    fn builtin_easing_names_contains_linear() {
+        assert!(builtin_easing_names().contains(&"linear"));
+        assert!(builtin_easing_names().contains(&"quadInOut"));
     }
 }
 

@@ -107,5 +107,7 @@ Modules are grouped by runtime layer. Each module page includes its spec Purpose
 
 | Module | Namespace | Purpose |
 |---|---|---|
+| [bin](Module-bin) | `lurek.bin` | Command-line helper binaries grouped under src/bin for diagnostics, maintenance, and local tooling tasks. |
 | [engine](Module-engine) | `lurek.engine` | lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts. |
+| [lua_api](Module-lua_api) | `lurek.lua_api` | Binding layer that registers and documents the public lurek.* Lua API surface. |
 | [system](Module-system) | `lurek.system` | lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection. |

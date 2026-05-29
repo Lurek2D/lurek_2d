@@ -62,7 +62,7 @@ end</code></pre></details>
     <article class="item-row api-row" id="method-addmessage"><div class="item-row-main"><h3>addMessage</h3><pre class="inline-signature">LAgentChat:addMessage(role: string, content: string) -&gt; nil</pre><p>Appends a message to the chat history without sending a completion.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:686</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local chat = lurek.agent.newChat()
     chat:addMessage(&quot;user&quot;, &quot;Tell me a joke.&quot;)
-end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LAgentChat:clear() -&gt; nil</pre><p>Clears the chat history.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:707</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">LAgentChat:clear() -&gt; nil</pre><p>Clears all stored chat history messages.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:707</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local chat = lurek.agent.newChat()
     chat:addMessage(&quot;user&quot;, &quot;Hello&quot;)
     chat:clear()

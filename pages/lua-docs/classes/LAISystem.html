@@ -189,7 +189,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     system:addInstruction(&quot;debug_hint&quot;, &quot;Temporary debug context.&quot;)
     local removed = system:removeInstruction(&quot;debug_hint&quot;)
     print(&quot;Instruction removed:&quot;, removed)
-end</code></pre></details></article><article class="item-row api-row" id="method-removeskill"><div class="item-row-main"><h3>removeSkill</h3><pre class="inline-signature">LAISystem:removeSkill(name: string) -&gt; boolean</pre><p>Removes a system skill by name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:415</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-removeskill"><div class="item-row-main"><h3>removeSkill</h3><pre class="inline-signature">LAISystem:removeSkill(name: string) -&gt; boolean</pre><p>Removes a registered system skill by exact name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:415</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local system = lurek.agent.newSystem({})
     system:addSkill(&quot;temp_skill&quot;, { &quot;test&quot; }, &quot;Temporary.&quot;)
     local removed = system:removeSkill(&quot;temp_skill&quot;)

@@ -76,7 +76,7 @@ impl LevelDetector {
         }
     }
 
-    /// Reset accumulated state.
+    /// Resets all accumulated detector state counters to defaults.
     pub fn reset(&mut self) {
         self.sum_squares = 0.0;
         self.peak = 0.0;
@@ -105,7 +105,7 @@ impl SpectrumAnalyzer {
         }
     }
 
-    /// Set the analyzer bin count.
+    /// Sets the analyzer output bin count with safe clamping.
     pub fn set_size(&mut self, size: usize) {
         self.size = size.clamp(1, 512);
     }

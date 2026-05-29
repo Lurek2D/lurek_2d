@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LBot - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="topnav">
+    <div class="topnav-left">
+      <a class="topnav-home" href="../index.html" title="Back to portal">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+      <span class="topnav-sep" aria-hidden="true">/</span>
+      <a class="topnav-brand" href="../index.html">
+        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
+        <span>Lua API</span>
+      </a>
+    </div>
+    <div class="topnav-right">
+      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
+    </div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <label class="search-box">
+        <span class="sr-only">Search API</span>
+        <input id="search" type="search" placeholder="Search module, class, function…">
+      </label>
+      <div class="search-filters">
+        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
+        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a class="active" href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a href="../modules/visibility.html">lurek.visibility</a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LBot</h1>
+  <p>Lua handle for a named agent stored inside an AI world.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/ai.html">lurek.ai</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;knight_03&quot;)
+  local name = npc:getName()
+  print(&quot;LBot:getName: &quot; .. name)
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LBot userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-addtag"><div class="item-row-main"><h3>addTag</h3><pre class="inline-signature">LBot:addTag(tag: string)</pre><p>Adds a tag string to this agent when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:297</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;guard&quot;)
+  npc:addTag(&quot;hostile&quot;)
+  local has_hostile = npc:hasTag(&quot;hostile&quot;)
+  print(&quot;LBot:addTag: hostile=&quot; .. tostring(has_hostile))
+end</code></pre></details></article><article class="item-row api-row" id="method-getblackboard"><div class="item-row-main"><h3>getBlackboard</h3><pre class="inline-signature">LBot:getBlackboard() -&gt; LAIBlackboard</pre><p>Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:326</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;ranger&quot;)
+  local bb = npc:getBlackboard()
+  bb:setNumber(&quot;hp&quot;, 100)
+  local hp = bb:getNumber(&quot;hp&quot;, 0)
+  print(&quot;LBot:getBlackboard: hp=&quot; .. tostring(hp))
+end</code></pre></details></article><article class="item-row api-row" id="method-getdecisionmodel"><div class="item-row-main"><h3>getDecisionModel</h3><pre class="inline-signature">LBot:getDecisionModel() -&gt; string</pre><p>Returns this agent&#x27;s decision model name or the default model name for a missing agent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:276</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;farmer&quot;)
+  npc:setDecisionModel(&quot;custom&quot;)
+  local model = npc:getDecisionModel()
+  print(&quot;LBot:getDecisionModel: &quot; .. model)
+end</code></pre></details></article><article class="item-row api-row" id="method-getmaxforce"><div class="item-row-main"><h3>getMaxForce</h3><pre class="inline-signature">LBot:getMaxForce() -&gt; number</pre><p>Returns this agent&#x27;s maximum steering force or the default force for a missing agent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:235</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;scout&quot;)
+  npc:setMaxForce(200)
+  local force = npc:getMaxForce()
+  print(&quot;LBot:getMaxForce: &quot; .. tostring(force))
+  print(&quot;LBot:getMaxForce: name=&quot; .. npc:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getmaxspeed"><div class="item-row-main"><h3>getMaxSpeed</h3><pre class="inline-signature">LBot:getMaxSpeed() -&gt; number</pre><p>Returns this agent&#x27;s maximum movement speed or the default speed for a missing agent.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:216</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;courier&quot;)
+  npc:setMaxSpeed(150)
+  local speed = npc:getMaxSpeed()
+  print(&quot;LBot:getMaxSpeed: &quot; .. tostring(speed))
+  print(&quot;LBot:getMaxSpeed: name=&quot; .. npc:getName())
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LBot:getName() -&gt; string</pre><p>Returns this agent&#x27;s stable world name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:163</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;knight_03&quot;)
+  local name = npc:getName()
+  print(&quot;LBot:getName: &quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LBot:getPosition() -&gt; number, number</pre><p>Returns this agent&#x27;s world position or the origin when the agent has been removed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:177</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;static_guard&quot;)
+  npc:setPosition(400, 300)
+  local x, y = npc:getPosition()
+  print(&quot;LBot:getPosition: &quot; .. tostring(x) .. &quot;, &quot; .. tostring(y))
+end</code></pre></details></article><article class="item-row api-row" id="method-getpriority"><div class="item-row-main"><h3>getPriority</h3><pre class="inline-signature">LBot:getPriority() -&gt; integer</pre><p>Returns this agent&#x27;s integer priority or zero when the agent has been removed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;grunt&quot;)
+  npc:setPriority(5)
+  local prio = npc:getPriority()
+  print(&quot;LBot:getPriority: &quot; .. tostring(prio))
+end</code></pre></details></article><article class="item-row api-row" id="method-getvelocity"><div class="item-row-main"><h3>getVelocity</h3><pre class="inline-signature">LBot:getVelocity() -&gt; number, number</pre><p>Returns this agent&#x27;s velocity vector or zero velocity when the agent has been removed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:197</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;idle_npc&quot;)
+  npc:setVelocity(0, 0)
+  local vx, vy = npc:getVelocity()
+  print(&quot;LBot:getVelocity: vx=&quot; .. tostring(vx) .. &quot; vy=&quot; .. tostring(vy))
+end</code></pre></details></article><article class="item-row api-row" id="method-hastag"><div class="item-row-main"><h3>hasTag</h3><pre class="inline-signature">LBot:hasTag(tag: string) -&gt; boolean</pre><p>Returns whether this agent currently has the given tag.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:316</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;merchant&quot;)
+  npc:addTag(&quot;friendly&quot;)
+  local friendly = npc:hasTag(&quot;friendly&quot;)
+  local hostile = npc:hasTag(&quot;hostile&quot;)
+  print(&quot;LBot:hasTag: friendly=&quot; .. tostring(friendly) .. &quot; hostile=&quot; .. tostring(hostile))
+end</code></pre></details></article><article class="item-row api-row" id="method-removetag"><div class="item-row-main"><h3>removeTag</h3><pre class="inline-signature">LBot:removeTag(tag: string)</pre><p>Removes a tag string from this agent when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;spy&quot;)
+  npc:addTag(&quot;visible&quot;)
+  npc:removeTag(&quot;visible&quot;)
+  local still_has = npc:hasTag(&quot;visible&quot;)
+  print(&quot;LBot:removeTag: visible=&quot; .. tostring(still_has))
+end</code></pre></details></article><article class="item-row api-row" id="method-setcustommodel"><div class="item-row-main"><h3>setCustomModel</h3><pre class="inline-signature">LBot:setCustomModel(callback: function)</pre><p>Installs a Lua callback as this agent&#x27;s decision model and stores it in the callback registry.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:286</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;thinker&quot;)
+  npc:setDecisionModel(&quot;custom&quot;)
+  local called_with_dt = 0
+  npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
+  world:update(0.016)
+  print(&quot;LBot:setCustomModel: dt=&quot; .. tostring(called_with_dt))
+end</code></pre></details></article><article class="item-row api-row" id="method-setdecisionmodel"><div class="item-row-main"><h3>setDecisionModel</h3><pre class="inline-signature">LBot:setDecisionModel(model: string)</pre><p>Sets this agent&#x27;s built-in decision model from a string name when the name is recognized.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:264</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;worker&quot;)
+  npc:setDecisionModel(&quot;custom&quot;)
+  local model = npc:getDecisionModel()
+  print(&quot;LBot:setDecisionModel: &quot; .. model)
+end</code></pre></details></article><article class="item-row api-row" id="method-setmaxforce"><div class="item-row-main"><h3>setMaxForce</h3><pre class="inline-signature">LBot:setMaxForce(v: number)</pre><p>Sets this agent&#x27;s maximum steering force when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:226</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;tank&quot;)
+  npc:setMaxForce(80)
+  print(&quot;LBot:setMaxForce: done&quot;)
+  print(&quot;LBot:setMaxForce: force=&quot; .. tostring(npc:getMaxForce()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setmaxspeed"><div class="item-row-main"><h3>setMaxSpeed</h3><pre class="inline-signature">LBot:setMaxSpeed(v: number)</pre><p>Sets this agent&#x27;s maximum movement speed when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:207</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;sprinter&quot;)
+  npc:setMaxSpeed(200)
+  print(&quot;LBot:setMaxSpeed: done&quot;)
+  print(&quot;LBot:setMaxSpeed: speed=&quot; .. tostring(npc:getMaxSpeed()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LBot:setPosition(x: number, y: number)</pre><p>Sets this agent&#x27;s world position when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:168</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;mover&quot;)
+  npc:setPosition(256, 128)
+  local x, y = npc:getPosition()
+  print(&quot;LBot:setPosition: done&quot;)
+  print(&quot;LBot:setPosition: pos=&quot; .. tostring(x) .. &quot;, &quot; .. tostring(y))
+end</code></pre></details></article><article class="item-row api-row" id="method-setpriority"><div class="item-row-main"><h3>setPriority</h3><pre class="inline-signature">LBot:setPriority(p: integer)</pre><p>Sets this agent&#x27;s integer priority when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:245</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;captain&quot;)
+  npc:setPriority(10)
+  print(&quot;LBot:setPriority: &quot; .. tostring(npc:getPriority()))
+end</code></pre></details></article><article class="item-row api-row" id="method-setvelocity"><div class="item-row-main"><h3>setVelocity</h3><pre class="inline-signature">LBot:setVelocity(x: number, y: number)</pre><p>Sets this agent&#x27;s velocity vector when the agent still exists in its world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:188</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;runner&quot;)
+  npc:setVelocity(60, -30)
+  local vx, vy = npc:getVelocity()
+  print(&quot;LBot:setVelocity: done&quot;)
+  print(&quot;LBot:setVelocity: vel=&quot; .. tostring(vx) .. &quot;, &quot; .. tostring(vy))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LBot:type() -&gt; string</pre><p>Returns the Lua-visible type name for this agent handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:341</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;villager&quot;)
+  local t = npc:type()
+  print(&quot;LBot:type: &quot; .. t)
+  print(&quot;LBot:type: matches=&quot; .. tostring(npc:typeOf(&quot;LBot&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LBot:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this agent handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/ai_api.rs:346</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent(&quot;knight&quot;)
+  local is_agent = npc:typeOf(&quot;LBot&quot;)
+  local is_image = npc:typeOf(&quot;LImage&quot;)
+  print(&quot;LBot:typeOf: LBot=&quot; .. tostring(is_agent) .. &quot; LImage=&quot; .. tostring(is_image))
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+  <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

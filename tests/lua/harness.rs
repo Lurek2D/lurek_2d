@@ -517,6 +517,11 @@ fn lua_unit_effect_unit() {
 }
 
 #[test]
+fn lua_unit_effects_audio_runtime_smoke_unit() {
+    run_lua_test("unit/test_effects_audio_runtime_smoke_unit.lua");
+}
+
+#[test]
 fn lua_unit_event_unit() {
     run_lua_test("unit/test_event_core_unit.lua");
 }

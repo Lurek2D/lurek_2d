@@ -1,46 +1,29 @@
-//! Ref-counted asset cache for `lurek.asset`.
+//! Ref-counted asset registry used by `lurek.asset`.
 //!
-//! ## Responsibilities
-//!
-//! `AssetCache` is the sole owner of all registered game-asset entries.
-//! It provides:
-//!
-//! - Unique `u64` handle IDs for each registered entry.
-//! - Reference counting: entries are removed when their ref count reaches zero.
-//! - Optional display names, group labels, and tag sets per entry.
-//! - Query methods: find entries by name substring, exact group, exact tag, or type string.
-//!
-//! ## Asset types
-//!
-//! | Type string | Storage          | `get()` resolution                    |
-//! |-------------|------------------|---------------------------------------|
-//! | `image`     | path ref         | `lurek.image.loadImage(path)`         |
-//! | `font`      | path ref         | `lurek.font.load(path, 16)`           |
-//! | `audio`     | path ref         | `lurek.audio.newSource(path)`         |
-//! | `music`     | path ref         | `lurek.audio.newSource(path)`         |
-//! | `text`      | cached text      | returns content string directly       |
-//! | `toml`      | cached text      | returns raw TOML string               |
-//! | `json`      | cached text      | returns raw JSON string               |
-//! | `obj`       | cached text      | returns raw OBJ geometry string       |
-//! | `shader`    | cached text      | returns shader source string          |
-//! | `lua`       | cached text      | returns Lua source string             |
-//!
-//! ## Design notes
-//!
-//! The cache is a plain in-process store — it records *where* an asset lives on disk
-//! and *how it is classified*, not the decoded GPU resource itself. Decoded resources
-//! (textures, fonts, audio sources) are owned by the respective `lurek.*` sub-modules;
-//! `lurek.asset` is the lightweight registry and search layer.
-//!
-//! One cache instance is created per Lua VM during `asset_api::register()`.
-//! Worker VMs created by `lurek.thread` each get their own independent cache.
+//! `AssetCache` stores asset metadata, optional text payload, and reference counts.
+//! Decoded runtime resources remain owned by feature modules such as image, font, and audio.
+//! This module provides load bookkeeping, metadata/tag queries, and handle lifecycle helpers.
 
 use std::collections::{HashMap, HashSet};
 
-/// Asset type discriminant.
+/// Asset type discriminant used by the `lurek.asset` cache registry.
 ///
 /// Governs how `get()` resolves the underlying resource and which
 /// `lurek.*` constructor is called on the Lua side.
+///
+/// # Variants
+///
+/// - `Image`: raster image path reference.
+/// - `Font`: font file path reference.
+/// - `Audio`: short SFX source path reference.
+/// - `Music`: long music source path reference.
+/// - `Text`: plain-text file content cached in memory.
+/// - `Toml`: TOML source text cached in memory.
+/// - `Json`: JSON source text cached in memory.
+/// - `Obj`: OBJ source text cached in memory.
+/// - `Shader`: shader source text cached in memory.
+/// - `Lua`: Lua source text cached in memory.
+/// - `Unknown(String)`: unrecognized type string stored as-is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AssetType {
     /// Raster image; resolved via `lurek.image.loadImage`.
@@ -117,6 +100,16 @@ impl AssetType {
 }
 
 /// A single registered asset entry.
+///
+/// # Fields
+///
+/// - `path`: filesystem path to the source file.
+/// - `asset_type`: type discriminant used by Lua `get()`.
+/// - `ref_count`: manual retain/release counter.
+/// - `text_content`: cached source text for text-like assets.
+/// - `name`: optional display name.
+/// - `group`: optional grouping key.
+/// - `tags`: searchable tag set.
 pub struct AssetEntry {
     /// Filesystem path to the asset.
     pub path: String,
@@ -139,6 +132,11 @@ pub struct AssetEntry {
 /// All mutation is performed through `&mut self` methods. Interior mutability
 /// is provided by the `Rc<RefCell<AssetCache>>` wrapper created in
 /// `asset_api::register()`.
+///
+/// # Fields
+///
+/// - `entries`: map of handle ID to `AssetEntry`.
+/// - `next_id`: monotonically increasing handle counter.
 pub struct AssetCache {
     entries: HashMap<u64, AssetEntry>,
     next_id: u64,

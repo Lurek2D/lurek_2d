@@ -46,8 +46,8 @@
   <p class="eyebrow">Module</p>
   <h1>lurek.visibility</h1>
   <p>`lurek.visibility` -- Lua bindings for universal fog-of-war, discovery, and line-of-sight. - Registers `lurek.visibility.*` functions and types via `register()`. - `LuaVisibilityGrid`: userdata type exposed to Lua. - Bridges 16 Lua-callable methods via `mlua`.</p>
-  <div class="api-meta api-meta-header"><span>1 functions</span><span>1 classes</span><span>src/lua_api/visibility_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 16</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+  <div class="api-meta api-meta-header"><span>2 functions</span><span>2 classes</span><span>src/lua_api/visibility_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 29</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
 </header>
 
 <section class="section-block" id="functions">
@@ -60,6 +60,9 @@
     local vg = lurek.visibility.new({ regions = 20 * 15, players = 4 })
     print(&quot;lurek.visibility.new type=&quot; .. type(vg))
     print(&quot;players=&quot; .. vg:playerCount())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newfov"><div class="item-row-main"><h3>newFov</h3><pre class="inline-signature">lurek.visibility.newFov(opts: table) -&gt; LFov</pre><p>Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/visibility_api.rs:238</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    print(&quot;newFov type=&quot; .. fov:type())
 end</code></pre></details></article>
   </div>
 </section>
@@ -70,7 +73,7 @@ end</code></pre></details></article>
     <p>Lua userdata types that expose methods through this module.</p>
   </div>
     <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LVisibilityGrid.html">LVisibilityGrid</a></h3><p>Lua-side wrapper for a visibility grid instance.</p></div><div class="item-row-meta"><span>15 methods</span><span>module visibility</span></div><div class="card-note">Example: visibility.lua</div></article>
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFov.html">LFov</a></h3><p>Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.</p></div><div class="item-row-meta"><span>12 methods</span><span>module visibility</span></div><div class="card-note">Example: visibility.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LVisibilityGrid.html">LVisibilityGrid</a></h3><p>Lua-side wrapper for a visibility grid instance.</p></div><div class="item-row-meta"><span>15 methods</span><span>module visibility</span></div><div class="card-note">Example: visibility.lua</div></article>
   </div>
 </section>
 

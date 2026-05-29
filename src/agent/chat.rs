@@ -261,7 +261,7 @@ impl LlmChat {
         self.history.push(ChatMessage { role, content });
     }
 
-    /// Clears all history entries.
+    /// Clears all accumulated chat history entries.
     pub fn clear(&mut self) {
         self.history.clear();
     }

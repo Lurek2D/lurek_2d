@@ -875,21 +875,21 @@ end
 
 --@api-stub: lurek.learning.wrap
 do
-    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("wrapped model type = " .. model:type())
 end
 
 --@api-stub: LBandit:predict
 do
-    local b = lurek.learning.newBandit(3)
-    local action = b:predict(0)
+    local b = lurek.learning.newBandit(3, "ucb1", 0.1, 12345)
+    local action = b:predict()
     print("bandit predict = " .. action)
 end
 
 --@api-stub: LModel:predict
 do
-    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     local action = model:predict(0)
     print("model predict = " .. action)
@@ -897,28 +897,28 @@ end
 
 --@api-stub: LModel:type
 do
-    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("model type = " .. model:type())
 end
 
 --@api-stub: LModel:typeOf
 do
-    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print("model typeOf LModel = " .. tostring(model:typeOf("LModel")))
 end
 
 --@api-stub: LNeuralNet:predict
 do
-    local nn = lurek.learning.newNeuralNet({2, 4, 1}, {activation="relu"})
+    local nn = lurek.learning.newNeuralNet()
     local action = nn:predict({0.5, 0.3})
     print("nn predict = " .. tostring(action))
 end
 
 --@api-stub: LQLearner:predict
 do
-    local q = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local q = lurek.learning.newQLearner(4, 2)
     local action = q:predict(0)
     print("qlearner predict = " .. action)
 end

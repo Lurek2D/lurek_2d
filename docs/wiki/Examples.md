@@ -44,6 +44,7 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 | [html.lua](../blob/main/content/examples/html.lua) | `lurek.html` | API example |
 | [i18n.lua](../blob/main/content/examples/i18n.lua) | `lurek.i18n` | API example |
 | [image.lua](../blob/main/content/examples/image.lua) | `lurek.image` | API example |
+| [simple_main.lua](../blob/main/content/examples/simple_main.lua) | `lurek.init` | API example |
 | [input.lua](../blob/main/content/examples/input.lua) | `lurek.input` | API example |
 | [layout.lua](../blob/main/content/examples/layout.lua) | `lurek.layout` | API example |
 | [learning.lua](../blob/main/content/examples/learning.lua) | `lurek.learning` | API example |

@@ -1,9 +1,13 @@
 //! Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
 //!
+//! - `GoalMap`: multi-source Dijkstra distance field for goal-oriented AI movement.
+//!
 //! - Flow fields and influence maps for group movement and tactical queries.
 //! - Navigation grids, hex grids, isometric grids, and navmesh support.
 //! - Async thread-pool dispatch for off-thread path computation.
 
+/// Multi-source Dijkstra distance field for goal-oriented AI movement.
+pub mod goal_map;
 /// AI-oriented flow field with steering integration.
 pub mod ai_flow_field;
 /// Core A* search, line-of-sight checks, and path smoothing.
@@ -32,6 +36,7 @@ pub mod pathgrid;
 pub mod render;
 /// Per-unit pathfinder with waypoint queue and replanning.
 pub mod unit_pathfinder;
+pub use goal_map::{GoalMap, GoalSource, UNREACHABLE};
 pub use ai_flow_field::FlowField as SimpleFlowField;
 pub use astar::{astar, line_of_sight, smooth_path};
 pub use async_pool::PathThreadPool;

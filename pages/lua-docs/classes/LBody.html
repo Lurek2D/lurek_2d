@@ -61,291 +61,291 @@ end</code></pre></details>
     <p>Instance methods exported from the LBody userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-applyangularimpulse"><div class="item-row-main"><h3>applyAngularImpulse</h3><pre class="inline-signature">LBody:applyAngularImpulse(impulse: number)</pre><p>Applies an instantaneous angular impulse (spin) to the body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1759</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-applyangularimpulse"><div class="item-row-main"><h3>applyAngularImpulse</h3><pre class="inline-signature">LBody:applyAngularImpulse(impulse: number)</pre><p>Applies an instantaneous angular impulse (spin) to the body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1760</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, &quot;dynamic&quot;)
     body:applyAngularImpulse(5.0)
     world:step(1 / 60)
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
     print(&quot;angle&quot;, body:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-applyforce"><div class="item-row-main"><h3>applyForce</h3><pre class="inline-signature">LBody:applyForce(fx: number, fy: number)</pre><p>Applies a continuous force to the body&#x27;s center of mass (accumulates over the step).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1730</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-applyforce"><div class="item-row-main"><h3>applyForce</h3><pre class="inline-signature">LBody:applyForce(fx: number, fy: number)</pre><p>Applies a continuous force to the body&#x27;s center of mass (accumulates over the step).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1731</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, &quot;dynamic&quot;)
     body:applyForce(100, 0)
     world:step(1 / 60)
     print(&quot;velocity&quot;, body:getVelocity())
     print(&quot;position&quot;, body:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-applyforceatpoint"><div class="item-row-main"><h3>applyForceAtPoint</h3><pre class="inline-signature">LBody:applyForceAtPoint(fx: number, fy: number, px: number, py: number)</pre><p>Applies a force at a specific world point, generating both linear and angular acceleration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1747</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-applyforceatpoint"><div class="item-row-main"><h3>applyForceAtPoint</h3><pre class="inline-signature">LBody:applyForceAtPoint(fx: number, fy: number, px: number, py: number)</pre><p>Applies a force at a specific world point, generating both linear and angular acceleration.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1748</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, &quot;dynamic&quot;)
     body:applyForceAtPoint(0, -50, 210, 200)
     world:step(1 / 60)
     print(&quot;velocity&quot;, body:getVelocity())
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-applyimpulse"><div class="item-row-main"><h3>applyImpulse</h3><pre class="inline-signature">LBody:applyImpulse(ix: number, iy: number)</pre><p>Applies an instantaneous linear impulse to the body&#x27;s center of mass.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1722</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-applyimpulse"><div class="item-row-main"><h3>applyImpulse</h3><pre class="inline-signature">LBody:applyImpulse(ix: number, iy: number)</pre><p>Applies an instantaneous linear impulse to the body&#x27;s center of mass.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1723</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, &quot;dynamic&quot;)
     body:applyImpulse(0, -200)
     world:step(1 / 60)
     print(&quot;velocity&quot;, body:getVelocity())
     print(&quot;position&quot;, body:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-applytorque"><div class="item-row-main"><h3>applyTorque</h3><pre class="inline-signature">LBody:applyTorque(torque: number)</pre><p>Applies a rotational torque to the body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1737</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-applytorque"><div class="item-row-main"><h3>applyTorque</h3><pre class="inline-signature">LBody:applyTorque(torque: number)</pre><p>Applies a rotational torque to the body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1738</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newCircleBody(200, 200, 10, &quot;dynamic&quot;)
     body:applyTorque(10.0)
     world:step(1 / 60)
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
     print(&quot;angle&quot;, body:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LBody:destroy()</pre><p>Destroys this body, removing it from the world along with all fixtures and joints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1849</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LBody:destroy()</pre><p>Destroys this body, removing it from the world along with all fixtures and joints.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1850</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local temp = world:newBody(400, 400, &quot;dynamic&quot;)
     print(&quot;before&quot;, world:getBodyCount())
     temp:destroy()
     print(&quot;after&quot;, world:getBodyCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-getangle"><div class="item-row-main"><h3>getAngle</h3><pre class="inline-signature">LBody:getAngle() -&gt; number</pre><p>Returns the body&#x27;s rotation angle in radians.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1586</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getangle"><div class="item-row-main"><h3>getAngle</h3><pre class="inline-signature">LBody:getAngle() -&gt; number</pre><p>Returns the body&#x27;s rotation angle in radians.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1587</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngle(math.pi / 6)
     print(&quot;angle&quot;, body:getAngle())
     print(&quot;position&quot;, body:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-getangulardamping"><div class="item-row-main"><h3>getAngularDamping</h3><pre class="inline-signature">LBody:getAngularDamping() -&gt; number</pre><p>Returns the angular damping factor (rotational decay rate).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1807</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getangulardamping"><div class="item-row-main"><h3>getAngularDamping</h3><pre class="inline-signature">LBody:getAngularDamping() -&gt; number</pre><p>Returns the angular damping factor (rotational decay rate).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1808</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngularDamping(0.9)
     print(&quot;angular_damping&quot;, body:getAngularDamping())
     print(&quot;linear_damping&quot;, body:getLinearDamping())
-end</code></pre></details></article><article class="item-row api-row" id="method-getangularvelocity"><div class="item-row-main"><h3>getAngularVelocity</h3><pre class="inline-signature">LBody:getAngularVelocity() -&gt; number</pre><p>Returns the body&#x27;s angular (rotational) velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1599</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getangularvelocity"><div class="item-row-main"><h3>getAngularVelocity</h3><pre class="inline-signature">LBody:getAngularVelocity() -&gt; number</pre><p>Returns the body&#x27;s angular (rotational) velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1600</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngularVelocity(1.25)
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
     print(&quot;angle&quot;, body:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-getfriction"><div class="item-row-main"><h3>getFriction</h3><pre class="inline-signature">LBody:getFriction() -&gt; number</pre><p>Returns the body&#x27;s friction coefficient.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1653</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getfriction"><div class="item-row-main"><h3>getFriction</h3><pre class="inline-signature">LBody:getFriction() -&gt; number</pre><p>Returns the body&#x27;s friction coefficient.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1654</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setFriction(0.25)
     print(&quot;friction&quot;, body:getFriction())
     print(&quot;restitution&quot;, body:getRestitution())
-end</code></pre></details></article><article class="item-row api-row" id="method-getgravityscale"><div class="item-row-main"><h3>getGravityScale</h3><pre class="inline-signature">LBody:getGravityScale() -&gt; number</pre><p>Returns the gravity scale multiplier for this body (1.0 = normal gravity).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1768</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getgravityscale"><div class="item-row-main"><h3>getGravityScale</h3><pre class="inline-signature">LBody:getGravityScale() -&gt; number</pre><p>Returns the gravity scale multiplier for this body (1.0 = normal gravity).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1769</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setGravityScale(-1.0)
     print(&quot;gravity_scale&quot;, body:getGravityScale())
     print(&quot;type&quot;, body:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LBody:getHeight() -&gt; number</pre><p>Returns the body&#x27;s bounding height (from its primary shape).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1646</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LBody:getHeight() -&gt; number</pre><p>Returns the body&#x27;s bounding height (from its primary shape).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1647</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;position&quot;, body:getPosition())
     print(&quot;size&quot;, body:getWidth(), body:getHeight())
-end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LBody:getId() -&gt; integer</pre><p>Returns the unique numeric ID of this body within the world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1526</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LBody:getId() -&gt; integer</pre><p>Returns the unique numeric ID of this body within the world.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1527</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;id&quot;, body:getId())
     print(&quot;position&quot;, body:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-getlayer"><div class="item-row-main"><h3>getLayer</h3><pre class="inline-signature">LBody:getLayer() -&gt; integer</pre><p>Returns the body&#x27;s collision layer bitmask.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1687</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getlayer"><div class="item-row-main"><h3>getLayer</h3><pre class="inline-signature">LBody:getLayer() -&gt; integer</pre><p>Returns the body&#x27;s collision layer bitmask.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1688</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setLayer(4)
     print(&quot;layer&quot;, body:getLayer())
     print(&quot;type&quot;, body:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-getlineardamping"><div class="item-row-main"><h3>getLinearDamping</h3><pre class="inline-signature">LBody:getLinearDamping() -&gt; number</pre><p>Returns the linear damping factor (velocity decay rate, like air resistance).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1794</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getlineardamping"><div class="item-row-main"><h3>getLinearDamping</h3><pre class="inline-signature">LBody:getLinearDamping() -&gt; number</pre><p>Returns the linear damping factor (velocity decay rate, like air resistance).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1795</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setLinearDamping(0.75)
     print(&quot;linear_damping&quot;, body:getLinearDamping())
     print(&quot;velocity&quot;, body:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-getmask"><div class="item-row-main"><h3>getMask</h3><pre class="inline-signature">LBody:getMask() -&gt; integer</pre><p>Returns the body&#x27;s collision mask (which layers this body can collide with).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1704</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getmask"><div class="item-row-main"><h3>getMask</h3><pre class="inline-signature">LBody:getMask() -&gt; integer</pre><p>Returns the body&#x27;s collision mask (which layers this body can collide with).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1705</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setMask(7)
     print(&quot;mask&quot;, body:getMask())
     print(&quot;id&quot;, body:getId())
-end</code></pre></details></article><article class="item-row api-row" id="method-getmass"><div class="item-row-main"><h3>getMass</h3><pre class="inline-signature">LBody:getMass() -&gt; number</pre><p>Returns the body&#x27;s total mass (computed from density and fixture areas).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1612</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getmass"><div class="item-row-main"><h3>getMass</h3><pre class="inline-signature">LBody:getMass() -&gt; number</pre><p>Returns the body&#x27;s total mass (computed from density and fixture areas).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1613</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setMass(5.0)
     print(&quot;mass&quot;, body:getMass())
     print(&quot;friction&quot;, body:getFriction())
     print(&quot;restitution&quot;, body:getRestitution())
-end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LBody:getPosition() -&gt; number</pre><p>Returns the current world-space position of this body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1531</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getposition"><div class="item-row-main"><h3>getPosition</h3><pre class="inline-signature">LBody:getPosition() -&gt; number</pre><p>Returns the current world-space position of this body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1532</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;position&quot;, body:getPosition())
     print(&quot;id&quot;, body:getId())
-end</code></pre></details></article><article class="item-row api-row" id="method-getrestitution"><div class="item-row-main"><h3>getRestitution</h3><pre class="inline-signature">LBody:getRestitution() -&gt; number</pre><p>Returns the body&#x27;s restitution (bounciness) value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1670</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getrestitution"><div class="item-row-main"><h3>getRestitution</h3><pre class="inline-signature">LBody:getRestitution() -&gt; number</pre><p>Returns the body&#x27;s restitution (bounciness) value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1671</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setRestitution(0.15)
     print(&quot;restitution&quot;, body:getRestitution())
     print(&quot;friction&quot;, body:getFriction())
-end</code></pre></details></article><article class="item-row api-row" id="method-gettype"><div class="item-row-main"><h3>getType</h3><pre class="inline-signature">LBody:getType() -&gt; string</pre><p>Returns the body&#x27;s type as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1625</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-gettype"><div class="item-row-main"><h3>getType</h3><pre class="inline-signature">LBody:getType() -&gt; string</pre><p>Returns the body&#x27;s type as a string.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1626</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;sensor&quot;)
     print(&quot;type&quot;, body:getType())
     print(&quot;id&quot;, body:getId())
-end</code></pre></details></article><article class="item-row api-row" id="method-getvelocity"><div class="item-row-main"><h3>getVelocity</h3><pre class="inline-signature">LBody:getVelocity() -&gt; number</pre><p>Returns the body&#x27;s current linear velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1564</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getvelocity"><div class="item-row-main"><h3>getVelocity</h3><pre class="inline-signature">LBody:getVelocity() -&gt; number</pre><p>Returns the body&#x27;s current linear velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1565</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, &quot;dynamic&quot;)
     body:setVelocity(25, -50)
     print(&quot;velocity&quot;, body:getVelocity())
     print(&quot;type&quot;, body:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LBody:getWidth() -&gt; number</pre><p>Returns the body&#x27;s bounding width (from its primary shape).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1639</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LBody:getWidth() -&gt; number</pre><p>Returns the body&#x27;s bounding width (from its primary shape).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1640</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;width&quot;, body:getWidth())
     print(&quot;height&quot;, body:getHeight())
-end</code></pre></details></article><article class="item-row api-row" id="method-getx"><div class="item-row-main"><h3>getX</h3><pre class="inline-signature">LBody:getX() -&gt; number</pre><p>Returns only the X component of the body&#x27;s position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1549</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getx"><div class="item-row-main"><h3>getX</h3><pre class="inline-signature">LBody:getX() -&gt; number</pre><p>Returns only the X component of the body&#x27;s position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1550</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;x&quot;, body:getX())
     print(&quot;y&quot;, body:getY())
-end</code></pre></details></article><article class="item-row api-row" id="method-gety"><div class="item-row-main"><h3>getY</h3><pre class="inline-signature">LBody:getY() -&gt; number</pre><p>Returns only the Y component of the body&#x27;s position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1556</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-gety"><div class="item-row-main"><h3>getY</h3><pre class="inline-signature">LBody:getY() -&gt; number</pre><p>Returns only the Y component of the body&#x27;s position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1557</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local body = lurek.physics.newBody(world, 100, 100, &quot;dynamic&quot;)
     print(&quot;y&quot;, body:getY())
     print(&quot;x&quot;, body:getX())
-end</code></pre></details></article><article class="item-row api-row" id="method-isbullet"><div class="item-row-main"><h3>isBullet</h3><pre class="inline-signature">LBody:isBullet() -&gt; boolean</pre><p>Returns whether continuous collision detection (bullet mode) is enabled for this body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1822</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isbullet"><div class="item-row-main"><h3>isBullet</h3><pre class="inline-signature">LBody:isBullet() -&gt; boolean</pre><p>Returns whether continuous collision detection (bullet mode) is enabled for this body.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1823</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, &quot;dynamic&quot;)
     bullet:setBullet(true)
     print(&quot;is_bullet&quot;, bullet:isBullet())
     print(&quot;position&quot;, bullet:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-isfixedrotation"><div class="item-row-main"><h3>isFixedRotation</h3><pre class="inline-signature">LBody:isFixedRotation() -&gt; boolean</pre><p>Returns whether the body&#x27;s rotation is locked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1781</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isfixedrotation"><div class="item-row-main"><h3>isFixedRotation</h3><pre class="inline-signature">LBody:isFixedRotation() -&gt; boolean</pre><p>Returns whether the body&#x27;s rotation is locked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1782</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, &quot;dynamic&quot;)
     player:setFixedRotation(true)
     print(&quot;fixed_rotation&quot;, player:isFixedRotation())
     print(&quot;type&quot;, player:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-issleeping"><div class="item-row-main"><h3>isSleeping</h3><pre class="inline-signature">LBody:isSleeping() -&gt; boolean</pre><p>Returns whether this body is currently in the sleeping (inactive) state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1856</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-issleeping"><div class="item-row-main"><h3>isSleeping</h3><pre class="inline-signature">LBody:isSleeping() -&gt; boolean</pre><p>Returns whether this body is currently in the sleeping (inactive) state.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1857</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setSleepingAllowed(true)
     body:sleep()
     print(&quot;sleeping&quot;, body:isSleeping())
     print(&quot;id&quot;, body:getId())
-end</code></pre></details></article><article class="item-row api-row" id="method-issleepingallowed"><div class="item-row-main"><h3>isSleepingAllowed</h3><pre class="inline-signature">LBody:isSleepingAllowed() -&gt; boolean</pre><p>Returns whether the body is allowed to enter sleep state when at rest.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1835</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-issleepingallowed"><div class="item-row-main"><h3>isSleepingAllowed</h3><pre class="inline-signature">LBody:isSleepingAllowed() -&gt; boolean</pre><p>Returns whether the body is allowed to enter sleep state when at rest.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1836</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setSleepingAllowed(true)
     print(&quot;allowed&quot;, body:isSleepingAllowed())
     print(&quot;type&quot;, body:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-setangle"><div class="item-row-main"><h3>setAngle</h3><pre class="inline-signature">LBody:setAngle(angle: number)</pre><p>Sets the body&#x27;s rotation angle directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1592</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setangle"><div class="item-row-main"><h3>setAngle</h3><pre class="inline-signature">LBody:setAngle(angle: number)</pre><p>Sets the body&#x27;s rotation angle directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1593</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngle(math.pi / 4)
     print(&quot;angle&quot;, body:getAngle())
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setangulardamping"><div class="item-row-main"><h3>setAngularDamping</h3><pre class="inline-signature">LBody:setAngularDamping(damping: number)</pre><p>Sets the angular damping factor (higher = rotation decays faster).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1813</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setangulardamping"><div class="item-row-main"><h3>setAngularDamping</h3><pre class="inline-signature">LBody:setAngularDamping(damping: number)</pre><p>Sets the angular damping factor (higher = rotation decays faster).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1814</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngularDamping(0.3)
     print(&quot;angular_damping&quot;, body:getAngularDamping())
     print(&quot;angle&quot;, body:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-setangularvelocity"><div class="item-row-main"><h3>setAngularVelocity</h3><pre class="inline-signature">LBody:setAngularVelocity(omega: number)</pre><p>Sets the body&#x27;s angular velocity directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1605</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setangularvelocity"><div class="item-row-main"><h3>setAngularVelocity</h3><pre class="inline-signature">LBody:setAngularVelocity(omega: number)</pre><p>Sets the body&#x27;s angular velocity directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1606</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setAngularVelocity(2.0)
     print(&quot;angular_velocity&quot;, body:getAngularVelocity())
     world:step(1 / 60)
     print(&quot;angle&quot;, body:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-setbullet"><div class="item-row-main"><h3>setBullet</h3><pre class="inline-signature">LBody:setBullet(bullet: boolean)</pre><p>Enables or disables continuous collision detection to prevent fast-moving tunneling.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1828</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setbullet"><div class="item-row-main"><h3>setBullet</h3><pre class="inline-signature">LBody:setBullet(bullet: boolean)</pre><p>Enables or disables continuous collision detection to prevent fast-moving tunneling.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1829</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local bullet = world:newCircleBody(100, 100, 4, &quot;dynamic&quot;)
     bullet:setBullet(true)
     print(&quot;is_bullet&quot;, bullet:isBullet())
     print(&quot;type&quot;, bullet:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-setfixedrotation"><div class="item-row-main"><h3>setFixedRotation</h3><pre class="inline-signature">LBody:setFixedRotation(fixed: boolean)</pre><p>Locks or unlocks the body&#x27;s rotation. Useful for player characters.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1787</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setfixedrotation"><div class="item-row-main"><h3>setFixedRotation</h3><pre class="inline-signature">LBody:setFixedRotation(fixed: boolean)</pre><p>Locks or unlocks the body&#x27;s rotation. Useful for player characters.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1788</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local player = world:newBody(200, 200, &quot;dynamic&quot;)
     player:setFixedRotation(true)
     print(&quot;fixed_rotation&quot;, player:isFixedRotation())
     print(&quot;angle&quot;, player:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-setfriction"><div class="item-row-main"><h3>setFriction</h3><pre class="inline-signature">LBody:setFriction(friction: number)</pre><p>Sets the body&#x27;s friction coefficient.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1660</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setfriction"><div class="item-row-main"><h3>setFriction</h3><pre class="inline-signature">LBody:setFriction(friction: number)</pre><p>Sets the body&#x27;s friction coefficient.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1661</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setFriction(0.8)
     print(&quot;friction&quot;, body:getFriction())
     print(&quot;mass&quot;, body:getMass())
-end</code></pre></details></article><article class="item-row api-row" id="method-setgravityscale"><div class="item-row-main"><h3>setGravityScale</h3><pre class="inline-signature">LBody:setGravityScale(scale: number)</pre><p>Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1774</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravityscale"><div class="item-row-main"><h3>setGravityScale</h3><pre class="inline-signature">LBody:setGravityScale(scale: number)</pre><p>Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1775</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local normal = world:newBody(100, 100, &quot;dynamic&quot;)
     local floaty = world:newBody(200, 100, &quot;dynamic&quot;)
     floaty:setGravityScale(0.2)
     print(&quot;normal&quot;, normal:getGravityScale())
     print(&quot;floaty&quot;, floaty:getGravityScale())
-end</code></pre></details></article><article class="item-row api-row" id="method-setlayer"><div class="item-row-main"><h3>setLayer</h3><pre class="inline-signature">LBody:setLayer(layer: integer)</pre><p>Sets the body&#x27;s collision layer bitmask (which layers this body belongs to).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1694</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayer"><div class="item-row-main"><h3>setLayer</h3><pre class="inline-signature">LBody:setLayer(layer: integer)</pre><p>Sets the body&#x27;s collision layer bitmask (which layers this body belongs to).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1695</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setLayer(2)
     print(&quot;layer&quot;, body:getLayer())
     print(&quot;mask&quot;, body:getMask())
-end</code></pre></details></article><article class="item-row api-row" id="method-setlineardamping"><div class="item-row-main"><h3>setLinearDamping</h3><pre class="inline-signature">LBody:setLinearDamping(damping: number)</pre><p>Sets the linear damping factor (higher = more velocity decay per step).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1800</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlineardamping"><div class="item-row-main"><h3>setLinearDamping</h3><pre class="inline-signature">LBody:setLinearDamping(damping: number)</pre><p>Sets the linear damping factor (higher = more velocity decay per step).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1801</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 0)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setLinearDamping(0.5)
     print(&quot;linear_damping&quot;, body:getLinearDamping())
     print(&quot;angular_damping&quot;, body:getAngularDamping())
-end</code></pre></details></article><article class="item-row api-row" id="method-setmask"><div class="item-row-main"><h3>setMask</h3><pre class="inline-signature">LBody:setMask(mask: integer)</pre><p>Sets the body&#x27;s collision mask (which layers this body can collide with).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1711</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setmask"><div class="item-row-main"><h3>setMask</h3><pre class="inline-signature">LBody:setMask(mask: integer)</pre><p>Sets the body&#x27;s collision mask (which layers this body can collide with).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1712</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setMask(3)
     print(&quot;mask&quot;, body:getMask())
     print(&quot;layer&quot;, body:getLayer())
-end</code></pre></details></article><article class="item-row api-row" id="method-setmass"><div class="item-row-main"><h3>setMass</h3><pre class="inline-signature">LBody:setMass(mass: number)</pre><p>Overrides the body&#x27;s mass directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1618</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setmass"><div class="item-row-main"><h3>setMass</h3><pre class="inline-signature">LBody:setMass(mass: number)</pre><p>Overrides the body&#x27;s mass directly.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1619</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setMass(7.5)
     print(&quot;mass&quot;, body:getMass())
     print(&quot;type&quot;, body:getType())
-end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LBody:setPosition(x: number, y: number)</pre><p>Teleports the body to a new world-space position (does not apply physics forces).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1542</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setposition"><div class="item-row-main"><h3>setPosition</h3><pre class="inline-signature">LBody:setPosition(x: number, y: number)</pre><p>Teleports the body to a new world-space position (does not apply physics forces).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1543</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, &quot;dynamic&quot;)
     body:setPosition(200, 100)
     print(&quot;position&quot;, body:getPosition())
     print(&quot;velocity&quot;, body:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setrestitution"><div class="item-row-main"><h3>setRestitution</h3><pre class="inline-signature">LBody:setRestitution(restitution: number)</pre><p>Sets the body&#x27;s restitution (bounciness) value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1677</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setrestitution"><div class="item-row-main"><h3>setRestitution</h3><pre class="inline-signature">LBody:setRestitution(restitution: number)</pre><p>Sets the body&#x27;s restitution (bounciness) value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1678</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newCircleBody(100, 100, 20, &quot;dynamic&quot;)
     body:setRestitution(0.6)
     print(&quot;restitution&quot;, body:getRestitution())
     print(&quot;mass&quot;, body:getMass())
-end</code></pre></details></article><article class="item-row api-row" id="method-setsleepingallowed"><div class="item-row-main"><h3>setSleepingAllowed</h3><pre class="inline-signature">LBody:setSleepingAllowed(allowed: boolean)</pre><p>Controls whether the body can enter sleep state. Disable for bodies that must stay active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1841</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setsleepingallowed"><div class="item-row-main"><h3>setSleepingAllowed</h3><pre class="inline-signature">LBody:setSleepingAllowed(allowed: boolean)</pre><p>Controls whether the body can enter sleep state. Disable for bodies that must stay active.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1842</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setSleepingAllowed(false)
     print(&quot;allowed&quot;, body:isSleepingAllowed())
     print(&quot;sleeping&quot;, body:isSleeping())
-end</code></pre></details></article><article class="item-row api-row" id="method-settype"><div class="item-row-main"><h3>setType</h3><pre class="inline-signature">LBody:setType(bodyType: string)</pre><p>Changes the body&#x27;s type at runtime.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1631</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-settype"><div class="item-row-main"><h3>setType</h3><pre class="inline-signature">LBody:setType(bodyType: string)</pre><p>Changes the body&#x27;s type at runtime.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1632</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setType(&quot;kinematic&quot;)
     print(&quot;type&quot;, body:getType())
     print(&quot;layer&quot;, body:getLayer())
-end</code></pre></details></article><article class="item-row api-row" id="method-setvelocity"><div class="item-row-main"><h3>setVelocity</h3><pre class="inline-signature">LBody:setVelocity(vx: number, vy: number)</pre><p>Directly sets the body&#x27;s linear velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1575</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setvelocity"><div class="item-row-main"><h3>setVelocity</h3><pre class="inline-signature">LBody:setVelocity(vx: number, vy: number)</pre><p>Directly sets the body&#x27;s linear velocity.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1576</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, &quot;dynamic&quot;)
     body:setVelocity(50, -100)
     print(&quot;velocity&quot;, body:getVelocity())
     world:step(1 / 60)
     print(&quot;position&quot;, body:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-sleep"><div class="item-row-main"><h3>sleep</h3><pre class="inline-signature">LBody:sleep()</pre><p>Forces the body into sleep state, pausing its simulation until disturbed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1867</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-sleep"><div class="item-row-main"><h3>sleep</h3><pre class="inline-signature">LBody:sleep()</pre><p>Forces the body into sleep state, pausing its simulation until disturbed.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1868</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setSleepingAllowed(true)
     body:sleep()
     print(&quot;sleeping&quot;, body:isSleeping())
     print(&quot;allowed&quot;, body:isSleepingAllowed())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LBody:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LBody&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1874</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LBody:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LBody&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1875</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, &quot;dynamic&quot;)
     print(&quot;type&quot;, body:type())
     print(&quot;type_of&quot;, body:typeOf(&quot;LBody&quot;), body:typeOf(&quot;LObject&quot;))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LBody:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1879</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LBody:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1880</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(0, 0, &quot;dynamic&quot;)
     print(&quot;type_of&quot;, body:typeOf(&quot;LBody&quot;), body:typeOf(&quot;LObject&quot;))
     print(&quot;type&quot;, body:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-wakeup"><div class="item-row-main"><h3>wakeUp</h3><pre class="inline-signature">LBody:wakeUp()</pre><p>Wakes the body from sleep, making it active in the simulation again.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1861</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-wakeup"><div class="item-row-main"><h3>wakeUp</h3><pre class="inline-signature">LBody:wakeUp()</pre><p>Wakes the body from sleep, making it active in the simulation again.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1862</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local body = world:newBody(100, 100, &quot;dynamic&quot;)
     body:setSleepingAllowed(true)

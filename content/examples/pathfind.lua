@@ -1258,3 +1258,135 @@ do
 
     print("thread_count = " .. lurek.pathfind.getThreadCount())
 end
+
+--@api-stub: lurek.pathfind.newGoalMap
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    print("goal_map_type = " .. gm:type())
+end
+
+--@api-stub: LGoalMap:addSource
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:bake()
+    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+end
+
+--@api-stub: LGoalMap:setSources
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:setSources({
+        { x = 4, y = 4, weight = 1 },
+        { x = 13, y = 13, weight = 2 },
+    })
+    gm:bake()
+    print("ready = " .. tostring(gm:isReady()))
+end
+
+--@api-stub: LGoalMap:clearSources
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:clearSources()
+    gm:bake()
+    print("ready_after_clear = " .. tostring(gm:isReady()))
+end
+
+--@api-stub: LGoalMap:setBlocker
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:setBlocker(function(x, y)
+        return x == 9 and y >= 4 and y <= 12
+    end)
+    gm:bake()
+    print("distance_12_8 = " .. gm:distanceAt(12, 8))
+end
+
+--@api-stub: LGoalMap:bake
+do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    gm:addSource(8, 8, 1)
+    gm:bake()
+    print("ready_after_bake = " .. tostring(gm:isReady()))
+end
+
+--@api-stub: LGoalMap:isReady
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    gm:addSource(4, 4, 1)
+    print("ready_before = " .. tostring(gm:isReady()))
+    gm:bake()
+    print("ready_after = " .. tostring(gm:isReady()))
+end
+
+--@api-stub: LGoalMap:distanceAt
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(5, 5, 1)
+    gm:bake()
+    print("distance_5_5 = " .. gm:distanceAt(5, 5))
+    print("distance_1_1 = " .. gm:distanceAt(1, 1))
+end
+
+--@api-stub: LGoalMap:gradientAt
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(10, 10, 1)
+    gm:bake()
+    local dx, dy = gm:gradientAt(1, 1)
+    print("gradient = " .. dx .. "," .. dy)
+end
+
+--@api-stub: LGoalMap:flee
+do
+    local gm = lurek.pathfind.newGoalMap(10, 10)
+    gm:addSource(5, 5, 1)
+    gm:bake()
+    local dx, dy = gm:flee(5, 6, 1.0)
+    print("flee = " .. dx .. "," .. dy)
+end
+
+--@api-stub: LGoalMap:floodFill
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local cells = gm:floodFill(6, 6, 4)
+    print("flood_cells = " .. #cells)
+end
+
+--@api-stub: LGoalMap:save
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local blob = gm:save()
+    print("blob_bytes = " .. #blob)
+end
+
+--@api-stub: LGoalMap:restore
+do
+    local gm = lurek.pathfind.newGoalMap(12, 12)
+    gm:addSource(6, 6, 1)
+    gm:bake()
+    local blob = gm:save()
+
+    local gm2 = lurek.pathfind.newGoalMap(12, 12)
+    gm2:restore(blob)
+    print("distance_restored = " .. gm2:distanceAt(6, 6))
+end
+
+--@api-stub: LGoalMap:type
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    print("type = " .. gm:type())
+end
+
+--@api-stub: LGoalMap:typeOf
+do
+    local gm = lurek.pathfind.newGoalMap(8, 8)
+    print("is_goal_map = " .. tostring(gm:typeOf("LGoalMap")))
+    print("is_object = " .. tostring(gm:typeOf("LObject")))
+end

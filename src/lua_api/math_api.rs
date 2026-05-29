@@ -1376,6 +1376,182 @@ impl LuaUserData for LuaAabbTree {
         });
     }
 }
+/// Lua-side wrapper for a Walker-Vose alias-method loot table.
+pub struct LuaLootTable {
+    /// Owned loot table state (RefCell for mutability through shared Lua reference).
+    inner: std::cell::RefCell<crate::math::LootTable>,
+}
+
+/// Provides Lua methods for loot table construction and sampling.
+impl LuaUserData for LuaLootTable {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- add --
+        /// Adds an entry to the table. Re-build is required before the next sample.
+        /// @param | id | string | Unique item identifier.
+        /// @param | weight | number | Relative drop weight (positive).
+        /// @param | meta | table? | Optional key-value metadata table.
+        methods.add_method("add", |_, this, (id, weight, meta): (String, f64, Option<LuaTable>)| {
+            let mut m = std::collections::HashMap::new();
+            if let Some(t) = meta {
+                for (k, v) in t.pairs::<String, String>().flatten() { m.insert(k, v); }
+            }
+            this.inner.borrow_mut().add(&id, weight, m);
+            Ok(())
+        });
+        // -- remove --
+        /// Removes an entry by id. Returns true when found.
+        /// @param | id | string | Item identifier.
+        /// @return | boolean | True when removed.
+        methods.add_method("remove", |_, this, id: String| {
+            Ok(this.inner.borrow_mut().remove(&id))
+        });
+        // -- setWeight --
+        /// Updates the weight of an existing entry. Returns true when found.
+        /// @param | id | string | Item identifier.
+        /// @param | weight | number | New weight.
+        /// @return | boolean | True when found.
+        methods.add_method("setWeight", |_, this, (id, weight): (String, f64)| {
+            Ok(this.inner.borrow_mut().set_weight(&id, weight))
+        });
+        // -- build --
+        /// Rebuilds the alias table after mutations. Call before sampling.
+        methods.add_method("build", |_, this, ()| {
+            this.inner.borrow_mut().build();
+            Ok(())
+        });
+        // -- sample --
+        /// Samples one entry in O(1). Returns nil when the table is empty.
+        /// @return | table? | Table with `id` (string) and `weight` (number) fields, or nil.
+        methods.add_method("sample", |lua, this, ()| {
+            let entry = this.inner.borrow_mut().sample().cloned();
+            match entry {
+                None => Ok(LuaValue::Nil),
+                Some(e) => {
+                    let t = lua.create_table()?;
+                    t.set("id", e.id)?;
+                    t.set("weight", e.weight)?;
+                    Ok(LuaValue::Table(t))
+                }
+            }
+        });
+        // -- sampleN --
+        /// Samples n entries with replacement. Returns an array table.
+        /// @param | n | integer | Number of samples.
+        /// @return | table | Array of entry tables.
+        methods.add_method("sampleN", |lua, this, n: usize| {
+            let entries = this.inner.borrow_mut().sample_n(n);
+            let out = lua.create_table()?;
+            for (i, e) in entries.into_iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("id", e.id)?;
+                t.set("weight", e.weight)?;
+                out.set(i + 1, t)?;
+            }
+            Ok(out)
+        });
+        // -- sampleUnique --
+        /// Samples up to n unique entries (by id). Returns an array table.
+        /// @param | n | integer | Maximum number of unique entries.
+        /// @return | table | Array of unique entry tables.
+        methods.add_method("sampleUnique", |lua, this, n: usize| {
+            let entries = this.inner.borrow_mut().sample_unique(n);
+            let out = lua.create_table()?;
+            for (i, e) in entries.into_iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("id", e.id)?;
+                t.set("weight", e.weight)?;
+                out.set(i + 1, t)?;
+            }
+            Ok(out)
+        });
+        // -- setSeed --
+        /// Sets the RNG seed. The alias table remains valid.
+        /// @param | seed | integer | New seed value.
+        methods.add_method("setSeed", |_, this, seed: u64| {
+            this.inner.borrow_mut().set_seed(seed);
+            Ok(())
+        });
+        // -- entryCount --
+        /// Returns the number of entries in the table.
+        /// @return | integer | Entry count.
+        methods.add_method("entryCount", |_, this, ()| {
+            Ok(this.inner.borrow().entries().len())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LLootTable`.
+        methods.add_method("type", |_, _, ()| Ok("LLootTable"));
+        // -- typeOf --
+        /// Returns whether this handle matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when matched.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LLootTable" || name == "LObject")
+        });
+    }
+}
+
+/// Lua-side wrapper for a pity tracker.
+pub struct LuaPityTracker {
+    /// Owned pity tracker state.
+    inner: std::cell::RefCell<crate::math::PityTracker>,
+}
+
+/// Provides Lua methods for pity tracking.
+impl LuaUserData for LuaPityTracker {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- notice --
+        /// Notifies the tracker of a sample result id.
+        /// Returns true when the tracker just primed (threshold just hit).
+        /// @param | result_id | string | The item id that was sampled.
+        /// @return | boolean | True when just primed.
+        methods.add_method("notice", |_, this, result_id: String| {
+            Ok(this.inner.borrow_mut().notice(&result_id))
+        });
+        // -- isPrimed --
+        /// Returns true when the guaranteed drop is due.
+        /// @return | boolean | True when primed.
+        methods.add_method("isPrimed", |_, this, ()| {
+            Ok(this.inner.borrow().is_primed())
+        });
+        // -- reset --
+        /// Resets counter and primed state.
+        methods.add_method("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+        // -- counter --
+        /// Returns the current miss counter.
+        /// @return | integer | Current miss count.
+        methods.add_method("counter", |_, this, ()| {
+            Ok(this.inner.borrow().counter())
+        });
+        // -- export --
+        /// Serialises pity state to a binary blob.
+        /// @return | string | Binary blob.
+        methods.add_method("export", |lua, this, ()| {
+            lua.create_string(this.inner.borrow().save())
+        });
+        // -- import --
+        /// Restores pity state from a blob produced by `export`.
+        /// @param | blob | string | Binary blob.
+        methods.add_method("import", |_, this, blob: LuaString| {
+            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LPityTracker`.
+        methods.add_method("type", |_, _, ()| Ok("LPityTracker"));
+        // -- typeOf --
+        /// Returns whether this handle matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when matched.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LPityTracker" || name == "LObject")
+        });
+    }
+}
+
 #[allow(clippy::type_complexity)]
 /// Registers `lurek.math` constructors, scalar helpers, easing, geometry, polygon, and spatial functions.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
@@ -2657,6 +2833,36 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "cubicBezier",
         lua.create_function(|_, (p1x, p1y, p2x, p2y, t): (f64, f64, f64, f64, f64)| {
             Ok(easing::cubic_bezier(p1x, p1y, p2x, p2y, t))
+        })?,
+    )?;
+    // ── LootTable / PityTracker ────────────────────────────────────────────
+    // -- newLootTable --
+    /// Creates a Walker-Vose alias-method loot table for O(1) weighted random sampling.
+    /// @param | seed | integer? | Optional deterministic seed.
+    /// @return | LLootTable | New loot table handle.
+    tbl.set(
+        "newLootTable",
+        lua.create_function(|lua, seed: Option<u64>| {
+            let inner = match seed {
+                Some(s) => crate::math::LootTable::with_seed(s),
+                None    => crate::math::LootTable::new(),
+            };
+            lua.create_userdata(LuaLootTable {
+                inner: std::cell::RefCell::new(inner),
+            })
+        })?,
+    )?;
+    // -- newPityTracker --
+    /// Creates a pity tracker that primes after `threshold` consecutive misses of `target_id`.
+    /// @param | target_id | string | Item id that resets the miss counter on a hit.
+    /// @param | threshold | integer | Number of consecutive misses before the tracker primes.
+    /// @return | LPityTracker | New pity tracker handle.
+    tbl.set(
+        "newPityTracker",
+        lua.create_function(|lua, (target_id, threshold): (String, u32)| {
+            lua.create_userdata(LuaPityTracker {
+                inner: std::cell::RefCell::new(crate::math::PityTracker::new(&target_id, threshold)),
+            })
         })?,
     )?;
     /// Performs the 'math' operation.

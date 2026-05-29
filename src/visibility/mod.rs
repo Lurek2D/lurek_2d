@@ -11,6 +11,8 @@
 //! - `DiscoveryCost` — per-region cost to reveal, adjacency requirements
 //! - `FogConfig` — fog intensity and rendering hints
 
+/// Tile-grid recursive shadowcasting FOV for roguelike and stealth games.
+pub mod shadowcast;
 /// Adjacency provider trait defining region neighbor relationships.
 pub mod adjacency;
 /// Per-region discovery cost and adjacency requirements for reveal logic.
@@ -35,4 +37,5 @@ pub use flags::VisibilityFlags;
 pub use fog_render::FogConfig;
 pub use grid::VisibilityGrid;
 pub use owner::PlayerOwnership;
+pub use shadowcast::TileFov;
 pub use state::VisibilityState;

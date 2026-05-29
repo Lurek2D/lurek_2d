@@ -495,9 +495,130 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             },
         )?,
     )?;
+    // -- newChain --
+    /// Creates a sequential tween chain for cinematic value-interpolation sequences.
+    /// @param | looping | boolean? | True to loop back to step 0 after the last step (default false).
+    /// @return | LTweenChain | New tween chain handle.
+    tbl.set(
+        "newChain",
+        lua.create_function(|lua, looping: Option<bool>| {
+            let mut chain = crate::tween::TweenChain::new();
+            chain.set_looping(looping.unwrap_or(false));
+            lua.create_userdata(LuaTweenChain {
+                inner: RefCell::new(chain),
+            })
+        })?,
+    )?;
     /// Performs the 'tween' operation.
     lurek.set("tween", tbl)?;
     Ok(())
+}
+/// Lua-side wrapper for a sequential tween chain.
+pub struct LuaTweenChain {
+    /// Owned chain state.
+    inner: RefCell<crate::tween::TweenChain>,
+}
+/// Provides Lua methods for step-by-step value interpolation chains.
+impl LuaUserData for LuaTweenChain {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- push --
+        /// Appends a step to the chain.
+        /// @param | opts | table | Step descriptor: `from`, `to`, `duration`, `easing?`, `label?`.
+        /// @return | integer | Zero-based index of the new step.
+        methods.add_method("push", |_, this, opts: LuaTable| {
+            let from: f64     = opts.get("from")?;
+            let to: f64       = opts.get("to")?;
+            let duration: f64 = opts.get("duration")?;
+            let easing: String = opts.get::<_, Option<String>>("easing")?.unwrap_or_else(|| "linear".into());
+            let label: Option<String> = opts.get::<_, Option<String>>("label")?;
+            let step = crate::tween::ChainStep::new(from, to, duration, &easing, label);
+            Ok(this.inner.borrow_mut().push(step))
+        });
+        // -- tick --
+        /// Advances the chain and returns an array of completed step events.
+        /// Each event table has `step` (integer), `label` (string or nil), `value` (number).
+        /// @param | dt | number | Delta time in seconds.
+        /// @return | table | Array of event tables.
+        methods.add_method("tick", |lua, this, dt: f64| {
+            let events = this.inner.borrow_mut().tick(dt);
+            let out = lua.create_table()?;
+            for (i, ev) in events.into_iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("step",  ev.step + 1)?; // one-based for Lua
+                t.set("label", ev.label)?;
+                t.set("value", ev.value)?;
+                out.set(i + 1, t)?;
+            }
+            Ok(out)
+        });
+        // -- value --
+        /// Returns the current interpolated value of the active step.
+        /// @return | number | Current value.
+        methods.add_method("value", |_, this, ()| {
+            Ok(this.inner.borrow().value())
+        });
+        // -- cursor --
+        /// Returns the one-based index of the currently active step.
+        /// @return | integer | Current step (one-based).
+        methods.add_method("cursor", |_, this, ()| {
+            Ok(this.inner.borrow().cursor() + 1)
+        });
+        // -- len --
+        /// Returns the number of steps in the chain.
+        /// @return | integer | Step count.
+        methods.add_method("len", |_, this, ()| {
+            Ok(this.inner.borrow().len())
+        });
+        // -- reset --
+        /// Resets the chain to step 0.
+        methods.add_method("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+        // -- jumpTo --
+        /// Jumps to the given step (one-based).
+        /// @param | step | integer | Step index (one-based).
+        methods.add_method("jumpTo", |_, this, step: usize| {
+            this.inner.borrow_mut().jump_to(step.saturating_sub(1));
+            Ok(())
+        });
+        // -- setLooping --
+        /// Enables or disables chain looping.
+        /// @param | looping | boolean | True to loop, false to stop at end.
+        methods.add_method("setLooping", |_, this, looping: bool| {
+            this.inner.borrow_mut().set_looping(looping);
+            Ok(())
+        });
+        // -- isLooping --
+        /// Returns true when the chain loops.
+        /// @return | boolean | Looping flag.
+        methods.add_method("isLooping", |_, this, ()| {
+            Ok(this.inner.borrow().is_looping())
+        });
+        // -- isFinished --
+        /// Returns true when the non-looping chain has completed all steps.
+        /// @return | boolean | True when finished.
+        methods.add_method("isFinished", |_, this, ()| {
+            Ok(this.inner.borrow().is_finished())
+        });
+        // -- clear --
+        /// Removes all steps and resets the cursor.
+        methods.add_method("clear", |_, this, ()| {
+            this.inner.borrow_mut().clear();
+            Ok(())
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LTweenChain`.
+        methods.add_method("type", |_, _, ()| Ok("LTweenChain"));
+        // -- typeOf --
+        /// Returns whether this handle matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when matched.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LTweenChain" || name == "LObject")
+        });
+    }
 }
 impl LuaUserData for LuaTween {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {

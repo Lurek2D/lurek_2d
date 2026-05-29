@@ -74,7 +74,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LUnitPathfinder userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-clearcache"><div class="item-row-main"><h3>clearCache</h3><pre class="inline-signature">LUnitPathfinder:clearCache()</pre><p>Clears all cached paths on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:566</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-clearcache"><div class="item-row-main"><h3>clearCache</h3><pre class="inline-signature">LUnitPathfinder:clearCache()</pre><p>Clears all cached paths on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:567</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -86,7 +86,7 @@ end</code></pre></details>
     print(&quot;cache_before_clear = &quot; .. pf:getCacheSize())
     pf:clearCache()
     print(&quot;cache_after_clear = &quot; .. pf:getCacheSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-findnearestwalkable"><div class="item-row-main"><h3>findNearestWalkable</h3><pre class="inline-signature">LUnitPathfinder:findNearestWalkable(x: integer, y: integer, max_radius: integer, unit_size: integer?) -&gt; integer</pre><p>Finds nearest walkable one-based grid cell within a radius.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:479</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findnearestwalkable"><div class="item-row-main"><h3>findNearestWalkable</h3><pre class="inline-signature">LUnitPathfinder:findNearestWalkable(x: integer, y: integer, max_radius: integer, unit_size: integer?) -&gt; integer</pre><p>Finds nearest walkable one-based grid cell within a radius.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:480</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -99,7 +99,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local nx, ny = pf:findNearestWalkable(10, 10, 5)
 
     print(&quot;nearest = &quot; .. nx .. &quot;,&quot; .. ny)
-end</code></pre></details></article><article class="item-row api-row" id="method-findpartialpath"><div class="item-row-main"><h3>findPartialPath</h3><pre class="inline-signature">LUnitPathfinder:findPartialPath(x1: integer, y1: integer, x2: integer, y2: integer, max_nodes: integer, unit_size: integer?) -&gt; table</pre><p>Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:450</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpartialpath"><div class="item-row-main"><h3>findPartialPath</h3><pre class="inline-signature">LUnitPathfinder:findPartialPath(x1: integer, y1: integer, x2: integer, y2: integer, max_nodes: integer, unit_size: integer?) -&gt; table</pre><p>Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:451</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(100, 100)
 
     nav:fill(1)
@@ -112,7 +112,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;points = &quot; .. #path)
     print(&quot;reached = &quot; .. tostring(reached))
     print(&quot;last = &quot; .. path[#path].x .. &quot;,&quot; .. path[#path].y)
-end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LUnitPathfinder:findPath(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; table</pre><p>Finds a path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:318</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LUnitPathfinder:findPath(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; table</pre><p>Finds a path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
     nav:fill(1)
@@ -130,7 +130,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;steps = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-findpathbidirectional"><div class="item-row-main"><h3>findPathBidirectional</h3><pre class="inline-signature">LUnitPathfinder:findPathBidirectional(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?, max_nodes: integer?) -&gt; table</pre><p>Finds a path using bidirectional A* and returns completion status.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpathbidirectional"><div class="item-row-main"><h3>findPathBidirectional</h3><pre class="inline-signature">LUnitPathfinder:findPathBidirectional(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?, max_nodes: integer?) -&gt; table</pre><p>Finds a path using bidirectional A* and returns completion status.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:381</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(40, 40)
 
     nav:fill(1)
@@ -144,7 +144,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;complete = &quot; .. tostring(complete))
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-findpathsmooth"><div class="item-row-main"><h3>findPathSmooth</h3><pre class="inline-signature">LUnitPathfinder:findPathSmooth(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; table</pre><p>Finds a smoothed path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:348</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpathsmooth"><div class="item-row-main"><h3>findPathSmooth</h3><pre class="inline-signature">LUnitPathfinder:findPathSmooth(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; table</pre><p>Finds a smoothed path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:349</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -158,7 +158,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;points = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-getcachesize"><div class="item-row-main"><h3>getCacheSize</h3><pre class="inline-signature">LUnitPathfinder:getCacheSize() -&gt; integer</pre><p>Returns the current path cache entry count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:573</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcachesize"><div class="item-row-main"><h3>getCacheSize</h3><pre class="inline-signature">LUnitPathfinder:getCacheSize() -&gt; integer</pre><p>Returns the current path cache entry count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:574</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -169,7 +169,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     pf:findPath(5, 5, 15, 15)
 
     print(&quot;cache_size = &quot; .. pf:getCacheSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-getpathcost"><div class="item-row-main"><h3>getPathCost</h3><pre class="inline-signature">LUnitPathfinder:getPathCost(path: table) -&gt; number</pre><p>Returns the total movement cost along a waypoint path.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:434</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpathcost"><div class="item-row-main"><h3>getPathCost</h3><pre class="inline-signature">LUnitPathfinder:getPathCost(path: table) -&gt; number</pre><p>Returns the total movement cost along a waypoint path.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:435</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -183,7 +183,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;cost = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-getpathlength"><div class="item-row-main"><h3>getPathLength</h3><pre class="inline-signature">LUnitPathfinder:getPathLength(path: table) -&gt; number</pre><p>Returns the total Euclidean length of a waypoint path.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:426</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpathlength"><div class="item-row-main"><h3>getPathLength</h3><pre class="inline-signature">LUnitPathfinder:getPathLength(path: table) -&gt; number</pre><p>Returns the total Euclidean length of a waypoint path.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:427</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -196,13 +196,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;length = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-heuristicdistance"><div class="item-row-main"><h3>heuristicDistance</h3><pre class="inline-signature">LUnitPathfinder:heuristicDistance(x1: integer, y1: integer, x2: integer, y2: integer) -&gt; number</pre><p>Returns heuristic distance between two one-based cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-heuristicdistance"><div class="item-row-main"><h3>heuristicDistance</h3><pre class="inline-signature">LUnitPathfinder:heuristicDistance(x1: integer, y1: integer, x2: integer, y2: integer) -&gt; number</pre><p>Returns heuristic distance between two one-based cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:521</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
     local pf = lurek.pathfind.newPathfinder(nav)
 
     print(&quot;dist_1_1_to_20_20 = &quot; .. pf:heuristicDistance(1, 1, 20, 20))
     print(&quot;dist_5_5_to_5_5 = &quot; .. pf:heuristicDistance(5, 5, 5, 5))
-end</code></pre></details></article><article class="item-row api-row" id="method-iscacheenabled"><div class="item-row-main"><h3>isCacheEnabled</h3><pre class="inline-signature">LUnitPathfinder:isCacheEnabled() -&gt; boolean</pre><p>Returns whether path cache is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:561</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-iscacheenabled"><div class="item-row-main"><h3>isCacheEnabled</h3><pre class="inline-signature">LUnitPathfinder:isCacheEnabled() -&gt; boolean</pre><p>Returns whether path cache is enabled.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:562</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -214,7 +214,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;enabled_before_disable = &quot; .. tostring(enabled))
     print(&quot;enabled_after_disable = &quot; .. tostring(pf:isCacheEnabled()))
-end</code></pre></details></article><article class="item-row api-row" id="method-isreachable"><div class="item-row-main"><h3>isReachable</h3><pre class="inline-signature">LUnitPathfinder:isReachable(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; boolean</pre><p>Returns whether a target cell is reachable from a start cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:501</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isreachable"><div class="item-row-main"><h3>isReachable</h3><pre class="inline-signature">LUnitPathfinder:isReachable(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; boolean</pre><p>Returns whether a target cell is reachable from a start cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:502</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -224,7 +224,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;reachable_left = &quot; .. tostring(pf:isReachable(1, 1, 9, 9)))
     print(&quot;reachable_right = &quot; .. tostring(pf:isReachable(1, 1, 20, 20)))
-end</code></pre></details></article><article class="item-row api-row" id="method-lineofsight"><div class="item-row-main"><h3>lineOfSight</h3><pre class="inline-signature">LUnitPathfinder:lineOfSight(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; boolean</pre><p>Returns whether two one-based cells have line of sight.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:539</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-lineofsight"><div class="item-row-main"><h3>lineOfSight</h3><pre class="inline-signature">LUnitPathfinder:lineOfSight(x1: integer, y1: integer, x2: integer, y2: integer, unit_size: integer?) -&gt; boolean</pre><p>Returns whether two one-based cells have line of sight.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:540</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -236,7 +236,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;clear = &quot; .. tostring(clear))
     print(&quot;blocked = &quot; .. tostring(blocked))
-end</code></pre></details></article><article class="item-row api-row" id="method-setcacheenabled"><div class="item-row-main"><h3>setCacheEnabled</h3><pre class="inline-signature">LUnitPathfinder:setCacheEnabled(enabled: boolean)</pre><p>Enables or disables the path cache on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:554</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcacheenabled"><div class="item-row-main"><h3>setCacheEnabled</h3><pre class="inline-signature">LUnitPathfinder:setCacheEnabled(enabled: boolean)</pre><p>Enables or disables the path cache on this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:555</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -251,7 +251,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;cache_size = &quot; .. pf:getCacheSize())
     pf:clearCache()
     print(&quot;cache_after_clear = &quot; .. pf:getCacheSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-setcachemaxsize"><div class="item-row-main"><h3>setCacheMaxSize</h3><pre class="inline-signature">LUnitPathfinder:setCacheMaxSize(n: integer)</pre><p>Sets maximum path cache size for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:579</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcachemaxsize"><div class="item-row-main"><h3>setCacheMaxSize</h3><pre class="inline-signature">LUnitPathfinder:setCacheMaxSize(n: integer)</pre><p>Sets maximum path cache size for this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:580</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -264,12 +264,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     pf:findPath(3, 3, 18, 18)
 
     print(&quot;cache_size = &quot; .. pf:getCacheSize())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LUnitPathfinder:type() -&gt; string</pre><p>Returns the Lua-visible type name for this pathfinder handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:586</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LUnitPathfinder:type() -&gt; string</pre><p>Returns the Lua-visible type name for this pathfinder handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:587</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
 
     print(&quot;type = &quot; .. pf:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LUnitPathfinder:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this pathfinder handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:591</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LUnitPathfinder:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this pathfinder handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:592</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local pf = lurek.pathfind.newPathfinder(nav)
 

@@ -66,7 +66,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LFlowField userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-calculate"><div class="item-row-main"><h3>calculate</h3><pre class="inline-signature">LFlowField:calculate(tx: integer, ty: integer, unit_size: integer?)</pre><p>Calculates a flow field toward one target cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:609</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-calculate"><div class="item-row-main"><h3>calculate</h3><pre class="inline-signature">LFlowField:calculate(tx: integer, ty: integer, unit_size: integer?)</pre><p>Calculates a flow field toward one target cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:610</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -76,7 +76,7 @@ end</code></pre></details>
 
     print(&quot;calculated = &quot; .. tostring(ff:isCalculated()))
     print(&quot;targets = &quot; .. #ff:getTargets())
-end</code></pre></details></article><article class="item-row api-row" id="method-calculatemulti"><div class="item-row-main"><h3>calculateMulti</h3><pre class="inline-signature">LFlowField:calculateMulti(targets: table, unit_size: integer?)</pre><p>Calculates a flow field toward multiple target cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:622</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-calculatemulti"><div class="item-row-main"><h3>calculateMulti</h3><pre class="inline-signature">LFlowField:calculateMulti(targets: table, unit_size: integer?)</pre><p>Calculates a flow field toward multiple target cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:623</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
     nav:fill(1)
@@ -91,7 +91,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;targets = &quot; .. #targets)
     print(&quot;first = &quot; .. targets[1].x .. &quot;,&quot; .. targets[1].y)
     print(&quot;last = &quot; .. targets[#targets].x .. &quot;,&quot; .. targets[#targets].y)
-end</code></pre></details></article><article class="item-row api-row" id="method-getcosttotarget"><div class="item-row-main"><h3>getCostToTarget</h3><pre class="inline-signature">LFlowField:getCostToTarget(x: integer, y: integer) -&gt; number</pre><p>Returns integration cost to the target from a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:660</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getcosttotarget"><div class="item-row-main"><h3>getCostToTarget</h3><pre class="inline-signature">LFlowField:getCostToTarget(x: integer, y: integer) -&gt; number</pre><p>Returns integration cost to the target from a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:661</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -102,7 +102,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local dx, dy = ff:getDirection(1, 1)
     print(&quot;dir = &quot; .. dx .. &quot;,&quot; .. dy)
     print(&quot;cost = &quot; .. ff:getCostToTarget(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LFlowField:getDirection(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction vector at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:644</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LFlowField:getDirection(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction vector at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:645</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -114,7 +114,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;dir = &quot; .. dx .. &quot;,&quot; .. dy)
     print(&quot;angle = &quot; .. ff:getDirectionAngle(1, 1))
     print(&quot;cost = &quot; .. ff:getCostToTarget(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-getdirectionangle"><div class="item-row-main"><h3>getDirectionAngle</h3><pre class="inline-signature">LFlowField:getDirectionAngle(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction angle at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:652</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getdirectionangle"><div class="item-row-main"><h3>getDirectionAngle</h3><pre class="inline-signature">LFlowField:getDirectionAngle(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction angle at a one-based grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:653</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -124,7 +124,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;angle = &quot; .. ff:getDirectionAngle(1, 1))
     print(&quot;cost = &quot; .. ff:getCostToTarget(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-gettargets"><div class="item-row-main"><h3>getTargets</h3><pre class="inline-signature">LFlowField:getTargets() -&gt; table</pre><p>Returns target cells for this flow field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:674</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-gettargets"><div class="item-row-main"><h3>getTargets</h3><pre class="inline-signature">LFlowField:getTargets() -&gt; table</pre><p>Returns target cells for this flow field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:675</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(15, 15)
 
     nav:fill(1)
@@ -138,14 +138,14 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local targets = ff:getTargets()
     print(&quot;targets = &quot; .. #targets)
     print(&quot;first = &quot; .. targets[1].x .. &quot;,&quot; .. targets[1].y)
-end</code></pre></details></article><article class="item-row api-row" id="method-iscalculated"><div class="item-row-main"><h3>isCalculated</h3><pre class="inline-signature">LFlowField:isCalculated() -&gt; boolean</pre><p>Returns whether the flow field has been calculated.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:666</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-iscalculated"><div class="item-row-main"><h3>isCalculated</h3><pre class="inline-signature">LFlowField:isCalculated() -&gt; boolean</pre><p>Returns whether the flow field has been calculated.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newNavGrid(16, 16)
     local ff = lurek.pathfind.newFlowField(grid)
 
     print(&quot;calculated_before = &quot; .. tostring(ff:isCalculated()))
     ff:calculate(8, 8, 1)
     print(&quot;calculated_after = &quot; .. tostring(ff:isCalculated()))
-end</code></pre></details></article><article class="item-row api-row" id="method-steer"><div class="item-row-main"><h3>steer</h3><pre class="inline-signature">LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -&gt; number</pre><p>Returns a steering velocity for a world position using the flow field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:696</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-steer"><div class="item-row-main"><h3>steer</h3><pre class="inline-signature">LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -&gt; number</pre><p>Returns a steering velocity for a world position using the flow field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:697</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(10, 10)
 
     nav:fill(1)
@@ -155,12 +155,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     local vx, vy = ff:steer(50, 50, 100, 32, 32)
     print(&quot;velocity = &quot; .. vx .. &quot;,&quot; .. vy)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LFlowField:type() -&gt; string</pre><p>Returns the Lua-visible type name for this flow field handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:705</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LFlowField:type() -&gt; string</pre><p>Returns the Lua-visible type name for this flow field handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:706</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
 
     print(&quot;type = &quot; .. ff:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LFlowField:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this flow field handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:710</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LFlowField:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this flow field handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:711</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(5, 5)
     local ff = lurek.pathfind.newFlowField(nav)
 

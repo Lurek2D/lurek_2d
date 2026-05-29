@@ -34,7 +34,7 @@ pub enum SeriesData {
 }
 
 impl SeriesData {
-    /// Return the series name.
+    /// Returns the display name of this series.
     pub fn name(&self) -> &str {
         match self {
             Self::Line { name, .. } => name,
@@ -239,7 +239,7 @@ impl GraphRenderer {
         self.series.iter().map(|s| s.name().to_string()).collect()
     }
 
-    /// Add a line series.
+    /// Adds a line series with explicit `(x, y)` points.
     pub fn add_line_series(&mut self, name: &str, points: Vec<(f32, f32)>, color: Color) {
         self.series.push(SeriesData::Line {
             name: name.to_string(),
@@ -248,7 +248,7 @@ impl GraphRenderer {
         });
     }
 
-    /// Add a scatter-plot series.
+    /// Adds a scatter-plot series with configurable dot size.
     pub fn add_scatter_series(
         &mut self,
         name: &str,
@@ -264,7 +264,7 @@ impl GraphRenderer {
         });
     }
 
-    /// Add a bar chart series.
+    /// Adds a vertical bar-chart series from scalar values.
     pub fn add_bar_series(&mut self, name: &str, values: Vec<f32>, color: Color) {
         self.series.push(SeriesData::Bar {
             name: name.to_string(),
@@ -283,7 +283,7 @@ impl GraphRenderer {
         }
     }
 
-    /// Remove all series.
+    /// Removes all currently registered data series.
     pub fn clear_series(&mut self) {
         self.series.clear();
     }

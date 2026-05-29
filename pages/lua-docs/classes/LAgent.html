@@ -96,11 +96,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local agent = lurek.agent.new({ model = &quot;llama3&quot; })
     local m     = agent:getModel()
     print(&quot;Agent model:&quot;, m)
-end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LAgent:getName() -&gt; string</pre><p>Returns the agent&#x27;s name identifier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:142</span></div><details class="example-block"><summary>Example · Exact example · ai.lua</summary><pre><code>do
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent(&quot;knight_03&quot;)
-  local name = npc:getName()
-  print(&quot;LAgent:getName: &quot; .. name)
+end</code></pre></details></article><article class="item-row api-row" id="method-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">LAgent:getName() -&gt; string</pre><p>Returns the agent&#x27;s name identifier.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:142</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+    local agent = lurek.agent.new({})
+    agent:setName(&quot;planner&quot;)
+    local name = agent:getName()
+    print(&quot;Agent name:&quot;, name)
 end</code></pre></details></article><article class="item-row api-row" id="method-geturl"><div class="item-row-main"><h3>getUrl</h3><pre class="inline-signature">LAgent:getUrl() -&gt; string</pre><p>Returns the current LLM endpoint URL.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:163</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local agent = lurek.agent.new({ url = &quot;http://127.0.0.1:11434/api/generate&quot; })
     local url   = agent:getUrl()

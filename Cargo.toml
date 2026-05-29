@@ -450,6 +450,10 @@ name = "window_tests"
 path = "tests/rust/unit/window_tests.rs"
 
 [[test]]
+name = "asset_tests"
+path = "tests/rust/unit/asset_tests.rs"
+
+[[test]]
 name = "agent_tests"
 path = "tests/rust/unit/agent_tests.rs"
 

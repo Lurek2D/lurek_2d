@@ -37,7 +37,7 @@ impl LuaUserData for LuaAIWorld {
         // -- addAgent --
         /// Creates a named agent in this world and returns a handle that can edit its movement and decision state.
         /// @param | name | string | Unique agent name used by later lookup, tags, custom callbacks, and squad membership references.
-        /// @return | LAgent | Lua handle for the newly inserted agent.
+        /// @return | LBot | Lua handle for the newly inserted bot.
         methods.add_method("addAgent", |_, this, name: String| {
             let mut w = this.inner.borrow_mut();
             w.add_agent(&name).map_err(LuaError::RuntimeError)?;
@@ -65,7 +65,7 @@ impl LuaUserData for LuaAIWorld {
         });
         // -- removeAgent --
         /// Removes an agent from this world by using an existing agent handle.
-        /// @param | agent | LAgent | Agent handle whose stored name identifies the world entry to remove.
+        /// @param | agent | LBot | Bot handle whose stored name identifies the world entry to remove.
         methods.add_method("removeAgent", |_, this, agent: LuaAnyUserData| {
             let a = agent.borrow::<LuaAgent>()?;
             this.inner.borrow_mut().remove_agent(&a.name);
@@ -337,14 +337,14 @@ impl LuaUserData for LuaAgent {
         });
         // -- type --
         /// Returns the Lua-visible type name for this agent handle.
-        /// @return | string | The string `LAgent`.
-        methods.add_method("type", |_, _, ()| Ok("LAgent"));
+        /// @return | string | The string `LBot`.
+        methods.add_method("type", |_, _, ()| Ok("LBot"));
         // -- typeOf --
         /// Returns whether this agent handle matches a supported type name.
         /// @param | name | string | Type name to compare against `Agent` and `Object`.
         /// @return | boolean | True when the supplied type name matches this handle.
         methods.add_method("typeOf", |_, _, name: String| {
-            Ok(name == "LAgent" || name == "LObject")
+            Ok(name == "LBot" || name == "LAgent" || name == "LObject")
         });
     }
 }
@@ -1038,7 +1038,7 @@ impl LuaUserData for LuaSteeringManager {
         );
         // -- applyCustomSteering --
         /// Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
-        /// @param | agent | LAgent | Agent handle passed through to every custom steering callback.
+        /// @param | agent | LBot | Bot handle passed through to every custom steering callback.
         /// @param | dt | number | Elapsed time in seconds passed to every custom steering callback.
         /// @return | number, number | Combined custom X and Y steering force.
         methods.add_method(

@@ -33,3 +33,7 @@ pub use facade::{get_playback_device, get_playback_devices, set_playback_device}
 pub use crate::dsp::{AtomicParam, DynamicEffectSource, EffectParams, EffectType, SharedEffectGraph};
 pub use crate::dsp::OfflineEffect;
 pub use crate::midi::{MidiPlayer, MidiState};
+
+/// Musical beat clock: BPM tracking, tap-tempo, beat scheduling, quantisation.
+pub mod beat_clock;
+pub use beat_clock::BeatClock;

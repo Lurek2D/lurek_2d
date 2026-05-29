@@ -21,6 +21,8 @@ pub mod mat3;
 
 /// Convex and concave polygon with area, centroid, and clipping helpers.
 pub mod polygon;
+/// Walker-Vose alias-method loot table and pity tracker for O(1) random drops.
+pub mod loot_table;
 /// Seeded pseudo-random number generator with distribution helpers.
 pub mod random;
 /// Axis-aligned rectangle with union, intersection, and split operations.
@@ -45,6 +47,7 @@ pub use facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 pub use geometry::*;
 pub use mat3::Mat3;
 
+pub use loot_table::{sample_with_pity, LootEntry, LootTable, PityTracker};
 pub use random::RandomGenerator;
 pub use rect::Rect;
 pub use crate::image::rect_packing::{PackedRect, RectPacker};

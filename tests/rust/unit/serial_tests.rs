@@ -116,10 +116,9 @@ mod lua_table_tests {
 
 mod codec_tests {
     use lurek2d::serial::{
-        decode_bytes, decode_text, detect_format, encode, from_csv_reader, DecodeOptions,
+        decode_bytes, decode_text, detect_format, encode, from_csv, DecodeOptions,
         EncodeOptions, EncodedValue, SerialFormat, SerialValue,
     };
-    use std::io::Cursor;
 
     fn lcg_next(state: &mut u64) -> u64 {
         *state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
@@ -173,9 +172,8 @@ mod codec_tests {
     }
 
     #[test]
-    fn from_csv_reader_parses_rows() {
-        let data = Cursor::new("name,score\nalice,10\n");
-        let val = from_csv_reader(data, Default::default()).unwrap();
+    fn from_csv_parses_rows() {
+        let val = from_csv("name,score\nalice,10\n", Default::default()).unwrap();
         match val {
             SerialValue::Seq(rows) => assert_eq!(rows.len(), 1),
             other => panic!("expected seq, got {other:?}"),

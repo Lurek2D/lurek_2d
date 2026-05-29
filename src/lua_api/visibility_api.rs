@@ -5,7 +5,7 @@
 //! - Bridges 16 Lua-callable methods via `mlua`.
 
 use super::SharedState;
-use crate::visibility::{FogConfig, VisibilityEvent, VisibilityFlags, VisibilityGrid};
+use crate::visibility::{FogConfig, TileFov, VisibilityEvent, VisibilityFlags, VisibilityGrid};
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -231,6 +231,174 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
         })?,
     )?;
 
+    // -- newFov --
+    /// Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+    /// @param | opts | table | `{ range=integer, light_walls=boolean? }` (default light_walls=true).
+    /// @return | LFov | New FOV handle ready for blocker assignment and compute calls.
+    tbl.set(
+        "newFov",
+        lua.create_function(|_, opts: LuaTable| {
+            let range: u32 = opts.get("range")?;
+            let light_walls: bool = opts.get::<_, Option<bool>>("light_walls")?.unwrap_or(true);
+            let width: u32 = opts.get::<_, Option<u32>>("width")?.unwrap_or(256);
+            let height: u32 = opts.get::<_, Option<u32>>("height")?.unwrap_or(256);
+            Ok(LuaTileFov {
+                inner: RefCell::new(TileFov::new(width, height, range, light_walls)),
+                blocker_key: RefCell::new(None),
+            })
+        })?,
+    )?;
+
     lurek.set("visibility", tbl)?;
     Ok(())
+}
+
+/// Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
+pub struct LuaTileFov {
+    /// Owned FOV state.
+    inner: RefCell<TileFov>,
+    /// Optional Lua blocker predicate stored in the registry.
+    blocker_key: RefCell<Option<LuaRegistryKey>>,
+}
+
+/// Provides `newFov` methods: setBlocker, setRange, compute, isVisible, isExplored,
+/// resetExplored, eachVisible, visibleCells, export, import.
+impl LuaUserData for LuaTileFov {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setBlocker --
+        /// Sets the Lua predicate that determines which cells are opaque.
+        /// @param | fn | function | `fn(x: integer, y: integer) -> boolean` (one-based).
+        methods.add_method("setBlocker", |lua, this, f: LuaFunction| {
+            if let Some(old) = this.blocker_key.borrow_mut().take() {
+                lua.remove_registry_value(old)?;
+            }
+            *this.blocker_key.borrow_mut() = Some(lua.create_registry_value(f)?);
+            Ok(())
+        });
+
+        // -- setRange --
+        /// Changes the visibility radius for subsequent compute calls.
+        /// @param | range | integer | Maximum sight radius in cells.
+        methods.add_method("setRange", |_, this, range: u32| {
+            this.inner.borrow_mut().set_range(range);
+            Ok(())
+        });
+
+        // -- compute --
+        /// Runs recursive shadowcasting from the observer position.
+        /// Resets the current `visible` mask before computing.
+        /// @param | ox | integer | Observer column (one-based).
+        /// @param | oy | integer | Observer row (one-based).
+        methods.add_method("compute", |lua, this, (ox, oy): (u32, u32)| {
+            if ox == 0 || oy == 0 {
+                return Err(LuaError::external("compute: coordinates must be >= 1"));
+            }
+            let oxz = ox - 1;
+            let oyz = oy - 1;
+            let blocker_key = this.blocker_key.borrow();
+            if let Some(ref key) = *blocker_key {
+                let f: LuaFunction = lua.registry_value(key)?;
+                let w = this.inner.borrow().width();
+                let h = this.inner.borrow().height();
+                let size = (w * h) as usize;
+                let mut blocked = vec![false; size];
+                for y in 0..h {
+                    for x in 0..w {
+                        let result: bool = f.call((x + 1, y + 1))?;
+                        blocked[(y * w + x) as usize] = result;
+                    }
+                }
+                this.inner.borrow_mut().compute(oxz, oyz, &|x, y| blocked[(y * w + x) as usize]);
+            } else {
+                this.inner.borrow_mut().compute(oxz, oyz, &|_, _| false);
+            }
+            Ok(())
+        });
+
+        // -- isVisible --
+        /// Returns true if the cell is visible in the current frame.
+        /// @param | x | integer | Column (one-based).
+        /// @param | y | integer | Row (one-based).
+        /// @return | boolean | True when visible.
+        methods.add_method("isVisible", |_, this, (x, y): (u32, u32)| {
+            if x == 0 || y == 0 {
+                return Ok(false);
+            }
+            Ok(this.inner.borrow().is_visible(x - 1, y - 1))
+        });
+
+        // -- isExplored --
+        /// Returns true if the cell has ever been visible.
+        /// @param | x | integer | Column (one-based).
+        /// @param | y | integer | Row (one-based).
+        /// @return | boolean | True when explored.
+        methods.add_method("isExplored", |_, this, (x, y): (u32, u32)| {
+            if x == 0 || y == 0 {
+                return Ok(false);
+            }
+            Ok(this.inner.borrow().is_explored(x - 1, y - 1))
+        });
+
+        // -- resetExplored --
+        /// Clears the explored mask so all cells appear unexplored.
+        methods.add_method("resetExplored", |_, this, ()| {
+            this.inner.borrow_mut().reset_explored();
+            Ok(())
+        });
+
+        // -- eachVisible --
+        /// Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+        /// @param | fn | function | Callback receiving column and row integers.
+        methods.add_method("eachVisible", |_, this, f: LuaFunction| {
+            let cells = this.inner.borrow().visible_cells();
+            for (x, y) in cells {
+                f.call::<_, ()>((x + 1, y + 1))?;
+            }
+            Ok(())
+        });
+
+        // -- visibleCells --
+        /// Returns an array of `{x, y}` tables for all currently visible cells (one-based).
+        /// @return | table | Array of cell position tables.
+        methods.add_method("visibleCells", |lua, this, ()| {
+            let cells = this.inner.borrow().visible_cells();
+            let out = lua.create_table()?;
+            for (i, (x, y)) in cells.into_iter().enumerate() {
+                let pt = lua.create_table()?;
+                /// The 'x' field value exposed to Lua scripts.
+                pt.set("x", x + 1)?;
+                /// The 'y' field value exposed to Lua scripts.
+                pt.set("y", y + 1)?;
+                out.set(i + 1, pt)?;
+            }
+            Ok(out)
+        });
+
+        // -- export --
+        /// Serialises the visible and explored masks to a binary blob.
+        /// @return | string | Binary blob.
+        methods.add_method("export", |lua, this, ()| {
+            lua.create_string(this.inner.borrow().save())
+        });
+
+        // -- import --
+        /// Restores visible and explored masks from a blob produced by `export`.
+        /// @param | blob | string | Binary blob.
+        methods.add_method("import", |_, this, blob: LuaString| {
+            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+        });
+
+        // -- type --
+        /// Returns the Lua-visible type name for this FOV handle.
+        /// @return | string | The string `LFov`.
+        methods.add_method("type", |_, _, ()| Ok("LFov"));
+
+        // -- typeOf --
+        /// Returns whether this FOV handle matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LFov" || name == "LObject")
+        });
+    }
 }

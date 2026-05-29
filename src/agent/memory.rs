@@ -74,7 +74,7 @@ impl WorkingMemory {
 
 // ─── EpisodicMemory ───────────────────────────────────────────────────────────
 
-/// A single recorded episode.
+/// A single recorded episodic-memory event snapshot.
 #[derive(Clone)]
 pub struct Episode {
     /// Logical tick / frame at which this episode was recorded.

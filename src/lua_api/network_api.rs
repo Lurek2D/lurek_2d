@@ -852,7 +852,7 @@ impl LuaUserData for LuaSseStream {
         // -- next --
         /// Polls for the next available event from the SSE stream (non-blocking).
         /// Fires the stored callback with the event table when one is available, then returns it.
-        /// @return | table? | Event table `{ id?, event?, data }`, or nil when no event is ready.
+        /// @return | table | Event table `{ id?, event?, data }` when available; returns nil when no event is ready.
         methods.add_method("next", |lua, this, ()| match this.inner.next() {
             None => Ok(LuaValue::Nil),
             Some(ref ev) => {

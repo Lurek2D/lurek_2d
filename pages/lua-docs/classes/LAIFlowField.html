@@ -64,7 +64,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LAIFlowField userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LAIFlowField:getDirection(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction vector for a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:910</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-getdirection"><div class="item-row-main"><h3>getDirection</h3><pre class="inline-signature">LAIFlowField:getDirection(x: integer, y: integer) -&gt; number</pre><p>Returns flow direction vector for a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:911</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
@@ -73,7 +73,7 @@ end</code></pre></details>
     local dx, dy = aiff:getDirection(1, 1)
     print(&quot;dir = &quot; .. dx .. &quot;,&quot; .. dy)
     print(&quot;distance = &quot; .. aiff:getDistance(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-getdistance"><div class="item-row-main"><h3>getDistance</h3><pre class="inline-signature">LAIFlowField:getDistance(x: integer, y: integer) -&gt; number</pre><p>Returns distance to goal for a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:918</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getdistance"><div class="item-row-main"><h3>getDistance</h3><pre class="inline-signature">LAIFlowField:getDistance(x: integer, y: integer) -&gt; number</pre><p>Returns distance to goal for a one-based cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:919</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
@@ -82,7 +82,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local dx, dy = aiff:getDirection(1, 1)
     print(&quot;dir = &quot; .. dx .. &quot;,&quot; .. dy)
     print(&quot;distance = &quot; .. aiff:getDistance(1, 1))
-end</code></pre></details></article><article class="item-row api-row" id="method-getgoal"><div class="item-row-main"><h3>getGoal</h3><pre class="inline-signature">LAIFlowField:getGoal() -&gt; integer</pre><p>Returns the one-based flow field goal, or nil when no goal is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:892</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getgoal"><div class="item-row-main"><h3>getGoal</h3><pre class="inline-signature">LAIFlowField:getGoal() -&gt; integer</pre><p>Returns the one-based flow field goal, or nil when no goal is set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:893</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
@@ -91,7 +91,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local gx, gy = aiff:getGoal()
     print(&quot;goal = &quot; .. gx .. &quot;,&quot; .. gy)
     print(&quot;has_goal = &quot; .. tostring(aiff:hasGoal()))
-end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LAIFlowField:getHeight() -&gt; integer</pre><p>Returns flow field height from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:871</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getheight"><div class="item-row-main"><h3>getHeight</h3><pre class="inline-signature">LAIFlowField:getHeight() -&gt; integer</pre><p>Returns flow field height from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:872</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
@@ -99,7 +99,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;dims = &quot; .. ff:getWidth() .. &quot;x&quot; .. ff:getHeight())
     print(&quot;has_goal = &quot; .. tostring(ff:hasGoal()))
-end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LAIFlowField:getWidth() -&gt; integer</pre><p>Returns flow field width from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:865</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getwidth"><div class="item-row-main"><h3>getWidth</h3><pre class="inline-signature">LAIFlowField:getWidth() -&gt; integer</pre><p>Returns flow field width from this object.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:866</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
@@ -107,14 +107,14 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;dims = &quot; .. ff:getWidth() .. &quot;x&quot; .. ff:getHeight())
     print(&quot;has_goal = &quot; .. tostring(ff:hasGoal()))
-end</code></pre></details></article><article class="item-row api-row" id="method-hasgoal"><div class="item-row-main"><h3>hasGoal</h3><pre class="inline-signature">LAIFlowField:hasGoal() -&gt; boolean</pre><p>Returns whether a flow field goal is currently set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:877</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-hasgoal"><div class="item-row-main"><h3>hasGoal</h3><pre class="inline-signature">LAIFlowField:hasGoal() -&gt; boolean</pre><p>Returns whether a flow field goal is currently set.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:878</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local pg = lurek.pathfind.newPathGrid(32, 32, 1)
     local ff = lurek.pathfind.newPathFlowField(pg)
 
     print(&quot;has_goal_before = &quot; .. tostring(ff:hasGoal()))
     ff:setGoal(16, 16)
     print(&quot;has_goal_after = &quot; .. tostring(ff:hasGoal()))
-end</code></pre></details></article><article class="item-row api-row" id="method-setgoal"><div class="item-row-main"><h3>setGoal</h3><pre class="inline-signature">LAIFlowField:setGoal(x: integer, y: integer)</pre><p>Sets the one-based flow field goal and recalculates the field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:884</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgoal"><div class="item-row-main"><h3>setGoal</h3><pre class="inline-signature">LAIFlowField:setGoal(x: integer, y: integer)</pre><p>Sets the one-based flow field goal and recalculates the field.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:885</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
@@ -123,12 +123,12 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local gx, gy = aiff:getGoal()
     print(&quot;has_goal = &quot; .. tostring(aiff:hasGoal()))
     print(&quot;goal = &quot; .. gx .. &quot;,&quot; .. gy)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAIFlowField:type() -&gt; string</pre><p>Returns the Lua-visible type name for this AI flow field handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:924</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LAIFlowField:type() -&gt; string</pre><p>Returns the Lua-visible type name for this AI flow field handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:925</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
     print(&quot;type = &quot; .. aiff:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAIFlowField:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this AI flow field handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:929</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LAIFlowField:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this AI flow field handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:930</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 

@@ -49,6 +49,141 @@ impl LuaUserData for LuaAssetHandle {
     }
 }
 
+fn load_text_content(path: &str, asset_type: &AssetType, context: &str) -> LuaResult<Option<String>> {
+    if asset_type.is_text_like() {
+        let content = std::fs::read_to_string(path).map_err(|e| {
+            LuaError::RuntimeError(format!(
+                "{}: cannot read \"{}\" (type: {}): {}",
+                context,
+                path,
+                asset_type.as_str(),
+                e
+            ))
+        })?;
+        Ok(Some(content))
+    } else {
+        if !std::path::Path::new(path).exists() {
+            return Err(LuaError::RuntimeError(format!(
+                "{}: file not found: \"{}\"",
+                context,
+                path
+            )));
+        }
+        Ok(None)
+    }
+}
+
+fn apply_load_opts(cache: &Rc<RefCell<AssetCache>>, id: u64, opts: Option<LuaTable>) -> LuaResult<()> {
+    if let Some(opts) = opts {
+        if let Ok(name) = opts.get::<_, String>("name") {
+            cache.borrow_mut().set_name(id, name);
+        }
+        if let Ok(group) = opts.get::<_, String>("group") {
+            cache.borrow_mut().set_group(id, group);
+        }
+        if let Ok(tags_tbl) = opts.get::<_, LuaTable>("tags") {
+            let len = tags_tbl.raw_len();
+            for i in 1..=len {
+                if let Ok(tag) = tags_tbl.get::<_, String>(i) {
+                    cache.borrow_mut().add_tag(id, &tag);
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn ids_to_handles_table<'lua>(
+    lua: &'lua Lua,
+    ids: &[u64],
+    cache: &Rc<RefCell<AssetCache>>,
+) -> LuaResult<LuaTable<'lua>> {
+    let out = lua.create_table()?;
+    for (i, id) in ids.iter().enumerate() {
+        out.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
+    }
+    Ok(out)
+}
+
+fn get_handle_entry(cache: &Rc<RefCell<AssetCache>>, id: u64, context: &str) -> LuaResult<crate::asset::AssetEntry> {
+    let borrow = cache.borrow();
+    let entry = borrow
+        .get(id)
+        .ok_or_else(|| LuaError::RuntimeError(format!("{}: handle not loaded", context)))?;
+    Ok(crate::asset::AssetEntry {
+        path: entry.path.clone(),
+        asset_type: entry.asset_type.clone(),
+        ref_count: entry.ref_count,
+        text_content: entry.text_content.clone(),
+        name: entry.name.clone(),
+        group: entry.group.clone(),
+        tags: entry.tags.clone(),
+    })
+}
+
+fn resolve_asset_value(lua: &Lua, entry: crate::asset::AssetEntry) -> LuaResult<LuaValue<'_>> {
+    match entry.asset_type {
+        AssetType::Text
+        | AssetType::Toml
+        | AssetType::Json
+        | AssetType::Obj
+        | AssetType::Shader
+        | AssetType::Lua => match entry.text_content {
+            Some(s) => Ok(LuaValue::String(lua.create_string(&s)?)),
+            None => Ok(LuaValue::Nil),
+        },
+        AssetType::Image => {
+            let image_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("image")?;
+            let load_fn: LuaFunction = image_tbl.get("loadImage")?;
+            load_fn.call(entry.path)
+        }
+        AssetType::Font => {
+            let font_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("font")?;
+            let load_fn: LuaFunction = font_tbl.get("load")?;
+            load_fn.call((entry.path, 16i64))
+        }
+        AssetType::Audio | AssetType::Music => {
+            let audio_tbl: LuaTable = lua.globals().get::<_, LuaTable>("lurek")?.get("audio")?;
+            let new_source_fn: LuaFunction = audio_tbl.get("newSource")?;
+            new_source_fn.call(entry.path)
+        }
+        AssetType::Unknown(_) => Ok(LuaValue::Nil),
+    }
+}
+
+fn preload_assets(cache: &Rc<RefCell<AssetCache>>, paths: LuaTable, callback: LuaFunction) -> LuaResult<()> {
+    let count = paths.raw_len() as i64;
+    for i in 1..=count {
+        let row: LuaTable = paths.get(i)?;
+
+        let path: String = row
+            .get::<_, Option<String>>(1)?
+            .or_else(|| row.get::<_, Option<String>>("path").ok().flatten())
+            .ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.asset.preload: each entry must have a path".into(),
+                )
+            })?;
+
+        let type_str: String = row
+            .get::<_, Option<String>>(2)?
+            .or_else(|| row.get::<_, Option<String>>("type").ok().flatten())
+            .ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "lurek.asset.preload: each entry must have a type".into(),
+                )
+            })?;
+
+        let asset_type = AssetType::from_type_str(&type_str);
+        let text_content = load_text_content(&path, &asset_type, "lurek.asset.preload")?;
+        cache.borrow_mut().register(path, asset_type, text_content);
+        callback.call::<_, ()>((i, count))?;
+    }
+
+    callback.call::<_, ()>((LuaValue::Nil, LuaValue::Nil))?;
+    Ok(())
+}
+
 // ─── register ────────────────────────────────────────────────────────────────
 
 /// Registers `lurek.asset.*` functions into the `lurek` table.
@@ -73,57 +208,22 @@ pub fn register(
     /// @param | asset_type | string | Asset type string; see above for valid values.
     /// @param | opts | table? | Optional metadata: `{name, group, tags}`.
     /// @return | LAssetHandle | Handle that keeps the asset alive in the cache.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "load",
-            lua.create_function(
-                move |_lua, (path, type_str, opts): (String, String, Option<LuaTable>)| {
-                    let asset_type = AssetType::from_type_str(&type_str);
-                    let text_content = if asset_type.is_text_like() {
-                        let content = std::fs::read_to_string(&path).map_err(|e| {
-                            LuaError::RuntimeError(format!(
-                                "lurek.asset.load: cannot read \"{}\" (type: {}): {}",
-                                path,
-                                asset_type.as_str(),
-                                e
-                            ))
-                        })?;
-                        Some(content)
-                    } else {
-                        if !std::path::Path::new(&path).exists() {
-                            return Err(LuaError::RuntimeError(format!(
-                                "lurek.asset.load: file not found: \"{}\"",
-                                path
-                            )));
-                        }
-                        None
-                    };
-                    let id = cache.borrow_mut().register(path, asset_type, text_content);
-                    if let Some(opts) = opts {
-                        if let Ok(name) = opts.get::<_, String>("name") {
-                            cache.borrow_mut().set_name(id, name);
-                        }
-                        if let Ok(group) = opts.get::<_, String>("group") {
-                            cache.borrow_mut().set_group(id, group);
-                        }
-                        if let Ok(tags_tbl) = opts.get::<_, LuaTable>("tags") {
-                            let len = tags_tbl.raw_len();
-                            for i in 1..=len {
-                                if let Ok(tag) = tags_tbl.get::<_, String>(i) {
-                                    cache.borrow_mut().add_tag(id, &tag);
-                                }
-                            }
-                        }
-                    }
-                    Ok(LuaAssetHandle {
-                        id,
-                        cache: cache.clone(),
-                    })
-                },
-            )?,
-        )?;
-    }
+    let load_cache = cache.clone();
+    asset_tbl.set(
+        "load",
+        lua.create_function(
+            move |_lua, (path, type_str, opts): (String, String, Option<LuaTable>)| {
+                let asset_type = AssetType::from_type_str(&type_str);
+                let text_content = load_text_content(&path, &asset_type, "lurek.asset.load")?;
+                let id = load_cache.borrow_mut().register(path, asset_type, text_content);
+                apply_load_opts(&load_cache, id, opts)?;
+                Ok(LuaAssetHandle {
+                    id,
+                    cache: load_cache.clone(),
+                })
+            },
+        )?,
+    )?;
 
     // ─── unload ───────────────────────────────────────────────────────────────
 
@@ -148,61 +248,17 @@ pub fn register(
     /// cached file content as a string. `image` calls `lurek.image.loadImage`,
     /// `font` calls `lurek.font.load`, `audio` and `music` call `lurek.audio.newSource`.
     /// @param | handle | LAssetHandle | Asset handle to retrieve.
-    /// @return | any | Asset value; nil when the handle is not loaded or the type is unknown.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "get",
-            lua.create_function(move |lua, handle: LuaAnyUserData| {
-                // Extract all data while the borrow is live, then drop before Lua calls.
-                let (path, asset_type, text_content) = {
-                    let h = handle.borrow::<LuaAssetHandle>()?;
-                    let borrow = cache.borrow();
-                    let entry = borrow.get(h.id).ok_or_else(|| {
-                        LuaError::RuntimeError(
-                            "lurek.asset.get: handle is no longer loaded".into(),
-                        )
-                    })?;
-                    (
-                        entry.path.clone(),
-                        entry.asset_type.clone(),
-                        entry.text_content.clone(),
-                    )
-                };
-
-                match asset_type {
-                    AssetType::Text
-                    | AssetType::Toml
-                    | AssetType::Json
-                    | AssetType::Obj
-                    | AssetType::Shader
-                    | AssetType::Lua => match text_content {
-                        Some(s) => Ok(LuaValue::String(lua.create_string(&s)?)),
-                        None => Ok(LuaValue::Nil),
-                    },
-                    AssetType::Image => {
-                        let image_tbl: LuaTable =
-                            lua.globals().get::<_, LuaTable>("lurek")?.get("image")?;
-                        let load_fn: LuaFunction = image_tbl.get("loadImage")?;
-                        load_fn.call(path)
-                    }
-                    AssetType::Font => {
-                        let font_tbl: LuaTable =
-                            lua.globals().get::<_, LuaTable>("lurek")?.get("font")?;
-                        let load_fn: LuaFunction = font_tbl.get("load")?;
-                        load_fn.call((path, 16i64))
-                    }
-                    AssetType::Audio | AssetType::Music => {
-                        let audio_tbl: LuaTable =
-                            lua.globals().get::<_, LuaTable>("lurek")?.get("audio")?;
-                        let new_source_fn: LuaFunction = audio_tbl.get("newSource")?;
-                        new_source_fn.call(path)
-                    }
-                    AssetType::Unknown(_) => Ok(LuaValue::Nil),
-                }
-            })?,
-        )?;
-    }
+    /// @return | string | Source text for text-like asset types.
+    /// @overload | handle | LAssetHandle | table | Runtime object returned by image/font/audio loaders for binary types.
+    let get_cache = cache.clone();
+    asset_tbl.set(
+        "get",
+        lua.create_function(move |lua, handle: LuaAnyUserData| {
+            let h = handle.borrow::<LuaAssetHandle>()?;
+            let entry = get_handle_entry(&get_cache, h.id, "lurek.asset.get")?;
+            resolve_asset_value(lua, entry)
+        })?,
+    )?;
 
     // ─── preload ──────────────────────────────────────────────────────────────
 
@@ -212,55 +268,13 @@ pub fn register(
     /// @param | paths | table | Array of `{path, type}` pairs (or `{path=…, type=…}` tables).
     /// @param | callback | any | Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.
     /// @return | nil | No value is returned.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "preload",
-            lua.create_function(move |_lua, (paths, callback): (LuaTable, LuaFunction)| {
-                let count = paths.raw_len() as i64;
-                for i in 1..=count {
-                    let entry: LuaTable = paths.get(i)?;
-
-                    let path: String = entry
-                        .get::<_, Option<String>>(1)?
-                        .or_else(|| entry.get::<_, Option<String>>("path").ok().flatten())
-                        .ok_or_else(|| {
-                            LuaError::RuntimeError(
-                                "lurek.asset.preload: each entry must have a path".into(),
-                            )
-                        })?;
-
-                    let type_str: String = entry
-                        .get::<_, Option<String>>(2)?
-                        .or_else(|| entry.get::<_, Option<String>>("type").ok().flatten())
-                        .ok_or_else(|| {
-                            LuaError::RuntimeError(
-                                "lurek.asset.preload: each entry must have a type".into(),
-                            )
-                        })?;
-
-                    let asset_type = AssetType::from_type_str(&type_str);
-                    let text_content = if asset_type.is_text_like() {
-                        std::fs::read_to_string(&path)
-                            .map(Some)
-                            .map_err(|e| {
-                                LuaError::RuntimeError(format!(
-                                    "lurek.asset.preload: cannot read \"{}\": {}",
-                                    path, e
-                                ))
-                            })?
-                    } else {
-                        None
-                    };
-
-                    cache.borrow_mut().register(path, asset_type, text_content);
-                    callback.call::<_, ()>((i, count))?;
-                }
-                callback.call::<_, ()>((LuaValue::Nil, LuaValue::Nil))?;
-                Ok(())
-            })?,
-        )?;
-    }
+    let preload_cache = cache.clone();
+    asset_tbl.set(
+        "preload",
+        lua.create_function(move |_lua, (paths, callback): (LuaTable, LuaFunction)| {
+            preload_assets(&preload_cache, paths, callback)
+        })?,
+    )?;
 
     // ─── refcount ─────────────────────────────────────────────────────────────
 
@@ -301,56 +315,51 @@ pub fn register(
     /// @field | total_refs | integer | Sum of all ref counts across all cached assets.
     /// @field | types | table | Per-type entry counts keyed by type string.
     /// @field | groups | table | Sorted array of unique group labels in the cache.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "stats",
-            lua.create_function(move |lua, ()| {
-                // Extract all needed data while holding the borrow, then drop before Lua calls.
-                let (loaded, total_refs, type_counts, groups) = {
-                    let borrow = cache.borrow();
-                    let mut counts = HashMap::<String, usize>::new();
-                    for (_, entry) in borrow.iter() {
-                        *counts
-                            .entry(entry.asset_type.as_str().to_string())
-                            .or_insert(0) += 1;
-                    }
-                    (borrow.loaded_count(), borrow.total_refs(), counts, borrow.unique_groups())
-                };
+    let stats_cache = cache.clone();
+    asset_tbl.set(
+        "stats",
+        lua.create_function(move |lua, ()| {
+            let (loaded, total_refs, type_counts, groups) = {
+                let borrow = stats_cache.borrow();
+                let mut counts = HashMap::<String, usize>::new();
+                for (_, entry) in borrow.iter() {
+                    *counts
+                        .entry(entry.asset_type.as_str().to_string())
+                        .or_insert(0) += 1;
+                }
+                (borrow.loaded_count(), borrow.total_refs(), counts, borrow.unique_groups())
+            };
 
-                let tbl = lua.create_table()?;
-                tbl.set("loaded", loaded)?;
-                tbl.set("total_refs", total_refs)?;
-                let types_tbl = lua.create_table()?;
-                for (k, v) in &type_counts {
-                    types_tbl.set(k.as_str(), *v)?;
-                }
-                tbl.set("types", types_tbl)?;
-                let groups_tbl = lua.create_table()?;
-                for (i, g) in groups.iter().enumerate() {
-                    groups_tbl.set(i + 1, g.as_str())?;
-                }
-                tbl.set("groups", groups_tbl)?;
-                Ok(tbl)
-            })?,
-        )?;
-    }
+            let out = lua.create_table()?;
+            out.set("loaded", loaded)?;
+            out.set("total_refs", total_refs)?;
+            let per_type = lua.create_table()?;
+            for (k, v) in &type_counts {
+                per_type.set(k.as_str(), *v)?;
+            }
+            out.set("types", per_type)?;
+            let groups_array = lua.create_table()?;
+            for (i, g) in groups.iter().enumerate() {
+                groups_array.set(i + 1, g.as_str())?;
+            }
+            out.set("groups", groups_array)?;
+            Ok(out)
+        })?,
+    )?;
 
     // ─── clear ────────────────────────────────────────────────────────────────
 
     // -- clear --
     /// Removes all entries from the cache immediately, regardless of ref counts.
     /// @return | nil | No value is returned.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "clear",
-            lua.create_function(move |_lua, ()| {
-                cache.borrow_mut().clear();
-                Ok(())
-            })?,
-        )?;
-    }
+    let clear_cache = cache.clone();
+    asset_tbl.set(
+        "clear",
+        lua.create_function(move |_lua, ()| {
+            clear_cache.borrow_mut().clear();
+            Ok(())
+        })?,
+    )?;
 
     // ─── getPath ─────────────────────────────────────────────────────────────
 
@@ -411,52 +420,37 @@ pub fn register(
     /// @field | group | string | Group label, or empty string when none is set.
     /// @field | tags | table | Array of tag strings.
     /// @field | refcount | integer | Current reference count.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "getInfo",
-            lua.create_function(move |lua, handle: LuaAnyUserData| {
-                let (path, type_str, name, group, tags, ref_count) = {
-                    let h = handle.borrow::<LuaAssetHandle>()?;
-                    let borrow = cache.borrow();
-                    let entry = borrow.get(h.id).ok_or_else(|| {
-                        LuaError::RuntimeError(
-                            "lurek.asset.getInfo: handle not loaded".into(),
-                        )
-                    })?;
-                    let name = entry.name.clone().unwrap_or_else(|| {
-                        std::path::Path::new(&entry.path)
-                            .file_stem()
-                            .and_then(|s| s.to_str())
-                            .unwrap_or("")
-                            .to_string()
-                    });
-                    let group = entry.group.clone().unwrap_or_default();
-                    let tags: Vec<String> = entry.tags.iter().cloned().collect();
-                    (
-                        entry.path.clone(),
-                        entry.asset_type.as_str().to_string(),
-                        name,
-                        group,
-                        tags,
-                        entry.ref_count,
-                    )
-                };
-                let tbl = lua.create_table()?;
-                tbl.set("path", path)?;
-                tbl.set("type", type_str)?;
-                tbl.set("name", name)?;
-                tbl.set("group", group)?;
-                let tags_tbl = lua.create_table()?;
-                for (i, tag) in tags.iter().enumerate() {
-                    tags_tbl.set(i + 1, tag.as_str())?;
-                }
-                tbl.set("tags", tags_tbl)?;
-                tbl.set("refcount", ref_count)?;
-                Ok(tbl)
-            })?,
-        )?;
-    }
+    let info_cache = cache.clone();
+    asset_tbl.set(
+        "getInfo",
+        lua.create_function(move |lua, handle: LuaAnyUserData| {
+            let h = handle.borrow::<LuaAssetHandle>()?;
+            let entry = get_handle_entry(&info_cache, h.id, "lurek.asset.getInfo")?;
+            let name = entry.name.unwrap_or_else(|| {
+                std::path::Path::new(&entry.path)
+                    .file_stem()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("")
+                    .to_string()
+            });
+            let group = entry.group.unwrap_or_default();
+            let mut tags: Vec<String> = entry.tags.into_iter().collect();
+            tags.sort();
+
+            let info = lua.create_table()?;
+            info.set("path", entry.path)?;
+            info.set("type", entry.asset_type.as_str())?;
+            info.set("name", name)?;
+            info.set("group", group)?;
+            let tag_array = lua.create_table()?;
+            for (i, tag) in tags.iter().enumerate() {
+                tag_array.set(i + 1, tag.as_str())?;
+            }
+            info.set("tags", tag_array)?;
+            info.set("refcount", entry.ref_count)?;
+            Ok(info)
+        })?,
+    )?;
 
     // ─── setName ─────────────────────────────────────────────────────────────
 
@@ -620,20 +614,14 @@ pub fn register(
     /// The comparison is case-insensitive. Assets with no explicit name use their path file-stem.
     /// @param | substr | string | Substring to search for in display names.
     /// @return | table | Array of `LAssetHandle` values whose name contains `substr`.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "findByName",
-            lua.create_function(move |lua, substr: String| {
-                let ids = cache.borrow().find_by_name(&substr);
-                let tbl = lua.create_table()?;
-                for (i, id) in ids.iter().enumerate() {
-                    tbl.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
-                }
-                Ok(tbl)
-            })?,
-        )?;
-    }
+    let by_name_cache = cache.clone();
+    asset_tbl.set(
+        "findByName",
+        lua.create_function(move |lua, substr: String| {
+            let ids = by_name_cache.borrow().find_by_name(&substr);
+            ids_to_handles_table(lua, &ids, &by_name_cache)
+        })?,
+    )?;
 
     // ─── findByGroup ─────────────────────────────────────────────────────────
 
@@ -641,20 +629,14 @@ pub fn register(
     /// Returns an array of asset handles whose group label exactly matches `group`.
     /// @param | group | string | Group label to match.
     /// @return | table | Array of `LAssetHandle` values in the given group.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "findByGroup",
-            lua.create_function(move |lua, group: String| {
-                let ids = cache.borrow().find_by_group(&group);
-                let tbl = lua.create_table()?;
-                for (i, id) in ids.iter().enumerate() {
-                    tbl.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
-                }
-                Ok(tbl)
-            })?,
-        )?;
-    }
+    let by_group_cache = cache.clone();
+    asset_tbl.set(
+        "findByGroup",
+        lua.create_function(move |lua, group: String| {
+            let ids = by_group_cache.borrow().find_by_group(&group);
+            ids_to_handles_table(lua, &ids, &by_group_cache)
+        })?,
+    )?;
 
     // ─── findByTag ───────────────────────────────────────────────────────────
 
@@ -662,20 +644,14 @@ pub fn register(
     /// Returns an array of asset handles that have the given tag in their tag set.
     /// @param | tag | string | Tag string to match.
     /// @return | table | Array of `LAssetHandle` values tagged with `tag`.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "findByTag",
-            lua.create_function(move |lua, tag: String| {
-                let ids = cache.borrow().find_by_tag(&tag);
-                let tbl = lua.create_table()?;
-                for (i, id) in ids.iter().enumerate() {
-                    tbl.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
-                }
-                Ok(tbl)
-            })?,
-        )?;
-    }
+    let by_tag_cache = cache.clone();
+    asset_tbl.set(
+        "findByTag",
+        lua.create_function(move |lua, tag: String| {
+            let ids = by_tag_cache.borrow().find_by_tag(&tag);
+            ids_to_handles_table(lua, &ids, &by_tag_cache)
+        })?,
+    )?;
 
     // ─── findByType ──────────────────────────────────────────────────────────
 
@@ -683,20 +659,14 @@ pub fn register(
     /// Returns an array of asset handles whose type exactly matches `type_str`.
     /// @param | type_str | string | Type string such as `"image"`, `"audio"`, `"toml"`.
     /// @return | table | Array of `LAssetHandle` values of that type.
-    {
-        let cache = cache.clone();
-        asset_tbl.set(
-            "findByType",
-            lua.create_function(move |lua, type_str: String| {
-                let ids = cache.borrow().find_by_type(&type_str);
-                let tbl = lua.create_table()?;
-                for (i, id) in ids.iter().enumerate() {
-                    tbl.set(i + 1, LuaAssetHandle { id: *id, cache: cache.clone() })?;
-                }
-                Ok(tbl)
-            })?,
-        )?;
-    }
+    let by_type_cache = cache.clone();
+    asset_tbl.set(
+        "findByType",
+        lua.create_function(move |lua, type_str: String| {
+            let ids = by_type_cache.borrow().find_by_type(&type_str);
+            ids_to_handles_table(lua, &ids, &by_type_cache)
+        })?,
+    )?;
 
     lurek.set("asset", asset_tbl)?;
     Ok(())

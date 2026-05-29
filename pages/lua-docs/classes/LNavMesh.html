@@ -66,7 +66,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LNavMesh userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-addpolygon"><div class="item-row-main"><h3>addPolygon</h3><pre class="inline-signature">LNavMesh:addPolygon(vertices: table) -&gt; integer</pre><p>Adds a polygon from vertex tables and returns a one-based id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1187</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-addpolygon"><div class="item-row-main"><h3>addPolygon</h3><pre class="inline-signature">LNavMesh:addPolygon(vertices: table) -&gt; integer</pre><p>Adds a polygon from vertex tables and returns a one-based id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1188</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
         { x = 0, y = 0 },
@@ -76,7 +76,7 @@ end</code></pre></details>
 
     print(&quot;polygon_id = &quot; .. id)
     print(&quot;polygon_count = &quot; .. mesh:getPolygonCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-connectpolygons"><div class="item-row-main"><h3>connectPolygons</h3><pre class="inline-signature">LNavMesh:connectPolygons(a: integer, b: integer, bidirectional: boolean?) -&gt; boolean</pre><p>Connects two polygons by one-based id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1208</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-connectpolygons"><div class="item-row-main"><h3>connectPolygons</h3><pre class="inline-signature">LNavMesh:connectPolygons(a: integer, b: integer, bidirectional: boolean?) -&gt; boolean</pre><p>Connects two polygons by one-based id.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1209</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
     local a = mesh:addPolygon({
         { x = 0, y = 0 },
@@ -99,7 +99,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;connected_ab = &quot; .. tostring(ab))
     print(&quot;connected_bc = &quot; .. tostring(bc))
     print(&quot;polygon_count = &quot; .. mesh:getPolygonCount())
-end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LNavMesh:findPath(sx: number, sy: number, gx: number, gy: number) -&gt; table</pre><p>Finds a path through the navmesh between world points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1227</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LNavMesh:findPath(sx: number, sy: number, gx: number, gy: number) -&gt; table</pre><p>Finds a path through the navmesh between world points.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1228</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
     local p1 = mesh:addPolygon({
         { x = 0, y = 0 },
@@ -131,7 +131,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     else
         print(&quot;waypoints = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-getpolygoncount"><div class="item-row-main"><h3>getPolygonCount</h3><pre class="inline-signature">LNavMesh:getPolygonCount() -&gt; integer</pre><p>Returns the total navmesh polygon count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1251</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getpolygoncount"><div class="item-row-main"><h3>getPolygonCount</h3><pre class="inline-signature">LNavMesh:getPolygonCount() -&gt; integer</pre><p>Returns the total navmesh polygon count.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1252</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
     local id = mesh:addPolygon({
         { x = 0, y = 0 },
@@ -141,11 +141,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;polygon_count = &quot; .. mesh:getPolygonCount())
     print(&quot;first_id = &quot; .. id)
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNavMesh:type() -&gt; string</pre><p>Returns the Lua-visible type name for this navmesh handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1257</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LNavMesh:type() -&gt; string</pre><p>Returns the Lua-visible type name for this navmesh handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1258</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
 
     print(&quot;type = &quot; .. mesh:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNavMesh:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this navmesh handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1262</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LNavMesh:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this navmesh handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1263</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
 
     print(&quot;is_nav_mesh = &quot; .. tostring(mesh:typeOf(&quot;LNavMesh&quot;)))

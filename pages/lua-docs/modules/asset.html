@@ -56,17 +56,17 @@
     <p>Standalone namespace functions registered under lurek.asset.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="fn-addtag"><div class="item-row-main"><h3>addTag</h3><pre class="inline-signature">lurek.asset.addTag(handle: LAssetHandle, tag: string) -&gt; nil</pre><p>Adds a tag to the tag set of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:550</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+    <article class="item-row api-row" id="fn-addtag"><div class="item-row-main"><h3>addTag</h3><pre class="inline-signature">lurek.asset.addTag(handle: LAssetHandle, tag: string) -&gt; nil</pre><p>Adds a tag to the tag set of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:544</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.addTag(h, &quot;config&quot;)
     lurek.asset.addTag(h, &quot;ui&quot;)
     print(&quot;hasTag config=&quot; .. tostring(lurek.asset.hasTag(h, &quot;config&quot;)))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.asset.clear()</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:346</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-clear"><div class="item-row-main"><h3>clear</h3><pre class="inline-signature">lurek.asset.clear() -&gt; nil</pre><p>Removes all entries from the cache immediately, regardless of ref counts.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:356</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.load(PATH_JSON, &quot;text&quot;)
     lurek.asset.clear()
     print(&quot;after clear loaded=&quot; .. lurek.asset.stats().loaded)
-end</code></pre></details></article><article class="item-row api-row" id="fn-findbygroup"><div class="item-row-main"><h3>findByGroup</h3><pre class="inline-signature">lurek.asset.findByGroup(group: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:646</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-findbygroup"><div class="item-row-main"><h3>findByGroup</h3><pre class="inline-signature">lurek.asset.findByGroup(group: string) -&gt; table</pre><p>Returns an array of asset handles whose group label exactly matches `group`.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:633</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   &quot;json&quot;,   {group = &quot;ui&quot;})
     local h2 = lurek.asset.load(PATH_TOML,   &quot;toml&quot;,   {group = &quot;ui&quot;})
@@ -77,7 +77,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-fin
     local gfx = lurek.asset.findByGroup(&quot;gfx&quot;)
     print(&quot;findByGroup &#x27;gfx&#x27; count=&quot; .. #gfx) -- 1
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-findbyname"><div class="item-row-main"><h3>findByName</h3><pre class="inline-signature">lurek.asset.findByName(substr: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:625</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-findbyname"><div class="item-row-main"><h3>findByName</h3><pre class="inline-signature">lurek.asset.findByName(substr: string) -&gt; table</pre><p>Returns an array of asset handles whose display name contains the substring.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:618</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_TOML,   &quot;toml&quot;, {name = &quot;ProjectConfig&quot;})
     local h2 = lurek.asset.load(PATH_JSON,   &quot;json&quot;, {name = &quot;FontAtlas&quot;})
@@ -89,7 +89,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-fin
     local shader_matches = lurek.asset.findByName(&quot;province&quot;)
     print(&quot;findByName &#x27;province&#x27; count=&quot; .. #shader_matches)  -- 1
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-findbytag"><div class="item-row-main"><h3>findByTag</h3><pre class="inline-signature">lurek.asset.findByTag(tag: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:667</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-findbytag"><div class="item-row-main"><h3>findByTag</h3><pre class="inline-signature">lurek.asset.findByTag(tag: string) -&gt; table</pre><p>Returns an array of asset handles that have the given tag in their tag set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:648</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   &quot;json&quot;)
     local h2 = lurek.asset.load(PATH_TOML,   &quot;toml&quot;)
@@ -103,7 +103,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-fin
     local gfx = lurek.asset.findByTag(&quot;gfx&quot;)
     print(&quot;findByTag &#x27;gfx&#x27; count=&quot; .. #gfx)        -- 1
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-findbytype"><div class="item-row-main"><h3>findByType</h3><pre class="inline-signature">lurek.asset.findByType(type_str: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:688</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-findbytype"><div class="item-row-main"><h3>findByType</h3><pre class="inline-signature">lurek.asset.findByType(type_str: string) -&gt; table</pre><p>Returns an array of asset handles whose type exactly matches `type_str`.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:663</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   &quot;json&quot;)
     local h2 = lurek.asset.load(PATH_TOML,   &quot;toml&quot;)
@@ -117,7 +117,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-fin
     print(&quot;findByType &#x27;music&#x27; count=&quot;  .. #lurek.asset.findByType(&quot;music&quot;))   -- 1
     print(&quot;findByType &#x27;audio&#x27; count=&quot;  .. #lurek.asset.findByType(&quot;audio&quot;))   -- 0
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">lurek.asset.get(handle: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:154</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">lurek.asset.get(handle: LAssetHandle) -&gt; string</pre><p>Returns the underlying asset value for a cached handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:254</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     -- get() for text-like types returns cached file content as a string.
     local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
     local content = lurek.asset.get(h)
@@ -129,13 +129,13 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
     local toml_src = lurek.asset.get(ht)
     print(&quot;toml source length=&quot; .. #toml_src)
     lurek.asset.unload(ht)
-end</code></pre></details></article><article class="item-row api-row" id="fn-getgroup"><div class="item-row-main"><h3>getGroup</h3><pre class="inline-signature">lurek.asset.getGroup(handle: LAssetHandle) -&gt; string</pre><p>Returns the group label for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:526</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getgroup"><div class="item-row-main"><h3>getGroup</h3><pre class="inline-signature">lurek.asset.getGroup(handle: LAssetHandle) -&gt; string</pre><p>Returns the group label for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:520</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     print(&quot;getGroup (unset)=&quot; .. lurek.asset.getGroup(h))   -- &quot;&quot;
     lurek.asset.setGroup(h, &quot;hud&quot;)
     print(&quot;getGroup (set)=&quot; .. lurek.asset.getGroup(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-getinfo"><div class="item-row-main"><h3>getInfo</h3><pre class="inline-signature">lurek.asset.getInfo(handle: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:416</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getinfo"><div class="item-row-main"><h3>getInfo</h3><pre class="inline-signature">lurek.asset.getInfo(handle: LAssetHandle) -&gt; table</pre><p>Returns a table containing all metadata for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:424</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;, {
         name  = &quot;ui_config&quot;,
         group = &quot;ui&quot;,
@@ -149,25 +149,25 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
     print(&quot;info.refcount=&quot; .. info.refcount)
     print(&quot;info.tags[1]=&quot;  .. tostring(info.tags[1]))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">lurek.asset.getName(handle: LAssetHandle) -&gt; string</pre><p>Returns the display name of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:484</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getname"><div class="item-row-main"><h3>getName</h3><pre class="inline-signature">lurek.asset.getName(handle: LAssetHandle) -&gt; string</pre><p>Returns the display name of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:478</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_TOML, &quot;toml&quot;)
     -- No explicit name: getName returns the path file-stem (&quot;Cargo&quot;).
     print(&quot;getName (stem)=&quot; .. lurek.asset.getName(h))
     lurek.asset.setName(h, &quot;project_config&quot;)
     print(&quot;getName (set)=&quot; .. lurek.asset.getName(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-getpath"><div class="item-row-main"><h3>getPath</h3><pre class="inline-signature">lurek.asset.getPath(handle: LAssetHandle) -&gt; string</pre><p>Returns the filesystem path for the asset associated with a handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:361</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-getpath"><div class="item-row-main"><h3>getPath</h3><pre class="inline-signature">lurek.asset.getPath(handle: LAssetHandle) -&gt; string</pre><p>Returns the filesystem path for the asset associated with a handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:370</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_TOML, &quot;toml&quot;)
     print(&quot;path=&quot; .. lurek.asset.getPath(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-gettags"><div class="item-row-main"><h3>getTags</h3><pre class="inline-signature">lurek.asset.getTags(handle: LAssetHandle) -&gt; table</pre><p>Returns an array of all tags for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:581</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettags"><div class="item-row-main"><h3>getTags</h3><pre class="inline-signature">lurek.asset.getTags(handle: LAssetHandle) -&gt; table</pre><p>Returns an array of all tags for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:575</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.addTag(h, &quot;sfx&quot;)
     lurek.asset.addTag(h, &quot;level_1&quot;)
     local tags = lurek.asset.getTags(h)
     print(&quot;tag count=&quot; .. #tags)
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-gettype"><div class="item-row-main"><h3>getType</h3><pre class="inline-signature">lurek.asset.getType(handle: LAssetHandle) -&gt; string</pre><p>Returns the type string for the asset associated with a handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:384</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-gettype"><div class="item-row-main"><h3>getType</h3><pre class="inline-signature">lurek.asset.getType(handle: LAssetHandle) -&gt; string</pre><p>Returns the type string for the asset associated with a handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_TOML, &quot;toml&quot;)
     print(&quot;type=&quot; .. lurek.asset.getType(h))   -- &quot;toml&quot;
     lurek.asset.unload(h)
@@ -175,29 +175,58 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-get
     local hm = lurek.asset.load(PATH_BIN, &quot;music&quot;)
     print(&quot;music type=&quot; .. lurek.asset.getType(hm))  -- &quot;music&quot;
     lurek.asset.unload(hm)
-end</code></pre></details></article><article class="item-row api-row" id="fn-hastag"><div class="item-row-main"><h3>hasTag</h3><pre class="inline-signature">lurek.asset.hasTag(handle: LAssetHandle, tag: string) -&gt; boolean</pre><p>Returns true when an asset handle has the given tag in its tag set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:607</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-hastag"><div class="item-row-main"><h3>hasTag</h3><pre class="inline-signature">lurek.asset.hasTag(handle: LAssetHandle, tag: string) -&gt; boolean</pre><p>Returns true when an asset handle has the given tag in its tag set.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:601</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.addTag(h, &quot;enemy&quot;)
     print(&quot;hasTag enemy=&quot; .. tostring(lurek.asset.hasTag(h, &quot;enemy&quot;)))
     print(&quot;hasTag boss=&quot;  .. tostring(lurek.asset.hasTag(h, &quot;boss&quot;)))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-isloaded"><div class="item-row-main"><h3>isLoaded</h3><pre class="inline-signature">lurek.asset.isLoaded(handle: LAssetHandle) -&gt; boolean</pre><p>Returns true when the asset for the given handle is still in the cache.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:286</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-isloaded"><div class="item-row-main"><h3>isLoaded</h3><pre class="inline-signature">lurek.asset.isLoaded(handle: LAssetHandle) -&gt; boolean</pre><p>Returns true when the asset for the given handle is still in the cache.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:300</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
     print(&quot;isLoaded=&quot; .. tostring(lurek.asset.isLoaded(h)))
     lurek.asset.unload(h)
     print(&quot;isLoaded after unload=&quot; .. tostring(lurek.asset.isLoaded(h)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">lurek.asset.load(path: any, type_str: any, opts: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:78</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
-    -- load with opts: name, group, and tags supplied inline.
-    local h = lurek.asset.load(PATH_TOML, &quot;toml&quot;, {
-        name  = &quot;build_config&quot;,
-        group = &quot;project&quot;,
-        tags  = {&quot;config&quot;, &quot;meta&quot;},
-    })
-    print(&quot;name=&quot;  .. lurek.asset.getName(h))
-    print(&quot;group=&quot; .. lurek.asset.getGroup(h))
-    print(&quot;hasTag config=&quot; .. tostring(lurek.asset.hasTag(h, &quot;config&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="fn-load"><div class="item-row-main"><h3>load</h3><pre class="inline-signature">lurek.asset.load(path: string, asset_type: string, opts: table?) -&gt; LAssetHandle</pre><p>Loads and caches an asset by path and type, returning a ref-counted handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:212</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+    -- Minimal load: text type reads file content immediately.
+    local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
+    print(&quot;loaded: &quot; .. h:type())
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-preload"><div class="item-row-main"><h3>preload</h3><pre class="inline-signature">lurek.asset.preload(paths: any, callback: any)</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:217</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+
+    -- load type=toml
+    local ht = lurek.asset.load(PATH_TOML, &quot;toml&quot;)
+    print(&quot;toml loaded: &quot; .. tostring(lurek.asset.isLoaded(ht)))
+    lurek.asset.unload(ht)
+
+    -- load type=json
+    local hj = lurek.asset.load(PATH_JSON, &quot;json&quot;)
+    print(&quot;json loaded: &quot; .. tostring(lurek.asset.isLoaded(hj)))
+    lurek.asset.unload(hj)
+
+    -- load type=lua
+    local hl = lurek.asset.load(PATH_LUA, &quot;lua&quot;)
+    print(&quot;lua loaded: &quot; .. tostring(lurek.asset.isLoaded(hl)))
+    lurek.asset.unload(hl)
+
+    -- load type=shader
+    local hs = lurek.asset.load(PATH_SHADER, &quot;shader&quot;)
+    print(&quot;shader loaded: &quot; .. tostring(lurek.asset.isLoaded(hs)))
+    lurek.asset.unload(hs)
+
+    -- load type=obj (any text file works for raw OBJ geometry)
+    local ho = lurek.asset.load(PATH_LUA, &quot;obj&quot;)
+    print(&quot;obj loaded: &quot; .. tostring(lurek.asset.isLoaded(ho)))
+    lurek.asset.unload(ho)
+
+    -- load type=music (binary path reference only; no file content cached)
+    local hm = lurek.asset.load(PATH_BIN, &quot;music&quot;)
+    print(&quot;music loaded: &quot; .. tostring(lurek.asset.isLoaded(hm)))
+    lurek.asset.unload(hm)
+
+    -- load type=audio (same as music but semantically a sound effect)
+    local ha = lurek.asset.load(PATH_BIN, &quot;audio&quot;)
+    print(&quot;audio loaded: &quot; .. tostring(lurek.asset.isLoaded(ha)))
+    lurek.asset.unload(ha)
+end</code></pre></details></article><article class="item-row api-row" id="fn-preload"><div class="item-row-main"><h3>preload</h3><pre class="inline-signature">lurek.asset.preload(paths: table, callback: any) -&gt; nil</pre><p>Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:272</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local results = {}
     lurek.asset.preload(
         {
@@ -214,28 +243,28 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-pre
         end
     )
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-refcount"><div class="item-row-main"><h3>refcount</h3><pre class="inline-signature">lurek.asset.refcount(handle: LAssetHandle) -&gt; integer</pre><p>Returns the current ref count for a handle, or 0 when it is no longer loaded.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-refcount"><div class="item-row-main"><h3>refcount</h3><pre class="inline-signature">lurek.asset.refcount(handle: LAssetHandle) -&gt; integer</pre><p>Returns the current ref count for a handle, or 0 when it is no longer loaded.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:285</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
     print(&quot;refcount=&quot; .. lurek.asset.refcount(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-removetag"><div class="item-row-main"><h3>removeTag</h3><pre class="inline-signature">lurek.asset.removeTag(handle: LAssetHandle, tag: string) -&gt; boolean</pre><p>Removes a tag from the tag set of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:566</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-removetag"><div class="item-row-main"><h3>removeTag</h3><pre class="inline-signature">lurek.asset.removeTag(handle: LAssetHandle, tag: string) -&gt; boolean</pre><p>Removes a tag from the tag set of an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:560</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.addTag(h, &quot;temp&quot;)
     local removed = lurek.asset.removeTag(h, &quot;temp&quot;)
     print(&quot;removeTag returned=&quot; .. tostring(removed))
     print(&quot;hasTag after remove=&quot; .. tostring(lurek.asset.hasTag(h, &quot;temp&quot;)))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-setgroup"><div class="item-row-main"><h3>setGroup</h3><pre class="inline-signature">lurek.asset.setGroup(handle: LAssetHandle, group: string) -&gt; nil</pre><p>Assigns an asset handle to a named group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:510</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setgroup"><div class="item-row-main"><h3>setGroup</h3><pre class="inline-signature">lurek.asset.setGroup(handle: LAssetHandle, group: string) -&gt; nil</pre><p>Assigns an asset handle to a named group.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:504</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.setGroup(h, &quot;level_1&quot;)
     print(&quot;setGroup → &quot; .. lurek.asset.getGroup(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-setname"><div class="item-row-main"><h3>setName</h3><pre class="inline-signature">lurek.asset.setName(handle: LAssetHandle, name: string) -&gt; nil</pre><p>Sets the display name for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:468</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setname"><div class="item-row-main"><h3>setName</h3><pre class="inline-signature">lurek.asset.setName(handle: LAssetHandle, name: string) -&gt; nil</pre><p>Sets the display name for an asset handle.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:462</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;json&quot;)
     lurek.asset.setName(h, &quot;font_atlas&quot;)
     print(&quot;setName → &quot; .. lurek.asset.getName(h))
     lurek.asset.unload(h)
-end</code></pre></details></article><article class="item-row api-row" id="fn-stats"><div class="item-row-main"><h3>stats</h3><pre class="inline-signature">lurek.asset.stats()</pre><p>No summary available.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:306</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-stats"><div class="item-row-main"><h3>stats</h3><pre class="inline-signature">lurek.asset.stats() -&gt; table</pre><p>Returns a snapshot table describing the current cache state.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:319</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     lurek.asset.clear()
     local h1 = lurek.asset.load(PATH_JSON,   &quot;json&quot;,   {group = &quot;data&quot;})
     local h2 = lurek.asset.load(PATH_TOML,   &quot;toml&quot;,   {group = &quot;data&quot;})
@@ -246,7 +275,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-sta
     print(&quot;json count=&quot; .. tostring(s.types.json))
     print(&quot;groups=&quot;     .. #s.groups)   -- 2 unique groups: &quot;data&quot; and &quot;gfx&quot;
     lurek.asset.clear()
-end</code></pre></details></article><article class="item-row api-row" id="fn-unload"><div class="item-row-main"><h3>unload</h3><pre class="inline-signature">lurek.asset.unload(handle: LAssetHandle) -&gt; nil</pre><p>Decrements the ref count for a cached asset; removes the entry when it reaches zero.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:134</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-unload"><div class="item-row-main"><h3>unload</h3><pre class="inline-signature">lurek.asset.unload(handle: LAssetHandle) -&gt; nil</pre><p>Decrements the ref count for a cached asset; removes the entry when it reaches zero.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/asset_api.rs:234</span></div><details class="example-block"><summary>Example · Exact example · asset.lua</summary><pre><code>do
     local h = lurek.asset.load(PATH_JSON, &quot;text&quot;)
     lurek.asset.unload(h)
     print(&quot;unloaded, isLoaded=&quot; .. tostring(lurek.asset.isLoaded(h)))

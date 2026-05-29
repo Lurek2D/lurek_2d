@@ -6,6 +6,16 @@
 -- @describe lurek.debugbridge lifecycle
 describe("lurek.debugbridge lifecycle", function()
 
+    local function start_on_free_high_port(start_port, end_port)
+        for port = start_port, end_port do
+            local ok = lurek.debugbridge.start(port)
+            if ok then
+                return port
+            end
+        end
+        return nil
+    end
+
     -- @covers lurek.debugbridge
     it("namespace exists", function()
         expect_not_nil(lurek.debugbridge)
@@ -31,11 +41,10 @@ describe("lurek.debugbridge lifecycle", function()
     -- @covers lurek.debugbridge.start
     -- @covers lurek.debugbridge.stop
     it("start and stop work on a high port", function()
-        -- Use a high port unlikely to conflict
-        local ok = lurek.debugbridge.start(49740)
-        expect_equal(true, ok)
+        local port = start_on_free_high_port(49740, 49840)
+        expect_not_nil(port)
         expect_equal(true, lurek.debugbridge.isRunning())
-        expect_equal(49740, lurek.debugbridge.getPort())
+        expect_equal(port, lurek.debugbridge.getPort())
 
         lurek.debugbridge.stop()
         expect_equal(false, lurek.debugbridge.isRunning())
@@ -44,8 +53,9 @@ describe("lurek.debugbridge lifecycle", function()
     -- @covers lurek.debugbridge.start
     -- @covers lurek.debugbridge.stop
     it("start returns false if already running", function()
-        lurek.debugbridge.start(49741)
-        local second = lurek.debugbridge.start(49742)
+        local port = start_on_free_high_port(49740, 49840)
+        expect_not_nil(port)
+        local second = lurek.debugbridge.start(port + 1)
         expect_equal(false, second)
         lurek.debugbridge.stop()
     end)
@@ -212,7 +222,15 @@ describe("lurek.debugbridge poll", function()
     -- @covers lurek.debugbridge.start
     -- @covers lurek.debugbridge.stop
     it("poll processes without error when server is running", function()
-        lurek.debugbridge.start(49743)
+        local port = nil
+        for p = 49740, 49840 do
+            local ok = lurek.debugbridge.start(p)
+            if ok then
+                port = p
+                break
+            end
+        end
+        expect_not_nil(port)
         expect_no_error(function() lurek.debugbridge.poll() end)
         lurek.debugbridge.stop()
     end)

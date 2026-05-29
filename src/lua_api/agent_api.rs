@@ -409,7 +409,7 @@ impl UserData for LuaAISystem {
         );
 
         // ─── removeSkill ───
-        /// Removes a system skill by name.
+        /// Removes a registered system skill by exact name.
         /// @param | name | string | Skill name to remove.
         /// @return | boolean | `true` if the skill was found and removed.
         methods.add_method_mut("removeSkill", |_, this, name: String| {
@@ -702,7 +702,7 @@ impl UserData for LuaAgentChat {
         });
 
         // ─── clear ───
-        /// Clears the chat history.
+        /// Clears all stored chat history messages.
         /// @return | nil | No value is returned.
         methods.add_method_mut("clear", |_, this, ()| {
             this.chat.clear();
@@ -809,7 +809,7 @@ impl UserData for LuaWorkingMemory {
         // ─── get ───
         /// Returns the value for `key`, or `nil` if not found.
         /// @param | key | string | Entry key.
-        /// @return | any | Stored value, or `nil`.
+        /// @return | table | Stored value converted from JSON when present; returns nil when missing.
         methods.add_method("get", |lua, this, key: String| {
             match this.mem.get(&key) {
                 Some(v) => json_to_lua(lua, v.clone()),
@@ -939,7 +939,7 @@ impl UserData for LuaSemanticMemory {
         // ─── recall ───
         /// Returns the fact for `key`, or `nil` if not found.
         /// @param | key | string | Fact key.
-        /// @return | any | Stored fact, or `nil`.
+        /// @return | table | Stored fact converted from JSON when present; returns nil when missing.
         methods.add_method("recall", |lua, this, key: String| {
             match this.mem.recall(&key) {
                 Some(v) => json_to_lua(lua, v.clone()),
@@ -1036,7 +1036,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     let agent_table = lua.create_table()?;
 
     // ─── new ───
-    /// Creates a new LLM Agent instance.
+    /// Creates a new configurable LLM Agent runtime instance.
     /// @param | config | table | Config with `url`, `model`, `system_prompt`, `format`, `name`, `description`, `max_retries`, `timeout`, and `options` sub-table.
     /// @return | LAgent | A new agent object.
     agent_table.set(

@@ -288,7 +288,7 @@ end
 --@api-stub: lurek.input.wasReleased
 do
     -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased(&quot;space&quot;)
+    local v = lurek.input.wasReleased()
     print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
     print(&quot;space released = &quot; .. tostring(v))
 end
@@ -548,7 +548,7 @@ end
 --@api-stub: lurek.input.wasReleased
 do
     -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased(&quot;space&quot;)
+    local v = lurek.input.wasReleased()
     print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
     print(&quot;space released = &quot; .. tostring(v))
 end
@@ -597,7 +597,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-was
     print(&quot;pressed=&quot; .. tostring(pressed) .. &quot; released=&quot; .. tostring(released))
 end</code></pre></details></article><article class="item-row api-row" id="fn-wasreleased"><div class="item-row-main"><h3>wasReleased</h3><pre class="inline-signature">lurek.input.wasReleased() -&gt; boolean</pre><p>Returns whether any bound key for this mapping was released this frame.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/input_api.rs:1175</span></div><details class="example-block"><summary>Example · Exact example · input.lua</summary><pre><code>do
     -- wasReleased(key) is true on the first frame the key goes up
-    local v = lurek.input.wasReleased(&quot;space&quot;)
+    local v = lurek.input.wasReleased()
     print(&quot;wasReleased available = &quot; .. tostring(type(lurek.input.wasReleased) == &quot;function&quot;))
     print(&quot;space released = &quot; .. tostring(v))
 end

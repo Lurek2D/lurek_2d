@@ -25,26 +25,31 @@ The module also integrates a suite of machine learning and adaptive systems via 
 
 Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store, while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
 
-## Boundaries
+## Files
 
-`lurek.ai.newBehaviorTree` creates an AI runtime behavior tree. Use it when a tree owns Lua callback-backed action, condition, or guard nodes and needs per-tick status for agent decision logic. The Rust implementation in `src/ai/behavior_tree.rs` points to `crate::patterns::behavior_tree` for structural behavior-tree building and adds Lua `RegistryKey`-driven actions, conditions, guards, and running state that resumes across ticks.
-
-`lurek.patterns.newBehaviorTree` is the Foundations-tier behavior-tree structure surface. Use it to build, inspect, or tick reusable tree shapes outside the AI agent runtime. It owns generic node IDs, child links, root selection, and structural tree operations; it does not own AIWorld agents, agent decision models, AI blackboards, or AI-specific guard/action/condition node handles.
-
-## Dependencies
-
-```text
-Feature Systems
-	lurek.ai.newBehaviorTree
-		-> src/ai/behavior_tree.rs
-			 -> structural BT concepts from crate::patterns::behavior_tree
-
-Foundations
-	lurek.patterns.newBehaviorTree
-		-> src/patterns/behavior_tree.rs
-```
-
-`ai` may depend on `patterns` for behavior-tree structure. `patterns` must stay independent of `ai` so the Foundations tier remains reusable by non-AI game logic.
+- `agent.rs`: Core runtime state for one AI actor: identity, motion, priority, and decision mode.
+- `behavior_tree.rs`: Runtime behavior tree executor for AI agents with Lua callbacks.
+- `blackboard.rs`: Agent blackboard: shared read/write key-value memory for behaviour-tree nodes.
+- `command_queue.rs`: Queued command format staging discrete actor actions with targets, callbacks, and priority.
+- `context_steering.rs`: Slot-based context steering accumulating interest and danger around a directional ring.
+- `director.rs`: Pacing director translating accumulated tension into pressure phases and runtime multipliers.
+- `emotion.rs`: Per-agent emotion state tracking named feelings as clamped scalars decaying toward rest.
+- `fsm.rs`: Runtime state machine executor for AI agents.
+- `goap.rs`: GOAP planning data storing actions, goals, search nodes, and planner state.
+- `htn.rs`: HTN planning model representing symbolic world state, tasks, methods, and the task registry.
+- `lod.rs`: AI level-of-detail model grouping agents into distance-based update tiers.
+- `mcts.rs`: Monte Carlo Tree Search configuring search parameters, arena-backed nodes, and rollout statistics.
+- `mod.rs`: Public AI module surface grouping planning, decision, control, memory, and movement subsystems.
+- `needs.rs`: Need-tracking model with normalized internal drives, urgency settings, and external advertisements.
+- `orca.rs`: ORCA local-avoidance data representing moving agents, solver constraints, and safe output velocities.
+- `perception.rs`: Perception model storing stimuli, sensor configuration, detection results, and awareness state.
+- `render.rs`: AI debug rendering helpers turning FSM and behavior-tree state into renderer commands.
+- `squad.rs`: Squad-level coordination grouping named members under one leader with shared local memory.
+- `steering.rs`: Steering model representing individual movement behaviors, blending rules, and waypoint following.
+- `strategy.rs`: High-level strategy selection scoring named goals against current tag context over time.
+- `traits.rs`: Personality-trait model storing base values, temporary modifiers, and reusable archetype presets.
+- `utility_ai.rs`: Utility-AI scoring model storing actions, response curves, considerations, and evaluation results.
+- `world.rs`: Shared AI world container owning registered agents, name-to-index lookup, and global blackboard.
 
 ## Source Documentation
 
@@ -601,28 +606,6 @@ Foundations
 - `LAIWorld:type`: Returns the Lua-visible type name for this AI world handle.
 - `LAIWorld:typeOf`: Returns whether this AI world handle matches a supported type name.
 
-### `LAgent` Methods
-- `LAgent:getName`: Returns this agent's stable world name.
-- `LAgent:setPosition`: Sets this agent's world position when the agent still exists in its world.
-- `LAgent:getPosition`: Returns this agent's world position or the origin when the agent has been removed.
-- `LAgent:setVelocity`: Sets this agent's velocity vector when the agent still exists in its world.
-- `LAgent:getVelocity`: Returns this agent's velocity vector or zero velocity when the agent has been removed.
-- `LAgent:setMaxSpeed`: Sets this agent's maximum movement speed when the agent still exists in its world.
-- `LAgent:getMaxSpeed`: Returns this agent's maximum movement speed or the default speed for a missing agent.
-- `LAgent:setMaxForce`: Sets this agent's maximum steering force when the agent still exists in its world.
-- `LAgent:getMaxForce`: Returns this agent's maximum steering force or the default force for a missing agent.
-- `LAgent:setPriority`: Sets this agent's integer priority when the agent still exists in its world.
-- `LAgent:getPriority`: Returns this agent's integer priority or zero when the agent has been removed.
-- `LAgent:setDecisionModel`: Sets this agent's built-in decision model from a string name when the name is recognized.
-- `LAgent:getDecisionModel`: Returns this agent's decision model name or the default model name for a missing agent.
-- `LAgent:setCustomModel`: Installs a Lua callback as this agent's decision model and stores it in the callback registry.
-- `LAgent:addTag`: Adds a tag string to this agent when the agent still exists in its world.
-- `LAgent:removeTag`: Removes a tag string from this agent when the agent still exists in its world.
-- `LAgent:hasTag`: Returns whether this agent currently has the given tag.
-- `LAgent:getBlackboard`: Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
-- `LAgent:type`: Returns the Lua-visible type name for this agent handle.
-- `LAgent:typeOf`: Returns whether this agent handle matches a supported type name.
-
 ### `LBTNode` Methods
 - `LBTNode:addChild`: Adds a child node to a composite selector, sequence, or parallel node.
 - `LBTNode:getChildCount`: Returns the number of children owned by this behavior tree node.
@@ -642,6 +625,28 @@ Foundations
 - `LBehaviorTree:getDebugState`: Returns behavior tree debug counters and status in a Lua table.
 - `LBehaviorTree:type`: Returns the Lua-visible type name for this behavior tree handle.
 - `LBehaviorTree:typeOf`: Returns whether this behavior tree handle matches a supported type name.
+
+### `LBot` Methods
+- `LBot:getName`: Returns this agent's stable world name.
+- `LBot:setPosition`: Sets this agent's world position when the agent still exists in its world.
+- `LBot:getPosition`: Returns this agent's world position or the origin when the agent has been removed.
+- `LBot:setVelocity`: Sets this agent's velocity vector when the agent still exists in its world.
+- `LBot:getVelocity`: Returns this agent's velocity vector or zero velocity when the agent has been removed.
+- `LBot:setMaxSpeed`: Sets this agent's maximum movement speed when the agent still exists in its world.
+- `LBot:getMaxSpeed`: Returns this agent's maximum movement speed or the default speed for a missing agent.
+- `LBot:setMaxForce`: Sets this agent's maximum steering force when the agent still exists in its world.
+- `LBot:getMaxForce`: Returns this agent's maximum steering force or the default force for a missing agent.
+- `LBot:setPriority`: Sets this agent's integer priority when the agent still exists in its world.
+- `LBot:getPriority`: Returns this agent's integer priority or zero when the agent has been removed.
+- `LBot:setDecisionModel`: Sets this agent's built-in decision model from a string name when the name is recognized.
+- `LBot:getDecisionModel`: Returns this agent's decision model name or the default model name for a missing agent.
+- `LBot:setCustomModel`: Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+- `LBot:addTag`: Adds a tag string to this agent when the agent still exists in its world.
+- `LBot:removeTag`: Removes a tag string from this agent when the agent still exists in its world.
+- `LBot:hasTag`: Returns whether this agent currently has the given tag.
+- `LBot:getBlackboard`: Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+- `LBot:type`: Returns the Lua-visible type name for this agent handle.
+- `LBot:typeOf`: Returns whether this agent handle matches a supported type name.
 
 ### `LCommandQueue` Methods
 - `LCommandQueue:enqueue`: Adds a command callback to the back of the queue.

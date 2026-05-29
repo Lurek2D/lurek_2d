@@ -23,7 +23,7 @@ pub enum Waveform {
 }
 
 impl Waveform {
-    /// Parse a waveform name.
+    /// Parses a waveform name string into the matching enum variant.
     pub fn parse(kind: &str) -> Result<Self, String> {
         match kind {
             "sine" => Ok(Self::Sine),
@@ -87,7 +87,7 @@ pub struct AdsrEnvelope {
 }
 
 impl AdsrEnvelope {
-    /// Create a new ADSR envelope.
+    /// Creates a new ADSR envelope with clamped parameter bounds.
     pub fn new(attack: f32, decay: f32, sustain: f32, release: f32) -> Self {
         Self {
             attack: attack.max(0.0),
@@ -190,12 +190,12 @@ impl Synthesizer {
         self.waveform = waveform;
     }
 
-    /// Set the optional envelope.
+    /// Sets the optional ADSR envelope used during synthesis.
     pub fn set_envelope(&mut self, envelope: AdsrEnvelope) {
         self.envelope = Some(envelope);
     }
 
-    /// Generate a sound buffer.
+    /// Generates a sound buffer from waveform and optional envelope.
     pub fn generate(&self, freq: f32, duration: f32, sample_rate: u32, amplitude: f32) -> SoundData {
         let mut sound_data = self.waveform.render(freq, duration, sample_rate, amplitude);
         if let Some(envelope) = &self.envelope {

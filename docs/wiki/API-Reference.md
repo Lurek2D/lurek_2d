@@ -20,12 +20,12 @@
   - [LSemanticMemory](#lsemanticmemory)
   - [LWorkingMemory](#lworkingmemory)
 - [lurek.ai](#lurekai)
-  - [LAgent](#lagent)
   - [LAIBlackboard](#laiblackboard)
   - [LAIDirector](#laidirector)
   - [LAILod](#lailod)
   - [LAIWorld](#laiworld)
   - [LBehaviorTree](#lbehaviortree)
+  - [LBot](#lbot)
   - [LBTNode](#lbtnode)
   - [LCommandQueue](#lcommandqueue)
   - [LContextSteering](#lcontextsteering)
@@ -211,6 +211,7 @@
 - [lurek.pathfind](#lurekpathfind)
   - [LAIFlowField](#laiflowfield)
   - [LFlowField](#lflowfield)
+  - [LGoalMap](#lgoalmap)
   - [LHexGrid](#lhexgrid)
   - [LJpsGrid](#ljpsgrid)
   - [LNavGrid](#lnavgrid)
@@ -362,6 +363,7 @@
 - [lurek.validator](#lurekvalidator)
   - [LValidationEngine](#lvalidationengine)
 - [lurek.visibility](#lurekvisibility)
+  - [LFov](#lfov)
   - [LVisibilityGrid](#lvisibilitygrid)
 - [lurek.window](#lurekwindow)
 
@@ -379,7 +381,7 @@ lurek.agent.configure(config: table) -- Configures the global LLM provider setti
 lurek.agent.embed(text: string) -> table -- Returns an embedding vector for `text` from the global LLM.
 lurek.agent.isAvailable() -> boolean -- Returns `true` if the configured LLM server responds within 5 seconds.
 lurek.agent.listModels() -> table -- Returns a list of available model names from the configured LLM server.
-lurek.agent.new(config: table) -> LAgent -- Creates a new LLM Agent instance.
+lurek.agent.new(config: table) -> LAgent -- Creates a new configurable LLM Agent runtime instance.
 lurek.agent.newAgentMemory([config]: table) -> LAgentMemory -- Creates a bundled working+episodic+semantic memory with optional disk persistence.
 lurek.agent.newChat() -> LAgentChat -- Creates a new stateful chat session using the global LLM config.
 lurek.agent.newEpisodicMemory() -> LEpisodicMemory -- Creates a new episodic memory for recording time-stamped events.
@@ -426,7 +428,7 @@ LAgent:update() -- Polls the background client for completed LLM requests and di
 
 ```lua
 LAgentChat:addMessage(role: string, content: string) -- Appends a message to the chat history without sending a completion.
-LAgentChat:clear() -- Clears the chat history.
+LAgentChat:clear() -- Clears all stored chat history messages.
 LAgentChat:complete() -> string -- Sends the current history to the LLM and returns the assistant reply.
 LAgentChat:getHistory() -> table -- Returns the chat history as an array of `{role, content}` tables.
 LAgentChat:setSystemPrompt(prompt: string) -- Sets the system prompt used for all completions in this session.
@@ -472,7 +474,7 @@ LAISystem:listInstructions() -> table -- Returns a list of registered instructio
 LAISystem:prompt(agent_name: string, instruction: string, callback: function, opts: table) -> integer -- Sends a prompt to a named agent through the system, auto-injecting matching context.
 LAISystem:removeAgent(name: string) -> boolean -- Removes a registered agent by name.
 LAISystem:removeInstruction(key: string) -> boolean -- Removes an instruction block by key.
-LAISystem:removeSkill(name: string) -> boolean -- Removes a system skill by name.
+LAISystem:removeSkill(name: string) -> boolean -- Removes a registered system skill by exact name.
 LAISystem:runAll(tasks: table, callback: function) -> integer -- Dispatches multiple named-agent tasks in parallel through the system.
 LAISystem:skillCount() -> integer -- Returns the number of registered system skills.
 LAISystem:update() -- Polls the system's background client for completed requests and dispatches callbacks.
@@ -512,7 +514,7 @@ LSemanticMemory:forget(key: string) -> boolean -- Removes the fact at `key`. Ret
 LSemanticMemory:learn(key: string, value: any) -- Inserts or replaces a fact at `key`.
 LSemanticMemory:len() -> integer -- Returns the number of stored facts.
 LSemanticMemory:query(filter: table) -> table -- Returns all facts whose value matches every key-value pair in `filter`.
-LSemanticMemory:recall(key: string) -> any -- Returns the fact for `key`, or `nil` if not found.
+LSemanticMemory:recall(key: string) -> table -- Returns the fact for `key`, or `nil` if not found.
 ```
 
 ### LWorkingMemory
@@ -520,7 +522,7 @@ LSemanticMemory:recall(key: string) -> any -- Returns the fact for `key`, or `ni
 ```lua
 LWorkingMemory:capacity() -> integer -- Returns the configured capacity (0 = unlimited).
 LWorkingMemory:forget(key: string) -> boolean -- Removes the entry with `key`. Returns `true` if it existed.
-LWorkingMemory:get(key: string) -> any -- Returns the value for `key`, or `nil` if not found.
+LWorkingMemory:get(key: string) -> table -- Returns the value for `key`, or `nil` if not found.
 LWorkingMemory:getRecent(n: integer) -> table -- Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
 LWorkingMemory:len() -> integer -- Returns the current number of entries.
 LWorkingMemory:push(key: string, value: any) -- Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
@@ -567,31 +569,6 @@ lurek.ai.newSucceeder() -> LBTNode -- Creates a behavior tree succeeder decorato
 lurek.ai.newTraitProfile() -> LTraitProfile -- Creates an empty trait profile with modifier support.
 lurek.ai.newUtilityAI() -> LUtilityAI -- Creates an empty utility AI action scorer.
 lurek.ai.newWorld() -> LAIWorld -- Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
-```
-
-### LAgent
-
-```lua
-LAgent:addTag(tag: string) -- Adds a tag string to this agent when the agent still exists in its world.
-LAgent:getBlackboard() -> LAIBlackboard -- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
-LAgent:getDecisionModel() -> string -- Returns this agent's decision model name or the default model name for a missing agent.
-LAgent:getMaxForce() -> number -- Returns this agent's maximum steering force or the default force for a missing agent.
-LAgent:getMaxSpeed() -> number -- Returns this agent's maximum movement speed or the default speed for a missing agent.
-LAgent:getName() -> string -- Returns this agent's stable world name.
-LAgent:getPosition() -> number, number -- Returns this agent's world position or the origin when the agent has been removed.
-LAgent:getPriority() -> integer -- Returns this agent's integer priority or zero when the agent has been removed.
-LAgent:getVelocity() -> number, number -- Returns this agent's velocity vector or zero velocity when the agent has been removed.
-LAgent:hasTag(tag: string) -> boolean -- Returns whether this agent currently has the given tag.
-LAgent:removeTag(tag: string) -- Removes a tag string from this agent when the agent still exists in its world.
-LAgent:setCustomModel(callback: function) -- Installs a Lua callback as this agent's decision model and stores it in the callback registry.
-LAgent:setDecisionModel(model: string) -- Sets this agent's built-in decision model from a string name when the name is recognized.
-LAgent:setMaxForce(v: number) -- Sets this agent's maximum steering force when the agent still exists in its world.
-LAgent:setMaxSpeed(v: number) -- Sets this agent's maximum movement speed when the agent still exists in its world.
-LAgent:setPosition(x: number, y: number) -- Sets this agent's world position when the agent still exists in its world.
-LAgent:setPriority(p: integer) -- Sets this agent's integer priority when the agent still exists in its world.
-LAgent:setVelocity(x: number, y: number) -- Sets this agent's velocity vector when the agent still exists in its world.
-LAgent:type() -> string -- Returns the Lua-visible type name for this agent handle.
-LAgent:typeOf(name: string) -> boolean -- Returns whether this agent handle matches a supported type name.
 ```
 
 ### LAIBlackboard
@@ -642,11 +619,11 @@ LAILod:typeOf(name: string) -> boolean -- Returns whether this AI LOD handle mat
 ### LAIWorld
 
 ```lua
-LAIWorld:addAgent(name: string) -> LAgent -- Creates a named agent in this world and returns a handle that can edit its movement and decision state.
+LAIWorld:addAgent(name: string) -> LBot -- Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 LAIWorld:getAgent(name: string) -> LuaValue -- Returns the named agent handle when it exists in this world.
 LAIWorld:getAgentCount() -> integer -- Returns the number of agents currently stored in this world.
 LAIWorld:getGlobalBlackboard() -> LAIBlackboard -- Returns a blackboard snapshot containing the world's shared AI facts.
-LAIWorld:removeAgent(agent: LAgent) -- Removes an agent from this world by using an existing agent handle.
+LAIWorld:removeAgent(agent: LBot) -- Removes an agent from this world by using an existing agent handle.
 LAIWorld:type() -> string -- Returns the Lua-visible type name for this AI world handle.
 LAIWorld:typeOf(name: string) -> boolean -- Returns whether this AI world handle matches a supported type name.
 LAIWorld:update(dt: number) -- Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
@@ -660,6 +637,31 @@ LBehaviorTree:getLastStatus() -> string -- Returns the last behavior tree status
 LBehaviorTree:setRoot(node: LBTNode) -- Sets the behavior tree root by moving a node handle into the tree.
 LBehaviorTree:type() -> string -- Returns the Lua-visible type name for this behavior tree handle.
 LBehaviorTree:typeOf(name: string) -> boolean -- Returns whether this behavior tree handle matches a supported type name.
+```
+
+### LBot
+
+```lua
+LBot:addTag(tag: string) -- Adds a tag string to this agent when the agent still exists in its world.
+LBot:getBlackboard() -> LAIBlackboard -- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+LBot:getDecisionModel() -> string -- Returns this agent's decision model name or the default model name for a missing agent.
+LBot:getMaxForce() -> number -- Returns this agent's maximum steering force or the default force for a missing agent.
+LBot:getMaxSpeed() -> number -- Returns this agent's maximum movement speed or the default speed for a missing agent.
+LBot:getName() -> string -- Returns this agent's stable world name.
+LBot:getPosition() -> number, number -- Returns this agent's world position or the origin when the agent has been removed.
+LBot:getPriority() -> integer -- Returns this agent's integer priority or zero when the agent has been removed.
+LBot:getVelocity() -> number, number -- Returns this agent's velocity vector or zero velocity when the agent has been removed.
+LBot:hasTag(tag: string) -> boolean -- Returns whether this agent currently has the given tag.
+LBot:removeTag(tag: string) -- Removes a tag string from this agent when the agent still exists in its world.
+LBot:setCustomModel(callback: function) -- Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+LBot:setDecisionModel(model: string) -- Sets this agent's built-in decision model from a string name when the name is recognized.
+LBot:setMaxForce(v: number) -- Sets this agent's maximum steering force when the agent still exists in its world.
+LBot:setMaxSpeed(v: number) -- Sets this agent's maximum movement speed when the agent still exists in its world.
+LBot:setPosition(x: number, y: number) -- Sets this agent's world position when the agent still exists in its world.
+LBot:setPriority(p: integer) -- Sets this agent's integer priority when the agent still exists in its world.
+LBot:setVelocity(x: number, y: number) -- Sets this agent's velocity vector when the agent still exists in its world.
+LBot:type() -> string -- Returns the Lua-visible type name for this agent handle.
+LBot:typeOf(name: string) -> boolean -- Returns whether this agent handle matches a supported type name.
 ```
 
 ### LBTNode
@@ -850,7 +852,7 @@ LSteeringManager:addFlock([neighbor_radius]: number, [sep_w]: number, [align_w]:
 LSteeringManager:addPursue([target_name]: string, [weight]: number) -- Adds a pursue behavior that chases another named agent when a target name is supplied.
 LSteeringManager:addSeek(tx: number, ty: number, [weight]: number) -- Adds a seek behavior that pulls the agent toward a target point.
 LSteeringManager:addWander([radius]: number, [dist]: number, [jitter]: number, [weight]: number) -- Adds a wander behavior that produces jittered exploratory movement.
-LSteeringManager:applyCustomSteering(agent: LAgent, dt: number) -> number, number -- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
+LSteeringManager:applyCustomSteering(agent: LBot, dt: number) -> number, number -- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 LSteeringManager:calculate(px: number, py: number, vx: number, vy: number, max_speed: number, max_force: number, dt: number) -> number, number -- Calculates a steering force for the supplied agent movement state.
 LSteeringManager:clearPath() -- Clears the active waypoint path behavior.
 LSteeringManager:enableSpatialHash(enabled: boolean) -- Enables or disables spatial hash acceleration for neighbor queries.
@@ -1031,27 +1033,27 @@ LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend lay
 
 ```lua
 lurek.asset.addTag(handle: LAssetHandle, tag: string) -- Adds a tag to the tag set of an asset handle.
-lurek.asset.clear()
-lurek.asset.findByGroup(group: any)
-lurek.asset.findByName(substr: any)
-lurek.asset.findByTag(tag: any)
-lurek.asset.findByType(type_str: any)
-lurek.asset.get(handle: any)
+lurek.asset.clear() -- Removes all entries from the cache immediately, regardless of ref counts.
+lurek.asset.findByGroup(group: string) -> table -- Returns an array of asset handles whose group label exactly matches `group`.
+lurek.asset.findByName(substr: string) -> table -- Returns an array of asset handles whose display name contains the substring.
+lurek.asset.findByTag(tag: string) -> table -- Returns an array of asset handles that have the given tag in their tag set.
+lurek.asset.findByType(type_str: string) -> table -- Returns an array of asset handles whose type exactly matches `type_str`.
+lurek.asset.get(handle: LAssetHandle) -> string -- Returns the underlying asset value for a cached handle.
 lurek.asset.getGroup(handle: LAssetHandle) -> string -- Returns the group label for an asset handle.
-lurek.asset.getInfo(handle: any)
+lurek.asset.getInfo(handle: LAssetHandle) -> table -- Returns a table containing all metadata for an asset handle.
 lurek.asset.getName(handle: LAssetHandle) -> string -- Returns the display name of an asset handle.
 lurek.asset.getPath(handle: LAssetHandle) -> string -- Returns the filesystem path for the asset associated with a handle.
 lurek.asset.getTags(handle: LAssetHandle) -> table -- Returns an array of all tags for an asset handle.
 lurek.asset.getType(handle: LAssetHandle) -> string -- Returns the type string for the asset associated with a handle.
 lurek.asset.hasTag(handle: LAssetHandle, tag: string) -> boolean -- Returns true when an asset handle has the given tag in its tag set.
 lurek.asset.isLoaded(handle: LAssetHandle) -> boolean -- Returns true when the asset for the given handle is still in the cache.
-lurek.asset.load(path: any, type_str: any, [opts]: any)
-lurek.asset.preload(paths: any, callback: any)
+lurek.asset.load(path: string, asset_type: string, [opts]: table) -> LAssetHandle -- Loads and caches an asset by path and type, returning a ref-counted handle.
+lurek.asset.preload(paths: table, callback: any) -- Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
 lurek.asset.refcount(handle: LAssetHandle) -> integer -- Returns the current ref count for a handle, or 0 when it is no longer loaded.
 lurek.asset.removeTag(handle: LAssetHandle, tag: string) -> boolean -- Removes a tag from the tag set of an asset handle.
 lurek.asset.setGroup(handle: LAssetHandle, group: string) -- Assigns an asset handle to a named group.
 lurek.asset.setName(handle: LAssetHandle, name: string) -- Sets the display name for an asset handle.
-lurek.asset.stats()
+lurek.asset.stats() -> table -- Returns a snapshot table describing the current cache state.
 lurek.asset.unload(handle: LAssetHandle) -- Decrements the ref count for a cached asset; removes the entry when it reaches zero.
 ```
 
@@ -3453,7 +3455,7 @@ LEnv:actionSpace() -> table -- Returns the action space descriptor.
 LEnv:obsSpace() -> table -- Returns the observation space descriptor.
 LEnv:reset() -> number[] -- Resets the environment and returns the initial observation.
 LEnv:step(action: any) -> number[] -- Advances the environment one step.
-LEnv:type() -> string -- Returns the type name `"LEnv"`.
+LEnv:type() -> string -- Returns this environment wrapper's type name `"LEnv"`.
 LEnv:typeOf(name: string) -> boolean -- Returns whether this env handle matches a supported type name.
 ```
 
@@ -3463,7 +3465,7 @@ LEnv:typeOf(name: string) -> boolean -- Returns whether this env handle matches 
 LFrameStack:capacity() -> integer -- Returns the maximum number of frames retained.
 LFrameStack:get() -> number[] -- Returns the flattened observation stack, zero-padded when not yet full.
 LFrameStack:push(obs: number[]) -- Pushes one observation into the stack.
-LFrameStack:reset() -- Clears all stored frames.
+LFrameStack:reset() -- Clears all stored observation frames from the stack.
 LFrameStack:type() -> string -- Returns the type name `"LFrameStack"`.
 LFrameStack:typeOf(name: string) -> boolean -- Returns whether this frame stack handle matches a supported type name.
 ```
@@ -3484,8 +3486,8 @@ LGeneticAlgorithm:typeOf(name: string) -> boolean -- Returns whether this geneti
 ### LModel
 
 ```lua
-LModel:predict(input: any) -> any -- Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
-LModel:type() -> string -- Returns the type name `"LModel"`.
+LModel:predict(input: any) -> integer, table -- Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`
+LModel:type() -> string -- Returns this wrapper's stable type name `"LModel"`.
 LModel:typeOf(name: string) -> boolean -- Returns whether this model wrapper matches a supported type name.
 ```
 
@@ -4394,7 +4396,7 @@ LNetworkRuntime:wsSend(id: integer, data: string) -- Sends text over a WebSocket
 ```lua
 LSseStream:close() -- Signals the background reader thread to stop and closes the stream.
 LSseStream:isOpen() -> boolean -- Returns true if the background reader thread is still connected and reading.
-LSseStream:next() -> table? -- Polls for the next available event from the SSE stream (non-blocking).
+LSseStream:next() -> table -- Polls for the next available event from the SSE stream (non-blocking).
 LSseStream:type() -> string -- Returns the Lua-visible type name for this SSE stream handle.
 LSseStream:typeOf(name: string) -> boolean -- Returns whether this SSE stream handle matches a supported type name.
 ```
@@ -4708,6 +4710,7 @@ LTrail:update(dt: number) -- Updates trail point lifetimes. This method is avail
 ```lua
 lurek.pathfind.getThreadCount() -> integer -- Returns the configured pathfinding thread count.
 lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField -- Creates a flow field for a navigation grid.
+lurek.pathfind.newGoalMap(width: integer, height: integer) -> LGoalMap -- Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
 lurek.pathfind.newHexGrid(width: integer, height: integer, [layout_str]: string) -> LHexGrid -- Creates a hex grid with the given dimensions.
 lurek.pathfind.newJpsGrid(width: integer, height: integer) -> LJpsGrid -- Creates a Jump Point Search grid with given dimensions.
 lurek.pathfind.newNavGrid(width: integer, height: integer) -> LNavGrid -- Creates a navigation grid with the given dimensions.
@@ -4747,6 +4750,25 @@ LFlowField:isCalculated() -> boolean -- Returns whether the flow field has been 
 LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -> number -- Returns a steering velocity for a world position using the flow field.
 LFlowField:type() -> string -- Returns the Lua-visible type name for this flow field handle.
 LFlowField:typeOf(name: string) -> boolean -- Returns whether this flow field handle matches a supported type name.
+```
+
+### LGoalMap
+
+```lua
+LGoalMap:addSource(x: integer, y: integer, [weight]: integer) -- Registers a source cell for this goal map. Coordinates are one-based.
+LGoalMap:bake() -- Runs multi-source Dijkstra to build the distance field using the registered blocker.
+LGoalMap:clearSources() -- Removes all registered source cells.
+LGoalMap:distanceAt(x: integer, y: integer) -> integer -- Returns the minimum cost from (x, y) to the nearest source.
+LGoalMap:flee(x: integer, y: integer, [fear]: number) -> number -- Returns a normalised direction vector pointing away from sources (for fleeing NPCs).
+LGoalMap:floodFill(cx: integer, cy: integer, threshold: integer) -> table -- Returns all cells reachable from (cx, cy) within `threshold` steps.
+LGoalMap:gradientAt(x: integer, y: integer) -> number -- Returns a normalised direction vector pointing toward the nearest source.
+LGoalMap:isReady() -> boolean -- Returns true when the distance field has been baked and not invalidated.
+LGoalMap:restore(blob: string) -- Restores a distance field from a blob produced by `save`.
+LGoalMap:save() -> string -- Serialises the current distance field to a binary blob string.
+LGoalMap:setBlocker(fn: function) -- Sets a Lua predicate called during `bake` to determine blocked cells.
+LGoalMap:setSources(sources: table) -- Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.
+LGoalMap:type() -> string -- Returns the Lua-visible type name for this goal map handle.
+LGoalMap:typeOf(name: string) -> boolean -- Returns whether this goal map handle matches a supported type name.
 ```
 
 ### LHexGrid
@@ -5856,7 +5878,7 @@ lurek.render.line(...: number) -- Draws a line between two points, or a polyline
 lurek.render.loadModel(path: string) -> LObjModel -- Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 lurek.render.loadObj(path: string) -> LObjModel -- Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 lurek.render.newCanvas(width: integer, height: integer) -> LCanvas -- Creates a new off-screen render target with the given dimensions.
-lurek.render.newDepthSorter() -> LDepthSorter -- Performs the 'render' operation.
+lurek.render.newDepthSorter() -> LDepthSorter -- Registers the depth-sorted drawing helper constructor in the render module.
 lurek.render.newDrawLayer() -> LDrawLayer -- Creates a new z-ordered draw layer for sorting draw callbacks by depth.
 lurek.render.newFont(pathOrSize: any, [size]: number) -> LFont -- Creates a font from a built-in font name, a font file path, or a numeric built-in point-size selector.
 lurek.render.newImage(pathOrData: string|LImageData, [colorSpace]: string) -> LImage -- Loads a texture from a file path or creates one from an ImageData object.
@@ -7609,6 +7631,24 @@ LValidationEngine:runFile(path: string) -> table -- Run validation against a sin
 
 ```lua
 lurek.visibility.new(config: table) -> LVisibilityGrid -- Create a new visibility grid for shadow-cast computation.
+lurek.visibility.newFov(opts: table) -> LFov -- Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+```
+
+### LFov
+
+```lua
+LFov:compute(ox: integer, oy: integer) -- Runs recursive shadowcasting from the observer position.
+LFov:eachVisible(fn: function) -- Calls `fn(x, y)` for every currently visible cell (one-based coordinates).
+LFov:export() -> string -- Serialises the visible and explored masks to a binary blob.
+LFov:import(blob: string) -- Restores visible and explored masks from a blob produced by `export`.
+LFov:isExplored(x: integer, y: integer) -> boolean -- Returns true if the cell has ever been visible.
+LFov:isVisible(x: integer, y: integer) -> boolean -- Returns true if the cell is visible in the current frame.
+LFov:resetExplored() -- Clears the explored mask so all cells appear unexplored.
+LFov:setBlocker(fn: function) -- Sets the Lua predicate that determines which cells are opaque.
+LFov:setRange(range: integer) -- Changes the visibility radius for subsequent compute calls.
+LFov:type() -> string -- Returns the Lua-visible type name for this FOV handle.
+LFov:typeOf(name: string) -> boolean -- Returns whether this FOV handle matches the given type name.
+LFov:visibleCells() -> table -- Returns an array of `{x, y}` tables for all currently visible cells (one-based).
 ```
 
 ### LVisibilityGrid

@@ -1,4 +1,5 @@
-﻿//! `lurek.physics` Ă˘â‚¬â€ť 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
+//! `lurek.physics` -- Lua bindings for 2D rigid-body physics systems and helpers.
+//! Covers worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.
 //!
 //! - Registers `lurek.physics.*` functions and types via `register()`.
 //! - `LuaWorld`: userdata type exposed to Lua.

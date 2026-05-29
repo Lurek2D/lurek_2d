@@ -13,7 +13,7 @@ pub use super::effects::{DynamicEffectSource, SharedEffectGraph};
 /// Stable DSP graph node handle.
 pub type NodeId = u32;
 
-/// DSP node processing kind.
+/// DSP node processing kind used by graph execution.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DspNodeType {
 	/// Low-pass filter node.
@@ -62,7 +62,7 @@ pub struct DspNode {
 }
 
 impl DspNode {
-	/// Create a node from a Lua-facing kind.
+	/// Creates a node from a Lua-facing kind string.
 	pub fn new(kind: &str) -> Self {
 		let node_type = DspNodeType::parse(kind);
 		let (p1, p2, p3) = match node_type {
@@ -80,7 +80,7 @@ impl DspNode {
 		}
 	}
 
-	/// Set a named node parameter.
+	/// Sets a named node parameter on this DSP node.
 	pub fn set_param(&mut self, name: &str, value: f32) -> Result<(), String> {
 		match name {
 			"cutoff" | "frequency" | "gain" | "value" | "low" => {
@@ -99,7 +99,7 @@ impl DspNode {
 		}
 	}
 
-	/// Get a named node parameter.
+	/// Returns a named node parameter value when it exists.
 	pub fn get_param(&self, name: &str) -> Option<f32> {
 		match name {
 			"cutoff" | "frequency" | "gain" | "value" | "low" => Some(self.p1),
@@ -109,7 +109,7 @@ impl DspNode {
 		}
 	}
 
-	/// Return this node's kind.
+	/// Returns this node's processing kind discriminator.
 	pub fn node_type(&self) -> DspNodeType {
 		self.node_type
 	}
@@ -134,7 +134,7 @@ pub struct DspGraph {
 }
 
 impl DspGraph {
-	/// Create an empty DSP graph.
+	/// Creates an empty DSP graph with no nodes or edges.
 	pub fn new() -> Self {
 		Self {
 			next_id: 1,
@@ -151,7 +151,7 @@ impl DspGraph {
 		id
 	}
 
-	/// Connect two existing nodes.
+	/// Connects two existing nodes with a directed edge.
 	pub fn connect(&mut self, from: NodeId, to: NodeId) -> bool {
 		if !self.has_node(from) || !self.has_node(to) {
 			return false;
@@ -162,7 +162,7 @@ impl DspGraph {
 		true
 	}
 
-	/// Disconnect two nodes.
+	/// Disconnects two nodes and removes that directed edge.
 	pub fn disconnect(&mut self, from: NodeId, to: NodeId) -> bool {
 		let before = self.edges.len();
 		self.edges.retain(|edge| *edge != (from, to));

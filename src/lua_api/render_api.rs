@@ -4947,9 +4947,9 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
-    /// Performs the 'render' operation.
+    /// Registers the depth-sorted drawing helper constructor in the render module.
     // -- newDepthSorter --
-    /// Creates a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
+    /// Creates a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one sorter per scene or per render pass.
     /// @return | LDepthSorter | A fresh depth sorter with no queued entries.
     graphics.set(
         "newDepthSorter",

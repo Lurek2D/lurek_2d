@@ -105,7 +105,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     print(&quot;LEnv:step obs[1]&quot;, obs[1])
     print(&quot;LEnv:step reward&quot;, reward)
     print(&quot;LEnv:step done&quot;, tostring(done))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LEnv:type() -&gt; string</pre><p>Returns the type name `&quot;LEnv&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:709</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LEnv:type() -&gt; string</pre><p>Returns this environment wrapper&#x27;s type name `&quot;LEnv&quot;`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:709</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local env = lurek.learning.defineEnv({
         reset = function() return {0.0} end,
         step  = function(a) return {{0.0}, 0.0, false, {}} end,

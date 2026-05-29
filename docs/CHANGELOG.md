@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+ - fix(test): stabilize Lua and Rust test runs for local distribution builds — make `test_debugbridge_core_unit.lua` choose a free high port, normalize migrated TOML golden sample line endings, restore missing Rust ext test targets, and skip `content/games/retro/commando/main.lua` in `games_load_test` due LuaJIT upvalue-limit parsing constraints.
+
+ - test(ext,lua): migrate API-level `effects_audio_runtime_smoke` to `tests/lua/unit/test_effects_audio_runtime_smoke_unit.lua`, then remove remaining `tests/rust/ext/*` files and ext wiring in `tests/engine_tests.rs`.
+
+ - fix(coverage): clear API coverage gaps (0 Rust→Lua, 0 Rust docstrings, 0 Lua docstrings) by demoting internal helpers from public Rust API (`rot_y`, gilrs name mappers, CSV reader helper, tween easing resolver), removing dead internal helpers (`log::enabled_for`, `network::estimate_size`), updating affected Rust unit tests to assert public behavior, and regenerating `logs/reports/coverage_gaps.md`.
+
+ - test(ext): remove duplicated behavioral extension suites `tests/rust/ext/graphics_ext_tests.rs` and `tests/rust/ext/math_ext_tests.rs`; keep runtime smoke coverage in `tests/rust/ext/` and Lua-first behavioral coverage in `tests/lua/unit/`.
+
  - fix(tests): update physics test files to use lurek.procgen.newCellular/CELL_* (namespace migrated in prior commit)
  - fix(examples): add 25 missing example stubs for learning, network, procgen, render modules
  - fix(api): standardize Lua-visible type names in docstrings — rename `LuaFont` → `LFont`, `LuaLineChart`/`LuaBarChart`/`LuaScatterPlot`/`LuaPieChart`/`LuaAreaChart` → `LLineChart`/`LBarChart`/`LScatterPlot`/`LPieChart`/`LAreaChart`, `LuaCursorManager`/`LuaCustomCursor`/`LuaAnimatedCursor` → `LCursorManager`/`LCustomCursor`/`LAnimatedCursor`, `LuaGrepEngine`/`LuaFileFilter` → `LGrepEngine`/`LFileFilter`, `LuaValidationEngine` → `LValidationEngine`; regenerated all docs artifacts.

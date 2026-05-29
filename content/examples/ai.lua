@@ -380,126 +380,126 @@ do
   print("LAIWorld:typeOf: LAIWorld=" .. tostring(is_world) .. " LImage=" .. tostring(is_wrong))
 end
 
---@api-stub: LAgent:getName
+--@api-stub: LBot:getName
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight_03")
   local name = npc:getName()
-  print("LAgent:getName: " .. name)
+  print("LBot:getName: " .. name)
 end
 
---@api-stub: LAgent:setPosition
+--@api-stub: LBot:setPosition
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("mover")
   npc:setPosition(256, 128)
   local x, y = npc:getPosition()
-  print("LAgent:setPosition: done")
-  print("LAgent:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
+  print("LBot:setPosition: done")
+  print("LBot:setPosition: pos=" .. tostring(x) .. ", " .. tostring(y))
 end
 
---@api-stub: LAgent:getPosition
+--@api-stub: LBot:getPosition
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("static_guard")
   npc:setPosition(400, 300)
   local x, y = npc:getPosition()
-  print("LAgent:getPosition: " .. tostring(x) .. ", " .. tostring(y))
+  print("LBot:getPosition: " .. tostring(x) .. ", " .. tostring(y))
 end
 
---@api-stub: LAgent:setVelocity
+--@api-stub: LBot:setVelocity
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("runner")
   npc:setVelocity(60, -30)
   local vx, vy = npc:getVelocity()
-  print("LAgent:setVelocity: done")
-  print("LAgent:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
+  print("LBot:setVelocity: done")
+  print("LBot:setVelocity: vel=" .. tostring(vx) .. ", " .. tostring(vy))
 end
 
---@api-stub: LAgent:getVelocity
+--@api-stub: LBot:getVelocity
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("idle_npc")
   npc:setVelocity(0, 0)
   local vx, vy = npc:getVelocity()
-  print("LAgent:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
+  print("LBot:getVelocity: vx=" .. tostring(vx) .. " vy=" .. tostring(vy))
 end
 
---@api-stub: LAgent:setMaxSpeed
+--@api-stub: LBot:setMaxSpeed
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("sprinter")
   npc:setMaxSpeed(200)
-  print("LAgent:setMaxSpeed: done")
-  print("LAgent:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
+  print("LBot:setMaxSpeed: done")
+  print("LBot:setMaxSpeed: speed=" .. tostring(npc:getMaxSpeed()))
 end
 
---@api-stub: LAgent:getMaxSpeed
+--@api-stub: LBot:getMaxSpeed
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("courier")
   npc:setMaxSpeed(150)
   local speed = npc:getMaxSpeed()
-  print("LAgent:getMaxSpeed: " .. tostring(speed))
-  print("LAgent:getMaxSpeed: name=" .. npc:getName())
+  print("LBot:getMaxSpeed: " .. tostring(speed))
+  print("LBot:getMaxSpeed: name=" .. npc:getName())
 end
 
---@api-stub: LAgent:setMaxForce
+--@api-stub: LBot:setMaxForce
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("tank")
   npc:setMaxForce(80)
-  print("LAgent:setMaxForce: done")
-  print("LAgent:setMaxForce: force=" .. tostring(npc:getMaxForce()))
+  print("LBot:setMaxForce: done")
+  print("LBot:setMaxForce: force=" .. tostring(npc:getMaxForce()))
 end
 
---@api-stub: LAgent:getMaxForce
+--@api-stub: LBot:getMaxForce
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("scout")
   npc:setMaxForce(200)
   local force = npc:getMaxForce()
-  print("LAgent:getMaxForce: " .. tostring(force))
-  print("LAgent:getMaxForce: name=" .. npc:getName())
+  print("LBot:getMaxForce: " .. tostring(force))
+  print("LBot:getMaxForce: name=" .. npc:getName())
 end
 
---@api-stub: LAgent:setPriority
+--@api-stub: LBot:setPriority
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("captain")
   npc:setPriority(10)
-  print("LAgent:setPriority: " .. tostring(npc:getPriority()))
+  print("LBot:setPriority: " .. tostring(npc:getPriority()))
 end
 
---@api-stub: LAgent:getPriority
+--@api-stub: LBot:getPriority
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("grunt")
   npc:setPriority(5)
   local prio = npc:getPriority()
-  print("LAgent:getPriority: " .. tostring(prio))
+  print("LBot:getPriority: " .. tostring(prio))
 end
 
---@api-stub: LAgent:setDecisionModel
+--@api-stub: LBot:setDecisionModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("worker")
   npc:setDecisionModel("custom")
   local model = npc:getDecisionModel()
-  print("LAgent:setDecisionModel: " .. model)
+  print("LBot:setDecisionModel: " .. model)
 end
 
---@api-stub: LAgent:getDecisionModel
+--@api-stub: LBot:getDecisionModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("farmer")
   npc:setDecisionModel("custom")
   local model = npc:getDecisionModel()
-  print("LAgent:getDecisionModel: " .. model)
+  print("LBot:getDecisionModel: " .. model)
 end
 
---@api-stub: LAgent:setCustomModel
+--@api-stub: LBot:setCustomModel
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("thinker")
@@ -507,64 +507,64 @@ do
   local called_with_dt = 0
   npc:setCustomModel(function(agent, bb, dt) called_with_dt = dt end)
   world:update(0.016)
-  print("LAgent:setCustomModel: dt=" .. tostring(called_with_dt))
+  print("LBot:setCustomModel: dt=" .. tostring(called_with_dt))
 end
 
---@api-stub: LAgent:addTag
+--@api-stub: LBot:addTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("guard")
   npc:addTag("hostile")
   local has_hostile = npc:hasTag("hostile")
-  print("LAgent:addTag: hostile=" .. tostring(has_hostile))
+  print("LBot:addTag: hostile=" .. tostring(has_hostile))
 end
 
---@api-stub: LAgent:removeTag
+--@api-stub: LBot:removeTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("spy")
   npc:addTag("visible")
   npc:removeTag("visible")
   local still_has = npc:hasTag("visible")
-  print("LAgent:removeTag: visible=" .. tostring(still_has))
+  print("LBot:removeTag: visible=" .. tostring(still_has))
 end
 
---@api-stub: LAgent:hasTag
+--@api-stub: LBot:hasTag
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("merchant")
   npc:addTag("friendly")
   local friendly = npc:hasTag("friendly")
   local hostile = npc:hasTag("hostile")
-  print("LAgent:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
+  print("LBot:hasTag: friendly=" .. tostring(friendly) .. " hostile=" .. tostring(hostile))
 end
 
---@api-stub: LAgent:getBlackboard
+--@api-stub: LBot:getBlackboard
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("ranger")
   local bb = npc:getBlackboard()
   bb:setNumber("hp", 100)
   local hp = bb:getNumber("hp", 0)
-  print("LAgent:getBlackboard: hp=" .. tostring(hp))
+  print("LBot:getBlackboard: hp=" .. tostring(hp))
 end
 
---@api-stub: LAgent:type
+--@api-stub: LBot:type
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("villager")
   local t = npc:type()
-  print("LAgent:type: " .. t)
-  print("LAgent:type: matches=" .. tostring(npc:typeOf("LAgent")))
+  print("LBot:type: " .. t)
+  print("LBot:type: matches=" .. tostring(npc:typeOf("LBot")))
 end
 
---@api-stub: LAgent:typeOf
+--@api-stub: LBot:typeOf
 do
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("knight")
-  local is_agent = npc:typeOf("LAgent")
+  local is_agent = npc:typeOf("LBot")
   local is_image = npc:typeOf("LImage")
-  print("LAgent:typeOf: LAgent=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
+  print("LBot:typeOf: LBot=" .. tostring(is_agent) .. " LImage=" .. tostring(is_image))
 end
 
 --@api-stub: LAIBlackboard:setNumber
@@ -680,8 +680,8 @@ end
 do
   local bb = lurek.ai.newBlackboard()
   local is_bb = bb:typeOf("LAIBlackboard")
-  local is_agent = bb:typeOf("LAgent")
-  print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LAgent=" .. tostring(is_agent))
+  local is_agent = bb:typeOf("LBot")
+  print("LAIBlackboard:typeOf: LAIBlackboard=" .. tostring(is_bb) .. " LBot=" .. tostring(is_agent))
 end
 
 --@api-stub: LStateMachine:addState
@@ -787,8 +787,8 @@ end
 do
   local bt = lurek.ai.newBehaviorTree()
   local is_bt = bt:typeOf("LBehaviorTree")
-  local is_other = bt:typeOf("LAgent")
-  print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LAgent=" .. tostring(is_other))
+  local is_other = bt:typeOf("LBot")
+  print("LBehaviorTree:typeOf: LBehaviorTree=" .. tostring(is_bt) .. " LBot=" .. tostring(is_other))
 end
 
 --@api-stub: LBTNode:addChild
@@ -1028,8 +1028,8 @@ end
 do
   local steer = lurek.ai.newSteeringManager()
   local is_steer = steer:typeOf("LSteeringManager")
-  local is_other = steer:typeOf("LAgent")
-  print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LAgent=" .. tostring(is_other))
+  local is_other = steer:typeOf("LBot")
+  print("LSteeringManager:typeOf: LSteeringManager=" .. tostring(is_steer) .. " LBot=" .. tostring(is_other))
 end
 
 --@api-stub: LSteeringManager:setSpatialHashCellSize
@@ -2282,3 +2282,4 @@ do
     local lod = lurek.ai.newAILod()
     print("is LAILod = " .. tostring(lod:typeOf("LAILod")))
 end
+

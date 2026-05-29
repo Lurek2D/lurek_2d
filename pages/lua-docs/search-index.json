@@ -1043,7 +1043,7 @@
     "kind": "function",
     "module": "render",
     "title": "lurek.render.newDepthSorter",
-    "subtitle": "Performs the 'render' operation.",
+    "subtitle": "Registers the depth-sorted drawing helper constructor in the render module.",
     "href": "modules/render.html#fn-newdepthsorter",
     "keywords": "render newDepthSorter function newDepthSorter() -> LDepthSorter"
   },
@@ -7267,7 +7267,7 @@
     "kind": "module",
     "module": "physics",
     "title": "lurek.physics",
-    "subtitle": "`lurek.physics` Ă˘â‚¬â€ť 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D. - Registers `lurek.physics.*` functions and types via `register()`. - `LuaWorld`: userdata type exposed to Lua. - `LuaZone`: userdata type exposed to Lua. - `LuaTerrain`: userdata type exposed to Lua. - `LuaCellular`: userdata type exposed to Lua. - `LuaBody`: userdata type exposed to Lua. - `LuaPhysicsShape`: userdata type exposed to Lua. - Bridges 205 Lua-callable methods via `mlua`.",
+    "subtitle": "`lurek.physics` -- Lua bindings for 2D rigid-body physics systems and helpers. Covers worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D. - Registers `lurek.physics.*` functions and types via `register()`. - `LuaWorld`: userdata type exposed to Lua. - `LuaZone`: userdata type exposed to Lua. - `LuaTerrain`: userdata type exposed to Lua. - `LuaCellular`: userdata type exposed to Lua. - `LuaBody`: userdata type exposed to Lua. - `LuaPhysicsShape`: userdata type exposed to Lua. - Bridges 205 Lua-callable methods via `mlua`.",
     "href": "modules/physics.html",
     "keywords": "lurek physics module"
   },
@@ -11453,7 +11453,7 @@
     "title": "LAIWorld:addAgent",
     "subtitle": "Creates a named agent in this world and returns a handle that can edit its movement and decision state.",
     "href": "classes/LAIWorld.html#method-addagent",
-    "keywords": "LAIWorld addAgent method ai addAgent(name: string) -> LAgent"
+    "keywords": "LAIWorld addAgent method ai addAgent(name: string) -> LBot"
   },
   {
     "kind": "method",
@@ -11469,7 +11469,7 @@
     "title": "LAIWorld:removeAgent",
     "subtitle": "Removes an agent from this world by using an existing agent handle.",
     "href": "classes/LAIWorld.html#method-removeagent",
-    "keywords": "LAIWorld removeAgent method ai removeAgent(agent: LAgent)"
+    "keywords": "LAIWorld removeAgent method ai removeAgent(agent: LBot)"
   },
   {
     "kind": "method",
@@ -11514,170 +11514,170 @@
   {
     "kind": "class",
     "module": "ai",
-    "title": "LAgent",
+    "title": "LBot",
     "subtitle": "Lua handle for a named agent stored inside an AI world.",
-    "href": "classes/LAgent.html",
-    "keywords": "LAgent class ai userdata"
+    "href": "classes/LBot.html",
+    "keywords": "LBot class ai userdata"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getName",
+    "title": "LBot:getName",
     "subtitle": "Returns this agent's stable world name.",
-    "href": "classes/LAgent.html#method-getname",
-    "keywords": "LAgent getName method ai getName() -> string"
+    "href": "classes/LBot.html#method-getname",
+    "keywords": "LBot getName method ai getName() -> string"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setPosition",
+    "title": "LBot:setPosition",
     "subtitle": "Sets this agent's world position when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-setposition",
-    "keywords": "LAgent setPosition method ai setPosition(x: number, y: number)"
+    "href": "classes/LBot.html#method-setposition",
+    "keywords": "LBot setPosition method ai setPosition(x: number, y: number)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getPosition",
+    "title": "LBot:getPosition",
     "subtitle": "Returns this agent's world position or the origin when the agent has been removed.",
-    "href": "classes/LAgent.html#method-getposition",
-    "keywords": "LAgent getPosition method ai getPosition() -> number, number"
+    "href": "classes/LBot.html#method-getposition",
+    "keywords": "LBot getPosition method ai getPosition() -> number, number"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setVelocity",
+    "title": "LBot:setVelocity",
     "subtitle": "Sets this agent's velocity vector when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-setvelocity",
-    "keywords": "LAgent setVelocity method ai setVelocity(x: number, y: number)"
+    "href": "classes/LBot.html#method-setvelocity",
+    "keywords": "LBot setVelocity method ai setVelocity(x: number, y: number)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getVelocity",
+    "title": "LBot:getVelocity",
     "subtitle": "Returns this agent's velocity vector or zero velocity when the agent has been removed.",
-    "href": "classes/LAgent.html#method-getvelocity",
-    "keywords": "LAgent getVelocity method ai getVelocity() -> number, number"
+    "href": "classes/LBot.html#method-getvelocity",
+    "keywords": "LBot getVelocity method ai getVelocity() -> number, number"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setMaxSpeed",
+    "title": "LBot:setMaxSpeed",
     "subtitle": "Sets this agent's maximum movement speed when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-setmaxspeed",
-    "keywords": "LAgent setMaxSpeed method ai setMaxSpeed(v: number)"
+    "href": "classes/LBot.html#method-setmaxspeed",
+    "keywords": "LBot setMaxSpeed method ai setMaxSpeed(v: number)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getMaxSpeed",
+    "title": "LBot:getMaxSpeed",
     "subtitle": "Returns this agent's maximum movement speed or the default speed for a missing agent.",
-    "href": "classes/LAgent.html#method-getmaxspeed",
-    "keywords": "LAgent getMaxSpeed method ai getMaxSpeed() -> number"
+    "href": "classes/LBot.html#method-getmaxspeed",
+    "keywords": "LBot getMaxSpeed method ai getMaxSpeed() -> number"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setMaxForce",
+    "title": "LBot:setMaxForce",
     "subtitle": "Sets this agent's maximum steering force when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-setmaxforce",
-    "keywords": "LAgent setMaxForce method ai setMaxForce(v: number)"
+    "href": "classes/LBot.html#method-setmaxforce",
+    "keywords": "LBot setMaxForce method ai setMaxForce(v: number)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getMaxForce",
+    "title": "LBot:getMaxForce",
     "subtitle": "Returns this agent's maximum steering force or the default force for a missing agent.",
-    "href": "classes/LAgent.html#method-getmaxforce",
-    "keywords": "LAgent getMaxForce method ai getMaxForce() -> number"
+    "href": "classes/LBot.html#method-getmaxforce",
+    "keywords": "LBot getMaxForce method ai getMaxForce() -> number"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setPriority",
+    "title": "LBot:setPriority",
     "subtitle": "Sets this agent's integer priority when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-setpriority",
-    "keywords": "LAgent setPriority method ai setPriority(p: integer)"
+    "href": "classes/LBot.html#method-setpriority",
+    "keywords": "LBot setPriority method ai setPriority(p: integer)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getPriority",
+    "title": "LBot:getPriority",
     "subtitle": "Returns this agent's integer priority or zero when the agent has been removed.",
-    "href": "classes/LAgent.html#method-getpriority",
-    "keywords": "LAgent getPriority method ai getPriority() -> integer"
+    "href": "classes/LBot.html#method-getpriority",
+    "keywords": "LBot getPriority method ai getPriority() -> integer"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setDecisionModel",
+    "title": "LBot:setDecisionModel",
     "subtitle": "Sets this agent's built-in decision model from a string name when the name is recognized.",
-    "href": "classes/LAgent.html#method-setdecisionmodel",
-    "keywords": "LAgent setDecisionModel method ai setDecisionModel(model: string)"
+    "href": "classes/LBot.html#method-setdecisionmodel",
+    "keywords": "LBot setDecisionModel method ai setDecisionModel(model: string)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getDecisionModel",
+    "title": "LBot:getDecisionModel",
     "subtitle": "Returns this agent's decision model name or the default model name for a missing agent.",
-    "href": "classes/LAgent.html#method-getdecisionmodel",
-    "keywords": "LAgent getDecisionModel method ai getDecisionModel() -> string"
+    "href": "classes/LBot.html#method-getdecisionmodel",
+    "keywords": "LBot getDecisionModel method ai getDecisionModel() -> string"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:setCustomModel",
+    "title": "LBot:setCustomModel",
     "subtitle": "Installs a Lua callback as this agent's decision model and stores it in the callback registry.",
-    "href": "classes/LAgent.html#method-setcustommodel",
-    "keywords": "LAgent setCustomModel method ai setCustomModel(callback: function)"
+    "href": "classes/LBot.html#method-setcustommodel",
+    "keywords": "LBot setCustomModel method ai setCustomModel(callback: function)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:addTag",
+    "title": "LBot:addTag",
     "subtitle": "Adds a tag string to this agent when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-addtag",
-    "keywords": "LAgent addTag method ai addTag(tag: string)"
+    "href": "classes/LBot.html#method-addtag",
+    "keywords": "LBot addTag method ai addTag(tag: string)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:removeTag",
+    "title": "LBot:removeTag",
     "subtitle": "Removes a tag string from this agent when the agent still exists in its world.",
-    "href": "classes/LAgent.html#method-removetag",
-    "keywords": "LAgent removeTag method ai removeTag(tag: string)"
+    "href": "classes/LBot.html#method-removetag",
+    "keywords": "LBot removeTag method ai removeTag(tag: string)"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:hasTag",
+    "title": "LBot:hasTag",
     "subtitle": "Returns whether this agent currently has the given tag.",
-    "href": "classes/LAgent.html#method-hastag",
-    "keywords": "LAgent hasTag method ai hasTag(tag: string) -> boolean"
+    "href": "classes/LBot.html#method-hastag",
+    "keywords": "LBot hasTag method ai hasTag(tag: string) -> boolean"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:getBlackboard",
+    "title": "LBot:getBlackboard",
     "subtitle": "Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.",
-    "href": "classes/LAgent.html#method-getblackboard",
-    "keywords": "LAgent getBlackboard method ai getBlackboard() -> LAIBlackboard"
+    "href": "classes/LBot.html#method-getblackboard",
+    "keywords": "LBot getBlackboard method ai getBlackboard() -> LAIBlackboard"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:type",
+    "title": "LBot:type",
     "subtitle": "Returns the Lua-visible type name for this agent handle.",
-    "href": "classes/LAgent.html#method-type",
-    "keywords": "LAgent type method ai type() -> string"
+    "href": "classes/LBot.html#method-type",
+    "keywords": "LBot type method ai type() -> string"
   },
   {
     "kind": "method",
     "module": "ai",
-    "title": "LAgent:typeOf",
+    "title": "LBot:typeOf",
     "subtitle": "Returns whether this agent handle matches a supported type name.",
-    "href": "classes/LAgent.html#method-typeof",
-    "keywords": "LAgent typeOf method ai typeOf(name: string) -> boolean"
+    "href": "classes/LBot.html#method-typeof",
+    "keywords": "LBot typeOf method ai typeOf(name: string) -> boolean"
   },
   {
     "kind": "class",
@@ -12189,7 +12189,7 @@
     "title": "LSteeringManager:applyCustomSteering",
     "subtitle": "Runs enabled custom steering callbacks for an agent and returns the weighted combined force.",
     "href": "classes/LSteeringManager.html#method-applycustomsteering",
-    "keywords": "LSteeringManager applyCustomSteering method ai applyCustomSteering(agent: LAgent, dt: number) -> number, number"
+    "keywords": "LSteeringManager applyCustomSteering method ai applyCustomSteering(agent: LBot, dt: number) -> number, number"
   },
   {
     "kind": "class",
@@ -19608,6 +19608,14 @@
     "keywords": "pathfind rangeMap function rangeMap(opts: table) -> table"
   },
   {
+    "kind": "function",
+    "module": "pathfind",
+    "title": "lurek.pathfind.newGoalMap",
+    "subtitle": "Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.",
+    "href": "modules/pathfind.html#fn-newgoalmap",
+    "keywords": "pathfind newGoalMap function newGoalMap(width: integer, height: integer) -> LGoalMap"
+  },
+  {
     "kind": "class",
     "module": "pathfind",
     "title": "LNavGrid",
@@ -20390,6 +20398,126 @@
     "subtitle": "Returns whether this navmesh handle matches a supported type name.",
     "href": "classes/LNavMesh.html#method-typeof",
     "keywords": "LNavMesh typeOf method pathfind typeOf(name: string) -> boolean"
+  },
+  {
+    "kind": "class",
+    "module": "pathfind",
+    "title": "LGoalMap",
+    "subtitle": "Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).",
+    "href": "classes/LGoalMap.html",
+    "keywords": "LGoalMap class pathfind userdata"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:addSource",
+    "subtitle": "Registers a source cell for this goal map. Coordinates are one-based.",
+    "href": "classes/LGoalMap.html#method-addsource",
+    "keywords": "LGoalMap addSource method pathfind addSource(x: integer, y: integer, weight: integer?)"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:setSources",
+    "subtitle": "Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.",
+    "href": "classes/LGoalMap.html#method-setsources",
+    "keywords": "LGoalMap setSources method pathfind setSources(sources: table)"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:clearSources",
+    "subtitle": "Removes all registered source cells.",
+    "href": "classes/LGoalMap.html#method-clearsources",
+    "keywords": "LGoalMap clearSources method pathfind clearSources()"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:setBlocker",
+    "subtitle": "Sets a Lua predicate called during `bake` to determine blocked cells.",
+    "href": "classes/LGoalMap.html#method-setblocker",
+    "keywords": "LGoalMap setBlocker method pathfind setBlocker(fn: function)"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:bake",
+    "subtitle": "Runs multi-source Dijkstra to build the distance field using the registered blocker.",
+    "href": "classes/LGoalMap.html#method-bake",
+    "keywords": "LGoalMap bake method pathfind bake()"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:isReady",
+    "subtitle": "Returns true when the distance field has been baked and not invalidated.",
+    "href": "classes/LGoalMap.html#method-isready",
+    "keywords": "LGoalMap isReady method pathfind isReady() -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:distanceAt",
+    "subtitle": "Returns the minimum cost from (x, y) to the nearest source.",
+    "href": "classes/LGoalMap.html#method-distanceat",
+    "keywords": "LGoalMap distanceAt method pathfind distanceAt(x: integer, y: integer) -> integer"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:gradientAt",
+    "subtitle": "Returns a normalised direction vector pointing toward the nearest source.",
+    "href": "classes/LGoalMap.html#method-gradientat",
+    "keywords": "LGoalMap gradientAt method pathfind gradientAt(x: integer, y: integer) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:flee",
+    "subtitle": "Returns a normalised direction vector pointing away from sources (for fleeing NPCs).",
+    "href": "classes/LGoalMap.html#method-flee",
+    "keywords": "LGoalMap flee method pathfind flee(x: integer, y: integer, fear: number?) -> number"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:floodFill",
+    "subtitle": "Returns all cells reachable from (cx, cy) within `threshold` steps.",
+    "href": "classes/LGoalMap.html#method-floodfill",
+    "keywords": "LGoalMap floodFill method pathfind floodFill(cx: integer, cy: integer, threshold: integer) -> table"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:save",
+    "subtitle": "Serialises the current distance field to a binary blob string.",
+    "href": "classes/LGoalMap.html#method-save",
+    "keywords": "LGoalMap save method pathfind save() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:restore",
+    "subtitle": "Restores a distance field from a blob produced by `save`.",
+    "href": "classes/LGoalMap.html#method-restore",
+    "keywords": "LGoalMap restore method pathfind restore(blob: string)"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:type",
+    "subtitle": "Returns the Lua-visible type name for this goal map handle.",
+    "href": "classes/LGoalMap.html#method-type",
+    "keywords": "LGoalMap type method pathfind type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "pathfind",
+    "title": "LGoalMap:typeOf",
+    "subtitle": "Returns whether this goal map handle matches a supported type name.",
+    "href": "classes/LGoalMap.html#method-typeof",
+    "keywords": "LGoalMap typeOf method pathfind typeOf(name: string) -> boolean"
   },
   {
     "kind": "module",
@@ -25283,7 +25411,7 @@
     "kind": "function",
     "module": "agent",
     "title": "lurek.agent.new",
-    "subtitle": "Creates a new LLM Agent instance.",
+    "subtitle": "Creates a new configurable LLM Agent runtime instance.",
     "href": "modules/agent.html#fn-new",
     "keywords": "agent new function new(config: table) -> LAgent"
   },
@@ -25755,7 +25883,7 @@
     "kind": "method",
     "module": "agent",
     "title": "LAISystem:removeSkill",
-    "subtitle": "Removes a system skill by name.",
+    "subtitle": "Removes a registered system skill by exact name.",
     "href": "classes/LAISystem.html#method-removeskill",
     "keywords": "LAISystem removeSkill method agent removeSkill(name: string) -> boolean"
   },
@@ -25955,7 +26083,7 @@
     "kind": "method",
     "module": "agent",
     "title": "LAgentChat:clear",
-    "subtitle": "Clears the chat history.",
+    "subtitle": "Clears all stored chat history messages.",
     "href": "classes/LAgentChat.html#method-clear",
     "keywords": "LAgentChat clear method agent clear() -> nil"
   },
@@ -26005,7 +26133,7 @@
     "title": "LWorkingMemory:get",
     "subtitle": "Returns the value for `key`, or `nil` if not found.",
     "href": "classes/LWorkingMemory.html#method-get",
-    "keywords": "LWorkingMemory get method agent get(key: string)"
+    "keywords": "LWorkingMemory get method agent get(key: string) -> table"
   },
   {
     "kind": "method",
@@ -26101,7 +26229,7 @@
     "title": "LSemanticMemory:recall",
     "subtitle": "Returns the fact for `key`, or `nil` if not found.",
     "href": "classes/LSemanticMemory.html#method-recall",
-    "keywords": "LSemanticMemory recall method agent recall(key: string)"
+    "keywords": "LSemanticMemory recall method agent recall(key: string) -> table"
   },
   {
     "kind": "method",
@@ -26811,9 +26939,9 @@
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.load",
-    "subtitle": "Lua function",
+    "subtitle": "Loads and caches an asset by path and type, returning a ref-counted handle.",
     "href": "modules/asset.html#fn-load",
-    "keywords": "asset load function load(path: any, type_str: any, opts: any)"
+    "keywords": "asset load function load(path: string, asset_type: string, opts: table?) -> LAssetHandle"
   },
   {
     "kind": "function",
@@ -26827,17 +26955,17 @@
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.get",
-    "subtitle": "Lua function",
+    "subtitle": "Returns the underlying asset value for a cached handle.",
     "href": "modules/asset.html#fn-get",
-    "keywords": "asset get function get(handle: any)"
+    "keywords": "asset get function get(handle: LAssetHandle) -> string"
   },
   {
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.preload",
-    "subtitle": "Lua function",
+    "subtitle": "Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.",
     "href": "modules/asset.html#fn-preload",
-    "keywords": "asset preload function preload(paths: any, callback: any)"
+    "keywords": "asset preload function preload(paths: table, callback: any) -> nil"
   },
   {
     "kind": "function",
@@ -26859,17 +26987,17 @@
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.stats",
-    "subtitle": "Lua function",
+    "subtitle": "Returns a snapshot table describing the current cache state.",
     "href": "modules/asset.html#fn-stats",
-    "keywords": "asset stats function stats()"
+    "keywords": "asset stats function stats() -> table"
   },
   {
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.clear",
-    "subtitle": "Lua function",
+    "subtitle": "Removes all entries from the cache immediately, regardless of ref counts.",
     "href": "modules/asset.html#fn-clear",
-    "keywords": "asset clear function clear()"
+    "keywords": "asset clear function clear() -> nil"
   },
   {
     "kind": "function",
@@ -26891,9 +27019,9 @@
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.getInfo",
-    "subtitle": "Lua function",
+    "subtitle": "Returns a table containing all metadata for an asset handle.",
     "href": "modules/asset.html#fn-getinfo",
-    "keywords": "asset getInfo function getInfo(handle: any)"
+    "keywords": "asset getInfo function getInfo(handle: LAssetHandle) -> table"
   },
   {
     "kind": "function",
@@ -26963,33 +27091,33 @@
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.findByName",
-    "subtitle": "Lua function",
+    "subtitle": "Returns an array of asset handles whose display name contains the substring.",
     "href": "modules/asset.html#fn-findbyname",
-    "keywords": "asset findByName function findByName(substr: any)"
+    "keywords": "asset findByName function findByName(substr: string) -> table"
   },
   {
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.findByGroup",
-    "subtitle": "Lua function",
+    "subtitle": "Returns an array of asset handles whose group label exactly matches `group`.",
     "href": "modules/asset.html#fn-findbygroup",
-    "keywords": "asset findByGroup function findByGroup(group: any)"
+    "keywords": "asset findByGroup function findByGroup(group: string) -> table"
   },
   {
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.findByTag",
-    "subtitle": "Lua function",
+    "subtitle": "Returns an array of asset handles that have the given tag in their tag set.",
     "href": "modules/asset.html#fn-findbytag",
-    "keywords": "asset findByTag function findByTag(tag: any)"
+    "keywords": "asset findByTag function findByTag(tag: string) -> table"
   },
   {
     "kind": "function",
     "module": "asset",
     "title": "lurek.asset.findByType",
-    "subtitle": "Lua function",
+    "subtitle": "Returns an array of asset handles whose type exactly matches `type_str`.",
     "href": "modules/asset.html#fn-findbytype",
-    "keywords": "asset findByType function findByType(type_str: any)"
+    "keywords": "asset findByType function findByType(type_str: string) -> table"
   },
   {
     "kind": "class",
@@ -34461,13 +34589,13 @@
     "title": "LModel:predict",
     "subtitle": "Runs the wrapped model's prediction. Delegates to `chooseAction`, `forward`, or `select`",
     "href": "classes/LModel.html#method-predict",
-    "keywords": "LModel predict method learning predict(input: any)"
+    "keywords": "LModel predict method learning predict(input: any) -> integer, table"
   },
   {
     "kind": "method",
     "module": "learning",
     "title": "LModel:type",
-    "subtitle": "Returns the type name `\"LModel\"`.",
+    "subtitle": "Returns this wrapper's stable type name `\"LModel\"`.",
     "href": "classes/LModel.html#method-type",
     "keywords": "LModel type method learning type() -> string"
   },
@@ -34523,7 +34651,7 @@
     "kind": "method",
     "module": "learning",
     "title": "LEnv:type",
-    "subtitle": "Returns the type name `\"LEnv\"`.",
+    "subtitle": "Returns this environment wrapper's type name `\"LEnv\"`.",
     "href": "classes/LEnv.html#method-type",
     "keywords": "LEnv type method learning type() -> string"
   },
@@ -34563,7 +34691,7 @@
     "kind": "method",
     "module": "learning",
     "title": "LFrameStack:reset",
-    "subtitle": "Clears all stored frames.",
+    "subtitle": "Clears all stored observation frames from the stack.",
     "href": "classes/LFrameStack.html#method-reset",
     "keywords": "LFrameStack reset method learning reset()"
   },
@@ -36693,7 +36821,7 @@
     "title": "LSseStream:next",
     "subtitle": "Polls for the next available event from the SSE stream (non-blocking).",
     "href": "classes/LSseStream.html#method-next",
-    "keywords": "LSseStream next method network next() -> table?"
+    "keywords": "LSseStream next method network next() -> table"
   },
   {
     "kind": "method",
@@ -46120,6 +46248,14 @@
     "keywords": "visibility new function new(config: table) -> LVisibilityGrid"
   },
   {
+    "kind": "function",
+    "module": "visibility",
+    "title": "lurek.visibility.newFov",
+    "subtitle": "Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.",
+    "href": "modules/visibility.html#fn-newfov",
+    "keywords": "visibility newFov function newFov(opts: table) -> LFov"
+  },
+  {
     "kind": "class",
     "module": "visibility",
     "title": "LVisibilityGrid",
@@ -46246,6 +46382,110 @@
     "subtitle": "Returns the total number of players in the grid.",
     "href": "classes/LVisibilityGrid.html#method-playercount",
     "keywords": "LVisibilityGrid playerCount method visibility playerCount() -> integer"
+  },
+  {
+    "kind": "class",
+    "module": "visibility",
+    "title": "LFov",
+    "subtitle": "Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.",
+    "href": "classes/LFov.html",
+    "keywords": "LFov class visibility userdata"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:setBlocker",
+    "subtitle": "Sets the Lua predicate that determines which cells are opaque.",
+    "href": "classes/LFov.html#method-setblocker",
+    "keywords": "LFov setBlocker method visibility setBlocker(fn: function)"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:setRange",
+    "subtitle": "Changes the visibility radius for subsequent compute calls.",
+    "href": "classes/LFov.html#method-setrange",
+    "keywords": "LFov setRange method visibility setRange(range: integer)"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:compute",
+    "subtitle": "Runs recursive shadowcasting from the observer position.",
+    "href": "classes/LFov.html#method-compute",
+    "keywords": "LFov compute method visibility compute(ox: integer, oy: integer)"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:isVisible",
+    "subtitle": "Returns true if the cell is visible in the current frame.",
+    "href": "classes/LFov.html#method-isvisible",
+    "keywords": "LFov isVisible method visibility isVisible(x: integer, y: integer) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:isExplored",
+    "subtitle": "Returns true if the cell has ever been visible.",
+    "href": "classes/LFov.html#method-isexplored",
+    "keywords": "LFov isExplored method visibility isExplored(x: integer, y: integer) -> boolean"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:resetExplored",
+    "subtitle": "Clears the explored mask so all cells appear unexplored.",
+    "href": "classes/LFov.html#method-resetexplored",
+    "keywords": "LFov resetExplored method visibility resetExplored()"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:eachVisible",
+    "subtitle": "Calls `fn(x, y)` for every currently visible cell (one-based coordinates).",
+    "href": "classes/LFov.html#method-eachvisible",
+    "keywords": "LFov eachVisible method visibility eachVisible(fn: function)"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:visibleCells",
+    "subtitle": "Returns an array of `{x, y}` tables for all currently visible cells (one-based).",
+    "href": "classes/LFov.html#method-visiblecells",
+    "keywords": "LFov visibleCells method visibility visibleCells() -> table"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:export",
+    "subtitle": "Serialises the visible and explored masks to a binary blob.",
+    "href": "classes/LFov.html#method-export",
+    "keywords": "LFov export method visibility export() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:import",
+    "subtitle": "Restores visible and explored masks from a blob produced by `export`.",
+    "href": "classes/LFov.html#method-import",
+    "keywords": "LFov import method visibility import(blob: string)"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:type",
+    "subtitle": "Returns the Lua-visible type name for this FOV handle.",
+    "href": "classes/LFov.html#method-type",
+    "keywords": "LFov type method visibility type() -> string"
+  },
+  {
+    "kind": "method",
+    "module": "visibility",
+    "title": "LFov:typeOf",
+    "subtitle": "Returns whether this FOV handle matches the given type name.",
+    "href": "classes/LFov.html#method-typeof",
+    "keywords": "LFov typeOf method visibility typeOf(name: string) -> boolean"
   },
   {
     "kind": "callback",

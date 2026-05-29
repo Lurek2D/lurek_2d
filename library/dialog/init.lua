@@ -1,4 +1,4 @@
---- Lurek2D dialog sequencer ÔÇö typewriter text, branching choices, events.
+--- Lurek2D dialog sequencer - typewriter text, branching choices, events.
 --
 -- A pure-Lua replacement for the former `lurek.dialog` Rust binding.
 -- No engine dependencies; works in headless test VMs.
@@ -30,7 +30,7 @@ if type(lurek) == "table" and type(lurek.patterns) == "table"
     _bus_factory = lurek.patterns.newEventBus
 end
 
--- ÔöÇÔöÇÔöÇ Internal constants ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-- ================================== Internal constants ==================================
 
 local DEFAULT_CPS = 20  -- characters per second
 local MAX_JUMPS   = 100 -- max jumps per step() to prevent infinite loops
@@ -44,19 +44,19 @@ local function log_debug(msg)
     if _log then _log.debug(msg) end
 end
 
--- ÔöÇÔöÇÔöÇ Sequencer object ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+-- ================================== Sequencer object ==================================
 
 --- Create a new dialog sequencer.
 -- The sequencer runs a list of dialog nodes one at a time, revealing
 -- typewriter-style text, pausing for choices, and firing named callbacks.
 --
 -- States:
---   "idle"    ÔÇö no script loaded or sequence ended, not started
---   "typing"  ÔÇö revealing the current line character by character
---   "waiting" ÔÇö current line fully revealed, waiting for advance()
---   "choice"  ÔÇö waiting for the player to call choose(index)
---   "paused"  ÔÇö a "wait" node is counting down
---   "done"    ÔÇö sequence finished
+--   "idle"    - no script loaded or sequence ended, not started
+--   "typing"  - revealing the current line character by character
+--   "waiting" - current line fully revealed, waiting for advance()
+--   "choice"  - waiting for the player to call choose(index)
+--   "paused"  - a "wait" node is counting down
+--   "done"    - sequence finished
 --
 -- @treturn table Sequencer object.
 function M.newSequencer()
@@ -80,7 +80,7 @@ function M.newSequencer()
     local _pending_nodes = nil  -- nodes injected mid-sequence by a branch
     local _jump_count    = 0    -- jump counter for loop detection
 
-    -- ÔöÇÔöÇ private helpers ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    -- ================================= private helpers =================================
 
     local function fire(event, ...)
         local list = _handlers[event]
@@ -200,7 +200,7 @@ function M.newSequencer()
         end
     end
 
-    -- ÔöÇÔöÇ public API ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+    -- ================================= public API =================================
 
     --- Load a new script, replacing any existing one.
     -- Call start() afterwards to begin playback.
@@ -421,9 +421,7 @@ function M.newSequencer()
 end
 
 
--- ÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉ
--- NODE CONSTRUCTOR HELPERS
--- ÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉ
+-- ================================== NODE CONSTRUCTOR HELPERS ==================================
 
 --- Create a `say` dialog node (spoken line with typewriter reveal).
 -- @param actor string Speaker name.
@@ -507,9 +505,7 @@ function M.jump(target, opts)
     return node
 end
 
--- ÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉ
--- PARITY ADDITIONS ÔÇö Phase 2A  (dialog)
--- ÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉÔLÉ
+-- ================================== PARITY ADDITIONS - Phase 2A (dialog) ==================================
 
 --- Dialog-graph node-type enum.
 -- @field SAY

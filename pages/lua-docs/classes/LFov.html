@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LFov - Lurek2D Lua API Browser</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <header class="topnav">
+    <div class="topnav-left">
+      <a class="topnav-home" href="../index.html" title="Back to portal">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Home
+      </a>
+      <span class="topnav-sep" aria-hidden="true">/</span>
+      <a class="topnav-brand" href="../index.html">
+        <img class="topnav-logo-img" src="../assets/lurek-logo.png" alt="">
+        <span>Lua API</span>
+      </a>
+    </div>
+    <div class="topnav-right">
+      <a class="topnav-xlink" href="../rust-docs/index.html">Rust Docs →</a>
+    </div>
+  </header>
+  <div class="shell">
+    <aside class="sidebar">
+      <label class="search-box">
+        <span class="sr-only">Search API</span>
+        <input id="search" type="search" placeholder="Search module, class, function…">
+      </label>
+      <div class="search-filters">
+        <select id="filter-module" aria-label="Filter by module"><option value="">All modules</option></select>
+        <select id="filter-kind" aria-label="Filter by type"><option value="">All types</option></select>
+      </div>
+      <div id="search-results" class="search-results" hidden></div>
+      <div class="global-nav"><a class="global-link active" href="../index.html">Overview</a>
+<a class="global-link" href="../callbacks.html">Callbacks</a>
+<a class="global-link" href="../types.html">Types</a></div><div class="nav-section-title">Modules</div><nav class="module-nav"><a href="../modules/render.html">lurek.render</a><a href="../modules/window.html">lurek.window</a><a href="../modules/input.html">lurek.input</a><a href="../modules/timer.html">lurek.time</a><a href="../modules/math.html">lurek.math</a><a href="../modules/audio.html">lurek.audio</a><a href="../modules/physics.html">lurek.physics</a><a href="../modules/filesystem.html">lurek.filesystem</a><a href="../modules/particle.html">lurek.particle</a><a href="../modules/event.html">lurek.signal</a><a href="../modules/system.html">lurek.system</a><a href="../modules/thread.html">lurek.thread</a><a href="../modules/ai.html">lurek.ai</a><a href="../modules/compute.html">lurek.compute</a><a href="../modules/dataframe.html">lurek.dataframe</a><a href="../modules/image.html">lurek.image</a><a href="../modules/tilemap.html">lurek.tilemap</a><a href="../modules/dialog.html">lurek.dialog</a><a href="../modules/ecs.html">lurek.ecs</a><a href="../modules/scene.html">lurek.scene</a><a href="../modules/pathfind.html">lurek.pathfind</a><a href="../modules/minimap.html">lurek.minimap</a><a href="../modules/save.html">lurek.save</a><a href="../modules/mods.html">lurek.mods</a><a href="../modules/i18n.html">lurek.i18n</a><a href="../modules/log.html">lurek.log</a><a href="../modules/debugbridge.html">lurek.debugbridge</a><a href="../modules/docs.html">lurek.docs</a><a href="../modules/patterns.html">lurek.patterns</a><a href="../modules/agent.html">lurek.agent</a><a href="../modules/animation.html">lurek.animation</a><a href="../modules/asset.html">lurek.asset</a><a href="../modules/automation.html">lurek.simulator</a><a href="../modules/binary.html">lurek.binary</a><a href="../modules/camera.html">lurek.camera</a><a href="../modules/charts.html">lurek.charts</a><a href="../modules/color.html">lurek.color</a><a href="../modules/cursor.html">lurek.cursor</a><a href="../modules/devtools.html">lurek.devtools</a><a href="../modules/dsp.html">lurek.dsp</a><a href="../modules/effect.html">lurek.effect</a><a href="../modules/engine.html">lurek.engine</a><a href="../modules/flownet.html">lurek.flownet</a><a href="../modules/font.html">lurek.font</a><a href="../modules/globe.html">lurek.globe</a><a href="../modules/grep.html">lurek.grep</a><a href="../modules/html.html">lurek.html</a><a href="../modules/layout.html">lurek.layout</a><a href="../modules/learning.html">lurek.learning</a><a href="../modules/light.html">lurek.light</a><a href="../modules/mapblock.html">lurek.mapblock</a><a href="../modules/midi.html">lurek.midi</a><a href="../modules/network.html">lurek.network</a><a href="../modules/overlay.html">lurek.overlay</a><a href="../modules/parallax.html">lurek.parallax</a><a href="../modules/pipeline.html">lurek.pipeline</a><a href="../modules/procgen.html">lurek.procgen</a><a href="../modules/province.html">lurek.province</a><a href="../modules/raycaster.html">lurek.raycaster</a><a href="../modules/repl.html">lurek.repl</a><a href="../modules/serialize.html">lurek.serialize</a><a href="../modules/spine.html">lurek.spine</a><a href="../modules/sprite.html">lurek.sprite</a><a href="../modules/terminal.html">lurek.terminal</a><a href="../modules/tween.html">lurek.tween</a><a href="../modules/ui.html">lurek.ui</a><a href="../modules/validator.html">lurek.validator</a><a class="active" href="../modules/visibility.html">lurek.visibility</a></nav>
+    </aside>
+    <main class="content">
+      
+<header class="page-header">
+  <p class="eyebrow">Class</p>
+  <h1>LFov</h1>
+  <p>Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.</p>
+  <div class="crumbs"><a href="../index.html">Docs home</a><span>/</span><a href="../modules/visibility.html">lurek.visibility</a></div>
+  <details class="example-block"><summary>Class Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:setBlocker(function(x, y)
+        return x == 10 and y &gt;= 6 and y &lt;= 14
+    end)
+    fov:compute(5, 10)
+    print(&quot;LFov:setBlocker visible_12_10=&quot; .. tostring(fov:isVisible(12, 10)))
+end</code></pre></details>
+</header>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Methods</h2>
+    <p>Instance methods exported from the LFov userdata.</p>
+  </div>
+    <div class="item-list">
+    <article class="item-row api-row" id="method-compute"><div class="item-row-main"><h3>compute</h3><pre class="inline-signature">LFov:compute(ox: integer, oy: integer)</pre><p>Runs recursive shadowcasting from the observer position.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:292</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print(&quot;LFov:compute visible_10_10=&quot; .. tostring(fov:isVisible(10, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-eachvisible"><div class="item-row-main"><h3>eachVisible</h3><pre class="inline-signature">LFov:eachVisible(fn: function)</pre><p>Calls `fn(x, y)` for every currently visible cell (one-based coordinates).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:352</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local count = 0
+    fov:eachVisible(function(_x, _y)
+        count = count + 1
+    end)
+    print(&quot;LFov:eachVisible count=&quot; .. count)
+end</code></pre></details></article><article class="item-row api-row" id="method-export"><div class="item-row-main"><h3>export</h3><pre class="inline-signature">LFov:export() -&gt; string</pre><p>Serialises the visible and explored masks to a binary blob.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:380</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+    print(&quot;LFov:export bytes=&quot; .. #blob)
+end</code></pre></details></article><article class="item-row api-row" id="method-import"><div class="item-row-main"><h3>import</h3><pre class="inline-signature">LFov:import(blob: string)</pre><p>Restores visible and explored masks from a blob produced by `export`.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:387</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+
+    local fov2 = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov2:import(blob)
+    print(&quot;LFov:import explored_10_10=&quot; .. tostring(fov2:isExplored(10, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isexplored"><div class="item-row-main"><h3>isExplored</h3><pre class="inline-signature">LFov:isExplored(x: integer, y: integer) -&gt; boolean</pre><p>Returns true if the cell has ever been visible.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:335</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print(&quot;LFov:isExplored_before_reset=&quot; .. tostring(fov:isExplored(10, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-isvisible"><div class="item-row-main"><h3>isVisible</h3><pre class="inline-signature">LFov:isVisible(x: integer, y: integer) -&gt; boolean</pre><p>Returns true if the cell is visible in the current frame.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:323</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print(&quot;LFov:isVisible=&quot; .. tostring(fov:isVisible(12, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-resetexplored"><div class="item-row-main"><h3>resetExplored</h3><pre class="inline-signature">LFov:resetExplored()</pre><p>Clears the explored mask so all cells appear unexplored.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:344</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    fov:resetExplored()
+    print(&quot;LFov:resetExplored=&quot; .. tostring(fov:isExplored(10, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setblocker"><div class="item-row-main"><h3>setBlocker</h3><pre class="inline-signature">LFov:setBlocker(fn: function)</pre><p>Sets the Lua predicate that determines which cells are opaque.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:271</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:setBlocker(function(x, y)
+        return x == 10 and y &gt;= 6 and y &lt;= 14
+    end)
+    fov:compute(5, 10)
+    print(&quot;LFov:setBlocker visible_12_10=&quot; .. tostring(fov:isVisible(12, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-setrange"><div class="item-row-main"><h3>setRange</h3><pre class="inline-signature">LFov:setRange(range: integer)</pre><p>Changes the visibility radius for subsequent compute calls.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:282</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 4 })
+    fov:setRange(10)
+    fov:compute(10, 10)
+    print(&quot;LFov:setRange visible_18_10=&quot; .. tostring(fov:isVisible(18, 10)))
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LFov:type() -&gt; string</pre><p>Returns the Lua-visible type name for this FOV handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:394</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print(&quot;LFov:type=&quot; .. fov:type())
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LFov:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this FOV handle matches the given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:400</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print(&quot;LFov:typeOf_Fov=&quot; .. tostring(fov:typeOf(&quot;LFov&quot;)))
+    print(&quot;LFov:typeOf_Object=&quot; .. tostring(fov:typeOf(&quot;LObject&quot;)))
+end</code></pre></details></article><article class="item-row api-row" id="method-visiblecells"><div class="item-row-main"><h3>visibleCells</h3><pre class="inline-signature">LFov:visibleCells() -&gt; table</pre><p>Returns an array of `{x, y}` tables for all currently visible cells (one-based).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/visibility_api.rs:363</span></div><details class="example-block"><summary>Example · Exact example · visibility.lua</summary><pre><code>do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local cells = fov:visibleCells()
+    print(&quot;LFov:visibleCells count=&quot; .. #cells)
+end</code></pre></details></article>
+  </div>
+</section>
+
+    </main>
+  </div>
+  <script>
+    window.LUREK_SITE_BASE = "..";
+  </script>
+  <script src="../assets/search-index.js"></script>
+  <script src="../assets/app.js"></script>
+</body>
+</html>

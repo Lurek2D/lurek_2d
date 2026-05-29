@@ -17,9 +17,9 @@ Lurek2D is a single-binary 2D runtime for games written in Lua. This wiki is gen
 ## Project Snapshot
 
 - 68 Lua API modules
-- 5425 Lua API functions
-- 68 module specs
-- 68 API examples
+- 5453 Lua API functions
+- 70 module specs
+- 69 API examples
 - 136 reference games
 - 28 libraries, 1522 functions
 

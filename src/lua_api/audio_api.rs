@@ -2290,9 +2290,163 @@ pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+    // -- newBeatClock --
+    /// Creates a musical beat clock for rhythm-game timing, tap-tempo, and beat scheduling.
+    /// @param | bpm | number | Initial beats-per-minute (minimum 1).
+    /// @param | beats_per_bar | integer? | Number of beats per bar (default 4).
+    /// @return | LBeatClock | New beat clock handle.
+    tbl.set(
+        "newBeatClock",
+        lua.create_function(|lua, (bpm, beats_per_bar): (f64, Option<u32>)| {
+            lua.create_userdata(LuaBeatClock {
+                inner: std::cell::RefCell::new(crate::audio::BeatClock::new(
+                    bpm,
+                    beats_per_bar.unwrap_or(4),
+                )),
+            })
+        })?,
+    )?;
     /// Performs the 'audio' operation.
     lurek.set("audio", tbl)?;
     Ok(())
+}
+
+/// Lua-side wrapper for a musical beat clock.
+pub struct LuaBeatClock {
+    /// Owned beat clock state.
+    inner: std::cell::RefCell<crate::audio::BeatClock>,
+}
+
+/// Provides Lua methods for beat-based timing.
+impl LuaUserData for LuaBeatClock {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- start --
+        /// Starts the clock.
+        methods.add_method("start", |_, this, ()| {
+            this.inner.borrow_mut().start();
+            Ok(())
+        });
+        // -- stop --
+        /// Pauses the clock.
+        methods.add_method("stop", |_, this, ()| {
+            this.inner.borrow_mut().stop();
+            Ok(())
+        });
+        // -- reset --
+        /// Resets elapsed time to zero without changing running state.
+        methods.add_method("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+        // -- tick --
+        /// Advances the clock by `dt` seconds. Returns an array of whole-beat crossings.
+        /// @param | dt | number | Delta time in seconds.
+        /// @return | table | Array of beat numbers crossed during this tick.
+        methods.add_method("tick", |lua, this, dt: f64| {
+            let crossings = this.inner.borrow_mut().tick(dt);
+            let out = lua.create_table()?;
+            for (i, b) in crossings.into_iter().enumerate() {
+                out.set(i + 1, b)?;
+            }
+            Ok(out)
+        });
+        // -- position --
+        /// Returns the current beat position.
+        /// @return | table | Table with `beat`, `bar`, `beat_in_bar`, `phase` fields.
+        methods.add_method("position", |lua, this, ()| {
+            let pos = this.inner.borrow().position();
+            let t = lua.create_table()?;
+            t.set("beat",        pos.beat)?;
+            t.set("bar",         pos.bar)?;
+            t.set("beat_in_bar", pos.beat_in_bar)?;
+            t.set("phase",       pos.phase)?;
+            Ok(t)
+        });
+        // -- bpm --
+        /// Returns the current BPM.
+        /// @return | number | Beats-per-minute.
+        methods.add_method("bpm", |_, this, ()| Ok(this.inner.borrow().bpm()));
+        // -- setBpm --
+        /// Sets a new BPM. Elapsed time is preserved.
+        /// @param | bpm | number | New BPM (clamped to ≥1).
+        methods.add_method("setBpm", |_, this, bpm: f64| {
+            this.inner.borrow_mut().set_bpm(bpm);
+            Ok(())
+        });
+        // -- beatsPerBar --
+        /// Returns the number of beats per bar.
+        /// @return | integer | Beats per bar.
+        methods.add_method("beatsPerBar", |_, this, ()| Ok(this.inner.borrow().beats_per_bar()));
+        // -- setBeatsPerBar --
+        /// Changes the time-signature beats-per-bar.
+        /// @param | beats | integer | New beats per bar (clamped to ≥1).
+        methods.add_method("setBeatsPerBar", |_, this, beats: u32| {
+            this.inner.borrow_mut().set_beats_per_bar(beats);
+            Ok(())
+        });
+        // -- tap --
+        /// Records a tap-tempo tap at `wall_time_secs`. Returns the estimated BPM (0.0 when fewer than 2 taps).
+        /// @param | wall_time_secs | number | Current real-world time in seconds.
+        /// @return | number | Estimated BPM, or 0.0 when not enough taps.
+        methods.add_method("tap", |_, this, t: f64| {
+            Ok(this.inner.borrow_mut().tap(t))
+        });
+        // -- scheduleAt --
+        /// Schedules a one-shot event at `beat`. Returns true when the beat is in the future.
+        /// @param | beat | number | Beat number to schedule.
+        /// @return | boolean | True when scheduled.
+        methods.add_method("scheduleAt", |_, this, beat: f64| {
+            Ok(this.inner.borrow_mut().schedule_at(beat))
+        });
+        // -- drainFired --
+        /// Returns and removes all scheduled beats that have now passed.
+        /// @return | table | Array of fired beat numbers.
+        methods.add_method("drainFired", |lua, this, ()| {
+            let fired = this.inner.borrow_mut().drain_fired();
+            let out = lua.create_table()?;
+            for (i, b) in fired.into_iter().enumerate() {
+                out.set(i + 1, b)?;
+            }
+            Ok(out)
+        });
+        // -- secondsPerBeat --
+        /// Returns seconds-per-beat at the current BPM.
+        /// @return | number | Seconds per beat.
+        methods.add_method("secondsPerBeat", |_, this, ()| {
+            Ok(this.inner.borrow().seconds_per_beat())
+        });
+        // -- secondsToNextBeat --
+        /// Returns seconds until the next whole beat boundary.
+        /// @return | number | Seconds until next beat.
+        methods.add_method("secondsToNextBeat", |_, this, ()| {
+            Ok(this.inner.borrow().seconds_to_next_beat())
+        });
+        // -- isRunning --
+        /// Returns true when the clock is running.
+        /// @return | boolean | Running state.
+        methods.add_method("isRunning", |_, this, ()| {
+            Ok(this.inner.borrow().is_running())
+        });
+        // -- quantise --
+        /// Quantises `beat` to the nearest `grid` beat grid (static utility).
+        /// @param | beat | number | Beat value to quantise.
+        /// @param | grid | number | Grid size (e.g. 0.25 for 16th notes).
+        /// @return | number | Quantised beat value.
+        methods.add_method("quantise", |_, _, (beat, grid): (f64, f64)| {
+            Ok(crate::audio::BeatClock::quantise(beat, grid))
+        });
+        // -- type --
+        /// Returns the Lua-visible type name.
+        /// @return | string | The string `LBeatClock`.
+        methods.add_method("type", |_, _, ()| Ok("LBeatClock"));
+        // -- typeOf --
+        /// Returns whether this handle matches the given type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when matched.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LBeatClock" || name == "LObject")
+        });
+    }
 }
 /// Represents the Lua-visible LSoundData object exposed by this module.
 impl mlua::UserData for SoundData {

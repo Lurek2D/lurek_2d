@@ -151,7 +151,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-tim
     limited:reset()
     print(&quot;lurek.learning.timeLimit type&quot;, limited:type())
 end</code></pre></details></article><article class="item-row api-row" id="fn-wrap"><div class="item-row-main"><h3>wrap</h3><pre class="inline-signature">lurek.learning.wrap(model: any) -&gt; LModel</pre><p>Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/learning_api.rs:1038</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
-    local qlearner = lurek.learning.newQLearner(4, 2, {alpha=0.1, gamma=0.9, epsilon=0.1})
+    local qlearner = lurek.learning.newQLearner(4, 2)
     local model = lurek.learning.wrap(qlearner)
     print(&quot;wrapped model type = &quot; .. model:type())
 end</code></pre></details></article>

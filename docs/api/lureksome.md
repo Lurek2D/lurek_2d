@@ -889,7 +889,7 @@ RecipeGroup:getOrder(  ) -> number  -- Get the sort order.
 
 ## `library.dialog` {#dialog}
 
-> Lurek2D dialog sequencer ��� typewriter text, branching choices, events.
+> Lurek2D dialog sequencer - typewriter text, branching choices, events.
 
 A pure-Lua replacement for the former `lurek.dialog` Rust binding.
 No engine dependencies; works in headless test VMs.
@@ -908,7 +908,7 @@ seq:start()
 *26 functions documented, 1 classes*
 
 ```lua
-library.dialog.newSequencer(  ) -> table  -- Create a new dialog sequencer. The sequencer runs a list of dialog nodes one at a time, revealing typewriter-style text, pausing for choices, and firing named callbacks. States: "idle"    ��� no script loaded or sequence ended, not started "typing"  ��� revealing the current line character by character "waiting" ��� current line fully revealed, waiting for advance() "choice"  ��� waiting for the player to call choose(index) "paused"  ��� a "wait" node is counting down "done"    ��� sequence finished
+library.dialog.newSequencer(  ) -> table  -- Create a new dialog sequencer. The sequencer runs a list of dialog nodes one at a time, revealing typewriter-style text, pausing for choices, and firing named callbacks. States: "idle"    - no script loaded or sequence ended, not started "typing"  - revealing the current line character by character "waiting" - current line fully revealed, waiting for advance() "choice"  - waiting for the player to call choose(index) "paused"  - a "wait" node is counting down "done"    - sequence finished
 library.dialog.say( actor : string, text : string, opts : table ) -> table  -- Create a `say` dialog node (spoken line with typewriter reveal).
 library.dialog.choice( prompt : string, options : table, opts : table ) -> table  -- Create a `choice` dialog node (branching prompt).
 library.dialog.wait( seconds : number, opts : table ) -> table  -- Create a `wait` dialog node (timed pause).

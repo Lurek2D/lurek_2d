@@ -12,6 +12,7 @@ use super::SharedState;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfind::hpa::{build_abstract, hpa_star, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
+use crate::pathfind::goal_map::{GoalMap, GoalSource};
 use crate::pathfind::{
     bidirectional_astar, DiagonalMode, FlowField, NavGrid, NavMesh, UnitPathfinder, Waypoint,
 };
@@ -1504,7 +1505,199 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
             Ok(out)
         })?,
     )?;
+    // -- newGoalMap --
+    /// Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.
+    /// @param | width  | integer | Grid width in cells.
+    /// @param | height | integer | Grid height in cells.
+    /// @return | LGoalMap | New goal map ready for source registration and baking.
+    tbl.set(
+        "newGoalMap",
+        lua.create_function(|_, (width, height): (u32, u32)| {
+            Ok(LuaGoalMap {
+                inner: RefCell::new(GoalMap::new(width, height)),
+                blocker_key: RefCell::new(None),
+            })
+        })?,
+    )?;
     /// Performs the 'pathfind' operation.
     lurek.set("pathfind", tbl)?;
     Ok(())
+}
+
+/// Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
+pub struct LuaGoalMap {
+    /// Owned goal map data.
+    inner: RefCell<GoalMap>,
+    /// Optional Lua blocker predicate (registry key).
+    blocker_key: RefCell<Option<LuaRegistryKey>>,
+}
+
+/// Provides `newGoalMap` methods: addSource, bake, distanceAt, gradientAt, flee, floodFill, save, restore.
+impl LuaUserData for LuaGoalMap {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addSource --
+        /// Registers a source cell for this goal map. Coordinates are one-based.
+        /// @param | x      | integer  | One-based column.
+        /// @param | y      | integer  | One-based row.
+        /// @param | weight | integer? | Relative weight (default 1). Lower = stronger pull.
+        methods.add_method("addSource", |_, this, (x, y, weight): (u32, u32, Option<u32>)| {
+            let xz = one_based_to_zero_based(x, "x")?;
+            let yz = one_based_to_zero_based(y, "y")?;
+            this.inner.borrow_mut().add_source(xz, yz, weight.unwrap_or(1));
+            Ok(())
+        });
+
+        // -- setSources --
+        /// Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.
+        /// @param | sources | table | Array of `{x, y, weight?}` tables.
+        methods.add_method("setSources", |_, this, sources: LuaTable| {
+            let mut gs = Vec::new();
+            for v in sources.sequence_values::<LuaTable>() {
+                let t = v?;
+                let x: u32 = t.get("x")?;
+                let y: u32 = t.get("y")?;
+                let w: u32 = t.get::<_, Option<u32>>("weight")?.unwrap_or(1);
+                gs.push(GoalSource {
+                    x: one_based_to_zero_based(x, "x")?,
+                    y: one_based_to_zero_based(y, "y")?,
+                    weight: w.max(1),
+                });
+            }
+            this.inner.borrow_mut().set_sources(gs);
+            Ok(())
+        });
+
+        // -- clearSources --
+        /// Removes all registered source cells.
+        methods.add_method("clearSources", |_, this, ()| {
+            this.inner.borrow_mut().clear_sources();
+            Ok(())
+        });
+
+        // -- setBlocker --
+        /// Sets a Lua predicate called during `bake` to determine blocked cells.
+        /// @param | fn | function | `fn(x: integer, y: integer) -> boolean` (one-based).
+        methods.add_method("setBlocker", |lua, this, f: LuaFunction| {
+            if let Some(old) = this.blocker_key.borrow_mut().take() {
+                lua.remove_registry_value(old)?;
+            }
+            *this.blocker_key.borrow_mut() = Some(lua.create_registry_value(f)?);
+            Ok(())
+        });
+
+        // -- bake --
+        /// Runs multi-source Dijkstra to build the distance field using the registered blocker.
+        methods.add_method("bake", |lua, this, ()| {
+            let blocker_key = this.blocker_key.borrow();
+            if let Some(ref key) = *blocker_key {
+                let f: LuaFunction = lua.registry_value(key)?;
+                let w = this.inner.borrow().width();
+                let h = this.inner.borrow().height();
+                // Pre-compute blocker table to avoid Lua calls inside tight Rust loop.
+                let size = (w * h) as usize;
+                let mut blocked = vec![false; size];
+                for y in 0..h {
+                    for x in 0..w {
+                        let result: bool = f.call((x + 1, y + 1))?;
+                        blocked[(y * w + x) as usize] = result;
+                    }
+                }
+                this.inner.borrow_mut().bake(&|x, y| blocked[(y * w + x) as usize]);
+            } else {
+                this.inner.borrow_mut().bake(&|_, _| false);
+            }
+            Ok(())
+        });
+
+        // -- isReady --
+        /// Returns true when the distance field has been baked and not invalidated.
+        /// @return | boolean | True when the field is ready for queries.
+        methods.add_method("isReady", |_, this, ()| Ok(!this.inner.borrow().is_dirty()));
+
+        // -- distanceAt --
+        /// Returns the minimum cost from (x, y) to the nearest source.
+        /// Returns the maximum integer value when unreachable.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @return | integer | Distance value; max-int means unreachable.
+        methods.add_method("distanceAt", |_, this, (x, y): (u32, u32)| {
+            let xz = one_based_to_zero_based(x, "x")?;
+            let yz = one_based_to_zero_based(y, "y")?;
+            Ok(this.inner.borrow().distance_at(xz, yz))
+        });
+
+        // -- gradientAt --
+        /// Returns a normalised direction vector pointing toward the nearest source.
+        /// @param | x | integer | One-based column.
+        /// @param | y | integer | One-based row.
+        /// @return | number | dx component.
+        /// @return | number | dy component.
+        methods.add_method("gradientAt", |_, this, (x, y): (u32, u32)| {
+            let xz = one_based_to_zero_based(x, "x")?;
+            let yz = one_based_to_zero_based(y, "y")?;
+            Ok(this.inner.borrow().gradient_at(xz, yz))
+        });
+
+        // -- flee --
+        /// Returns a normalised direction vector pointing away from sources (for fleeing NPCs).
+        /// @param | x    | integer | One-based column.
+        /// @param | y    | integer | One-based row.
+        /// @param | fear | number? | Scale factor (default 1.0).
+        /// @return | number | dx component.
+        /// @return | number | dy component.
+        methods.add_method("flee", |_, this, (x, y, fear): (u32, u32, Option<f32>)| {
+            let xz = one_based_to_zero_based(x, "x")?;
+            let yz = one_based_to_zero_based(y, "y")?;
+            Ok(this.inner.borrow().flee_at(xz, yz, fear.unwrap_or(1.0)))
+        });
+
+        // -- floodFill --
+        /// Returns all cells reachable from (cx, cy) within `threshold` steps.
+        /// @param | cx        | integer | One-based center column.
+        /// @param | cy        | integer | One-based center row.
+        /// @param | threshold | integer | Maximum distance to include.
+        /// @return | table | Array of `{x, y}` tables (one-based).
+        methods.add_method("floodFill", |lua, this, (cx, cy, threshold): (u32, u32, u32)| {
+            let cxz = one_based_to_zero_based(cx, "cx")?;
+            let cyz = one_based_to_zero_based(cy, "cy")?;
+            let cells = this.inner.borrow().flood_fill(cxz, cyz, threshold);
+            let out = lua.create_table()?;
+            for (i, (x, y)) in cells.into_iter().enumerate() {
+                let pt = lua.create_table()?;
+                /// The 'x' field value exposed to Lua scripts.
+                pt.set("x", x + 1)?;
+                /// The 'y' field value exposed to Lua scripts.
+                pt.set("y", y + 1)?;
+                out.set(i + 1, pt)?;
+            }
+            Ok(out)
+        });
+
+        // -- save --
+        /// Serialises the current distance field to a binary blob string.
+        /// @return | string | Serialised blob.
+        methods.add_method("save", |lua, this, ()| {
+            lua.create_string(this.inner.borrow().save())
+        });
+
+        // -- restore --
+        /// Restores a distance field from a blob produced by `save`.
+        /// @param | blob | string | Serialised blob.
+        methods.add_method("restore", |_, this, blob: LuaString| {
+            this.inner.borrow_mut().restore(blob.as_bytes()).map_err(LuaError::external)
+        });
+
+        // -- type --
+        /// Returns the Lua-visible type name for this goal map handle.
+        /// @return | string | The string `LGoalMap`.
+        methods.add_method("type", |_, _, ()| Ok("LGoalMap"));
+
+        // -- typeOf --
+        /// Returns whether this goal map handle matches a supported type name.
+        /// @param | name | string | Type name to check.
+        /// @return | boolean | True when the name matches.
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "LGoalMap" || name == "LObject")
+        });
+    }
 }

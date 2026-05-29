@@ -67,7 +67,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     wm:push(&quot;temp&quot;, &quot;value&quot;)
     local removed = wm:forget(&quot;temp&quot;)
     print(&quot;Removed:&quot;, removed)
-end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LWorkingMemory:get(key: string)</pre><p>Returns the value for `key`, or `nil` if not found.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:813</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-get"><div class="item-row-main"><h3>get</h3><pre class="inline-signature">LWorkingMemory:get(key: string) -&gt; table</pre><p>Returns the value for `key`, or `nil` if not found.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/agent_api.rs:813</span></div><details class="example-block"><summary>Example · Exact example · agent.lua</summary><pre><code>do
     local wm = lurek.agent.newWorkingMemory(8)
     wm:push(&quot;hp&quot;, 100)
     local hp = wm:get(&quot;hp&quot;)

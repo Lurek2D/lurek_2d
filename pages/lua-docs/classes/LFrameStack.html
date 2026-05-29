@@ -76,7 +76,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     fs:push({0.1, 0.2})
     fs:push({0.3, 0.4})
     print(&quot;LFrameStack:push capacity&quot;, fs:capacity())
-end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LFrameStack:reset()</pre><p>Clears all stored frames.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LFrameStack:reset()</pre><p>Clears all stored observation frames from the stack.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:753</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local fs = lurek.learning.frameStack(3)
     fs:push({1.0})
     fs:push({2.0})

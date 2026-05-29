@@ -122,12 +122,15 @@ describe("lurek.asset module", function()
 
     -- ─── load / handle basics ──────────────────────────────────────────────
 
+    -- @covers lurek.asset.load
+    -- @covers LAssetHandle:type
     it("load a text file returns LAssetHandle", function()
         local handle = lurek.asset.load(PATH_JSON, "text")
         expect_not_nil(handle, "handle should not be nil")
         expect_equal("LAssetHandle", handle:type())
     end)
 
+    -- @covers LAssetHandle:typeOf
     it("handle:typeOf('LAssetHandle') returns true", function()
         local handle = lurek.asset.load(PATH_JSON, "text")
         expect_equal(true, handle:typeOf("LAssetHandle"))
@@ -246,6 +249,9 @@ describe("lurek.asset module", function()
 
     -- ─── unload ────────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.unload
+    -- @covers lurek.asset.refcount
+    -- @covers lurek.asset.isLoaded
     it("unload reduces refcount to 0 and asset is no longer loaded", function()
         local handle = lurek.asset.load(PATH_JSON, "text")
         expect_equal(true, lurek.asset.isLoaded(handle))
@@ -256,6 +262,7 @@ describe("lurek.asset module", function()
 
     -- ─── get (text) ────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.get
     it("get returns string content for text asset", function()
         local handle = lurek.asset.load(PATH_JSON, "text")
         local content = lurek.asset.get(handle)
@@ -267,12 +274,14 @@ describe("lurek.asset module", function()
 
     -- ─── getPath / getType ────────────────────────────────────────────────
 
+    -- @covers lurek.asset.getPath
     it("getPath returns the path passed to load", function()
         local h = lurek.asset.load(PATH_TOML, "toml")
         expect_equal(PATH_TOML, lurek.asset.getPath(h))
         lurek.asset.unload(h)
     end)
 
+    -- @covers lurek.asset.getType
     it("getType returns the type string used at load", function()
         local h = lurek.asset.load(PATH_TOML, "toml")
         expect_equal("toml", lurek.asset.getType(h))
@@ -290,6 +299,7 @@ describe("lurek.asset module", function()
 
     -- ─── getInfo ──────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.getInfo
     it("getInfo returns table with all fields", function()
         local h = lurek.asset.load(PATH_JSON, "json", {
             name  = "test_asset",
@@ -333,6 +343,8 @@ describe("lurek.asset module", function()
         lurek.asset.unload(h)
     end)
 
+    -- @covers lurek.asset.setName
+    -- @covers lurek.asset.getName
     it("setName then getName roundtrip", function()
         local h = lurek.asset.load(PATH_JSON, "json")
         lurek.asset.setName(h, "my_json")
@@ -348,6 +360,8 @@ describe("lurek.asset module", function()
         lurek.asset.unload(h)
     end)
 
+    -- @covers lurek.asset.setGroup
+    -- @covers lurek.asset.getGroup
     it("setGroup then getGroup roundtrip", function()
         local h = lurek.asset.load(PATH_JSON, "text")
         lurek.asset.setGroup(h, "level_1")
@@ -370,6 +384,10 @@ describe("lurek.asset module", function()
         lurek.asset.unload(h)
     end)
 
+    -- @covers lurek.asset.addTag
+    -- @covers lurek.asset.removeTag
+    -- @covers lurek.asset.getTags
+    -- @covers lurek.asset.hasTag
     it("removeTag returns true when tag was present", function()
         local h = lurek.asset.load(PATH_JSON, "json")
         lurek.asset.addTag(h, "tmp")
@@ -404,6 +422,7 @@ describe("lurek.asset module", function()
 
     -- ─── findByType ───────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.findByType
     it("findByType returns handles of matching type only", function()
         lurek.asset.clear()
         local h1 = lurek.asset.load(PATH_JSON, "json")
@@ -426,6 +445,7 @@ describe("lurek.asset module", function()
 
     -- ─── findByGroup ──────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.findByGroup
     it("findByGroup returns handles in named group", function()
         lurek.asset.clear()
         local h1 = lurek.asset.load(PATH_JSON, "json", {group = "ui"})
@@ -447,6 +467,7 @@ describe("lurek.asset module", function()
 
     -- ─── findByTag ────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.findByTag
     it("findByTag returns handles with matching tag", function()
         lurek.asset.clear()
         local h1 = lurek.asset.load(PATH_JSON, "json")
@@ -469,6 +490,7 @@ describe("lurek.asset module", function()
 
     -- ─── findByName ───────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.findByName
     it("findByName uses path file-stem for unnamed assets", function()
         lurek.asset.clear()
         local h = lurek.asset.load(PATH_TOML, "toml")
@@ -500,6 +522,7 @@ describe("lurek.asset module", function()
 
     -- ─── stats ─────────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.stats
     it("stats returns table with loaded and total_refs fields", function()
         lurek.asset.clear()
         local s = lurek.asset.stats()
@@ -550,6 +573,7 @@ describe("lurek.asset module", function()
 
     -- ─── clear ─────────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.clear
     it("clear empties the cache", function()
         local h1 = lurek.asset.load(PATH_JSON, "text")
         lurek.asset.clear()
@@ -579,6 +603,7 @@ describe("lurek.asset module", function()
 
     -- ─── preload ───────────────────────────────────────────────────────────
 
+    -- @covers lurek.asset.preload
     it("preload fires callback with progress and nil/nil at end", function()
         lurek.asset.clear()
         local calls = {}

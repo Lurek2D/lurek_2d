@@ -28,7 +28,6 @@ The glossary collects terms that appear across module and API pages.
 - `LAccordion` ([lurek.ui](Module-ui)) - Adds accordion-specific methods to an accordion widget table.
 - `LAdsrEnvelope` ([lurek.dsp](Module-dsp)) - Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 - `LAgent` ([lurek.agent](Module-agent)) - Lua-side handle for a single LLM Agent.
-- `LAgent` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
 - `LAgentChat` ([lurek.agent](Module-agent)) - Lua-side handle for a stateful LLM chat session.
 - `LAgentManager` ([lurek.agent](Module-agent)) - Lua-side handle for managing multiple LLM Agents in parallel.
 - `LAgentMemory` ([lurek.agent](Module-agent)) - Lua-side handle for a bundled working+episodic+semantic memory with optional persistence.
@@ -61,6 +60,7 @@ The glossary collects terms that appear across module and API pages.
 - `LBlackboard` ([lurek.patterns](Module-patterns)) - Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
 - `LBlendLayerSet` ([lurek.animation](Module-animation)) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
 - `LBody` ([lurek.physics](Module-physics)) - A handle to a single physics body in the world, providing per-body manipulation methods.
+- `LBot` ([lurek.ai](Module-ai)) - Lua handle for a named agent stored inside an AI world.
 - `LBTNode` ([lurek.ai](Module-ai)) - Lua handle for a behavior tree node that can be assembled into composites and decorators.
 - `LBus` ([lurek.audio](Module-audio)) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
 - `LButton` ([lurek.ui](Module-ui)) - Adds button-specific methods (setText, getText) to a button widget table.
@@ -114,11 +114,13 @@ The glossary collects terms that appear across module and API pages.
 - `LFlowField` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a flow field over a navigation grid.
 - `LFont` ([lurek.font](Module-font)) - Lua-visible font handle storing the slot key and cached metadata.
 - `LFont` ([lurek.render](Module-render)) - Bitmap font handle for measuring and rendering text.
+- `LFov` ([lurek.visibility](Module-visibility)) - Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
 - `LFrameStack` ([lurek.learning](Module-learning)) - Lua handle wrapping a frame-stacking ring buffer.
 - `LFunnel` ([lurek.patterns](Module-patterns)) - Lua-facing batching funnel that collects events over a time window and flushes them together.
 - `LGeneticAlgorithm` ([lurek.learning](Module-learning)) - Lua handle for a floating-point genetic algorithm population.
 - `LGlobe` ([lurek.globe](Module-globe)) - Lua-side handle for a named globe stored inside a shared registry.
 - `LGlobeRegistry` ([lurek.globe](Module-globe)) - Lua-side handle for creating and locating named globes in one registry.
+- `LGoalMap` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
 - `LGOAPPlanner` ([lurek.ai](Module-ai)) - Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
 - `LGraph` ([lurek.flownet](Module-flownet)) - Lua-side graph handle storing graph state and registered event callbacks.
 - `LGraphEdge` ([lurek.flownet](Module-flownet)) - Lua-side edge handle referencing one edge id inside a graph.
@@ -142,5 +144,3 @@ The glossary collects terms that appear across module and API pages.
 - `LInfluenceMap` ([lurek.ai](Module-ai)) - Lua handle for a grid-based influence map with named layers.
 - `LInputRecording` ([lurek.input](Module-input)) - Lua-side handle for serialized input recording data.
 - `LIsoMap` ([lurek.tilemap](Module-tilemap)) - Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
-- `LJpsGrid` ([lurek.pathfind](Module-pathfind)) - Lua-side wrapper for a Jump Point Search grid.
-- `LLabel` ([lurek.ui](Module-ui)) - Adds label-specific methods (setText, getText) to a label widget table.

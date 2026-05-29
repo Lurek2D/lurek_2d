@@ -282,7 +282,7 @@ mod aabb_tree_query_tests {
 
 mod sphere_tests {
     use lurek2d::globe::sphere::{
-        great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect, rot_y,
+        great_circle_distance, great_circle_path, lat_lon_to_unit, ray_sphere_intersect,
         unit_to_lat_lon, Mat3x3,
     };
     use lurek2d::math::Vec3;
@@ -343,14 +343,6 @@ mod sphere_tests {
     fn ray_sphere_miss() {
         let hit = ray_sphere_intersect(Vec3::new(0.0, 5.0, 0.0), Vec3::new(0.0, 1.0, 0.0), 1.0);
         assert!(hit.is_none());
-    }
-
-    #[test]
-    fn rot_y_90_maps_x_to_minus_z() {
-        let matrix = rot_y(90.0);
-        let vector = matrix.mul_vec(Vec3::new(1.0, 0.0, 0.0));
-        assert!(approx(vector.x, 0.0, 1e-5));
-        assert!(approx(vector.z, -1.0, 1e-5));
     }
 
     #[test]

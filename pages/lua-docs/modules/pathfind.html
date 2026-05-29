@@ -46,8 +46,8 @@
   <p class="eyebrow">Module</p>
   <h1>lurek.pathfind</h1>
   <p>`lurek.pathfind` - Lua bindings for navigation grids, unit pathfinding, flow fields, path grids, hex grids, JPS grids, nav meshes, range maps, and tilemap-derived path data. - Registers `lurek.pathfind.*` functions and types via `register()`. - Userdata types: `LuaNavGrid`, `LuaUnitPathfinder`, `LuaFlowField`. - Userdata types: `LuaPathGrid`, `LuaAiFlowField`, `LuaHexGrid`. - Userdata types: `LuaJpsGrid`, `LuaNavMesh`. - Bridges 102 Lua-callable methods via `mlua`. - See `docs/specs/pathfind.md` for the full API specification.</p>
-  <div class="api-meta api-meta-header"><span>12 functions</span><span>8 classes</span><span>src/lua_api/pathfind_api.rs</span></div>
-    <div class="api-meta api-meta-header"><span>Exact examples: 102</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
+  <div class="api-meta api-meta-header"><span>13 functions</span><span>9 classes</span><span>src/lua_api/pathfind_api.rs</span></div>
+    <div class="api-meta api-meta-header"><span>Exact examples: 117</span><a href="#functions">Functions</a><a href="#classes">Classes</a></div>
 </header>
 
 <section class="section-block" id="functions">
@@ -56,11 +56,11 @@
     <p>Standalone namespace functions registered under lurek.pathfind.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="fn-getthreadcount"><div class="item-row-main"><h3>getThreadCount</h3><pre class="inline-signature">lurek.pathfind.getThreadCount() -&gt; integer</pre><p>Returns the configured pathfinding thread count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1355</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="fn-getthreadcount"><div class="item-row-main"><h3>getThreadCount</h3><pre class="inline-signature">lurek.pathfind.getThreadCount() -&gt; integer</pre><p>Returns the configured pathfinding thread count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1356</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local tc = lurek.pathfind.getThreadCount()
 
     print(&quot;thread_count = &quot; .. tc)
-end</code></pre></details></article><article class="item-row api-row" id="fn-newflowfield"><div class="item-row-main"><h3>newFlowField</h3><pre class="inline-signature">lurek.pathfind.newFlowField(grid_ud: LNavGrid) -&gt; LFlowField</pre><p>Creates a flow field for a navigation grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1301</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newflowfield"><div class="item-row-main"><h3>newFlowField</h3><pre class="inline-signature">lurek.pathfind.newFlowField(grid_ud: LNavGrid) -&gt; LFlowField</pre><p>Creates a flow field for a navigation grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1302</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(20, 20)
 
     nav:fill(1)
@@ -73,7 +73,10 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
 
     print(&quot;calculated = &quot; .. tostring(ff:isCalculated()))
     print(&quot;targets = &quot; .. #ff:getTargets())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newhexgrid"><div class="item-row-main"><h3>newHexGrid</h3><pre class="inline-signature">lurek.pathfind.newHexGrid(width: integer, height: integer, layout_str: string?) -&gt; LHexGrid</pre><p>Creates a hex grid with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1403</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newgoalmap"><div class="item-row-main"><h3>newGoalMap</h3><pre class="inline-signature">lurek.pathfind.newGoalMap(width: integer, height: integer) -&gt; LGoalMap</pre><p>Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1513</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    local gm = lurek.pathfind.newGoalMap(16, 16)
+    print(&quot;goal_map_type = &quot; .. gm:type())
+end</code></pre></details></article><article class="item-row api-row" id="fn-newhexgrid"><div class="item-row-main"><h3>newHexGrid</h3><pre class="inline-signature">lurek.pathfind.newHexGrid(width: integer, height: integer, layout_str: string?) -&gt; LHexGrid</pre><p>Creates a hex grid with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1404</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local hex = lurek.pathfind.newHexGrid(12, 10, &quot;flat&quot;)
 
     hex:setBlocked(5, 5, true)
@@ -81,7 +84,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
 
     print(&quot;blocked_5_5 = &quot; .. tostring(hex:isBlocked(5, 5)))
     print(&quot;blocked_1_1 = &quot; .. tostring(hex:isBlocked(1, 1)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-newjpsgrid"><div class="item-row-main"><h3>newJpsGrid</h3><pre class="inline-signature">lurek.pathfind.newJpsGrid(width: integer, height: integer) -&gt; LJpsGrid</pre><p>Creates a Jump Point Search grid with given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1422</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newjpsgrid"><div class="item-row-main"><h3>newJpsGrid</h3><pre class="inline-signature">lurek.pathfind.newJpsGrid(width: integer, height: integer) -&gt; LJpsGrid</pre><p>Creates a Jump Point Search grid with given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1423</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
     jps:setBlocked(15, 10, true)
@@ -90,13 +93,13 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
 
     print(&quot;blocked_15_10 = &quot; .. tostring(jps:isBlocked(15, 10)))
     print(&quot;blocked_1_1 = &quot; .. tostring(jps:isBlocked(1, 1)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-newnavgrid"><div class="item-row-main"><h3>newNavGrid</h3><pre class="inline-signature">lurek.pathfind.newNavGrid(width: integer, height: integer) -&gt; LNavGrid</pre><p>Creates a navigation grid with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1275</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnavgrid"><div class="item-row-main"><h3>newNavGrid</h3><pre class="inline-signature">lurek.pathfind.newNavGrid(width: integer, height: integer) -&gt; LNavGrid</pre><p>Creates a navigation grid with the given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1276</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(50, 50)
     local w, h = nav:getDimensions()
 
     print(&quot;dims = &quot; .. w .. &quot;x&quot; .. h)
     print(&quot;chunk = &quot; .. nav:getChunkSize())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newnavgridfromtilemap"><div class="item-row-main"><h3>newNavGridFromTileMap</h3><pre class="inline-signature">lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -&gt; LNavGrid</pre><p>Creates a navigation grid from a tilemap layer and blocked gid table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1367</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnavgridfromtilemap"><div class="item-row-main"><h3>newNavGridFromTileMap</h3><pre class="inline-signature">lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -&gt; LNavGrid</pre><p>Creates a navigation grid from a tilemap layer and blocked gid table.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1368</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local layer_index = tm:addLayer(&quot;ground&quot;, 8, 8)
 
@@ -108,7 +111,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
     print(&quot;dims = &quot; .. ng:getWidth() .. &quot;x&quot; .. ng:getHeight())
     print(&quot;blocked_3_3 = &quot; .. tostring(ng:isBlocked(3, 3)))
     print(&quot;blocked_4_3 = &quot; .. tostring(ng:isBlocked(4, 3)))
-end</code></pre></details></article><article class="item-row api-row" id="fn-newnavmesh"><div class="item-row-main"><h3>newNavMesh</h3><pre class="inline-signature">lurek.pathfind.newNavMesh() -&gt; LNavMesh</pre><p>Creates an empty navigation mesh for polygon-based pathfinding.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1433</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newnavmesh"><div class="item-row-main"><h3>newNavMesh</h3><pre class="inline-signature">lurek.pathfind.newNavMesh() -&gt; LNavMesh</pre><p>Creates an empty navigation mesh for polygon-based pathfinding.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1434</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local mesh = lurek.pathfind.newNavMesh()
     local id1 = mesh:addPolygon({
         { x = 0, y = 0 },
@@ -123,7 +126,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
 
     print(&quot;polygons = &quot; .. mesh:getPolygonCount())
     print(&quot;ids = &quot; .. id1 .. &quot;,&quot; .. id2)
-end</code></pre></details></article><article class="item-row api-row" id="fn-newpathflowfield"><div class="item-row-main"><h3>newPathFlowField</h3><pre class="inline-signature">lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -&gt; LAIFlowField</pre><p>Creates an AI flow field from a path grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1328</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpathflowfield"><div class="item-row-main"><h3>newPathFlowField</h3><pre class="inline-signature">lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -&gt; LAIFlowField</pre><p>Creates an AI flow field from a path grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1329</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(15, 15, 32)
     local aiff = lurek.pathfind.newPathFlowField(grid)
 
@@ -133,12 +136,12 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
     print(&quot;dims = &quot; .. aiff:getWidth() .. &quot;x&quot; .. aiff:getHeight())
     print(&quot;has_goal = &quot; .. tostring(aiff:hasGoal()))
     print(&quot;goal = &quot; .. gx .. &quot;,&quot; .. gy)
-end</code></pre></details></article><article class="item-row api-row" id="fn-newpathgrid"><div class="item-row-main"><h3>newPathGrid</h3><pre class="inline-signature">lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -&gt; LPathGrid</pre><p>Creates a cell-size path grid with given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1316</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpathgrid"><div class="item-row-main"><h3>newPathGrid</h3><pre class="inline-signature">lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -&gt; LPathGrid</pre><p>Creates a cell-size path grid with given dimensions.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1317</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
 
     print(&quot;grid = &quot; .. grid:getWidth() .. &quot;x&quot; .. grid:getHeight())
     print(&quot;cell_size = &quot; .. grid:getCellSize())
-end</code></pre></details></article><article class="item-row api-row" id="fn-newpathfinder"><div class="item-row-main"><h3>newPathfinder</h3><pre class="inline-signature">lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -&gt; LUnitPathfinder</pre><p>Creates a unit pathfinder for a navigation grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1288</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-newpathfinder"><div class="item-row-main"><h3>newPathfinder</h3><pre class="inline-signature">lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -&gt; LUnitPathfinder</pre><p>Creates a unit pathfinder for a navigation grid.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1289</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local nav = lurek.pathfind.newNavGrid(30, 30)
 
     nav:fill(1)
@@ -156,7 +159,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-new
     else
         print(&quot;steps = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="fn-rangemap"><div class="item-row-main"><h3>rangeMap</h3><pre class="inline-signature">lurek.pathfind.rangeMap(opts: table) -&gt; table</pre><p>Computes reachable cells from range map options.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1448</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-rangemap"><div class="item-row-main"><h3>rangeMap</h3><pre class="inline-signature">lurek.pathfind.rangeMap(opts: table) -&gt; table</pre><p>Computes reachable cells from range map options.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1449</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local result = lurek.pathfind.rangeMap({
         width = 10,
         height = 10,
@@ -171,7 +174,7 @@ end</code></pre></details></article><article class="item-row api-row" id="fn-ran
     if #result.cells &gt; 0 then
         print(&quot;first = &quot; .. result.cells[1].x .. &quot;,&quot; .. result.cells[1].y .. &quot;,&quot; .. result.cells[1].cost)
     end
-end</code></pre></details></article><article class="item-row api-row" id="fn-setthreadcount"><div class="item-row-main"><h3>setThreadCount</h3><pre class="inline-signature">lurek.pathfind.setThreadCount(count: integer)</pre><p>Sets the configured pathfinding worker-thread count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1345</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="fn-setthreadcount"><div class="item-row-main"><h3>setThreadCount</h3><pre class="inline-signature">lurek.pathfind.setThreadCount(count: integer)</pre><p>Sets the configured pathfinding worker-thread count.</p></div><div class="item-row-meta"><span>function</span><span>src/lua_api/pathfind_api.rs:1346</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     lurek.pathfind.setThreadCount(2)
 
     print(&quot;thread_count = &quot; .. lurek.pathfind.getThreadCount())
@@ -185,7 +188,7 @@ end</code></pre></details></article>
     <p>Lua userdata types that expose methods through this module.</p>
   </div>
     <div class="item-list compact-list">
-    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAIFlowField.html">LAIFlowField</a></h3><p>Lua-side wrapper for an AI flow field over a path grid.</p></div><div class="item-row-meta"><span>9 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFlowField.html">LFlowField</a></h3><p>Lua-side wrapper for a flow field over a navigation grid.</p></div><div class="item-row-meta"><span>10 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LHexGrid.html">LHexGrid</a></h3><p>Lua-side wrapper for a hexagonal grid.</p></div><div class="item-row-meta"><span>10 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LJpsGrid.html">LJpsGrid</a></h3><p>Lua-side wrapper for a Jump Point Search grid.</p></div><div class="item-row-meta"><span>5 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNavGrid.html">LNavGrid</a></h3><p>Lua-side wrapper for a navigation grid and optional abstract graph cache.</p></div><div class="item-row-meta"><span>22 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNavMesh.html">LNavMesh</a></h3><p>Lua-side wrapper for a navigation mesh.</p></div><div class="item-row-meta"><span>6 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPathGrid.html">LPathGrid</a></h3><p>Lua-side wrapper for a cell-size path grid.</p></div><div class="item-row-meta"><span>11 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LUnitPathfinder.html">LUnitPathfinder</a></h3><p>Lua-side wrapper for a unit pathfinder over a navigation grid.</p></div><div class="item-row-meta"><span>17 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article>
+    <article class="item-row"><div class="item-row-main"><h3><a href="../classes/LAIFlowField.html">LAIFlowField</a></h3><p>Lua-side wrapper for an AI flow field over a path grid.</p></div><div class="item-row-meta"><span>9 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LFlowField.html">LFlowField</a></h3><p>Lua-side wrapper for a flow field over a navigation grid.</p></div><div class="item-row-meta"><span>10 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LGoalMap.html">LGoalMap</a></h3><p>Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).</p></div><div class="item-row-meta"><span>14 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LHexGrid.html">LHexGrid</a></h3><p>Lua-side wrapper for a hexagonal grid.</p></div><div class="item-row-meta"><span>10 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LJpsGrid.html">LJpsGrid</a></h3><p>Lua-side wrapper for a Jump Point Search grid.</p></div><div class="item-row-meta"><span>5 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNavGrid.html">LNavGrid</a></h3><p>Lua-side wrapper for a navigation grid and optional abstract graph cache.</p></div><div class="item-row-meta"><span>22 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LNavMesh.html">LNavMesh</a></h3><p>Lua-side wrapper for a navigation mesh.</p></div><div class="item-row-meta"><span>6 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LPathGrid.html">LPathGrid</a></h3><p>Lua-side wrapper for a cell-size path grid.</p></div><div class="item-row-meta"><span>11 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article><article class="item-row"><div class="item-row-main"><h3><a href="../classes/LUnitPathfinder.html">LUnitPathfinder</a></h3><p>Lua-side wrapper for a unit pathfinder over a navigation grid.</p></div><div class="item-row-meta"><span>17 methods</span><span>module pathfind</span></div><div class="card-note">Example: pathfind.lua</div></article>
   </div>
 </section>
 

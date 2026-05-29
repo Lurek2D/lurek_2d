@@ -73,7 +73,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     local stream = lurek.network.sseConnect(&quot;http://127.0.0.1:9999/events&quot;, function(_ev) end)
     print(&quot;open=&quot; .. tostring(stream:isOpen()))
     stream:close()
-end</code></pre></details></article><article class="item-row api-row" id="method-next"><div class="item-row-main"><h3>next</h3><pre class="inline-signature">LSseStream:next() -&gt; table?</pre><p>Polls for the next available event from the SSE stream (non-blocking).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:856</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-next"><div class="item-row-main"><h3>next</h3><pre class="inline-signature">LSseStream:next() -&gt; table</pre><p>Polls for the next available event from the SSE stream (non-blocking).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/network_api.rs:856</span></div><details class="example-block"><summary>Example · Exact example · network.lua</summary><pre><code>do
     ---@type LSseStream
     local stream = lurek.network.sseConnect(&quot;http://127.0.0.1:9999/events&quot;, function(_ev) end)
     local ev = stream:next()

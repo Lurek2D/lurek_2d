@@ -76,8 +76,8 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;LBandit:bestArm&quot;, bandit:bestArm())
 end</code></pre></details></article><article class="item-row api-row" id="method-predict"><div class="item-row-main"><h3>predict</h3><pre class="inline-signature">LBandit:predict() -&gt; integer</pre><p>Alias for `select`. Selects an arm using the configured bandit strategy.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:423</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
-    local b = lurek.learning.newBandit(3)
-    local action = b:predict(0)
+    local b = lurek.learning.newBandit(3, &quot;ucb1&quot;, 0.1, 12345)
+    local action = b:predict()
     print(&quot;bandit predict = &quot; .. action)
 end</code></pre></details></article><article class="item-row api-row" id="method-reset"><div class="item-row-main"><h3>reset</h3><pre class="inline-signature">LBandit:reset()</pre><p>Resets all bandit arm statistics. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/learning_api.rs:393</span></div><details class="example-block"><summary>Example · Exact example · learning.lua</summary><pre><code>do
     local bandit = lurek.learning.newBandit(3, &quot;thompson&quot;, 0.1, 3)

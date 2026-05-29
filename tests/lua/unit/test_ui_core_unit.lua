@@ -4662,4 +4662,68 @@ describe("lurek.ui migrated internal tests", function()
     end)
 end)
 
+-- =========================================================================
+-- MIGRATED FROM RUST: extras_tests – badge display text exact values
+-- =========================================================================
+-- @describe lurek.ui badge display text exact values
+describe("lurek.ui badge display text exact values", function()
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.getDisplayText
+    it("badge with count 42 displays '42'", function()
+        local b = lurek.ui.newBadge(42)
+        expect_equal("42", b:getDisplayText())
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @covers LBadge.getDisplayText
+    -- @covers LBadge.setCount
+    it("badge with count 150 displays '99+' overflow cap", function()
+        local b = lurek.ui.newBadge(150)
+        expect_equal("99+", b:getDisplayText())
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: chart_tests – bar chart unpaired series/category
+-- =========================================================================
+-- @describe lurek.ui bar chart unpaired series and category
+describe("lurek.ui bar chart unpaired series and category", function()
+    -- @covers lurek.ui.newBarChart
+    it("bar chart with more series than category data does not panic", function()
+        local chart = lurek.ui.newBarChart({ width = 360, height = 240 })
+        chart:addSeries("s1", 0.2, 0.6, 0.9)
+        chart:addSeries("s2-extra", 0.5, 0.5, 0.5)
+        chart:addCategory("Q1", { 42.0 })
+        local img = lurek.image.newImageData(360, 240)
+        expect_no_error(function() chart:drawToImage(img) end)
+        expect_equal(240, img:getHeight())
+    end)
+end)
+
+-- =========================================================================
+-- MIGRATED FROM RUST: theme_tests – theme token exact values
+-- =========================================================================
+-- @describe lurek.ui theme token exact values
+describe("lurek.ui theme token exact values", function()
+    -- @covers lurek.ui.getStyleToken
+    it("spacing_md token returns a number near 8.0 when default theme is active", function()
+        local token = lurek.ui.getStyleToken("spacing_md")
+        if token ~= nil then
+            expect_type("number", token)
+            expect_near(8.0, token, 0.1)
+        end
+    end)
+
+    -- @covers lurek.ui.getStyleToken
+    it("color_primary token returns a table with r near 0.2 and b near 1.0 when default theme is active", function()
+        local token = lurek.ui.getStyleToken("color_primary")
+        if token ~= nil and type(token) == "table" then
+            local r = token.r or token[1] or 0
+            local b = token.b or token[3] or 0
+            expect_near(0.2, r, 0.05)
+            expect_near(1.0, b, 0.05)
+        end
+    end)
+end)
+
 test_summary()

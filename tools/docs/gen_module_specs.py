@@ -12,7 +12,7 @@ Manual sections preserved from the existing spec when present:
 - Notes
 
 Auto-collected sections rebuilt from source code and Lua binding data:
-- Files
+- Source Documentation
 - Types
 - Functions
 - Lua API Reference
@@ -704,6 +704,7 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 
     general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
     source_docs_text = format_source_docs(source["file_docs"])
+    files_text = format_files(source["files"], {})
     types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
     functions_text = format_functions(module, source["files"], source["functions_by_file"], function_overrides)
     lua_api_text = format_lua_api(lua_api)
@@ -722,6 +723,10 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
 ## Summary
 
 {summary_text}
+
+## Files
+
+{files_text}
 
 ## Source Documentation
 

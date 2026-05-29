@@ -106,7 +106,7 @@ impl LurekTensor {
         Self { shape, data }
     }
 
-    /// Total number of elements.
+    /// Returns the total number of tensor elements.
     pub fn len(&self) -> usize {
         self.data.len()
     }

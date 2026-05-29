@@ -253,7 +253,7 @@ impl LuaAgentRuntime {
         self.state.set_model(model);
     }
 
-    /// Sets the LLM endpoint URL.
+    /// Sets the LLM endpoint URL used for future requests.
     pub(crate) fn set_url(&mut self, url: String) {
         self.state.set_url(url);
     }
@@ -758,6 +758,7 @@ fn json_to_lua<'lua>(lua: &'lua Lua, value: &serde_json::Value) -> LuaResult<Val
     }
 }
 
+/// Recursively converts an `mlua::Value` into a `serde_json::Value`.
 pub(crate) fn lua_to_json(value: Value) -> LuaResult<serde_json::Value> {
     match value {
         Value::Nil => Ok(serde_json::Value::Null),

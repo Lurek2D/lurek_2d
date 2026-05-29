@@ -1,0 +1,114 @@
+-- content/examples/tools/pathfind_goal_map_flee.lua
+--
+-- Demonstrates: lurek.pathfind.newGoalMap — flee AI pattern.
+--
+-- A player wanders the map. Four NPC guards each use a GoalMap baked around
+-- the player position to move away when the player comes within 5 cells.
+-- The GoalMap is rebaked whenever the player moves to a new cell.
+--
+-- Expected output (visual): guards scatter outward from the player.
+-- Run with: lurek content/examples/tools/pathfind_goal_map_flee.lua
+
+local W, H = 30, 20
+local TILE = 24
+
+-- Simple open map (no walls for this demo)
+local gm = lurek.pathfind.newGoalMap(W, H)
+gm:setBlocker(function(_, _) return false end)
+
+-- Player starts at centre
+local player = { x = 15.5, y = 10.5, cx = 15, cy = 10 }
+
+-- Guards start at various positions
+local guards = {
+    { x =  4.5, y =  4.5 },
+    { x = 25.5, y =  4.5 },
+    { x =  4.5, y = 15.5 },
+    { x = 25.5, y = 15.5 },
+}
+
+local function rebake()
+    gm:clearSources()
+    gm:addSource(player.cx, player.cy)
+    gm:bake()
+end
+
+rebake()
+
+-- Draw grid
+local function draw_grid()
+    for y = 1, H do
+        for x = 1, W do
+            local d = gm:distanceAt(x, y)
+            local t = math.min(d, 10)
+            local shade = math.floor(255 * (1 - t / 10))
+            lurek.draw.rectangle(
+                (x - 1) * TILE, (y - 1) * TILE, TILE, TILE,
+                { r = shade / 255, g = 0, b = (255 - shade) / 255, a = 0.25 }
+            )
+        end
+    end
+end
+
+-- Draw player
+local function draw_player()
+    lurek.draw.circle(
+        (player.x - 1) * TILE + TILE / 2,
+        (player.y - 1) * TILE + TILE / 2,
+        TILE / 2 - 2,
+        { r = 1, g = 1, b = 0, a = 1 }
+    )
+end
+
+-- Draw guards
+local function draw_guards()
+    for _, g in ipairs(guards) do
+        lurek.draw.circle(
+            (g.x - 1) * TILE + TILE / 2,
+            (g.y - 1) * TILE + TILE / 2,
+            TILE / 2 - 4,
+            { r = 1, g = 0.2, b = 0.2, a = 1 }
+        )
+    end
+end
+
+lurek.process(function(dt)
+    -- Move player with arrow keys
+    local moved = false
+    if lurek.input.keyboard.isDown("right") then player.x = math.min(player.x + 5 * dt, W) moved = true end
+    if lurek.input.keyboard.isDown("left")  then player.x = math.max(player.x - 5 * dt, 1) moved = true end
+    if lurek.input.keyboard.isDown("down")  then player.y = math.min(player.y + 5 * dt, H) moved = true end
+    if lurek.input.keyboard.isDown("up")    then player.y = math.max(player.y - 5 * dt, 1) moved = true end
+
+    -- Rebake when player moves to a new cell
+    local ncx = math.floor(player.x)
+    local ncy = math.floor(player.y)
+    if ncx ~= player.cx or ncy ~= player.cy then
+        player.cx = ncx
+        player.cy = ncy
+        rebake()
+    end
+
+    -- Update guards: flee when close, idle otherwise
+    for _, g in ipairs(guards) do
+        local gx = math.floor(g.x)
+        local gy = math.floor(g.y)
+        local d = gm:distanceAt(math.max(1, math.min(W, gx)),
+                                 math.max(1, math.min(H, gy)))
+        if d < 6 then
+            local dx, dy = gm:flee(gx, gy, 1.0)
+            g.x = math.max(1, math.min(W, g.x + dx * 4 * dt))
+            g.y = math.max(1, math.min(H, g.y + dy * 4 * dt))
+        end
+    end
+
+    -- Render
+    lurek.draw.clear({ r = 0.05, g = 0.05, b = 0.1, a = 1 })
+    draw_grid()
+    draw_player()
+    draw_guards()
+
+    lurek.draw.text(4, 4,
+        string.format("Player: (%d,%d)  Arrows to move", player.cx, player.cy),
+        { r = 1, g = 1, b = 1, a = 1 })
+end)

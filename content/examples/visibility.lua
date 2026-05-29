@@ -116,3 +116,107 @@ do
     vg:setGroup({ 0, 1 })
     print("LVisibilityGrid:playerCount=" .. vg:playerCount())
 end
+
+--@api-stub: lurek.visibility.newFov
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    print("newFov type=" .. fov:type())
+end
+
+--@api-stub: LFov:setBlocker
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:setBlocker(function(x, y)
+        return x == 10 and y >= 6 and y <= 14
+    end)
+    fov:compute(5, 10)
+    print("LFov:setBlocker visible_12_10=" .. tostring(fov:isVisible(12, 10)))
+end
+
+--@api-stub: LFov:setRange
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 4 })
+    fov:setRange(10)
+    fov:compute(10, 10)
+    print("LFov:setRange visible_18_10=" .. tostring(fov:isVisible(18, 10)))
+end
+
+--@api-stub: LFov:compute
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:compute visible_10_10=" .. tostring(fov:isVisible(10, 10)))
+end
+
+--@api-stub: LFov:isVisible
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:isVisible=" .. tostring(fov:isVisible(12, 10)))
+end
+
+--@api-stub: LFov:isExplored
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    print("LFov:isExplored_before_reset=" .. tostring(fov:isExplored(10, 10)))
+end
+
+--@api-stub: LFov:resetExplored
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 8 })
+    fov:compute(10, 10)
+    fov:resetExplored()
+    print("LFov:resetExplored=" .. tostring(fov:isExplored(10, 10)))
+end
+
+--@api-stub: LFov:eachVisible
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local count = 0
+    fov:eachVisible(function(_x, _y)
+        count = count + 1
+    end)
+    print("LFov:eachVisible count=" .. count)
+end
+
+--@api-stub: LFov:visibleCells
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local cells = fov:visibleCells()
+    print("LFov:visibleCells count=" .. #cells)
+end
+
+--@api-stub: LFov:export
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+    print("LFov:export bytes=" .. #blob)
+end
+
+--@api-stub: LFov:import
+do
+    local fov = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov:compute(10, 10)
+    local blob = fov:export()
+
+    local fov2 = lurek.visibility.newFov({ width = 20, height = 20, range = 6 })
+    fov2:import(blob)
+    print("LFov:import explored_10_10=" .. tostring(fov2:isExplored(10, 10)))
+end
+
+--@api-stub: LFov:type
+do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print("LFov:type=" .. fov:type())
+end
+
+--@api-stub: LFov:typeOf
+do
+    local fov = lurek.visibility.newFov({ width = 8, height = 8, range = 4 })
+    print("LFov:typeOf_Fov=" .. tostring(fov:typeOf("LFov")))
+    print("LFov:typeOf_Object=" .. tostring(fov:typeOf("LObject")))
+end

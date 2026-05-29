@@ -210,7 +210,7 @@ describe("lurek.ai Agent", function()
     it("type returns Agent", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("hero")
-        expect_equal("LAgent", a:type())
+        expect_equal("LBot", a:type())
     end)
 
     -- @covers LAIWorld:addAgent
@@ -244,8 +244,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxSpeed
-    -- @covers LAgent:setMaxSpeed
+    -- @covers LBot:getMaxSpeed
+    -- @covers LBot:setMaxSpeed
     -- @covers lurek.ai.newWorld
     it("setMaxSpeed / getMaxSpeed", function()
         local w = lurek.ai.newWorld()
@@ -255,8 +255,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxForce
-    -- @covers LAgent:setMaxForce
+    -- @covers LBot:getMaxForce
+    -- @covers LBot:setMaxForce
     -- @covers lurek.ai.newWorld
     it("setMaxForce / getMaxForce", function()
         local w = lurek.ai.newWorld()
@@ -275,8 +275,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("setDecisionModel / getDecisionModel for fsm", function()
         local w = lurek.ai.newWorld()
@@ -286,8 +286,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("setDecisionModel / getDecisionModel for bt", function()
         local w = lurek.ai.newWorld()
@@ -297,8 +297,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("setDecisionModel / getDecisionModel for steering", function()
         local w = lurek.ai.newWorld()
@@ -308,8 +308,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("setDecisionModel / getDecisionModel for fsm+steering", function()
         local w = lurek.ai.newWorld()
@@ -319,8 +319,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("setDecisionModel / getDecisionModel for bt+steering", function()
         local w = lurek.ai.newWorld()
@@ -374,7 +374,7 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getVelocity
+    -- @covers LBot:getVelocity
     -- @covers lurek.ai.newWorld
     it("default velocity is zero", function()
         local w = lurek.ai.newWorld()
@@ -385,8 +385,8 @@ describe("lurek.ai Agent", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("default decision model is fsm and invalid values are ignored", function()
         local w = lurek.ai.newWorld()
@@ -3844,8 +3844,8 @@ end)
 -- @describe Missing explicit test for Agent:setMaxSpeed
 describe("Missing explicit test for Agent:setMaxSpeed", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxSpeed
-    -- @covers LAgent:setMaxSpeed
+    -- @covers LBot:getMaxSpeed
+    -- @covers LBot:setMaxSpeed
     -- @covers lurek.ai.newWorld
     it("Agent:setMaxSpeed works", function()
         local w = lurek.ai.newWorld()
@@ -3858,8 +3858,8 @@ end)
 -- @describe Missing explicit test for Agent:getMaxSpeed
 describe("Missing explicit test for Agent:getMaxSpeed", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxSpeed
-    -- @covers LAgent:setMaxSpeed
+    -- @covers LBot:getMaxSpeed
+    -- @covers LBot:setMaxSpeed
     -- @covers lurek.ai.newWorld
     it("Agent:getMaxSpeed works", function()
         local w = lurek.ai.newWorld()
@@ -3872,8 +3872,8 @@ end)
 -- @describe Missing explicit test for Agent:setMaxForce
 describe("Missing explicit test for Agent:setMaxForce", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxForce
-    -- @covers LAgent:setMaxForce
+    -- @covers LBot:getMaxForce
+    -- @covers LBot:setMaxForce
     -- @covers lurek.ai.newWorld
     it("Agent:setMaxForce works", function()
         local w = lurek.ai.newWorld()
@@ -3886,8 +3886,8 @@ end)
 -- @describe Missing explicit test for Agent:getMaxForce
 describe("Missing explicit test for Agent:getMaxForce", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getMaxForce
-    -- @covers LAgent:setMaxForce
+    -- @covers LBot:getMaxForce
+    -- @covers LBot:setMaxForce
     -- @covers lurek.ai.newWorld
     it("Agent:getMaxForce works", function()
         local w = lurek.ai.newWorld()
@@ -3924,8 +3924,8 @@ end)
 -- @describe Missing explicit test for Agent:setDecisionModel
 describe("Missing explicit test for Agent:setDecisionModel", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("Agent:setDecisionModel works", function()
         local w = lurek.ai.newWorld()
@@ -3938,8 +3938,8 @@ end)
 -- @describe Missing explicit test for Agent:getDecisionModel
 describe("Missing explicit test for Agent:getDecisionModel", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setDecisionModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setDecisionModel
     -- @covers lurek.ai.newWorld
     it("Agent:getDecisionModel works", function()
         local w = lurek.ai.newWorld()
@@ -4007,7 +4007,7 @@ describe("Missing explicit test for Agent:type", function()
     it("Agent:type works", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("agent_type")
-        expect_equal("LAgent", a:type())
+        expect_equal("LBot", a:type())
     end)
 end)
 
@@ -4018,7 +4018,7 @@ describe("Missing explicit test for Agent:typeOf", function()
     it("Agent:typeOf works", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("agent_typeof")
-        expect_equal(true, a:typeOf("LAgent"))
+        expect_equal(true, a:typeOf("LBot"))
     end)
 end)
 
@@ -6112,7 +6112,7 @@ describe("custom decision model", function()
     -- it is invoked when the world is updated.
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:update
-    -- @covers LAgent:setCustomModel
+    -- @covers LBot:setCustomModel
     -- @covers lurek.ai.newWorld
     it("can set custom model on agent and callback fires on update", function()
         local world = lurek.ai.newWorld()
@@ -6126,8 +6126,8 @@ describe("custom decision model", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setCustomModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setCustomModel
     -- @covers lurek.ai.newWorld
     it("getDecisionModel returns 'custom' after setCustomModel", function()
         local world = lurek.ai.newWorld()
@@ -6235,8 +6235,8 @@ end)
 -- @describe Agent:setCustomModel extensibility hook
 describe("Agent:setCustomModel extensibility hook", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getDecisionModel
-    -- @covers LAgent:setCustomModel
+    -- @covers LBot:getDecisionModel
+    -- @covers LBot:setCustomModel
     -- @covers lurek.ai.newWorld
     it("setCustomModel marks agent with custom model", function()
         local world = lurek.ai.newWorld()
@@ -6248,7 +6248,7 @@ describe("Agent:setCustomModel extensibility hook", function()
 
     -- @covers LAIWorld:addAgent
     -- @covers LAIWorld:update
-    -- @covers LAgent:setCustomModel
+    -- @covers LBot:setCustomModel
     -- @covers lurek.ai.newWorld
     it("setCustomModel callback is invoked via world:update without error", function()
         local world = lurek.ai.newWorld()
@@ -6261,10 +6261,10 @@ describe("Agent:setCustomModel extensibility hook", function()
         expect_true(called, "custom model callback should be called by world:update")
     end)
 end)
--- @describe ai strict: LAgent missing methods
-describe("ai strict: LAgent missing methods", function()
+-- @describe ai strict: LBot missing methods
+describe("ai strict: LBot missing methods", function()
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getName
+    -- @covers LBot:getName
     -- @covers lurek.ai.newWorld
     it("getName returns agent name", function()
         local w = lurek.ai.newWorld()
@@ -6273,8 +6273,8 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:setPosition
-    -- @covers LAgent:getPosition
+    -- @covers LBot:setPosition
+    -- @covers LBot:getPosition
     -- @covers lurek.ai.newWorld
     it("setPosition and getPosition are callable", function()
         local w = lurek.ai.newWorld()
@@ -6286,8 +6286,8 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:setVelocity
-    -- @covers LAgent:getVelocity
+    -- @covers LBot:setVelocity
+    -- @covers LBot:getVelocity
     -- @covers lurek.ai.newWorld
     it("setVelocity and getVelocity are callable", function()
         local w = lurek.ai.newWorld()
@@ -6299,7 +6299,8 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getPriority
+    -- @covers LBot:setPriority
+    -- @covers LBot:getPriority
     -- @covers lurek.ai.newWorld
     it("getPriority returns number", function()
         local w = lurek.ai.newWorld()
@@ -6308,8 +6309,8 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:addTag
-    -- @covers LAgent:hasTag
+    -- @covers LBot:addTag
+    -- @covers LBot:hasTag
     -- @covers lurek.ai.newWorld
     it("addTag then hasTag returns boolean", function()
         local w = lurek.ai.newWorld()
@@ -6319,8 +6320,8 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:addTag
-    -- @covers LAgent:removeTag
+    -- @covers LBot:addTag
+    -- @covers LBot:removeTag
     -- @covers lurek.ai.newWorld
     it("removeTag is callable", function()
         local w = lurek.ai.newWorld()
@@ -6331,7 +6332,7 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:getBlackboard
+    -- @covers LBot:getBlackboard
     -- @covers lurek.ai.newWorld
     it("getBlackboard returns userdata", function()
         local w = lurek.ai.newWorld()
@@ -6341,10 +6342,10 @@ describe("ai strict: LAgent missing methods", function()
     end)
 
     -- @covers LAIWorld:addAgent
-    -- @covers LAgent:type
-    -- @covers LAgent:typeOf
+    -- @covers LBot:type
+    -- @covers LBot:typeOf
     -- @covers lurek.ai.newWorld
-    it("LAgent type and typeOf are callable", function()
+    it("LBot type and typeOf are callable", function()
         local w = lurek.ai.newWorld()
         local a = w:addAgent("strict_type")
         expect_type("string", a:type())
@@ -6491,3 +6492,4 @@ describe("ai strict: missing type methods", function()
 end)
 
 test_summary()
+

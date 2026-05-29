@@ -65,7 +65,7 @@ end</code></pre></details>
     <p>Instance methods exported from the LJpsGrid userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LJpsGrid:findPath(fx: integer, fy: integer, tx: integer, ty: integer) -&gt; table</pre><p>Finds a JPS path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1140</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-findpath"><div class="item-row-main"><h3>findPath</h3><pre class="inline-signature">LJpsGrid:findPath(fx: integer, fy: integer, tx: integer, ty: integer) -&gt; table</pre><p>Finds a JPS path between one-based grid cells.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1141</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(50, 50)
 
     for y = 10, 40 do
@@ -81,14 +81,14 @@ end</code></pre></details>
     else
         print(&quot;points = 0&quot;)
     end
-end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LJpsGrid:isBlocked(x: integer, y: integer) -&gt; boolean</pre><p>Returns whether a one-based JPS grid cell is blocked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1128</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-isblocked"><div class="item-row-main"><h3>isBlocked</h3><pre class="inline-signature">LJpsGrid:isBlocked(x: integer, y: integer) -&gt; boolean</pre><p>Returns whether a one-based JPS grid cell is blocked.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1129</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
     jps:setBlocked(9, 9, true)
 
     print(&quot;blocked_9_9 = &quot; .. tostring(jps:isBlocked(9, 9)))
     print(&quot;blocked_9_10 = &quot; .. tostring(jps:isBlocked(9, 10)))
-end</code></pre></details></article><article class="item-row api-row" id="method-setblocked"><div class="item-row-main"><h3>setBlocked</h3><pre class="inline-signature">LJpsGrid:setBlocked(x: integer, y: integer, blocked: boolean)</pre><p>Sets blocked state for a one-based JPS grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1116</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setblocked"><div class="item-row-main"><h3>setBlocked</h3><pre class="inline-signature">LJpsGrid:setBlocked(x: integer, y: integer, blocked: boolean)</pre><p>Sets blocked state for a one-based JPS grid cell.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1117</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(30, 30)
 
     jps:setBlocked(15, 10, true)
@@ -97,11 +97,11 @@ end</code></pre></details></article><article class="item-row api-row" id="method
 
     print(&quot;blocked_15_10 = &quot; .. tostring(jps:isBlocked(15, 10)))
     print(&quot;blocked_15_12 = &quot; .. tostring(jps:isBlocked(15, 12)))
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LJpsGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this JPS grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1165</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LJpsGrid:type() -&gt; string</pre><p>Returns the Lua-visible type name for this JPS grid handle.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1166</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
 
     print(&quot;type = &quot; .. jps:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LJpsGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this JPS grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1170</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LJpsGrid:typeOf(name: string) -&gt; boolean</pre><p>Returns whether this JPS grid handle matches a supported type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/pathfind_api.rs:1171</span></div><details class="example-block"><summary>Example · Exact example · pathfind.lua</summary><pre><code>do
     local jps = lurek.pathfind.newJpsGrid(5, 5)
 
     print(&quot;is_jps_grid = &quot; .. tostring(jps:typeOf(&quot;LJpsGrid&quot;)))

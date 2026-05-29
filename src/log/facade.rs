@@ -37,11 +37,3 @@ pub fn get_level() -> String {
     log_messages::get_log_level().to_string()
 }
 
-/// Returns true if `level` is a recognized, non-disabled log level name.
-pub fn enabled_for(level: &str) -> bool {
-    matches!(
-        level.to_ascii_lowercase().as_str(),
-        "trace" | "debug" | "info" | "warn" | "warning" | "error" | "err"
-    )
-}
-

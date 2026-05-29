@@ -6,23 +6,19 @@
 //! invariants.
 
 mod log_mod_tests {
-    use lurek2d::log::enabled_for;
+    use lurek2d::log::{get_level, set_level};
 
     #[test]
-    fn enabled_for_off_returns_false() {
-        assert!(!enabled_for("off"));
-        assert!(!enabled_for("none"));
+    fn set_level_accepts_warning_alias() {
+        set_level("warning");
+        assert_eq!(get_level(), "warn");
     }
 
     #[test]
-    fn enabled_for_unknown_returns_false() {
-        assert!(!enabled_for("garbage"));
-        assert!(!enabled_for(""));
-    }
-
-    #[test]
-    fn enabled_for_recognises_warning_alias() {
-        assert_eq!(enabled_for("warn"), enabled_for("warning"));
+    fn set_level_rejects_unknown_and_keeps_previous() {
+        set_level("info");
+        set_level("garbage");
+        assert_eq!(get_level(), "info");
     }
 }
 

@@ -111,12 +111,12 @@ impl AgentState {
         self.format = format;
     }
 
-    /// Sets the model identifier.
+    /// Sets the model identifier used for all future prompts.
     pub fn set_model(&mut self, model: String) {
         self.model = model;
     }
 
-    /// Sets the LLM endpoint URL.
+    /// Sets the LLM endpoint URL used for outbound requests.
     pub fn set_url(&mut self, url: String) {
         self.url = url;
     }

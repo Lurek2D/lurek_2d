@@ -17,14 +17,14 @@ The API index is generated from machine-readable Lua API data and links back to 
 ## Source Artifacts
 
 - Lua API data: [logs/data/lua_api_data.json](../blob/main/logs/data/lua_api_data.json)
-- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8693 lines)
-- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29561 lines)
+- Markdown reference: [docs/api/lurek.md](../blob/main/docs/api/lurek.md) (8736 lines)
+- LuaCATS stub: [docs/api/lurek.lua](../blob/main/docs/api/lurek.lua) (29738 lines)
 
 ## Coverage
 
 - 68 modules
-- 5410 functions and methods
-- 99.8% documented
+- 5438 functions and methods
+- 100.0% documented
 
 ## API Module Index
 
@@ -74,7 +74,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.overlay](Module-overlay) | 2 | 2 | Screen overlay system: weather, atmosphere, screen effects, and transitions. |
 | [lurek.parallax](Module-parallax) | 3 | 2 | Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes. |
 | [lurek.particle](Module-particle) | 5 | 2 | Emitter-based 2D particle systems with bounded pools and Euler integration. |
-| [lurek.pathfind](Module-pathfind) | 12 | 8 | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
+| [lurek.pathfind](Module-pathfind) | 13 | 9 | Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai. |
 | [lurek.patterns](Module-patterns) | 24 | 24 | Twelve classic game-programming design patterns exposed as lurek.patterns.*. |
 | [lurek.physics](Module-physics) | 22 | 5 | Rigid-body 2D physics on top of rapier2d. Heavy dependency tree. |
 | [lurek.pipeline](Module-pipeline) | 3 | 2 | DAG-based workflow orchestration: analytics, test sequences, asset / mod processing. |
@@ -96,7 +96,7 @@ The API index is generated from machine-readable Lua API data and links back to 
 | [lurek.tween](Module-tween) | 14 | 5 | Property animation: interpolated transitions on Lua table fields without per-frame lerp code. |
 | [lurek.ui](Module-ui) | 91 | 41 | Retained-mode widget system; rendering deferred through RenderCommand. |
 | [lurek.validator](Module-validator) | 3 | 1 | Content validation engine: asset checks, import resolution, API compliance, custom rules. |
-| [lurek.visibility](Module-visibility) | 1 | 1 | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |
+| [lurek.visibility](Module-visibility) | 2 | 2 | Universal fog-of-war / discovery / line-of-sight system; geometry-agnostic, consumed by province/globe/minimap. |
 | [lurek.window](Module-window) | 55 | 0 | Window control via deferred WindowState writes; winit ops applied at frame start on the main thread. |
 
 One-page callable index: [API Reference](API-Reference).

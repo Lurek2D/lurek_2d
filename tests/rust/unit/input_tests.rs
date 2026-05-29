@@ -482,16 +482,6 @@ mod gamepad_tests {
         assert_eq!(dir, "ld");
     }
 
-    #[test]
-    fn gilrs_button_to_string_known() {
-        assert_eq!(gilrs_button_to_string(gilrs::Button::South), "a");
-        assert_eq!(gilrs_button_to_string(gilrs::Button::Start), "start");
-    }
-
-    #[test]
-    fn gilrs_axis_to_string_known() {
-        assert_eq!(gilrs_axis_to_string(gilrs::Axis::LeftStickX), "leftx");
-    }
 }
 
 // ── combo ─────────────────────────────────────────────────────────────────────

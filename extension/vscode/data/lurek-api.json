@@ -10,7 +10,7 @@
           "name": "new",
           "fullPath": "lurek.agent.new",
           "signature": "lurek.agent.new(config)",
-          "description": "Creates a new LLM Agent instance.",
+          "description": "Creates a new configurable LLM Agent runtime instance.",
           "parameters": [
             {
               "name": "config",
@@ -996,29 +996,29 @@
           "name": "load",
           "fullPath": "lurek.asset.load",
           "signature": "(path, type_str, [opts])",
-          "description": "",
+          "description": "Loads and caches an asset by path and type, returning a ref-counted handle.",
           "parameters": [
             {
               "name": "path",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Filesystem path to the asset file.",
               "optional": false
             },
             {
-              "name": "type_str",
-              "type": "any",
-              "description": "",
+              "name": "asset_type",
+              "type": "string",
+              "description": "Asset type string; see above for valid values.",
               "optional": false
             },
             {
               "name": "opts",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Optional metadata: `{name, group, tags}`.",
               "optional": true
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "LAssetHandle",
+          "returnType": "LAssetHandle",
           "isMethod": false,
           "objectType": null
         },
@@ -1044,17 +1044,17 @@
           "name": "get",
           "fullPath": "lurek.asset.get",
           "signature": "(handle)",
-          "description": "",
+          "description": "Returns the underlying asset value for a cached handle.",
           "parameters": [
             {
               "name": "handle",
-              "type": "any",
-              "description": "",
+              "type": "LAssetHandle",
+              "description": "Asset handle to retrieve.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "string",
+          "returnType": "string",
           "isMethod": false,
           "objectType": null
         },
@@ -1062,18 +1062,18 @@
           "name": "preload",
           "fullPath": "lurek.asset.preload",
           "signature": "(paths, callback)",
-          "description": "",
+          "description": "Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.",
           "parameters": [
             {
               "name": "paths",
-              "type": "any",
-              "description": "",
+              "type": "table",
+              "description": "Array of `{path, type}` pairs (or `{path=…, type=…}` tables).",
               "optional": false
             },
             {
               "name": "callback",
               "type": "any",
-              "description": "",
+              "description": "Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.",
               "optional": false
             }
           ],
@@ -1122,10 +1122,10 @@
           "name": "stats",
           "fullPath": "lurek.asset.stats",
           "signature": "()",
-          "description": "",
+          "description": "Returns a snapshot table describing the current cache state.",
           "parameters": [],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -1133,7 +1133,7 @@
           "name": "clear",
           "fullPath": "lurek.asset.clear",
           "signature": "()",
-          "description": "",
+          "description": "Removes all entries from the cache immediately, regardless of ref counts.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -1180,17 +1180,17 @@
           "name": "getInfo",
           "fullPath": "lurek.asset.getInfo",
           "signature": "(handle)",
-          "description": "",
+          "description": "Returns a table containing all metadata for an asset handle.",
           "parameters": [
             {
               "name": "handle",
-              "type": "any",
-              "description": "",
+              "type": "LAssetHandle",
+              "description": "Asset handle to inspect.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -1372,17 +1372,17 @@
           "name": "findByName",
           "fullPath": "lurek.asset.findByName",
           "signature": "(substr)",
-          "description": "",
+          "description": "Returns an array of asset handles whose display name contains the substring.",
           "parameters": [
             {
               "name": "substr",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Substring to search for in display names.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -1390,17 +1390,17 @@
           "name": "findByGroup",
           "fullPath": "lurek.asset.findByGroup",
           "signature": "(group)",
-          "description": "",
+          "description": "Returns an array of asset handles whose group label exactly matches `group`.",
           "parameters": [
             {
               "name": "group",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Group label to match.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -1408,17 +1408,17 @@
           "name": "findByTag",
           "fullPath": "lurek.asset.findByTag",
           "signature": "(tag)",
-          "description": "",
+          "description": "Returns an array of asset handles that have the given tag in their tag set.",
           "parameters": [
             {
               "name": "tag",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Tag string to match.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         },
@@ -1426,17 +1426,17 @@
           "name": "findByType",
           "fullPath": "lurek.asset.findByType",
           "signature": "(type_str)",
-          "description": "",
+          "description": "Returns an array of asset handles whose type exactly matches `type_str`.",
           "parameters": [
             {
               "name": "type_str",
-              "type": "any",
-              "description": "",
+              "type": "string",
+              "description": "Type string such as `\"image\"`, `\"audio\"`, `\"toml\"`.",
               "optional": false
             }
           ],
-          "returns": "nil",
-          "returnType": "nil",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": false,
           "objectType": null
         }
@@ -17751,6 +17751,30 @@
           "returnType": "table",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newGoalMap",
+          "fullPath": "lurek.pathfind.newGoalMap",
+          "signature": "(width, height)",
+          "description": "Creates a new multi-source Dijkstra distance-field goal map for the given grid dimensions.",
+          "parameters": [
+            {
+              "name": "width",
+              "type": "integer",
+              "description": "Grid width in cells.",
+              "optional": false
+            },
+            {
+              "name": "height",
+              "type": "integer",
+              "description": "Grid height in cells.",
+              "optional": false
+            }
+          ],
+          "returns": "LGoalMap",
+          "returnType": "LGoalMap",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -18130,7 +18154,7 @@
     },
     {
       "name": "physics",
-      "description": "`lurek.physics` Ă˘â‚¬â€ť 2D rigid-body physics: worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.\n\n- Registers `lurek.physics.*` functions and types via `register()`.\n- `LuaWorld`: userdata type exposed to Lua.\n- `LuaZone`: userdata type exposed to Lua.\n- `LuaTerrain`: userdata type exposed to Lua.\n- `LuaCellular`: userdata type exposed to Lua.\n- `LuaBody`: userdata type exposed to Lua.\n- `LuaPhysicsShape`: userdata type exposed to Lua.\n- Bridges 205 Lua-callable methods via `mlua`.",
+      "description": "`lurek.physics` -- Lua bindings for 2D rigid-body physics systems and helpers.\nCovers worlds, bodies, shapes, joints, raycasting, collision queries, terrain, cellular simulation, and debug drawing via Rapier2D.\n\n- Registers `lurek.physics.*` functions and types via `register()`.\n- `LuaWorld`: userdata type exposed to Lua.\n- `LuaZone`: userdata type exposed to Lua.\n- `LuaTerrain`: userdata type exposed to Lua.\n- `LuaCellular`: userdata type exposed to Lua.\n- `LuaBody`: userdata type exposed to Lua.\n- `LuaPhysicsShape`: userdata type exposed to Lua.\n- Bridges 205 Lua-callable methods via `mlua`.",
       "functions": [
         {
           "name": "newWorld",
@@ -23816,7 +23840,7 @@
           "name": "newDepthSorter",
           "fullPath": "lurek.render.newDepthSorter",
           "signature": "()",
-          "description": "Performs the 'render' operation.",
+          "description": "Registers the depth-sorted drawing helper constructor in the render module.",
           "parameters": [],
           "returns": "LDepthSorter",
           "returnType": "LDepthSorter",
@@ -29885,6 +29909,24 @@
           "returnType": "LVisibilityGrid",
           "isMethod": false,
           "objectType": null
+        },
+        {
+          "name": "newFov",
+          "fullPath": "lurek.visibility.newFov",
+          "signature": "(opts)",
+          "description": "Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.",
+          "parameters": [
+            {
+              "name": "opts",
+              "type": "table",
+              "description": "`{ range=integer, light_walls=boolean? }` (default light_walls=true).",
+              "optional": false
+            }
+          ],
+          "returns": "LFov",
+          "returnType": "LFov",
+          "isMethod": false,
+          "objectType": null
         }
       ],
       "methods": []
@@ -31537,7 +31579,7 @@
           "name": "removeSkill",
           "fullPath": "LAISystem:removeSkill",
           "signature": "(name)",
-          "description": "Removes a system skill by name.",
+          "description": "Removes a registered system skill by exact name.",
           "parameters": [
             {
               "name": "name",
@@ -31694,8 +31736,8 @@
               "optional": false
             }
           ],
-          "returns": "LAgent",
-          "returnType": "LAgent",
+          "returns": "LBot",
+          "returnType": "LBot",
           "isMethod": true,
           "objectType": "LAIWorld"
         },
@@ -31725,8 +31767,8 @@
           "parameters": [
             {
               "name": "agent",
-              "type": "LAgent",
-              "description": "Agent handle whose stored name identifies the world entry to remove.",
+              "type": "LBot",
+              "description": "Bot handle whose stored name identifies the world entry to remove.",
               "optional": false
             }
           ],
@@ -33896,315 +33938,6 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LAgent"
-        },
-        {
-          "name": "getName",
-          "fullPath": "LAgent:getName",
-          "signature": "()",
-          "description": "Returns this agent's stable world name.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setPosition",
-          "fullPath": "LAgent:setPosition",
-          "signature": "(x, y)",
-          "description": "Sets this agent's world position when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "New X position in world units.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "New Y position in world units.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getPosition",
-          "fullPath": "LAgent:getPosition",
-          "signature": "()",
-          "description": "Returns this agent's world position or the origin when the agent has been removed.",
-          "parameters": [],
-          "returns": "number, number",
-          "returnType": "number, number",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setVelocity",
-          "fullPath": "LAgent:setVelocity",
-          "signature": "(x, y)",
-          "description": "Sets this agent's velocity vector when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "x",
-              "type": "number",
-              "description": "New X velocity in world units per second.",
-              "optional": false
-            },
-            {
-              "name": "y",
-              "type": "number",
-              "description": "New Y velocity in world units per second.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getVelocity",
-          "fullPath": "LAgent:getVelocity",
-          "signature": "()",
-          "description": "Returns this agent's velocity vector or zero velocity when the agent has been removed.",
-          "parameters": [],
-          "returns": "number, number",
-          "returnType": "number, number",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setMaxSpeed",
-          "fullPath": "LAgent:setMaxSpeed",
-          "signature": "(v)",
-          "description": "Sets this agent's maximum movement speed when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "v",
-              "type": "number",
-              "description": "Maximum speed in world units per second.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getMaxSpeed",
-          "fullPath": "LAgent:getMaxSpeed",
-          "signature": "()",
-          "description": "Returns this agent's maximum movement speed or the default speed for a missing agent.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setMaxForce",
-          "fullPath": "LAgent:setMaxForce",
-          "signature": "(v)",
-          "description": "Sets this agent's maximum steering force when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "v",
-              "type": "number",
-              "description": "Maximum steering force applied during steering calculations.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getMaxForce",
-          "fullPath": "LAgent:getMaxForce",
-          "signature": "()",
-          "description": "Returns this agent's maximum steering force or the default force for a missing agent.",
-          "parameters": [],
-          "returns": "number",
-          "returnType": "number",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setPriority",
-          "fullPath": "LAgent:setPriority",
-          "signature": "(p)",
-          "description": "Sets this agent's integer priority when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "p",
-              "type": "integer",
-              "description": "Priority value used by game-side AI scheduling or ordering logic.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getPriority",
-          "fullPath": "LAgent:getPriority",
-          "signature": "()",
-          "description": "Returns this agent's integer priority or zero when the agent has been removed.",
-          "parameters": [],
-          "returns": "integer",
-          "returnType": "integer",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setDecisionModel",
-          "fullPath": "LAgent:setDecisionModel",
-          "signature": "(model)",
-          "description": "Sets this agent's built-in decision model from a string name when the name is recognized.",
-          "parameters": [
-            {
-              "name": "model",
-              "type": "string",
-              "description": "Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getDecisionModel",
-          "fullPath": "LAgent:getDecisionModel",
-          "signature": "()",
-          "description": "Returns this agent's decision model name or the default model name for a missing agent.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "setCustomModel",
-          "fullPath": "LAgent:setCustomModel",
-          "signature": "(callback)",
-          "description": "Installs a Lua callback as this agent's decision model and stores it in the callback registry.",
-          "parameters": [
-            {
-              "name": "callback",
-              "type": "function",
-              "description": "Function called during world updates with `(agent, blackboard, dt)` for this agent.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "addTag",
-          "fullPath": "LAgent:addTag",
-          "signature": "(tag)",
-          "description": "Adds a tag string to this agent when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "tag",
-              "type": "string",
-              "description": "Tag name to insert into the agent tag set.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "removeTag",
-          "fullPath": "LAgent:removeTag",
-          "signature": "(tag)",
-          "description": "Removes a tag string from this agent when the agent still exists in its world.",
-          "parameters": [
-            {
-              "name": "tag",
-              "type": "string",
-              "description": "Tag name to remove from the agent tag set.",
-              "optional": false
-            }
-          ],
-          "returns": "nil",
-          "returnType": "nil",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "hasTag",
-          "fullPath": "LAgent:hasTag",
-          "signature": "(tag)",
-          "description": "Returns whether this agent currently has the given tag.",
-          "parameters": [
-            {
-              "name": "tag",
-              "type": "string",
-              "description": "Tag name to check in the agent tag set.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "getBlackboard",
-          "fullPath": "LAgent:getBlackboard",
-          "signature": "()",
-          "description": "Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.",
-          "parameters": [],
-          "returns": "LAIBlackboard",
-          "returnType": "LAIBlackboard",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "type",
-          "fullPath": "LAgent:type",
-          "signature": "()",
-          "description": "Returns the Lua-visible type name for this agent handle.",
-          "parameters": [],
-          "returns": "string",
-          "returnType": "string",
-          "isMethod": true,
-          "objectType": "LAgent"
-        },
-        {
-          "name": "typeOf",
-          "fullPath": "LAgent:typeOf",
-          "signature": "(name)",
-          "description": "Returns whether this agent handle matches a supported type name.",
-          "parameters": [
-            {
-              "name": "name",
-              "type": "string",
-              "description": "Type name to compare against `Agent` and `Object`.",
-              "optional": false
-            }
-          ],
-          "returns": "boolean",
-          "returnType": "boolean",
-          "isMethod": true,
-          "objectType": "LAgent"
         }
       ]
     },
@@ -34269,7 +34002,7 @@
           "name": "clear",
           "fullPath": "LAgentChat:clear",
           "signature": "()",
-          "description": "Clears the chat history.",
+          "description": "Clears all stored chat history messages.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -41303,6 +41036,321 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LBody"
+        }
+      ]
+    },
+    {
+      "name": "LBot",
+      "description": "Lua handle for a named agent stored inside an AI world.",
+      "methods": [
+        {
+          "name": "getName",
+          "fullPath": "LBot:getName",
+          "signature": "()",
+          "description": "Returns this agent's stable world name.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setPosition",
+          "fullPath": "LBot:setPosition",
+          "signature": "(x, y)",
+          "description": "Sets this agent's world position when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "New X position in world units.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "New Y position in world units.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getPosition",
+          "fullPath": "LBot:getPosition",
+          "signature": "()",
+          "description": "Returns this agent's world position or the origin when the agent has been removed.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setVelocity",
+          "fullPath": "LBot:setVelocity",
+          "signature": "(x, y)",
+          "description": "Sets this agent's velocity vector when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "number",
+              "description": "New X velocity in world units per second.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "number",
+              "description": "New Y velocity in world units per second.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getVelocity",
+          "fullPath": "LBot:getVelocity",
+          "signature": "()",
+          "description": "Returns this agent's velocity vector or zero velocity when the agent has been removed.",
+          "parameters": [],
+          "returns": "number, number",
+          "returnType": "number, number",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setMaxSpeed",
+          "fullPath": "LBot:setMaxSpeed",
+          "signature": "(v)",
+          "description": "Sets this agent's maximum movement speed when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "number",
+              "description": "Maximum speed in world units per second.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getMaxSpeed",
+          "fullPath": "LBot:getMaxSpeed",
+          "signature": "()",
+          "description": "Returns this agent's maximum movement speed or the default speed for a missing agent.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setMaxForce",
+          "fullPath": "LBot:setMaxForce",
+          "signature": "(v)",
+          "description": "Sets this agent's maximum steering force when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "v",
+              "type": "number",
+              "description": "Maximum steering force applied during steering calculations.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getMaxForce",
+          "fullPath": "LBot:getMaxForce",
+          "signature": "()",
+          "description": "Returns this agent's maximum steering force or the default force for a missing agent.",
+          "parameters": [],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setPriority",
+          "fullPath": "LBot:setPriority",
+          "signature": "(p)",
+          "description": "Sets this agent's integer priority when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "p",
+              "type": "integer",
+              "description": "Priority value used by game-side AI scheduling or ordering logic.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getPriority",
+          "fullPath": "LBot:getPriority",
+          "signature": "()",
+          "description": "Returns this agent's integer priority or zero when the agent has been removed.",
+          "parameters": [],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setDecisionModel",
+          "fullPath": "LBot:setDecisionModel",
+          "signature": "(model)",
+          "description": "Sets this agent's built-in decision model from a string name when the name is recognized.",
+          "parameters": [
+            {
+              "name": "model",
+              "type": "string",
+              "description": "Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getDecisionModel",
+          "fullPath": "LBot:getDecisionModel",
+          "signature": "()",
+          "description": "Returns this agent's decision model name or the default model name for a missing agent.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "setCustomModel",
+          "fullPath": "LBot:setCustomModel",
+          "signature": "(callback)",
+          "description": "Installs a Lua callback as this agent's decision model and stores it in the callback registry.",
+          "parameters": [
+            {
+              "name": "callback",
+              "type": "function",
+              "description": "Function called during world updates with `(agent, blackboard, dt)` for this agent.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "addTag",
+          "fullPath": "LBot:addTag",
+          "signature": "(tag)",
+          "description": "Adds a tag string to this agent when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag name to insert into the agent tag set.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "removeTag",
+          "fullPath": "LBot:removeTag",
+          "signature": "(tag)",
+          "description": "Removes a tag string from this agent when the agent still exists in its world.",
+          "parameters": [
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag name to remove from the agent tag set.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "hasTag",
+          "fullPath": "LBot:hasTag",
+          "signature": "(tag)",
+          "description": "Returns whether this agent currently has the given tag.",
+          "parameters": [
+            {
+              "name": "tag",
+              "type": "string",
+              "description": "Tag name to check in the agent tag set.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "getBlackboard",
+          "fullPath": "LBot:getBlackboard",
+          "signature": "()",
+          "description": "Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.",
+          "parameters": [],
+          "returns": "LAIBlackboard",
+          "returnType": "LAIBlackboard",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "type",
+          "fullPath": "LBot:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this agent handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LBot"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LBot:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this agent handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to compare against `Agent` and `Object`.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LBot"
         }
       ]
     },
@@ -57951,7 +57999,7 @@
           "name": "type",
           "fullPath": "LEnv:type",
           "signature": "()",
-          "description": "Returns the type name `\"LEnv\"`.",
+          "description": "Returns this environment wrapper's type name `\"LEnv\"`.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -60413,6 +60461,218 @@
       ]
     },
     {
+      "name": "LFov",
+      "description": "Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.",
+      "methods": [
+        {
+          "name": "setBlocker",
+          "fullPath": "LFov:setBlocker",
+          "signature": "(f)",
+          "description": "Sets the Lua predicate that determines which cells are opaque.",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "`fn(x: integer, y: integer) -> boolean` (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "setRange",
+          "fullPath": "LFov:setRange",
+          "signature": "(range)",
+          "description": "Changes the visibility radius for subsequent compute calls.",
+          "parameters": [
+            {
+              "name": "range",
+              "type": "integer",
+              "description": "Maximum sight radius in cells.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "compute",
+          "fullPath": "LFov:compute",
+          "signature": "(ox, oy)",
+          "description": "Runs recursive shadowcasting from the observer position.",
+          "parameters": [
+            {
+              "name": "ox",
+              "type": "integer",
+              "description": "Observer column (one-based).",
+              "optional": false
+            },
+            {
+              "name": "oy",
+              "type": "integer",
+              "description": "Observer row (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "isVisible",
+          "fullPath": "LFov:isVisible",
+          "signature": "(x, y)",
+          "description": "Returns true if the cell is visible in the current frame.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Column (one-based).",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Row (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "isExplored",
+          "fullPath": "LFov:isExplored",
+          "signature": "(x, y)",
+          "description": "Returns true if the cell has ever been visible.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "Column (one-based).",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "Row (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "resetExplored",
+          "fullPath": "LFov:resetExplored",
+          "signature": "()",
+          "description": "Clears the explored mask so all cells appear unexplored.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "eachVisible",
+          "fullPath": "LFov:eachVisible",
+          "signature": "(f)",
+          "description": "Calls `fn(x, y)` for every currently visible cell (one-based coordinates).",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "Callback receiving column and row integers.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "visibleCells",
+          "fullPath": "LFov:visibleCells",
+          "signature": "()",
+          "description": "Returns an array of `{x, y}` tables for all currently visible cells (one-based).",
+          "parameters": [],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "export",
+          "fullPath": "LFov:export",
+          "signature": "()",
+          "description": "Serialises the visible and explored masks to a binary blob.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "import",
+          "fullPath": "LFov:import",
+          "signature": "(blob)",
+          "description": "Restores visible and explored masks from a blob produced by `export`.",
+          "parameters": [
+            {
+              "name": "blob",
+              "type": "string",
+              "description": "Binary blob.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "type",
+          "fullPath": "LFov:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this FOV handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LFov"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LFov:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this FOV handle matches the given type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LFov"
+        }
+      ]
+    },
+    {
       "name": "LFrameStack",
       "description": "Lua handle wrapping a frame-stacking ring buffer.",
       "methods": [
@@ -60449,7 +60709,7 @@
           "name": "reset",
           "fullPath": "LFrameStack:reset",
           "signature": "()",
-          "description": "Clears all stored frames.",
+          "description": "Clears all stored observation frames from the stack.",
           "parameters": [],
           "returns": "nil",
           "returnType": "nil",
@@ -62584,6 +62844,277 @@
           "returnType": "boolean",
           "isMethod": true,
           "objectType": "LGlobeRegistry"
+        }
+      ]
+    },
+    {
+      "name": "LGoalMap",
+      "description": "Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).",
+      "methods": [
+        {
+          "name": "addSource",
+          "fullPath": "LGoalMap:addSource",
+          "signature": "(x, y, [weight])",
+          "description": "Registers a source cell for this goal map. Coordinates are one-based.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "weight",
+              "type": "integer",
+              "description": "Relative weight (default 1). Lower = stronger pull.",
+              "optional": true
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "setSources",
+          "fullPath": "LGoalMap:setSources",
+          "signature": "(sources)",
+          "description": "Replaces all registered source cells. Each entry must have x, y (one-based) and optional weight.",
+          "parameters": [
+            {
+              "name": "sources",
+              "type": "table",
+              "description": "Array of `{x, y, weight?}` tables.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "clearSources",
+          "fullPath": "LGoalMap:clearSources",
+          "signature": "()",
+          "description": "Removes all registered source cells.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "setBlocker",
+          "fullPath": "LGoalMap:setBlocker",
+          "signature": "(f)",
+          "description": "Sets a Lua predicate called during `bake` to determine blocked cells.",
+          "parameters": [
+            {
+              "name": "fn",
+              "type": "function",
+              "description": "`fn(x: integer, y: integer) -> boolean` (one-based).",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "bake",
+          "fullPath": "LGoalMap:bake",
+          "signature": "()",
+          "description": "Runs multi-source Dijkstra to build the distance field using the registered blocker.",
+          "parameters": [],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "isReady",
+          "fullPath": "LGoalMap:isReady",
+          "signature": "()",
+          "description": "Returns true when the distance field has been baked and not invalidated.",
+          "parameters": [],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "distanceAt",
+          "fullPath": "LGoalMap:distanceAt",
+          "signature": "(x, y)",
+          "description": "Returns the minimum cost from (x, y) to the nearest source.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            }
+          ],
+          "returns": "integer",
+          "returnType": "integer",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "gradientAt",
+          "fullPath": "LGoalMap:gradientAt",
+          "signature": "(x, y)",
+          "description": "Returns a normalised direction vector pointing toward the nearest source.",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "flee",
+          "fullPath": "LGoalMap:flee",
+          "signature": "(x, y, [fear])",
+          "description": "Returns a normalised direction vector pointing away from sources (for fleeing NPCs).",
+          "parameters": [
+            {
+              "name": "x",
+              "type": "integer",
+              "description": "One-based column.",
+              "optional": false
+            },
+            {
+              "name": "y",
+              "type": "integer",
+              "description": "One-based row.",
+              "optional": false
+            },
+            {
+              "name": "fear",
+              "type": "number",
+              "description": "Scale factor (default 1.0).",
+              "optional": true
+            }
+          ],
+          "returns": "number",
+          "returnType": "number",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "floodFill",
+          "fullPath": "LGoalMap:floodFill",
+          "signature": "(cx, cy, threshold)",
+          "description": "Returns all cells reachable from (cx, cy) within `threshold` steps.",
+          "parameters": [
+            {
+              "name": "cx",
+              "type": "integer",
+              "description": "One-based center column.",
+              "optional": false
+            },
+            {
+              "name": "cy",
+              "type": "integer",
+              "description": "One-based center row.",
+              "optional": false
+            },
+            {
+              "name": "threshold",
+              "type": "integer",
+              "description": "Maximum distance to include.",
+              "optional": false
+            }
+          ],
+          "returns": "table",
+          "returnType": "table",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "save",
+          "fullPath": "LGoalMap:save",
+          "signature": "()",
+          "description": "Serialises the current distance field to a binary blob string.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "restore",
+          "fullPath": "LGoalMap:restore",
+          "signature": "(blob)",
+          "description": "Restores a distance field from a blob produced by `save`.",
+          "parameters": [
+            {
+              "name": "blob",
+              "type": "string",
+              "description": "Serialised blob.",
+              "optional": false
+            }
+          ],
+          "returns": "nil",
+          "returnType": "nil",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "type",
+          "fullPath": "LGoalMap:type",
+          "signature": "()",
+          "description": "Returns the Lua-visible type name for this goal map handle.",
+          "parameters": [],
+          "returns": "string",
+          "returnType": "string",
+          "isMethod": true,
+          "objectType": "LGoalMap"
+        },
+        {
+          "name": "typeOf",
+          "fullPath": "LGoalMap:typeOf",
+          "signature": "(name)",
+          "description": "Returns whether this goal map handle matches a supported type name.",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string",
+              "description": "Type name to check.",
+              "optional": false
+            }
+          ],
+          "returns": "boolean",
+          "returnType": "boolean",
+          "isMethod": true,
+          "objectType": "LGoalMap"
         }
       ]
     },
@@ -88482,8 +89013,8 @@
               "optional": false
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "integer, table",
+          "returnType": "integer, table",
           "isMethod": true,
           "objectType": "LModel"
         },
@@ -88491,7 +89022,7 @@
           "name": "type",
           "fullPath": "LModel:type",
           "signature": "()",
-          "description": "Returns the type name `\"LModel\"`.",
+          "description": "Returns this wrapper's stable type name `\"LModel\"`.",
           "parameters": [],
           "returns": "string",
           "returnType": "string",
@@ -112661,8 +113192,8 @@
               "optional": false
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSemanticMemory"
         },
@@ -123341,8 +123872,8 @@
           "signature": "()",
           "description": "Polls for the next available event from the SSE stream (non-blocking).",
           "parameters": [],
-          "returns": "table?",
-          "returnType": "table?",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LSseStream"
         },
@@ -125642,8 +126173,8 @@
           "parameters": [
             {
               "name": "agent",
-              "type": "LAgent",
-              "description": "Agent handle passed through to every custom steering callback.",
+              "type": "LBot",
+              "description": "Bot handle passed through to every custom steering callback.",
               "optional": false
             },
             {
@@ -145929,8 +146460,8 @@
               "optional": false
             }
           ],
-          "returns": "any",
-          "returnType": "any",
+          "returns": "table",
+          "returnType": "table",
           "isMethod": true,
           "objectType": "LWorkingMemory"
         },

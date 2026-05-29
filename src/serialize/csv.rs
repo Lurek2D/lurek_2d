@@ -29,7 +29,7 @@ pub fn from_csv(s: &str, opts: CsvOptions) -> Result<SerialValue, String> {
     from_csv_reader(s.as_bytes(), opts)
 }
 /// Parse CSV from any `Read` source into a `SerialValue` sequence.
-pub fn from_csv_reader<R: Read>(reader: R, opts: CsvOptions) -> Result<SerialValue, String> {
+pub(crate) fn from_csv_reader<R: Read>(reader: R, opts: CsvOptions) -> Result<SerialValue, String> {
     let mut reader = csv::ReaderBuilder::new()
         .delimiter(opts.delimiter)
         .has_headers(opts.has_headers)

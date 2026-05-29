@@ -61,18 +61,18 @@ end</code></pre></details>
     <p>Instance methods exported from the LZone userdata.</p>
   </div>
     <div class="item-list">
-    <article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LZone:destroy()</pre><p>Removes this zone from the world. Bodies will no longer be affected by it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1327</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+    <article class="item-row api-row" id="method-destroy"><div class="item-row-main"><h3>destroy</h3><pre class="inline-signature">LZone:destroy()</pre><p>Removes this zone from the world. Bodies will no longer be affected by it.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1328</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(0, 0, 100, 100)
     print(&quot;zone_id&quot;, zone:getId())
     zone:destroy()
     print(&quot;events&quot;, #world:getZoneEvents())
-end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LZone:getId() -&gt; integer</pre><p>Returns the unique ID of this zone. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1209</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-getid"><div class="item-row-main"><h3>getId</h3><pre class="inline-signature">LZone:getId() -&gt; integer</pre><p>Returns the unique ID of this zone. This method is available to Lua scripts.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1210</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     print(&quot;zone_id&quot;, zone:getId())
     print(&quot;type&quot;, zone:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-setangulardampingoverride"><div class="item-row-main"><h3>setAngularDampingOverride</h3><pre class="inline-signature">LZone:setAngularDampingOverride(value: number?)</pre><p>Overrides the angular damping of bodies inside this zone, or nil to use each body&#x27;s own value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1315</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setangulardampingoverride"><div class="item-row-main"><h3>setAngularDampingOverride</h3><pre class="inline-signature">LZone:setAngularDampingOverride(value: number?)</pre><p>Overrides the angular damping of bodies inside this zone, or nil to use each body&#x27;s own value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1316</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
     water:setAngularDampingOverride(2.0)
@@ -83,20 +83,20 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;angular_velocity&quot;, diver:getAngularVelocity())
     print(&quot;angle&quot;, diver:getAngle())
-end</code></pre></details></article><article class="item-row api-row" id="method-setcircle"><div class="item-row-main"><h3>setCircle</h3><pre class="inline-signature">LZone:setCircle(cx: number, cy: number, radius: number)</pre><p>Changes this zone&#x27;s shape to a circle (overrides the initial rectangle).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1245</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setcircle"><div class="item-row-main"><h3>setCircle</h3><pre class="inline-signature">LZone:setCircle(cx: number, cy: number, radius: number)</pre><p>Changes this zone&#x27;s shape to a circle (overrides the initial rectangle).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1246</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local zone = world:addZone(200, 200, 100, 100)
     zone:setCircle(250, 250, 80)
     zone:setGravityZero()
     print(&quot;zone_id&quot;, zone:getId())
     print(&quot;type&quot;, zone:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-setenabled"><div class="item-row-main"><h3>setEnabled</h3><pre class="inline-signature">LZone:setEnabled(enabled: boolean)</pre><p>Enables or disables this zone. Disabled zones have no effect on bodies.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1213</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setenabled"><div class="item-row-main"><h3>setEnabled</h3><pre class="inline-signature">LZone:setEnabled(enabled: boolean)</pre><p>Enables or disables this zone. Disabled zones have no effect on bodies.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1214</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setEnabled(true)
     print(&quot;zone_id&quot;, zone:getId())
     print(&quot;type&quot;, zone:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-setgravitydirectional"><div class="item-row-main"><h3>setGravityDirectional</h3><pre class="inline-signature">LZone:setGravityDirectional(gx: number, gy: number)</pre><p>Sets the zone to apply a constant directional gravity to bodies inside.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1256</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravitydirectional"><div class="item-row-main"><h3>setGravityDirectional</h3><pre class="inline-signature">LZone:setGravityDirectional(gx: number, gy: number)</pre><p>Sets the zone to apply a constant directional gravity to bodies inside.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1257</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local windZone = world:addZone(0, 0, 300, 600)
     windZone:setGravityDirectional(200, 0)
@@ -106,7 +106,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;position&quot;, ball:getPosition())
     print(&quot;velocity&quot;, ball:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setgravitypoint"><div class="item-row-main"><h3>setGravityPoint</h3><pre class="inline-signature">LZone:setGravityPoint(cx: number, cy: number, strength: number)</pre><p>Sets the zone to attract bodies toward a center point with a given strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1268</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravitypoint"><div class="item-row-main"><h3>setGravityPoint</h3><pre class="inline-signature">LZone:setGravityPoint(cx: number, cy: number, strength: number)</pre><p>Sets the zone to attract bodies toward a center point with a given strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1269</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local vortex = world:addZone(400, 200, 150, 150)
     vortex:setGravityPoint(475, 275, 500)
@@ -116,7 +116,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;position&quot;, ball:getPosition())
     print(&quot;velocity&quot;, ball:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setgravityrepulsor"><div class="item-row-main"><h3>setGravityRepulsor</h3><pre class="inline-signature">LZone:setGravityRepulsor(cx: number, cy: number, strength: number)</pre><p>Sets the zone to push bodies away from a center point with a given strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1283</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravityrepulsor"><div class="item-row-main"><h3>setGravityRepulsor</h3><pre class="inline-signature">LZone:setGravityRepulsor(cx: number, cy: number, strength: number)</pre><p>Sets the zone to push bodies away from a center point with a given strength.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1284</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local repulsor = world:addZone(200, 200, 100, 100)
     repulsor:setGravityRepulsor(250, 250, 300)
@@ -126,7 +126,7 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;position&quot;, ball:getPosition())
     print(&quot;velocity&quot;, ball:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setgravityzero"><div class="item-row-main"><h3>setGravityZero</h3><pre class="inline-signature">LZone:setGravityZero()</pre><p>Sets the zone to cancel all gravity for bodies inside (zero-G area).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1295</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setgravityzero"><div class="item-row-main"><h3>setGravityZero</h3><pre class="inline-signature">LZone:setGravityZero()</pre><p>Sets the zone to cancel all gravity for bodies inside (zero-G area).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1296</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local zeroG = world:addZone(400, 100, 200, 200)
     zeroG:setGravityZero()
@@ -136,13 +136,13 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;position&quot;, ball:getPosition())
     print(&quot;velocity&quot;, ball:getVelocity())
-end</code></pre></details></article><article class="item-row api-row" id="method-setlayermask"><div class="item-row-main"><h3>setLayerMask</h3><pre class="inline-signature">LZone:setLayerMask(mask: integer)</pre><p>Sets a bitmask controlling which body layers this zone affects.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1233</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlayermask"><div class="item-row-main"><h3>setLayerMask</h3><pre class="inline-signature">LZone:setLayerMask(mask: integer)</pre><p>Sets a bitmask controlling which body layers this zone affects.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1234</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setLayerMask(0xFF)
     print(&quot;zone_id&quot;, zone:getId())
     print(&quot;type&quot;, zone:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-setlineardampingoverride"><div class="item-row-main"><h3>setLinearDampingOverride</h3><pre class="inline-signature">LZone:setLinearDampingOverride(value: number?)</pre><p>Overrides the linear damping of bodies inside this zone, or nil to use each body&#x27;s own value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1305</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setlineardampingoverride"><div class="item-row-main"><h3>setLinearDampingOverride</h3><pre class="inline-signature">LZone:setLinearDampingOverride(value: number?)</pre><p>Overrides the linear damping of bodies inside this zone, or nil to use each body&#x27;s own value.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1306</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 400)
     local water = world:addZone(100, 300, 400, 200)
     water:setLinearDampingOverride(3.0)
@@ -153,18 +153,18 @@ end</code></pre></details></article><article class="item-row api-row" id="method
     end
     print(&quot;velocity&quot;, diver:getVelocity())
     print(&quot;position&quot;, diver:getPosition())
-end</code></pre></details></article><article class="item-row api-row" id="method-setpriority"><div class="item-row-main"><h3>setPriority</h3><pre class="inline-signature">LZone:setPriority(priority: integer)</pre><p>Sets the priority of this zone. Higher-priority zones take precedence when overlapping.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1223</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-setpriority"><div class="item-row-main"><h3>setPriority</h3><pre class="inline-signature">LZone:setPriority(priority: integer)</pre><p>Sets the priority of this zone. Higher-priority zones take precedence when overlapping.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1224</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     zone:setPriority(1)
     print(&quot;zone_id&quot;, zone:getId())
     print(&quot;type&quot;, zone:type())
-end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LZone:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LZone&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1334</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-type"><div class="item-row-main"><h3>type</h3><pre class="inline-signature">LZone:type() -&gt; string</pre><p>Returns the type name of this object (&quot;LZone&quot;).</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1335</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     print(&quot;type&quot;, zone:type())
     print(&quot;type_of&quot;, zone:typeOf(&quot;LZone&quot;))
-end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LZone:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1339</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
+end</code></pre></details></article><article class="item-row api-row" id="method-typeof"><div class="item-row-main"><h3>typeOf</h3><pre class="inline-signature">LZone:typeOf(name: string) -&gt; boolean</pre><p>Checks if this object is of a given type name.</p></div><div class="item-row-meta"><span>method</span><span>src/lua_api/physics_api.rs:1340</span></div><details class="example-block"><summary>Example · Exact example · physics.lua</summary><pre><code>do
     local world = lurek.physics.newWorld(0, 9.8)
     local zone = world:addZone(0, 0, 200, 200)
     print(&quot;type_of&quot;, zone:typeOf(&quot;LZone&quot;), zone:typeOf(&quot;LObject&quot;))

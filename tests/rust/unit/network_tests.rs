@@ -9,7 +9,7 @@ use lurek2d::network::error::NetworkError;
 use lurek2d::network::host::{HostRole, PeerStats};
 use lurek2d::network::http::HttpResponse;
 use lurek2d::network::lobby::{LobbyInfo, LOBBY_PORT};
-use lurek2d::network::message::{estimate_size, pack, unpack, NetValue};
+use lurek2d::network::message::{pack, unpack, NetValue};
 use lurek2d::network::net_thread::NetworkRuntime;
 use std::net::{Ipv4Addr, SocketAddr};
 
@@ -343,10 +343,16 @@ mod message_tests {
     }
 
     #[test]
-    fn estimate_size_basic() {
-        assert_eq!(estimate_size(&NetValue::Nil), 1);
-        assert_eq!(estimate_size(&NetValue::Bool(true)), 1);
-        assert!(estimate_size(&NetValue::Integer(42)) <= 2);
+    fn packed_size_basic() {
+        let nil_len = pack(&NetValue::Nil).unwrap().len();
+        let bool_len = pack(&NetValue::Bool(true)).unwrap().len();
+        let int_len = pack(&NetValue::Integer(42)).unwrap().len();
+        let str_len = pack(&NetValue::String("hello".to_string())).unwrap().len();
+
+        assert!(nil_len > 0);
+        assert!(bool_len >= nil_len);
+        assert!(int_len >= nil_len);
+        assert!(str_len >= int_len);
     }
 }
 
