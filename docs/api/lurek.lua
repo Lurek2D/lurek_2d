@@ -5,6 +5,156 @@ lurek = {}
 
 ---@alias LuaValue nil|boolean|number|string|table|function|userdata|thread
 
+--- Global engine callbacks invoked by the runtime when defined in `main.lua`.
+
+--- Called every frame for world rendering.
+function lurek.draw() end
+
+--- Called every frame after `draw` for UI rendering.
+function lurek.draw_ui() end
+
+--- Called for unhandled Lua errors.
+---@param msg string Error message text.
+function lurek.errorhandler(msg) end
+
+--- Called when the engine is shutting down.
+function lurek.exit() end
+
+--- Deprecated alias for `process_physics`.
+---@deprecated Deprecated alias for `process_physics`.
+---@param dt number Fixed-step delta time in seconds.
+function lurek.fixedUpdate(dt) end
+
+--- Called when window focus changes.
+---@param has_focus boolean True when focused.
+function lurek.focus(has_focus) end
+
+--- Called when a gamepad axis value changes.
+---@param id number Gamepad id.
+---@param axis string Axis name.
+---@param value number Axis value in range -1..1.
+function lurek.gamepadaxis(id, axis, value) end
+
+--- Called when a gamepad button is pressed.
+---@param id number Gamepad id.
+---@param button string Button name.
+function lurek.gamepadpressed(id, button) end
+
+--- Called when a gamepad button is released.
+---@param id number Gamepad id.
+---@param button string Button name.
+function lurek.gamepadreleased(id, button) end
+
+--- Called once when the engine initialises.
+function lurek.init() end
+
+--- Called when a gamepad is connected.
+---@param id number Gamepad id.
+function lurek.joystickadded(id) end
+
+--- Called when a gamepad is disconnected.
+---@param id number Gamepad id.
+function lurek.joystickremoved(id) end
+
+--- Called when a keyboard key is pressed.
+---@param key string Key name.
+---@param scancode string Platform scancode.
+---@param isrepeat boolean True when key repeat generated the event.
+function lurek.keypressed(key, scancode, isrepeat) end
+
+--- Called when a keyboard key is released.
+---@param key string Key name.
+---@param scancode string Platform scancode.
+function lurek.keyreleased(key, scancode) end
+
+--- Called when the mouse cursor moves.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param dx number Horizontal delta.
+---@param dy number Vertical delta.
+function lurek.mousemoved(x, y, dx, dy) end
+
+--- Called when a mouse button is pressed.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button number Button index.
+function lurek.mousepressed(x, y, button) end
+
+--- Called when a mouse button is released.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button number Button index.
+function lurek.mousereleased(x, y, button) end
+
+--- Called every frame for variable-step gameplay logic.
+---@param dt number Delta time in seconds.
+function lurek.process(dt) end
+
+--- Called every frame after `process`.
+---@param dt number Delta time in seconds.
+function lurek.process_late(dt) end
+
+--- Called on the fixed physics step.
+---@param dt number Fixed-step delta time in seconds.
+function lurek.process_physics(dt) end
+
+--- Called before shutdown; return true to cancel quit.
+function lurek.quit() end
+
+--- Called once after init, when runtime state is ready.
+function lurek.ready() end
+
+--- Called when window size changes.
+---@param w number New window width.
+---@param h number New window height.
+function lurek.resize(w, h) end
+
+--- Called when IME composition text changes.
+---@param text string Composition text.
+---@param start number Cursor start offset.
+---@param length number Selection length.
+function lurek.textedited(text, start, length) end
+
+--- Called when text input is received.
+---@param text string Input text fragment.
+function lurek.textinput(text) end
+
+--- Called when a touch point moves.
+---@param id number Touch id.
+---@param x number Touch x coordinate.
+---@param y number Touch y coordinate.
+---@param dx number Horizontal delta.
+---@param dy number Vertical delta.
+---@param pressure number Touch pressure.
+function lurek.touchmoved(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch begins.
+---@param id number Touch id.
+---@param x number Touch x coordinate.
+---@param y number Touch y coordinate.
+---@param dx number Horizontal delta.
+---@param dy number Vertical delta.
+---@param pressure number Touch pressure.
+function lurek.touchpressed(id, x, y, dx, dy, pressure) end
+
+--- Called when a touch ends.
+---@param id number Touch id.
+---@param x number Touch x coordinate.
+---@param y number Touch y coordinate.
+---@param dx number Horizontal delta.
+---@param dy number Vertical delta.
+---@param pressure number Touch pressure.
+function lurek.touchreleased(id, x, y, dx, dy, pressure) end
+
+--- Called when window visibility changes.
+---@param is_visible boolean True when visible.
+function lurek.visible(is_visible) end
+
+--- Called when the mouse wheel moves.
+---@param x number Horizontal wheel delta.
+---@param y number Vertical wheel delta.
+function lurek.wheelmoved(x, y) end
+
 ---@class LSpacer
 LSpacer = {}
 
@@ -1605,7 +1755,7 @@ LEpisodicMemory = {}
 ---@class LOllamaManager
 LOllamaManager = {}
 
---- Lua-side handle for an unbounded key → value fact store.
+--- Lua-side handle for an unbounded key Ă˘â€ â€™ value fact store.
 ---@class LSemanticMemory
 LSemanticMemory = {}
 
@@ -3058,7 +3208,7 @@ function LAgentMemory:semantic() end
 function LAgentMemory:working() end
 
 --- Renders the template by substituting `{key}` placeholders from `values`.
----@param values table Map of key → string substitutions.
+---@param values table Map of key Ă˘â€ â€™ string substitutions.
 ---@return string Rendered string, or raises an error if a key is missing.
 function LAgentTemplate:render(values) end
 
@@ -5040,7 +5190,7 @@ lurek.asset.isLoaded = function(handle) end
 lurek.asset.load = function(path, asset_type, opts) end
 
 --- Synchronously loads a batch of assets and fires `callback(loaded, total)` after each item.
----@param paths table Array of `{path, type}` pairs (or `{path=…, type=…}` tables).
+---@param paths table Array of `{path, type}` pairs (or `{path=â€¦, type=â€¦}` tables).
 ---@param callback any Function invoked as `callback(loaded, total)` per item; `callback(nil, nil)` on finish.
 ---@return nil No value is returned.
 lurek.asset.preload = function(paths, callback) end
@@ -5190,11 +5340,11 @@ function LBeatClock:secondsPerBeat() end
 function LBeatClock:secondsToNextBeat() end
 
 --- Changes the time-signature beats-per-bar.
----@param beats number New beats per bar (clamped to ≥1).
+---@param beats number New beats per bar (clamped to â‰Ą1).
 function LBeatClock:setBeatsPerBar(beats) end
 
 --- Sets a new BPM. Elapsed time is preserved.
----@param bpm number New BPM (clamped to ≥1).
+---@param bpm number New BPM (clamped to â‰Ą1).
 function LBeatClock:setBpm(bpm) end
 
 --- Sets rhythmic swing amount in `[0.0, 0.5]` for off-beat timing feel.
@@ -7171,7 +7321,7 @@ function LLineChart:render() end
 ---@param title string New chart title text.
 function LLineChart:setTitle(title) end
 
---- Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
+--- Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
 ---@param label string Display label for the slice.
 ---@param value number Numeric value determining the slice proportion.
 ---@param color? table Optional RGBA color {r, g, b, a}. Auto-assigned from palette if nil.
@@ -7263,7 +7413,7 @@ lurek.charts.newScatter = function(config) end
 ---@return table Color table {r, g, b, a}.
 lurek.charts.seriesColor = function(index) end
 
---- Additive blend of two colors (clamped to 0–1 per channel).
+--- Additive blend of two colors (clamped to 0â€“1 per channel).
 ---@param c1 table First color {r, g, b, a}.
 ---@param c2 table Second color {r, g, b, a}.
 ---@return table Additively blended color table.
@@ -7276,10 +7426,10 @@ lurek.color.additive = function(c1, c2) end
 lurek.color.alphaBlend = function(fg, bg) end
 
 --- Computes perceived luminance (ITU-R BT.601) of an RGB color.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@return number Perceived brightness (0–1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@return number Perceived brightness (0â€“1).
 lurek.color.brightness = function(r, g, b) end
 
 --- Parses a hex color string ("#RRGGBB" or "#RRGGBBAA") into a color table. Returns nil on invalid input.
@@ -7288,49 +7438,49 @@ lurek.color.brightness = function(r, g, b) end
 lurek.color.fromHex = function(hex) end
 
 --- Creates a color from HSL components. Returns an opaque color (alpha = 1).
----@param h number Hue in degrees (0–360).
----@param s number Saturation (0–1).
----@param l number Lightness (0–1).
+---@param h number Hue in degrees (0â€“360).
+---@param s number Saturation (0â€“1).
+---@param l number Lightness (0â€“1).
 ---@return table Color table {r, g, b, a}.
 lurek.color.fromHsl = function(h, s, l) end
 
 --- Creates a color from HSV components. Returns an opaque color (alpha = 1).
----@param h number Hue in degrees (0–360).
----@param s number Saturation (0–1).
----@param v number Value/brightness (0–1).
+---@param h number Hue in degrees (0â€“360).
+---@param s number Saturation (0â€“1).
+---@param v number Value/brightness (0â€“1).
 ---@return table Color table {r, g, b, a}.
 lurek.color.fromHsv = function(h, s, v) end
 
---- Creates a color from 0–255 integer components. Alpha defaults to 255.
----@param r number Red channel (0–255).
----@param g number Green channel (0–255).
----@param b number Blue channel (0–255).
----@param a? number Alpha channel (0–255); defaults to 255.
----@return table Color table {r, g, b, a} with values normalised to 0–1.
+--- Creates a color from 0â€“255 integer components. Alpha defaults to 255.
+---@param r number Red channel (0â€“255).
+---@param g number Green channel (0â€“255).
+---@param b number Blue channel (0â€“255).
+---@param a? number Alpha channel (0â€“255); defaults to 255.
+---@return table Color table {r, g, b, a} with values normalised to 0â€“1.
 lurek.color.fromU8 = function(r, g, b, a) end
 
 --- Converts a single sRGB gamma-encoded component to linear space.
----@param c number Gamma-encoded value (0–1).
+---@param c number Gamma-encoded value (0â€“1).
 ---@return number Linear value.
 lurek.color.gammaToLinear = function(c) end
 
 --- Inverts the RGB channels of a color, keeping alpha unchanged.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a? number Alpha channel (0–1); defaults to 1.0.
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a? number Alpha channel (0â€“1); defaults to 1.0.
 ---@return table Inverted color table.
 lurek.color.invert = function(r, g, b, a) end
 
---- Linearly interpolates between two color tables by factor t (clamped to 0–1).
+--- Linearly interpolates between two color tables by factor t (clamped to 0â€“1).
 ---@param c1 table Start color {r, g, b, a}.
 ---@param c2 table End color {r, g, b, a}.
----@param t number Interpolation factor (0–1).
+---@param t number Interpolation factor (0â€“1).
 ---@return table Interpolated color table.
 lurek.color.lerp = function(c1, c2, t) end
 
 --- Converts a single linear component to sRGB gamma-encoded space.
----@param c number Linear value (0–1).
+---@param c number Linear value (0â€“1).
 ---@return number Gamma-encoded value.
 lurek.color.linearToGamma = function(c) end
 
@@ -7340,11 +7490,11 @@ lurek.color.linearToGamma = function(c) end
 ---@return table Multiplied color table.
 lurek.color.multiply = function(c1, c2) end
 
---- Creates an RGBA color from 0–1 float components. Alpha defaults to 1.0.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a? number Alpha channel (0–1); defaults to 1.0.
+--- Creates an RGBA color from 0â€“1 float components. Alpha defaults to 1.0.
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a? number Alpha channel (0â€“1); defaults to 1.0.
 ---@return table Color table {r, g, b, a}.
 lurek.color.new = function(r, g, b, a) end
 
@@ -7366,28 +7516,28 @@ lurek.color.palette = function(name) end
 lurek.color.screen = function(c1, c2) end
 
 --- Converts RGBA components to a hex string ("#RRGGBB" or "#RRGGBBAA" if alpha < 1).
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a? number Alpha channel (0–1); defaults to 1.0.
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a? number Alpha channel (0â€“1); defaults to 1.0.
 ---@return string Hex color string.
 lurek.color.toHex = function(r, g, b, a) end
 
 --- Convert RGB color components to HSL color representation.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@return number Hue (0–360); saturation (0–1); lightness (0–1). (value 1).
----@return number Hue (0–360); saturation (0–1); lightness (0–1). (value 2).
----@return number Hue (0–360); saturation (0–1); lightness (0–1). (value 3).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@return number Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 1).
+---@return number Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 2).
+---@return number Hue (0â€“360); saturation (0â€“1); lightness (0â€“1). (value 3).
 lurek.color.toHsl = function(r, g, b) end
 
 --- Returns a color with the alpha channel replaced.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
 ---@param a number Original alpha (ignored in output).
----@param newAlpha number New alpha channel value (0–1).
+---@param newAlpha number New alpha channel value (0â€“1).
 ---@return table Color table with the new alpha.
 lurek.color.withAlpha = function(r, g, b, a, newAlpha) end
 
@@ -7990,7 +8140,7 @@ function LCustomCursor:getPixel(x, y) end
 ---@return number Height.
 function LCustomCursor:getSize() end
 
---- Set a pixel color — Lua userdata object exposed by the engine.
+--- Set a pixel color â€” Lua userdata object exposed by the engine.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
 ---@param r number Red (0-255).
@@ -8213,14 +8363,14 @@ function LDataFrame:nrows() end
 ---@return LDataFrame New dataframe containing outlier rows.
 function LDataFrame:outliers(col, threshold) end
 
---- Parallel filter — automatically parallelizes when frame has 10,000+ rows.
+--- Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
 ---@param col any Column name string or one-based column index.
 ---@param op string Comparison operator (==, !=, <, >, <=, >=, contains).
 ---@param val any Value to compare against.
 ---@return LDataFrame New filtered DataFrame.
 function LDataFrame:parFilter(col, op, val) end
 
---- Parallel group-by aggregation — partitions and aggregates in parallel.
+--- Parallel group-by aggregation â€” partitions and aggregates in parallel.
 ---@param group_col any Column name string or one-based column index.
 ---@param agg_col any Column name string or one-based column index.
 ---@param fn_name string Aggregation function (sum, mean, count, min, max, first, last).
@@ -12314,7 +12464,7 @@ lurek.globe.raySphereIntersect = function(ox, oy, oz, dx, dy, dz, radius) end
 ---@return boolean True when a globe was removed.
 lurek.globe.remove = function(name) end
 
---- Add allowed file extensions — Lua userdata object exposed by the engine.
+--- Add allowed file extensions â€” Lua userdata object exposed by the engine.
 ---@param ext string Extension (without dot).
 function LFileFilter:addExtension(ext) end
 
@@ -14003,7 +14153,7 @@ function LEnv:typeOf(name) end
 function LFrameStack:capacity() end
 
 --- Returns the flattened observation stack, zero-padded when not yet full.
----@return number[] Flattened frame-stack vector of length capacity × obs_dim.
+---@return number[] Flattened frame-stack vector of length capacity Ă— obs_dim.
 function LFrameStack:get() end
 
 --- Pushes one observation into the stack.
@@ -15173,7 +15323,7 @@ function LMapBlock:setLevelSpan(levels) end
 ---@param name string Block name.
 function LMapBlock:setName(name) end
 
---- Set a tile slot value — Lua userdata object exposed by the engine.
+--- Set a tile slot value â€” Lua userdata object exposed by the engine.
 ---@param layer number Layer index (0-based).
 ---@param x number Tile X position.
 ---@param y number Tile Y position.
@@ -15186,7 +15336,7 @@ function LMapBlock:setTile(layer, x, y, slot, tileset_id, gid) end
 ---@param weight number Weight value (higher = more likely).
 function LMapBlock:setWeight(weight) end
 
---- Add a slot definition — Lua userdata object exposed by the engine.
+--- Add a slot definition â€” Lua userdata object exposed by the engine.
 ---@param name string Slot name.
 ---@param required? boolean Whether this slot is required.
 ---@param default_gid? number Default GID when empty.
@@ -15230,7 +15380,7 @@ function LMapBlockGenerator:setMaxLevels(levels) end
 ---@param orientation string "topdown" or "isometric".
 function LMapBlockGenerator:setOrientation(orientation) end
 
---- Set rectangular map shape — Lua userdata object exposed by the engine.
+--- Set rectangular map shape â€” Lua userdata object exposed by the engine.
 ---@param width number Grid width.
 ---@param height number Grid height.
 function LMapBlockGenerator:setRectShape(width, height) end
@@ -15265,7 +15415,7 @@ function LMapBlockResult:getBlocksPlaced() end
 ---@return number GID value.
 function LMapBlockResult:getGid(level, layer, x, y, slot) end
 
---- Get total height in tiles — Lua userdata object exposed by the engine.
+--- Get total height in tiles â€” Lua userdata object exposed by the engine.
 ---@return number Height.
 function LMapBlockResult:getHeight() end
 
@@ -15301,7 +15451,7 @@ function LMapGroup:getBlockCount() end
 ---@return string Group name.
 function LMapGroup:getName() end
 
---- Add a generation step — Lua userdata object exposed by the engine.
+--- Add a generation step â€” Lua userdata object exposed by the engine.
 ---@param step_type string Step type name.
 ---@param opts? table Step configuration options.
 function LMapScript:addStep(step_type, opts) end
@@ -15336,7 +15486,7 @@ function LNeighborRules:clear() end
 ---@return boolean True if compatible.
 function LNeighborRules:isCompatible(type_a, type_b) end
 
---- Add a position to the grid — Lua userdata object exposed by the engine.
+--- Add a position to the grid â€” Lua userdata object exposed by the engine.
 ---@param x number X coordinate.
 ---@param y number Y coordinate.
 function LPlacementGrid:addPosition(x, y) end
@@ -15358,7 +15508,7 @@ function LPlacementGrid:isAvailable(x, y) end
 ---@return number Tileset ID.
 function LTilesetRef:getId() end
 
---- Get tileset name — Lua userdata object exposed by the engine.
+--- Get tileset name â€” Lua userdata object exposed by the engine.
 ---@return string Tileset name.
 function LTilesetRef:getName() end
 
@@ -18482,10 +18632,10 @@ function LParallaxLayer:setTileSize(w, h) end
 function LParallaxLayer:setTiling(enabled) end
 
 --- Sets layer tint color for this object.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a number Alpha channel (0–1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a number Alpha channel (0â€“1).
 function LParallaxLayer:setTint(r, g, b, a) end
 
 --- Sets layer visibility for this object.
@@ -19354,7 +19504,7 @@ function LJpsGrid:typeOf(name) end
 function LNavGrid:clearDirty() end
 
 --- Fills the entire grid with a uniform movement cost.
----@param cost number Movement cost (0–255).
+---@param cost number Movement cost (0â€“255).
 function LNavGrid:fill(cost) end
 
 --- Fills a one-based rectangular area with a movement cost.
@@ -19362,7 +19512,7 @@ function LNavGrid:fill(cost) end
 ---@param y number One-based row of the top-left corner.
 ---@param w number Rectangle width in cells.
 ---@param h number Rectangle height in cells.
----@param cost number Movement cost (0–255).
+---@param cost number Movement cost (0â€“255).
 function LNavGrid:fillRect(x, y, w, h, cost) end
 
 --- Finds a hierarchical path using the cached abstract graph, rebuilding it on first use.
@@ -19438,7 +19588,7 @@ function LNavGrid:setChunkSize(size) end
 --- Sets movement cost at a one-based grid cell.
 ---@param x number One-based column.
 ---@param y number One-based row.
----@param cost number Movement cost (0–255).
+---@param cost number Movement cost (0â€“255).
 function LNavGrid:setCost(x, y, cost) end
 
 --- Sets diagonal movement mode for this object.
@@ -19745,7 +19895,7 @@ lurek.pathfind.setThreadCount = function(count) end
 ---@return boolean True if attached successfully.
 function LBehaviorTree:addChild(parentId, childId) end
 
---- Create a decorator node that inverts its child's result (success ↔ failure).
+--- Create a decorator node that inverts its child's result (success â†” failure).
 ---@param label? string Optional debug label.
 ---@return number The node ID.
 function LBehaviorTree:addInverter(label) end
@@ -21020,7 +21170,7 @@ function LBody:setMass(mass) end
 function LBody:setPosition(x, y) end
 
 --- Sets the body's restitution (bounciness) value.
----@param restitution number New restitution (0Ă˘â‚¬â€ś1).
+---@param restitution number New restitution (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1).
 function LBody:setRestitution(restitution) end
 
 --- Controls whether the body can enter sleep state. Disable for bodies that must stay active.
@@ -21218,7 +21368,7 @@ function LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) end
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
 ---@param bodyA number First body ID.
 ---@param bodyB number Second body ID.
----@param factor number Correction factor (0Ă˘â‚¬â€ś1), higher = faster convergence.
+---@param factor number Correction factor (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1), higher = faster convergence.
 ---@return number The joint ID.
 function LWorld:addMotorJoint(bodyA, bodyB, factor) end
 
@@ -21558,7 +21708,7 @@ function LWorld:setEndContact(callback) end
 --- Updates the friction coefficient of a specific fixture on a body.
 ---@param bodyId number The body ID.
 ---@param fixtureIndex number Zero-based fixture index on the body.
----@param friction number New friction value (0Ă˘â‚¬â€ś1 typical range).
+---@param friction number New friction value (0Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›1 typical range).
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
 
 --- Updates the restitution (bounciness) of a specific fixture on a body.
@@ -21610,7 +21760,7 @@ function LWorld:setMeter(ppm) end
 function LWorld:setMouseJointTarget(jointId, x, y) end
 
 --- Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
----@param n number Number of iterations (default is typically 4Ă˘â‚¬â€ś8).
+---@param n number Number of iterations (default is typically 4Ä‚ËĂ˘â€šÂ¬Ă˘â‚¬Ĺ›8).
 function LWorld:setSolverIterations(n) end
 
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
@@ -22155,9 +22305,9 @@ lurek.pipeline.newPipeline = function(name) end
 lurek.pipeline.newStep = function(name, callback) end
 
 --- Classify a single point into a biome type based on its environmental parameters.
----@param height number Elevation value (0.0–1.0) of the terrain point.
----@param moisture number Moisture level (0.0–1.0) at the point.
----@param temperature number Temperature value (0.0–1.0) at the point.
+---@param height number Elevation value (0.0â€“1.0) of the terrain point.
+---@param moisture number Moisture level (0.0â€“1.0) at the point.
+---@param temperature number Temperature value (0.0â€“1.0) at the point.
 ---@return string Biome name such as "ocean", "desert", "grassland", "taiga", etc.
 function LBiomeClassifier:classify(height, moisture, temperature) end
 
@@ -22384,10 +22534,10 @@ function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
 
 --- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 ---@param name string Biome name (e.g. "ocean", "desert", "taiga").
----@return number Red component (0–255).
----@return number Green component (0–255).
----@return number Blue component (0–255).
----@return number Alpha component (0–255).
+---@return number Red component (0â€“255).
+---@return number Green component (0â€“255).
+---@return number Blue component (0â€“255).
+---@return number Alpha component (0â€“255).
 lurek.procgen.biomeColor = function(name) end
 
 --- Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
@@ -22405,8 +22555,8 @@ lurek.procgen.bspDungeonWithPrefabs = function(opts, prefabs) end
 --- Generate a cave or organic map using cellular automata rules.
 ---@param width number Grid width in cells.
 ---@param height number Grid height in cells.
----@param opts? table Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
----@return number[] Flat array of cell values (0=empty, 1=wall) with length width×height.
+---@param opts? table Options: fill (0.0â€“1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
+---@return number[] Flat array of cell values (0=empty, 1=wall) with length widthĂ—height.
 lurek.procgen.cellularAutomata = function(width, height, opts) end
 
 --- Samples stateless fractal Brownian motion noise.
@@ -22427,7 +22577,7 @@ lurek.procgen.fbm = function(x, y, seed, octaves, lac, gain) end
 ---@param startY number Start row (0-based).
 ---@param threshold? number Value threshold (default 128).
 ---@param above? boolean If true, fill cells >= threshold; if false (default), fill cells < threshold.
----@return number[] Flat array of fill values (1=filled, 0=not filled) with length width×height.
+---@return number[] Flat array of fill values (1=filled, 0=not filled) with length widthĂ—height.
 lurek.procgen.floodFill = function(data, width, height, startX, startY, threshold, above) end
 
 --- Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
@@ -22449,7 +22599,7 @@ lurek.procgen.generateNames = function(samples, count, minLen, maxLen, seed) end
 
 --- Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
 ---@param opts? table Options: width, height, scale, octaves, lacunarity, persistence, seed, erosion_passes.
----@return LProcgenHeightmapResult Table with .cells (flat f32 array 0.0–1.0), .width, .height.
+---@return LProcgenHeightmapResult Table with .cells (flat f32 array 0.0â€“1.0), .width, .height.
 lurek.procgen.heightmap = function(opts) end
 
 --- Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
@@ -22840,9 +22990,9 @@ function LProvinceRegistry:setMapMode(name) end
 
 --- Sets the political map color for a province. Used in political map mode rendering and change tracking.
 ---@param id number Province ID.
----@param r number Red component (0.0–1.0).
----@param g number Green component (0.0–1.0).
----@param b number Blue component (0.0–1.0).
+---@param r number Red component (0.0â€“1.0).
+---@param g number Green component (0.0â€“1.0).
+---@param b number Blue component (0.0â€“1.0).
 ---@param a? number Alpha component (default 1.0).
 ---@return boolean True if the province ID exists.
 function LProvinceRegistry:setPoliticalColor(id, r, g, b, a) end
@@ -22907,7 +23057,7 @@ lurek.province.getProperty = function(id, key) end
 
 --- Checks whether a flag bit is set on a province.
 ---@param id number Province ID.
----@param bit number Flag bit index (0–63).
+---@param bit number Flag bit index (0â€“63).
 ---@return boolean True if the flag bit is set.
 lurek.province.hasFlag = function(id, bit) end
 
@@ -22940,9 +23090,9 @@ lurek.province.setActive = function(name) end
 ---@param value string String value to store.
 lurek.province.setAttr = function(id, key, value) end
 
---- Sets a single flag bit (0–63) on a province.
+--- Sets a single flag bit (0â€“63) on a province.
 ---@param id number Province ID.
----@param bit number Flag bit index (0–63).
+---@param bit number Flag bit index (0â€“63).
 ---@param value boolean True to set, false to clear.
 lurek.province.setFlag = function(id, bit, value) end
 
@@ -23617,7 +23767,7 @@ function LImageData:getRegion(x, y, w, h) end
 function LImageData:getWidth() end
 
 --- Iterates over every pixel and replaces its color with the return value of the callback.
----@param callback function Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
+---@param callback function Called as callback(x, y, r, g, b, a) â†’ (r, g, b, a) for each pixel.
 function LImageData:mapPixels(callback) end
 
 --- Creates a new ImageData resized to the given dimensions using bilinear sampling.
@@ -23720,7 +23870,7 @@ function LObjModel:projectToMesh(camera, screenW, screenH) end
 --- Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
 ---@param width number Output image width in pixels.
 ---@param height number Output image height in pixels.
----@param rotation? number Rotation step (0–3, each step = 90 degrees, default 0).
+---@param rotation? number Rotation step (0â€“3, each step = 90 degrees, default 0).
 ---@return LImage The rendered image handle.
 function LObjModel:renderToImage(width, height, rotation) end
 
@@ -23852,10 +24002,10 @@ function LShape:rectangle(mode, x, y, w, h) end
 function LShape:roundedRectangle(mode, x, y, w, h, rx, ry) end
 
 --- Sets the drawing color for subsequent shape commands.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a? number Alpha channel (0–1, default 1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a? number Alpha channel (0â€“1, default 1).
 function LShape:setColor(r, g, b, a) end
 
 --- Sets the line width for subsequent line-mode shape commands.
@@ -24160,10 +24310,10 @@ lurek.render.flushSortGroup = function(id) end
 lurek.render.flushSortGroup = function(id) end
 
 --- Returns the current background clear color.
----@return number Red; green; blue; alpha channels (0–1). (value 1).
----@return number Red; green; blue; alpha channels (0–1). (value 2).
----@return number Red; green; blue; alpha channels (0–1). (value 3).
----@return number Red; green; blue; alpha channels (0–1). (value 4).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 1).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 2).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 3).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 4).
 lurek.render.getBackgroundColor = function() end
 
 --- Returns the current blend mode name.
@@ -24185,10 +24335,10 @@ lurek.render.getCanvas = function() end
 lurek.render.getCanvasSize = function(canvas) end
 
 --- Returns the current drawing color.
----@return number Red; green; blue; alpha channels (0–1). (value 1).
----@return number Red; green; blue; alpha channels (0–1). (value 2).
----@return number Red; green; blue; alpha channels (0–1). (value 3).
----@return number Red; green; blue; alpha channels (0–1). (value 4).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 1).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 2).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 3).
+---@return number Red; green; blue; alpha channels (0â€“1). (value 4).
 lurek.render.getColor = function() end
 
 --- Returns the current color write mask.
@@ -24503,13 +24653,13 @@ lurek.render.push = function() end
 
 --- Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
 ---@param id number Layer identifier (must match the popLayer call).
----@param alpha? number Layer opacity (0–1, default 1).
+---@param alpha? number Layer opacity (0â€“1, default 1).
 ---@param blendMode? string Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
 lurek.render.pushLayer = function(id, alpha, blendMode) end
 
 --- Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
 ---@param id number Layer identifier (must match the popLayer call).
----@param alpha? number Layer opacity (0–1, default 1).
+---@param alpha? number Layer opacity (0â€“1, default 1).
 ---@param blendMode? string Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
 lurek.render.pushLayer = function(id, alpha, blendMode) end
 
@@ -24550,9 +24700,9 @@ lurek.render.saveScreenshot = function(path) end
 lurek.render.scale = function(sx, sy) end
 
 --- Sets the background clear color used at the start of each frame.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
 lurek.render.setBackgroundColor = function(r, g, b) end
 
 --- Sets the blend mode for subsequent draw operations.
@@ -24568,10 +24718,10 @@ lurek.render.setBold = function(bold) end
 lurek.render.setCanvas = function(canvas) end
 
 --- Sets the active drawing color for all subsequent draw operations.
----@param r number Red channel (0–1).
----@param g number Green channel (0–1).
----@param b number Blue channel (0–1).
----@param a? number Alpha channel (0–1, default 1).
+---@param r number Red channel (0â€“1).
+---@param g number Green channel (0â€“1).
+---@param b number Blue channel (0â€“1).
+---@param a? number Alpha channel (0â€“1, default 1).
 lurek.render.setColor = function(r, g, b, a) end
 
 --- Sets which color channels are written during draw calls. Call with no args to enable all.
@@ -24809,7 +24959,7 @@ function LSaveManager:setCompress(enabled) end
 ---@param version number Integer schema version (must increase with each breaking data format change).
 function LSaveManager:setSchemaVersion(version) end
 
---- Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
+--- Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
 ---@param summary string Short description of the current game progress.
 function LSaveManager:setSummary(summary) end
 
@@ -24837,7 +24987,7 @@ lurek.save.newSaveManager = function() end
 
 --- Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
 ---@param callback function A zero-argument draw function invoked during flush.
----@param depth number Numeric z-depth controlling draw order — lower values are drawn behind higher values.
+---@param depth number Numeric z-depth controlling draw order â€” lower values are drawn behind higher values.
 function LDepthSorter:add(callback, depth) end
 
 --- Register a game object table for depth-sorted rendering. The object must expose a numeric `depth` field and a `drawSorted(self)` method. During `flush`, each object's `drawSorted` is called in depth order, making this ideal for entity-based architectures where objects manage their own drawing.
@@ -24847,7 +24997,7 @@ function LDepthSorter:addObject(obj) end
 --- Discard all pending entries without executing any draw callbacks. Use this when a scene is interrupted, reset, or destroyed before its normal `flush` call.
 function LDepthSorter:clear() end
 
---- Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.
+--- Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
 function LDepthSorter:flush() end
 
 --- Returns the number of draw entries currently queued for the next `flush` call. Useful for debugging or deciding whether to skip an empty render pass.
@@ -25028,7 +25178,7 @@ lurek.scene.pop = function(transition, duration, easing) end
 ---@return boolean True if the named scene was found and is now the active top scene, false if the name was not found.
 lurek.scene.popTo = function(name) end
 
---- Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
+--- Register a deferred-loading function for a scene. The loader function is NOT called immediately â€” it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
 ---@param name string Name to associate with the loader (must match the name used in `pushPreloaded`).
 ---@param loader function A zero-argument function that creates and registers the scene via `registerScene` when called.
 lurek.scene.preload = function(name, loader) end
@@ -25053,7 +25203,7 @@ lurek.scene.processPhysics = function(dt) end
 ---@param params? table Arbitrary data forwarded to the new scene's `enter(self, params)` callback for initialization.
 lurek.scene.push = function(scene, transition, duration, easing, params) end
 
---- Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
+--- Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 ---@param scene table The overlay scene table.
 ---@param transition? string Transition type name. Defaults to `"none"`.
 ---@param duration? number Transition animation duration in seconds. Defaults to 0.
@@ -25099,7 +25249,7 @@ lurek.scene.serializeScene = function() end
 ---@return boolean True if a scene was on top and the layer was set, false if the stack is empty.
 lurek.scene.setCurrentLayer = function(layer) end
 
---- Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.
+--- Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.
 ---@param key string The key to store data under (e.g. `"selectedLevel"`, `"playerName"`).
 ---@param value any Value to store under the scene data key.
 lurek.scene.setData = function(key, value) end
@@ -25134,7 +25284,7 @@ lurek.scene.setUpdateEnabled = function(target, enabled) end
 ---@return LTransitionsSlideResult Transition descriptor `{type="slide...", duration=...}` for use with scene functions.
 lurek.scene.transitions.slide = function(direction, duration) end
 
---- Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).
+--- Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).
 ---@param scene table The replacement scene table.
 ---@param transition? string Transition type name. Defaults to `"none"`.
 ---@param duration? number Transition animation duration in seconds. Defaults to 0.
@@ -25142,7 +25292,7 @@ lurek.scene.transitions.slide = function(direction, duration) end
 ---@param params? table Arbitrary data forwarded to the new scene's `enter(self, params)` callback.
 lurek.scene.switchTo = function(scene, transition, duration, easing, params) end
 
---- Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.
+--- Remove a scene registration by name. Does not pop the scene if it is currently active on the stack â€” it only removes the name mapping.
 ---@param name string The registered name to remove.
 lurek.scene.unregisterScene = function(name) end
 
@@ -25309,7 +25459,7 @@ function LSkeleton:getAnimationTime() end
 
 --- Returns the final world-space transform of a bone after hierarchy resolution.
 ---@param idx number Zero-based bone index.
----@return LSkeletonGetBoneWorldResult Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
+---@return LSkeletonGetBoneWorldResult Table with keys x, y, rotation, scale_x, scale_y â€” or nil if the index is invalid.
 function LSkeleton:getBoneWorld(idx) end
 
 --- Returns the name of the currently active skin, or nil if no skin is set.
@@ -25481,7 +25631,7 @@ function LSpriteSheet:getColumn(col) end
 function LSpriteSheet:getFrame(index) end
 
 --- Returns the total number of frames in this sprite sheet.
----@return number Total frame count (columns × rows).
+---@return number Total frame count (columns Ă— rows).
 function LSpriteSheet:getFrameCount() end
 
 --- Returns the pixel dimensions of a single frame cell.
@@ -25530,7 +25680,7 @@ function LSpriteSheet:typeOf(name) end
 ---@return LSpriteSheet A new sprite sheet derived from the atlas entries.
 lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
 
---- Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
+--- Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 ---@param tw number Full texture width in pixels.
 ---@param th number Full texture height in pixels.
 ---@return LSpriteSheet A new sprite sheet configured for RPG Maker character sprites.
@@ -27554,7 +27704,7 @@ lurek.timer.setPhysicsMaxSteps = function(n) end
 ---@param alpha number Smoothing factor between 0.01 and 1.0.
 lurek.timer.setSmoothingFactor = function(alpha) end
 
---- Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.
+--- Blocks the current thread for the given number of seconds. Use sparingly â€” this halts the entire game loop. Intended for loading screens or synchronization.
 ---@param seconds number Duration to sleep in seconds.
 lurek.timer.sleep = function(seconds) end
 

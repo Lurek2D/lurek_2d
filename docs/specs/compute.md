@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/compute/`
-- Lua API path(s): `src/lua_api/compute_api.rs`
-- Primary Lua namespace: `lurek.compute`
+- Binding: `src/lua_api/compute_api.rs`
+- Namespace: `lurek.compute`
+- Lua API surface: `13` functions, `6` types, `80` methods
 - Rust test path(s): tests/rust/unit/compute_tests.rs; tests/rust/stress/compute_stress_tests.rs; inline tests in src/compute/array.rs, src/compute/spatial.rs
 - Lua test path(s): tests/lua/unit/test_compute.lua; tests/lua/stress/test_compute_stress.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_compute_golden.lua
 
@@ -24,6 +25,10 @@ This module is intentionally GPU-agnostic and gameplay-agnostic. It exists to pr
 Quality for this module means strong shape/type guarantees, predictable numeric behavior, and transparent performance controls (such as configurable parallel dispatch thresholds) so callers can balance determinism and throughput.
 
 Implementation detail and boundary guarantees for compute: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analytics.rs: Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d) - Histogram binning with configurable range and bin count - Percentile extraction with linear interpolation - Pairwise statistical measures (covariance, Pearson correlation) - Value normalization helpe; array.rs: Dense n-dimensional array container with typed storage (float32, float64, int32) - Shape validation, stride computation, and flat-index addressing - Constructors for zeros, ones, range, and from-slice initialization - Element access by flat index or multidimensional coordinates -; fft.rs: Radix-2 in-place FFT and inverse FFT for power-of-two length buffers - Real-to-complex forward transform with automatic zero-padding - Complex-to-real inverse transform for spectrum reconstruction - Magnitude spectrum extraction from complex bin pairs; linalg.rs: Vector operations (normalize, cross2d, outer product, dot via spatial) - 2D transformation matrices (rotation, affine, point transform) - Convolution kernels (Gaussian) and edge detection (Sobel) - Linear system solving via Gaussian elimination with partial pivoting - LU decompos; mod.rs: N-dimensional array container, element-wise and reduction operations - FFT, linear algebra, spatial filtering, and statistical analytics - Configurable parallel dispatch threshold for large arrays; ops.rs: Element-wise arithmetic, comparison, and bitwise operations on NdArray - Scalar and array binary operations with row-broadcast support - Reduction operations (sum, mean, min, max) globally and along axes - In-place mutation variants for add, sub, mul, div - Reshape, transpose, cl; spatial.rs: 2D convolution with zero-padded boundary handling - Binary morphology operators (dilate, erode) using Manhattan radius - Flood fill with 4-connected BFS propagation - Sub-region extraction and insertion for 2D arrays - Matrix multiplication and 1D dot product. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -96,9 +101,6 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/compute_api.rs`
-- Namespace: `lurek.compute`
-
 ### Functions
 
 - `lurek.compute.affine2d`: Creates a 2D affine transform matrix.
@@ -114,6 +116,12 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 - `lurek.compute.rotate2dMatrix`: Creates a 2D rotation matrix from an angle in radians.
 - `lurek.compute.setParThreshold`: Sets the global compute parallelism threshold and returns the previous value.
 - `lurek.compute.zeros`: Creates a zero-filled array with the requested shape and data type.
+
+### Callbacks
+
+- `LArray:map` param `func` (`function`): Function called with each element value and returning a number.
+- `LArray:reduce` param `func` (`function`): Function called as `(accumulator, value)` and returning the next accumulator.
+- `LArray:scan` param `func` (`function`): Function called as `(accumulator, value)` and returning the next accumulator.
 
 ### Enums
 
@@ -279,7 +287,3 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

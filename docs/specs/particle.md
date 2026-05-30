@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/particle/`
-- Lua API path(s): `src/lua_api/particle_api.rs`
-- Primary Lua namespace: `lurek.particle`
+- Binding: `src/lua_api/particle_api.rs`
+- Namespace: `lurek.particle`
+- Lua API surface: `5` functions, `3` types, `105` methods
 - Rust test path(s): tests/rust/unit/particle_tests.rs
 - Lua test path(s): tests/lua/unit/test_particle.lua, tests/lua/stress/test_particle_stress.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/evidence/test_evidence_particle.lua
 
@@ -20,6 +21,15 @@ Designed for high-performance visual effects, it utilizes bounded, fixed-capacit
 The visual representation of particles is extremely flexible. The system supports both procedural geometric shapes (like squares, circles, sparks, and shrapnel) and fully textured sprites. Throughout their lifetime, particles dynamically interpolate key properties—such as color, size, rotation, and opacity—using customizable multi-stop keyframe curves. To create complex, layered effects, `ParticleSystem`s support sub-emitters, allowing particles to spawn entirely new child particle bursts upon specific events, such as birth, death, or collision. The module also features a robust physics collision integration, allowing particles to bounce realistically off defined bounding boxes or dynamic Rapier2D world geometry with configurable restitution.
 
 Beyond standalone particles, the module implements a sophisticated `Trail` system. This generates connected ribbon segments behind moving particles or standalone points, featuring width tapering, age-based point retirement, and head-to-tail color interpolation. Additional advanced features include point attractors (gravity wells) that dynamically pull or repel live particles, and texture animation that can cycle through sprite atlas frames over a particle's lifetime. For ease of use, the module provides a suite of ready-made `presets` for common effects like fire, smoke, rain, snow, and sparks. The entire module is heavily optimized for deterministic simulation (given the same initial seed) and provides extensive debug visualization tools. It is fully exposed to the Lua scripting environment via the `lurek.particle.*` API, making it an essential tool for bringing dynamic, visually rich effects to Lurek2D games.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -119,9 +129,6 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/particle_api.rs`
-- Namespace: `lurek.particle`
-
 ### Functions
 
 - `lurek.particle.drawLifecycleToImage`: Draws a lifecycle chart image from `(step, count)` snapshot tables.
@@ -129,6 +136,11 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `lurek.particle.newPreset`: Creates a particle system from a named preset.
 - `lurek.particle.newSystem`: Creates a particle system from an optional config table.
 - `lurek.particle.newTrail`: Creates a trail effect. This function is exposed to Lua scripts.
+
+### Callbacks
+
+- `LParticleSystem:setCustomEmissionShape` param `cb` (`function`): Callback returning an x/y position.
+- `LParticleSystem:setOnDeathBatch` param `cb` (`function`): Death batch callback.
 
 ### Enums
 
@@ -277,12 +289,3 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LTrail:type`: Returns the Lua-visible type name for this trail handle.
 - `LTrail:typeOf`: Returns whether this trail handle matches a supported type name.
 - `LTrail:update`: Updates trail point lifetimes. This method is available to Lua scripts.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `physics`: Imports or references `src/physics/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/font/`
-- Lua API path(s): `src/lua_api/font_api.rs`
-- Primary Lua namespace: `lurek.font`
+- Binding: `src/lua_api/font_api.rs`
+- Namespace: `lurek.font`
+- Lua API surface: `11` functions, `1` types, `8` methods
 - Rust test path(s): tests/rust/unit/font_tests.rs
 - Lua test path(s): tests/lua/unit/test_font_core_unit.lua
 
@@ -18,6 +19,10 @@
 The font module provides the CPU-side data layer for text rendering: bitmap font atlas loading with Latin-1 glyph coverage, per-glyph and per-text metrics, text alignment, word and character wrapping, and a central font registry for named handles. The module does not own GPU resources — texture management for font atlases remains in the render module. Fourteen bundled Courier New bitmap atlases are shipped in `assets/fonts/`.
 
 This module is mostly self-contained inside the `Platform Services` group. Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -60,9 +65,6 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/font_api.rs`
-- Namespace: `lurek.font`
-
 ### Functions
 
 - `lurek.font.availableSizes`: Returns the array of built-in bitmap font point sizes available in the engine.
@@ -76,6 +78,10 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - `lurek.font.measureLine`: Measures the pixel width and height of a single line of text with the given font.
 - `lurek.font.shapeText`: Shapes and aligns text into wrapped lines with x-offset data for rendering.
 - `lurek.font.wrapText`: Wraps a text string into lines that fit within the given maximum pixel width.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -101,7 +107,3 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 - `LFont:lineHeight`: Returns the line height of this font in pixels. This method is available to Lua scripts.
 - `LFont:measure`: Measures the pixel dimensions of a text string at the given scale. This method is available to Lua scripts.
 - `LFont:wrapText`: Wraps text into lines fitting within the given max width. This method is available to Lua scripts.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/debugbridge/`
-- Lua API path(s): `src/lua_api/debugbridge_api.rs`
-- Primary Lua namespace: `lurek.debugbridge`
+- Binding: `src/lua_api/debugbridge_api.rs`
+- Namespace: `lurek.debugbridge`
+- Lua API surface: `16` functions, `2` types, `0` methods
 - Rust test path(s): tests/rust/unit/debugbridge_tests.rs
 - Lua test path(s): tests/lua/unit/test_debugbridge.lua
 
@@ -24,6 +25,10 @@ This module should stay transport-focused. It is not a replacement for gameplay 
 Operationally, quality depends on predictable queue behavior, clear message contracts, and failure-safe networking boundaries so debug tooling cannot silently corrupt runtime state.
 
 Implementation detail and boundary guarantees for debugbridge: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bridge.rs: Define shared state and queue structures for the debug bridge protocol.; mod.rs: Expose the debug bridge subsystem for runtime-to-IDE communication.; server.rs: Run a non-blocking TCP server loop accepting debug bridge client connections.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -54,9 +59,6 @@ Implementation detail and boundary guarantees for debugbridge: this module keeps
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/debugbridge_api.rs`
-- Namespace: `lurek.debugbridge`
-
 ### Functions
 
 - `lurek.debugbridge.broadcast`: Queues a JSON string payload broadcast for debug bridge clients.
@@ -75,6 +77,10 @@ Implementation detail and boundary guarantees for debugbridge: this module keeps
 - `lurek.debugbridge.setMaxPrintHistory`: Sets the maximum retained print history entry count.
 - `lurek.debugbridge.start`: Starts the localhost debug bridge server on a port.
 - `lurek.debugbridge.stop`: Stops the debug bridge server and joins its server thread.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -110,7 +116,3 @@ Implementation detail and boundary guarantees for debugbridge: this module keeps
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

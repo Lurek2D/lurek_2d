@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/spine/`
-- Lua API path(s): `src/lua_api/spine_api.rs`
-- Primary Lua namespace: `lurek.spine`
+- Binding: `src/lua_api/spine_api.rs`
+- Namespace: `lurek.spine`
+- Lua API surface: `3` functions, `5` types, `34` methods
 - Rust test path(s): tests/rust/unit/spine_tests.rs
 - Lua test path(s): tests/lua/unit/test_spine.lua
 
@@ -20,6 +21,12 @@ Moving beyond traditional frame-by-frame sprites, this module enables fluid, dyn
 To achieve sophisticated, procedural motion, the module features a dedicated Inverse Kinematics (IK) system. The `IKConstraint` solver calculates the necessary joint rotations for a two-bone chain (e.g., an arm or leg) to reach a specific world-space target, vastly simplifying dynamic interactions like foot placement on uneven terrain or aiming weapons. The animation pipeline itself is driven by `SkeletonAnimation` clips, which organize multiple `BoneTimeline` and `SlotTimeline` sequences containing keyed property changes. The runtime efficiently interpolates between these keyframes using various easing curves (linear, stepped, bezier) and applies the resulting poses to the skeleton. Animations can be blended together using configurable weights, allowing for smooth transitions between states (like transitioning from a run cycle to a jump).
 
 The module also supports extensive customization and event handling. The Skin system allows developers to group specific slot attachments into switchable visual sets, enabling character customization (e.g., changing armor or weapons) without duplicating the underlying animation rig. Furthermore, `EventKeyframe` markers can be embedded within timelines to trigger Lua callbacks at precise moments, perfect for syncing footstep audio or hit-box activation. Fully exposed through the `lurek.spine.*` API, this module provides the robust tooling necessary to bring complex, expressive, and interactive 2D characters to life.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -80,14 +87,15 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/spine_api.rs`
-- Namespace: `lurek.spine`
-
 ### Functions
 
 - `lurek.spine.animationFromJson`: Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 - `lurek.spine.newSkeleton`: Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 - `lurek.spine.newSkeletonAnimation`: Creates a new empty animation with the given name and duration. Add keyframes to define motion.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -193,9 +201,3 @@ The module also supports extensive customization and event handling. The Skin sy
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

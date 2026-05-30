@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/patterns/`
-- Lua API path(s): `src/lua_api/patterns_api.rs`
-- Primary Lua namespace: `lurek.patterns`
+- Binding: `src/lua_api/patterns_api.rs`
+- Namespace: `lurek.patterns`
+- Lua API surface: `24` functions, `27` types, `218` methods
 - Rust test path(s): tests/rust/unit/patterns_tests.rs
 - Lua test path(s): tests/lua/unit/test_patterns_core_unit.lua; tests/lua/stress/test_patterns_stress.lua
 
@@ -20,6 +21,10 @@ Designed to be highly reusable, completely decoupled from one another, and fully
 To facilitate decoupled communication across systems, the module provides a robust `EventBus` for pub-sub messaging with wildcard listeners and prioritized execution, as well as a channel-based `Mediator`. The `Observer` pattern is available for reactive property-change notifications, and the `Blackboard` provides a shared, typed key-value store with revision tracking—essential for coordinating AI state. For undo/redo functionality (e.g., in editors or turn-based games), the `CommandStack` offers a cursor-based linear history with batching support. Resource management is handled by the `ObjectPool`, which tracks active and idle IDs to reduce allocation churn for frequently spawned entities like bullets or particles. The `Factory` and `ServiceLocator` patterns provide dynamic object construction and dependency injection.
 
 The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
+
+## Imports
+
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
 ## Files
 
@@ -189,9 +194,6 @@ The module also includes specialized data structures optimized for game developm
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/patterns_api.rs`
-- Namespace: `lurek.patterns`
-
 ### Functions
 
 - `lurek.patterns.newBehaviorTree`: Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
@@ -219,6 +221,21 @@ The module also includes specialized data structures optimized for game developm
 - `lurek.patterns.newThrottle`: Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
 - `lurek.patterns.newWeightedRandom`: Create a new weighted random selection pool. Add items with weights and pick random selections.
 
+### Callbacks
+
+- `LBehaviorTree:setLeaf` param `callback` (`function`): A function returning a status string.
+- `LBlackboard:watch` param `callback` (`function`): Called with (key, newValue) when a change occurs.
+- `LCommandStack:execute` param `execFn` (`function`): The function that performs the action.
+- `LCommandStack:execute` param `undoFn` (`function?`): An optional function that reverses the action. If omitted, command cannot be undone.
+- `LDebounce:onFire` param `f` (`function`): The callback to execute.
+- `LEventBus:on` param `callback` (`function`): The function to invoke when the event fires.
+- `LFactory:register` param `ctor` (`function`): A constructor function that returns a new instance.
+- `LFunnel:onFlush` param `f` (`function`): Callback receiving a table array of batched entries.
+- `LMediator:on` param `callback` (`function`): The handler to invoke when a message is sent to this channel.
+- `LObserver:subscribe` param `callback` (`function`): Called with (key, newValue) when the property changes.
+- `LStrategy:register` param `callback` (`function`): The implementation function to call when this strategy is active.
+- `LThrottle:onFire` param `f` (`function`): The callback to execute on fire.
+
 ### Enums
 
 - No documented module-level enums/constants.
@@ -236,7 +253,7 @@ The module also includes specialized data structures optimized for game developm
 ##### Methods
 
 - `LBehaviorTree:addChild`: Attach a child node to a parent composite or decorator node.
-- `LBehaviorTree:addInverter`: Create a decorator node that inverts its child's result (success ↔ failure).
+- `LBehaviorTree:addInverter`: Create a decorator node that inverts its child's result (success â†” failure).
 - `LBehaviorTree:addLeaf`: Create a leaf (action) node that will invoke a named callback function on tick.
 - `LBehaviorTree:addParallel`: Create a parallel composite node that runs all children simultaneously.
 - `LBehaviorTree:addRepeat`: Create a decorator node that repeats its child a fixed number of times.
@@ -751,7 +768,3 @@ The module also includes specialized data structures optimized for game developm
 - `LWeightedRandom:remove`: Remove an item by its ID. Returns true if it existed.
 - `LWeightedRandom:setWeight`: Change the weight of an existing entry.
 - `LWeightedRandom:totalWeight`: Return the sum of all entry weights.
-
-## References
-
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

@@ -9,8 +9,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/effect/`
-- Lua API path(s): `src/lua_api/effect_api.rs`
-- Primary Lua namespace: `lurek.effect`
+- Binding: `src/lua_api/effect_api.rs`
+- Namespace: `lurek.effect`
+- Lua API surface: `10` functions, `3` types, `62` methods
 - Rust test path(s): tests/rust/unit/effect_tests.rs
 - Lua test path(s): tests/lua/unit/test_effect_core_unit.lua, tests/lua/integration/test_effect_camera.lua, tests/lua/integration/test_effect_light.lua, tests/lua/evidence/test_effect_evidence.lua
 
@@ -25,6 +26,13 @@ A key architectural property is data-driven configuration. Effects are represent
 The module should continue to own effect lifecycle and stack policy (including expiry/removal timing), while the renderer remains responsible for executing the generated commands on GPU resources.
 
 Implementation detail and boundary guarantees for effect: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: draw.rs: Render a preview image summarizing the current post-FX stack state.; effect.rs: Post-processing effect instance holding type, parameters, and enabled state.; effect_type.rs: Post-processing effect type enumeration and name registry.; image_effect.rs: Image-scoped post-processing effect pipeline that groups and orders shader passes.; mod.rs: Visual effect sub-system: particle effects, screen-space post-processing, and shakes.; presets.rs: Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).; render.rs: Render-command integration for the post-effects stack.; stack.rs: Ordered post-processing effect stack with per-entry enable flags.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -89,9 +97,6 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/effect_api.rs`
-- Namespace: `lurek.effect`
-
 ### Functions
 
 - `lurek.effect.getEffectTypes`: Returns all built-in post-processing effect type names.
@@ -104,6 +109,10 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - `lurek.effect.newPresetStack`: Creates a named preset post-processing stack with optional dimensions.
 - `lurek.effect.newStack`: Creates a post-processing stack using optional dimensions or the current window size.
 - `lurek.effect.setShaderErrorDisplay`: Enables or disables renderer shader error display overlays.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -205,10 +214,3 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - `LPostFxStack:setFeedback`: Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 - `LPostFxStack:type`: Returns the Lua-visible type name for this post-processing stack handle.
 - `LPostFxStack:typeOf`: Returns whether this stack handle matches a supported type name.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `overlay`: Imports or references `src/overlay/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

@@ -10,8 +10,9 @@ groups, and exposes query helpers for scripts.
 
 - Module group: `Feature Systems`
 - Source path: `src/asset/`
-- Lua API path(s): `src/lua_api/asset_api.rs`
-- Primary Lua namespace: `lurek.asset`
+- Binding: `src/lua_api/asset_api.rs`
+- Namespace: `lurek.asset`
+- Lua API surface: `23` functions, `3` types, `2` methods
 - Rust test path(s): tests/rust/unit/asset_tests.rs
 - Lua test path(s): tests/lua/unit/test_asset_core_unit.lua
 
@@ -24,6 +25,10 @@ Core responsibilities are stable indexing and retrieval by name, group, tag, and
 The design goal is a lightweight catalog layer, not a universal transcoder. Binary-heavy types (images, fonts, sounds) are primarily represented by handle/path metadata in this module, while text-like assets can retain source content when needed for script tooling and hot-reload workflows. This separation keeps the module performant and avoids tight coupling to decoder internals.
 
 In practical usage, `asset` is the lookup and lifetime contract that other systems depend on. High-level gameplay code should query and resolve through this registry, then hand off to module-specific loaders for final decode/playback/render behavior.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -44,9 +49,6 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 - Serves as the composition entry for engine-side `lurek.asset` state and operations.
 
 ## Lua API Ref
-
-- Binding: `src/lua_api/asset_api.rs`
-- Namespace: `lurek.asset`
 
 ### Functions
 
@@ -73,6 +75,10 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 - `lurek.asset.setName`: Sets the display name for an asset handle.
 - `lurek.asset.stats`: Returns a snapshot table describing the current cache state.
 - `lurek.asset.unload`: Decrements the ref count for a cached asset; removes the entry when it reaches zero.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -124,7 +130,3 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

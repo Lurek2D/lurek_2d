@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/globe/`
-- Lua API path(s): `src/lua_api/globe_api.rs`
-- Primary Lua namespace: `lurek.globe`
+- Binding: `src/lua_api/globe_api.rs`
+- Namespace: `lurek.globe`
+- Lua API surface: `11` functions, `4` types, `72` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -22,6 +23,14 @@ The module manages complex geographical topologies via the `RegionGraph` (aliase
 To support gameplay mechanics, the `globe` module features a robust `FogMask` system for fog-of-war. This system uses compact bit-packed representations to track hidden, explored, and visible states per region, per viewer, allowing for efficient serialization and multi-faction scenarios. Data visualization is handled through `MarkerStore` and `LabelStore`, which manage the placement of animated icons and text annotations directly onto the sphere's surface. Additionally, `LayerStore` allows for color-coded data overlays (heat maps), and arcs can be drawn to visualize great-circle routes. Screen-space region picking is implemented via ray-polygon intersection, ensuring precise user interaction. The entire suite of features, including multi-globe support via the `GlobeRegistry`, is fully scriptable via the `lurek.globe.*` Lua API.
 
 > **Note on naming:** Globe internally uses "Region" as the primary type name (e.g., `Region`, `RegionId`, `RegionGraph`) to avoid confusion with the separate `crate::province` 2D province-map module. Backward-compatible aliases (`Province`, `ProvinceId`, `ProvinceGraph`) are provided. The Lua API exposes both `addProvince`/`addRegion` etc. for scripts.
+
+## Imports
+
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
+- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 
 ## Files
 
@@ -169,9 +178,6 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/globe_api.rs`
-- Namespace: `lurek.globe`
-
 ### Functions
 
 - `lurek.globe.generateVoronoi`: Creates a globe and populates provinces from latitude-longitude seed points.
@@ -185,6 +191,10 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `lurek.globe.new`: Creates a named globe with optional specification fields in the module registry.
 - `lurek.globe.raySphereIntersect`: Intersects a 3D ray with a sphere and returns the nearest positive hit distance.
 - `lurek.globe.remove`: Removes a globe from the registry by name.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -312,11 +322,3 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `LGlobeRegistry:remove`: Removes a globe from the registry by name.
 - `LGlobeRegistry:type`: Returns the Lua-visible type name for this globe registry handle.
 - `LGlobeRegistry:typeOf`: Returns whether this registry handle matches a supported type name.
-
-## References
-
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Edge/Integration` into `Foundations`.
-- `pathfind`: Imports or references `src/pathfind/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.

@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/minimap/`
-- Lua API path(s): `src/lua_api/minimap_api.rs`
-- Primary Lua namespace: `lurek.minimap`
+- Binding: `src/lua_api/minimap_api.rs`
+- Namespace: `lurek.minimap`
+- Lua API surface: `1` functions, `1` types, `86` methods
 - Rust test path(s): tests/rust/game/minimap_tests.rs
 - Lua test path(s): tests/lua/unit/test_minimap.lua, tests/lua/evidence/test_evidence_minimap.lua
 
@@ -20,6 +21,15 @@ It manages an independent grid of terrain cells, allowing games to display a sca
 Beyond basic terrain visualization, the minimap acts as a comprehensive strategic display. It tracks active game entities via `MinimapObject`s, which project world positions onto the grid and render as typed, owner-colored dots or assigned texture icons. To support mission and location tracking, it provides a `MinimapMarker` system for persistent or timed points of interest, featuring built-in animation states like blinking, pulsing, or rotating crosshairs. For strategic feedback, the module supports dynamic `OverlayShape`s (lines, rectangles, named polyline paths) and temporary animated `MinimapPing` alerts to draw player attention to specific map coordinates.
 
 The module also features a robust rendering pipeline that composites these layers—terrain, fog, overlays, objects, markers, and pings—into an optimized `ImageData` buffer or directly generates an ordered list of `RenderCommand`s. It fully supports configurable display resolutions, zoom levels, panning, and automatic camera-tracking viewports that overlay the player's active screen bounds. To support diverse game genres, it offers multiple color modes, such as switching between standard terrain-colored views and political owner-colored strategic modes. Bridging seamlessly with other systems like the `province` registry, this entire feature set is exposed to Lua scripts via the `lurek.minimap.*` API, enabling developers to build complex, interactive UI maps with minimal engine overhead.
+
+## Imports
+
+- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `image`: Imports or references `image` from `src/image/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -79,12 +89,13 @@ The module also features a robust rendering pipeline that composites these layer
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/minimap_api.rs`
-- Namespace: `lurek.minimap`
-
 ### Functions
 
 - `lurek.minimap.newMinimap`: Creates a minimap with grid dimensions and optional display size.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -188,12 +199,3 @@ The module also features a robust rendering pipeline that composites these layer
 - `LMinimap:type`: Returns the Lua-visible type name for this minimap handle.
 - `LMinimap:typeOf`: Returns whether this minimap handle matches a supported type name.
 - `LMinimap:update`: Advances minimap animations and timers.
-
-## References
-
-- `camera`: Imports or references `src/camera/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `image`: Imports or references `image` from `src/image/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `raycaster`: Imports or references `src/raycaster/`. Dependency stays inside `Feature Systems` and should remain acyclic.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/agent/`
-- Lua API path(s): `src/lua_api/agent_api.rs`
-- Primary Lua namespace: `lurek.agent`
+- Binding: `src/lua_api/agent_api.rs`
+- Namespace: `lurek.agent`
+- Lua API surface: `17` functions, `10` types, `85` methods
 - Rust test path(s): tests/rust/unit/agent_tests.rs
 - Lua test path(s): tests/lua/unit/test_agent_core_unit.lua
 
@@ -20,6 +21,10 @@ The `agent` module owns the engine-side runtime for LLM-backed assistants. It ke
 The module boundary is narrow. `src/agent/` owns request construction, async callback routing, response parsing for `json` / `csv` / `text`, automatic transient-error retry with back-off, and the secure `evalCode` runtime entry point. The `AISystemState` type provides multi-agent orchestration: a shared system prompt, manually included instruction blocks, and keyword-gated skill blocks that Lurek auto-injects based on prompt keyword overlap. `src/lua_api/agent_api.rs` exposes `lurek.agent.new`, `lurek.agent.newManager`, `lurek.agent.newSystem`, and userdata methods that delegate into the module runtime. Network transport stays delegated to `crate::network::http::execute_request`, and the API remains polling-based so prompt execution never blocks the frame loop.
 
 `src/agent/chat.rs` provides a synchronous direct LLM path (`configure`, `complete`, `completeJson`, `embed`, `isAvailable`, `listModels`) backed by `GlobalLlmConfig`. `LlmChat` maintains a stateful message history for multi-turn conversations. `LlmTemplate` renders `{key}` placeholders. `src/agent/memory.rs` provides `WorkingMemory` (bounded FIFO), `EpisodicMemory` (tick-stamped event log), `SemanticMemory` (fact store), and `AgentMemory` (bundled, optionally persistent).
+
+## Imports
+
+- `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.
 
 ## Files
 
@@ -88,9 +93,6 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/agent_api.rs`
-- Namespace: `lurek.agent`
-
 ### Functions
 
 - `lurek.agent.complete`: Sends a single prompt to the global LLM and returns the response text.
@@ -110,6 +112,16 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `lurek.agent.newSystem`: Creates a new AISystem orchestrator that holds agents, instructions, and keyword-gated skills.
 - `lurek.agent.newTemplate`: Creates a new `{key}` placeholder prompt template.
 - `lurek.agent.newWorkingMemory`: Creates a new bounded FIFO working memory with the given capacity.
+
+### Callbacks
+
+- `LAISystem:prompt` param `callback` (`function`): Function called with `(success, data, err_info)` when complete.
+- `LAISystem:runAll` param `callback` (`function`): Function called with a results table when all tasks complete.
+- `LAgent:prompt` param `callback` (`function`): Function called with `(success, data, err_info)` when complete.
+- `LAgent:promptBatch` param `callback` (`function`): Function called with a results table when all complete.
+- `LAgentManager:runAll` param `callback` (`function`): Function called with a results table when all tasks complete.
+- `LOllamaManager:pullModel` param `callback` (`function`): Called with `(success, err_msg)` on completion.
+- `lurek.agent.completeAsync` param `callback` (`function`): Called with `(text, err)` on completion (`err` is `nil` on success).
 
 ### Enums
 
@@ -281,7 +293,7 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 
 #### LSemanticMemory Type
 
-- Lua-side handle for an unbounded key → value fact store.
+- Lua-side handle for an unbounded key Ă˘â€ â€™ value fact store.
 
 ##### Fields
 
@@ -311,7 +323,3 @@ The module boundary is narrow. `src/agent/` owns request construction, async cal
 - `LWorkingMemory:getRecent`: Returns the `n` most recently inserted entries as an array of `{key, value}` tables.
 - `LWorkingMemory:len`: Returns the current number of entries.
 - `LWorkingMemory:push`: Inserts or updates a key-value entry; evicts the oldest entry if capacity is exceeded.
-
-## References
-
-- `network`: `src/agent/client.rs` delegates HTTP transport to `crate::network::http::execute_request`.

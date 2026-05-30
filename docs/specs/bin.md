@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/bin/`
-- Lua API path(s): None direct
-- Primary Lua namespace: None direct
+- Binding: None direct
+- Namespace: None direct
+- Lua API surface: `0` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -22,6 +23,10 @@ Each binary should remain small, task-oriented, and decoupled from gameplay runt
 This module is intentionally integration-oriented: it wires CLI inputs to engine/library APIs, formats outputs, and exits with clear status codes. It is not intended to host feature-domain business logic.
 
 As the toolset grows, the quality bar is discoverability and reliability: clear command contracts, predictable side effects, and stable output formats that can be consumed by local scripts and CI workflows.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -42,7 +47,3 @@ As the toolset grows, the quality bar is discoverability and reliability: clear 
 ## Lua API Ref
 
 - No dedicated direct `lurek.*` namespace is exposed by this module.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

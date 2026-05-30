@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/animation/`
-- Lua API path(s): `src/lua_api/animation_api.rs`
-- Primary Lua namespace: `lurek.animation`
+- Binding: `src/lua_api/animation_api.rs`
+- Namespace: `lurek.animation`
+- Lua API surface: `7` functions, `8` types, `65` methods
 - Rust test path(s): tests/rust/unit/animation_tests.rs
 - Lua test path(s): tests/lua/unit/test_animation.lua, tests/lua/stress/test_animation_stress.lua, tests/lua/integration/test_tween_animation.lua, tests/lua/integration/test_render_animation.lua, tests/lua/integration/test_animation_timer.lua, tests/lua/golden/test_animation_golden.lua
 
@@ -24,6 +25,14 @@ For coordinated character movement and advanced timing, the `AnimSyncGroup` lock
 The module offers seamless integration with external tools and formats. An Aseprite JSON importer (`load_aseprite_json`) parses exported frame tags into named clip ranges, supporting both array and object layouts while extracting per-frame durations. Additionally, a `SpineAnimBridge` maps the module's FSM states to Spine skeleton animations, allowing 2D skeletal animations to be controlled through the same uniform interface.
 
 Finally, the module generates textured draw commands from active frame quads via the `render` utilities, tightly integrating with the engine's graphics pipeline. Lua bindings expose `LAnimation:draw` and `LAnimStateMachine:draw` as ergonomic helpers over the same current-frame rectangle returned by `getQuad`; these helpers queue one draw command when a frame is active, return `false` without mutating playback when no frame is active, and leave broader `lurek.render.draw` polymorphism unchanged. Both `:draw` methods accept two call forms: `draw(image, x, y, opts)` for explicit atlas passing and `draw(x, y, opts)` when a spritesheet has been stored in advance with `:setImage(image)`. The API is thoroughly exposed to Lua via the `lurek.animation` namespace, providing script developers with constructors for state machines, curves, blend layers, and synchronization groups, along with methods to advance playback and poll animation events. By importing only the `math` module and avoiding cyclic dependencies, the animation runtime remains fully headless-testable and architecturally isolated within the Feature Systems group.
+
+## Imports
+
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `spine`: Imports or references `src/spine/`. Dependency stays inside `Feature Systems` and should remain acyclic.
 
 ## Files
 
@@ -121,9 +130,6 @@ Finally, the module generates textured draw commands from active frame quads via
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/animation_api.rs`
-- Namespace: `lurek.animation`
-
 ### Functions
 
 - `lurek.animation.buildCharacter`: Builds a character animation bundle from grid frame and clip configuration.
@@ -133,6 +139,10 @@ Finally, the module generates textured draw commands from active frame quads via
 - `lurek.animation.newCurve`: Creates an empty animation curve. This function is exposed to Lua scripts.
 - `lurek.animation.newStateMachine`: Creates an animation state machine by consuming an animation handle.
 - `lurek.animation.newSyncGroup`: Creates an empty animation synchronization group.
+
+### Callbacks
+
+- `LAnimCurve:setCustomEasing` param `func` (`function`): Function used as custom easing callback, or nil to clear custom easing.
 
 ### Enums
 
@@ -300,11 +310,3 @@ Finally, the module generates textured draw commands from active frame quads via
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `spine`: Imports or references `src/spine/`. Dependency stays inside `Feature Systems` and should remain acyclic.

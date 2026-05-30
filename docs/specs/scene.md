@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/scene/`
-- Lua API path(s): `src/lua_api/scene_api.rs`
-- Primary Lua namespace: `lurek.scene`
+- Binding: `src/lua_api/scene_api.rs`
+- Namespace: `lurek.scene`
+- Lua API surface: `59` functions, `9` types, `10` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): none found in the workspace
 
@@ -20,6 +21,13 @@ It provides the structural backbone for Lurek2D games by coordinating transition
 Visual polish is heavily emphasized through built-in transition effects. When switching scenes, developers can apply animated transitions (including fade, wipe, slide, dissolve, pixelate, and iris effects) with configurable durations and mathematical easing curves (like bounce or back-overshoot). To ensure correct visual layering, the module features a highly optimized `DepthSorter`. This component adaptively selects the most efficient sorting strategy (unstable, stable, radix, or even multi-threaded rayon parallel sorting for 10k+ entries) based on the number of draw calls, ensuring that sprites and UI elements are rendered strictly front-to-back according to their assigned depth values.
 
 The `scene` module also acts as a central registry and shared data bus. Scenes can be registered by string names, allowing for direct navigation (e.g., `popTo` a specific scene) or deferred loading via `pushPreloaded`, which is ideal for breaking up heavy asset initialization. Furthermore, the stack provides shared data slots, enabling scenes to pass state variables (like selected level indices or player choices) between each other without relying on fragile global variables. Game logic is driven by a deterministic callback lifecycle (`enter`, `leave`, `pause`, `resume`, `update`, `process`, `processPhysics`, `processLate`), and each callback family can be frozen/unfrozen per scene via `set*Enabled` APIs. Rendering remains separated into world-space (`render`) and screen-space (`renderUi`) passes, but both passes render only the current top scene. Exposed via the `lurek.scene.*` API, this module offers a complete solution for structuring complex, multi-state game flows.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -64,9 +72,6 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/scene_api.rs`
-- Namespace: `lurek.scene`
-
 ### Functions
 
 - `lurek.scene.clear`: Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After this call the stack is empty and `isEmpty()` returns true. Useful for returning to a title screen or tearing down the entire scene graph.
@@ -102,12 +107,12 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - `lurek.scene.newScene`: Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
 - `lurek.scene.pop`: Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for "back" navigation, closing menus, or exiting sub-screens.
 - `lurek.scene.popTo`: Pop scenes off the stack until the named registered scene is on top. Every popped scene receives `leave()` and the target scene receives `resume()`. The target scene must have been previously added via `registerScene`. Returns false if no scene with that name exists on the stack.
-- `lurek.scene.preload`: Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
+- `lurek.scene.preload`: Register a deferred-loading function for a scene. The loader function is NOT called immediately â€” it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
 - `lurek.scene.process`: Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every process-active scene ordered by layer (lowest first).
 - `lurek.scene.processLate`: Call `process_late(self, dt)` on every process-active scene after all other processing.
 - `lurek.scene.processPhysics`: Call `process_physics(self, dt)` on every process-active scene ordered by layer.
 - `lurek.scene.push`: Push a new scene onto the stack, making it the active scene. The previously-active scene receives its `pause()` lifecycle callback and the new scene receives `enter(self, params)`. An optional visual transition (fade, slide, iris, etc.) animates between the two scenes over the specified duration.
-- `lurek.scene.pushOverlay`: Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
+- `lurek.scene.pushOverlay`: Push a scene as an overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused â€” it can continue to receive `process` callbacks unless frozen. Rendering remains single-scene (top scene only) at engine level.
 - `lurek.scene.pushPreloaded`: Push a preloaded scene onto the stack by name. If the loader registered via `preload` has not yet run, it executes first to create and register the scene. Then the registered scene is pushed with the specified transition. Combines deferred loading with stack navigation in a single call.
 - `lurek.scene.queueTransition`: Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
 - `lurek.scene.registerScene`: Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
@@ -116,18 +121,23 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - `lurek.scene.renderUi`: Call `render_ui(self)` on render-active scenes ordered by layer (lowest first).
 - `lurek.scene.serializeScene`: Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player's navigation state.
 - `lurek.scene.setCurrentLayer`: Set the rendering layer of the current top scene. Scenes with higher layer values are processed and drawn after lower-layer scenes. Use layers to control draw order when multiple scenes are active (e.g. game world at layer 0, HUD overlay at layer 10).
-- `lurek.scene.setData`: Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.
+- `lurek.scene.setData`: Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references â€” for example, passing a selected level index from a menu scene to a gameplay scene.
 - `lurek.scene.setLateEnabled`: Enable or disable `process_late(self, dt)` execution for a selected scene.
 - `lurek.scene.setPhysicsEnabled`: Enable or disable `process_physics(self, dt)` execution for a selected scene.
 - `lurek.scene.setProcessEnabled`: Enable or disable `process(self, dt)` execution for a selected scene.
 - `lurek.scene.setUpdateEnabled`: Enable or disable `update(self, dt)` execution for a selected scene.
-- `lurek.scene.switchTo`: Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).
+- `lurek.scene.switchTo`: Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack â€” the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 â†’ level 2).
 - `lurek.scene.transitions.fade`: Helper sub-table `lurek.scene.transitions` with convenience factory functions that build transition descriptor tables for use with transition-aware APIs.
 - `lurek.scene.transitions.iris`: Create an iris (circle) transition descriptor table. A circular aperture opens or closes to reveal the new scene, similar to classic cartoon transitions.
 - `lurek.scene.transitions.slide`: Create a directional slide transition descriptor table. The new scene slides in from the specified direction, pushing the old scene out.
 - `lurek.scene.transitions.wipe`: Create a horizontal wipe transition descriptor table. A wipe bar sweeps across the screen to reveal the new scene.
-- `lurek.scene.unregisterScene`: Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.
+- `lurek.scene.unregisterScene`: Remove a scene registration by name. Does not pop the scene if it is currently active on the stack â€” it only removes the name mapping.
 - `lurek.scene.update`: Advance any active transition animation and call `update(self, dt)` on the current top scene.
+
+### Callbacks
+
+- `LDepthSorter:add` param `callback` (`function`): A zero-argument draw function invoked during flush.
+- `lurek.scene.preload` param `loader` (`function`): A zero-argument function that creates and registers the scene via `registerScene` when called.
 
 ### Enums
 
@@ -148,7 +158,7 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 - `LDepthSorter:add`: Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
 - `LDepthSorter:addObject`: Register a game object table for depth-sorted rendering. The object must expose a numeric `depth` field and a `drawSorted(self)` method. During `flush`, each object's `drawSorted` is called in depth order, making this ideal for entity-based architectures where objects manage their own drawing.
 - `LDepthSorter:clear`: Discard all pending entries without executing any draw callbacks. Use this when a scene is interrupted, reset, or destroyed before its normal `flush` call.
-- `LDepthSorter:flush`: Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.
+- `LDepthSorter:flush`: Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path â€” call it once per frame inside your scene's `draw` or `render` callback.
 - `LDepthSorter:getCount`: Returns the number of draw entries currently queued for the next `flush` call. Useful for debugging or deciding whether to skip an empty render pass.
 - `LDepthSorter:isStable`: Returns whether the sorter uses stable sorting.
 - `LDepthSorter:setStable`: Enable or disable stable sorting. When stable, items sharing the same depth value retain their insertion order, which prevents visual flickering between overlapping sprites at the same layer. Unstable sort is slightly faster but may swap equal-depth items between frames.
@@ -256,10 +266,3 @@ The `scene` module also acts as a central registry and shared data bus. Scenes c
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `src/math/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

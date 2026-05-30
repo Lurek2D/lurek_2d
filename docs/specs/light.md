@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/light/`
-- Lua API path(s): `src/lua_api/light_api.rs`
-- Primary Lua namespace: `lurek.light`
+- Binding: `src/lua_api/light_api.rs`
+- Namespace: `lurek.light`
+- Lua API surface: `20` functions, `4` types, `79` methods
 - Rust test path(s): tests/rust/unit/light_tests.rs
 - Lua test path(s): tests/lua/unit/test_light.lua, tests/lua/stress/test_light_stress.lua, tests/lua/integration/test_light_render.lua, tests/lua/evidence/test_evidence_light.lua
 
@@ -20,6 +21,13 @@ It is responsible for managing point, spot, and area lights, alongside shadow-ca
 The central orchestration of these lighting primitives is handled by the `LightWorld`. This scene-level container holds pools of active lights and `Occluder` shapes (convex polygons that block light propagation to generate shadows). It provides an efficient slotmap-backed architecture for adding, removing, and querying these entities, as well as applying batch operations like intensity or color changes across named light groups. The lighting model supports sophisticated attenuation, allowing for quadratic, linear, and inverse-square falloff models, alongside custom coefficient tuples to precisely control how light decays over distance. Blend modes (additive, subtractive, alpha-mix) dictate how each light composited into the final accumulation buffer.
 
 Beyond static illumination, the module excels in dynamic effects. It features a robust `FlickerConfig` system that drives procedural, noise-based intensity variation over time—ideal for simulating torches, candles, or unstable neon signs. To ensure optimal performance, the flicker system utilizes a lazy-indexed advance loop that only evaluates lights with active flicker states. The module also supports time-based linear transitions for smoothly animating light color, intensity, and radius. Additionally, it offers advanced shadow filtering presets (from hard shadows to various PCF soft-shadow kernels) and normal-map integration for surface shading. The entire feature set is extensively exposed to the scripting environment via the `lurek.light.*` API.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -102,9 +110,6 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/light_api.rs`
-- Namespace: `lurek.light`
-
 ### Functions
 
 - `lurek.light.advanceFlickers`: Advances flicker animation for all indexed flickering lights.
@@ -127,6 +132,10 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 - `lurek.light.setGroupIntensity`: Sets intensity for all lights in a group.
 - `lurek.light.setMaxLights`: Sets the maximum configured light count, clamped to 1 through 256.
 - `lurek.light.syncAmbient`: Returns the light world's ambient color hint.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -266,10 +275,3 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 - `LOccluder:setVertices`: Replaces this occluder's flat vertex coordinate list.
 - `LOccluder:type`: Returns the Lua-visible type name for this occluder handle.
 - `LOccluder:typeOf`: Returns whether this occluder handle matches a supported type name.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

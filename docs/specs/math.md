@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/math/`
-- Lua API path(s): `src/lua_api/math_api.rs`
-- Primary Lua namespace: `lurek.math`
+- Binding: `src/lua_api/math_api.rs`
+- Namespace: `lurek.math`
+- Lua API surface: `99` functions, `19` types, `164` methods
 - Rust test path(s): tests/rust/unit/math_tests.rs; inline tests in src/math/vec2.rs, src/math/vec3.rs, src/math/mat3.rs, src/math/rect.rs, src/math/bezier.rs, src/math/easing.rs, src/math/geometry.rs, src/math/noise_functions.rs, src/math/noise_generator.rs, src/math/polygon.rs, src/math/random.rs, src/math/spatial_hash.rs, src/math/transform.rs, src/math/tween.rs, src/math/voronoi.rs, src/math/mod.rs; sibling test file src/math/aabb_tree_tests.rs; inline tests in src/math/spline.rs
 - Lua test path(s): tests/lua/unit/test_math.lua
 
@@ -20,6 +21,11 @@ As the foundational leaf of the engine's dependency graph, it is imported and ut
 Beyond basic vectors, the module implements a robust set of geometric primitives and intersection algorithms. `Rect` and `Circle` structs provide foundational AABB and radial collision checks. The `geometry` submodule extends this with advanced operations: signed polygon area (shoelace formula), centroid calculation, point-in-polygon ray casting, line and segment intersection, Ear-clipping triangulation, Sutherland-Hodgman polygon clipping, and Andrew's monotone chain convex hull generation. To accelerate geometric queries, the module provides dynamic spatial indexing structures: an `AabbTree` for broad-phase hierarchical queries and a `SpatialHash` for uniform grid lookups, scaling efficiently with entity density rather than raw count.
 
 The module also excels in procedural generation and animation. It features a sophisticated `NoiseGenerator` offering Perlin, Simplex, and Worley (cellular) noise, layered with Fractional Brownian Motion (fBm) or turbulence for organic terrain synthesis. For animation, it provides an extensive library of over 50 named easing functions and multi-channel numeric interpolators via the `Tween` system. Pathing and curves are supported through `BezierCurve` (quadratic/cubic) and `CatmullRomSpline` implementations. Additionally, it handles deterministic, seedable random number generation (`RandomGenerator`) and texture atlas rectangle packing. This immense mathematical toolkit is entirely exposed to the scripting environment via the `lurek.math.*` API.
+
+## Imports
+
+- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.
 
 ## Files
 
@@ -184,9 +190,6 @@ The module also excels in procedural generation and animation. It features a sop
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/math_api.rs`
-- Namespace: `lurek.math`
-
 ### Functions
 
 - `lurek.math.Vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
@@ -288,6 +291,10 @@ The module also excels in procedural generation and animation. It features a sop
 - `lurek.math.triangulate`: Triangulates a flat polygon point table.
 - `lurek.math.vec2`: Creates a 2D vector. This function is exposed to Lua scripts.
 - `lurek.math.vec3`: Creates a 3D vector. This function is exposed to Lua scripts.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -683,8 +690,3 @@ The module also excels in procedural generation and animation. It features a sop
 - `LVec3:sub`: Returns the difference from another vector.
 - `LVec3:type`: Returns the Lua-visible type name for this vector handle.
 - `LVec3:typeOf`: Returns whether this vector handle matches a supported type name.
-
-## References
-
-- `globe`: Imports or references `src/globe/`. Cross-group dependency from `Foundations` into `Feature Systems`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Foundations` into `Platform Services`.

@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/mapblock/`
-- Lua API path(s): `src/lua_api/mapblock_api.rs`
-- Primary Lua namespace: `lurek.mapblock`
+- Binding: `src/lua_api/mapblock_api.rs`
+- Namespace: `lurek.mapblock`
+- Lua API surface: `10` functions, `9` types, `53` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ The `mapblock` module implements a Carcassonne-inspired map assembly pipeline wh
 Blocks are organized into named `BlockGroup` sets using alias-method weighted sampling, enabling biome-zone filling where a single script step populates an entire region with contextually appropriate tiles. Each block references a `TilesetRef` that maps its tile slot IDs to world tile IDs via a `base_id` offset, allowing multiple blocks to share the same tileset texture. Tile slots are typed (`floor`, `roof`, `object`, `wall`, or custom), which maps directly to `TileMap` layer indices in the output.
 
 Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelMap`) that maintains independent `MapBlockGrid` instances per Z-level. Both top-down and isometric projection orientations are supported via `MapOrientation`, applied by the tilemap renderer. The final assembly step calls `grid_to_tilemap`, converting the block grid into a standard `TileMap` owned by the caller and decoupled from the generator. The `lurek.mapblock.*` Lua API exposes block definition, group registration, script construction, and generation entry points.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -135,9 +140,6 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/mapblock_api.rs`
-- Namespace: `lurek.mapblock`
-
 ### Functions
 
 - `lurek.mapblock.newBlock`: Create a new map block exposed by the lurek engine.
@@ -150,6 +152,10 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 - `lurek.mapblock.newRules`: Create new neighbor rules exposed by the lurek engine.
 - `lurek.mapblock.newScript`: Create a new map script exposed by the lurek engine.
 - `lurek.mapblock.newTilesetRef`: Create a tileset reference exposed by the lurek engine.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -177,7 +183,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 - `LMapBlock:setInteriorOnly`: Set whether block must be in interior.
 - `LMapBlock:setLevelSpan`: Set multi-level span for this object.
 - `LMapBlock:setName`: Set the map block's display or lookup name string value.
-- `LMapBlock:setTile`: Set a tile slot value — Lua userdata object exposed by the engine.
+- `LMapBlock:setTile`: Set a tile slot value â€” Lua userdata object exposed by the engine.
 - `LMapBlock:setWeight`: Set block weight for random selection.
 
 #### LMapBlockConfig Type
@@ -190,7 +196,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 
 ##### Methods
 
-- `LMapBlockConfig:addSlot`: Add a slot definition — Lua userdata object exposed by the engine.
+- `LMapBlockConfig:addSlot`: Add a slot definition â€” Lua userdata object exposed by the engine.
 - `LMapBlockConfig:getSlotCount`: Get the number of slots for this object.
 - `LMapBlockConfig:removeSlot`: Remove a slot by name for this object.
 - `LMapBlockConfig:setDefaultSegmentSize`: Set default segment size for this object.
@@ -211,7 +217,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 - `LMapBlockGenerator:getLastPlacedCount`: Get last placement count for this object.
 - `LMapBlockGenerator:setMaxLevels`: Set the number of vertical levels or storeys to generate.
 - `LMapBlockGenerator:setOrientation`: Set rendering orientation for this object.
-- `LMapBlockGenerator:setRectShape`: Set rectangular map shape — Lua userdata object exposed by the engine.
+- `LMapBlockGenerator:setRectShape`: Set rectangular map shape â€” Lua userdata object exposed by the engine.
 - `LMapBlockGenerator:setRules`: Set neighbor matching rules for this object.
 - `LMapBlockGenerator:setSeed`: Set RNG seed for deterministic generation.
 - `LMapBlockGenerator:setShape`: Set the generator map shape using a list of tile positions.
@@ -229,7 +235,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 
 - `LMapBlockResult:getBlocksPlaced`: Get number of blocks placed for this object.
 - `LMapBlockResult:getGid`: Get tile GID at position for this object.
-- `LMapBlockResult:getHeight`: Get total height in tiles — Lua userdata object exposed by the engine.
+- `LMapBlockResult:getHeight`: Get total height in tiles â€” Lua userdata object exposed by the engine.
 - `LMapBlockResult:getLayerCount`: Get number of layers for this object.
 - `LMapBlockResult:getLevelCount`: Get number of levels for this object.
 - `LMapBlockResult:getWidth`: Get total width in tiles for this object.
@@ -260,7 +266,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 
 ##### Methods
 
-- `LMapScript:addStep`: Add a generation step — Lua userdata object exposed by the engine.
+- `LMapScript:addStep`: Add a generation step â€” Lua userdata object exposed by the engine.
 - `LMapScript:clear`: Clear all queued script steps from this map script.
 - `LMapScript:getName`: Get the script name for this object.
 - `LMapScript:getStepCount`: Get the number of steps for this object.
@@ -290,7 +296,7 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 
 ##### Methods
 
-- `LPlacementGrid:addPosition`: Add a position to the grid — Lua userdata object exposed by the engine.
+- `LPlacementGrid:addPosition`: Add a position to the grid â€” Lua userdata object exposed by the engine.
 - `LPlacementGrid:clear`: Clear all positions and placed blocks.
 - `LPlacementGrid:getAvailableCount`: Get available position count for this object.
 - `LPlacementGrid:isAvailable`: Check whether a placement grid position is currently available.
@@ -306,9 +312,5 @@ Multi-storey environments are handled by a `LayerStack` (wrapped as `MultilevelM
 ##### Methods
 
 - `LTilesetRef:getId`: Get the numeric tileset ID for this tileset reference.
-- `LTilesetRef:getName`: Get tileset name — Lua userdata object exposed by the engine.
+- `LTilesetRef:getName`: Get tileset name â€” Lua userdata object exposed by the engine.
 - `LTilesetRef:setImagePath`: Set the image file path for this tileset reference.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

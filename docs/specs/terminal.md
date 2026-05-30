@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/terminal/`
-- Lua API path(s): `src/lua_api/terminal_api.rs`
-- Primary Lua namespace: `lurek.terminal`
+- Binding: `src/lua_api/terminal_api.rs`
+- Namespace: `lurek.terminal`
+- Lua API surface: `29` functions, `3` types, `59` methods
 - Rust test path(s): tests/rust/unit/terminal_tests.rs, tests/rust/ext/terminal_demo_smoke_tests.rs
 - Lua test path(s): tests/lua/unit/test_terminal_core_unit.lua
 
@@ -20,6 +21,12 @@ Originally designed to host the in-game developer console, it functions as a hig
 Beyond raw text rendering, the terminal provides a surprisingly capable immediate-mode widget framework (`widget.rs`). Developers can compose interactive interfaces directly on the character grid using pre-built elements like Buttons, Labels, TextBoxes, Lists, and Panels. These widgets handle their own bounds checking, input routing, and rendering (complete with ASCII border drawing and shaded backgrounds). To support command-line workflows, the module includes a `CompletionEngine` for context-aware tab completion, a persistent command history buffer for quick recall, and a scrollback buffer that gracefully evicts the oldest lines when capacity is reached. For specialized display needs—such as the interactive Lua REPL (`lurek.repl`)—the module integrates a regex-driven `highlighter.rs` that applies token-based syntax coloring to code inputs in real-time.
 
 The rendering pipeline bridges the gap between the character grid and the engine's graphical backend. The terminal state is efficiently composited and flattened into batched `RenderCommand` sequences, mapped directly to loaded bitmap fonts for pixel-perfect display. The terminal can also software-rasterize its grid directly into an `ImageData` buffer, useful for generating preview thumbnails or headless output. Fully accessible via the `lurek.terminal.*` API, this module is an invaluable tool for building in-game developer tools, specialized text-based mini-games, and deeply interactive console environments.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -98,9 +105,6 @@ The rendering pipeline bridges the gap between the character grid and the engine
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/terminal_api.rs`
-- Namespace: `lurek.terminal`
-
 ### Functions
 
 - `lurek.terminal.addCompletion`: Registers a candidate string for tab-completion in the shared completion engine.
@@ -132,6 +136,12 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `lurek.terminal.scrollbackLen`: Returns the number of lines currently stored in the terminal scrollback buffer.
 - `lurek.terminal.setScrollbackCap`: Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 - `lurek.terminal.stripAnsi`: Removes all ANSI escape sequences from a string, returning plain text.
+
+### Callbacks
+
+- `LWidget:setOnChange` param `callback` (`function?`): The change handler, or nil to clear.
+- `LWidget:setOnClick` param `callback` (`function?`): The click handler, or nil to clear.
+- `LWidget:setOnSelect` param `callback` (`function?`): The selection handler, or nil to clear.
 
 ### Enums
 
@@ -235,9 +245,3 @@ The rendering pipeline bridges the gap between the character grid and the engine
 - `LWidget:setVisible`: Controls whether the widget is drawn and receives input events.
 - `LWidget:type`: Returns the type name string "LWidget".
 - `LWidget:typeOf`: Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

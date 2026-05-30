@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/visibility/`
-- Lua API path(s): `src/lua_api/visibility_api.rs`
-- Primary Lua namespace: `lurek.visibility`
+- Binding: `src/lua_api/visibility_api.rs`
+- Namespace: `lurek.visibility`
+- Lua API surface: `2` functions, `2` types, `27` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -22,6 +23,10 @@ Per-region state is stored in the `VisibilityGrid`, a compact `(faction_id, regi
 Discovery semantics are controlled per region via `VisibilityCost`: a movement-point cost gates reveal progression, and a required-flag mask (`VisibilityFlags`, a `u32` bitfield with 24 game-defined bits) can block reveal until the player possesses a specific capability. When regions transition between states, the grid queues `VisibilityEvent` entries (`RegionRevealed`, `RegionDiscovered`, `RegionHidden`) that are drained to Lua each tick — providing clean hooks for map-reveal animations, narrator cues, and scripted responses.
 
 Rendering integration is handled via `FogRenderConfig`, which supplies per-state fog opacity values and RGBA tint colors composited as per-tile multiply in the world render pass. The full grid state serializes compactly (2 bits per region per faction) into the save file. The `lurek.visibility.*` Lua API exposes grid construction, reveal/hide calls, state queries, event draining, cost and flag mutation, faction grouping, and fog configuration.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -96,13 +101,15 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/visibility_api.rs`
-- Namespace: `lurek.visibility`
-
 ### Functions
 
 - `lurek.visibility.new`: Create a new visibility grid for shadow-cast computation.
 - `lurek.visibility.newFov`: Creates a new tile-grid shadowcasting FOV for roguelike and stealth games.
+
+### Callbacks
+
+- `LFov:eachVisible` param `fn` (`function`): Callback receiving column and row integers.
+- `LFov:setBlocker` param `fn` (`function`): `fn(x: integer, y: integer) -> boolean` (one-based).
 
 ### Enums
 
@@ -158,7 +165,3 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 - `LVisibilityGrid:setFlag`: Sets a visibility flag bit on a region.
 - `LVisibilityGrid:setGroup`: Sets an alliance group for a list of players (shared visibility).
 - `LVisibilityGrid:sharesVisibility`: Checks if two players share visibility (same alliance group or same player).
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

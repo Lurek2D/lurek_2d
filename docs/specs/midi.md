@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/midi/`
-- Lua API path(s): `src/lua_api/midi_api.rs`
-- Primary Lua namespace: `lurek.midi`
+- Binding: `src/lua_api/midi_api.rs`
+- Namespace: `lurek.midi`
+- Lua API surface: `4` functions, `0` types, `0` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs (shared with audio)
 - Lua test path(s): tests/lua/unit/test_midi_core_unit.lua
 
@@ -30,6 +31,11 @@ The `MidiState` struct manages global SoundFont state:
 - Clearing loaded SoundFont data.
 
 Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `SharedState` holds a `midi_state: MidiState` field accessible to both the audio and midi API modules.
+
+## Imports
+
+- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
 
 ## Files
 
@@ -58,15 +64,16 @@ Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/midi_api.rs`
-- Namespace: `lurek.midi`
-
 ### Functions
 
 - `lurek.midi.clearSoundFont`: Unloads the current SoundFont and frees its memory.
 - `lurek.midi.hasSoundFont`: Returns whether a SoundFont is currently loaded and ready for synthesis.
 - `lurek.midi.loadSoundFont`: Loads a SoundFont (SF2) file into the global MIDI state for synthesis.
 - `lurek.midi.newPlayer`: Creates a new MIDI player instance, optionally loading a file immediately.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -75,8 +82,3 @@ Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `
 ### Types
 
 - No documented module types.
-
-## References
-
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.

@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/ui/`
-- Lua API path(s): `src/lua_api/ui_api.rs`
-- Primary Lua namespace: `lurek.ui`
+- Binding: `src/lua_api/ui_api.rs`
+- Namespace: `lurek.ui`
+- Lua API surface: `91` functions, `44` types, `338` methods
 - Rust test path(s): tests/rust/unit/gui_tests.rs
 - Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_input_unit.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_i18n_ui.lua
 
@@ -20,6 +21,15 @@ Designed for both engine tooling and in-game interfaces, it centers around the `
 At the structural level, the module employs a robust flex-based layout engine (`Layout`) that supports vertical, horizontal, and grid packing, alongside alignment, spacing, padding, and min/max constraints. Layouts can be constructed programmatically in Lua or loaded dynamically from declarative TOML files using the built-in layout loader, which dramatically accelerates UI iteration. The visual presentation is governed by a flexible `Theme` system that maps widget states (Normal, Hovered, Pressed, Focused, Disabled) to specific styles containing color palettes, font overrides, borders, and shadows. The module natively supports resolution-independent 9-slice borders (`NinePatch`) and per-widget transition animations (alpha fades, position slides) to deliver a polished, responsive user experience.
 
 Beyond standard UI components and input routing, the module integrates powerful data binding tools. The `GUITable` seamlessly integrates with the `dataframe` module, enabling bulk loading of structured rows directly into UI views without expensive Lua-side iterations. Fully exposed through the `lurek.ui.*` API, this module equips developers with everything needed to build intricate developer dashboards, complex menus, and data-rich game interfaces.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -160,9 +170,6 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/ui_api.rs`
-- Namespace: `lurek.ui`
-
 ### Functions
 
 - `lurek.ui.addToast`: Adds a toast notification to the queue.
@@ -256,6 +263,20 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `lurek.ui.update_bindings`: Updates data bindings for widgets that reference binding keys.
 - `lurek.ui.visibleRange`: Calculate the visible item range for a scrollable list widget.
 - `lurek.ui.wheelmoved`: Delivers a mouse wheel event to the UI.
+
+### Callbacks
+
+- `LColorPicker:setOnChange` param `f` (`function`): Callback receiving the widget index.
+- `LDialog:addButton` param `cb` (`function?`): Optional click callback (reserved for future use).
+- `LDialog:setOnClose` param `f` (`function`): Callback receiving the widget index.
+- `LGuiTable:setOnSelect` param `f` (`function`): Callback receiving the widget index.
+- `LGuiWindow:setOnClose` param `f` (`function`): Callback receiving the widget index.
+- `LMenuItem:setOnClick` param `f` (`function`): Callback receiving the widget index.
+- `LRadioButton:setOnChange` param `f` (`function`): Callback receiving the widget index.
+- `LScrollBar:setOnChange` param `f` (`function`): Callback receiving the widget index.
+- `LUiWidget:setOnChange` param `f` (`function`): Callback receiving the widget index as argument.
+- `LUiWidget:setOnClick` param `f` (`function`): Callback receiving the widget index as argument.
+- `LUiWidget:setOnDraw` param `f` (`function`): Callback receiving a rect table {x, y, w, h} with the computed bounds.
 
 ### Enums
 
@@ -1097,12 +1118,3 @@ Beyond standard UI components and input routing, the module integrates powerful 
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

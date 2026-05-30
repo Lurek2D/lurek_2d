@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/raycaster/`
-- Lua API path(s): `src/lua_api/raycaster_api.rs`
-- Primary Lua namespace: `lurek.raycaster`
+- Binding: `src/lua_api/raycaster_api.rs`
+- Namespace: `lurek.raycaster`
+- Lua API surface: `9` functions, `14` types, `67` methods
 - Rust test path(s): tests/rust/unit/raycaster_tests.rs
 - Lua test path(s): tests/lua/unit/test_raycaster_core_unit.lua, tests/lua/evidence/test_raycaster_evidence.lua
 
@@ -20,6 +21,14 @@ It projects a grid-based 2D map into a textured, first-person 3D perspective usi
 The rendering pipeline is robust and feature-rich. Floor and ceiling rendering utilizes perspective-correct per-pixel texture mapping with per-tile UV generation and lighting calculations. Transparent and semi-transparent walls are natively supported via multi-hit ray casting (`cast_ray_multi`), which penetrates transparent tiles until an opaque wall is hit. The module also features a fully animated sliding door system (`DoorManager`), and a `SpriteManager` that projects world-space billboard sprites (such as enemies or items) into the camera view. Sprites are correctly distance-sorted and depth-culled against a per-column `DepthBuffer` populated during the wall-casting phase. Furthermore, dynamic 3D OBJ models can be projected into the scene alongside flat sprites.
 
 Lighting and visibility are deeply integrated into the raycaster. It supports a point-light model with Bresenham line-of-sight occlusion, distance-based shading (fog/darkness attenuation), and FOV-aware visibility polygon generation. A comprehensive suite of software-rendered visualization helpers is also included, allowing developers to draw top-down grid maps, minimap overlays, depth maps, line-of-sight rays, and even first-person sweeps directly into `ImageData` buffers for debugging or UI overlays. The scene builder synthesizes all these elements—walls, floors, ceilings, doors, sprites, and models—into a GPU-ready `RaycasterScene` composed of textured quads, which is then handed off to the main renderer. The entire engine is fully scriptable via the `lurek.raycaster.*` Lua API.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -197,9 +206,6 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/raycaster_api.rs`
-- Namespace: `lurek.raycaster`
-
 ### Functions
 
 - `lurek.raycaster.applyLitShade`: Applies an RGB light color to a scalar shade value.
@@ -211,6 +217,10 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - `lurek.raycaster.newPointLight`: Creates a new point light with position, color, radius, and intensity.
 - `lurek.raycaster.newSpriteManager`: Creates a new sprite manager for tracking and projecting billboard sprites.
 - `lurek.raycaster.projectColumn`: Computes the projected wall-column height for a given distance, FOV, and screen height.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -491,11 +501,3 @@ Lighting and visibility are deeply integrated into the raycaster. It supports a 
 - `LSpriteManager:sortAndProject`: Sorts all visible sprites by distance from the camera and returns projection data.
 - `LSpriteManager:type`: Returns the type name of this object ("LSpriteManager").
 - `LSpriteManager:typeOf`: Checks whether this object matches the given type name.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

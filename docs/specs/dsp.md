@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/dsp/`
-- Lua API path(s): `src/lua_api/dsp_api.rs`
-- Primary Lua namespace: `lurek.dsp`
+- Binding: `src/lua_api/dsp_api.rs`
+- Namespace: `lurek.dsp`
+- Lua API surface: `29` functions, `7` types, `27` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs (shared with audio)
 - Lua test path(s): tests/lua/unit/test_dsp_core_unit.lua
 
@@ -24,6 +25,11 @@ A key design requirement is thread-safe processing behavior for audio-thread usa
 In architecture terms, `dsp` should remain the transformation layer: it mutates and analyzes signal data. Playback orchestration and source routing should continue to be handled by neighboring audio runtime modules.
 
 Implementation detail and boundary guarantees for dsp: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: analysis.rs: Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.; effects.rs: Lock-free AtomicParam for sharing f32 parameters between the audio thread and Lua API.; graph.rs: DSP processing graph: nodes connected by typed audio-rate and control-rate edges.; mod.rs: Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.; offline.rs: Offline audio processing: apply DSP effect chains to files without real-time playback.; synthesis.rs: Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.; visualizer.rs: Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.
 
 ## Files
 
@@ -89,9 +95,6 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/dsp_api.rs`
-- Namespace: `lurek.dsp`
-
 ### Functions
 
 - `lurek.dsp.addEffectToBus`: Adds an effect to a named audio bus and returns its effect ID.
@@ -123,6 +126,10 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `lurek.dsp.setEffectParam`: Sets a parameter value on an effect attached to a named audio bus.
 - `lurek.dsp.spectrogramToPng`: Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 - `lurek.dsp.waveformToPng`: Renders a waveform visualization of an audio file and saves it as a PNG image.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -233,8 +240,3 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 
 - `LWaveform:render`: Renders this waveform to a new SoundData buffer.
 - `LWaveform:type`: Returns the waveform identifier string.
-
-## References
-
-- `audio`: Imports or references `src/audio/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from ``Platform Services`` into `Core Runtime`.

@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/layout/`
-- Lua API path(s): `src/lua_api/layout_api.rs`
-- Primary Lua namespace: `lurek.layout`
+- Binding: `src/lua_api/layout_api.rs`
+- Namespace: `lurek.layout`
+- Lua API surface: `5` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ The `layout` module offers four complementary 2D graph layout algorithms with no
 For general undirected graphs where hierarchy is not meaningful, `layout_force` runs the Fruchterman-Reingold spring simulation. Nodes repel each other while edges attract; a cooling schedule reduces displacement each iteration until convergence. `ForceConfig` exposes temperature, cooling rate, repulsion constant, and maximum iterations. Seeding is deterministic given the same integer seed, producing reproducible node editor layouts.
 
 All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` coordinates in logical pixels. Two post-processing utilities compose cleanly with any layout output: `snap_to_grid` rounds positions to a configurable cell size, and `center_in_area` translates the entire layout to fill a target viewport rectangle. The full algorithm suite is exposed via the `lurek.layout.*` Lua API, targeting pipeline visualization, dialog tree views, skill trees, and org charts.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -69,9 +74,6 @@ All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` co
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/layout_api.rs`
-- Namespace: `lurek.layout`
-
 ### Functions
 
 - `lurek.layout.centerInArea`: Centers the layout within a given area.
@@ -80,6 +82,10 @@ All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` co
 - `lurek.layout.snapToGrid`: Snaps all node positions to the nearest grid point.
 - `lurek.layout.tree`: Lays out a tree using the Reingold-Tilford algorithm.
 
+### Callbacks
+
+- No documented callback parameters in this module.
+
 ### Enums
 
 - No documented module-level enums/constants.
@@ -87,7 +93,3 @@ All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` co
 ### Types
 
 - No documented module types.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

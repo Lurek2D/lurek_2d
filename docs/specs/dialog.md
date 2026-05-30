@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/dialog/`
-- Lua API path(s): `src/lua_api/dialog_api.rs`
-- Primary Lua namespace: `lurek.dialog`
+- Binding: `src/lua_api/dialog_api.rs`
+- Namespace: `lurek.dialog`
+- Lua API surface: `3` functions, `3` types, `30` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -22,6 +23,10 @@ Module responsibilities are explicit: `tree` models nodes and branch selection, 
 The architecture keeps dialogue logic data-driven and testable. Selection policy and gate checks are represented as explicit model types rather than hardcoded branching paths scattered in scripts.
 
 In feature-system terms, `dialog` should remain focused on conversation evaluation and progression contracts. Presentation, animation timing, and game-specific narrative policy should consume this runtime surface rather than live inside it.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -69,14 +74,15 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/dialog_api.rs`
-- Namespace: `lurek.dialog`
-
 ### Functions
 
 - `lurek.dialog.newAI`: Creates an empty dialogue selector for weighted topics and branches.
 - `lurek.dialog.newSpeakerRegistry`: Creates an empty speaker registry for dialog participants.
 - `lurek.dialog.newState`: Creates an empty dialogue state for tracking conversation progress.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -146,7 +152,3 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 - `LSpeakerRegistry:remove`: Removes a speaker by ID for this object.
 - `LSpeakerRegistry:type`: Returns the Lua-visible type name.
 - `LSpeakerRegistry:typeOf`: Returns whether this handle matches a supported type name.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

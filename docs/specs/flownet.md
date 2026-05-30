@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/flownet/`
-- Lua API path(s): `src/lua_api/flownet_api.rs`
-- Primary Lua namespace: `lurek.graph`
+- Binding: `src/lua_api/flownet_api.rs`
+- Namespace: `lurek.graph`
+- Lua API surface: `1` functions, `7` types, `130` methods
 - Rust test path(s): tests/rust/unit/flownet_tests.rs plus inline flownet module tests
 - Lua test path(s): tests/lua/unit/test_flownet.lua and related flownet stress and golden suites
 
@@ -20,6 +21,12 @@ Moving beyond simple data-structure graphs, this module simulates complex logist
 The simulation is deeply systemic. Items (`GraphItem`) accumulate in node inventories and traverse directed edges (`Edge`). These edges are not merely logical links; they enforce strict constraints including transit capacities, cooldown timers, and item-type filters. Nodes (`Node`) possess configurable item capacities, explicit queueing systems, and distinct flow modes (passive, push, or pull). Furthermore, nodes can execute `ConversionRule`s—acting as economic factories that consume specific inputs to produce new typed outputs. To manage bottlenecks, nodes implement defined `OverflowPolicy` behaviors, dictating whether excess items are rejected, queued, or destroyed.
 
 The module runs an intricate simulation pipeline (`step(dt)`) that processes item decay, executes conversion rules, matches supply against demand declarations, and progresses items along edges. To support this, the module includes a comprehensive suite of graph algorithms: A* and Dijkstra shortest-path searches, reachability flood-fills, connected component discovery, cycle detection, topological sorting, Kruskal's minimum spanning tree, and graph coloring. Pathfinding inherently respects edge constraints and item-type filters. For performance scalability, the simulation tick can be executed in parallel using multi-threading. The engine exposes this entire logistical framework, alongside event-driven callbacks for state transitions, to Lua scripts via the `lurek.graph.*` namespace.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -126,12 +133,13 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/flownet_api.rs`
-- Namespace: `lurek.graph`
-
 ### Functions
 
 - `lurek.graph.newGraph`: Creates an empty logistics graph with no nodes, edges, items, or callbacks.
+
+### Callbacks
+
+- `LGraph:on` param `func` (`function`): Lua callback invoked with event-specific handles and values.
 
 ### Enums
 
@@ -361,9 +369,3 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphNode:setType`: Sets this node's type string for this object.
 - `LGraphNode:type`: Returns the Lua-visible type name for this graph node handle.
 - `LGraphNode:typeOf`: Returns whether this graph node handle matches a supported type name.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

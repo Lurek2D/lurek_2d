@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/audio/`
-- Lua API path(s): `src/lua_api/audio_api.rs`
-- Primary Lua namespace: `lurek.audio`
+- Binding: `src/lua_api/audio_api.rs`
+- Namespace: `lurek.audio`
+- Lua API surface: `88` functions, `7` types, `157` methods
 - Rust test path(s): tests/rust/unit/audio_tests.rs, tests/rust/unit/audio_sound_tests.rs
 - Lua test path(s): tests/lua/unit/test_audio.lua, tests/lua/unit/test_audio_bus.lua, tests/lua/unit/test_audio_dsp.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_audio_event.lua, tests/lua/evidence/test_evidence_audio.lua, tests/lua/evidence/test_evidence_audio_bus.lua
 
@@ -24,6 +25,13 @@ The module intentionally does not absorb every signal-processing concern. DSP-he
 In short, `audio` owns runtime sound orchestration and stable playback contracts, while neighboring modules provide decode, synthesis, and advanced processing capabilities that are plugged into this path.
 
 Implementation detail and boundary guarantees for audio: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: beat_clock.rs: Musical beat clock â€” tempo and measure tracking for rhythm games and procedural audio.; bus.rs: Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.; decoder.rs: Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.; facade.rs: Stub device enumeration and selection for the audio output backend.; mixer.rs: Mixer central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.; mod.rs: Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.; pool.rs: SoundPool round-robin polyphonic voice pool for one-shot playback of a single sound asset.; sound_data.rs: SoundData in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.; source.rs: SpatialState 3D position, velocity, and orientation for positional audio.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -108,9 +116,6 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - Serves as the foundational source contract shared across routing, playback, and spatialization paths.
 
 ## Lua API Ref
-
-- Binding: `src/lua_api/audio_api.rs`
-- Namespace: `lurek.audio`
 
 ### Functions
 
@@ -202,6 +207,15 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `lurek.audio.stopAll`: Stops all audio sources and resets their positions.
 - `lurek.audio.stopQueueable`: Stops playback of a queueable audio source.
 - `lurek.audio.tell`: Returns the current playback position of a source in seconds.
+
+### Callbacks
+
+- `LBeatClock:at` param `fn` (`function`): Callback receiving the scheduled beat.
+- `LBeatClock:every` param `fn` (`function`): Callback receiving `step_index`.
+- `LBeatClock:pattern` param `fn` (`function`): Callback receiving 1-based pattern step index.
+- `LMidiPlayer:setOnEnd` param `cb` (`function?`): Callback function or nil to clear.
+- `LMidiPlayer:setOnNoteOff` param `cb` (`function?`): Callback function or nil to clear.
+- `LMidiPlayer:setOnNoteOn` param `cb` (`function?`): Callback function or nil to clear.
 
 ### Enums
 
@@ -442,10 +456,3 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LSource:tell`: Returns the current playback position of this source in seconds.
 - `LSource:type`: Returns the type name of this object for runtime type-checking.
 - `LSource:typeOf`: Checks whether this object is of the given type name or a parent type.
-
-## References
-
-- `dsp`: Imports or references `src/dsp/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Platform Services`` into `Platform Services`.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

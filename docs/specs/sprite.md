@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/sprite/`
-- Lua API path(s): `src/lua_api/sprite_api.rs`
-- Primary Lua namespace: `lurek.sprite`
+- Binding: `src/lua_api/sprite_api.rs`
+- Namespace: `lurek.sprite`
+- Lua API surface: `5` functions, `9` types, `19` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): none found in the workspace
 
@@ -20,6 +21,13 @@ It provides the essential building blocks for 2D game visuals, encompassing spri
 For more complex texture packing, the module features a comprehensive `SpriteAtlas` system. It parses standard texture atlas formats, specifically supporting JSON exports from popular tools like TexturePacker and Aseprite. The atlas stores named regions (`AtlasEntry`) complete with pixel rectangles and flags for rotation or flipping, allowing for O(1) name lookups and seamless integration with existing art pipelines. The module also includes `NineSlice`, a specialized struct that generates 9-patch geometry. This enables the creation of scalable UI elements—such as dialog boxes, health bars, or menu panels—that preserve their corner and edge pixel ratios while stretching to fit target dimensions.
 
 To ensure optimal rendering performance, the module provides the `SpriteBatch` mechanism. A `SpriteBatch` acts as a deferred draw-call collector bound to a single texture atlas. Instead of submitting individual sprites to the GPU one by one, developers can accumulate hundreds of positioned, rotated, and scaled sprite entries into a single batch. This approach drastically reduces state changes and GPU draw calls, making it highly efficient for rendering dense tile layers, complex UI screens, or large swarms of characters. Fully accessible via the `lurek.sprite.*` Lua API, this module is indispensable for performant 2D game development in Lurek2D.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -69,16 +77,17 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/sprite_api.rs`
-- Namespace: `lurek.sprite`
-
 ### Functions
 
 - `lurek.sprite.newAtlasSheet`: Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
-- `lurek.sprite.newRPGMakerSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
+- `lurek.sprite.newRPGMakerSheet`: Creates a sprite sheet using RPG Maker's standard character layout (4 columns Ă— 4 rows per character block).
 - `lurek.sprite.newSheet`: Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 - `lurek.sprite.parseAsepriteAtlas`: Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 - `lurek.sprite.parseAtlas`: Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -241,10 +250,3 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems.`` into `Platform Services`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

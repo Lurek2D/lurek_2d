@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/parallax/`
-- Lua API path(s): `src/lua_api/parallax_api.rs`
-- Primary Lua namespace: `lurek.parallax`
+- Binding: `src/lua_api/parallax_api.rs`
+- Namespace: `lurek.parallax`
+- Lua API surface: `3` functions, `2` types, `48` methods
 - Rust test path(s): tests/rust/unit/parallax_tests.rs
 - Lua test path(s): tests/lua/unit/test_parallax_core_unit.lua, tests/lua/integration/test_parallax_camera.lua
 
@@ -20,6 +21,12 @@ It allows developers to easily create a deep sense of 2D perspective by stacking
 In addition to camera-driven motion, the module features an independent auto-scroll mechanic. This allows layers to maintain a constant baseline velocity regardless of player movement, which is essential for animating ambient atmospheric elements like drifting clouds, flowing water, or moving starfields. The rendering pipeline of the `parallax` module is deeply optimized. It automatically computes `ParallaxDrawBatch`es, utilizing a sophisticated `tile_iter` algorithm to calculate the precise grid of visible repeating tiles required to fill the viewport (plus a safety cull margin). This avoids allocating vast repeating grids and instead generates lightweight, stateless `RenderCommand` sequences for GPU submission.
 
 The visual fidelity of parallax layers can be further customized per-layer. It supports dynamic opacity adjustments, RGBA tinting, and various accumulation blend modes (such as additive or screen). Advanced visual features include a motion-stretch blur effect, which procedurally stretches layer tiles based on their auto-scroll velocity to simulate high-speed motion. For ease of use, the module includes a `presets` system offering ready-made configurations for common depth planes (e.g., far backgrounds, mid-grounds, and foreground fog). Grouped management is provided via `ParallaxSet`s, and the entire feature suite is fully exposed to the Lua environment through the `lurek.parallax.*` API.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -65,14 +72,15 @@ The visual fidelity of parallax layers can be further customized per-layer. It s
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/parallax_api.rs`
-- Namespace: `lurek.parallax`
-
 ### Functions
 
 - `lurek.parallax.newLayer`: Creates a parallax layer from an options table.
 - `lurek.parallax.newPresetLayer`: Creates a parallax layer from a named preset and texture image.
 - `lurek.parallax.newSet`: Creates an empty parallax layer set.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -149,9 +157,3 @@ The visual fidelity of parallax layers can be further customized per-layer. It s
 - `LParallaxSet:sortByZ`: Sorts layers by z order on this object.
 - `LParallaxSet:type`: Returns the Lua-visible type name for this parallax set handle.
 - `LParallaxSet:update`: Updates all layers in this parallax set.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

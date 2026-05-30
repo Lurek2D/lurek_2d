@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/cursor/`
-- Lua API path(s): `src/lua_api/cursor_api.rs`
-- Primary Lua namespace: `lurek.cursor`
+- Binding: `src/lua_api/cursor_api.rs`
+- Namespace: `lurek.cursor`
+- Lua API surface: `4` functions, `3` types, `30` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -24,6 +25,10 @@ The design keeps input capture and cursor rendering conceptually separate. Input
 In practice, cursor behavior should remain deterministic and low-latency, with clear fallback paths between native/system cursors and custom/animated variants.
 
 Implementation detail and boundary guarantees for cursor: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: animated_cursor.rs: Animated cursor: frame sequences with per-frame timing and pulse scale effects.; config.rs: Global cursor system configuration shared across the cursor manager.; context.rs: Context-sensitive cursor switching: maps named contexts to cursor states.; custom_cursor.rs: Custom image cursor built from RGBA pixel data with configurable hotspot offset.; mod.rs: Cursor management system.; system_cursor.rs: System cursor shapes available on all desktop platforms.; trail.rs: Cursor trail effects: fading dot trails, connected line trails, and particle modes.; zoom.rs: Cursor magnifier lens: a configurable zoom window that follows the cursor.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -85,15 +90,16 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/cursor_api.rs`
-- Namespace: `lurek.cursor`
-
 ### Functions
 
 - `lurek.cursor.newAnimated`: Creates a new animated cursor that can cycle through frames.
 - `lurek.cursor.newCustom`: Creates a new custom cursor with specified dimensions and hotspot position.
 - `lurek.cursor.newManager`: Creates a new cursor manager for handling cursor state and visibility.
 - `lurek.cursor.systemCursors`: Returns a list of all available system cursor names as a string array.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -162,8 +168,4 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 - `LCustomCursor:getHotspot`: Get hotspot position for this object.
 - `LCustomCursor:getPixel`: Get the pixel color at the specified cursor image position.
 - `LCustomCursor:getSize`: Get the pixel width and height of the cursor image.
-- `LCustomCursor:setPixel`: Set a pixel color — Lua userdata object exposed by the engine.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.
+- `LCustomCursor:setPixel`: Set a pixel color â€” Lua userdata object exposed by the engine.

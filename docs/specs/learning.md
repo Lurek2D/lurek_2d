@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/learning/`
-- Lua API path(s): `src/lua_api/learning_api.rs`
-- Primary Lua namespace: `lurek.learning`
+- Binding: `src/lua_api/learning_api.rs`
+- Namespace: `lurek.learning`
+- Lua API surface: `20` functions, `18` types, `127` methods
 - Rust test path(s): tests/rust/unit/learning_tests.rs
 - Lua test path(s): tests/lua/unit/test_learning_core_unit.lua
 
@@ -39,6 +40,10 @@ The module now also includes advanced neural-building blocks for CPU-first seque
 - **LurekNeuralEngine** — Heterogeneous block container that packs/unpacks all trainable parameters into one flat genome buffer.
 
 All types are pure CPU, headless-testable, and have zero rendering dependencies. The module is exposed to Lua via `lurek.learning.*`.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -163,9 +168,6 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/learning_api.rs`
-- Namespace: `lurek.learning`
-
 ### Functions
 
 - `lurek.learning.defineEnv`: Defines a Lua-described RL environment from a config table.
@@ -188,6 +190,10 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `lurek.learning.normalizeEnv`: Wraps an LEnv so observations are normalised by subtracting mean and dividing by std.
 - `lurek.learning.timeLimit`: Wraps an LEnv so episodes end automatically after max_steps steps.
 - `lurek.learning.wrap`: Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -519,7 +525,3 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LTransformerEncoder:setWeights`: Loads flattened trainable parameters for this encoder block.
 - `LTransformerEncoder:type`: Returns the Lua-visible type name for this wrapper.
 - `LTransformerEncoder:typeOf`: Returns whether this userdata matches the requested type string.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/pipeline/`
-- Lua API path(s): `src/lua_api/pipeline_api.rs`
-- Primary Lua namespace: `lurek.pipeline`
+- Binding: `src/lua_api/pipeline_api.rs`
+- Namespace: `lurek.pipeline`
+- Lua API surface: `3` functions, `5` types, `63` methods
 - Rust test path(s): tests/rust/unit/pipeline_tests.rs
 - Lua test path(s): tests/lua/unit/test_pipeline_core_unit.lua
 
@@ -20,6 +21,10 @@ It is designed to sequence complex, multi-step operations—such as asset proces
 Each `PipelineStep` is highly configurable, acting as a discrete unit of work. Steps support conditional execution (via run-if predicates), configurable delayed starts, and maximum timeout limits. To handle transient failures robustly, steps can be configured with automatic retries and custom retry-delay backoffs. A step's error policy (`ErrorMode`) can be explicitly set to either abort the entire pipeline upon failure or allow execution to continue (treating the failure as optional). Pipelines themselves can be nested, with `add_sub_pipeline` allowing complex workflows to be merged under namespace prefixes while automatically wiring outer dependencies into the sub-pipeline's entry points.
 
 Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven async engine that tracks elapsed wall-clock time, manages countdown timers for delayed steps, and seamlessly handles step progression (from `Pending` to `Waiting`, `Running`, and finally `Completed`, `Failed`, or `Skipped`). The scheduler supports both synchronous blocking runs and asynchronous, coroutine-based execution that yields between frames, ensuring the game loop is never stalled by long-running background pipelines. Upon completion or cancellation, the module generates a detailed `PipelineResult` object, summarizing the outcomes, durations, and error messages for all steps. The entire workflow definition and execution API is cleanly exposed to Lua via the `lurek.pipeline.*` namespace, offering script developers a powerful tool for asynchronous task orchestration.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -63,14 +68,28 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/pipeline_api.rs`
-- Namespace: `lurek.pipeline`
-
 ### Functions
 
 - `lurek.pipeline.fromTable`: Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
 - `lurek.pipeline.newPipeline`: Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
 - `lurek.pipeline.newStep`: Creates a new pipeline step with the given name and an optional callback function.
+
+### Callbacks
+
+- `LPipeline:addBranch` param `elseFn` (`function?`): Callback executed if the predicate returns false. Defaults to a no-op.
+- `LPipeline:addBranch` param `thenFn` (`function`): Callback executed if the predicate returns true.
+- `LPipeline:addBranch` param `when` (`function`): Predicate function receiving context; returns true for the "then" path.
+- `LPipeline:addConditional` param `callback` (`function`): The step callback function.
+- `LPipeline:addConditional` param `condition` (`function`): Predicate function; step runs only if it returns true.
+- `LPipeline:onEvent` param `callback` (`function`): A function receiving (eventName, stepName, status, detail).
+- `LPipeline:onProgress` param `callback` (`function`): A function receiving (stepName, status).
+- `LPipeline:setOnComplete` param `callback` (`function?`): A function receiving the result table. Pass nil to remove.
+- `LPipeline:setOnStepComplete` param `callback` (`function?`): A function receiving (stepName, context). Pass nil to remove.
+- `LPipeline:setOnStepError` param `callback` (`function?`): A function receiving (stepName, errorMessage). Pass nil to remove.
+- `LPipelineStep:setCallback` param `callback` (`function`): A function receiving the pipeline context table and optionally returning a result value.
+- `LPipelineStep:setCondition` param `condition` (`function?`): A function receiving the context table and returning a boolean. Pass nil to remove the condition.
+- `LPipelineStep:setOnError` param `callback` (`function?`): A function receiving (stepName, errorMessage). Pass nil to remove.
+- `lurek.pipeline.newStep` param `callback` (`function?`): Optional callback executed when this step runs.
 
 ### Enums
 
@@ -212,7 +231,3 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

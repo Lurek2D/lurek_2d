@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/grep/`
-- Lua API path(s): `src/lua_api/grep_api.rs`
-- Primary Lua namespace: `lurek.grep`
+- Binding: `src/lua_api/grep_api.rs`
+- Namespace: `lurek.grep`
+- Lua API surface: `7` functions, `2` types, `9` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ The `grep` module exposes a full-featured file search engine to Lua game scripts
 Performance is addressed at multiple levels. Small files use buffered I/O; large files above a configurable threshold switch to `memmap2` zero-copy memory-mapped access, avoiding heap allocation for multi-megabyte assets. Parallel dispatch via Rayon distributes file slices across worker threads, with a `thread_count` of 0 forcing safe single-threaded mode.
 
 Beyond general text search, the module includes two specialized engines. The `json_search` path traverses JSON files using a `/`-separated key path syntax, extracting nested values without loading the entire document into a Lua table. The `log_search` path parses structured log lines in `[LEVEL TIMESTAMP] MESSAGE` format, filtering by severity level, time range, and text pattern — enabling game scripts to query the engine's runtime log for debugging or telemetry analysis. Streaming search with callbacks is supported for real-time result delivery in UI tools. All functionality is accessible via `lurek.grep.*`, making this the primary tool for in-engine asset auditing, content discovery, and developer productivity features.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -115,9 +120,6 @@ Beyond general text search, the module includes two specialized engines. The `js
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/grep_api.rs`
-- Namespace: `lurek.grep`
-
 ### Functions
 
 - `lurek.grep.jsonSearch`: Searches a JSON file for all values associated with a given key name at any depth.
@@ -127,6 +129,10 @@ Beyond general text search, the module includes two specialized engines. The `js
 - `lurek.grep.newEngineOpts`: Creates a new grep engine with custom search configuration options.
 - `lurek.grep.newFilter`: Creates a new empty file filter that can be configured to match specific file patterns.
 - `lurek.grep.search`: Searches a directory tree for files containing an exact literal pattern string.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -144,7 +150,7 @@ Beyond general text search, the module includes two specialized engines. The `js
 
 ##### Methods
 
-- `LFileFilter:addExtension`: Add allowed file extensions — Lua userdata object exposed by the engine.
+- `LFileFilter:addExtension`: Add allowed file extensions â€” Lua userdata object exposed by the engine.
 - `LFileFilter:excludeExtension`: Add excluded file extension for this object.
 - `LFileFilter:excludePattern`: Add path pattern to exclude for this object.
 - `LFileFilter:setIncludeHidden`: Set whether hidden files are included.
@@ -164,7 +170,3 @@ Beyond general text search, the module includes two specialized engines. The `js
 - `LGrepEngine:search`: Search a directory for a literal pattern.
 - `LGrepEngine:searchExt`: Search with file extension filter.
 - `LGrepEngine:searchFiles`: Search a specific provided list of files for text matches.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/validator/`
-- Lua API path(s): `src/lua_api/validator_api.rs`
-- Primary Lua namespace: `lurek.validator`
+- Binding: `src/lua_api/validator_api.rs`
+- Namespace: `lurek.validator`
+- Lua API surface: `3` functions, `1` types, `9` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ The `validator` module equips developers and CI pipelines with a structured stat
 Three built-in rule types cover the most common correctness checks. The `ApiComplianceRule` inspects each `lurek.*` call site against an `ApiRegistry` loaded at startup, flagging unknown function names as `Severity::Error` and wrong argument counts as `Severity::Warning`. The `AssetExistenceRule` pattern-matches `lurek.asset.load("path")` calls and verifies each path via `GameFS::exists` without decoding the asset — missing files produce errors, likely typos produce warnings. The `ImportResolutionRule` scans for `require("path")` calls via regex, resolving each against the game's configured `lua_paths` to catch missing module files before runtime.
 
 Beyond built-in rules, the engine supports extensibility in two directions. TOML rule files (loaded via `load_rules_from_file`) specify `[[rule]]` arrays with pattern, severity, message, and optional file-extension filter — ideal for project-specific naming conventions or forbidden API patterns. Lua callbacks registered via `lurek.validator.add_rule` inject `LuaPatternRule` adapters, letting game teams write script-side rules without recompiling. Results are collected into a `ValidationReport` containing `Vec<Violation>` with file path, line number, severity, and an optional suggestion string. The `lurek.validator.*` API exposes engine creation, rule registration, single-file and tree-wide validation runs, and report display.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -103,14 +108,15 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/validator_api.rs`
-- Namespace: `lurek.validator`
-
 ### Functions
 
 - `lurek.validator.newEngine`: Creates a new validation engine rooted at the given filesystem path.
 - `lurek.validator.validate`: Runs all validation rules against a project root directory and returns a report table.
 - `lurek.validator.validateFile`: Runs API validation rules against a single Lua file and returns a report table.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -137,7 +143,3 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 - `LValidationEngine:ruleCount`: Get number of loaded rules for this object.
 - `LValidationEngine:run`: Run validation against all Lua files under root.
 - `LValidationEngine:runFile`: Run validation against a single file.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

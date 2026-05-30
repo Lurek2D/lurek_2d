@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/input/`
-- Lua API path(s): `src/lua_api/input_api.rs`
-- Primary Lua namespace: `lurek.input`
+- Binding: `src/lua_api/input_api.rs`
+- Namespace: `lurek.input`
+- Lua API surface: `89` functions, `8` types, `18` methods
 - Rust test path(s): tests/rust/unit/input_tests.rs
 - Lua test path(s): tests/lua/unit/test_input.lua, tests/lua/integration/test_input_camera.lua
 
@@ -20,6 +21,10 @@ Functioning as a translation layer between the winit OS event loop and the game 
 The `MouseState` system offers comprehensive tracking of cursor coordinates, scroll-wheel deltas, and multi-button states. It allows developers to customize the cursor by selecting from system icons, providing raw RGBA pixel data, or toggling visibility and window-grab confinement (relative mode) for first-person control schemes. Gamepad support is exceptionally robust via the `GamepadState` struct, which tracks up to four connected controllers simultaneously. It manages analog sticks, triggers, button presses, connection lifecycles, and OS force-feedback vibration requests, synthesizing virtual D-pads and providing SDL2 GameControllerDB GUID mapping for maximum compatibility. `TouchState` similarly handles multi-point contact tracking for mobile or touchscreen interfaces, capturing press, move, and release lifecycles.
 
 To support complex game mechanics, the module includes a highly capable `ComboDetector` designed to recognize fighting-game-style multi-step input sequences, complete with configurable per-step and total-sequence timeout windows. Furthermore, the module implements an `InputRecorder` that can capture sparse frame-by-frame event streams into versioned JSON envelopes. These recordings can be loaded and played back deterministically, facilitating automated testing, replay systems, and automated demo loops. All of these features are seamlessly exposed to the scripting engine via the `lurek.input.*` Lua namespace.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -95,9 +100,6 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
 
 ## Lua API Ref
-
-- Binding: `src/lua_api/input_api.rs`
-- Namespace: `lurek.input`
 
 ### Functions
 
@@ -190,6 +192,10 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `lurek.input.wasActionReleased`: Returns whether any binding for an action was released this frame.
 - `lurek.input.wasPressed`: Returns whether any bound key for this mapping was pressed this frame.
 - `lurek.input.wasReleased`: Returns whether any bound key for this mapping was released this frame.
+
+### Callbacks
+
+- `lurek.input.onRebind` param `callback` (`function`): function(action_name, new_keys) called on any change.
 
 ### Enums
 
@@ -318,7 +324,3 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

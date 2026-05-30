@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/charts/`
-- Lua API path(s): `src/lua_api/charts_api.rs`
-- Primary Lua namespace: `lurek.charts`
+- Binding: `src/lua_api/charts_api.rs`
+- Namespace: `lurek.charts`
+- Lua API surface: `7` functions, `5` types, `32` methods
 - Rust test path(s): tests/rust/unit/charts_tests.rs
 - Lua test path(s): tests/lua/unit/test_charts_core_unit.lua
 
@@ -22,6 +23,12 @@ Each chart type is implemented in its own module (`line`, `bar`, `scatter`, `pie
 The module is intentionally data-driven: callers provide series/slice data and chart options, and the renderer emits deterministic software raster output. This makes charts reproducible in tests and usable in headless or tooling contexts where GPU access is not assumed.
 
 Because chart rendering can be consumed by UI and reporting paths, the boundary should stay focused on conversion from numeric data to image output. Layout orchestration and interaction policy belong to higher layers.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.
 
 ## Files
 
@@ -89,9 +96,6 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/charts_api.rs`
-- Namespace: `lurek.charts`
-
 ### Functions
 
 - `lurek.charts.defaultPalette`: Get the default 8-color series palette.
@@ -101,6 +105,10 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `lurek.charts.newPie`: Create a new pie chart exposed by the lurek engine.
 - `lurek.charts.newScatter`: Create a new scatter plot exposed by the lurek engine.
 - `lurek.charts.seriesColor`: Get a palette color by 1-based index (wraps around for index > 8).
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -170,7 +178,7 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 
 ##### Methods
 
-- `LPieChart:addSlice`: Add a slice to the pie chart â€” Lua userdata object exposed by the engine.
+- `LPieChart:addSlice`: Add a slice to the pie chart Ă˘â‚¬â€ť Lua userdata object exposed by the engine.
 - `LPieChart:clear`: Removes all pie data slices from this chart.
 - `LPieChart:getHeight`: Get the chart output height in pixels.
 - `LPieChart:getWidth`: Get the chart output width in pixels.
@@ -194,9 +202,3 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `LScatterPlot:render`: Renders the chart contents into a new pixel buffer.
 - `LScatterPlot:setDotRadius`: Set the radius of the dot drawn for each data point.
 - `LScatterPlot:setTitle`: Set or update the chart's displayed title.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Feature Systems`` into `Edge/Integration`.
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from ``Feature Systems`` into `Foundations`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from ``Feature Systems`` into `Platform Services`.

@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/procgen/`
-- Lua API path(s): `src/lua_api/procgen_api.rs`
-- Primary Lua namespace: `lurek.procgen`
+- Binding: `src/lua_api/procgen_api.rs`
+- Namespace: `lurek.procgen`
+- Lua API surface: `33` functions, `15` types, `37` methods
 - Rust test path(s): src/procgen/noise_tests.rs (sibling), plus inline #[cfg(test)] in all other .rs files
 - Lua test path(s): none found in the workspace
 
@@ -20,6 +21,10 @@ It offers a rich suite of deterministic, headless-testable algorithms for creati
 The module also excels at dungeon and interior generation. The `BspDungeon` generator uses Binary Space Partitioning to recursively divide space and carve rooms connected by L-shaped corridors. Alternatively, the `rooms_dungeon` generator places random non-overlapping rooms. Both systems support a prefab stamping feature that cleanly pastes named template shapes into qualifying rooms in a round-robin fashion. For organic caves, the `cellular_automata` generator applies birth/survival rules to a grid to form natural-looking caverns.
 
 For advanced world-building, `procgen` includes a `world_graph` subsystem for generating overworld node topologies, complete with A* pathfinding and Kruskal's minimum spanning tree algorithms. It also features a Wave Function Collapse (`wfc`) solver for constraint-based tile placement, Voronoi tessellation for regional partitioning, and Poisson-disk sampling for natural, evenly-spaced object distribution. L-systems provide string-rewriting and turtle-graphics interpretation for generating fractal trees or road networks. Finally, a Markov-chain `NameGen` creates plausible, random names trained on input word corpora. All these algorithms are thoroughly exposed to Lua via the `lurek.procgen.*` API, enabling script developers to construct infinitely varied, reproducible game content on the fly.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -180,9 +185,6 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/procgen_api.rs`
-- Namespace: `lurek.procgen`
-
 ### Functions
 
 - `lurek.procgen.biomeColor`: Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
@@ -218,6 +220,10 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 - `lurek.procgen.wfcFromPrompt`: Asks the global LLM for WFC tile definitions and adjacency rules, then runs WFC generation.
 - `lurek.procgen.wfcGenerate`: Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
 - `lurek.procgen.worldGraph`: Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -466,7 +472,3 @@ For advanced world-building, `procgen` includes a `world_graph` subsystem for ge
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

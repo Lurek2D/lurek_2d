@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/overlay/`
-- Lua API path(s): `src/lua_api/overlay_api.rs`
-- Primary Lua namespace: `lurek.overlay`
+- Binding: `src/lua_api/overlay_api.rs`
+- Namespace: `lurek.overlay`
+- Lua API surface: `2` functions, `3` types, `88` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -28,6 +29,13 @@ The `overlay` module provides a self-contained screen-space effects layer that s
 **Water distortion**: `WaterOverlayState` applies an animated sine-wave distortion overlay with configurable amplitude, frequency, and speed, plus shallow-water tint and depth-based color shift.
 
 All active layers emit `RenderCommand` entries built by `build_render_commands` for compositor integration. Debug visualization helpers render state panels and trigger previews into `ImageData` buffers. The full suite is accessible via `lurek.overlay.*`.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 
 ## Files
 
@@ -96,13 +104,14 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/overlay_api.rs`
-- Namespace: `lurek.overlay`
-
 ### Functions
 
 - `lurek.overlay.new`: Creates an overlay controller for screen effects using optional dimensions.
 - `lurek.overlay.newTransition`: Creates a timed screen transition with optional kind, duration, and color.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -243,10 +252,3 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 - `LScreenTransition:type`: Returns the Lua-visible type name for this transition handle.
 - `LScreenTransition:typeOf`: Returns whether this transition handle matches a supported type name.
 - `LScreenTransition:update`: Advances this transition timer and returns whether it remains active.
-
-## References
-
-- `color`: Imports or references `src/color/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.

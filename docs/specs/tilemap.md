@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/tilemap/`
-- Lua API path(s): `src/lua_api/tilemap_api.rs`
-- Primary Lua namespace: `lurek.tilemap`
+- Binding: `src/lua_api/tilemap_api.rs`
+- Namespace: `lurek.tilemap`
+- Lua API surface: `28` functions, `22` types, `162` methods
 - Rust test path(s): tests/rust/unit/tilemap_tests.rs
 - Lua test path(s): tests/lua/unit/test_tilemap.lua, tests/lua/stress/test_tilemap_stress.lua, tests/lua/integration/test_tilemap_physics.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_procgen_tilemap.lua, tests/lua/golden/test_tilemap_golden.lua, tests/lua/evidence/test_evidence_tilemap.lua
 
@@ -20,6 +21,14 @@ Central to this module is the `TileMap` struct, which stores stacked `TileLayer`
 To support massive, open-world environments, the module implements a sophisticated `ChunkMap` system alongside a `LargeMapRenderer`. These tools partition infinite sparse tile grids into fixed-size square chunks, facilitating on-demand loading, unloading, and view-frustum culling, which drastically reduces memory usage and GPU load for oversized maps. For complex terrain, the `AutoTileSheet` simplifies level design by using bitmask-based neighbor rules to automatically select the correct tile index for seamless terrain transitions (supporting 4-bit and 8-bit matching). Additionally, specialized components like `IsoMap` provide dedicated handling for multi-level isometric projection, ensuring proper depth sorting (painter's algorithm) across intricate 3D-like structures.
 
 The module also goes far beyond simple rendering. It features a robust procedural generation engine (`MapGen`) that constructs maps deterministically from reusable `MapBlock` prefabs and scripted operations (fill, scatter, path). For physics and gameplay logic, the map supports continuous AABB sweep-cast collision detection directly against solid tiles. `PolygonMap` enables the definition and spatial querying of named convex/concave regions (useful for zones or provinces), while `TileWalker` provides utilities for grid-based discrete movement and facing logic. Supported by the extensive `lurek.tilemap.*` Lua API, this module is a foundational pillar for building complex, optimized, and interactive 2D worlds.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -162,9 +171,6 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/tilemap_api.rs`
-- Namespace: `lurek.tilemap`
-
 ### Functions
 
 - `lurek.tilemap.fromLDtk`: Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
@@ -195,6 +201,12 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `lurek.tilemap.newTileSet`: Creates a new tileset from atlas parameters.
 - `lurek.tilemap.toScreenHex`: Converts axial hex coordinates to screen-space pixel position.
 - `lurek.tilemap.toScreenIso`: Converts tile coordinates to screen-space position for isometric projection.
+
+### Callbacks
+
+- `LTileMap:onTileEnter` param `func` (`function`): Callback receiving `(wx, wy, tx, ty)`.
+- `LTileMap:onTileExit` param `func` (`function`): Callback receiving `(entity, tx, ty)`.
+- `LTileMap:onTileStep` param `func` (`function`): Callback receiving `(entity, tx, ty)`.
 
 ### Enums
 
@@ -635,11 +647,3 @@ The module also goes far beyond simple rendering. It features a robust procedura
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

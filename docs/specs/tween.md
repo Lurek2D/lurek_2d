@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/tween/`
-- Lua API path(s): `src/lua_api/tween_api.rs`
-- Primary Lua namespace: `lurek.tween`
+- Binding: `src/lua_api/tween_api.rs`
+- Namespace: `lurek.tween`
+- Lua API surface: `15` functions, `6` types, `82` methods
 - Rust test path(s): tests/rust/unit/tween_tests.rs
 - Lua test path(s): tests/lua/unit/test_tween.lua, tests/lua/stress/test_tween_stress.lua, tests/lua/integration/test_tween_ecs.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tween_animation.lua
 
@@ -20,6 +21,10 @@ It provides a robust engine for animating numeric properties over time, making i
 To handle complex animation choreography, the module provides powerful combinators. `LuaTweenSequence` enables the chaining of multiple tweens, delays, and callbacks into an ordered execution pipeline, where each step seamlessly transitions to the next while carrying over leftover frame delta time. Conversely, `LuaTweenParallel` groups multiple tweens together, executing them simultaneously and completing only when the longest-running child finishes. For a more organic, physics-driven feel, `SpringSystem` offers damped spring interpolation with configurable stiffness and damping. This eliminates fixed durations in favor of natural settling dynamics, which is particularly effective for responsive UI elements or following camera logic.
 
 The entire system is driven by a centralized `TweenEngine` that efficiently updates all active tweens, sequences, parallels, and springs every frame. The module is fully integrated with Lua coroutines via the `await()` method, allowing developers to yield execution until an animation completes, drastically simplifying sequential scripting without callback hell. Exposed via the comprehensive `lurek.tween.*` Lua API, this module is an essential tool for bringing fluid, polished motion to Lurek2D games.
+
+## Imports
+
+- `math`: Imports or references `math` from `src/math/`.
 
 ## Files
 
@@ -83,9 +88,6 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/tween_api.rs`
-- Namespace: `lurek.tween`
-
 ### Functions
 
 - `lurek.tween.cancelAll`: Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
@@ -103,6 +105,22 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `lurek.tween.tweenChain`: Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `fields`, optional `easing`, optional `callback`, or a `delay` key for pauses.
 - `lurek.tween.tweenColor`: Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
 - `lurek.tween.update`: Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
+
+### Callbacks
+
+- `LTween:onCancel` param `f` (`function`): Callback fired when the tween is cancelled.
+- `LTween:onComplete` param `f` (`function`): Callback fired when the tween finishes.
+- `LTween:onUpdate` param `f` (`function`): Callback fired each frame with the current progress `t` (0..1).
+- `LTweenChain:call` param `fn` (`function`): Callback to execute.
+- `LTweenChain:onComplete` param `fn` (`function`): Completion callback.
+- `LTweenChain:onLoop` param `fn` (`function`): Callback receiving iteration number.
+- `LTweenChain:wait` param `callback` (`function?`): Optional callback fired after wait.
+- `LTweenParallel:onComplete` param `f` (`function`): Function to call when all tweens in the group complete.
+- `LTweenSequence:callback` param `f` (`function`): Function called when this step is reached during playback.
+- `LTweenSequence:delay` param `cb` (`function?`): Optional callback fired when the delay elapses.
+- `LTweenSequence:onComplete` param `f` (`function`): Function to call when the sequence completes.
+- `lurek.tween.delay` param `cb` (`function?`): Optional callback fired when the delay completes.
+- `lurek.tween.registerEasing` param `f` (`function`): Easing function `f(t) -> number` where t is 0..1.
 
 ### Enums
 
@@ -257,7 +275,3 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTweenState:tick`: Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
 - `LTweenState:type`: Returns the type name of this object.
 - `LTweenState:typeOf`: Checks whether this object matches the given type name.
-
-## References
-
-- `math`: Imports or references `math` from `src/math/`.

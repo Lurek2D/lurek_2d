@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/render/`
-- Lua API path(s): `src/lua_api/render_api.rs`
-- Primary Lua namespace: `lurek.render`
+- Binding: `src/lua_api/render_api.rs`
+- Namespace: `lurek.render`
+- Lua API surface: `130` functions, `14` types, `88` methods
 - Rust test path(s): src/render/ (inline #[cfg(test)] in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), src/render/renderer_tests.rs, src/render/postfx_pipeline_tests.rs
 - Lua test path(s): none found in the workspace
 
@@ -20,6 +21,15 @@ Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. 
 The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
 
 A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using cached ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
+
+## Imports
+
+- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
+- `light`: Imports or references `light` from `src/light/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
 
 ## Files
 
@@ -180,9 +190,6 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/render_api.rs`
-- Namespace: `lurek.render`
-
 ### Functions
 
 - `lurek.render.applyTransform`: Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
@@ -315,6 +322,12 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `lurek.render.stencil`: Begins a stencil write pass with the given action and reference value.
 - `lurek.render.translate`: Applies a translation to the current transformation matrix.
 - `lurek.render.triangle`: Draws a triangle from three vertex positions.
+
+### Callbacks
+
+- `LDrawLayer:queue` param `f` (`function`): Callback to invoke during flush.
+- `LImageData:mapPixels` param `callback` (`function`): Called as callback(x, y, r, g, b, a) â†’ (r, g, b, a) for each pixel. Invocation: `callback(x, y, r, g, b, a)`.
+- `lurek.render.captureScreenshot` param `callback` (`function`): Called with an LImageData argument.
 
 ### Enums
 
@@ -582,12 +595,3 @@ A standout feature of the `render` module is its robust `PostFxPipeline`. This f
 - `LSpriteBatch:release`: Releases the sprite batch resource.
 - `LSpriteBatch:type`: Returns the type name string for this sprite batch.
 - `LSpriteBatch:typeOf`: Checks whether this object matches the given type name.
-
-## References
-
-- `font`: Imports or references `src/font/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `image`: Imports or references `src/image/`. Dependency stays inside `Platform Services` and should remain acyclic.
-- `light`: Imports or references `light` from `src/light/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.

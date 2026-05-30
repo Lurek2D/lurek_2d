@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/ecs/`
-- Lua API path(s): `src/lua_api/ecs_api.rs`
-- Primary Lua namespace: `lurek.ecs`
+- Binding: `src/lua_api/ecs_api.rs`
+- Namespace: `lurek.ecs`
+- Lua API surface: `1` functions, `4` types, `68` methods
 - Rust test path(s): tests/rust/unit/ecs_tests.rs
 - Lua test path(s): tests/lua/unit/test_ecs_core_unit.lua
 
@@ -24,6 +25,10 @@ The generational-ID approach prevents stale handle reuse while keeping IDs compa
 This module should keep its focus on storage semantics and relationship/state utilities. System scheduling and gameplay policy should remain outside ECS core and consume this state through explicit APIs.
 
 Implementation detail and boundary guarantees for ecs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: generational_id.rs: Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.; lua_table.rs: Deep-copy utility for Lua tables via mlua.; mod.rs: Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.; relationships.rs: Relationship type definitions with named level labels and validated defaults.; types.rs: Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.; universe.rs: Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.; universe_ext.rs: Extended Universe operations: advanced queries, bulk spawning, and state serialization.; universe_systems.rs: System registration, removal, and count queries on a Universe.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -94,12 +99,16 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/ecs_api.rs`
-- Namespace: `lurek.ecs`
-
 ### Functions
 
 - `lurek.ecs.newUniverse`: Creates an empty ECS universe for entity, component, system, and relationship management.
+
+### Callbacks
+
+- `LUniverse:each` param `callback` (`function`): Callback invoked by the ECS backend for each matching entity.
+- `LUniverse:onComponentAdded` param `cb` (`function`): Callback receiving entity id and component name.
+- `LUniverse:onComponentRemoved` param `cb` (`function`): Callback receiving entity id and component name.
+- `LUniverse:queryMulti` param `callback` (`function`): Callback invoked by the ECS backend for each matching entity.
 
 ### Enums
 
@@ -228,7 +237,3 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

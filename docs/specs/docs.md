@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/docs/`
-- Lua API path(s): `src/lua_api/docs_api.rs`
-- Primary Lua namespace: `lurek.docs`
+- Binding: `src/lua_api/docs_api.rs`
+- Namespace: `lurek.docs`
+- Lua API surface: `26` functions, `13` types, `60` methods
 - Rust test path(s): tests/rust/unit/docs_tests.rs
 - Lua test path(s): tests/lua/unit/test_docs.lua
 
@@ -24,6 +25,10 @@ The module's value is consistency between source metadata and generated artifact
 As an integration-facing subsystem, it should prioritize deterministic output formats and explicit quality criteria so downstream generators and validators can rely on stable contracts over time.
 
 Implementation detail and boundary guarantees for docs: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: catalog.rs: Provide in-memory catalog storage for documentation entries collected from Rust source.; entry.rs: Define normalized documentation record types for lurek API symbols.; export.rs: Build JSON payloads for IDE completion, hover, and signature help from doc entries.; mod.rs: Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.; report.rs: Compute per-entry quality scores from completeness of description, params, and metadata.; schema.rs: Re-export schema validation types from the lurek_schema crate.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -71,9 +76,6 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/docs_api.rs`
-- Namespace: `lurek.docs`
-
 ### Functions
 
 - `lurek.docs.checkStaleness`: Lists source files in a directory for simple documentation staleness checks.
@@ -102,6 +104,10 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `lurek.docs.setReturnInfo`: Replaces return-value metadata for one editable catalog entry.
 - `lurek.docs.validate`: Compares a documentation catalog with the live reflected `lurek` API table.
 - `lurek.docs.validateModule`: Compares one module's documentation catalog entries with the live reflected module table.
+
+### Callbacks
+
+- `LApiCatalog:filter` param `predicate` (`function`): Callback called with each `LDocEntry`; truthy return keeps the entry.
 
 ### Enums
 
@@ -338,7 +344,3 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

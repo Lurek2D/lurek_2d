@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/repl/`
-- Lua API path(s): `src/lua_api/repl_api.rs`
-- Primary Lua namespace: `lurek.repl`
+- Binding: `src/lua_api/repl_api.rs`
+- Namespace: `lurek.repl`
+- Lua API surface: `1` functions, `1` types, `7` methods
 - Rust test path(s): tests/rust/unit/repl_tests.rs
 - Lua test path(s): tests/lua/unit/test_repl_core_unit.lua
 
@@ -20,6 +21,10 @@ Designed to execute Lua commands dynamically, it empowers developers and users t
 The REPL supports a rich set of interactive features. It manages a bounded command history (with a configurable capacity, defaulting to 200 entries), allowing users to easily navigate past inputs. The input evaluator intelligently handles expressions (attempting a `return <input>` first) before falling back to statement execution. A suite of built-in colon commands (`:help`, `:clear`, `:vars`, `:time`, `:reset`, `:load <file>`) provides essential session management and file execution capabilities directly from the prompt.
 
 Furthermore, the module includes a sophisticated `completer` that offers tab completion against a static pool of Lua keywords, built-ins, standard libraries, and all `lurek.*` namespaces, while also dynamically resolving dot-separated paths against the live Lua global table. Value formatting is handled by a robust `value_to_string` recursive formatter, which converts all Lua value types (including opaque types like functions and userdata) into stable, human-readable display text with configurable depth limits and table truncation. Entirely free of wgpu or winit dependencies, the `lurek.repl.*` API ensures that interactive scripting is safe, stable, and available across all Lurek2D environments.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -59,12 +64,13 @@ Furthermore, the module includes a sophisticated `completer` that offers tab com
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/repl_api.rs`
-- Namespace: `lurek.repl`
-
 ### Functions
 
 - `lurek.repl.new`: Creates a release-safe REPL session with bounded command history.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -89,7 +95,3 @@ Furthermore, the module includes a sophisticated `completer` that offers tab com
 - `LReplSession:len`: Returns the number of entries stored in this REPL history.
 - `LReplSession:type`: Returns the Lua-visible type name for this REPL session handle.
 - `LReplSession:typeOf`: Returns whether this REPL session handle matches a supported type name.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/serialize/`
-- Lua API path(s): `src/lua_api/serialize_api.rs`
-- Primary Lua namespace: `lurek.serial`
+- Binding: `src/lua_api/serialize_api.rs`
+- Namespace: `lurek.serial`
+- Lua API surface: `15` functions, `0` types, `0` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ At its core, it relies on the recursive `SerialValue` enum—an intermediate typ
 Each format codec is highly specialized to handle the nuances of its specific specification. For instance, the CSV parser efficiently handles headers, custom delimiters, quoting, and multi-line fields, easily mapping between spreadsheet rows and Lua arrays of tables. The TOML and INI parsers support deep nesting and sections, perfect for configuration files. The XML parser correctly interprets attributes and text nodes, crucial for importing complex assets like Tiled map exports. For performance-critical paths—such as save states or network synchronization—the MessagePack codec provides fast, compact binary encoding that significantly outperforms text formats in both speed and size.
 
 Beyond simple format translation, the module includes a powerful schema validation system. Developers can define typed constraints to validate `SerialValue` trees against expected shapes, enforcing required fields, numeric ranges, and string lengths before the data reaches game logic. Additionally, the schema system can apply default values to automatically fill missing fields, ensuring backwards compatibility with older save files or partial configurations. Coupled with seamless bi-directional conversion between `SerialValue` and the Lua runtime, the `lurek.serial.*` API equips developers with an extremely versatile and reliable data pipeline for config loading, state persistence, and external tool integration.
+
+## Imports
+
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.
 
 ## Files
 
@@ -100,9 +105,6 @@ Beyond simple format translation, the module includes a powerful schema validati
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/serialize_api.rs`
-- Namespace: `lurek.serial`
-
 ### Functions
 
 - `lurek.serial.applyDefaults`: Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
@@ -121,6 +123,10 @@ Beyond simple format translation, the module includes a powerful schema validati
 - `lurek.serial.toToml`: Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
 - `lurek.serial.validate`: Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 
+### Callbacks
+
+- No documented callback parameters in this module.
+
 ### Enums
 
 - No documented module-level enums/constants.
@@ -128,7 +134,3 @@ Beyond simple format translation, the module includes a powerful schema validati
 ### Types
 
 - No documented module types.
-
-## References
-
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Foundations` into `Core Runtime`.

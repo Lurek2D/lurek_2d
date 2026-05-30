@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/physics/`
-- Lua API path(s): `src/lua_api/physics_api.rs`
-- Primary Lua namespace: `lurek.physics`
+- Binding: `src/lua_api/physics_api.rs`
+- Namespace: `lurek.physics`
+- Lua API surface: `22` functions, `16` types, `168` methods
 - Rust test path(s): src/physics/world_tests.rs, inline #[cfg(test)] in body.rs, shape.rs, zone.rs, cellular.rs, terrain.rs, render.rs, collision_helpers.rs
 - Lua test path(s): none found in the workspace
 
@@ -22,6 +23,13 @@ The module supports a full spectrum of physics bodies: `dynamic` (fully simulate
 A comprehensive suite of joints enables complex mechanical linkages between bodies, including revolute (hinge), prismatic (slider), distance (rope), weld, wheel, motor, and mouse joints. The module also features a sophisticated `TerrainMap` system for chunked, destructible environments, automatically synchronizing solid bit-grid cells into static physics colliders for high-performance interaction. Further extending environmental interactions, the `PhysicsZone` system allows developers to define spatial areas (rectangles or circles) that override standard physics rules—applying directional gravity, point attractors, repulsors, or custom damping to bodies that enter them.
 
 Additionally, the `cellular` submodule provides a cellular automaton grid for simulating falling sand, flowing water, and other particle-like materials. For spatial queries, the module offers extensive raycasting, shape-casting, and point intersection tests, alongside pure-geometry collision helpers for lightweight, physics-free checks. The entire system—from body lifecycle management to collision event callbacks and debug rendering—is comprehensively exposed to the Lua environment via the `lurek.physics.*` API, forming the backbone of physical interactions in Lurek2D games.
+
+## Imports
+
+- `image`: Imports or references `image` from `src/image/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -114,9 +122,6 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/physics_api.rs`
-- Namespace: `lurek.physics`
-
 ### Functions
 
 - `lurek.physics.attachShape`: Attaches a previously created shape to a body, using the shape's stored material properties.
@@ -141,6 +146,11 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `lurek.physics.testCircleAABB`: Tests whether a circle overlaps an AABB. Lightweight check without physics world.
 - `lurek.physics.testCircles`: Tests whether two circles overlap. Lightweight collision check without physics world.
 - `lurek.physics.testPoint`: Tests whether a point lies inside an AABB. Lightweight check without physics world.
+
+### Callbacks
+
+- `LWorld:setBeginContact` param `callback` (`function`): Called with (bodyIdA, bodyIdB) on each new contact.
+- `LWorld:setEndContact` param `callback` (`function`): Called with (bodyIdA, bodyIdB) on each ended contact.
 
 ### Enums
 
@@ -532,10 +542,3 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LZone:setPriority`: Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
 - `LZone:type`: Returns the type name of this object ("LZone").
 - `LZone:typeOf`: Checks if this object is of a given type name.
-
-## References
-
-- `image`: Imports or references `image` from `src/image/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

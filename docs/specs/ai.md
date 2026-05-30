@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/ai/`
-- Lua API path(s): `src/lua_api/ai_api.rs`
-- Primary Lua namespace: `lurek.ai`
+- Binding: `src/lua_api/ai_api.rs`
+- Namespace: `lurek.ai`
+- Lua API surface: `36` functions, `24` types, `237` methods
 - Rust test path(s): tests/rust/unit/ai_tests.rs, tests/rust/game/ai_tests.rs
 - Lua test path(s): tests/lua/unit/test_ai.lua, tests/lua/golden/test_ai_golden.lua, tests/lua/integration/test_ecs_ai.lua, tests/lua/integration/test_ai_physics.lua, tests/lua/integration/test_ai_pathfind.lua, tests/lua/integration/test_ai_ecs_scene.lua, tests/lua/stress/test_ai_stress.lua
 
@@ -24,6 +25,15 @@ Beyond decision logic, the toolkit encompasses extensive systems for perception,
 The module also integrates a suite of machine learning and adaptive systems via re-exports from the dedicated [`learning`](learning.md) module. It features multi-armed `Bandit` strategies (epsilon-greedy, UCB1, Thompson sampling), tabular `QLearner` reinforcement learning, and a lightweight `NeuralNet` supporting `Neuroevolution` via a population-based genetic algorithm. This allows for evolving behaviors over generations. Furthermore, agents can possess rich internal states using the `Emotion` and `NeedSystem` modules, alongside archetypal `TraitProfile`s that govern personality variables.
 
 Inter-system communication is achieved seamlessly through a hierarchical `Blackboard` key-value store re-exported from [`patterns`](patterns.md), while the `CommandQueue` stages interruptible actions. The entire API is thoroughly exposed via Lua bindings under the `lurek.ai.*` namespace, ensuring that developers and modders can instantiate, configure, and orchestrate these sophisticated AI tools entirely from script without wrestling with shared state.
+
+## Imports
+
+- `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `learning`: Imports or references `src/learning/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -218,9 +228,6 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/ai_api.rs`
-- Namespace: `lurek.ai`
-
 ### Functions
 
 - `lurek.ai.newAIDirector`: Creates an AI director for tension, phase, and pacing factor calculations.
@@ -259,6 +266,26 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `lurek.ai.newTraitProfile`: Creates an empty trait profile with modifier support.
 - `lurek.ai.newUtilityAI`: Creates an empty utility AI action scorer.
 - `lurek.ai.newWorld`: Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
+
+### Callbacks
+
+- `LBot:setCustomModel` param `callback` (`function`): Function called during world updates with `(agent, blackboard, dt)` for this agent.
+- `LCommandQueue:enqueue` param `callback` (`function`): Callback invoked by command execution logic outside this wrapper.
+- `LCommandQueue:pushFront` param `callback` (`function`): Callback invoked by command execution logic outside this wrapper.
+- `LCommandQueue:replace` param `callback` (`function`): Callback invoked by command execution logic outside this wrapper.
+- `LGOAPPlanner:addAction` param `callback` (`function?`): Optional callback stored with the action for game-side execution.
+- `LMCTSEngine:search` param `apply_fn` (`function`): Function called with `(state, action)` and returning the next state integer.
+- `LMCTSEngine:search` param `eval_fn` (`function`): Function called with a state and returning a numeric score.
+- `LMCTSEngine:search` param `get_actions_fn` (`function`): Function called with a state and returning an array of integer actions.
+- `LStateMachine:addTransition` param `guard` (`function?`): Optional function that must return true for the transition to run.
+- `LSteeringManager:addCustomBehavior` param `func` (`function`): Function called as `(agent, dt)` that returns an X and Y steering force.
+- `LStrategyAI:forceEvaluate` param `scorer_fn` (`function`): Function called with a goal name and returning a numeric score.
+- `LStrategyAI:update` param `scorer_fn` (`function`): Function called with a goal name and returning a numeric score.
+- `LUtilityAI:addAction` param `scorer_fn` (`function`): Function called by evaluation to score this action.
+- `LUtilityAI:addConsideration` param `scorer_fn` (`function`): Function that returns the raw consideration score.
+- `lurek.ai.newAction` param `callback` (`function`): Callback invoked when the action node ticks.
+- `lurek.ai.newCondition` param `callback` (`function`): Callback invoked when the condition node ticks.
+- `lurek.ai.newGuard` param `predicate` (`function`): Callback that decides whether the child may run.
 
 ### Enums
 
@@ -768,12 +795,3 @@ Inter-system communication is achieved seamlessly through a hierarchical `Blackb
 - `LUtilityAI:getLastAction`: Returns the last winning action name when evaluation has selected one.
 - `LUtilityAI:type`: Returns the Lua-visible type name for this utility AI handle.
 - `LUtilityAI:typeOf`: Returns whether this utility AI handle matches a supported type name.
-
-## References
-
-- `dialog`: Imports or references `src/dialog/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `learning`: Imports or references `src/learning/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `patterns`: Imports or references `src/patterns/`. Cross-group dependency from `Feature Systems` into `Foundations`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

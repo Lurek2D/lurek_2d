@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/binary/`
-- Lua API path(s): `src/lua_api/binary_api.rs`
-- Primary Lua namespace: `lurek.binary`
+- Binding: `src/lua_api/binary_api.rs`
+- Namespace: `lurek.binary`
+- Lua API surface: `22` functions, `4` types, `50` methods
 - Rust test path(s): tests/rust/unit/binary_tests.rs; tests/rust/stress/binary_stress_tests.rs; inline tests in src/binary/byte_data.rs, src/binary/encode.rs, src/binary/hash.rs
 - Lua test path(s): tests/lua/unit/test_binary_core_unit.lua; tests/lua/stress/test_binary_stress.lua; tests/lua/integration/test_binary_filesystem.lua; tests/lua/integration/test_binary_compute.lua; tests/lua/golden/test_binary_golden.lua
 
@@ -24,6 +25,10 @@ Design emphasis is predictable low-level behavior and reusable primitives rather
 Because this module sits in foundations, its contracts must remain stable and explicit: byte order, bounds behavior, and transformation semantics should be documented and deterministic so higher layers can rely on it for cross-module interoperability.
 
 Implementation detail and boundary guarantees for binary: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: bin_pack.rs: Token-based binary packing and unpacking using whitespace-separated format strings - Endian-aware serialization of integers, floats, booleans, strings, and raw bytes - Coercion helpers that convert between BinValue variants at write time - Length-prefixed and null-terminated stri; byte_data.rs: Owned mutable byte buffer with indexed read and write access - UTF-8 string encoding and lossy decoding from raw bytes - Immutable and mutable slice views for zero-copy downstream use; compress.rs: Multi-codec compression and decompression (deflate, gzip, zlib, lz4) - Full-buffer and streaming APIs for both single slices and chunk lists - Configurable compression level clamped to valid range (0-9) - ChunkReader adapter that flattens multiple borrowed slices into one Read st; data_writer.rs: Sequential binary writer with a movable cursor over a growable byte buffer - Little-endian and big-endian integer, float, and string write methods - Seek support with automatic zero-fill when moving past buffer end; dataview.rs: Read-only typed accessor over a shared Arc byte buffer - Bounds-checked scalar reads for u8, i8, u16, i16, u32, i32, f32, f64 - Sub-slice views with validated offset and size - LuaDataView wrapper for Lua-facing ownership patterns; encode.rs: Base64 and hexadecimal encoding and decoding for opaque byte payloads - Format selection via enum variant parsed from user-facing labels - Consistent error wrapping for malformed input; hash.rs: Cryptographic hash digest computation (MD5, SHA-1, SHA-256, SHA-512) - CRC32 checksum for fast integrity checks - Hex-encoded string output for all digest algorithms; mod.rs: Binary packing, unpacking, and struct-style format-string serialization - Owned byte buffers, shared data views, and sequential writers - Compression codecs (deflate, gzip, zlib, lz4) with stream and chunk APIs - Encoding helpers (base64, hex) and hash digests (MD5, SHA, CRC32) -; pack.rs: Python struct-style format-string packing and unpacking - Single-character format tokens for integers, floats, strings, and padding - Endian switching via '<' (little) and '>' (big) prefix characters - Length-prefixed ('s') and null-terminated ('z') string support - Coercion help; ring_buffer.rs: Fixed-capacity circular buffer with oldest-overwrite FIFO semantics - Push, pop, peek, and index-based access with O(1) operations - Iteration and collection helpers from oldest to newest element - Copy-optimized collection for Clone + Copy element types. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -112,9 +117,6 @@ Implementation detail and boundary guarantees for binary: this module keeps resp
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/binary_api.rs`
-- Namespace: `lurek.binary`
-
 ### Functions
 
 - `lurek.binary.compress`: Compresses a binary string using a named compression format.
@@ -139,6 +141,10 @@ Implementation detail and boundary guarantees for binary: this module keeps resp
 - `lurek.binary.toMsgPack`: Encodes a Lua value into the current structured binary interchange payload.
 - `lurek.binary.unpack`: Unpacks values from a binary string using a format string.
 - `lurek.binary.write`: Writes binary values into a byte string using a format string.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -239,7 +245,3 @@ Implementation detail and boundary guarantees for binary: this module keeps resp
 - `LRingBuffer:toTable`: Returns stored values in oldest-to-newest order.
 - `LRingBuffer:type`: Returns the Lua-visible type name for this ring buffer handle.
 - `LRingBuffer:typeOf`: Returns whether this ring buffer handle matches a supported type name.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

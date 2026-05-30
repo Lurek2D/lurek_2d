@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/image/`
-- Lua API path(s): `src/lua_api/image_api.rs`
-- Primary Lua namespace: `lurek.image`
+- Binding: `src/lua_api/image_api.rs`
+- Namespace: `lurek.image`
+- Lua API surface: `12` functions, `10` types, `90` methods
 - Rust test path(s): tests/rust/unit/image_tests.rs, tests/rust/stress/image_stress_tests.rs
 - Lua test path(s): tests/lua/unit/test_image_core_unit.lua, tests/lua/unit/test_image.lua, tests/lua/unit/test_image_effect.lua, tests/lua/unit/test_render_core_unit.lua, tests/lua/stress/test_image_stress.lua, tests/lua/evidence/test_evidence_image_drawing.lua, tests/lua/evidence/test_evidence_imagedata.lua, tests/lua/evidence/test_evidence_image_effects.lua, tests/lua/evidence/test_evidence_imagedata_effects.lua
 
@@ -20,6 +21,16 @@ The foundational type is `ImageData`, which manages raw RGBA8 pixel buffers alon
 Beyond flat buffers, the module implements a sophisticated `LayeredImage` system. This allows developers to construct complex images from ordered stacks of `ImageLayer`s, featuring adjustable opacity, visibility flags, and support for Porter-Duff alpha blending to merge the final composite. For asset management, the module decodes compressed texture formats (DDS BC1–BC7) and supports standard image encoding/decoding (PNG, QOI, BMP). It also includes a `TextureAtlas` packer that combines multiple sprites into a single large texture using a shelf-based bin-packing algorithm, complete with nine-slice inset metadata for scalable UI components.
 
 The `image` module features specialized systems for game development, most notably the `ProvinceGrid`. This system performs high-speed flood-fill analysis on color-coded PNG maps to generate optimized spatial indexes, identifying distinct provinces, calculating adjacencies, tracing polygonal borders, and exporting compressed shape data for Geoscape-style games. Additionally, `PaletteLUT` provides hardware-accelerated color remapping for retro palette-swapping effects. The module also contains an extensive set of debug visualization renderers for animation, audio, camera bounds, easing curves, and procedural generation (Voronoi, noise, cellular automata). The entire API, including CPU-to-GPU texture upload helpers, is fully exposed to Lua via the `lurek.image.*` namespace.
+
+## Imports
+
+- `animation`: Imports or references `animation` from `src/animation/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `math`: Imports or references `math` from `src/math/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -218,9 +229,6 @@ The `image` module features specialized systems for game development, most notab
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/image_api.rs`
-- Namespace: `lurek.image`
-
 ### Functions
 
 - `lurek.image.fromScreen`: Returns a completed screen capture image or requests one for a future call.
@@ -235,6 +243,11 @@ The `image` module features specialized systems for game development, most notab
 - `lurek.image.newProvinceGrid`: Loads a province id grid from an image file under the current game directory.
 - `lurek.image.saveImage`: Saves an image data object to a path under the current game directory.
 - `lurek.image.savePNG`: Encodes image data as PNG and writes it under the current game directory.
+
+### Callbacks
+
+- `LImageData:mapPixel` param `func` (`function`): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+- `LImageData:mapPixels` param `func` (`function`): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
 
 ### Enums
 
@@ -458,13 +471,3 @@ The `image` module features specialized systems for game development, most notab
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `animation`: Imports or references `animation` from `src/animation/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `color`: Imports or references `src/color/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `math`: Imports or references `math` from `src/math/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Platform Services` into `Edge/Integration`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

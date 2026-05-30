@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/runtime/`
-- Lua API path(s): None direct
-- Primary Lua namespace: `lurek.runtime`
+- Binding: None direct
+- Namespace: `lurek.runtime`
+- Lua API surface: `41` functions, `8` types, `0` methods
 - Rust test path(s): tests/rust/unit/runtime_tests.rs, tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
 - Lua test path(s): tests/lua/config/test_config.lua, tests/lua/unit/test_runtime_core_unit.lua
 
@@ -28,6 +29,28 @@ The old `lua_api` spec duplicated this runtime namespace. Its relevant contract 
 Module registration is trait-based. Each binding file implements a `register(lua, lurek, state)` entry point, and `src/lua_api/register.rs` walks the static `MODULES` slice using `always!` and `gated!` entries. Feature-gated modules that cannot appear in that static slice are registered after the standard pass. Binding files remain translation-only: they parse Lua values, borrow `SharedState`, call domain modules, and convert results back to Lua without owning business logic.
 
 For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.md](../architecture/lua-rust-boundary.md).
+
+## Imports
+
+- `audio`: Imports or references `audio` from `src/audio/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `event`: Imports or references `event` from `src/event/`.
+- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
+- `input`: Imports or references `input` from `src/input/`.
+- `light`: Imports or references `light` from `src/light/`.
+- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
+- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `parallax`: Imports or references `parallax` from `src/parallax/`.
+- `particle`: Imports or references `particle` from `src/particle/`.
+- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
+- `timer`: Imports or references `timer` from `src/timer/`.
+- `ui`: Imports or references `ui` from `src/ui/`.
 
 ## Files
 
@@ -125,9 +148,6 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 
 ## Lua API Ref
 
-- Binding: None direct
-- Namespace: `lurek.runtime`
-
 ### Functions
 
 - `lurek.engine.fps`: Returns the latest frames-per-second value stored by the runtime.
@@ -171,6 +191,10 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 - `lurek.runtime.setClipboardText`: Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
 - `lurek.runtime.setDebugOverlay`: Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
 - `lurek.runtime.setLogLevel`: Sets the engine-wide log verbosity level at runtime.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -326,25 +350,3 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `audio`: Imports or references `audio` from `src/audio/`.
-- `camera`: Imports or references `camera` from `src/camera/`.
-- `event`: Imports or references `event` from `src/event/`.
-- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Core Runtime` into `Platform Services`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: `src/lua_api/system_api.rs`, `src/lua_api/engine_api.rs`, and `src/lua_api/register.rs` expose the runtime contract to Lua. `src/runtime/` must not import the binding layer.
-- `midi`: Imports or references `src/midi/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `parallax`: Imports or references `parallax` from `src/parallax/`.
-- `particle`: Imports or references `particle` from `src/particle/`.
-- `province`: Imports or references `src/province/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `repl`: Imports or references `src/repl/`. Cross-group dependency from `Core Runtime` into `Edge/Integration`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
-- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
-- `timer`: Imports or references `timer` from `src/timer/`.
-- `ui`: Imports or references `ui` from `src/ui/`.

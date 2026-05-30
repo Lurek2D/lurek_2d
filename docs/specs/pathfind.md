@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/pathfind/`
-- Lua API path(s): `src/lua_api/pathfind_api.rs`
-- Primary Lua namespace: `lurek.pathfind`
+- Binding: `src/lua_api/pathfind_api.rs`
+- Namespace: `lurek.pathfind`
+- Lua API surface: `13` functions, `22` types, `104` methods
 - Rust test path(s): tests/rust/unit/pathfinding_tests.rs
 - Lua test path(s): tests/lua/unit/test_pathfind.lua, tests/lua/stress/test_pathfind_stress.lua, tests/lua/golden/test_pathfind_golden_grid.lua, tests/lua/integration/test_tilemap_pathfind.lua, tests/lua/integration/test_pathfind_ecs.lua, tests/lua/integration/test_ai_pathfind.lua
 
@@ -20,6 +21,13 @@ It is designed to handle everything from simple grid-based movement to complex, 
 To address the challenges of large open worlds and massive agent counts, the module includes several advanced AI pathing techniques. Hierarchical Pathfinding A* (HPA*) partitions grids into chunks, building an abstract graph of boundary entrances to allow near-instant long-distance path planning that is later refined into tile-by-tile routes. For crowd simulation, the `FlowField` and `ai_flow_field` structures precompute directional vectors across a grid toward a specific goal, allowing hundreds of agents to steer smoothly without calculating individual paths. Additionally, the `InfluenceMap` system allows developers to propagate, blend, and decay scalar values across grids—perfect for tactical AI to evaluate threat levels, control zones, or attractive points of interest.
 
 Beyond standard square grids, the module offers extensive support for alternative spatial layouts. It includes a fully featured `HexGrid` with cube-coordinate math, supporting both pointy-top and flat-top layouts, alongside specific line-of-sight and field-of-view queries. An `IsoGrid` provides specialized routing for isometric map layouts. For non-grid environments, the `NavMesh` structure allows A* routing across connected arbitrary polygons, extracting smoothed centroid corridors. To ensure pathfinding never stalls the primary game loop, the module features a dedicated `PathThreadPool`, allowing asynchronous, off-thread path requests via non-blocking channels. Finally, the `UnitPathfinder` provides a high-level, stateful wrapper for individual agents, handling path caching, variable unit sizes (clearance checks), partial paths, and string-pull smoothing. The entire suite is accessible via the `lurek.pathfind.*` Lua API.
+
+## Imports
+
+- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -213,9 +221,6 @@ Beyond standard square grids, the module offers extensive support for alternativ
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/pathfind_api.rs`
-- Namespace: `lurek.pathfind`
-
 ### Functions
 
 - `lurek.pathfind.getThreadCount`: Returns the configured pathfinding thread count.
@@ -231,6 +236,10 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `lurek.pathfind.newPathfinder`: Creates a unit pathfinder for a navigation grid.
 - `lurek.pathfind.rangeMap`: Computes reachable cells from range map options.
 - `lurek.pathfind.setThreadCount`: Sets the configured pathfinding worker-thread count.
+
+### Callbacks
+
+- `LGoalMap:setBlocker` param `fn` (`function`): `fn(x: integer, y: integer) -> boolean` (one-based).
 
 ### Enums
 
@@ -610,10 +619,3 @@ Beyond standard square grids, the module offers extensive support for alternativ
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `flownet`: Imports or references `src/flownet/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `image`: Imports or references `image` from `src/image/`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

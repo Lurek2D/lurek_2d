@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/mods/`
-- Lua API path(s): `src/lua_api/mods_api.rs`
-- Primary Lua namespace: `lurek.mods`
+- Binding: `src/lua_api/mods_api.rs`
+- Namespace: `lurek.mods`
+- Lua API surface: `4` functions, `8` types, `51` methods
 - Rust test path(s): none found in the workspace
 - Lua test path(s): none found in the workspace
 
@@ -20,6 +21,10 @@ It is engineered to handle the complete lifecycle of mods, from initial discover
 At the heart of the system is the `ModInfo` struct, which encapsulates all vital metadata for a single mod. This includes standard fields like name, version, and author, alongside critical functional data such as script entry points, declared capabilities, custom configuration schemas, and optional SHA-256 integrity signatures. A major responsibility of the `ModManager` is safely resolving inter-mod dependencies. It performs robust cyclic dependency detection and utilizes a topological sort, weighted by author-defined priority values, to compute a deterministic and stable load order. It also supports manual load-order overrides for resolving complex edge-case conflicts.
 
 Once loaded, the module bridges the gap between engine architecture and user content. Mods can seamlessly override existing game assets within the virtual filesystem, introduce entirely new content via the typed `ContentRegistry`, and inject Lua scripts that execute within the engine's sandboxed environment. The module provides sophisticated runtime tools, including enable/disable toggling for instantaneous mod switching and a robust hot-reload queue that can re-parse and re-apply modified mods on the fly without requiring a full game restart. Fully exposed to Lua via the `lurek.mods.*` API, this system empowers developers to treat first-party game content and community mods with identical architectural parity.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -76,15 +81,16 @@ Once loaded, the module bridges the gap between engine architecture and user con
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/mods_api.rs`
-- Namespace: `lurek.mods`
-
 ### Functions
 
 - `lurek.mods.checkApiVersion`: Checks whether a mod API version is compatible with a host version.
 - `lurek.mods.newMod`: Creates a mod metadata handle from a Lua table.
 - `lurek.mods.newModManager`: Creates an empty mod manager. This function is exposed to Lua scripts.
 - `lurek.mods.newRegistry`: Creates an empty content registry.
+
+### Callbacks
+
+- `LMod:setHook` param `func` (`function`): Hook callback function.
 
 ### Enums
 
@@ -265,7 +271,3 @@ Once loaded, the module bridges the gap between engine architecture and user con
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

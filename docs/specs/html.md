@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/html/`
-- Lua API path(s): `src/lua_api/html_api.rs`
-- Primary Lua namespace: `lurek.html`
+- Binding: `src/lua_api/html_api.rs`
+- Namespace: `lurek.html`
+- Lua API surface: `6` functions, `2` types, `54` methods
 - Rust test path(s): None found in the workspace
 - Lua test path(s): None found in the workspace
 
@@ -20,6 +21,10 @@ It empowers game developers to construct complex, responsive User Interfaces (UI
 Layout computation is driven by a flexible vertical block layout engine with robust flexbox support, accurately calculating an `HtmlRect` for every DOM node. Instead of rendering pixels directly, the module translates the computed layout into a renderer-agnostic list of `HtmlDrawCommand` instructions (rectangles, text, borders, images, and clipping regions). The engine includes a comprehensive CSS color parser that understands hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and an extended set of named color keywords.
 
 The module also handles complex text rendering, ensuring accurate wrapping, alignment, and multi-line overflow management. Furthermore, the `html` module is deeply interactive. It routes user input—such as mouse clicks, hover events, keyboard focus, and text input—directly to the appropriate DOM elements, executing bound Lua callbacks (`mousepressed`, `mousemoved`, `keypressed`). The entire document lifecycle, from DOM queries (`getElementById`, `querySelector`) to dynamic structural mutations, is fully scriptable via the `lurek.html.*` API.
+
+## Imports
+
+- `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.
 
 ## Files
 
@@ -85,9 +90,6 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/html_api.rs`
-- Namespace: `lurek.html`
-
 ### Functions
 
 - `lurek.html.isDefaultPrevented`: Returns whether the default action was prevented.
@@ -96,6 +98,11 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 - `lurek.html.preventDefault`: Marks the event as having its default action prevented.
 - `lurek.html.stopPropagation`: Stops event propagation to remaining listeners.
 - `lurek.html.supports`: Returns whether the HTML engine supports a named feature.
+
+### Callbacks
+
+- `LHtmlDocument:on` param `func` (`function`): Lua callback receiving an event table.
+- `LHtmlElement:on` param `func` (`function`): Lua callback receiving an event table.
 
 ### Enums
 
@@ -178,7 +185,3 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 - `LHtmlElement:toggleClass`: Toggles a CSS class on this element, optionally forcing the final state.
 - `LHtmlElement:type`: Returns the Lua-visible type name for this HTML element handle.
 - `LHtmlElement:typeOf`: Returns whether this element handle matches a supported type name.
-
-## References
-
-- `color`: Imports or references `src/color/`. Cross-group dependency from ``Edge/Integration`` into `Edge/Integration`.

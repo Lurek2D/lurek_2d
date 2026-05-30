@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/event/`
-- Lua API path(s): `src/lua_api/event_api.rs`
-- Primary Lua namespace: `lurek.event`
+- Binding: `src/lua_api/event_api.rs`
+- Namespace: `lurek.event`
+- Lua API surface: `16` functions, `2` types, `12` methods
 - Rust test path(s): tests/rust/unit/event_tests.rs
 - Lua test path(s): tests/lua/unit/test_event.lua, tests/lua/integration/test_audio_event.lua
 
@@ -24,6 +25,10 @@ Design emphasis is predictable dispatch behavior and safe payload bridging to Lu
 As a core runtime messaging surface, this module should remain deterministic, minimal, and explicit about queue/priority semantics. Domain-specific event meanings belong to caller modules, not to the queue itself.
 
 Implementation detail and boundary guarantees for event: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: event_queue.rs: Dual-priority FIFO event queue (high and normal) with priority-based polling.; mod.rs: Priority queue with ordered dispatch and Lua payload conversion for runtime events.; signal.rs: Named signal subscription registry with exact-name and wildcard pattern matching.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -53,9 +58,6 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/event_api.rs`
-- Namespace: `lurek.event`
-
 ### Functions
 
 - `lurek.event.clear`: Clears all pending events from the shared event queue.
@@ -74,6 +76,14 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 - `lurek.event.quit`: Deprecated alias for `lurek.event.exit(0)`; requests engine shutdown with exit code zero.
 - `lurek.event.restart`: Requests a full engine restart cycle from the runtime.
 - `lurek.event.wait`: Waits for the next queued event and returns success, name, and argument table.
+
+### Callbacks
+
+- `LSignal:connect` param `func` (`function`): Lua function invoked with emitted signal arguments.
+- `LSignal:once` param `callback` (`function`): Lua function invoked once with emitted signal arguments.
+- `LSignal:register` param `callback` (`function`): Lua function invoked with emitted signal arguments.
+- `LSignal:registerWithFilter` param `callback` (`function`): Lua function invoked after the filter accepts the signal.
+- `LSignal:registerWithFilter` param `filter` (`function`): Lua predicate called with emitted arguments.
 
 ### Enums
 
@@ -116,7 +126,3 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 - `LSignal:remove`: Removes a signal callback by subscription handle.
 - `LSignal:type`: Returns the Lua-visible type name for this signal handle.
 - `LSignal:typeOf`: Returns whether this signal handle matches a supported type name.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

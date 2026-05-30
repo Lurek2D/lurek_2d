@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/save/`
-- Lua API path(s): `src/lua_api/save_api.rs`
-- Primary Lua namespace: `lurek.save`
+- Binding: `src/lua_api/save_api.rs`
+- Namespace: `lurek.save`
+- Lua API surface: `1` functions, `3` types, `27` methods
 - Rust test path(s): tests/rust/unit/savegame_tests.rs
 - Lua test path(s): tests/lua/unit/test_save.lua, tests/lua/stress/test_save_stress.lua, tests/lua/security/test_save_validation.lua, tests/lua/integration/test_save_ecs.lua, tests/lua/integration/test_save_tilemap.lua, tests/lua/integration/test_save_ecs_scene.lua
 
@@ -20,6 +21,11 @@ It enables developers to reliably save and load game state with built-in support
 To optimize performance and minimize disk wear, the system employs dirty tracking. Writes are entirely skipped unless the state is explicitly marked as dirty (changed). An auto-save scheduler can be configured to automatically persist the dirty state to a designated slot at regular intervals. When writing to disk, the `save` module uses a custom serialization format that converts Lua tables into a Rust `SaveValue` tree, emitting valid Lua-literal text. To ensure small file sizes, this text is subsequently compressed using LZ4 and Base64 encoded before being written. The manager also handles slot file rotation, automatically maintaining a configurable number of backup copies for data safety.
 
 Crucially, the module provides robust tools for long-term game maintenance via schema versioning and data migrations. Each save file is stamped with a schema version number. If the game is updated and the schema advances, registered migration functions are automatically invoked in sequence to upgrade older save data to the current schema before it is handed back to the `restore` callbacks. Additionally, the system generates lightweight `SlotMeta` metadata for each save slot—including timestamps, play time, and human-readable summary strings (e.g., 'Level 5 – Forest')—enabling UI save-select screens to display save info instantly without needing to deserialize the entire game state. The comprehensive `lurek.save.*` API gives Lua scripts full control over this powerful persistence engine.
+
+## Imports
+
+- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -40,12 +46,17 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/save_api.rs`
-- Namespace: `lurek.save`
-
 ### Functions
 
 - `lurek.save.newSaveManager`: Create a new SaveManager instance for managing persistent game saves.
+
+### Callbacks
+
+- `LSaveManager:addMigration` param `func` (`function`): Receives the full save data table and must return the transformed table.
+- `LSaveManager:onAfterLoad` param `func` (`function?`): Callback receiving the slot name as its argument, or nil to clear.
+- `LSaveManager:onBeforeSave` param `func` (`function?`): Callback receiving the slot name as its argument, or nil to clear.
+- `LSaveManager:register` param `collectFn` (`function`): Called with no arguments during save; must return the data to persist for this section.
+- `LSaveManager:register` param `restoreFn` (`function`): Called with the saved value during load; responsible for applying it back to game state.
 
 ### Enums
 
@@ -85,7 +96,7 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 - `LSaveManager:save`: Persist all registered data sections to the named slot file on disk.
 - `LSaveManager:setCompress`: Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
 - `LSaveManager:setSchemaVersion`: Set the current schema version number for saves produced by this game build.
-- `LSaveManager:setSummary`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
+- `LSaveManager:setSummary`: Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 â€“ Forest").
 - `LSaveManager:type`: Return the type name string for this userdata object.
 - `LSaveManager:typeOf`: Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
 - `LSaveManager:unregister`: Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
@@ -120,8 +131,3 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `binary`: Imports or references `src/binary/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/thread/`
-- Lua API path(s): `src/lua_api/thread_api.rs`
-- Primary Lua namespace: `lurek.thread`
+- Binding: `src/lua_api/thread_api.rs`
+- Namespace: `lurek.thread`
+- Lua API surface: `7` functions, `4` types, `34` methods
 - Rust test path(s): tests/rust/unit/thread_tests.rs, plus inline unit coverage in src/thread/channel.rs, src/thread/promise.rs, src/thread/pool.rs, src/thread/worker.rs
 - Lua test path(s): tests/lua/unit/test_thread.lua, tests/lua/stress/test_thread_stress.lua, tests/lua/integration/test_thread_data.lua
 
@@ -20,6 +21,10 @@ Adhering to the engine's strict architectural constraints (specifically B-04), i
 To facilitate concurrent workloads, the module provides a `ThreadPool`. This fixed-size pool manages a set of persistent worker threads, each running its own restricted Lua VM. These workers process tasks from a shared input channel and push results to an output channel. The worker VMs are deliberately sandboxed: they are denied access to window, rendering, and input APIs, and are injected only with safe, restricted capabilities like `lurek.thread.getChannel` and path-traversed-guarded `fs.read`. This design ensures that background tasks—such as pathfinding, procedural generation, or heavy data processing—cannot compromise the main thread's stability or access unauthorized host files.
 
 For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern. A `Promise` spawns a single worker thread to execute a piece of Lua code and safely collects the solitary result via an internal channel, allowing the main thread to poll for completion using `isDone` and `result` methods. Recently enhanced with composable promise chaining, bounded channel backpressure, and deadline-based blocking (`demand`), the `thread` module provides a comprehensive suite of concurrency primitives. Fully exposed via the `lurek.thread.*` API, it empowers developers to build responsive, multi-threaded Lua games without the pitfalls of shared mutable state.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -62,9 +67,6 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/thread_api.rs`
-- Namespace: `lurek.thread`
-
 ### Functions
 
 - `lurek.thread.async`: Runs a Lua code string or dumped function asynchronously on a new worker thread, returning a promise for the result.
@@ -74,6 +76,10 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `lurek.thread.newChannel`: Creates a new unbounded channel for sending typed values between threads.
 - `lurek.thread.newPool`: Creates a fixed-size thread pool where each worker runs the same Lua code and consumes items from a shared input channel.
 - `lurek.thread.newThread`: Creates a new worker thread that will execute the given Lua code string when started.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -158,7 +164,3 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `LThreadPool:submit`: Pushes a value into the pool's input channel for processing by a worker thread.
 - `LThreadPool:type`: Returns the type name of this object.
 - `LThreadPool:typeOf`: Checks whether this object matches the given type name.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

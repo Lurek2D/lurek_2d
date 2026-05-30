@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/province/`
-- Lua API path(s): `src/lua_api/province_api.rs`
-- Primary Lua namespace: `lurek.province`
+- Binding: `src/lua_api/province_api.rs`
+- Namespace: `lurek.province`
+- Lua API surface: `15` functions, `8` types, `45` methods
 - Rust test path(s): tests/rust/unit/province_tests.rs
 - Lua test path(s): None found in the workspace
 
@@ -29,6 +30,12 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `visibility_state = 1`: discovered. The renderer emits only a gray fill (no border, capital, or label).
 - `visibility_state >= 2`: fully visible. The renderer emits normal map-mode fill and full details.
 - Border segments render only when both adjacent provinces are fully visible (`>= 2`).
+
+## Imports
+
+- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
+- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
 
 ## Files
 
@@ -184,9 +191,6 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/province_api.rs`
-- Namespace: `lurek.province`
-
 ### Functions
 
 - `lurek.province.clearProperties`: Removes all properties, attributes, and flags for a province.
@@ -201,9 +205,14 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 - `lurek.province.sanitizeMarkedPng`: Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
 - `lurek.province.setActive`: Sets the named registry as the active province registry. Returns false if no registry with that name exists.
 - `lurek.province.setAttr`: Sets a string attribute on a province.
-- `lurek.province.setFlag`: Sets a single flag bit (0–63) on a province.
+- `lurek.province.setFlag`: Sets a single flag bit (0â€“63) on a province.
 - `lurek.province.setProperty`: Sets a numeric property on a province. Game logic defines the semantics of each key.
 - `lurek.province.zoomCameraAt`: Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.
+
+### Callbacks
+
+- `LProvinceRegistry:findRoute` param `cost_fn` (`function?`): Optional cost callback `fn(from_id, to_id) -> number`.
+- `LProvinceRegistry:findRoutes` param `cost_fn` (`function?`): Optional cost callback `fn(from_id, to_id) -> number?`.
 
 ### Enums
 
@@ -369,9 +378,3 @@ The import pipeline is equally robust, automatically converting color-coded PNG 
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `image`: Imports or references `src/image/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `render`: Imports or references `src/render/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
-- `runtime`: Imports or references `src/runtime/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.

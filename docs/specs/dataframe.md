@@ -8,8 +8,9 @@
 
 - Module group: `Foundations`
 - Source path: `src/dataframe/`
-- Lua API path(s): `src/lua_api/dataframe_api.rs`
-- Primary Lua namespace: `lurek.dataframe`
+- Binding: `src/lua_api/dataframe_api.rs`
+- Namespace: `lurek.dataframe`
+- Lua API surface: `15` functions, `6` types, `143` methods
 - Rust test path(s): tests/rust/unit/dataframe_tests.rs
 - Lua test path(s): tests/lua/unit/test_dataframe.lua; tests/lua/stress/test_dataframe_stress.lua; tests/lua/integration/test_compute_dataframe.lua; tests/lua/golden/test_dataframe_golden.lua
 
@@ -24,6 +25,10 @@ This design allows callers to use only the depth they need, from simple table ma
 As a foundations component, `dataframe` should keep deterministic semantics for query results and type handling. Higher-level domain policy should compose on top of these stable primitives rather than fork table logic.
 
 Implementation detail and boundary guarantees for dataframe: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: file_io.rs: Provides storage-agnostic DataFrame and Database file persistence helpers.; frame.rs: Core dataframe cell type and typed value representation - Columnar storage with named columns and row-major access - Column resolution by name or one-based index - Row and column CRUD operations including add, remove, and rename - DataFrame cloning, slicing, and row iteration - D; lazy.rs: Deferred query step representation for filter, sort, select, head, tail, slice, and limit - Lazy query builder that chains steps without executing until collect - Materialization via sequential step application over a cloned source frame; mod.rs: Columnar DataFrame type and Database container - Lazy query builder and deferred execution pipeline - Query-time transforms: filtering, grouping, analytics, processing, and window functions - CSV, JSON, and binary serialization and parsing - Storage-agnostic file persistence help; query/analytics.rs: Percentile computation by linear interpolation over sorted values - Z-score standardization for numeric columns - Min-max normalization to arbitrary output range - Outlier detection via z-score threshold - Mode value computation across non-nil cells - Shannon entropy calculation; query/filter.rs: Row filtering by column predicate with comparison and contains operators - Column sorting in ascending or descending order - Head, tail, and inclusive slice row selection - Column projection and unique value extraction - Group-by partitioning and inner/left join merging - Frame m; query/grouping.rs: Grouped aggregation by key column with mean, sum, min, max, count, first, last - Pivot transformation from row/column/value keys into cross-tabulated frame - Pearson correlation between two numeric columns - Full numeric-column correlation matrix generation; query/mod.rs: Statistical and distribution-oriented analytics helpers - Row filtering, sorting, joins, and sampling operations - Grouped aggregation, pivoting, and correlation computations - Reusable processing helpers for counts, missingness, duplicates, and dates - Rolling and ranking window; query/processing.rs: Frequency tables with optional percentage output - Column-level missing-value reports - Duplicate row extraction by full-row or selected-column keys - ISO date part extraction into appended year, month, and day columns; query/window.rs: Rolling mean, sum, min, and max over configurable window size - Dense rank computation with average-rank tie-breaking - Row-to-row percent change calculation - Cumulative sum across ordered rows; rng.rs: Xorshift64 pseudo-random number generator for deterministic dataframe sampling - Float, integer, and index generation from 64-bit state - Zero-seed remap to avoid degenerate all-zero output; serial.rs: CSV parsing with quote escaping and type auto-detection - CSV serialization with field escaping rules - JSON array-of-objects parsing into DataFrame - JSON serialization with proper string escaping - Compact binary LVDF format encoding and decoding - Padded string-table rendering; sql.rs: SQL text tokenizer producing typed token stream - Recursive-descent parser for SELECT statements - WHERE clause expression tree with AND, OR, NOT, LIKE, and IN - Aggregate function support: COUNT, SUM, AVG, MIN, MAX - SELECT arithmetic expressions with explicit AS aliases - GRO; task.rs: One-shot threaded dataframe jobs for file loading and SQL queries.; vectorized.rs: Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks - Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg - Element-wise binary operations between two numeric columns - Column reduction: sum, mean, min, max, std, var, count. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Files
 
@@ -178,9 +183,6 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/dataframe_api.rs`
-- Namespace: `lurek.dataframe`
-
 ### Functions
 
 - `lurek.dataframe.fromBinary`: Parses a dataframe from binary data.
@@ -198,6 +200,11 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `lurek.dataframe.newDatabase`: Creates an empty dataframe database.
 - `lurek.dataframe.random`: Creates a random dataframe from column definitions.
 - `lurek.dataframe.toVec`: Converts a dataframe to a vectorized frame.
+
+### Callbacks
+
+- `LDataFrame:apply` param `func` (`function`): Function called with each cell value and returning a replacement value.
+- `LGroupedFrame:aggregate` param `func` (`function`): Function called with an array table of numeric values and returning a number.
 
 ### Enums
 
@@ -253,8 +260,8 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LDataFrame:normalizeCol`: Adds a range-normalized column in place.
 - `LDataFrame:nrows`: Returns the number of rows in this dataframe.
 - `LDataFrame:outliers`: Returns rows considered outliers for a numeric column.
-- `LDataFrame:parFilter`: Parallel filter — automatically parallelizes when frame has 10,000+ rows.
-- `LDataFrame:parGroupAgg`: Parallel group-by aggregation — partitions and aggregates in parallel.
+- `LDataFrame:parFilter`: Parallel filter â€” automatically parallelizes when frame has 10,000+ rows.
+- `LDataFrame:parGroupAgg`: Parallel group-by aggregation â€” partitions and aggregates in parallel.
 - `LDataFrame:pivot`: Pivots rows into columns using row, column, and value fields.
 - `LDataFrame:pivotTable`: Builds a pivot table using row key, column key, value column, and aggregate function.
 - `LDataFrame:query`: Runs a SQL-style query against this dataframe.
@@ -413,7 +420,3 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LVecFrame:toDataFrame`: Converts this vectorized frame to a dataframe.
 - `LVecFrame:type`: Returns the Lua-visible type name for this vectorized frame handle.
 - `LVecFrame:typeOf`: Returns whether this vectorized frame handle matches a supported type name.
-
-## References
-
-- No top-level `crate::<module>` imports were detected in this module's Rust source files.

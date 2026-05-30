@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/network/`
-- Lua API path(s): `src/lua_api/network_api.rs`
-- Primary Lua namespace: `lurek.network`
+- Binding: `src/lua_api/network_api.rs`
+- Namespace: `lurek.network`
+- Lua API surface: `21` functions, `17` types, `49` methods
 - Rust test path(s): tests/rust/unit/network_tests.rs
 - Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtimer.lua, tests/lua/security/test_network_security.lua
 
@@ -20,6 +21,10 @@ It is engineered to handle a diverse array of network topologies and transport p
 At the heart of real-time multiplayer functionality is the `NetworkHost` structure, which wraps an ENet instance and manages robust connections across Server, Client, or Peer-to-Peer roles. It supports sophisticated traffic shaping, including per-peer bandwidth limits and reliable/unreliable channel separation, and provides a continuous stream of `NetworkEvent`s (connect, disconnect, receive) for Lua to consume. To address the complexities of modern internet connectivity, the module features a sophisticated `relay` system that utilizes NAT-punching probes and encoded `RelayTicket`s to establish peer connections even across restrictive networks. It also provides built-in LAN lobby discovery via UDP broadcasting.
 
 Beyond raw transport, the module implements high-level game synchronization features. The `net_sync` submodule provides tools for entity snapshot replication, utilizing linear dead-reckoning prediction and server-authoritative reconciliation to ensure smooth gameplay across varied latencies. Network messaging is powered by a custom `NetValue` wire-format, mirroring Lua's dynamic type system and utilizing compact MessagePack serialization. Auxiliary services, like the synchronous HTTP client (supporting all major verbs with headers and timeouts) and the WebSocket manager, provide vital hooks for integrating with REST APIs, authentication servers, and web-based services. This extensive networking suite is fully exposed to scripts via the `lurek.network.*` API, making it a cornerstone for connected Lurek2D games.
+
+## Imports
+
+- `runtime`: Imports runtime config from `src/runtime/`.
 
 ## Files
 
@@ -125,9 +130,6 @@ Beyond raw transport, the module implements high-level game synchronization feat
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/network_api.rs`
-- Namespace: `lurek.network`
-
 ### Functions
 
 - `lurek.network.createLobby`: Broadcasts lobby information and returns it as a table.
@@ -151,6 +153,10 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `lurek.network.sseConnect`: Opens an SSE stream to `url` and returns an `LSseStream` handle.
 - `lurek.network.syncEntity`: Broadcasts a packed entity sync payload through a network host.
 - `lurek.network.unpack`: Unpacks a binary network message string into a Lua value.
+
+### Callbacks
+
+- `lurek.network.sseConnect` param `callback` (`function`): Called with each event table `{ id?, event?, data }`.
 
 ### Enums
 
@@ -464,7 +470,3 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `LSseStream:next`: Polls for the next available event from the SSE stream (non-blocking).
 - `LSseStream:type`: Returns the Lua-visible type name for this SSE stream handle.
 - `LSseStream:typeOf`: Returns whether this SSE stream handle matches a supported type name.
-
-## References
-
-- `runtime`: Imports runtime config from `src/runtime/`.

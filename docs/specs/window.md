@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/window/`
-- Lua API path(s): `src/lua_api/window_api.rs`
-- Primary Lua namespace: `lurek.window`
+- Binding: `src/lua_api/window_api.rs`
+- Namespace: `lurek.window`
+- Lua API surface: `55` functions, `4` types, `0` methods
 - Rust test path(s): tests/rust/unit/window_tests.rs
 - Lua test path(s): tests/lua/unit/test_window_core_unit.lua
 
@@ -20,6 +21,10 @@ Built upon the robust `winit` 0.30 backend, it controls window creation, sizing,
 Handling modern display environments is a primary focus of this module. It provides comprehensive multi-monitor enumeration (`get_displays`), returning detailed `DisplayInfo` snapshots that include resolution, DPI scale, refresh rate, and physical layout coordinates. This allows the engine to intelligently select startup monitors, center windows across distinct screens, and adapt to DPI scaling changes on the fly. The viewport system (`viewport.rs`) works in tandem with the window manager to decouple the logical game resolution from the physical window size. It provides coordinate conversion helpers that automatically translate OS-level mouse coordinates into game-space coordinates based on the active scale mode (e.g., stretch, letterbox, pixel-perfect).
 
 The module also handles critical rendering integration points. VSync configuration can be toggled between immediate (uncapped), FIFO (standard vsync), and mailbox modes, giving developers tight control over frame presentation and latency. Fullscreen operations support both exclusive mode for maximum performance and borderless desktop mode for seamless multitasking. Additionally, the module exposes native platform features—such as asynchronous file dialogs via `rfd` and OS-level message boxes—allowing for standard file picking and alert interactions without blocking the primary game loop. Fully accessible through the `lurek.window.*` API, this module provides the dependable foundation required to host the engine on any supported desktop OS.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -54,9 +59,6 @@ The module also handles critical rendering integration points. VSync configurati
 - It supports runtime staging of scale behavior without direct renderer coupling.
 
 ## Lua API Ref
-
-- Binding: `src/lua_api/window_api.rs`
-- Namespace: `lurek.window`
 
 ### Functions
 
@@ -115,6 +117,10 @@ The module also handles critical rendering integration points. VSync configurati
 - `lurek.window.showMessageBox`: Displays a native OS message box dialog. Blocks execution until the user dismisses it.
 - `lurek.window.toPixels`: Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale.
 - `lurek.window.windowConfig`: Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.
+
+### Callbacks
+
+- `lurek.window.onDpiChange` param `func` (`function`): Callback receiving the new DPI scale as a number.
 
 ### Enums
 
@@ -186,7 +192,3 @@ The module also handles critical rendering integration points. VSync configurati
 ##### Methods
 
 - No documented methods.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

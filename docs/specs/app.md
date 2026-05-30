@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/app/`
-- Lua API path(s): None direct
-- Primary Lua namespace: `lurek.input`
+- Binding: None direct
+- Namespace: `lurek.input`
+- Lua API surface: `0` functions, `0` types, `0` methods
 - Rust test path(s): tests/engine_tests.rs; tests/rust/ext/graphics_runtime_smoke_tests.rs
 - Lua test path(s): None dedicated
 
@@ -24,6 +25,22 @@ The boundary is intentionally integration-focused. Submodules like `lua_callback
 From a maintenance perspective, this module is where reliability controls belong: callback timeout wrappers, safe recovery paths for user-facing failures, and event-to-callback routing guarantees. In practice, changes here should preserve strict ordering guarantees and keep side effects observable, because almost every runtime subsystem is activated through this module's frame pipeline.
 
 Implementation detail and boundary guarantees for app: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: app.rs: Implements the central LurekApp runtime driven by winit's ApplicationHandler.; debug_overlay.rs: Owns the lightweight debug HUD toggled by F12 or Lua.; error_screen.rs: Formats fatal Lua and engine errors into a user-facing screen.; frame_profile.rs: Formats per-frame timing data into compact single-line strings for logging.; lua_callbacks.rs: Invokes named lurek.* Lua callbacks with error logging and optional timeout.; mod.rs: Orchestrates the Lurek2D application lifecycle from window creation through frame rendering.; splash_screen.rs: Decodes embedded splash icon and banner PNGs into temporary texture storage.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `event`: Imports or references `event` from `src/event/`.
+- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `image`: Imports or references `image` from `src/image/`.
+- `input`: Imports or references `input` from `src/input/`.
+- `light`: Imports or references `light` from `src/light/`.
+- `lua_api`: Imports or references `lua_api` from `src/lua_api/`.
+- `math`: Imports or references `math` from `src/math/`.
+- `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
+- `window`: Imports or references `src/window/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.
 
 ## Files
 
@@ -79,6 +96,93 @@ Implementation detail and boundary guarantees for app: this module keeps respons
 - Provides checked and logging variants so callers choose explicit error propagation behavior.
 - Supports optional timeout enforcement via instruction hooks to stop runaway callback execution.
 - Serves as the callback safety boundary between frame orchestration and Lua script handlers.
+- @engine-callback | init | function lurek.init() | Called once when the engine initialises.
+- @engine-callback | ready | function lurek.ready() | Called once after init, when runtime state is ready.
+- @engine-callback | process_physics | function lurek.process_physics(dt) | Called on the fixed physics step.
+- @engine-param | process_physics | dt | number | false | Fixed-step delta time in seconds.
+- @engine-callback | fixedUpdate | function lurek.fixedUpdate(dt) | Deprecated alias for `process_physics`.
+- @engine-param | fixedUpdate | dt | number | false | Fixed-step delta time in seconds.
+- @engine-callback | process | function lurek.process(dt) | Called every frame for variable-step gameplay logic.
+- @engine-param | process | dt | number | false | Delta time in seconds.
+- @engine-callback | process_late | function lurek.process_late(dt) | Called every frame after `process`.
+- @engine-param | process_late | dt | number | false | Delta time in seconds.
+- @engine-callback | draw | function lurek.draw() | Called every frame for world rendering.
+- @engine-callback | draw_ui | function lurek.draw_ui() | Called every frame after `draw` for UI rendering.
+- @engine-callback | keypressed | function lurek.keypressed(key, scancode, isrepeat) | Called when a keyboard key is pressed.
+- @engine-param | keypressed | key | string | false | Key name.
+- @engine-param | keypressed | scancode | string | false | Platform scancode.
+- @engine-param | keypressed | isrepeat | boolean | false | True when key repeat generated the event.
+- @engine-callback | keyreleased | function lurek.keyreleased(key, scancode) | Called when a keyboard key is released.
+- @engine-param | keyreleased | key | string | false | Key name.
+- @engine-param | keyreleased | scancode | string | false | Platform scancode.
+- @engine-callback | textinput | function lurek.textinput(text) | Called when text input is received.
+- @engine-param | textinput | text | string | false | Input text fragment.
+- @engine-callback | textedited | function lurek.textedited(text, start, length) | Called when IME composition text changes.
+- @engine-param | textedited | text | string | false | Composition text.
+- @engine-param | textedited | start | number | false | Cursor start offset.
+- @engine-param | textedited | length | number | false | Selection length.
+- @engine-callback | mousepressed | function lurek.mousepressed(x, y, button) | Called when a mouse button is pressed.
+- @engine-param | mousepressed | x | number | false | Mouse x coordinate.
+- @engine-param | mousepressed | y | number | false | Mouse y coordinate.
+- @engine-param | mousepressed | button | number | false | Button index.
+- @engine-callback | mousereleased | function lurek.mousereleased(x, y, button) | Called when a mouse button is released.
+- @engine-param | mousereleased | x | number | false | Mouse x coordinate.
+- @engine-param | mousereleased | y | number | false | Mouse y coordinate.
+- @engine-param | mousereleased | button | number | false | Button index.
+- @engine-callback | mousemoved | function lurek.mousemoved(x, y, dx, dy) | Called when the mouse cursor moves.
+- @engine-param | mousemoved | x | number | false | Mouse x coordinate.
+- @engine-param | mousemoved | y | number | false | Mouse y coordinate.
+- @engine-param | mousemoved | dx | number | false | Horizontal delta.
+- @engine-param | mousemoved | dy | number | false | Vertical delta.
+- @engine-callback | wheelmoved | function lurek.wheelmoved(x, y) | Called when the mouse wheel moves.
+- @engine-param | wheelmoved | x | number | false | Horizontal wheel delta.
+- @engine-param | wheelmoved | y | number | false | Vertical wheel delta.
+- @engine-callback | gamepadpressed | function lurek.gamepadpressed(id, button) | Called when a gamepad button is pressed.
+- @engine-param | gamepadpressed | id | number | false | Gamepad id.
+- @engine-param | gamepadpressed | button | string | false | Button name.
+- @engine-callback | gamepadreleased | function lurek.gamepadreleased(id, button) | Called when a gamepad button is released.
+- @engine-param | gamepadreleased | id | number | false | Gamepad id.
+- @engine-param | gamepadreleased | button | string | false | Button name.
+- @engine-callback | gamepadaxis | function lurek.gamepadaxis(id, axis, value) | Called when a gamepad axis value changes.
+- @engine-param | gamepadaxis | id | number | false | Gamepad id.
+- @engine-param | gamepadaxis | axis | string | false | Axis name.
+- @engine-param | gamepadaxis | value | number | false | Axis value in range -1..1.
+- @engine-callback | joystickadded | function lurek.joystickadded(id) | Called when a gamepad is connected.
+- @engine-param | joystickadded | id | number | false | Gamepad id.
+- @engine-callback | joystickremoved | function lurek.joystickremoved(id) | Called when a gamepad is disconnected.
+- @engine-param | joystickremoved | id | number | false | Gamepad id.
+- @engine-callback | touchpressed | function lurek.touchpressed(id, x, y, dx, dy, pressure) | Called when a touch begins.
+- @engine-param | touchpressed | id | number | false | Touch id.
+- @engine-param | touchpressed | x | number | false | Touch x coordinate.
+- @engine-param | touchpressed | y | number | false | Touch y coordinate.
+- @engine-param | touchpressed | dx | number | false | Horizontal delta.
+- @engine-param | touchpressed | dy | number | false | Vertical delta.
+- @engine-param | touchpressed | pressure | number | false | Touch pressure.
+- @engine-callback | touchmoved | function lurek.touchmoved(id, x, y, dx, dy, pressure) | Called when a touch point moves.
+- @engine-param | touchmoved | id | number | false | Touch id.
+- @engine-param | touchmoved | x | number | false | Touch x coordinate.
+- @engine-param | touchmoved | y | number | false | Touch y coordinate.
+- @engine-param | touchmoved | dx | number | false | Horizontal delta.
+- @engine-param | touchmoved | dy | number | false | Vertical delta.
+- @engine-param | touchmoved | pressure | number | false | Touch pressure.
+- @engine-callback | touchreleased | function lurek.touchreleased(id, x, y, dx, dy, pressure) | Called when a touch ends.
+- @engine-param | touchreleased | id | number | false | Touch id.
+- @engine-param | touchreleased | x | number | false | Touch x coordinate.
+- @engine-param | touchreleased | y | number | false | Touch y coordinate.
+- @engine-param | touchreleased | dx | number | false | Horizontal delta.
+- @engine-param | touchreleased | dy | number | false | Vertical delta.
+- @engine-param | touchreleased | pressure | number | false | Touch pressure.
+- @engine-callback | focus | function lurek.focus(has_focus) | Called when window focus changes.
+- @engine-param | focus | has_focus | boolean | false | True when focused.
+- @engine-callback | visible | function lurek.visible(is_visible) | Called when window visibility changes.
+- @engine-param | visible | is_visible | boolean | false | True when visible.
+- @engine-callback | resize | function lurek.resize(w, h) | Called when window size changes.
+- @engine-param | resize | w | number | false | New window width.
+- @engine-param | resize | h | number | false | New window height.
+- @engine-callback | quit | function lurek.quit() | Called before shutdown; return true to cancel quit.
+- @engine-callback | exit | function lurek.exit() | Called when the engine is shutting down.
+- @engine-callback | errorhandler | function lurek.errorhandler(msg) | Called for unhandled Lua errors.
+- @engine-param | errorhandler | msg | string | false | Error message text.
 
 ### mod.rs
 
@@ -96,12 +200,13 @@ Implementation detail and boundary guarantees for app: this module keeps respons
 
 ## Lua API Ref
 
-- Binding: None direct
-- Namespace: `lurek.input`
-
 ### Functions
 
 - No documented module-level functions.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -110,19 +215,3 @@ Implementation detail and boundary guarantees for app: this module keeps respons
 ### Types
 
 - No documented module types.
-
-## References
-
-- `event`: Imports or references `event` from `src/event/`.
-- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `image`: Imports or references `image` from `src/image/`.
-- `input`: Imports or references `input` from `src/input/`.
-- `light`: Imports or references `light` from `src/light/`.
-- `lua_api`: Imports or references `lua_api` from `src/lua_api/`.
-- `math`: Imports or references `math` from `src/math/`.
-- `parallax`: Imports or references `src/parallax/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `render`: Imports or references `render` from `src/render/`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `sprite`: Imports or references `sprite` from `src/sprite/`.
-- `tilemap`: Imports or references `src/tilemap/`. Cross-group dependency from `Edge/Integration` into `Feature Systems`.
-- `window`: Imports or references `src/window/`. Cross-group dependency from `Edge/Integration` into `Platform Services`.

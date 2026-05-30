@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/filesystem/`
-- Lua API path(s): `src/lua_api/filesystem_api.rs`
-- Primary Lua namespace: `lurek.filesystem`
+- Binding: `src/lua_api/filesystem_api.rs`
+- Namespace: `lurek.filesystem`
+- Lua API surface: `44` functions, `5` types, `23` methods
 - Rust test path(s): tests/rust/unit/filesystem_tests.rs
 - Lua test path(s): tests/lua/unit/test_filesystem_core_unit.lua, tests/lua/stress/test_filesystem_stress.lua
 
@@ -20,6 +21,11 @@ It provides the essential abstraction layer between Lua game scripts and the hos
 Beyond security, the module offers a robust suite of filesystem operations. It supports synchronous and asynchronous file reads/writes, directory creation, flat and recursive listing, glob matching, and file copy/move operations. A notable feature is its support for virtual mount overlays: directories or read-only `.zip` archives (`ZipMount`) can be layered into the virtual filesystem at specified prefixes. When a file is requested, `GameFS` queries these layered mounts seamlessly, enabling modding, content patching, and asset packing without altering game logic.
 
 To prevent blocking the main engine thread during expensive I/O operations, the module includes an `AsyncLoader`. This loader dispatches read and write requests to a dedicated background worker thread, returning opaque handles that scripts can poll for completion. For fine-grained file manipulation, `FileHandle` provides a buffered, cursor-based streaming API with discrete read, write, and append modes. Additionally, for hot-reload development workflows, a poll-based `FileWatcher` tracks modification-time (`mtime`) changes across registered paths, enabling real-time asset updates. The full functionality of the virtual filesystem, including JSON validation helpers and file metadata queries, is exposed to scripts via the `lurek.filesystem.*` API.
+
+## Imports
+
+- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -83,9 +89,6 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/filesystem_api.rs`
-- Namespace: `lurek.filesystem`
-
 ### Functions
 
 - `lurek.filesystem.append`: Appends UTF-8 text to a GameFS file.
@@ -132,6 +135,10 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `lurek.filesystem.writeAsync`: Starts an asynchronous file write request.
 - `lurek.filesystem.writeBytes`: Writes binary data through GameFS.
 - `lurek.filesystem.writeJson`: Writes JSON text through the GameFS layer.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -223,8 +230,3 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `LZipMount:readFile`: Reads a file from the ZIP mount by virtual path.
 - `LZipMount:type`: Returns the Lua-visible type name for this ZIP mount handle.
 - `LZipMount:typeOf`: Returns whether this ZIP mount handle matches a supported type name.
-
-## References
-
-- `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Core Runtime` into `Foundations`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

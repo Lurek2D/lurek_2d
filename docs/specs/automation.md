@@ -8,8 +8,9 @@
 
 - Module group: `Feature Systems`
 - Source path: `src/automation/`
-- Lua API path(s): `src/lua_api/automation_api.rs`
-- Primary Lua namespace: `lurek.automation`
+- Binding: `src/lua_api/automation_api.rs`
+- Namespace: `lurek.automation`
+- Lua API surface: `32` functions, `0` types, `0` methods
 - Rust test path(s): tests/rust/unit/automation_tests.rs
 - Lua test path(s): tests/lua/unit/test_automation_core_unit.lua, tests/lua/integration/test_automation_event.lua
 
@@ -24,6 +25,13 @@ A key architectural property is determinism: scenarios are encoded as data and r
 Because it is a feature-system integration tool, it should remain focused on sequencing, condition evaluation, and assertions. Device drivers, rendering internals, and gameplay domain logic are inputs to automation scenarios, not responsibilities of this module.
 
 Implementation detail and boundary guarantees for automation: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: mod.rs: Automation subsystem for deterministic input replay and visual regression testing.; script.rs: Automation script container: named, time-sorted step sequences for deterministic replay.; simulator.rs: Automation simulator: drives script playback by advancing time and dispatching events.; step.rs: Action enum and Step struct: typed event descriptors for automation playback.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `event`: Imports or references `event` from `src/event/`.
+- `input`: Imports or references `src/input/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
+- `timer`: Imports or references `src/timer/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.
 
 ## Files
 
@@ -64,9 +72,6 @@ Implementation detail and boundary guarantees for automation: this module keeps 
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/automation_api.rs`
-- Namespace: `lurek.automation`
-
 ### Functions
 
 - `lurek.automation.getCondition`: Returns a named automation condition value.
@@ -102,6 +107,10 @@ Implementation detail and boundary guarantees for automation: this module keeps 
 - `lurek.automation.update`: Advances automation playback and dispatches generated input events.
 - `lurek.automation.waitUntil`: Suspends automation updates until a predicate returns true or a timeout elapses.
 
+### Callbacks
+
+- `lurek.automation.waitUntil` param `predicate` (`function`): Function called each update; true resolves the wait.
+
 ### Enums
 
 - No documented module-level enums/constants.
@@ -109,10 +118,3 @@ Implementation detail and boundary guarantees for automation: this module keeps 
 ### Types
 
 - No documented module types.
-
-## References
-
-- `event`: Imports or references `event` from `src/event/`.
-- `input`: Imports or references `src/input/`. Cross-group dependency from `Feature Systems` into `Platform Services`.
-- `runtime`: Imports or references `runtime` from `src/runtime/`.
-- `timer`: Imports or references `src/timer/`. Cross-group dependency from `Feature Systems` into `Core Runtime`.

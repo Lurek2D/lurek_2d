@@ -8,8 +8,9 @@
 
 - Module group: `Core Runtime`
 - Source path: `src/timer/`
-- Lua API path(s): `src/lua_api/timer_api.rs`
-- Primary Lua namespace: `lurek.timer`
+- Binding: `src/lua_api/timer_api.rs`
+- Namespace: `lurek.timer`
+- Lua API surface: `21` functions, `1` types, `28` methods
 - Rust test path(s): tests/rust/unit/timer_tests.rs, tests/fixtures/timer_api_fixture.rs, plus inline unit coverage in src/timer/scheduler.rs
 - Lua test path(s): tests/lua/unit/test_timer.lua, tests/lua/stress/test_timer_stress.lua, tests/lua/integration/test_timer_math.lua, tests/lua/integration/test_physics_timer.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_animation_timer.lua
 
@@ -20,6 +21,10 @@ At the core of the engine's main loop sits the `Clock`, which meticulously track
 Beyond basic timekeeping, the module provides a highly versatile `Scheduler` for managing deferred and recurring logic. The scheduler handles both time-based (seconds) and frame-based (tick counts) events, offering one-shot and repeating modes. Events can be assigned string names, enabling automatic deduplication—where registering a new named event transparently cancels and replaces any existing event with the same name. Developers have fine-grained lifecycle control over scheduled events, with the ability to pause, resume, reset, or mutate the interval of active timers. Crucially, the scheduler supports a global time-scale multiplier, allowing developers to easily implement slow-motion or fast-forward effects that apply universally to all scheduled callbacks without affecting the underlying wall-clock timers.
 
 The module also caters to diverse asynchronous scripting patterns. It provides real-time timers (`afterReal`) that bypass the global time-scale and game pauses, making them ideal for UI animations or system notifications. For coroutine-based scripting, the module offers `waitSeconds` and `waitFrames`, which yield the current coroutine and auto-resume it once the deadline passes, vastly simplifying complex sequence scripting. Supported by swap-remove compaction to maintain O(1) performance even with thousands of active timers, the `lurek.timer.*` API gives developers robust, high-performance control over the flow of time in their games.
+
+## Imports
+
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Files
 
@@ -62,9 +67,6 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/timer_api.rs`
-- Namespace: `lurek.timer`
-
 ### Functions
 
 - `lurek.timer.afterReal`: Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.
@@ -82,12 +84,22 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 - `lurek.timer.setPhysicsDelta`: Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increase accuracy but cost more CPU.
 - `lurek.timer.setPhysicsMaxSteps`: Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.
 - `lurek.timer.setSmoothingFactor`: Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged) results; higher values track changes faster. Clamped to [0.01, 1.0].
-- `lurek.timer.sleep`: Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.
+- `lurek.timer.sleep`: Blocks the current thread for the given number of seconds. Use sparingly â€” this halts the entire game loop. Intended for loading screens or synchronization.
 - `lurek.timer.step`: Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the engine loop; game scripts rarely need this.
 - `lurek.timer.tickRealTimers`: Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that fired. Call this once per frame after afterReal scheduling.
 - `lurek.timer.tickWaits`: Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries. Returns the number of coroutines that were resumed. Call once per frame.
 - `lurek.timer.waitFrames`: Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.
 - `lurek.timer.waitSeconds`: Yields the current coroutine for the given number of real-time seconds. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the deadline has passed.
+
+### Callbacks
+
+- `LScheduler:after` param `func` (`function`): Callback to invoke when the delay elapses.
+- `LScheduler:afterFrames` param `func` (`function`): Callback to invoke when the frame count elapses.
+- `LScheduler:afterNamed` param `func` (`function`): Callback to invoke when the delay elapses.
+- `LScheduler:every` param `func` (`function`): Callback to invoke on each interval tick.
+- `LScheduler:everyFrames` param `func` (`function`): Callback to invoke on each frame-interval tick.
+- `LScheduler:everyNamed` param `func` (`function`): Callback to invoke on each interval tick.
+- `lurek.timer.afterReal` param `func` (`function`): Callback to invoke when the real-time deadline is reached.
 
 ### Enums
 
@@ -133,7 +145,3 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 - `LScheduler:typeOf`: Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
 - `LScheduler:update`: Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
 - `LScheduler:updateFrames`: Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
-
-## References
-
-- `runtime`: Imports or references `runtime` from `src/runtime/`.

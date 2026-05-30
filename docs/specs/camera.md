@@ -8,8 +8,9 @@
 
 - Module group: `Platform Services`
 - Source path: `src/camera/`
-- Lua API path(s): `src/lua_api/camera_api.rs`
-- Primary Lua namespace: `lurek.camera`
+- Binding: `src/lua_api/camera_api.rs`
+- Namespace: `lurek.camera`
+- Lua API surface: `3` functions, `2` types, `85` methods
 - Rust test path(s): tests/rust/unit/camera_tests.rs, tests/rust/stress/camera_fuzz_tests.rs
 - Lua test path(s): tests/lua/unit/test_camera.lua, tests/lua/stress/test_camera_stress.lua, tests/lua/integration/test_tween_camera.lua, tests/lua/integration/test_tilemap_camera.lua, tests/lua/integration/test_scene_camera.lua, tests/lua/integration/test_parallax_camera.lua, tests/lua/integration/test_input_camera.lua, tests/lua/integration/test_render_camera.lua
 
@@ -24,6 +25,11 @@ The separation between viewport and camera behavior is deliberate. Viewport code
 In practice, camera changes should preserve stable transform semantics across single-camera and multi-camera flows. Render integration should remain adapter-style: camera produces view data, renderer consumes commands.
 
 Implementation detail and boundary guarantees for camera: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: effects.rs: Camera effect primitives for transient motion overlays on top of base camera state.; mod.rs: Camera subsystem module root: effects, multi-view, path, render, types, and viewport.; multi.rs: Multi-camera rig that stores and manages named Camera2D instances.; path.rs: Waypoint-based camera path interpolation for scripted camera movement.; render.rs: Render command generation from camera transform state.; types.rs: Core camera state containers: Camera (minimal) and Camera2D (full runtime).; viewport.rs: Viewport scaling strategies for mapping a fixed game surface into variable window sizes.; viewport_scale.rs: Viewport scale state object used by the engine resize flow.. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `math`: Imports or references `math` from `src/math/`.
+- `render`: Imports or references `render` from `src/render/`.
 
 ## Files
 
@@ -94,14 +100,15 @@ Implementation detail and boundary guarantees for camera: this module keeps resp
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/camera_api.rs`
-- Namespace: `lurek.camera`
-
 ### Functions
 
 - `lurek.camera.new`: Creates a 2D camera with optional virtual viewport size.
 - `lurek.camera.newCamera`: Creates a 2D camera with optional virtual viewport size.
 - `lurek.camera.newRig`: Creates an empty named camera rig. This function is exposed to Lua scripts.
+
+### Callbacks
+
+- No documented callback parameters in this module.
 
 ### Enums
 
@@ -215,8 +222,3 @@ Implementation detail and boundary guarantees for camera: this module keeps resp
 - `LCameraRig:type`: Returns the Lua-visible type name for this camera rig handle.
 - `LCameraRig:typeOf`: Returns whether this camera rig handle matches a supported type name.
 - `LCameraRig:updateAll`: Advances every camera in this rig. This method is available to Lua scripts.
-
-## References
-
-- `math`: Imports or references `math` from `src/math/`.
-- `render`: Imports or references `render` from `src/render/`.

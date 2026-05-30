@@ -8,8 +8,9 @@
 
 - Module group: `Edge/Integration`
 - Source path: `src/devtools/`
-- Lua API path(s): `src/lua_api/devtools_api.rs`
-- Primary Lua namespace: `lurek.devtools`
+- Binding: `src/lua_api/devtools_api.rs`
+- Namespace: `lurek.devtools`
+- Lua API surface: `50` functions, `9` types, `12` methods
 - Rust test path(s): tests/rust/unit/devtools_tests.rs
 - Lua test path(s): tests/lua/unit/test_devtools.lua; tests/lua/integration/test_devtools.lua
 
@@ -24,6 +25,11 @@ The design goal is composable instrumentation with minimal disruption to runtime
 As an Edge/Integration module, it should preserve clear contracts for output structure, history bounds, and performance overhead, so diagnostics remain useful under both local iteration and automated quality checks.
 
 Implementation detail and boundary guarantees for devtools: this module keeps responsibilities explicit across source files so behavior remains inspectable during refactors. The current source map is: frame_stats.rs: Collect bounded rolling history of frame-delta samples - Compute aggregate metrics: FPS, average, min, max, and percentiles - Produce immutable snapshots summarizing recent frame performance; logger.rs: Define ordered severity levels with case-insensitive parsing - Store bounded in-memory log history with timestamped entries - Filter log output by minimum severity and optional category prefix - Mirror accepted entries to stderr and optional append-only file - Provide tail and ca; lua_display.rs: Convert Lua values to human-readable text for REPL and debug display - Handle nil, boolean, number, string, table, function, and userdata variants - Return safe fallback labels for unrecognized value kinds; mod.rs: Aggregate frame-time statistics and FPS percentile snapshots - Structured logging with severity filtering, file output, and history - Hierarchical profiler with zone stacking and per-frame capture - Interactive Lua REPL console with bounded command history - File-watcher polling; profiler.rs: Record hierarchical profiling zones with push/pop stack semantics - Compute total and self (exclusive) duration per zone - Capture per-frame zone trees into bounded rolling history - Retrieve frames by positive or negative index - Flatten nested zone trees for aggregate reporting; repl.rs: Compatibility wrapper around the release-safe REPL core - Preserves the devtools ReplConsole API and bounded history behavior - Returns expression results, success markers, command text, or formatted error text; time_anchor.rs: Capture a monotonic instant at construction time - Compute elapsed seconds from that anchor on demand - Provide a shared timing primitive for logger and profiler; watcher.rs: Track watched file paths with last-observed modification timestamps - Poll for mtime changes and report modified paths on each tick - Integrate native notify backend when devtools-plugin feature is enabled - Support forced-stale marking, path registration, and full clear - Dedupl. This split is part of the contract: orchestration stays in composition points, data models stay in type-centric files, and adapters stay in bridge files. That separation reduces hidden coupling, improves testability, and keeps Lua API surfaces aligned with Rust runtime semantics. For maintainers, the key guarantee is that high-level APIs should keep delegating into scoped internals instead of collapsing into a single large entry point. Future extensions should preserve explicit dependency direction and documented invariants near owning types and functions.
+
+## Imports
+
+- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
+- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
 
 ## Files
 
@@ -85,9 +91,6 @@ Implementation detail and boundary guarantees for devtools: this module keeps re
 
 ## Lua API Ref
 
-- Binding: `src/lua_api/devtools_api.rs`
-- Namespace: `lurek.devtools`
-
 ### Functions
 
 - `lurek.devtools.clearLog`: Clears all in-memory devtools log entries.
@@ -140,6 +143,11 @@ Implementation detail and boundary guarantees for devtools: this module keeps re
 - `lurek.devtools.unwatch`: Removes a path from the module-level devtools file watcher.
 - `lurek.devtools.warn`: Adds a warning-level diagnostic message to the devtools log.
 - `lurek.devtools.watch`: Adds a path to the module-level devtools file watcher.
+
+### Callbacks
+
+- `LFileWatcher:onChanged` param `func` (`function`): Callback called with no arguments after a change is detected.
+- `lurek.devtools.exposeWatch` param `getter` (`function`): Callback invoked with no arguments when watch values are collected.
 
 ### Enums
 
@@ -301,8 +309,3 @@ Implementation detail and boundary guarantees for devtools: this module keeps re
 - `LReplConsole:len`: Returns the number of entries stored in this REPL console history.
 - `LReplConsole:type`: Returns the Lua-visible type name for this REPL console handle.
 - `LReplConsole:typeOf`: Returns whether this REPL console handle matches a supported type name.
-
-## References
-
-- `filesystem`: Imports or references `src/filesystem/`. Cross-group dependency from `Edge/Integration` into `Core Runtime`.
-- `repl`: Imports or references `src/repl/`. Dependency stays inside `Edge/Integration` and should remain acyclic.
