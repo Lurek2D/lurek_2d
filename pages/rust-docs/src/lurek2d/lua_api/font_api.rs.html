@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\lua_api\font_api.rs`."><title>font_api.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurek2d" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.1 (e408947bf 2026-03-25)" data-channel="1.94.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">lurek2d\lua_api/</div>font_api.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! `lurek.font` -- Font bindings for text measurement, font loading, word wrapping, and text shaping.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\lua_api\font_api.rs`."><title>font_api.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurek2d" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.1 (e408947bf 2026-03-25)" data-channel="1.94.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">lurek2d\lua_api/</div>font_api.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! File: src/lua_api/font_api.rs
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use </span><span class="kw">super</span>::SharedState;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span><span class="kw">crate</span>::render::font::{AVAILABLE_POINT_SIZES, Font};
@@ -188,7 +188,7 @@
 <a href=#188 id=188 data-nosnippet>188</a>
 <a href=#189 id=189 data-nosnippet>189</a>    <span class="comment">// -- getDefault --
 <a href=#190 id=190 data-nosnippet>190</a>    </span><span class="doccomment">/// Returns the default engine font as a LuaFont userdata. This function is available to Lua scripts.
-<a href=#191 id=191 data-nosnippet>191</a>    /// @return | LuaFont | The default font handle.
+<a href=#191 id=191 data-nosnippet>191</a>    /// @return | LFont | The default font handle.
 <a href=#192 id=192 data-nosnippet>192</a>    </span>{
 <a href=#193 id=193 data-nosnippet>193</a>        <span class="kw">let </span>s = state.clone();
 <a href=#194 id=194 data-nosnippet>194</a>        <span class="doccomment">/// Returns the default engine font as an LFont userdata handle.
@@ -214,7 +214,7 @@
 <a href=#214 id=214 data-nosnippet>214</a>    </span><span class="doccomment">/// Loads a TTF/OTF font file at the given point size and returns a LuaFont handle. This function is available to Lua scripts.
 <a href=#215 id=215 data-nosnippet>215</a>    /// @param | path | string | Relative path to the font file.
 <a href=#216 id=216 data-nosnippet>216</a>    /// @param | size | number | Point size for rasterisation.
-<a href=#217 id=217 data-nosnippet>217</a>    /// @return | LuaFont | The loaded font handle.
+<a href=#217 id=217 data-nosnippet>217</a>    /// @return | LFont | The loaded font handle.
 <a href=#218 id=218 data-nosnippet>218</a>    </span>{
 <a href=#219 id=219 data-nosnippet>219</a>        <span class="kw">let </span>s = state.clone();
 <a href=#220 id=220 data-nosnippet>220</a>        <span class="doccomment">/// Loads a TTF/OTF/PNG font file at the given point size and returns an LFont handle.
@@ -287,7 +287,7 @@
 <a href=#287 id=287 data-nosnippet>287</a>    /// @param | path | string | Relative path to the PNG atlas.
 <a href=#288 id=288 data-nosnippet>288</a>    /// @param | cellWidth | integer | Cell width in pixels.
 <a href=#289 id=289 data-nosnippet>289</a>    /// @param | cellHeight | integer | Cell height in pixels.
-<a href=#290 id=290 data-nosnippet>290</a>    /// @return | LuaFont | The loaded bitmap font handle.
+<a href=#290 id=290 data-nosnippet>290</a>    /// @return | LFont | The loaded bitmap font handle.
 <a href=#291 id=291 data-nosnippet>291</a>    </span>{
 <a href=#292 id=292 data-nosnippet>292</a>        <span class="kw">let </span>s = state.clone();
 <a href=#293 id=293 data-nosnippet>293</a>        <span class="doccomment">/// Loads a bitmap font atlas PNG with the given cell dimensions and returns an LFont handle.
@@ -406,7 +406,7 @@
 <a href=#406 id=406 data-nosnippet>406</a>
 <a href=#407 id=407 data-nosnippet>407</a>    <span class="comment">// -- measure --
 <a href=#408 id=408 data-nosnippet>408</a>    </span><span class="doccomment">/// Measures text dimensions using a font at the given scale. This function is available to Lua scripts.
-<a href=#409 id=409 data-nosnippet>409</a>    /// @param | font | LuaFont | Font handle to measure with.
+<a href=#409 id=409 data-nosnippet>409</a>    /// @param | font | LFont | Font handle to measure with.
 <a href=#410 id=410 data-nosnippet>410</a>    /// @param | text | string | Text to measure.
 <a href=#411 id=411 data-nosnippet>411</a>    /// @param | scale | number | Scale factor.
 <a href=#412 id=412 data-nosnippet>412</a>    /// @return | number, number | Width and height in pixels.
@@ -442,7 +442,7 @@
 <a href=#442 id=442 data-nosnippet>442</a>
 <a href=#443 id=443 data-nosnippet>443</a>    <span class="comment">// -- measureLine --
 <a href=#444 id=444 data-nosnippet>444</a>    </span><span class="doccomment">/// Measures a single line of text. This function is available to Lua scripts.
-<a href=#445 id=445 data-nosnippet>445</a>    /// @param | font | LuaFont | Font handle to measure with.
+<a href=#445 id=445 data-nosnippet>445</a>    /// @param | font | LFont | Font handle to measure with.
 <a href=#446 id=446 data-nosnippet>446</a>    /// @param | text | string | Single-line text to measure.
 <a href=#447 id=447 data-nosnippet>447</a>    /// @param | scale | number | Scale factor.
 <a href=#448 id=448 data-nosnippet>448</a>    /// @return | number, number | Width and height in pixels.
@@ -478,7 +478,7 @@
 <a href=#478 id=478 data-nosnippet>478</a>
 <a href=#479 id=479 data-nosnippet>479</a>    <span class="comment">// -- wrapText --
 <a href=#480 id=480 data-nosnippet>480</a>    </span><span class="doccomment">/// Wraps text into lines fitting within a maximum width. This function is available to Lua scripts.
-<a href=#481 id=481 data-nosnippet>481</a>    /// @param | font | LuaFont | Font handle.
+<a href=#481 id=481 data-nosnippet>481</a>    /// @param | font | LFont | Font handle.
 <a href=#482 id=482 data-nosnippet>482</a>    /// @param | text | string | Text to wrap.
 <a href=#483 id=483 data-nosnippet>483</a>    /// @param | maxWidth | number | Maximum line width in pixels.
 <a href=#484 id=484 data-nosnippet>484</a>    /// @param | scale | number | Scale factor.
@@ -533,7 +533,7 @@
 <a href=#533 id=533 data-nosnippet>533</a>
 <a href=#534 id=534 data-nosnippet>534</a>    <span class="comment">// -- shapeText --
 <a href=#535 id=535 data-nosnippet>535</a>    </span><span class="doccomment">/// Shapes text into aligned, wrapped lines with offset data. This function is available to Lua scripts.
-<a href=#536 id=536 data-nosnippet>536</a>    /// @param | font | LuaFont | Font handle.
+<a href=#536 id=536 data-nosnippet>536</a>    /// @param | font | LFont | Font handle.
 <a href=#537 id=537 data-nosnippet>537</a>    /// @param | text | string | Text to shape.
 <a href=#538 id=538 data-nosnippet>538</a>    /// @param | maxWidth | number | Maximum line width in pixels.
 <a href=#539 id=539 data-nosnippet>539</a>    /// @param | scale | number | Scale factor.
@@ -636,7 +636,7 @@
 <a href=#636 id=636 data-nosnippet>636</a>
 <a href=#637 id=637 data-nosnippet>637</a>    <span class="comment">// -- charAdvance --
 <a href=#638 id=638 data-nosnippet>638</a>    </span><span class="doccomment">/// Returns the horizontal advance width of a single character. This function is available to Lua scripts.
-<a href=#639 id=639 data-nosnippet>639</a>    /// @param | font | LuaFont | Font handle.
+<a href=#639 id=639 data-nosnippet>639</a>    /// @param | font | LFont | Font handle.
 <a href=#640 id=640 data-nosnippet>640</a>    /// @param | char | string | A single-character string.
 <a href=#641 id=641 data-nosnippet>641</a>    /// @param | scale | number | Scale factor.
 <a href=#642 id=642 data-nosnippet>642</a>    /// @return | number | Advance width in pixels.
@@ -672,7 +672,7 @@
 <a href=#672 id=672 data-nosnippet>672</a>
 <a href=#673 id=673 data-nosnippet>673</a>    <span class="comment">// -- lineHeight --
 <a href=#674 id=674 data-nosnippet>674</a>    </span><span class="doccomment">/// Returns the line height of a font in pixels. This function is available to Lua scripts.
-<a href=#675 id=675 data-nosnippet>675</a>    /// @param | font | LuaFont | Font handle.
+<a href=#675 id=675 data-nosnippet>675</a>    /// @param | font | LFont | Font handle.
 <a href=#676 id=676 data-nosnippet>676</a>    /// @return | number | Line height in pixels.
 <a href=#677 id=677 data-nosnippet>677</a>    </span>{
 <a href=#678 id=678 data-nosnippet>678</a>        <span class="kw">let </span>s = state.clone();
@@ -700,7 +700,7 @@
 <a href=#700 id=700 data-nosnippet>700</a>    <span class="prelude-val">Ok</span>(font)
 <a href=#701 id=701 data-nosnippet>701</a>}
 <a href=#702 id=702 data-nosnippet>702</a>
-<a href=#703 id=703 data-nosnippet>703</a><span class="doccomment">/// Standard module registration entry point — registers `lurek.font` and returns `Ok(())`.
+<a href=#703 id=703 data-nosnippet>703</a><span class="doccomment">/// Standard module registration entry point â€” registers `lurek.font` and returns `Ok(())`.
 <a href=#704 id=704 data-nosnippet>704</a></span><span class="kw">pub fn </span>register(lua: <span class="kw-2">&amp;</span>Lua, lurek: <span class="kw-2">&amp;</span>LuaTable, state: Rc&lt;RefCell&lt;SharedState&gt;&gt;) -&gt; LuaResult&lt;()&gt; {
 <a href=#705 id=705 data-nosnippet>705</a>    <span class="kw">let </span>font = register_font_api(lua, state)<span class="question-mark">?</span>;
 <a href=#706 id=706 data-nosnippet>706</a>    lurek.set(<span class="string">"font"</span>, font)<span class="question-mark">?</span>;

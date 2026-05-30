@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["NetValue"],"fn":["estimate_size","pack","unpack"]};
+window.SIDEBAR_ITEMS = {"enum":["NetValue"],"fn":["pack","unpack"]};

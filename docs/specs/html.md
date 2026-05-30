@@ -25,59 +25,63 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 
 ### color.rs
 
-- CSS color string parsing: hex, `rgb()`, `rgba()`, `hsl()`, `hsla()`, and named keywords.
-- Component extraction for RGB bytes/percent, alpha, hue (deg/turn/rad), and percent values.
-- HSL-to-RGB conversion with full hue normalization.
-- Named color lookup covering the CSS basic and extended keyword set.
-- All outputs normalized to `[f32; 4]` in the 0.0–1.0 range.
+- Turns raw CSS color text into normalized RGBA values ready for render-side blending.
+- Accepts hex codes, rgb/rgba, hsl/hsla forms, and named web colors used by authored styles.
+- Normalizes hue units and percentage channels so mixed input formats resolve to one stable shape.
+- Applies alpha parsing with clamping semantics that keep transparent and opaque intent predictable.
+- Returns compact `[f32; 4]` color vectors in 0..1 space for direct engine consumption.
 
 ### document.rs
 
-- Owns `HtmlDocument`, the mutable tree that holds parsed elements, CSS state, and interaction focus.
-- Provides document construction from raw HTML with optional viewport size and initial CSS.
-- Manages CSS source accumulation, rule parsing, and per-element computed style resolution.
-- Implements a simple vertical block layout engine with dirty-flag tracking and viewport resize.
-- Exposes DOM query helpers: element-by-id, CSS selector matching, ancestor traversal.
-- Supports DOM mutation: set/append inner HTML, set text, remove elements, attribute and class ops.
-- Handles focus, hover, hit-testing, mouse/keyboard routing, and text input for form elements.
-- Produces `HtmlDrawCommand` vectors consumed by the renderer for box and text passes.
-- Includes inner/outer HTML serialization and document-order traversal utilities.
+- Orchestrates the full HTML document lifecycle from source text to interactive, drawable UI state.
+- Builds and rebuilds element trees while preserving viewport constraints and accumulated stylesheet inputs.
+- Resolves selector-driven style cascades into computed per-element visual properties for later layout.
+- Runs block-style layout passes with dirty tracking so structural and style edits trigger fresh geometry.
+- Supports focused and hovered interaction state used by pointer routing, keyboard input, and text editing.
+- Exposes traversal and lookup paths for id, selector, ancestry, and document-order element queries.
+- Applies DOM mutations like attribute edits, class toggles, text replacement, and inner fragment insertion.
+- Serializes inner and outer HTML snapshots so runtime edits can be observed or persisted deterministically.
+- Generates draw command streams carrying rectangles, text, and color intent for render-side execution.
+- Collects parse and style warnings so caller code can surface authoring issues without aborting runtime flow.
 
 ### element.rs
 
-- DOM element model: tag, attributes, children, parent linkage, and text content.
-- Inline style handling with bidirectional sync to the `style` attribute.
-- Class list manipulation: add, remove, toggle, and membership queries.
-- Axis-aligned layout rectangle for hit testing and position queries.
-- Attribute normalization and void-tag classification helpers.
+- Defines the core DOM node shape used to store structure, attributes, text, and layout geometry.
+- Keeps normalized attribute and inline-style maps in sync so style edits remain coherent with HTML state.
+- Provides class token mutation paths that preserve deterministic ordering and membership checks.
+- Tracks parent-child linkage and removal flags to support stable traversal without index churn.
+- Carries axis-aligned rectangles for hit testing, layout output, and pointer targeting in UI flow.
+- Supplies normalization and void-element classification rules that guide parsing and tree mutations.
 
 ### mod.rs
 
-- HTML document tree with element storage, layout rectangles, and draw-command generation.
-- CSS rule parsing, selector matching, and color normalization.
-- Tag parsing and entity escaping for inline HTML content.
+- High-level HTML module surface that composes parsing, styling, selection, and document orchestration.
+- Re-exports stable document and element types used by runtime code interacting with HTML-driven UI.
+- Binds color, parser, selector, and style helpers into one cohesive entry point for the subsystem.
 
 ### parser.rs
 
-- Parse raw HTML strings into a live element tree with parent-child relationships.
-- Split tag headers, extract and normalize attribute key-value pairs.
-- Decode and encode the small HTML entity set (amp, lt, gt, quot, #39).
-- Collapse whitespace in text nodes before attaching to elements.
-- Handle self-closing tags, void tags, closing tags, and comments.
+- Converts raw HTML text into document nodes with stable parent-child links and normalized attributes.
+- Handles open, close, self-closing, void, and comment forms so authored markup maps to valid tree state.
+- Parses attribute key-value pairs with quote-aware scanning and consistent lowercase key normalization.
+- Encodes and decodes common HTML entities to preserve readable text while keeping stored values canonical.
+- Collapses insignificant whitespace in text nodes to keep rendered output predictable across content styles.
 
 ### selector.rs
 
-- CSS selector matching for the HTML element tree.
-- Parse selector strings into tag, id, class, and combinator fragments.
-- Support descendant and child combinators for ancestor-chain traversal.
-- Match parsed selector chains against live elements by walking parent links.
-- Provide the core predicate used by style resolution and query APIs.
+- Implements selector matching logic that maps CSS-like queries onto the live HTML element tree.
+- Parses selector text into tag, id, class, and combinator fragments with deterministic chain ordering.
+- Supports descendant and direct-child relationships for ancestry-aware filtering semantics.
+- Walks parent links to evaluate multi-part selector chains against runtime element topology.
+- Provides the core predicate shared by style cascade resolution and document query operations.
 
 ### style.rs
 
-- CSS stylesheet parsing: split source text into selector/declaration blocks.
-- Declaration normalization: property validation, value extraction, warning collection.
-- Length unit resolution: convert px, %, and unitless values to pixel floats.
+- Parses stylesheet sources into ordered selector rules and normalized declaration maps for HTML layout.
+- Validates supported properties while collecting non-fatal warnings for unknown or malformed inputs.
+- Normalizes declaration keys and values so later cascade merges operate on stable property naming.
+- Resolves pixel, percent, and unitless length text into float values against caller-provided bases.
+- Supplies compact parse outputs consumed by document rebuild, style recompute, and layout phases.
 
 ## Lua API Ref
 
@@ -99,9 +103,9 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 
 ### Types
 
-
 #### LHtmlDocument Type
 
+- Lua-side HTML document handle with DOM state, callbacks, and render command access.
 
 ##### Fields
 
@@ -136,9 +140,9 @@ The module also handles complex text rendering, ensuring accurate wrapping, alig
 - `LHtmlDocument:update`: Advances document timers and animated state.
 - `LHtmlDocument:wheelmoved`: Forwards mouse wheel movement to the document.
 
-
 #### LHtmlElement Type
 
+- Lua-side DOM element handle with stale-generation detection.
 
 ##### Fields
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaSpring","LuaTweenState"]};
+window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaSpring","LuaTweenChain","LuaTweenState"]};

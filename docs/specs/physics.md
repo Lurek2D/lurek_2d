@@ -27,85 +27,90 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 
 ### body.rs
 
-- Data-only body descriptor passed to `World` for physics simulation.
-- Body types: static, dynamic, kinematic, and sensor (overlap-only).
-- Shape primitives: rectangle, circle, polygon, edge, and chain.
-- Constructors produce default mass, friction, and restitution values.
-- Geometric helpers: AABB computation, layer/mask filtering, local↔world transforms.
-- Extended shapes stored in `shape_ext` for polygon/edge/chain bodies.
+- Physics body description layer that gathers the state a simulation object needs before or while it lives inside the world.
+- The file defines the playable vocabulary of rigid body roles such as dynamic movers, fixed solids, script-driven kinematics, and overlap-only sensors.
+- It also binds those roles to supported geometry forms, material defaults, collision filtering, and transform helpers so a body can be reasoned about as one coherent unit.
+- Constructors emphasize ready-to-use authoring by filling in sensible density, friction, restitution, and motion settings rather than forcing every caller to spell out raw fields.
+- Geometry utilities keep body space and world space connected, which matters for bounds queries, spawn setup, editor tooling, and shape-aware logic outside the solver.
+- Functionally this file delivers the authored physical identity of an object before the broader world machinery turns it into live simulated behavior.
 
 ### collision.rs
 
-- Collision event queuing and contact processing between physics bodies.
-- `CollisionQueue` accumulates `ContactEvent`s during `physics::step()`.
-- Events are drained each Lua tick and delivered as `lurek.physics.on_contact` callbacks.
-- Contact events carry both body keys, contact normal, and penetration depth.
-- Sensor events (`ContactEvent::SensorEnter` / `SensorExit`) are routed separately.
-- The queue is never flushed mid-step; callbacks fire only after step completes.
+- Collision event buffering for the moments when physical contact needs to become stable gameplay information instead of transient solver state.
+- The file packages body pairs, normals, penetration data, and sensor transitions into an ordered queue that can be drained after stepping without disturbing the simulation loop.
+- Functionally this delivers the bridge from raw contact detection to script-consumable collision events with clean step-boundary timing.
 
 ### collision_helpers.rs
 
-- Pure-geometry collision tests for AABB, circle, and point queries.
-- No allocations or side effects; suitable for hot-path per-frame checks.
-- All coordinates assume x-right, y-down screen space.
+- Lightweight geometry overlap helpers for code that needs quick collision answers without standing up a full physics world.
+- The file keeps AABB, circle, and point tests allocation-free and side-effect free so they fit hot loops, culling, and cheap gameplay probes.
+- Functionally this delivers the smallest collision vocabulary for fast spatial checks in plain screen-space coordinates.
 
 ### mod.rs
 
-- Rapier2D-backed rigid-body physics: bodies, shapes, world stepping, and raycasting.
-- Collision helpers (AABB, circle, point) and contact/event reporting.
-- Terrain tile-maps and spatial trigger zones.
+- Platform-level 2D physics module that unifies authored bodies, geometric shapes, simulation stepping, spatial queries, terrain sync, and trigger-style environmental effects.
+- It exposes the major surfaces of the subsystem as one coherent toolbox, from lightweight helper tests through full world simulation and debug-oriented support structures.
+- Functionally this file is the high-level entry point for physical interaction, movement constraints, collision reporting, and physics-backed world state in Lurek2D.
 
 ### render.rs
 
-- Debug visualisation of physics bodies as render commands or rasterised images.
-- Colour-codes bodies by type: dynamic, static, kinematic, sensor.
-- Draws velocity arrows for dynamic bodies and shape outlines for all bodies.
+- Physics debug rendering layer for turning invisible simulation state into visible lines, outlines, and motion cues that developers can inspect frame by frame.
+- The file translates bodies and shapes into render-friendly snapshots without changing the simulation, letting diagnostics live beside gameplay rather than inside it.
+- Type-based coloring keeps static, dynamic, kinematic, and sensor objects readable at a glance when scenes grow dense.
+- Velocity arrows and shape outlines expose both form and movement so developers can see why contacts, tunnels, or odd impulses are happening.
+- Functionally this delivers the visual instrumentation needed to understand, tune, and trust the physics subsystem during development.
 
 ### shape.rs
 
-- Geometry primitives: rect, circle, convex polygon, edge, and chain polyline.
-- Rapier collider conversion with degenerate-input rejection.
-- String-based shape parsing from a type tag and flat argument list.
-- Regular polygon constructor with side-count clamping.
-- `StandaloneShape` pairs geometry with density, friction, restitution, and sensor flag.
-- Local-space AABB queries for all shape variants.
+- Physics shape definition layer that gives the subsystem a compact language for circles, rectangles, polygons, edges, and chained outlines.
+- The file keeps geometry authoring, validation, and collider conversion close together so malformed inputs can be rejected before they become unstable runtime fixtures.
+- Parsing and regular-polygon construction make the surface practical for scripts, tools, and data-driven content that describe shape intent rather than raw engine objects.
+- Standalone shapes carry material and sensor settings alongside geometry, which lets authored collision pieces travel with the properties that affect how they behave in the world.
+- Local bounding logic keeps each shape queryable without needing a live body, which is useful for previews, authoring tools, and lightweight reasoning.
+- Functionally this file delivers the reusable geometry vocabulary that both bodies and higher-level physics workflows build upon.
 
 ### terrain.rs
 
-- Tile-based terrain grid that syncs solid cells to static physics bodies via chunked rebuilds.
-- Chunk-based dirty tracking: only modified regions regenerate bodies on flush.
-- Bulk fill operations (circle, rectangle, fill-all) for terrain editing at runtime.
-- Run-length row merging to minimise body count per chunk.
-- Compact bitpacked serialisation and deserialisation for save/load.
-- Debris spawning and column-collapse utilities for destructible terrain effects.
+- Destructible terrain map layer that turns editable solid cells into physics-ready world geometry without making callers manage collider lifecycles manually.
+- The file tracks terrain in chunks so local edits stay local, allowing flush operations to rebuild only the regions that actually changed.
+- Fill tools support live terrain authoring and destruction patterns such as circles, rectangles, blanket writes, and other broad modifications during play.
+- Row merging keeps the generated static-body footprint compact, which matters when large tile fields must remain interactive without exploding collider counts.
+- Serialization and image output make the terrain usable for save systems, tooling, previews, and data exchange outside the immediate simulation step.
+- Debris spawning and collapse helpers push the system beyond passive walls into active destructible-environment behavior.
+- Functionally this file delivers the editable ground model that connects tile logic, destruction effects, and efficient static collision rebuilds.
 
 ### types.rs
 
-- Core type definitions for the physics subsystem.
-- `BodyId` newtype wrapper for type-safe body identification across Lua and Rust layers.
-- Implements `Copy`, `Hash`, and `Display`; converts to/from `usize` without allocation.
+- Small core type surface for the physics subsystem where stable identifiers need stronger meaning than a bare integer can provide.
+- The file wraps body identity in a dedicated type so physics handles remain cheap to pass around while still reading as deliberate domain values.
+- Functionally this delivers the low-friction type safety that keeps body references explicit across Rust and Lua-facing boundaries.
 
 ### world.rs
 
-- Full rapier2d-backed physics simulation world with body, collider, and joint management.
-- Collision event collection: begin-contact, end-contact, and overlap pairs per step.
-- Raycast queries: single closest hit, point-to-point sweep, and multi-hit gather.
-- AABB and point spatial queries via QueryPipeline.
-- Joint catalog: revolute, distance, prismatic, weld, rope, wheel, friction, motor, mouse, pulley, gear.
-- Joint break-force thresholds with automatic removal on exceeded relative velocity.
-- One-way platform normals with velocity projection on contact.
-- Trigger zone system: gravity overrides (zero, directional, point, repulsor), damping, enter/exit events.
-- Fixed-timestep accumulator helper and pixels-per-meter unit conversion.
-- Debug rendering: shape snapshot extraction and direct ImageData line drawing.
-- Body lifecycle: add, destroy (disable), clear world, sleep control, CCD toggle.
+- Central physics simulation world that owns the living state of rigid bodies, colliders, joints, queries, events, and solver progression for the engine.
+- The file wraps Rapier into an engine-shaped runtime surface where spawning, stepping, sleeping, destruction, and body mutation all speak one consistent game-facing vocabulary.
+- Fixed-timestep accumulation is part of that surface, which keeps motion and contact results deterministic enough for frame-rate-independent gameplay code.
+- Collision collection lives beside stepping so begin, end, and overlap information emerges as stable post-step data rather than scattered callbacks fired from deep inside the solver.
+- Spatial queries such as raycasts, point tests, and area checks share the same authoritative world state, which lets gameplay systems ask where things are without duplicating geometry.
+- Joint support turns the world from a loose body container into a mechanical playground where links, motors, ropes, sliders, and welded constraints become first-class scene behaviors.
+- Break thresholds and one-way platform handling add gameplay-oriented control over how contacts and constraints should behave under stress or directional motion.
+- Trigger zones extend the world beyond classic rigid-body simulation by letting areas override gravity, damping, and enter-exit signaling as bodies move through space.
+- Pixels-per-meter conversion keeps authored screen-scale intent aligned with simulation-scale correctness, reducing the friction between gameplay numbers and solver numbers.
+- Debug shape extraction and line drawing make the same world inspectable, so developers can see the geometry and contact surfaces that drive runtime outcomes.
+- Terrain-linked behavior integrates static environment rebuilding into the same physical authority instead of leaving destructible ground as an external special case.
+- Body lifecycle controls cover creation, disabling, wake-sleep flow, velocity mutation, material changes, and other everyday manipulations expected from a playable simulation backend.
+- Query, contact, and mutation responsibilities stay concentrated here so higher layers can treat the world as the one source of truth for physical state.
+- The result is a large but coherent orchestration surface where simulation, environment effects, and debug visibility reinforce each other instead of fragmenting across helper subsystems.
+- Functionally this file delivers the full physical stage on which movement, impact, constraints, triggers, terrain interaction, and spatial reasoning all take place.
 
 ### zone.rs
 
-- Spatial trigger zones with boundary containment (rect or circle).
-- Gravity overrides per zone: directional, point-attractor, repulsor, or zero-g.
-- Priority-based zone layering with bitmask filtering.
-- Damping overrides (linear and angular) for bodies inside a zone.
-- Enter/leave event tracking via diffing per-body zone sets each step.
+- Physics zone system for spatial rule overrides that should apply because a body is somewhere, not because it touched a solid object.
+- The file defines bounded areas that can replace normal gravity with directional pull, attraction, repulsion, or weightless behavior.
+- Priority and mask filtering let multiple zones coexist without turning area-based effects into ambiguous global state.
+- Damping overrides make zones useful for liquids, mud, low-friction fields, or other environmental modifiers that change motion feel.
+- Enter and leave tracking turns zones into event sources as well as force fields, which is important for scripting and gameplay transitions.
+- Functionally this file delivers area-driven physics behavior for environmental control, special spaces, and location-sensitive simulation rules.
 
 ## Lua API Ref
 
@@ -143,9 +148,9 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 
 ### Types
 
-
 #### LBody Type
 
+- A handle to a single physics body in the world, providing per-body manipulation methods.
 
 ##### Fields
 
@@ -202,9 +207,22 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LBody:typeOf`: Checks if this object is of a given type name.
 - `LBody:wakeUp`: Wakes the body from sleep, making it active in the simulation again.
 
+#### LPhysicsGetCollisionsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `body_a` (`integer`): Body A id.
+- `body_b` (`integer`): Body B id.
+
+##### Methods
+
+- No documented methods.
 
 #### LPhysicsShape Type
 
+- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
 
 ##### Fields
 
@@ -223,9 +241,9 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LPhysicsShape:type`: Returns the type name of this object ("LPhysicsShape").
 - `LPhysicsShape:typeOf`: Checks if this object is of a given type name.
 
-
 #### LTerrain Type
 
+- A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
 
 ##### Fields
 
@@ -249,9 +267,22 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LTerrain:type`: Returns the type name of this object ("LTerrain").
 - `LTerrain:typeOf`: Checks if this object is of a given type name.
 
+#### LTerrainSolidPositionsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`integer`): Cell x coordinate.
+- `y` (`integer`): Cell y coordinate.
+
+##### Methods
+
+- No documented methods.
 
 #### LWorld Type
 
+- A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
 
 ##### Fields
 
@@ -341,9 +372,145 @@ Additionally, the `cellular` submodule provides a cellular automaton grid for si
 - `LWorld:typeOf`: Checks if this object is of a given type name. Supports inheritance (always matches "Object").
 - `LWorld:wakeUpBody`: Forces a sleeping body to wake up and participate in simulation again.
 
+#### LWorldGetBeginContactEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyA` (`integer`): BodyA.
+- `bodyB` (`integer`): BodyB.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetBodyContactsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyA` (`integer`): BodyA.
+- `bodyB` (`integer`): BodyB.
+- `isTouching` (`boolean`): IsTouching.
+- `normalX` (`number`): NormalX.
+- `normalY` (`number`): NormalY.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetCollisionEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyA` (`integer`): Body A id.
+- `bodyB` (`integer`): Body B id.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetContactsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyA` (`integer`): BodyA.
+- `bodyB` (`integer`): BodyB.
+- `isTouching` (`boolean`): IsTouching.
+- `normalX` (`number`): NormalX.
+- `normalY` (`number`): NormalY.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetEndContactEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyA` (`integer`): BodyA.
+- `bodyB` (`integer`): BodyB.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldGetZoneEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `body_id` (`integer`): Body_id.
+- `kind` (`string`): Kind.
+- `zone_id` (`integer`): Zone_id.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldRaycastAllResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyId` (`integer`): BodyId.
+- `normalX` (`number`): NormalX.
+- `normalY` (`number`): NormalY.
+- `toi` (`number`): Toi.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldRaycastClosestResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyId` (`integer`): BodyId.
+- `normalX` (`number`): NormalX.
+- `normalY` (`number`): NormalY.
+- `toi` (`number`): Toi.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LWorldRaycastResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bodyId` (`integer`): BodyId.
+- `normalX` (`number`): NormalX.
+- `normalY` (`number`): NormalY.
+- `toi` (`number`): Toi.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LZone Type
 
+- A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
 
 ##### Fields
 

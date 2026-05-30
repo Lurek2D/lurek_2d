@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["RunState"],"fn":["fit_contain_size","recompute_viewport","splash_window_title"],"struct":["App","AppRunOptions","LurekApp"]};
+window.SIDEBAR_ITEMS = {"enum":["DropStartupTarget","RunState"],"fn":["classify_drop_startup_target","fit_contain_size","recompute_viewport","splash_window_title"],"struct":["App","AppRunOptions","LurekApp"]};

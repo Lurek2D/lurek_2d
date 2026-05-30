@@ -25,183 +25,196 @@ The `image` module features specialized systems for game development, most notab
 
 ### compressed.rs
 
-- DDS compressed-texture parsing: header validation, mipmap extraction, format detection.
-- Recognized block-compression families: BC1–BC7 (desktop) and ETC1/ETC2 (mobile).
-- Dual detection path: DXGI format field for DX10+ files, D3DFormat for legacy DDS.
-- File-level helpers for magic-byte checks and full-file decode via GameFS or std I/O.
-- Data carrier (`CompressedImageData`) holding dimensions, format tag, and raw mip payloads.
+- Decodes DDS-style compressed textures into structured payloads used by higher-level image loading.
+- Validates headers and extracts dimensions, mip blocks, and metadata needed for downstream upload.
+- Detects desktop and mobile block-compression families from DXGI and legacy format descriptors.
+- Exposes file and byte entry points so callers can probe and decode assets from multiple pipelines.
+- Returns stable data carriers containing format tags and raw compressed mip chains.
 
 ### effects.rs
 
-- Pixel-level color adjustments: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, and posterize applied via parallel pixel mapping.
-- Alpha channel masking and deterministic per-pixel noise injection with repeatable seed.
-- Geometric transforms: horizontal and vertical flip, 90-degree clockwise rotation, and rectangular crop with bounds validation.
-- Resize operations using nearest-neighbor sampling, bilinear interpolation, and Lanczos3 windowed-sinc filtering.
-- Separable box blur with configurable radius and 3x3 unsharp-mask sharpening kernel.
-- General-purpose NxN kernel convolution with clamped-edge boundary handling and validation of odd kernel dimensions.
-- Compositing via alpha-blended blit with fast-path for fully opaque sources and nine-slice stretch drawing.
-- Bytewise image difference scoring across same-sized and differently-sized images for test comparison.
-- `ResizeFilter` enum for selecting resampling kernels via string parsing at the Lua boundary.
+- Provides the main CPU image effect toolkit for color grading, filtering, resampling, and compositing.
+- Applies brightness, contrast, saturation, gamma, tint, threshold, and stylization transforms per pixel.
+- Supports deterministic noise injection and alpha-aware operations for repeatable visual post-processing.
+- Implements geometric edits like crop, flip, and rotation for texture preparation and UI workflows.
+- Includes nearest, bilinear, and Lanczos resize paths to balance speed and quality by caller choice.
+- Runs blur, sharpen, and generic kernel convolution with safe boundary handling on edge samples.
+- Offers alpha-blended blit and nine-slice stretching for practical sprite and panel assembly tasks.
+- Computes byte-level difference scores for test assertions and regression image comparisons.
+- Normalizes effect behavior around mutable `ImageData` buffers without hidden global state.
+- Exposes filter-selection enums parsed from textual inputs used at scripting boundaries.
 
 ### image_data.rs
 
-- Mutable RGBA pixel buffer for creation, loading, and manipulation of 2D images.
-- Constructors from file path, encoded memory bytes, or raw RGBA byte vectors.
-- Per-pixel read/write, paste composition, and bulk map transforms (serial and parallel).
-- Primitive drawing: filled rectangles, circles, Bresenham lines, and bitmap text labels.
-- PNG encoding for serialization and export.
+- Defines the central mutable RGBA buffer used across rendering, tooling, and image-side gameplay logic.
+- Creates images from dimensions, files, encoded bytes, or direct raw pixel payloads.
+- Provides pixel access, region copy, and whole-buffer transform flows in serial and parallel variants.
+- Implements primitive raster drawing for lines, rectangles, circles, labels, and debug overlays.
+- Supports blending and paste semantics that keep alpha composition behavior explicit and predictable.
+- Carries width, height, and packed bytes in a compact row-major memory representation.
+- Encodes images back to portable formats for persistence, export, and diagnostics.
+- Includes comparison and utility helpers used by tests and content validation steps.
+- Serves as the common interchange type between image operations and render-facing code paths.
+- Keeps all mutation local to the instance to avoid hidden shared-state side effects.
 
 ### layers.rs
 
-- Named image layers with opacity, visibility, and RGBA pixel data.
-- Layered image stack that composites layers front-to-back with alpha blending.
-- Layer manipulation: add, remove, reorder, swap, rename, set opacity/visibility.
-- Final merge produces a single `ImageData` using standard Porter-Duff over compositing.
+- Implements layered image editing with per-layer visibility, opacity, naming, and pixel ownership.
+- Maintains ordered stacks so compositing results stay deterministic during insert and reorder actions.
+- Supports add, remove, rename, swap, and move operations for non-destructive content workflows.
+- Merges the stack into flat output using alpha-over compositing compatible with engine image buffers.
+- Provides practical layer primitives for editors, tooling pipelines, and scripted content generation.
 
 ### mod.rs
 
-- RGBA image storage, pixel manipulation, and CPU-side drawing helpers.
-- Compressed format decoding (PNG, QOI, BMP, TGA, WebP) and texture upload.
-- Layered compositing, palette remapping, and image-space effects.
-- Texture atlas packing, nine-slice metadata, and province-grid extraction.
+- High-level image module that unifies pixel buffers, effects, serialization, and atlas-oriented helpers.
+- Re-exports core image types and decoding utilities used across runtime systems and content pipelines.
+- Defines the integration boundary between CPU image manipulation and render-upload preparation.
 
 ### palette_lut.rs
 
-- Source-to-target color remapping via indexed palette lookup tables.
-- Hash-accelerated pixel matching for large palettes, linear scan for small ones.
-- In-place image rewrite and cyclic rotation of replacement colors.
+- Provides palette lookup remapping that transforms source colors into target colors across images.
+- Stores parallel source and destination palettes to express deterministic recolor tables.
+- Applies in-place remap passes optimized by direct scan or hash-assisted lookup by palette size.
+- Supports rotation-style remap workflows for palette cycling and stylized animation effects.
+- Supplies reusable color-map primitives for procedural art and runtime theme variation.
 
 ### rect_packing.rs
 
-- Shelf-first rectangle packing for texture atlas layout.
-- Configurable atlas dimensions and uniform pixel padding between rects.
-- Tracks occupancy ratio and returns placement coordinates in insertion order.
+- Implements shelf-based rectangle packing used to place sprites into compact atlas layouts.
+- Accepts caller-defined atlas bounds and padding to preserve sampling safety between regions.
+- Places rectangles in insertion order while tracking shelf growth and remaining horizontal space.
+- Returns deterministic packed coordinates that map back to source asset identities.
+- Reports occupancy metrics useful for tuning atlas size and packing efficiency.
 
 ### render.rs
 
-- Convert an image buffer into GPU render commands for on-screen display.
-- Provide cloning helpers to snapshot pixel data as standalone values.
-- Bridge between ImageData and the engine's RenderCommand pipeline.
+- Bridges CPU `ImageData` content into render-command payloads consumed by the draw pipeline.
+- Provides lightweight conversion helpers that reference texture keys and screen placement.
+- Includes image snapshot utilities used where value-copy semantics are required.
 
 ### serial.rs
 
-- Serialize and deserialize flat and layered images in the LIMG binary format.
-- Provide zlib compression and decompression for pixel payloads.
-- Validate headers, version tags, and type flags on load.
-- Encode layer metadata (name, opacity, visibility) alongside pixel data.
-- Expose both file-path and raw-byte entry points for flexible I/O.
+- Implements LIMG binary serialization for flat and layered images with versioned format guards.
+- Encodes and decodes pixel payloads with compression to reduce storage and transfer overhead.
+- Validates magic headers, version bytes, and payload type tags before accepting input data.
+- Preserves layer metadata such as names, opacity, and visibility across save-load round trips.
+- Exposes both in-memory byte APIs and filesystem helpers for flexible integration contexts.
+- Keeps format handling deterministic so tooling and runtime produce consistent binary artifacts.
 
 ### texture.rs
 
-- CPU-side texture loading, decoding, and storage into the SlotMap pool.
-- Premultiplied-alpha conversion for correct blending on the GPU.
-- Color-space tagging (sRGB vs linear) carried alongside pixel data.
-- Construction from file paths or raw RGBA byte buffers.
-- Dimension validation for caller-supplied pixel buffers.
+- Manages CPU texture ingestion and staging before GPU-side renderer upload and sampling.
+- Decodes files and raw buffers into validated RGBA payloads keyed in slot-map storage.
+- Applies premultiplied-alpha conversion paths to align blending behavior with render expectations.
+- Tracks texture color-space intent so pipelines can distinguish sRGB and linear content.
+- Supplies safe construction and validation helpers used by asset loading and runtime creation flows.
 
 ### texture_atlas.rs
 
-- Shelf-based rectangle packing for combining multiple images into a single atlas texture.
-- Nine-slice inset metadata attached per region for scalable UI sprites.
-- Name-keyed region lookup, clearing, and dimension queries.
+- Builds and maintains texture atlases that group many named regions inside one packed image.
+- Uses shelf-style placement to allocate rectangles while preserving padding and bounds guarantees.
+- Attaches optional nine-slice inset metadata so UI sprites can scale without corner distortion.
+- Supports name-based lookup, mutation, and reset operations for dynamic atlas management.
+- Exposes region geometry and atlas dimensions needed by render and layout call sites.
 
 ### visualization/animation.rs
 
-- Frame grid rendering for animation debug overlays.
-- Playback timeline preview with active frame highlighting.
-- Playback control state visualization with run, idle, pause, and resume.
-- Default cell-dimension wrapper for quick animation preview.
-- Color-coded frame indicators for current vs inactive frames.
+- Renders animation timelines and frame grids into debug images for rapid visual inspection.
+- Highlights current playback position against surrounding frames to expose timing behavior.
+- Draws state-oriented overlays for running, paused, and resumed playback diagnostics.
+- Provides quick wrappers with sensible cell sizing for tool and test screenshot generation.
+- Uses consistent color accents so active and inactive frame regions are instantly readable.
 
 ### visualization/audio.rs
 
-- Mono waveform preview with axis grid and peak normalization.
-- Stereo waveform rendering with channel separation.
-- Zoomed waveform with interpolated sample detail.
-- Labeled waveform strip with custom color mapping.
-- Shared peak normalization and column-based rendering.
+- Converts audio sample streams into waveform images suitable for tooling and in-engine diagnostics.
+- Renders mono and stereo views with channel separation and baseline guides for quick interpretation.
+- Supports zoom-oriented sampling views to inspect transient detail in dense signal regions.
+- Adds labels and configurable color accents so waveform panels fit different UI styles.
+- Normalizes peak ranges to keep amplitude visualization stable across varying source loudness.
+- Shares column-based raster logic to keep waveform output deterministic and lightweight.
 
 ### visualization/camera.rs
 
-- Camera debug overlay with viewport rectangle and position crosshair.
-- Zoom level comparison panel across multiple scale factors.
-- Rotation preview grid with world-to-screen coordinate transforms.
-- Camera bounds display with labeled position list.
-- Follow and dead-zone trail visualization.
-- Shake displacement trail with center and moved-position markers.
-- Full-size camera debug wrapper for quick usage.
-- HSV color helpers for hue-based visual differentiation.
+- Produces camera-debug imagery that visualizes framing, motion, and transform behavior in world space.
+- Draws viewport boxes, crosshairs, and coordinate guides for position and anchor verification.
+- Compares multiple zoom factors to reveal scale-dependent composition and clipping effects.
+- Renders rotation-aware grids that expose world-to-screen mapping under angular transforms.
+- Displays bounds and follow trails to inspect dead-zone tuning and target-tracking responses.
+- Visualizes shake offsets against center references for temporal stability checks.
+- Provides wrapper entry points for fast full-panel generation in tests and tooling flows.
+- Uses hue-based color differentiation to keep layered debug signals visually distinct.
 
 ### visualization/easing.rs
 
-- Easing curve gallery rendered in a labeled grid layout.
-- Overlaid easing comparison chart with colored traces.
-- Bézier curve rendering with control-point markers.
-- Advanced Bézier demo with derivatives, segments, and edit operations.
-- Grid background and axis rendering for chart context.
+- Renders easing and curve diagnostics as image charts for motion-tuning and teaching workflows.
+- Produces labeled curve galleries arranged in grids for side-by-side behavior comparison.
+- Draws overlay traces that contrast multiple easing functions on shared coordinate axes.
+- Includes Bezier-focused views with control-point and segment cues for shape inspection.
+- Supplies advanced Bezier visualization for derivative and edit-oriented debugging scenarios.
+- Uses chart backgrounds and guides that preserve readability across dense trace overlays.
 
 ### visualization/facade.rs
 
-- HSV to RGB conversion for visualization color mapping.
-- Hue-based palette generation for chart and graph elements.
-- Shared color utility used across all visualization submodules.
+- Provides shared visualization color conversion from HSV space into RGB byte tuples.
+- Centralizes hue-driven palette logic used by charts, graphs, and debug overlays.
+- Keeps color mapping behavior consistent across all image visualization submodules.
 
 ### visualization/geometry.rs
 
-- Polygon gallery with regular shapes of varying side counts.
-- Archimedes spiral rendering with HSV ring colors.
-- Filled primitive samples: rectangles, circles, brightness grid.
-- Convex hull computation and overlay drawing.
-- Point-in-polygon, centroid, and area visualization.
-- Bresenham line rasterization proof.
-- Segment-segment and circle-line intersection tests.
-- Circle-segment and line intersection proof rendering.
+- Generates geometry-focused debug images that visualize shape algorithms and spatial relationships.
+- Renders polygon galleries, primitive fills, and line rasterization examples for correctness checks.
+- Shows convex hull and centroid style outputs to inspect geometric post-processing behavior.
+- Illustrates intersection outcomes between segments, circles, and lines with clear overlays.
+- Draws spiral and ring patterns to stress sampling consistency and color-mapping utilities.
+- Provides rich visual evidence for math and geometry routines used by higher-level systems.
 
 ### visualization/graph.rs
 
-- Node-edge graph rendering with labels and colored vertices.
-- Removed-edge overlay with dimmed styling.
-- Item-flow graph with directional arrows and node items.
-- Stats text and title label placement.
-- Circle node rendering with adjacency-list edges.
+- Renders graph structures into diagnostic images with nodes, edges, labels, and status overlays.
+- Visualizes active and removed connections using distinct styling for topology change analysis.
+- Supports item-flow style arrows and annotation text for simulation and logic debugging.
+- Places titles and stats summaries to contextualize rendered graph snapshots.
+- Uses circle-node layouts and adjacency-driven links for readable relationship visualization.
 
 ### visualization/image_ops.rs
 
-- Side-by-side labeled image comparison composite.
-- Pixel transform grid: original, inverted, grayscale, sepia columns.
-- HSV color wheel rendering from angle and distance.
-- Slot-based layout with automatic scaling and padding.
-- Label placement beneath each comparison slot.
+- Composes side-by-side image operation previews for fast visual comparison of processing outputs.
+- Builds slot-based layouts with scaling and padding so varied source sizes stay presentable.
+- Labels each panel to make transform deltas clear during review and regression analysis.
+- Includes color-wheel and transform showcase helpers for broad image-operation demonstrations.
+- Keeps composite rendering deterministic for repeatable screenshot-based validation.
 
 ### visualization/mod.rs
 
-- Submodule declarations for all visualization categories.
-- Wildcard re-exports providing a flat public API.
-- Shared facade helpers scoped to crate visibility.
+- High-level visualization module wiring that groups image-debug renderers by domain.
+- Re-exports category entry points to provide one flat surface for visualization consumers.
+- Shares internal facade utilities while keeping submodule responsibilities clearly separated.
 
 ### visualization/noise.rs
 
-- Noise function rendering as scaled grayscale.
-- Raw noise mapping without range normalization.
-- Terrain biome coloring from noise elevation bands.
-- Heightmap slice visualization with elevation gradient.
-- Noise comparison strip with multiple tiles side by side.
+- Turns scalar noise functions into image outputs for terrain tuning and generator diagnostics.
+- Renders normalized and raw grayscale maps to compare contrast handling across noise sources.
+- Provides biome and elevation band coloring to inspect threshold-driven terrain classification.
+- Supports sliced and tiled comparison views for spotting artifacts across parameter variations.
+- Keeps sampling and raster paths deterministic for stable test and documentation visuals.
 
 ### visualization/procgen.rs
 
-- Cellular automata grid rendering with alive and dead colors.
-- Voronoi region visualization from seed partitions.
-- Point sample rendering as colored dots or circles.
-- Dungeon grid display with wall and floor tile scaling.
-- Delaunay triangulation overlay with triangle edges and vertices.
+- Visualizes procedural-generation data structures as images for analysis and tuning loops.
+- Renders cellular grids, dungeon maps, and occupancy states with configurable color semantics.
+- Draws Voronoi and Delaunay style outputs to inspect spatial partition behavior.
+- Displays point samples and topology overlays for algorithm-step debugging.
+- Provides compact visual proof artifacts for procgen experimentation and regression checks.
 
 ### visualization/ui.rs
 
-- Settings panel layout with controls, sliders, and buttons.
-- HUD bar rendering for health, mana, stamina, and XP.
-- Skill cooldown arcs with radial fill indicators.
-- Color swatch palette with selection highlight.
-- Progress bars and percentage label formatting.
+- Renders UI-oriented mockups into images to preview panel composition and widget styling.
+- Draws settings-style panels with controls, sliders, and button affordances for layout checks.
+- Produces HUD bars and cooldown visuals used to validate gameplay HUD readability.
+- Includes swatches and progress widgets for color and status presentation experiments.
+- Supplies deterministic UI snapshots useful in examples, tests, and design iteration loops.
 
 ## Lua API Ref
 
@@ -229,9 +242,9 @@ The `image` module features specialized systems for game development, most notab
 
 ### Types
 
-
 #### LCompressedImageData Type
 
+- Lua-side handle for compressed DDS image metadata and mipmap data.
 
 ##### Fields
 
@@ -247,9 +260,9 @@ The `image` module features specialized systems for game development, most notab
 - `LCompressedImageData:type`: Returns the Lua-visible type name for this compressed image handle.
 - `LCompressedImageData:typeOf`: Returns whether this compressed image handle matches a supported type name.
 
-
 #### LImageData Type
 
+- Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
 
 ##### Fields
 
@@ -302,9 +315,9 @@ The `image` module features specialized systems for game development, most notab
 - `LImageData:type`: Returns the Lua-visible type name for this image data handle.
 - `LImageData:typeOf`: Returns whether this image data handle matches the `LImageData` type name.
 
-
 #### LLayeredImage Type
 
+- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
 
 ##### Fields
 
@@ -332,9 +345,9 @@ The `image` module features specialized systems for game development, most notab
 - `LLayeredImage:type`: Returns the Lua-visible type name for this layered image handle.
 - `LLayeredImage:typeOf`: Returns whether this layered image handle matches a supported type name.
 
-
 #### LPaletteLUT Type
 
+- Lua-side handle for palette color remapping.
 
 ##### Fields
 
@@ -349,9 +362,9 @@ The `image` module features specialized systems for game development, most notab
 - `LPaletteLUT:type`: Returns the Lua-visible type name for this palette lookup table handle.
 - `LPaletteLUT:typeOf`: Returns whether this palette lookup table handle matches a supported type name.
 
-
 #### LProvinceGrid Type
 
+- Lua-side handle for a province id grid decoded from an image.
 
 ##### Fields
 
@@ -373,6 +386,78 @@ The `image` module features specialized systems for game development, most notab
 - `LProvinceGrid:serializeShapeData`: Serializes province span and border shape data into a binary Lua string.
 - `LProvinceGrid:type`: Returns the Lua-visible type name for this province grid handle.
 - `LProvinceGrid:typeOf`: Returns whether this province grid handle matches a supported type name.
+
+#### LProvinceGridAdjacenciesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `border_pixels` (`integer`): Number of shared border pixels.
+- `province_a` (`integer`): First province id.
+- `province_b` (`integer`): Second province id.
+
+##### Methods
+
+- No documented methods.
+
+#### LProvinceGridBorderSegmentsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `province_a` (`integer`): First province id.
+- `province_b` (`integer`): Second province id.
+- `x0` (`number`): Segment start x.
+- `x1` (`number`): Segment end x.
+- `y0` (`number`): Segment start y.
+- `y1` (`number`): Segment end y.
+
+##### Methods
+
+- No documented methods.
+
+#### LProvinceGridGetPolygonsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `province_id` (`integer`): Province id.
+- `rings` (`table`): Array of rings; each ring is an array of [x, y] pairs.
+
+##### Methods
+
+- No documented methods.
+
+#### LProvinceGridGetPolygonsSimplifiedResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `province_id` (`integer`): Province id.
+- `rings` (`table`): Array of simplified rings; each ring is an array of [x, y] pairs.
+
+##### Methods
+
+- No documented methods.
+
+#### LProvinceGridProvinceSpansResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `province_id` (`integer`): Province id.
+- `x0` (`integer`): Start x coordinate.
+- `x1` (`integer`): End x coordinate.
+- `y` (`integer`): Scanline y coordinate.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

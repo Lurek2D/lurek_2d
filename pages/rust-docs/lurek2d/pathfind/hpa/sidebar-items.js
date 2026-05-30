@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["build_abstract","hpa_star","is_reachable"],"struct":["AbstractEdge","AbstractGraph","AbstractNode","Chunk"]};
+window.SIDEBAR_ITEMS = {"fn":["build_abstract","is_reachable"],"struct":["AbstractEdge","AbstractGraph","AbstractNode","Chunk"]};

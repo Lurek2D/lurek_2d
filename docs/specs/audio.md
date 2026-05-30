@@ -29,73 +29,83 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 
 ### beat_clock.rs
 
-- Musical beat clock — tempo and measure tracking for rhythm games and procedural audio.
-- `BeatClock` converts wall-clock time into beats, bars, and pulse events.
-- Supports BPM change, time-signature change, tap-tempo, and quantised scheduling.
-- No audio playback — pure timing. Wire it to audio callbacks in Lua.
+- Implements musical time tracking that maps wall-clock progression to beats, bars, and pulses.
+- Supports tempo and meter changes while preserving coherent phase continuity over runtime updates.
+- Provides tap-tempo and quantized scheduling utilities for rhythm-aware gameplay coordination.
+- Applies latency and swing parameters to shape musical timing feel without audio-thread coupling.
+- Exposes deterministic query surfaces for beat index, measure position, and subdivision boundaries.
+- Keeps timing logic pure and playback-agnostic so multiple systems can consume one clock source.
+- Serves rhythm, sequencing, and procedural trigger systems that require stable musical time.
+- Functions as the temporal backbone for Lua callbacks aligned to musical structure.
 
 ### bus.rs
 
-- Named audio routing bus with per-bus volume, pitch, pause, and duck-target controls.
-- Shared DSP effect chain stored as `Arc<RwLock<Vec<Arc<EffectParams>>>>` for lock-free audio-thread reads.
-- Duck-target assignment enabling automatic cross-bus volume suppression.
-- Boundary clamping on volume, pitch, and duck volume values.
+- Implements named audio routing channels that apply shared gain, pitch, pause, and ducking control.
+- Maintains per-bus processing parameters and effect-chain references for downstream mixer application.
+- Supports duck-target relationships so one bus can attenuate others during priority playback.
+- Enforces bounded parameter updates to keep runtime routing behavior stable and predictable.
 
 ### decoder.rs
 
-- Full-file PCM decoder backed by rodio for WAV/OGG/MP3/FLAC formats.
-- Random-access seek and rewind via cursor over the decoded i16 sample buffer.
-- Chunked iteration with configurable `buffer_size` for streaming consumption.
-- Duration and position queries derived from sample rate and channel count.
-- Seekable flag always true since the entire file is held in memory.
+- Implements full-file PCM decode for supported audio formats into a seekable in-memory sample buffer.
+- Provides random-access cursor movement for rewind, seek, and chunked iteration workflows.
+- Exposes duration and playback-position metrics derived from decoded sample metadata.
+- Serves as the decode bridge between file assets and streaming or buffered playback paths.
 
 ### facade.rs
 
-- Stub device enumeration and selection for the audio output backend.
-- Always reports a single "Default" device until platform-specific enumeration is added.
-- Validates device name against the available list on set.
+- Provides the audio device facade used for output listing and active-device selection hooks.
+- Exposes a stable API surface while backend-specific device enumeration remains minimal.
+- Validates requested device names against known outputs before accepting selection changes.
 
 ### mixer.rs
 
-- `Mixer` central registry: slot-mapped sources, buses, queueable streams, and spatial listener state.
-- rodio `OutputStream`/`OutputStreamHandle` ownership with graceful fallback when audio hardware is unavailable.
-- Per-source playback lifecycle: load, play, stop, pause, resume, seek, clone, release.
-- Per-source parameters: volume, pitch, pan, looping, lowpass/highpass cutoff, fade-in, spatial position/velocity.
-- `Bus` integration: bus creation, name lookup, per-source bus assignment, bus-level volume/pitch/pause propagation.
-- `QueueableSource` push-buffer streaming with fixed slot count and free-buffer tracking.
-- Spatial audio: listener position/orientation/velocity, per-source position/velocity/orientation, doppler scale, distance model.
-- Peak metering: per-source, per-bus average, and master peak tracking.
-- Stereo width, random pitch range, crossfade, and sound pool creation utilities.
-- `SourceType` and `PlayState` enums for backing strategy and runtime state classification.
+- Implements the central audio mixer registry that owns sources, buses, streams, and listener state.
+- Manages output stream lifecycle with graceful fallback behavior when device initialization is unavailable.
+- Controls source playback lifecycle including load, play, pause, stop, seek, clone, and release flows.
+- Applies per-source parameters for gain, pitch, panning, looping, filters, and transition shaping.
+- Integrates bus routing so grouped sources share higher-level volume, pitch, pause, and effect behavior.
+- Supports queueable streaming sources with bounded buffer slots and free-space tracking semantics.
+- Maintains spatial-audio state for listener and source transforms used in attenuation and motion cues.
+- Applies distance-model and doppler controls for runtime spatialization consistency.
+- Tracks metering data across source, bus, and master levels for diagnostics and gameplay feedback.
+- Provides utility controls for stereo width, random pitch spread, crossfade behavior, and pooled playback.
+- Preserves stable key-based lookup so script calls map deterministically to mixer-owned runtime entities.
+- Coordinates effect processing boundaries while leaving advanced DSP behavior to dedicated modules.
+- Centralizes audio concurrency decisions so frame systems interact through one coherent control plane.
+- Serves as the primary engine-side audio execution surface behind Lua-facing playback APIs.
+- Anchors all real-time audio state mutation under a deterministic, runtime-safe ownership model.
 
 ### mod.rs
 
-- Audio subsystem module: mixer, buses, decoders, pools, and device enumeration.
-- Re-exports primary types: `Mixer`, `Bus`, `Decoder`, `SoundData`, `SoundPool`.
-- DSP effects are in `crate::dsp`; MIDI playback is in `crate::midi`.
+- Defines the audio module boundary that groups playback, routing, decode, and source-data primitives.
+- Exposes coherent core audio contracts while delegating specialized processing to adjacent modules.
+- Serves as the composition entry for engine-side runtime audio behavior and shared types.
 
 ### pool.rs
 
-- `SoundPool` round-robin polyphonic voice pool for one-shot playback of a single sound asset.
-- Preloaded `SoundKey` voices cycled via `next_voice` for low-latency triggering.
-- Per-pool volume multiplier and optional bus routing assignment.
-- Validity check ensuring at least one voice is available.
+- Implements round-robin voice pooling for low-latency repeated playback of one sound asset.
+- Cycles preloaded source keys to distribute trigger load across reusable playback voices.
+- Stores per-pool gain and optional bus assignment for grouped routing behavior.
+- Validates pool integrity so empty or invalid voice sets are rejected early.
 
 ### sound_data.rs
 
-- `SoundData` in-memory interleaved f32 PCM buffer with per-sample get/set and metadata.
-- File decode via rodio, silent-buffer allocation, and Lua argument factory.
-- WAV encoding to byte vector for save/export.
-- Waveform generators: sine, square, sawtooth, triangle, and deterministic white noise.
-- In-place DSP transforms: low-pass, high-pass, band-pass, gain, and mix-into.
-- Waveform drawing into `ImageData` for visual feedback.
-- Duration, sample count, and channel count queries.
+- Implements in-memory interleaved PCM storage with metadata-aware sample access and mutation.
+- Supports decode from file and direct buffer creation for generated or procedural audio content.
+- Provides waveform synthesis helpers for common tonal and noise signal generation workflows.
+- Applies lightweight in-place transforms such as filtering, gain, and buffer mixing operations.
+- Exposes encode paths for export-ready WAV byte output from runtime sample data.
+- Supplies duration and shape queries for tools, previews, and script-side audio reasoning.
+- Bridges sample data to visual workflows through waveform drawing integration points.
+- Serves as the core raw sound-data container for playback and preprocessing pipelines.
 
 ### source.rs
 
-- `SpatialState` 3D position, velocity, and orientation for positional audio.
-- `AudioSource` basic metadata struct: ID, file path, volume, and looping flag.
-- Default spatial state: origin position, zero velocity, forward -Z / up +Y orientation.
+- Defines source-level audio metadata and spatial attributes used by mixer-side playback control.
+- Encapsulates position, velocity, and orientation state for positional and motion-aware rendering.
+- Stores identity and basic playback defaults that classify each loaded runtime source.
+- Serves as the foundational source contract shared across routing, playback, and spatialization paths.
 
 ## Lua API Ref
 
@@ -199,9 +209,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 
 ### Types
 
-
 #### LBeatClock Type
 
+- Lua-side wrapper for a musical beat clock.
 
 ##### Fields
 
@@ -245,9 +255,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LBeatClock:typeOf`: Returns whether this handle matches the given type name.
 - `LBeatClock:update`: Advances the clock by `dt` seconds and returns beat/bar transitions.
 
-
 #### LBus Type
 
+- Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
 
 ##### Fields
 
@@ -269,9 +279,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LBus:type`: Returns the type name of this object for runtime type-checking.
 - `LBus:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LDecoder Type
 
+- Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
 
 ##### Fields
 
@@ -292,9 +302,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LDecoder:type`: Returns the type name of this object for runtime type-checking.
 - `LDecoder:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LMidiPlayer Type
 
+- Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
 
 ##### Fields
 
@@ -353,9 +363,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LMidiPlayer:unsoloAll`: Removes solo from all channels, restoring normal playback.
 - `LMidiPlayer:useDefaultSoundFont`: Reverts to the built-in default SoundFont (stub, not yet implemented).
 
-
 #### LSoundData Type
 
+- Represents the Lua-visible LSoundData object exposed by this module.
 
 ##### Fields
 
@@ -374,9 +384,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LSoundData:type`: Returns the type name of this object for runtime type-checking.
 - `LSoundData:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LSoundPool Type
 
+- Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
 
 ##### Fields
 
@@ -393,9 +403,9 @@ Implementation detail and boundary guarantees for audio: this module keeps respo
 - `LSoundPool:type`: Returns the type name of this object for runtime type-checking.
 - `LSoundPool:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LSource Type
 
+- Lua-side wrapper around a loaded audio source (sound effect or music stream).
 
 ##### Fields
 

@@ -25,28 +25,28 @@ Logging is highly structured, allowing messages to carry not only severity level
 
 ### facade.rs
 
-- Structured log dispatch with level, tag, and key-value fields.
-- Runtime log-level query and mutation via string names.
-- Level-filter check without emitting a message.
+- Provides the structured logging facade used to emit level-tagged messages with fields.
+- Handles runtime level queries and updates while enforcing fast level gating before dispatch.
+- Exposes compact log-entry helpers consumed by Lua and Rust call sites.
 
 ### mod.rs
 
-- Structured logging facade with global level control and dispatch to registered sinks.
-- Rotating file sink and in-memory ring buffer for runtime log capture.
-- Level-gated emission so disabled messages cost near-zero.
+- High-level logging module that combines facade APIs with sink implementations.
+- Re-exports level control and sink types for centralized runtime log configuration.
+- Defines the boundary for structured log routing to memory and file backends.
 
 ### sinks.rs
 
-- Log severity levels and string parsing for sink-level filtering.
-- In-memory ring-buffer sink for captured log entries with structured fields.
-- Output format selection: plain text, JSON, and NDJSON line formats.
-- Timestamp and ANSI color formatting helpers for human-readable output.
-- Rotating file sink with configurable size limit and backup management.
-- Buffered write coalescing to reduce OS syscall frequency.
-- Tag-based allow-list filtering per sink instance.
-- Callback sink variant for Lua-side log dispatch.
-- Unified `Sink` abstraction combining level, format, and storage backend.
-- `SinkRegistry` for multi-sink dispatch of unstructured and structured messages.
+- Implements logging sink backends, severity filters, and output formatting infrastructure.
+- Defines sink-level enums and parsing rules used to gate message delivery.
+- Provides in-memory capture sinks for runtime inspection and diagnostic tooling.
+- Supports plain, JSON, and NDJSON output styles for machine and human consumers.
+- Manages timestamp and optional color formatting for readable terminal and file logs.
+- Implements rotating file sinks with size limits and backup retention control.
+- Uses buffered writes and filtering hooks to keep output efficient and configurable.
+- Offers callback-style sink integration for forwarding logs to external handlers.
+- Unifies sink behavior under shared abstractions for consistent dispatch semantics.
+- Exposes registry orchestration for broadcasting structured and plain messages to many sinks.
 
 ## Lua API Ref
 
@@ -80,7 +80,35 @@ Logging is highly structured, allowing messages to carry not only severity level
 
 ### Types
 
-- No documented module types.
+#### LLogListSinksResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Sink id.
+- `level` (`string`): Minimum log level.
+- `path` (`string?`): File path for file-backed sinks.
+- `type` (`string`): Sink type name.
+
+##### Methods
+
+- No documented methods.
+
+#### LLogReadMemoryResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `fields` (`table?`): Optional structured fields table.
+- `level` (`string`): Log level.
+- `message` (`string`): Log message.
+- `tag` (`string`): Log tag.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

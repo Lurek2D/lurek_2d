@@ -25,100 +25,104 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 
 ### algorithms.rs
 
-- Connected-component discovery via undirected BFS traversal.
-- Directed cycle detection using a three-color DFS walk.
-- Kahn-style topological sort with deterministic tie-breaking.
-- Kruskal minimum spanning forest using a union-find structure.
-- Greedy graph coloring with sorted node-id processing order.
-- Bipartiteness test through BFS two-coloring.
-- A* shortest-path search using Euclidean node-position heuristics.
-- All algorithms operate on the shared `Graph` adjacency representation.
+- Provides graph algorithm utilities for connectivity, ordering, coloring, and optimization analyses.
+- Implements traversal and cycle checks that reveal structural health of directed flow networks.
+- Supplies deterministic topological and spanning computations for planning and diagnostics workflows.
+- Includes coloring and bipartite checks for partitioning and compatibility reasoning.
+- Offers heuristic shortest-path search to support efficient route estimation over node geometry.
+- Operates directly on shared graph adjacency state to avoid duplicate model translations.
+- Delivers the analytical toolkit used to inspect and tune flownet topology behavior.
 
 ### core.rs
 
-- Graph container managing nodes, edges, and items with id-based lookup.
-- Adjacency indexes for fast outgoing and incoming edge queries.
-- Node CRUD with cascade removal of connected edges and displaced items.
-- Edge CRUD with transit capacity, cooldown, and type filtering.
-- Item lifecycle: creation, node placement (with overflow policy), transit, and removal.
-- Subgraph extraction preserving topology and item positions.
-- Aggregate stats computation across nodes and edges.
-- Direction-based edge queries (in, out, both).
-- Simple circular-layout image rendering for debug preview.
-- JSON-like serialize and deserialize for persistence.
+- Provides the central flownet graph container that owns nodes, edges, items, and adjacency indexes.
+- Manages full CRUD lifecycles with cascading cleanup to keep topology and item state coherent.
+- Tracks outgoing and incoming connectivity for efficient route and neighborhood queries.
+- Coordinates item creation, placement, transit, and removal under node and edge constraints.
+- Supports subgraph extraction and aggregate statistics for analysis and tooling pipelines.
+- Exposes directional query helpers that simplify traversal and simulation planning logic.
+- Includes debug-friendly serialization and preview output for inspection and persistence workflows.
+- Keeps id allocation and storage ownership centralized for deterministic graph mutation behavior.
+- Integrates overflow-aware placement paths that align with node policy semantics.
+- Delivers the authoritative data backbone consumed by algorithms, pathfinding, and simulation updates.
 
 ### edge.rs
 
-- Directed edge connecting two graph nodes with capacity, throughput, and cooldown constraints.
-- Type-based filtering restricts which items may transit an edge.
-- Supports bidirectional flag and per-edge speed/weight modifiers for pathfinding.
-- Captures functional behavior for edge so callers can compose this capability safely.
+- Provides flownet edge state that links nodes with transit limits, timing, and routing metadata.
+- Encodes capacity, throughput, cooldown, and filtering constraints that govern movement eligibility.
+- Supports directional and bidirectional semantics with pathfinding weight and speed modifiers.
+- Delivers the per-connection transport contract used by simulation and routing systems.
+- Keeps edge behavior explicit so tuning and diagnostics remain consistent across network updates.
 
 ### item.rs
 
-- Define `GraphItem` as the data carrier moved through graph nodes and edges.
-- Track item position (at node, in transit, or unplaced) via `ItemPosition`.
-- Provide decay-time lifetime, priority, and alive/dead state per item.
-- Captures functional behavior for item so callers can compose this capability safely.
+- Provides flownet item records that carry typed payload identity through nodes and transit edges.
+- Tracks location state as node-bound, in-transit, or unplaced to drive simulation decisions.
+- Stores decay lifetime, priority, and alive status for scheduling and cleanup behavior.
+- Delivers the movable unit model consumed by demand, conversion, and transport mechanics.
+- Keeps item lifecycle state centralized for deterministic flow simulation and event emission.
 
 ### mod.rs
 
-- Directed flownet container with typed nodes, edges, and item flow.
-- Supply/demand modeling, conversion rules, and overflow policies.
-- Pathfinding, simulation stepping, and event emission.
-- Render helpers for visual flownet output.
+- Provides the high-level flownet module boundary for graph flow modeling, simulation, and rendering support.
+- Connects nodes, edges, items, demand logic, routing, and update events into one runtime network surface.
+- Delivers a complete directed-flow toolkit for gameplay systems that model transport and transformation.
 
 ### node.rs
 
-- Node struct with id, type, capacity, inventory, and flow settings for graph simulation.
-- OverflowPolicy enum controlling behavior when a node reaches capacity: reject, destroy, or queue.
-- FlowMode enum defining automatic push, pull, or passive behavior during simulation steps.
-- ConversionRule, Supply, and Demand structs for item transformation and economic modeling.
-- Tag, queue, and item management methods on Node.
-- String-based FromStr parsing for policy and flow mode enums.
+- Provides flownet node modeling with capacity, inventory, policy, and flow-direction configuration.
+- Defines overflow behavior modes that govern how nodes handle arrivals beyond available space.
+- Encodes push and pull flow semantics used by simulation to move items across the graph.
+- Stores conversion, supply, and demand records for transformation and economic-style mechanics.
+- Exposes node-level queue and tag operations needed for runtime orchestration.
+- Parses textual policy and flow values into typed enums for resilient script integration.
+- Delivers the per-node behavior contract that anchors transport and conversion decisions.
 
 ### pathfinding.rs
 
-- Dijkstra shortest-path search over weighted directed graphs.
-- Item-type-aware pathfinding respecting edge filters and cooldowns.
-- Distance queries and bounded reachability flood-fill.
-- Neighbor discovery across active edges and bidirectional links.
-- Path reconstruction from predecessor maps into ordered node/edge lists.
-- Priority-queue state with min-cost ordering for traversal.
+- Provides flownet pathfinding operations that compute cheapest routes across weighted directed edges.
+- Respects edge activity, cooldown, and type filters so route output matches simulation constraints.
+- Supports distance and reachability queries for planning and demand-matching workflows.
+- Builds predecessor maps and reconstructs ordered node and edge paths for execution.
+- Uses priority-queue traversal for efficient shortest-path expansion under dynamic graph state.
+- Integrates neighbor discovery across directional and bidirectional connectivity patterns.
+- Delivers the routing layer used by supply movement and logistics decision systems.
 
 ### render.rs
 
-- Render a graph as a circular node-and-edge diagram via `RenderCommand` output.
-- Layout nodes evenly on a circle, draw edges as lines, color nodes by type.
-- Produce a self-contained command list suitable for the engine renderer.
+- Provides debug render-command generation that visualizes flownet topology as node-edge diagrams.
+- Lays out nodes on a circular frame and draws links with deterministic mapping.
+- Colors nodes by type to expose structural roles at a glance during inspection.
+- Delivers a self-contained preview command stream consumable by the renderer.
 
 ### simulation.rs
 
-- Graph simulation tick loop: `update`, `step`, and parallel variant.
-- Item decay processing: reduce remaining life, kill expired items, purge from all containers.
-- Edge transit progression: advance items along edges and resolve arrivals with overflow policy.
-- Push-flow mechanics: rate-limited emission of items from push-capable nodes onto outgoing edges.
-- Pull-flow mechanics: rate-limited demand of items into pull-capable nodes from source inventories.
-- Node conversion rules: consume matching inputs and produce typed outputs per recipe.
-- Queue processing: timed dequeue of waiting items into node inventories when capacity allows.
-- Overflow handling: reject, destroy, or queue items that arrive at full nodes.
-- Parallel simulation via rayon feature gate for large-graph workloads.
-- GraphEvent emission for every state transition observable by Lua scripts.
+- Provides the flownet simulation engine that advances transport, decay, conversion, and queue behavior per tick.
+- Processes item lifetimes and removes expired entities while preserving graph consistency guarantees.
+- Moves transit items along edges and resolves arrivals using each node's overflow policy.
+- Executes push and pull flow mechanics with rate-limited logic tied to node configuration.
+- Applies conversion rules that consume inputs and emit transformed output items at nodes.
+- Handles queued backpressure by promoting waiting items when capacity becomes available.
+- Emits structured simulation events for observable state transitions consumed by scripts.
+- Supports optional parallel stepping paths for larger network workloads under feature gating.
+- Coordinates sub-steps in deterministic order to keep outcomes reproducible across runs.
+- Delivers the runtime progression core for logistics-style gameplay simulation.
 
 ### supply_demand.rs
 
-- Priority-ordered demand matching against available supply nodes.
-- Pathfinding-based item routing from supplier to consumer.
-- Event emission on supply depletion and demand fulfillment.
-- Captures functional behavior for supply demand so callers can compose this capability safely.
+- Provides demand-processing logic that matches prioritized needs against available network supply.
+- Uses pathfinding to route produced items from supplier nodes toward consumer destinations.
+- Tracks fulfillment progress and decrements source supply quantities during transfer.
+- Emits simulation events that expose depletion and fulfillment transitions to observers.
+- Delivers the balancing layer that drives directed resource flow through the graph.
 
 ### types.rs
 
-- Shared type definitions for the flownet visual scripting graph.
-- `NodeId`, `PortId`, and `EdgeId` are newtype wrappers around `u32` for clarity.
-- `PortKind` distinguishes input/output and the value type carried (number, bool, any).
-- `NodeValue` is the runtime variant type flowing through edges at evaluation time.
-- All types are `Clone + Debug + PartialEq` to support undo-redo snapshotting.
+- Provides shared flownet identifier wrappers used to type node, edge, and item handles.
+- Encapsulates raw numeric ids in lightweight newtypes for clearer API contracts.
+- Supports conversion and display behavior needed across simulation and tooling call paths.
+- Delivers the common identity foundation for graph storage and cross-module interoperability.
+- Keeps handle semantics consistent so id usage remains safe and readable throughout flownet code.
 
 ## Lua API Ref
 
@@ -135,9 +139,9 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 
 ### Types
 
-
 #### LGraph Type
 
+- Lua-side graph handle storing graph state and registered event callbacks.
 
 ##### Fields
 
@@ -189,9 +193,9 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraph:typeOf`: Returns whether this graph handle matches a supported type name.
 - `LGraph:update`: Advances graph simulation by delta time and dispatches generated callbacks.
 
-
 #### LGraphEdge Type
 
+- Lua-side edge handle referencing one edge id inside a graph.
 
 ##### Fields
 
@@ -228,9 +232,58 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphEdge:type`: Returns the Lua-visible type name for this graph edge handle.
 - `LGraphEdge:typeOf`: Returns whether this graph edge handle matches a supported type name.
 
+#### LGraphFindPathForItemResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cost` (`number`): Total path cost.
+- `edges` (`LGraphEdge[]`): Path edges in order.
+- `nodes` (`LGraphNode[]`): Path nodes in order.
+
+##### Methods
+
+- No documented methods.
+
+#### LGraphFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cost` (`number`): Total path cost.
+- `edges` (`LGraphEdge[]`): Path edges in order.
+- `nodes` (`LGraphNode[]`): Path nodes in order.
+
+##### Methods
+
+- No documented methods.
+
+#### LGraphGetStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `activeEdges` (`integer`): Active edge count.
+- `activeNodes` (`integer`): Active node count.
+- `edges` (`integer`): Edge count.
+- `items` (`integer`): Item count.
+- `itemsInTransit` (`integer`): Items in transit.
+- `itemsOnNodes` (`integer`): Items on nodes.
+- `nodes` (`integer`): Node count.
+- `queuedItems` (`integer`): Queued item count.
+- `totalDemand` (`integer`): Total demand.
+- `totalSupply` (`integer`): Total supply.
+
+##### Methods
+
+- No documented methods.
 
 #### LGraphItem Type
 
+- Lua-side item handle referencing one item id inside a graph.
 
 ##### Fields
 
@@ -251,9 +304,9 @@ The module runs an intricate simulation pipeline (`step(dt)`) that processes ite
 - `LGraphItem:type`: Returns the Lua-visible type name for this graph item handle.
 - `LGraphItem:typeOf`: Returns whether this graph item handle matches a supported type name.
 
-
 #### LGraphNode Type
 
+- Lua-side node handle referencing one node id inside a graph.
 
 ##### Fields
 

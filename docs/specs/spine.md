@@ -25,52 +25,58 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ### bone.rs
 
-- Bone struct holding local and accumulated world-space transform.
-- Parent-child hierarchy via optional parent index.
-- Constructors for root bones and parented child bones.
+- This file defines the skeletal bone unit that carries local pose data and resolved world transform state.
+- Parent linkage is part of the model so chains of motion can propagate naturally through a hierarchy.
+- The type exists as the core transform-bearing element for the rest of the spine animation system.
+- It is where local intent becomes world-space pose context for attached visuals and constraints.
 
 ### ik.rs
 
-- Two-bone inverse-kinematics constraint for skeleton animation.
-- Solves root and elbow rotations via law-of-cosines to reach a world-space target.
-- Supports configurable bend direction (positive or negative).
+- This file implements the focused inverse-kinematics solver used when a short bone chain should reach toward a target automatically.
+- It computes joint angles from geometric constraints instead of relying only on keyed animation values.
+- Bend direction is part of the constraint so mirrored or elbow-up versus elbow-down poses can be chosen intentionally.
+- The file adds procedural responsiveness to otherwise keyframed skeletal motion.
+- It is the module's compact answer to target-seeking limb behavior.
 
 ### mod.rs
 
-- Skeletal animation runtime: bones, slots, IK, timelines, and pose blending.
-- Hierarchical bone transforms with parent-relative computation.
-- Keyframe-driven animation clips with easing and interpolation.
-- Skeleton-level render assembly converting posed bones to draw commands.
+- This module provides the engine's skeletal animation runtime built around bones, slots, timelines, constraints, and posed rendering support.
+- It turns hierarchical transform animation into a reusable feature system for articulated 2D characters and props.
+- At the highest level this is the subsystem that gives the engine pose-driven animation instead of only frame-swapped sprites.
 
 ### render.rs
 
-- Convert a Skeleton's bone and slot state into a flat list of RenderCommands.
-- Draw bones as filled circles at world positions with slot-derived colors.
-- Draw slot attachments as outline rectangles around their parent bone.
+- This file converts a posed skeleton into renderer-facing commands for debug or simplified skeletal visualization.
+- Bone and slot state are flattened here into ordinary draw operations so the rest of the renderer does not need skeleton awareness.
+- The output emphasizes readable structure over full attachment rendering complexity.
+- It is the handoff layer from skeletal pose data to generic draw command streams.
 
 ### skeleton.rs
 
-- Skeleton struct holding bones, slots, animations, IK constraints, skins, and playback state.
-- Bone and slot management: add, find by name, query world transforms.
-- Animation playback: start/stop clips, advance time, loop or clamp at duration.
-- IK constraint registration and per-frame solving against bone poses.
-- Skin system: register skins, switch active skin, map attachments per slot.
-- World-transform recomputation traversing bones in parent-before-child order.
-- Debug visualization: rasterise skeleton bones and slot markers into ImageData.
+- This file implements the main skeleton container that holds the full moving rig, visual attachment points, animations, and runtime playback state.
+- Bones and slots are managed together here because final pose evaluation must understand both transform hierarchy and attachment ownership.
+- Animation playback advances in this file, including looping, clamping, blending, and application of sampled values onto the rig.
+- Constraint solving and skin switching are also coordinated here so procedural adjustments and visual variants act on the same live structure.
+- World transforms are recomputed in hierarchy order, which keeps every downstream query grounded in one authoritative pose.
+- Debug drawing support is included because skeletal systems are much easier to tune when their invisible structure can be inspected directly.
+- The file is therefore the runtime brain of the spine subsystem rather than a passive data container.
+- It is where skeletal state becomes animated pose over time.
 
 ### slot.rs
 
-- Slot struct: named attachment point on a bone with RGBA tint and optional texture reference.
-- Constructor defaults to white opaque colour, no attachment, and draw-order zero.
-- Draw-order field drives back-to-front rendering when multiple slots share a bone.
+- This file defines the slot concept that binds visible attachments to bones without making the bone itself a rendering record.
+- Slots carry appearance and ordering intent so one skeleton can swap visuals or reorder layers without changing its transform hierarchy.
+- The type is the visual attachment bridge between pose evaluation and rendered character parts.
 
 ### timeline.rs
 
-- Easing curves (linear, quadratic in/out, step) for inter-keyframe interpolation.
-- Keyframe storage and sorted insertion for bone property timelines.
-- BoneTimeline evaluation with clamping and step-hold semantics.
-- Event keyframes fired at specific animation times for Lua callback dispatch.
-- SkeletonAnimation clip: multi-timeline playback, blending, reversal, and JSON parsing.
+- This file defines the animation timeline machinery that turns keyed values over time into sampled pose changes for a skeleton.
+- Interpolation curves live here so motion can feel stepped, smooth, weighted, or otherwise shaped between authored keys.
+- Bone-property timelines are stored and evaluated here because timing semantics should remain consistent across all clips.
+- Event keyframes share the same temporal framework, which lets animation playback trigger gameplay or audio markers at controlled moments.
+- Full animation clips are assembled from many timelines and can be sampled, blended, reversed, or parsed from serialized sources.
+- The file is therefore the temporal logic center of the spine subsystem.
+- It explains how authored motion unfolds, not just what a static pose looks like.
 
 ## Lua API Ref
 
@@ -89,9 +95,9 @@ The module also supports extensive customization and event handling. The Skin sy
 
 ### Types
 
-
 #### LSkeleton Type
 
+- Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
 
 ##### Fields
 
@@ -125,9 +131,9 @@ The module also supports extensive customization and event handling. The Skin sy
 - `LSkeleton:updateAnimation`: Advances the current animation by a delta time, applying bone transforms to the skeleton.
 - `LSkeleton:updateWorldTransforms`: Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 
-
 #### LSkeletonAnimation Type
 
+- Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
 
 ##### Fields
 
@@ -144,6 +150,49 @@ The module also supports extensive customization and event handling. The Skin sy
 - `LSkeletonAnimation:reverse`: Creates a new animation that plays this animation's keyframes in reverse order.
 - `LSkeletonAnimation:type`: Returns the type name of this userdata object.
 - `LSkeletonAnimation:typeOf`: Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
+
+#### LSkeletonAnimationGetEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `name` (`string`): Event name.
+- `value` (`number`): Event value.
+
+##### Methods
+
+- No documented methods.
+
+#### LSkeletonAnimationPoseAtResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bone_idx` (`integer`): Bone index.
+- `property` (`string`): Property name.
+- `value` (`number`): Property value.
+
+##### Methods
+
+- No documented methods.
+
+#### LSkeletonGetBoneWorldResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `rotation` (`number`): Rotation in degrees.
+- `scale_x` (`number`): Horizontal scale.
+- `scale_y` (`number`): Vertical scale.
+- `x` (`number`): X position.
+- `y` (`number`): Y position.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

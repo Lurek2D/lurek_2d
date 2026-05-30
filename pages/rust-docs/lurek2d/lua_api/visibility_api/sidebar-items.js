@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["register"]};
+window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaTileFov"]};

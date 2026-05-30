@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["bandit","genetic","neural_net","neuroevolution","qlearner"]};
+window.SIDEBAR_ITEMS = {"mod":["attention","bandit","conv","engine","env","evolutionary","genetic","neural_net","neuroevolution","onnx","qlearner","recurrent","tensor","transformer"]};

@@ -26,98 +26,102 @@ Beyond raw transport, the module implements high-level game synchronization feat
 ### constants.rs
 
 - Numeric limits for peer connections, channels, and buffer sizes.
-- Default fallback values when game config omits network parameters.
-- Timeout durations for HTTP and transport-level operations.
+- Provides default fallback values when game config omits network settings.
+- Holds timeout durations for HTTP and transport-level operations.
 
 ### error.rs
 
-- Unified error enum for all network subsystem failures.
+- Unified error type for all network subsystem failures.
 - Covers socket I/O, ENet, HTTP, WebSocket, TCP, and threading faults.
-- Integrates with `thiserror` for automatic `Display` and `From` impls.
+- Integrates with thiserror for automatic Display and From implementations.
 
 ### host.rs
 
-- ENet host wrapper owning a non-blocking UDP socket and all peer slots for one endpoint.
-- Host role classification (Server, Client, combined Host) for session routing.
-- Event-driven poll loop yielding Connect, Disconnect, and Receive events.
-- Connection lifecycle: initiate, graceful disconnect, forced disconnect, and reset.
-- Unicast and broadcast packet sending with reliable or unreliable delivery.
-- Peer diagnostics: round-trip time, connection state, address, and full statistics snapshot.
-- Bandwidth and channel limit configuration at runtime.
-- Convenience constructors for common server and client bind patterns.
+- ENet host wrapper owning a non-blocking UDP socket and peer slots for one endpoint.
+- Classifies the host role as server, client, or combined host for session routing.
+- Runs the event poll loop that yields connect, disconnect, and receive events.
+- Manages connection lifecycle, packet delivery, and reset flows.
+- Exposes peer diagnostics such as round-trip time, state, address, and statistics.
+- Lets callers tune bandwidth and channel limits at runtime.
+- Provides convenience constructors for common server and client bind patterns.
+- Acts as the low-level connection anchor for the multiplayer stack.
 
 ### http.rs
 
-- Synchronous HTTP client built on `ureq` for GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
-- Configurable per-request timeout via agent builder.
-- Unified `HttpResponse` captures status, body, headers, and optional error message.
+- Synchronous HTTP client built on ureq for common request verbs.
+- Supports per-request timeout configuration through the agent builder.
+- Returns a unified response object with status, body, headers, and error text.
+- Keeps the API small so game code can fetch remote data without async setup.
+- Fits simple request/response workflows inside scripts and engine tools.
 
 ### lobby.rs
 
-- LAN lobby discovery via timed UDP broadcast listen on a fixed port.
-- Lobby advertisement encoding and parsing in a `key=value;...` wire format.
-- In-process room registry for create, join, leave, and list operations.
-- Broadcast helper that sends a single SO_BROADCAST datagram on all interfaces.
-- Deduplication of discovered lobbies by host+port during the scan window.
+- LAN lobby discovery via timed UDP broadcast on a fixed port.
+- Encodes and parses lobby advertisements in a compact key-value wire format.
+- Maintains an in-process room registry for create, join, leave, and list flows.
+- Sends one broadcast datagram across all interfaces when scanning starts.
+- Deduplicates discovered lobbies by host and port during the scan window.
 
 ### message.rs
 
-- Wire-format value type (`NetValue`) mirroring Lua's dynamic type system for cross-peer messaging.
-- MessagePack serialization and deserialization via `pack`/`unpack`.
-- Zero-allocation size estimation for budget checks before sending.
+- Wire-format value type mirroring Lua's dynamic type system for peer messaging.
+- Uses MessagePack serialization and deserialization for packed transport.
+- Provides zero-allocation size estimation before a message is sent.
 
 ### mod.rs
 
-- Multiplayer networking: TCP, WebSocket, and relay transports with binary message framing.
-- Host/client model with lobby state machine, peer management, and game-state sync.
-- Background async runtime (Tokio) for non-blocking socket I/O and HTTP helpers.
+- Multiplayer networking across TCP, WebSocket, relay, and HTTP helpers.
+- Hosts the host/client model, lobby flow, peer management, and game-state sync.
+- Runs the background async runtime for non-blocking socket I/O.
 
 ### net_sync.rs
 
 - Entity snapshot capture and wire serialization for networked state.
-- Linear dead-reckoning prediction between ticks.
-- Server-authoritative reconciliation with configurable blend factor.
+- Supports linear dead-reckoning prediction between ticks.
+- Handles server-authoritative reconciliation with a configurable blend factor.
+- Gives the multiplayer stack a compact sync model for replicated actors.
 
 ### net_thread.rs
 
-- Background network thread that owns all blocking I/O (HTTP, TCP, WebSocket).
-- MPSC request/response channels isolate the game thread from socket latency.
-- `NetworkRequest` enum drives HTTP fetches, TCP streams, and WebSocket frames.
-- `NetworkResponse` carries completed results and lifecycle events back to the game loop.
-- `TcpEvent` / `WsEvent` model connection state machines (connect, data, close, error).
-- `NetworkRuntime` struct spawns the thread, assigns IDs, and exposes typed helpers.
-- 10 ms poll loop processes transports and drains the request channel.
-- Graceful shutdown closes all connections and joins the thread on drop.
-- Correlation IDs let the game thread match responses to outstanding requests.
+- Background network thread that owns all blocking I/O for HTTP, TCP, and WebSocket work.
+- Uses MPSC request and response channels to keep the game thread isolated from latency.
+- Drives transport activity through typed request and response enums.
+- Models connection state with explicit TCP and WebSocket event types.
+- Spawns, polls, and shuts down the runtime while preserving request ordering.
+- Routes completed results back with correlation ids for outstanding work.
+- Keeps the blocking transport surface off the main loop.
 
 ### relay.rs
 
-- Relay ticket encoding and decoding for room+peer identification over the wire.
-- UDP hole-punch probe construction and parsing with a magic prefix.
-- Lightweight helpers for relay-based NAT traversal signalling.
+- Relay ticket encoding and decoding for room and peer identification.
+- Builds UDP hole-punch probe payloads with a magic prefix.
+- Provides lightweight helpers for relay-based NAT traversal signalling.
 
 ### sse.rs
 
-- Server-Sent Events (SSE) stream reader.
-- Uses a background thread to read events from an HTTP SSE endpoint.
-- `SseStream::connect` spawns a reader thread that parses SSE frames and sends them over a channel.
-- `SseStream::next` polls for the next event without blocking.
-- `SseStream::collect` is a blocking helper for gathering a fixed number of events.
-- See `docs/specs/network.md` for the full SSE API specification.
+- Server-Sent Events stream reader for HTTP event endpoints.
+- Uses a background thread to parse frames and forward them through a channel.
+- Offers non-blocking polling plus a blocking collect helper for batched reads.
+- Keeps live event streams separate from the main game thread.
+- Fits long-lived event feeds that should not stall gameplay.
+- Exposes a simple streaming shape for push-based remote updates.
 
 ### tcp.rs
 
 - Non-blocking TCP connection pool for the background network thread.
-- Round-robin polling across all active streams with event-based notification.
-- Connect, send, close, and bulk-poll operations with automatic error cleanup.
+- Uses round-robin polling across all active streams with event-based notification.
+- Supports connect, send, close, and bulk-poll operations with automatic cleanup.
+- Keeps stream management simple for the threaded network runtime.
+- Serves as the pooled TCP transport layer for multiplayer I/O.
 
 ### websocket.rs
 
-- Manage a pool of active WebSocket connections keyed by caller-assigned ID.
-- Spawn background threads for TLS/TCP handshakes so connect never blocks the game loop.
-- Non-blocking poll loop reads text, binary, and close frames from all live sockets.
-- Send text or binary frames, and perform graceful close with drain semantics.
-- Post all connection lifecycle events (open, message, error, close) through an MPSC channel.
+- Pool of active WebSocket connections keyed by caller-assigned id.
+- Spawns background threads for TLS and TCP handshakes so connect never blocks the game loop.
+- Polls live sockets for text, binary, and close frames without blocking.
+- Sends text or binary frames and performs graceful close with drain semantics.
+- Posts connection lifecycle events through an MPSC channel.
+- Keeps WebSocket transport behaviour isolated from game-thread timing.
 
 ## Lua API Ref
 
@@ -154,9 +158,57 @@ Beyond raw transport, the module implements high-level game synchronization feat
 
 ### Types
 
+#### LNetworkCreateLobbyResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `max_players` (`integer`): Maximum players allowed.
+- `name` (`string`): Lobby name.
+- `player_count` (`integer`): Current player count.
+- `port` (`integer`): Port number.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkCreateRoomResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `id` (`string`): Room identifier.
+- `max_players` (`integer`): Maximum allowed players.
+- `name` (`string`): Room name.
+- `player_count` (`integer`): Current player count.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkDiscoverLobbiesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `max_players` (`integer`): Maximum allowed players.
+- `name` (`string`): Lobby name.
+- `player_count` (`integer`): Current player count.
+- `port` (`integer`): Host port.
+
+##### Methods
+
+- No documented methods.
 
 #### LNetworkHost Type
 
+- Lua-side wrapper for a network host.
 
 ##### Fields
 
@@ -194,9 +246,153 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `LNetworkHost:type`: Returns the Lua-visible type name for this network host handle.
 - `LNetworkHost:typeOf`: Returns whether this network host handle matches a supported type name.
 
+#### LNetworkHostGetBandwidthLimitResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `incoming` (`integer`): Incoming bandwidth limit.
+- `outgoing` (`integer`): Outgoing bandwidth limit.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkHostGetPeerStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `packet_loss` (`number`): Packet loss ratio.
+- `packets_lost` (`integer`): Packets lost.
+- `packets_sent` (`integer`): Packets sent.
+- `round_trip_time` (`number`): Round-trip time in ms.
+- `round_trip_time_variance` (`number`): RTT variance.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkHostServiceResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `channel_id` (`integer?`): Channel index for receive events.
+- `data` (`any`): Connection data or receive payload.
+- `peer_id` (`integer`): Peer id.
+- `type` (`string`): Event type (connect, disconnect, receive).
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkJoinRoomResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `id` (`string`): Room id.
+- `max_players` (`integer`): Maximum allowed players.
+- `name` (`string`): Room name.
+- `player_count` (`integer`): Current player count.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkLeaveRoomResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `id` (`string`): Room id.
+- `max_players` (`integer`): Maximum allowed players.
+- `name` (`string`): Room name.
+- `player_count` (`integer`): Current player count.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkListRoomsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `max_players` (`integer`): Maximum allowed players.
+- `name` (`string`): Room name.
+- `player_count` (`integer`): Current player count.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkParseRelayTicketResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Id.
+- `peer_id` (`string`): Peer identifier.
+- `room_id` (`string`): Room identifier.
+- `tick` (`integer`): Tick number.
+- `vx` (`number`): Velocity X.
+- `vy` (`number`): Velocity Y.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkPredictLinearResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Id.
+- `tick` (`integer`): Tick number.
+- `vx` (`number`): Velocity X.
+- `vy` (`number`): Velocity Y.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkReconcileSnapshotResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Id.
+- `tick` (`integer`): Tick number.
+- `vx` (`number`): Velocity X.
+- `vy` (`number`): Velocity Y.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LNetworkRuntime Type
 
+- Lua-side wrapper for the background network runtime.
 
 ##### Fields
 
@@ -220,9 +416,42 @@ Beyond raw transport, the module implements high-level game synchronization feat
 - `LNetworkRuntime:wsConnect`: Opens a WebSocket connection. This method is available to Lua scripts.
 - `LNetworkRuntime:wsSend`: Sends text over a WebSocket connection.
 
+#### LNetworkRuntimePollResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `body` (`string?`): HTTP response body.
+- `headers` (`table?`): HTTP response headers.
+- `id` (`integer?`): TCP/WS connection id.
+- `request_id` (`integer?`): HTTP request id.
+- `status` (`integer?`): HTTP status code.
+- `type` (`string`): Response type (http, tcp, ws).
+
+##### Methods
+
+- No documented methods.
+
+#### LNetworkUnpackResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `host` (`string`): Host address.
+- `max_players` (`integer`): Maximum players allowed.
+- `name` (`string`): Lobby name.
+- `player_count` (`integer`): Current player count.
+- `port` (`integer`): Port number.
+
+##### Methods
+
+- No documented methods.
 
 #### LSseStream Type
 
+- Lua userdata wrapping an `SseStream` with an optional stored callback.
 
 ##### Fields
 

@@ -25,37 +25,37 @@ Furthermore, the module includes a sophisticated `completer` that offers tab com
 
 ### commands.rs
 
-- Declares `ReplCommand` enum for the five built-in colon commands: `:help`, `:quit`, `:clear`, `:reset`, and `:load <path>`.
-- `display_text` returns a short human-readable confirmation string for each command variant.
-- Command data only; dispatch logic and Lua eval live in `session.rs`.
+- This file defines the small command language for colon-prefixed REPL control actions.
+- It keeps command intent separate from evaluation logic so parsing and execution stay cleanly divided.
+- The result is a lightweight vocabulary for session management layered on top of ordinary Lua input.
 
 ### completer.rs
 
-- Provides `complete_prefix` for tab completion against a static pool and live Lua globals.
-- Static pool includes Lua keywords, built-in globals, standard libraries, colon commands, and all `lurek.*` sub-namespaces.
-- Dynamic branch resolves a dot-separated path through Lua globals and collects matching key names.
-- Output is sorted and deduplicated; callers pass `None` for the Lua handle when no VM is available.
+- This file implements completion for interactive REPL input so partially typed commands can expand into useful candidates.
+- Suggestions come from both a static knowledge base of Lua and engine names and the live global environment of the current VM.
+- Dot-path completion is resolved step by step, which makes nested tables and engine namespaces feel navigable from the prompt.
+- Candidate output is normalized and deduplicated so the REPL can present stable suggestions instead of noisy raw table keys.
+- The file therefore acts as the discoverability layer of the REPL, helping users explore available runtime symbols while typing.
 
 ### mod.rs
 
-- Exports the release-safe Lua REPL core: session, commands, completer, and value formatter.
-- Re-exports top-level symbols for convenient use by `lua_api` bindings and `devtools`.
-- All REPL state is pure Rust with no wgpu or winit dependencies; safe for headless and test contexts.
+- This module provides the headless REPL stack for evaluating Lua, formatting results, and assisting interactive input.
+- It keeps the feature independent from rendering concerns so terminals, tests, and tools can all reuse the same session core.
+- At the top level this is the engine's embeddable interactive console backend rather than a UI implementation.
 
 ### session.rs
 
-- Implements `ReplSession`, a stateful Lua evaluator with bounded command history.
-- `ReplResult` captures value output, silent success, structured error text, or a parsed colon command.
-- Eval dispatches colon commands first; expression input tries `return <input>` then falls back to statement execution.
-- History is capped at `max_history` entries; oldest entries are evicted when the cap is reached; default capacity is 200.
-- `:load` reads a file from disk and executes it inside the current Lua VM, returning a command or error result.
-- Session state is pure Rust; the Lua reference is borrowed per call and never stored on the struct.
+- This file implements the stateful heart of the REPL, where input is recorded, classified, and evaluated against a caller-supplied Lua VM.
+- It distinguishes between command-style control input and ordinary Lua text so one prompt can manage both session behavior and code execution.
+- Expression-first evaluation keeps interactive probing ergonomic while still falling back to statement execution for longer snippets.
+- Command history is bounded and owned by the session, which keeps repeated use predictable without leaking VM references across calls.
+- The file is therefore the operational core that makes the REPL feel persistent and interactive while remaining headless and embeddable.
 
 ### value.rs
 
-- Converts a single `mlua::Value` to a display string for REPL and headless stdout output.
-- Covers all Lua value kinds; opaque types like tables and functions return fixed angle-bracket labels.
-- Error values include the Lua error message; nil returns the literal string `"nil"`.
+- This file turns raw Lua values into stable human-readable text for REPL output and other headless inspection paths.
+- It gives every major Lua value kind a display strategy, including opaque runtime objects that cannot sensibly print their full internals.
+- The formatter is tuned for readable interactive feedback rather than lossless serialization of Lua state.
 
 ## Lua API Ref
 
@@ -72,9 +72,9 @@ Furthermore, the module includes a sophisticated `completer` that offers tab com
 
 ### Types
 
-
 #### LReplSession Type
 
+- Lua-side REPL session handle with bounded history.
 
 ##### Fields
 

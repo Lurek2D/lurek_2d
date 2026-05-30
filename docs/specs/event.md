@@ -29,25 +29,27 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 
 ### event_queue.rs
 
-- Dual-priority FIFO event queue (high and normal) with priority-based polling.
-- Event payload types supporting string, number, boolean, nil, and shallow tables.
-- Condvar-based blocking wait with optional timeout for thread synchronization.
-- Lua value conversion utilities for copying event payloads across the Rust-Lua boundary.
-- Table key and value marshalling with shallow-copy semantics.
-- Captures functional behavior for event queue so callers can compose this capability safely.
+- Provides a dual-priority FIFO event queue that dispatches high-priority items before normal traffic.
+- Defines portable event payload shapes that carry scalar and shallow table data across boundaries.
+- Supports blocking wait semantics with timeout control for synchronized producer-consumer patterns.
+- Converts queued payloads between Rust and Lua value domains using predictable marshalling rules.
+- Preserves insertion order inside each priority lane to keep event flow behavior deterministic.
+- Encapsulates push, poll, peek, and wait operations in one reusable runtime messaging primitive.
+- Delivers the queue core used by event-driven systems that need ordered asynchronous signaling.
 
 ### mod.rs
 
-- Priority queue with ordered dispatch and Lua payload conversion for runtime events.
-- Name-based and wildcard signal subscriptions for decoupled communication.
-- Re-exports `EventQueue`, `Event`, `EventArg`, `EventPriority`, and signal types.
+- Provides the high-level event module boundary for queued dispatch and signal-based subscription routing.
+- Connects payload conversion, priority handling, and listener registration into one communication layer.
+- Delivers a stable event-facing surface for systems that need decoupled runtime messaging.
 
 ### signal.rs
 
-- Named signal subscription registry with exact-name and wildcard pattern matching.
-- Handle-based subscribe/remove lifecycle with monotonic id allocation.
-- Glob-style wildcard matching (`*`, `?`) for pattern subscriptions.
-- Captures functional behavior for signal so callers can compose this capability safely.
+- Provides named signal subscription storage with support for exact and wildcard pattern matching.
+- Allocates stable handle ids so listeners can be removed or inspected through explicit lifecycle control.
+- Resolves matching subscribers with deterministic behavior for both direct names and glob-style patterns.
+- Exposes snapshot-friendly query helpers that aid runtime diagnostics and tooling inspection.
+- Delivers the subscription registry used by event publishers to find active listeners efficiently.
 
 ## Lua API Ref
 
@@ -79,9 +81,22 @@ Implementation detail and boundary guarantees for event: this module keeps respo
 
 ### Types
 
+#### LEventGetHistoryResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `args` (`table`): Event arguments array.
+- `name` (`string`): Event name.
+
+##### Methods
+
+- No documented methods.
 
 #### LSignal Type
 
+- Lua-side signal object storing subscriptions and Lua callback registry keys.
 
 ##### Fields
 

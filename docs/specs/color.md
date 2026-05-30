@@ -27,35 +27,33 @@ As a foundations module, its APIs should remain small, explicit, and determinist
 
 ### blend.rs
 
-- Colour blending helpers: linear interpolation and compositing operations.
-- `lerp_color` — interpolates two RGBA colours by factor `t` (clamped 0–1).
-- Used internally by tween, particle, and effect systems for smooth transitions.
-- All operations stay in `[u8; 4]` RGBA to avoid intermediate float allocations.
+- Implements color blending helpers for interpolation and compositing-style channel math.
+- Provides clamped linear interpolation between RGBA values for smooth visual transitions.
+- Keeps operations lightweight and deterministic for per-frame use in effects and tween flows.
+- Serves as the core blend-utility layer consumed by rendering-adjacent systems.
 
 ### color_core.rs
 
-- Core colour conversion and manipulation: RGB, HSL, HSV, and hex parsing.
-- `hsl_to_rgb` / `hsv_to_rgb` — convert hue-based spaces to RGBA bytes.
-- `parse_hex_color` — parses `#RGB`, `#RRGGBB`, `#RRGGBBAA` strings.
-- `rgba_to_hex` — serialises an RGBA byte array to a `#RRGGBBAA` string.
-- All public functions are pure and allocation-free where possible.
-- Exposed to Lua via `lurek.color.*` through `color_api.rs`.
+- Implements core color representation and conversion utilities across RGB, HSL, and HSV domains.
+- Parses hex color strings into structured channel values with support for common shorthand forms.
+- Serializes RGBA channel values back to canonical hexadecimal text for interchange and debugging.
+- Provides pure color-space transforms suitable for runtime use without hidden global state.
+- Exposes stable conversion behavior reused by palettes, blending, and Lua-visible color APIs.
+- Serves as the foundational color math and parsing layer for the full color module.
 
 ### mod.rs
 
-- RGBA color types, palettes, blending, and color-space conversions.
-- Linear RGBA float color with named constants and brand palette.
-- Color-space transforms: RGB↔HSL, HSV→RGB, sRGB gamma↔linear.
-- Predefined palettes: CSS named colors, retro consoles, game-dev common.
-- Blending modes: lerp, multiply, screen, overlay, additive.
+- Defines the color module boundary for channel types, conversion logic, palettes, and blending helpers.
+- Groups core color math and curated palette sources into one reusable runtime surface.
+- Serves as the composition entry for engine-side and Lua-side color workflows.
 
 ### palette.rs
 
-- Named colour palettes: retro console, web-safe, and designer presets.
-- `retro` sub-module provides PICO-8, Game Boy, CGA, and ZX Spectrum palettes.
-- Each palette is a static `&[&str]` of hex strings; no heap allocation.
-- Exposed to Lua via `lurek.color.palette.*`.
-- Palettes are additive — new sets can be registered via the Lua API.
+- Implements named color-palette collections for retro, utility, and designer-oriented presets.
+- Stores curated palette definitions as static data for low-overhead runtime access.
+- Provides lookup and conversion helpers that map palette entries into structured color values.
+- Supports extension flows where new palette sets can be surfaced through higher API layers.
+- Serves as the canonical palette source used by rendering tools and script-facing color features.
 
 ## Lua API Ref
 

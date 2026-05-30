@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["chart","containers","context","controls","data_graph_renderer","extras","layout_loader","render","theme","widget"]};
+window.SIDEBAR_ITEMS = {"mod":["containers","context","controls","data_graph_renderer","extras","layout_loader","render","theme","widget"]};

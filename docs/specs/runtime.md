@@ -33,87 +33,95 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 
 ### config.rs
 
-- Runtime configuration types parsed from `conf.toml` at engine startup.
-- Top-level `Config` struct with sections for window, renderer, modules, and performance.
-- Feature-toggle table (`ModulesConfig`) controlling which engine subsystems are loaded.
-- Dependency validation that auto-disables modules when prerequisites are off.
-- TOML merge logic: user overrides are layered on top of built-in defaults.
-- Serde-based serialization for round-trip configuration persistence.
+- This file defines the typed runtime configuration model that turns human-edited TOML into engine startup policy.
+- It gathers window, renderer, module, performance, and environment-facing options into one coherent structure.
+- Default values and user overrides meet here, which lets the engine begin from a known baseline and then absorb project-specific changes.
+- Module toggles are not merely flags in this file.
+- They also participate in dependency validation so invalid feature combinations degrade into a supported runtime shape.
+- Serialization support matters here because configuration is both loaded from disk and, in some workflows, written back or inspected programmatically.
+- The design is intentionally declarative so callers can reason about engine behavior before subsystems are even initialized.
+- This file therefore acts as the contract between external project configuration and internal runtime setup.
+- Many startup decisions appear later in code, but their authoritative knobs are described here.
+- In practice this is the runtime's policy schema expressed as Rust data.
 
 ### error.rs
 
-- Defines `EngineError` — the engine-wide error enum covering all subsystem failures.
-- Provides `ErrorCategory` for high-level failure classification (init, runtime, resource, script, filesystem, system).
-- Assigns stable machine-readable error codes (`E1001`–`E1012`) and recovery hints per variant.
-- Exposes `ErrorSnapshot` for serializable log/UI output with compact JSON encoding.
-- Supplies the `EngineResult<T>` convenience alias used throughout the runtime.
+- This file centralizes engine failure reporting so subsystems can surface problems through one shared error vocabulary.
+- Variants are grouped by operational meaning as well as by source, which helps logs, tools, and UI distinguish recovery paths.
+- Stable codes and snapshot forms exist here because runtime failures must remain readable both to humans and to external automation.
+- The convenience result alias keeps the rest of the codebase aligned with the same error contract.
+- In effect this file is the runtime's common language for things going wrong.
 
 ### headless.rs
 
-- Implements the no-window headless runtime path for script automation and CI use.
-- `HeadlessOptions` carries game directory, eval snippets, and an optional frame-count override.
-- `run_headless` maps engine errors to process exit codes; `run_headless_checked` preserves structured errors for test callers.
-- Init sequence installs a stdout-routed `print` global and prepends game-directory roots to `package.path`.
-- Frame loop drives `process_physics`, `fixedUpdate`, `process`, and `process_late` in order; count and dt come from config or CLI flag.
-- Callback timeout is enforced via Lua instruction-count hooks when a limit is configured in `PerformanceConfig`.
+- This file implements the runtime path for executing games and scripts without opening a window or interactive frontend.
+- It exists for automation, tests, batch jobs, and command-line workflows that still need the engine lifecycle to run correctly.
+- Startup wiring here prepares the Lua environment, script roots, and output behavior so headless sessions still feel like real engine sessions.
+- Frame stepping follows the normal update rhythm closely enough that gameplay logic can be exercised without a graphical loop.
+- Error mapping is also handled here because command-line callers need process-oriented outcomes while tests may need structured failures.
+- The file is therefore the engine's bridge from full runtime behavior to non-visual execution contexts.
 
 ### log_messages.rs
 
-- Stable, structured log message identifiers for all engine subsystems.
-- Each constant provides a short code (e.g. "L001") used as prefix in log output.
-- Identifiers grouped by domain: L=lifecycle, A=audio, G=graphics, P=physics, FS=filesystem.
-- Additional prefixes: AN=animation, EN=ECS, TM=tilemap, SV=save, SC=scene, TH=thread, PF=pathfind.
-- Extended prefixes: MD=mods, NW=network, PL=pipeline, AT=automation, CP=compute, SR=serial, GU=GUI.
-- Runtime log level control via set_log_level/get_log_level with atomic override.
-- log_msg! macro for consistent formatted log output with message lookup.
-- Codes are stable across versions for log parsing, alerting, and external tool integration.
+- This file defines the stable identifier layer for engine logs so messages can be grouped, filtered, and recognized across versions.
+- Codes are organized by subsystem domain rather than by source file, which makes operational analysis easier than raw string logs alone.
+- The constant catalog gives every log site a compact symbolic handle that remains readable in terminals and machine parsers.
+- Log level overrides also live here because message identity and message visibility are tightly related runtime concerns.
+- The supporting macro turns those codes into consistent formatted output without forcing every call site to rebuild the same pattern.
+- Stability is a design goal of this file.
+- External tools, tests, and support workflows can rely on these identifiers without scraping fragile prose.
+- The file therefore acts as the diagnostic index of the engine rather than just a pile of string constants.
+- It gives the runtime a structured logging spine that other modules can lean on.
+- When logs matter for debugging or automation, this is where their shared vocabulary begins.
 
 ### messages.rs
 
-- Embedded TOML-based message catalog for runtime log and display text.
-- Lazy one-shot initialization with fallback to raw identifiers.
-- Recursive string extraction from nested TOML tables.
+- This file loads and resolves the embedded message catalog that backs structured runtime text.
+- Lookup behavior is lazy so the engine pays setup cost only when message resolution is actually needed.
+- Nested catalog data is flattened through recursive extraction so callers can ask for stable identifiers without knowing storage shape.
+- Fallback behavior is defined here as well, ensuring missing catalog entries degrade into readable raw keys instead of silent blanks.
 
 ### mod.rs
 
-- Engine runtime foundations: configuration, shared state, and error types.
-- Loads `conf.toml` into a typed `Config` struct consumed by all subsystems.
-- Provides `SharedState` for mutable cross-module communication during a frame.
-- Defines `EngineError` variants and slot-map resource keys.
+- This module provides the foundational runtime layer that the rest of the engine stands on during startup and per-frame execution.
+- Configuration, shared mutable state, error contracts, operating modes, and resource handle types are gathered here.
+- At the highest level this is the engine's coordination core, not a gameplay feature module.
 
 ### mode.rs
 
-- Defines `RuntimeMode` enum with four variants: `gui`, `tui`, `headless`, and `cli`.
-- Provides lowercase string tokens for config serialization and CLI parsing via `as_str` and `Display`.
-- `FromStr` accepts any casing and returns a typed parse error that names the rejected token.
-- Used by `config.rs` during TOML deserialization and by `main.rs` to select the startup path.
+- This file defines the small mode vocabulary that tells the engine which style of runtime entry path to follow.
+- String conversion rules are kept close to the enum so configuration parsing and CLI parsing agree on accepted names.
+- Parse errors remain explicit here because mode selection failures should be readable before the rest of startup proceeds.
+- The file therefore turns user-facing startup labels into one typed branch point for the runtime.
 
 ### os.rs
 
-- Operating system detection utilities for platform-specific code paths.
-- `get_os_name()` returns a lowercase string: `"windows"`, `"linux"`, or `"macos"`.
-- Used at startup to set OS-specific defaults (e.g. font paths, config directories).
-- Exposed to Lua via `lurek.runtime.os()` for platform-conditional game scripts.
-- Built on `cfg!` macros; no runtime OS probing, so the result is always correct.
+- This file exposes the runtime's view of the host operating system for startup policy and script-facing platform checks.
+- Detection is compile-time oriented rather than probe-heavy, which keeps the answer stable and cheap for every call site.
+- Startup code relies on this information for platform-shaped defaults such as paths and environment-sensitive behavior.
+- Lua-visible platform queries also depend on the same source so scripts and Rust agree on the current host label.
+- The file is intentionally narrow because it exists to answer identity questions, not to abstract whole platform APIs.
 
 ### resource_keys.rs
 
-- Typed slotmap keys for every engine resource pool (textures, fonts, sounds, particles, etc.).
-- Each key is a lightweight handle safe to store in Lua userdata and pass across frames.
-- Generated via `slotmap::new_key_type!` for O(1) lookup with generational validity checks.
+- This file defines the typed handle keys used to reference runtime-managed resources without exposing storage internals.
+- The handles are cheap to copy and safe to hold across frames, which is essential for Lua userdata and engine-facing APIs.
+- It is the type-safety layer that lets many resource pools share one slotmap-style ownership pattern.
 
 ### shared_state.rs
 
-- Central mutable state container shared across all engine subsystems during a frame.
-- Window state tracking: focus, DPI, fullscreen, scale mode, and pending resize/move requests.
-- Resource pools via SlotMap for textures, fonts, canvases, shaders, meshes, and particle systems.
-- Input aggregation: keyboard, mouse, touch, and gamepad state with vibration requests.
-- Timing and profiling: frame clock, delta time, FPS, per-phase timing breakdown.
-- Memory budget enforcement with LRU eviction of textures and canvases.
-- Asynchronous file I/O through GameFS with poll-based completion.
-- Physics stepping configuration and run-state parameters.
-- Render pipeline state: blend mode, stencil, depth, scissor, color mask, and command buffer.
-- Province registries, parallax layers, tilemaps, raycaster output, and UI context weak refs.
+- This file defines the shared mutable runtime container that lets otherwise separate engine systems coordinate during startup and each frame.
+- It gathers cross-cutting state for windowing, timing, resources, input, rendering, async work, and several feature subsystems into one borrowable hub.
+- Resource pools live here because textures, canvases, fonts, shaders, meshes, and similar assets need one authoritative ownership home.
+- Frame-local render state also accumulates here so gameplay code can enqueue visual intent without talking directly to the GPU backend.
+- Input aggregation and timing data share the same structure because many systems consume them repeatedly throughout a frame.
+- Memory budget enforcement belongs here as well, since eviction decisions depend on a global view of runtime-managed assets.
+- Async filesystem operations are tracked here so polling and completion can integrate cleanly with the main loop.
+- Several feature modules store their live handles or derived outputs in this container when they need to survive across calls and script boundaries.
+- The file is intentionally broad because it is not modeling one feature.
+- It is modeling the practical state surface of the whole running engine.
+- Without this container, subsystems would duplicate ownership logic or pass oversized parameter sets through every call.
+- In practice this is the mutable coordination nucleus of the runtime.
 
 ## Lua API Ref
 
@@ -122,7 +130,47 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 
 ### Functions
 
-- No documented module-level functions.
+- `lurek.engine.fps`: Returns the latest frames-per-second value stored by the runtime.
+- `lurek.engine.frameCount`: Returns the number of frames counted by the shared runtime clock.
+- `lurek.engine.getConfigRevision`: Returns the configuration reload revision counter.
+- `lurek.engine.getFrameBudget`: Returns the target frame budget for a 60 FPS update loop.
+- `lurek.engine.getFrameProfile`: Returns the latest frame timing profile split by engine phase.
+- `lurek.engine.getFrameProfileText`: Returns the latest frame timing profile formatted as one text line.
+- `lurek.engine.getResourceStats`: Returns current resource memory usage and object counts by resource kind.
+- `lurek.engine.getVersion`: Returns the engine crate version string embedded at build time.
+- `lurek.engine.isDebug`: Returns whether the engine binary was built with debug assertions.
+- `lurek.engine.memoryUsage`: Returns Lua VM memory usage as bytes and rounded kilobytes.
+- `lurek.engine.platform`: Returns the current desktop operating system name.
+- `lurek.engine.setResourceBudget`: Sets the resource memory budget used by resource statistics reporting.
+- `lurek.engine.uptime`: Returns total engine runtime accumulated by the main loop.
+- `lurek.runtime.errorSnapshot`: Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
+- `lurek.runtime.getArch`: Returns the CPU architecture of the host system.
+- `lurek.runtime.getArgs`: Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
+- `lurek.runtime.getBatchResults`: Summarizes batch results by counting passed, failed, and skipped tasks.
+- `lurek.runtime.getClipboardText`: Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
+- `lurek.runtime.getConfig`: Returns a table containing the current engine runtime configuration values.
+- `lurek.runtime.getDebugOverlay`: Returns whether the on-screen debug overlay is currently enabled.
+- `lurek.runtime.getEnv`: Reads an environment variable by name. Returns `nil` if the variable is not set.
+- `lurek.runtime.getInfo`: Returns a table with comprehensive engine and host information.
+- `lurek.runtime.getLastError`: Returns the last error for Lua scripts in this module.
+- `lurek.runtime.getLogLevel`: Returns the current engine log verbosity level as a string.
+- `lurek.runtime.getMemorySize`: Returns the total physical memory of the host system in megabytes.
+- `lurek.runtime.getMessage`: Resolves a message string by its identifier from the engine message catalog.
+- `lurek.runtime.getMessageCount`: Returns the total number of messages registered in the engine message catalog.
+- `lurek.runtime.getOS`: Returns the name of the host operating system as a string.
+- `lurek.runtime.getPowerInfo`: Returns the current power supply state, battery percentage, and estimated time remaining.
+- `lurek.runtime.getPreferredLocales`: Returns a list of the user's preferred locale identifiers from the operating system.
+- `lurek.runtime.getProcessorCount`: Returns the number of logical processors available on the host machine.
+- `lurek.runtime.getVersion`: Returns the semantic version string of the Lurek2D engine.
+- `lurek.runtime.hasMessage`: Checks whether a message identifier exists in the engine message catalog.
+- `lurek.runtime.log`: Writes a message to the engine log at the specified severity level.
+- `lurek.runtime.openURL`: Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
+- `lurek.runtime.parseArgs`: Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
+- `lurek.runtime.reloadConfig`: Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
+- `lurek.runtime.runBatch`: Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
+- `lurek.runtime.setClipboardText`: Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
+- `lurek.runtime.setDebugOverlay`: Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
+- `lurek.runtime.setLogLevel`: Sets the engine-wide log verbosity level at runtime.
 
 ### Enums
 
@@ -130,7 +178,154 @@ For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.
 
 ### Types
 
-- No documented module types.
+#### LEngineGetFrameProfileResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `app_frame_total_ms` (`number`): App frame total ms.
+- `app_render_ms` (`number`): App render ms.
+- `app_tick_ms` (`number`): App tick ms.
+- `app_update_ms` (`number`): App update ms.
+- `callback_total_ms` (`number`): Callback total ms.
+- `draw_ms` (`number`): Draw ms.
+- `draw_ui_ms` (`number`): Draw ui ms.
+- `fixed_update_ms` (`number`): Fixed update ms.
+- `process_late_ms` (`number`): Process late ms.
+- `process_ms` (`number`): Process ms.
+- `process_physics_ms` (`number`): Process physics ms.
+
+##### Methods
+
+- No documented methods.
+
+#### LEngineGetResourceStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `app_frame_total_ms` (`number`): App frame total ms.
+- `app_render_ms` (`number`): App render ms.
+- `app_tick_ms` (`number`): App tick ms.
+- `app_update_ms` (`number`): App update ms.
+- `budget_bytes` (`integer`): Budget bytes.
+- `callback_total_ms` (`number`): Callback total ms.
+- `canvas_bytes` (`integer`): Canvas bytes.
+- `canvas_count` (`integer`): Canvas count.
+- `draw_ms` (`number`): Draw ms.
+- `draw_ui_ms` (`number`): Draw ui ms.
+- `fixed_update_ms` (`number`): Fixed update ms.
+- `font_bytes` (`integer`): Font bytes.
+- `font_count` (`integer`): Font count.
+- `process_late_ms` (`number`): Process late ms.
+- `process_ms` (`number`): Process ms.
+- `process_physics_ms` (`number`): Process physics ms.
+- `shader_bytes` (`integer`): Shader bytes.
+- `shader_count` (`integer`): Shader count.
+- `texture_bytes` (`integer`): Texture bytes.
+- `texture_count` (`integer`): Texture count.
+- `total_bytes` (`integer`): Total bytes.
+
+##### Methods
+
+- No documented methods.
+
+#### LEngineMemoryUsageResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `lua_bytes` (`integer`): Lua bytes.
+- `lua_kb` (`number`): Lua kb.
+
+##### Methods
+
+- No documented methods.
+
+#### LRuntimeGetConfigResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `config_reload_revision` (`integer`): Config reload revision.
+- `default_font_bold` (`boolean`): Configured bold variant flag for the default render font.
+- `default_font_size` (`integer`): Configured built-in default render font point size.
+- `fixed_update_tick_rate` (`number`): Fixed update tick rate.
+- `frame_budget_warn_ms` (`number`): Frame budget warn ms.
+- `log_level` (`string`): Log level.
+- `lua_callback_timeout_ms` (`number`): Lua callback timeout ms.
+- `physics_tick_rate` (`number`): Physics tick rate.
+- `runtime_mode` (`string`): Runtime mode.
+- `vsync` (`boolean`): Vsync.
+
+##### Methods
+
+- No documented methods.
+
+#### LRuntimeGetInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `engine` (`string`): Engine name.
+- `lua_version` (`string`): Lua version string.
+- `memory` (`number`): Total physical memory in MiB.
+- `os` (`string`): Host operating system name.
+- `processors` (`integer`): Number of logical processors.
+- `renderer` (`string`): Renderer backend name.
+- `version` (`string`): Engine version string.
+
+##### Methods
+
+- No documented methods.
+
+#### LRuntimeGetLastErrorResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `category` (`string`): Error category.
+- `code` (`string`): Error code.
+- `hint` (`string?`): Optional hint for resolution.
+- `message` (`string`): Error message.
+
+##### Methods
+
+- No documented methods.
+
+#### LRuntimeParseArgsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `flags` (`table`): Boolean flags indexed by name.
+- `options` (`table`): String options indexed by name.
+- `positional` (`string[]`): Positional argument values.
+
+##### Methods
+
+- No documented methods.
+
+#### LRuntimeRunBatchResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `error` (`string?`): Error message when status is `failed`.
+- `status` (`string`): Task status: `passed`, `failed`, or `skipped`.
+- `time` (`number`): Elapsed time in seconds.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

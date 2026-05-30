@@ -25,126 +25,140 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ### autotile_sheet.rs
 
-- Autotile sprite-sheet abstraction: blob-47, composite-48, and minimal-16 layouts.
-- Bitmask table generation and reverse lookup from neighbor mask to tile index.
-- 8-bit diagonal collapse for correct cardinal-gated corner resolution.
-- Quarter-tile compositing helpers for sub-tile source and destination rects.
-- Sheet-to-tileset rule registration for runtime autotile placement.
+- This file provides the autotile sheet model that turns neighborhood context into final tile picks.
+- It keeps multiple atlas layouts coherent so different terrain styles share one usage contract.
+- It centralizes bitmask interpretation and rule matching in a single graphics selection layer.
+- It resolves corner relationships carefully so terrain seams stay clean across transitions.
+- It supports quarter-tile composition when rendering needs sub-tile assembly for smooth blends.
+- It connects sheet logic to tileset data so runtime autotiling remains deterministic.
+- It forms a stable foundation for roads, biomes, and organic borders in grid-based worlds.
 
 ### chunk.rs
 
-- Infinite sparse tile grid partitioned into fixed-size square chunks.
-- On-demand chunk allocation and explicit load/unload lifecycle.
-- Tile read/write by world coordinates with automatic chunk decomposition.
-- Rectangular fill, chunk enumeration, and view-frustum culling helpers.
-- World-space geometry queries for chunk bounds and overlap testing.
+- This file provides sparse chunk storage for very large tile worlds that load data on demand.
+- It decouples tile access from raw memory layout so map scale can grow without full allocation.
+- It keeps world-to-chunk and local cell transforms precise for predictable addressing.
+- It exposes range operations and visible-chunk selection to drive rendering and streaming paths.
+- It stabilizes spatial boundaries so culling and update logic stay consistent under scale.
 
 ### coords.rs
 
-- Isometric tile-to-screen and screen-to-tile coordinate conversions.
-- Cardinal direction rotation, naming, and angle snapping for iso grids.
-- Hex axial coordinate conversions between screen and grid space.
-- Hex neighbor lookup, distance, and rounding for fractional coordinates.
-- Line drawing, ring enumeration, spiral traversal, and area fill on hex grids.
-- Hex rotation and reflection transforms around arbitrary center cells.
+- This file provides coordinate transforms for isometric and hex grids used across map systems.
+- It keeps one geometric language between screen space, tile space, and movement direction logic.
+- It offers orientation, rotation, and side classification helpers for grid navigation flows.
+- It supports hex metrics and neighborhoods so pathing and range tools share a stable base.
+- It delivers line, ring, and spiral traversals for tactical gameplay and map UI overlays.
 
 ### isomap.rs
 
-- Multi-level isometric tile map with per-tile draw-layer parts (floor, walls, objects).
-- Diamond-projection coordinate conversion between tile space and screen space.
-- Painter-sorted draw iteration via diagonal-strip traversal across elevation levels.
-- Per-level visibility toggling and configurable part draw order.
-- Bulk fill and individual GID get/set for each tile-part slot.
+- This file provides a multi-level isometric map model with separate parts per tile cell.
+- It maps tile coordinates to diamond-projected screen space for coherent scene placement.
+- It iterates draw order by diagonal progression so elevation layering reads correctly.
+- It lets each elevation level be shown or hidden to support staged world presentation.
+- It keeps part ordering configurable so floor, wall, and object composition remains flexible.
+- It supports both bulk writes and precise per-slot updates for runtime editing workflows.
+- It anchors isometric world structure in a form that is predictable for rendering and tools.
 
 ### large_map_renderer.rs
 
-- Chunk-based large-map renderer for tilemaps that exceed single-pass draw limits.
-- Splits the full tile grid into fixed-size square chunks with dirty-flag tracking.
-- Camera and viewport state drive visibility culling at chunk granularity.
-- Supports per-tile mutation with automatic chunk invalidation.
-- Optional LOD down-sampling controlled by configurable zoom thresholds.
-- Tileset column count stored for atlas UV computation by the draw backend.
+- This file provides chunk-oriented rendering support for tilemaps that exceed single-pass scale.
+- It partitions the full grid into fixed blocks with dirty tracking for incremental refresh.
+- It uses camera and viewport state to cull work at chunk granularity before draw emission.
+- It supports per-tile mutation with automatic invalidation so updates stay localized.
+- It applies optional zoom-aware detail reduction to keep large-world rendering responsive.
+- It preserves tileset atlas geometry inputs needed by backend UV mapping logic.
 
 ### ldtk.rs
 
-- Import LDtk project JSON into the engine tilemap representation.
-- Parse levels, tile layers, and auto-layers with tileset geometry reconstruction.
-- Map LDtk pixel-based tile coordinates to grid-cell indices.
+- This file provides LDtk JSON import into the engine-native tilemap representation.
+- It parses levels and tile layers while rebuilding tileset geometry needed by runtime maps.
+- It converts pixel-based LDtk placements into stable grid-cell coordinates for simulation.
+- It keeps external level content aligned with the engine's layered tile data model.
+- It enables deterministic content ingestion from LDtk authoring workflows.
 
 ### mapgen.rs
 
-- Procedural tile-map generation driven by reusable block stamps and scripted steps.
-- `MapBlock` stores rectangular tile grids with edge side-IDs for neighbour matching.
-- `MapGroup` collects blocks and `MapScript`s into named generation palettes.
-- `ScriptStep` parameterises operations: fill, place, scatter, flood-fill, path drawing.
-- `MapGen` orchestrates generation using seeded LCG RNG, zones, orientation, and layer modes.
-- Supports single-region and multi-region world tiling with independent seeds per region.
-- Deterministic output: same seed + script always produces the same map.
-- Grid presets (`MapSize`) and horizontal zone bands constrain placement areas.
-- Orientation tags (top-down, side-view, isometric, hexagonal) stored for downstream renderers.
-- Layer modes control whether blocks share a unified layer or write independently.
+- This file provides scripted procedural generation for tile worlds built from reusable block pieces.
+- It models block edges and matching rules so assembled regions connect with coherent boundaries.
+- It groups reusable content and scripts into named generation palettes for targeted world styles.
+- It defines step-driven operations for fill, placement, scatter, flood spread, and path carving.
+- It orchestrates generation with seeded randomness so outputs are repeatable and testable.
+- It supports both single-map and multi-region production with independent deterministic seeds.
+- It applies zone and orientation metadata so generated content matches downstream render expectations.
+- It controls how layers receive writes, enabling unified or split composition strategies.
+- It gives runtime and tools one procedural contract that scales from prototypes to full maps.
+- It keeps generation intent explicit so scripts remain readable and maintainable over time.
+- It enables data-driven map variety without requiring hand-authored full layouts for every scene.
+- It anchors procedural authoring in predictable structures that can be debugged and replayed.
 
 ### mod.rs
 
-- Tile map storage, rendering, and chunk streaming for large worlds.
-- Supports orthogonal and isometric layouts with layered tiles.
-- Imports LDtk and Tiled TMX formats; procedural generation via MapGen.
-- Autotile rules, tile-space coordinates, and polygon-region maps.
+- This module delivers the high-level tile world stack for storage, generation, import, and rendering.
+- It unifies layered map data for orthogonal and isometric play spaces under one runtime contract.
+- It connects authored formats, procedural tools, autotiling, and region geometry into one pipeline.
+- It provides the structural backbone for large interactive 2D worlds in Lurek2D.
 
 ### polygon_map.rs
 
-- Named convex/concave polygon regions with fill color and optional text labels.
-- Spatial query via ray-casting point-in-polygon test for hit detection.
-- Global outline and highlight styling shared across all regions.
-- Region management: add, remove, recolor, label, and enumerate.
-- Bounding-box and centroid computation for layout and camera framing.
+- This file provides named polygon regions for zone semantics layered over tile-based worlds.
+- It supports convex and concave shapes with fill styling and optional in-region text labels.
+- It answers point-in-region queries for selection, triggers, and gameplay ownership checks.
+- It maintains shared outline and highlight styling to keep region feedback visually consistent.
+- It includes region lifecycle operations so zones can be created, updated, and removed at runtime.
+- It computes bounds and centroids to support layout decisions, framing, and camera behaviors.
 
 ### render.rs
 
-- Camera-culled render-command generation for tile-map layers.
-- GID-to-color debug palette for fallback colored tile rendering.
-- Per-layer visibility and tint applied during command emission.
+- This file provides tilemap render-command emission with camera-aware culling across map layers.
+- It maps tile IDs to debug colors so rendering can proceed even without atlas texture sampling.
+- It applies per-layer visibility and tint state when composing command output for the renderer.
+- It keeps draw generation predictable so map visualization remains stable during updates.
+- It provides a stable debug visualization path when textured rendering is unavailable.
 
 ### tile_walker.rs
 
-- Cardinal facing direction with angle, delta, and rotation helpers.
-- Discrete grid walker with forward, backward, and strafe movement.
-- Previous-state snapshot for smooth frame interpolation of position and heading.
-- Relative-facing query to classify adjacent tiles as front, back, left, or right.
-- Passability checks decoupled from actual collision data.
+- This file provides a discrete grid walker model with stable cardinal facing semantics.
+- It supports forward, backward, and strafe movement as first-class motion primitives.
+- It tracks previous state snapshots so interpolation can smooth visual motion between ticks.
+- It classifies neighboring cells relative to facing for directional interaction logic.
+- It separates passability queries from concrete collision backends for flexible integration.
+- It keeps movement intent readable for gameplay, AI steering, and tactical controls.
 
 ### tilemap.rs
 
-- Multi-layer tile map with per-tile GID storage, tint overrides, and parallax scroll factors.
-- Tileset attachment and GID resolution across multiple tileset ranges.
-- 4-neighbour and 8-neighbour autotile bitmask computation and GID substitution.
-- Continuous AABB sweep-cast collision against solid tiles for platformer and top-down physics.
-- Per-GID animation timer advancement using tileset frame data.
-- World-to-tile and tile-to-world coordinate conversion respecting tile dimensions.
-- Viewport-aware culled render-command generation for debug colour-coded output.
-- Debug image rendering: full-map, per-layer side-by-side, and highlight-overlay modes.
-- Boolean walkability grid export for pathfinding integration.
-- GID-to-position reverse index cache for fast spatial queries by tile type.
+- This file provides the core layered tilemap data model used by simulation and rendering paths.
+- It stores per-cell tile IDs, per-layer state, tint metadata, and parallax movement factors.
+- It resolves global IDs through attached tilesets so tile ownership stays deterministic.
+- It computes autotile neighborhood masks and substitution outputs for terrain continuity.
+- It performs swept collision checks against solid tiles for top-down and platform movement.
+- It advances tile animation timelines from tileset frame data during runtime updates.
+- It converts world and tile coordinates in both directions using map geometry settings.
+- It emits culled draw commands for viewport-scoped visualization and debug rendering.
+- It exports walkability structures so pathfinding systems can consume map topology directly.
+- It maintains reverse lookup caches from tile IDs to positions for fast spatial queries.
+- It supports image-based debug outputs for inspection, tooling, and regression validation.
+- It anchors gameplay-critical map behavior in one consistent and testable runtime surface.
 
 ### tileset.rs
 
-- Tileset geometry: tile dimensions, spacing, margin, column count, and GID range ownership.
-- Source-rect lookup: compute pixel `Rect` for any local tile ID within the sprite-sheet.
-- Collision metadata: per-tile solid flag storage and query.
-- Animation sequences: frame-based tile animations keyed by local ID.
-- Autotile rules: 4-bit and 8-bit bitmask-to-tile mappings for terrain transitions.
+- This file provides tileset geometry and metadata that define how tile IDs map to atlas pixels.
+- It computes source rectangles from local IDs so render code can sample the correct sprite area.
+- It stores solidity metadata per tile to support collision and gameplay filtering decisions.
+- It tracks frame-based tile animations so animated map cells advance with deterministic timing.
+- It holds autotile rule tables that translate neighborhood masks into terrain transition IDs.
 
 ### tmx.rs
 
-- Parse the Tiled TMX XML map format into engine-native structs for tile and object layers.
-- Support orthogonal, isometric, staggered, and hexagonal map orientations.
-- Decode tile GID arrays from CSV, raw XML, and base64 encodings with zlib/gzip decompression.
-- Extract tileset metadata including image paths, spacing, margins, and solid-tile markers.
-- Parse object layers with position, size, type, and optional tile-GID references.
-- Mask Tiled flip flags (horizontal, vertical, diagonal) from raw GID values before storage.
-- Detect solid tiles via embedded objectgroups or `solid=true` custom properties.
-- Propagate parse failures as descriptive error strings with element and attribute context.
-- Parse Tiled hex color strings (`#RRGGBB` / `#AARRGGBB`) for map background color.
+- This file provides TMX import that converts Tiled XML maps into engine-native map structures.
+- It supports major TMX orientation modes so authored content can target varied 2D projections.
+- It decodes tile data from csv, xml, and compressed base64 payloads into stable gid streams.
+- It ingests tileset geometry and metadata needed for atlas lookup and collision interpretation.
+- It parses object layers to retain placement, sizing, and semantic type annotations.
+- It strips flip flags from raw gids so stored tile identity stays clean and comparable.
+- It infers solid tiles from embedded markers and custom properties used by authoring tools.
+- It reports parse failures with contextual messages to speed debugging of malformed assets.
+- It reads TMX color encodings so visual defaults are preserved during map import.
+- It delivers a predictable bridge between external level authoring and runtime world assembly.
 
 ## Lua API Ref
 
@@ -188,9 +202,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 
 ### Types
 
-
 #### LAutoTileSheet Type
 
+- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 
 ##### Fields
 
@@ -209,9 +223,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LAutoTileSheet:type`: Returns the type name of this userdata.
 - `LAutoTileSheet:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LChunkMap Type
 
+- Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
 
 ##### Fields
 
@@ -232,9 +246,35 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LChunkMap:typeOf`: Checks whether this object matches the given type name.
 - `LChunkMap:unloadChunk`: Unloads a chunk from memory at the given chunk coordinates.
 
+#### LChunkMapGetChunksInViewResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cx` (`integer`): Cx.
+- `cy` (`integer`): Cy.
+
+##### Methods
+
+- No documented methods.
+
+#### LChunkMapGetLoadedChunksResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cx` (`integer`): Cx.
+- `cy` (`integer`): Cy.
+
+##### Methods
+
+- No documented methods.
 
 #### LIsoMap Type
 
+- Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
 
 ##### Fields
 
@@ -263,9 +303,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LIsoMap:type`: Returns the type name of this userdata.
 - `LIsoMap:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LLargeMapRenderer Type
 
+- Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
 
 ##### Fields
 
@@ -293,9 +333,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LLargeMapRenderer:type`: Returns the type name of this userdata.
 - `LLargeMapRenderer:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LMapBlock Type
 
+- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
 
 ##### Fields
 
@@ -321,9 +361,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LMapBlock:type`: Returns the type name of this userdata.
 - `LMapBlock:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LMapGen Type
 
+- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
 
 ##### Fields
 
@@ -335,9 +375,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LMapGen:type`: Returns the type name of this userdata.
 - `LMapGen:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LMapGroup Type
 
+- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
 
 ##### Fields
 
@@ -354,9 +394,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LMapGroup:type`: Returns the type name of this userdata.
 - `LMapGroup:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LMapScript Type
 
+- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
 
 ##### Fields
 
@@ -369,9 +409,9 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LMapScript:type`: Returns the type name of this userdata.
 - `LMapScript:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LTileMap Type
 
+- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
 
 ##### Fields
 
@@ -430,9 +470,35 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LTileMap:update`: Advances tile animations by the given delta time.
 - `LTileMap:worldToTile`: Converts world-space pixel coordinates to tile-grid coordinates.
 
+#### LTileMapFindTilesByGidResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LTileMapTileTypeIndexResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LTileSet Type
 
+- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
 
 ##### Fields
 
@@ -459,6 +525,116 @@ The module also goes far beyond simple rendering. It features a robust procedura
 - `LTileSet:setSolid`: Marks a tile as solid or non-solid for collision queries.
 - `LTileSet:type`: Returns the type name of this userdata.
 - `LTileSet:typeOf`: Checks whether this object matches the given type name.
+
+#### LTileSetGetAnimationResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `duration` (`number`): Duration.
+- `tileid` (`integer`): Tileid.
+
+##### Methods
+
+- No documented methods.
+
+#### LTileSetGetQuadResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `height` (`number`): Height.
+- `width` (`number`): Width.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapHexAreaResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `q` (`integer`): Q.
+- `r` (`number`): R.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapHexLineResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `q` (`integer`): Q.
+- `r` (`number`): R.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapHexNeighborsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `q` (`integer`): Q.
+- `r` (`number`): R.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapHexRingResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `q` (`integer`): Q.
+- `r` (`number`): R.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapHexSpiralResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `q` (`integer`): Q.
+- `r` (`number`): R.
+
+##### Methods
+
+- No documented methods.
+
+#### LTilemapLoadTMXResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `height` (`number`): Height.
+- `layers` (`table`): Layers array.
+- `orientation` (`string`): Map orientation.
+- `tileHeight` (`integer`): Tile height in pixels.
+- `tileWidth` (`integer`): Tile width in pixels.
+- `width` (`number`): Width.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

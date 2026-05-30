@@ -29,140 +29,152 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 
 ### file_io.rs
 
-- Provides storage-agnostic DataFrame and Database file persistence helpers.
-- Defines a narrow trait for reading and writing text, JSON, and binary payloads without importing GameFS.
-- Combines existing CSV, JSON, LVDF, and database serializers with caller-provided storage operations.
-- Keeps storage failures separate from parse and format failures so Lua bindings can preserve error surfaces.
+- Implements storage-agnostic persistence helpers for DataFrame and Database payload workflows.
+- Defines narrow read and write abstraction traits decoupled from concrete filesystem backends.
+- Bridges CSV, JSON, and binary serializers with caller-provided storage transport operations.
+- Preserves distinct error domains for storage, parsing, and format conversion failure handling.
+- Serves as the persistence integration layer for runtime and binding-side dataframe file operations.
 
 ### frame.rs
 
-- Core dataframe cell type and typed value representation
-- Columnar storage with named columns and row-major access
-- Column resolution by name or one-based index
-- Row and column CRUD operations including add, remove, and rename
-- DataFrame cloning, slicing, and row iteration
-- Database container for named table collections
-- Random data generation from typed column definitions
-- Arithmetic expression evaluation per row via `with_eval`
-- Pivot table construction with configurable aggregation
-- Rolling mean, rolling sum, and rank computations
-- Aggregation function enumeration and parsing
+- Implements the core DataFrame and Database runtime models with typed cell-value representation.
+- Stores table data in named column structures with stable row-wise access semantics.
+- Supports column resolution by name or index for flexible scripting and API integration paths.
+- Provides row and column lifecycle operations including add, remove, rename, and mutation workflows.
+- Exposes slicing, cloning, iteration, and structural transformation helpers for table processing.
+- Maintains multi-table database containers that group frames under stable logical identifiers.
+- Includes random-data generation and expression-evaluation helpers for synthetic and derived columns.
+- Supports pivot-style reshaping with configurable aggregation behavior across grouping dimensions.
+- Implements rolling and rank-oriented analytics over sequential data windows.
+- Defines aggregation enum contracts and parsing behavior for consistent operation selection.
+- Preserves deterministic data-shape handling and explicit error reporting on invalid operations.
+- Serves as the foundational dataframe domain layer consumed by SQL, lazy, and vectorized modules.
 
 ### lazy.rs
 
-- Deferred query step representation for filter, sort, select, head, tail, slice, and limit
-- Lazy query builder that chains steps without executing until `collect`
-- Materialization via sequential step application over a cloned source frame
+- Implements deferred dataframe query planning through composable step-chain descriptions.
+- Stores filter, sort, select, window, and limit operations without immediate execution.
+- Materializes lazy plans on collect by applying steps over cloned source-frame state.
+- Preserves deterministic step order and transformation semantics during pipeline realization.
+- Serves as the lazy-query orchestration layer for staged dataframe processing.
 
 ### mod.rs
 
-- Columnar DataFrame type and Database container
-- Lazy query builder and deferred execution pipeline
-- Query-time transforms: filtering, grouping, analytics, processing, and window functions
-- CSV, JSON, and binary serialization and parsing
-- Storage-agnostic file persistence helpers for dataframe and database payloads
-- One-shot threaded dataframe tasks for file loading and SQL queries
-- SQL-like SELECT executor with tokenizer and recursive-descent parser
-- Typed vectorized column storage with parallel reduce and scalar operations
+- Defines the dataframe module boundary for typed tabular storage, query execution, and serialization flows.
+- Groups core frame models, lazy operations, SQL parsing, threaded tasks, and vectorized processing layers.
+- Serves as the composition entry for all engine-side dataframe capabilities and integrations.
 
 ### query/analytics.rs
 
-- Percentile computation by linear interpolation over sorted values
-- Z-score standardization for numeric columns
-- Min-max normalization to arbitrary output range
-- Outlier detection via z-score threshold
-- Mode value computation across non-nil cells
-- Shannon entropy calculation over rendered cell distributions
+- Implements statistical analytics helpers over dataframe columns and derived numeric distributions.
+- Provides percentile extraction through interpolation on ordered numeric sample sequences.
+- Supports z-score and min-max normalization for consistent feature scaling workflows.
+- Includes outlier detection, mode estimation, and entropy-style spread characterization helpers.
+- Serves as the compact statistics layer used by higher query and reporting operations.
 
 ### query/filter.rs
 
-- Row filtering by column predicate with comparison and contains operators
-- Column sorting in ascending or descending order
-- Head, tail, and inclusive slice row selection
-- Column projection and unique value extraction
-- Group-by partitioning and inner/left join merging
-- Frame merge, count-by, drop-nil, and deterministic sampling
-- Aggregate statistics: sum, mean, min, max, median, stddev, variance
-- Descriptive statistics frame generation
-- Nil fill, batch row append, and column f64 import/export
+- Implements primary row and column query transforms for dataframe selection and restructuring.
+- Applies predicate-based filtering with comparison and text containment operator semantics.
+- Provides ordering, slicing, projection, and uniqueness extraction over tabular datasets.
+- Supports grouping and join composition for cross-frame and keyed relational-style operations.
+- Includes deterministic sampling, nil handling, and batch append utilities for data preparation.
+- Computes common aggregate statistics and descriptive summary frames across numeric columns.
+- Exposes import and export helpers for numeric column vectors and merged frame workflows.
+- Serves as the high-utility query manipulation layer for core dataframe use cases.
 
 ### query/grouping.rs
 
-- Grouped aggregation by key column with mean, sum, min, max, count, first, last
-- Pivot transformation from row/column/value keys into cross-tabulated frame
-- Pearson correlation between two numeric columns
-- Full numeric-column correlation matrix generation
+- Implements grouping-oriented dataframe operations for keyed aggregation and cross-tab reshaping.
+- Aggregates grouped values with selectable reducers such as mean, sum, min, max, and count.
+- Builds pivoted result frames from row, column, and value key combinations.
+- Computes pairwise Pearson correlation between selected numeric columns.
+- Generates full numeric correlation matrices for multivariate relationship inspection.
+- Preserves deterministic group output construction and explicit missing-value handling paths.
+- Serves as the grouping and correlation analytics layer for dataframe query pipelines.
 
 ### query/mod.rs
 
-- Statistical and distribution-oriented analytics helpers
-- Row filtering, sorting, joins, and sampling operations
-- Grouped aggregation, pivoting, and correlation computations
-- Reusable processing helpers for counts, missingness, duplicates, and dates
-- Rolling and ranking window functions
+- Defines the dataframe query module boundary for filtering, grouping, processing, analytics, and window logic.
+- Groups query submodules under one cohesive extension surface over core frame structures.
+- Serves as the composition entry for staged dataframe query operations.
 
 ### query/processing.rs
 
-- Frequency tables with optional percentage output
-- Column-level missing-value reports
-- Duplicate row extraction by full-row or selected-column keys
-- ISO date part extraction into appended year, month, and day columns
+- Implements dataframe processing helpers for frequency summaries and table-quality diagnostics.
+- Builds value-count tables with optional percentage columns for distribution inspection.
+- Produces missing-value reports and duplicate-row extraction over full-row or keyed comparisons.
+- Appends parsed ISO date parts into structured year, month, and day output columns.
+- Serves as a reusable cleanup and profiling layer for downstream dataframe query workflows.
 
 ### query/window.rs
 
-- Rolling mean, sum, min, and max over configurable window size
-- Dense rank computation with average-rank tie-breaking
-- Row-to-row percent change calculation
-- Cumulative sum across ordered rows
+- Implements window-style dataframe computations over ordered row sequences and bounded spans.
+- Provides rolling mean, sum, min, and max evaluation with configurable window lengths.
+- Computes dense-style ranking with stable tie handling across repeated numeric values.
+- Supports row-over-row percent-change derivation for trend and momentum analysis.
+- Builds cumulative running totals across ordered rows for progressive metric inspection.
+- Serves as the window-function layer for time-like and sequence-aware dataframe analytics.
 
 ### rng.rs
 
-- Xorshift64 pseudo-random number generator for deterministic dataframe sampling
-- Float, integer, and index generation from 64-bit state
-- Zero-seed remap to avoid degenerate all-zero output
+- Implements lightweight xorshift64 random generation used by dataframe-local sampling utilities.
+- Produces deterministic integer, float, and index outputs from a compact 64-bit state.
+- Remaps zero seed values to prevent degenerate all-zero generator behavior.
 
 ### serial.rs
 
-- CSV parsing with quote escaping and type auto-detection
-- CSV serialization with field escaping rules
-- JSON array-of-objects parsing into DataFrame
-- JSON serialization with proper string escaping
-- Compact binary LVDF format encoding and decoding
-- Padded string-table rendering for debug and display
-- Database-level JSON serialization across all tables
-- Database-level JSON parsing from named table arrays
-- Nested JSON value and array handling during parse
+- Implements serialization and parsing for dataframe and database payloads across multiple formats.
+- Supports CSV decode and encode with quoting, escaping, and type-inference behavior.
+- Provides JSON array-object conversion between textual payloads and dataframe structures.
+- Handles nested JSON values and arrays during parser traversal and value coercion.
+- Encodes and decodes compact LVDF binary format for efficient dataframe transport storage.
+- Supplies text-table rendering helpers for debugging and readable frame inspection outputs.
+- Serializes complete database table collections into JSON with stable named table mapping.
+- Parses database-level JSON payloads back into structured table collections.
+- Preserves explicit parse and conversion failure reporting across supported format paths.
+- Serves as the format-conversion backbone for dataframe persistence and interchange.
 
 ### sql.rs
 
-- SQL text tokenizer producing typed token stream
-- Recursive-descent parser for SELECT statements
-- WHERE clause expression tree with AND, OR, NOT, LIKE, and IN
-- Aggregate function support: COUNT, SUM, AVG, MIN, MAX
-- SELECT arithmetic expressions with explicit `AS` aliases
-- GROUP BY with HAVING filter and ORDER BY with LIMIT/OFFSET
-- JOIN clause parsing and inner-join execution
-- SQL LIKE pattern matching with `%` and `_` wildcards
-- Single-frame and multi-table Database query entry points
+- Implements SQL-like query execution over dataframe and database table structures.
+- Tokenizes input query text into typed lexical units for downstream parser consumption.
+- Parses SELECT statements through recursive-descent grammar with explicit clause ordering.
+- Builds expression trees for WHERE and HAVING filters including boolean and pattern operators.
+- Supports projection arithmetic with aliasing and function-call style aggregate expressions.
+- Executes grouping, aggregation, ordering, limits, and offsets over intermediate query results.
+- Parses and applies join clauses for multi-table query paths within database containers.
+- Implements LIKE-style wildcard matching semantics compatible with SQL-style pattern tokens.
+- Validates column and table references with structured error reporting on unresolved names.
+- Exposes query entry points for both single-frame and multi-table execution contexts.
+- Preserves deterministic clause semantics and result-shape construction behavior.
+- Balances expressiveness with bounded parser and evaluator complexity for runtime safety.
+- Serves as the declarative query layer on top of core dataframe manipulation primitives.
+- Integrates tightly with frame and value contracts for consistent type handling outcomes.
+- Anchors script-facing tabular querying with predictable parser and execution behavior.
 
 ### task.rs
 
-- One-shot threaded dataframe jobs for file loading and SQL queries.
-- Worker-owned storage snapshots so large CSV/JSON reads do not pass through Lua strings.
-- Poll, wait, result, error, and progress lifecycle helpers shared by Lua bindings.
-- Snapshot-based DataFrame and Database query execution on Rust worker threads.
+- Implements one-shot threaded dataframe jobs for file loading and SQL query execution.
+- Captures worker-side data snapshots to avoid large payload transfer through script boundaries.
+- Provides poll, wait, progress, result, and error lifecycle helpers for async task management.
+- Executes dataframe and database operations on worker threads with bounded state handoff.
+- Serves as the asynchronous execution layer used by Lua-facing dataframe task APIs.
 
 ### vectorized.rs
 
-- Typed columnar storage (Float64, Int64, Bool, Text) with optional validity masks
-- Element-wise scalar operations: add, sub, mul, div, abs, sqrt, floor, ceil, neg
-- Element-wise binary operations between two numeric columns
-- Column reduction: sum, mean, min, max, std, var, count
-- Comparison mask generation for filter predicates
-- VecFrame ↔ DataFrame bidirectional conversion with type inference
-- Parallel multi-column reduce and scalar operations via rayon
-- Column type casting between float64, int64, and text
-- Boolean mask filtering across all column types
+- Implements typed vectorized column storage for high-throughput dataframe-style numeric processing.
+- Supports float, integer, boolean, and text columns with optional validity-mask semantics.
+- Provides scalar element-wise transforms across arithmetic and unary operation families.
+- Executes binary column operations with dtype-aware coercion and compatibility checks.
+- Computes reductions including sum, mean, min, max, variance, and related aggregate metrics.
+- Generates comparison masks for predicate-style filtering over typed column values.
+- Supports bidirectional conversion between vectorized frames and generic dataframe representations.
+- Applies parallelized multi-column operations and reductions via rayon-backed execution paths.
+- Handles explicit column casting between numeric and textual type domains.
+- Preserves boolean-mask filtering behavior consistently across all supported column types.
+- Balances performance-oriented storage layout with conversion interoperability requirements.
+- Serves as the vectorized acceleration layer above core dataframe contracts.
 
 ## Lua API Ref
 
@@ -193,9 +205,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 
 ### Types
 
-
 #### LDataFrame Type
 
+- Lua-side dataframe handle for tabular data with named columns and typed cells.
 
 ##### Fields
 
@@ -286,9 +298,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LDataFrame:withRollingSum`: Adds a rolling sum column in place. This method is available to Lua scripts.
 - `LDataFrame:zscoreCol`: Adds a z-score normalized column in place.
 
-
 #### LDataFrameTask Type
 
+- Lua-side handle for a threaded dataframe job.
 
 ##### Fields
 
@@ -304,9 +316,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LDataFrameTask:typeOf`: Returns whether this dataframe task handle matches a supported type name.
 - `LDataFrameTask:wait`: Blocks until this dataframe task completes.
 
-
 #### LDatabase Type
 
+- Lua-side in-memory database containing named dataframes.
 
 ##### Fields
 
@@ -331,9 +343,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LDatabase:type`: Returns the Lua-visible type name for this database handle.
 - `LDatabase:typeOf`: Returns whether this database handle matches a supported type name.
 
-
 #### LGroupedFrame Type
 
+- Lua-side grouped dataframe object containing group keys and subframes.
 
 ##### Fields
 
@@ -345,9 +357,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LGroupedFrame:type`: Returns the Lua-visible type name for this grouped frame handle.
 - `LGroupedFrame:typeOf`: Returns whether this grouped frame handle matches a supported type name.
 
-
 #### LLazyQuery Type
 
+- Lua-side lazy dataframe query pipeline.
 
 ##### Fields
 
@@ -367,9 +379,9 @@ Implementation detail and boundary guarantees for dataframe: this module keeps r
 - `LLazyQuery:type`: Returns the Lua-visible type name for this lazy query handle.
 - `LLazyQuery:typeOf`: Returns whether this lazy query handle matches a supported type name.
 
-
 #### LVecFrame Type
 
+- Lua-side vectorized dataframe handle for numeric column operations.
 
 ##### Fields
 

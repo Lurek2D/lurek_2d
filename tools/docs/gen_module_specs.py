@@ -155,6 +155,12 @@ ENUM_VARIANT_RE = re.compile(
 SET_RE = re.compile(r'\b(?:lurek|lurek)\.set\(\s*"([^\"]+)"')
 LUA_API_JSON = ROOT / "logs" / "data" / "lua_api_data.json"
 
+# Some Lua API bindings are grouped under legacy/top-level names that do not
+# match docs/specs module stems. Merge them into the target spec module.
+LUA_API_MODULE_ALIASES: dict[str, list[str]] = {
+    "runtime": ["system", "engine"],
+}
+
 
 def load_lua_parser():
     spec = importlib.util.spec_from_file_location(
@@ -489,63 +495,86 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
 
     if LUA_API_JSON.exists():
         data = json.loads(read_text(LUA_API_JSON))
-        module_data = (data.get("lua_api", {}).get("modules", {}) or {}).get(module, {})
-        for fn in module_data.get("functions", []) or []:
-            lua_name = fn.get("lua_name") or fn.get("name")
-            if lua_name and "." in lua_name:
-                namespace_prefixes.append(lua_name.rsplit(".", 1)[0])
-            module_functions.append(
-                {
-                    "name": fn.get("name") or "",
-                    "lua_name": lua_name,
-                    "description": fn.get("description") or "Lua-facing function documented in the binding source.",
-                }
-            )
+        all_modules = (data.get("lua_api", {}).get("modules", {}) or {})
+        module_names = [module] + LUA_API_MODULE_ALIASES.get(module, [])
 
-        for cls_name, cls in (module_data.get("classes") or {}).items():
-            fields = []
-            for field in cls.get("fields", []) or []:
-                fields.append(
+        for module_name in module_names:
+            module_data = all_modules.get(module_name, {})
+
+            for fn in module_data.get("functions", []) or []:
+                lua_name = fn.get("lua_name") or fn.get("name")
+                if lua_name and "." in lua_name:
+                    namespace_prefixes.append(lua_name.rsplit(".", 1)[0])
+                module_functions.append(
                     {
-                        "name": field.get("name") or "",
-                        "type": field.get("type") or "any",
-                        "description": field.get("description") or "Lua-visible field.",
+                        "name": fn.get("name") or "",
+                        "lua_name": lua_name,
+                        "description": fn.get("description") or "Lua-facing function documented in the binding source.",
+                        "full_doc": fn.get("full_doc") or "",
                     }
                 )
 
-            methods = []
-            for method in cls.get("methods", []) or []:
-                methods.append(
+            for cls_name, cls in (module_data.get("classes") or {}).items():
+                fields = []
+                for field in cls.get("fields", []) or []:
+                    fields.append(
+                        {
+                            "name": field.get("name") or "",
+                            "type": field.get("type") or "any",
+                            "description": field.get("description") or "Lua-visible field.",
+                        }
+                    )
+
+                methods = []
+                for method in cls.get("methods", []) or []:
+                    methods.append(
+                        {
+                            "name": method.get("name") or "",
+                            "lua_name": method.get("lua_name") or f"{cls_name}:{method.get('name','')}",
+                            "description": method.get("description") or "Lua-visible method.",
+                            "full_doc": method.get("full_doc") or "",
+                        }
+                    )
+
+                if cls_name in classes:
+                    existing = classes[cls_name]
+                    existing_fields = {f.get("name", ""): f for f in existing.get("fields", [])}
+                    for field in fields:
+                        key = field.get("name", "")
+                        if key and key not in existing_fields:
+                            existing_fields[key] = field
+                    existing["fields"] = sorted(existing_fields.values(), key=lambda item: item["name"])
+
+                    existing_methods = {(m.get("lua_name") or m.get("name") or ""): m for m in existing.get("methods", [])}
+                    for method in methods:
+                        key = method.get("lua_name") or method.get("name") or ""
+                        if key and key not in existing_methods:
+                            existing_methods[key] = method
+                    existing["methods"] = sorted(existing_methods.values(), key=lambda item: item["name"])
+                else:
+                    classes[cls_name] = {
+                        "description": cls.get("description") or "Lua-visible object type.",
+                        "fields": fields,
+                        "methods": methods,
+                    }
+
+            # Optional module-scoped constants/enums if present in source JSON shape.
+            for const in module_data.get("constants", []) or []:
+                module_constants.append(
                     {
-                        "name": method.get("name") or "",
-                        "lua_name": method.get("lua_name") or f"{cls_name}:{method.get('name','')}",
-                        "description": method.get("description") or "Lua-visible method.",
+                        "name": const.get("name") or "",
+                        "value": const.get("value"),
+                        "description": const.get("description") or "Lua-visible constant.",
                     }
                 )
-
-            classes[cls_name] = {
-                "description": cls.get("description") or "Lua-visible object type.",
-                "fields": methods and fields or fields,
-                "methods": methods,
-            }
-
-        # Optional module-scoped constants/enums if present in source JSON shape.
-        for const in module_data.get("constants", []) or []:
-            module_constants.append(
-                {
-                    "name": const.get("name") or "",
-                    "value": const.get("value"),
-                    "description": const.get("description") or "Lua-visible constant.",
-                }
-            )
-        for enum in module_data.get("enums", []) or []:
-            module_enums.append(
-                {
-                    "name": enum.get("name") or "",
-                    "values": enum.get("values") or [],
-                    "description": enum.get("description") or "Lua-visible enum.",
-                }
-            )
+            for enum in module_data.get("enums", []) or []:
+                module_enums.append(
+                    {
+                        "name": enum.get("name") or "",
+                        "values": enum.get("values") or [],
+                        "description": enum.get("description") or "Lua-visible enum.",
+                    }
+                )
     else:
         # Fallback for environments without generated JSON.
         all_functions = lua_parser.collect_all_functions(ROOT / "src" / "lua_api")
@@ -610,6 +639,92 @@ def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
             for k, v in sorted(classes.items())
         },
     }
+
+
+def extract_field_entries_from_full_doc(full_doc: str) -> list[dict[str, str]]:
+    """Extract @field entries from a docstring in pipe-tag format."""
+    if not full_doc:
+        return []
+
+    entries: list[dict[str, str]] = []
+    for raw_line in full_doc.splitlines():
+        line = raw_line.strip()
+        match = re.match(r"^@field\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+)$", line)
+        if match:
+            entries.append(
+                {
+                    "name": match.group(1).strip(),
+                    "type": match.group(2).strip(),
+                    "description": match.group(3).strip(),
+                }
+            )
+    return entries
+
+
+def derive_generated_result_class_name(lua_name: str) -> str:
+    """Derive a stable result-class name from a Lua function/method name."""
+    if ":" in lua_name:
+        owner, method = lua_name.split(":", 1)
+        base = owner + method[:1].upper() + method[1:] + "Result"
+    elif "." in lua_name:
+        parts = lua_name.split(".")
+        tail = parts[-2:] if len(parts) >= 2 else parts
+        base = "".join(p[:1].upper() + p[1:] for p in tail) + "Result"
+    else:
+        base = lua_name[:1].upper() + lua_name[1:] + "Result"
+
+    if base.startswith("L") and len(base) > 1 and base[1].isupper():
+        return base
+    return f"L{base}"
+
+
+def merge_generated_result_classes(lua_api: dict) -> None:
+    """Add synthetic result classes derived from @field tags on functions/methods."""
+    classes = lua_api.get("classes") or {}
+
+    def add_or_merge(class_name: str, fields: list[dict[str, str]]) -> None:
+        if class_name not in classes:
+            classes[class_name] = {
+                "description": "Generated result shape from @field tags.",
+                "fields": [],
+                "methods": [],
+            }
+
+        existing = {f.get("name"): f for f in classes[class_name].get("fields", [])}
+        for field in fields:
+            field_name = field.get("name", "").strip()
+            if not field_name:
+                continue
+            if field_name not in existing:
+                existing[field_name] = {
+                    "name": field_name,
+                    "type": field.get("type", "any").strip() or "any",
+                    "description": field.get("description", "").strip() or "Lua-visible field.",
+                }
+
+        classes[class_name]["fields"] = sorted(existing.values(), key=lambda item: item["name"])
+
+    for fn in lua_api.get("module_functions", []):
+        lua_name = (fn.get("lua_name") or fn.get("name") or "").strip()
+        if not lua_name:
+            continue
+        fields = extract_field_entries_from_full_doc(fn.get("full_doc") or "")
+        if fields:
+            add_or_merge(derive_generated_result_class_name(lua_name), fields)
+
+    for class_name, class_data in list(classes.items()):
+        for method in class_data.get("methods", []):
+            lua_name = (method.get("lua_name") or "").strip()
+            if not lua_name:
+                method_name = (method.get("name") or "").strip()
+                lua_name = f"{class_name}:{method_name}" if method_name else ""
+            if not lua_name:
+                continue
+            fields = extract_field_entries_from_full_doc(method.get("full_doc") or "")
+            if fields:
+                add_or_merge(derive_generated_result_class_name(lua_name), fields)
+
+    lua_api["classes"] = dict(sorted(classes.items()))
 
 
 def normalize_info_key(key: str) -> str:
@@ -813,9 +928,14 @@ def format_lua_api(lua_api: dict) -> str:
     lines.extend(["", "### Types", ""])
     if lua_api["classes"]:
         for class_name, class_meta in sorted(lua_api["classes"].items()):
-            lines.extend(["", f"#### {class_name} Type", ""])
+            lines.extend([f"#### {class_name} Type", ""])
 
-            lines.extend(["", "##### Fields", ""])
+            class_description = (class_meta.get("description") or "").strip()
+            if class_description:
+                lines.append(f"- {class_description}")
+                lines.append("")
+
+            lines.extend(["##### Fields", ""])
             fields = class_meta.get("fields", [])
             if fields:
                 for field in fields:
@@ -876,6 +996,7 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
     legacy_sections = parse_doc_sections(legacy_text)
     source = scan_module_sources(module)
     lua_api = collect_lua_api(module, lua_parser, [spec_text, agent_text, legacy_text])
+    merge_generated_result_classes(lua_api)
 
     info_maps = build_info_maps(spec_text, spec_sections, agent_text, agent_sections, legacy_text)
     rust_tests = lookup_info(info_maps, "Rust test path(s)", "Rust Tests") or "None found in the workspace"

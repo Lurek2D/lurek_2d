@@ -29,87 +29,95 @@ Finally, the module generates textured draw commands from active frame quads via
 
 ### aseprite.rs
 
-- Loads Aseprite JSON exports into engine animation metadata.
-- Extracts sheet frame rectangles, per-frame durations, and sheet size.
-- Parses frame tags into named clip ranges with forward, reverse, or ping-pong playback.
-- Accepts both array and object `frames` layouts and normalizes object order into playback order.
-- Validates required metadata fields and returns explicit parse errors when the export is incomplete.
+- Parses Aseprite export data into engine-ready frame geometry, timing, and clip-tag metadata.
+- Supports multiple JSON frame layout variants while enforcing deterministic playback ordering.
+- Validates structural assumptions early so malformed exports fail before runtime animation usage.
+- Extracts frame rectangles and durations into normalized data consumable by controller pipelines.
+- Serves as the import boundary between external authoring output and internal animation contracts.
 
 ### blend.rs
 
-- Defines blend masks and named blend layers for multi-clip animation mixing.
-- Stores per-layer clip assignment, clamped blend weight, and optional bone filtering.
-- Manages an ordered layer set with add, remove, lookup, weight update, and mask replacement.
-- Provides the layer data higher animation systems use to build partial-body or weighted blends.
+- Implements layered animation blending where multiple clip outputs combine into one final pose.
+- Applies per-layer influence weights to shape how strongly each source contributes over time.
+- Supports optional bone masks for partial-body mixing without disturbing unrelated motion regions.
+- Maintains ordered layer stacking so blend precedence stays explicit and predictable.
+- Serves as the composition core for expressive multi-source character animation behavior.
 
 ### clip.rs
 
-- Defines named animation clips as reusable frame-index ranges.
-- Stores playback direction, looping state, and fallback FPS for clips that do not rely on per-frame timing.
-- Gives higher animation systems a compact clip descriptor they can switch, reuse, and combine by name.
+- Defines reusable animation clip metadata over frame spans, playback direction, and loop policy.
+- Carries baseline timing settings that playback systems use when frame durations are unspecified.
+- Serves as a compact contract shared by controller, state-machine, and blend-layer orchestration.
 
 ### controller.rs
 
-- Owns the runtime animation player for frame-based clips.
-- Stores loaded frames, named clips, active playback state, pending animation events, and crossfade state.
-- Builds clip data from grids, explicit rectangles, and parsed Aseprite metadata.
-- Advances playback with forward, reverse, and ping-pong modes, including looping, stopping, pausing, and speed scaling.
-- Exposes the current quad, event drain, crossfade blend state, and simple preview images for the active frame set.
+- Implements the central frame-animation runtime that owns clips, frames, cursor state, and event flow.
+- Advances playback through forward, reverse, ping-pong, looped, and paused progression modes.
+- Applies speed scaling and transition blending so timing and clip handoff remain artistically controllable.
+- Builds runtime clip libraries from grids, explicit frame data, and imported authoring metadata.
+- Emits timeline events for frame changes and lifecycle boundaries to drive gameplay synchronization.
+- Exposes current frame sampling for render-facing systems that require stable quad lookup each tick.
+- Maintains deterministic update behavior so identical input timing yields identical playback state.
+- Supports preview and inspection flows used by tools and debugging overlays.
+- Keeps clip selection, event buffering, and cursor mutation within one cohesive control surface.
+- Serves as the primary animation execution engine for sprite and timeline-driven characters.
 
 ### curve.rs
 
-- Defines keyed numeric curves and sparse multi-property timelines for animation data.
-- Stores sorted keyframes for single values and named property tracks.
-- Supports step, linear, ease-in, ease-out, ease-in-out, and callback-backed easing modes.
-- Evaluates one curve, one property, or a full property snapshot at an arbitrary time.
-- Provides the interpolation layer used by higher animation systems for parameter driving over time.
+- Implements keyframed property timelines that interpolate numeric animation parameters over time.
+- Supports stepped, linear, eased, and callback-defined transitions for authored motion behavior.
+- Evaluates sparse named tracks into sampled property values at arbitrary timeline positions.
+- Provides both single-property reads and full snapshot sampling for synchronized consumers.
+- Keeps interpolation semantics explicit so authored curves remain predictable across runtime contexts.
+- Serves as the parameter animation layer beneath higher-level state and clip orchestration.
 
 ### event.rs
 
-- Defines the animation events emitted while clip playback advances.
-- Carries the state changes higher layers react to: finish, loop, and frame switch.
-- Stores the optional frame index payload for frame-change notifications.
-- Provides a stable event name and a small accessor surface for consumers of runtime playback events.
+- Defines the event payload contract emitted by animation playback state transitions.
+- Captures completion, loop, and frame-change signals as stable timeline reaction points.
+- Serves gameplay and scripting systems that listen to animation progression milestones.
 
 ### frame.rs
 
-- Defines the single-frame record used by the animation runtime to pair a source rectangle with optional per-frame timing.
-- Keeps the minimal frame payload shared by clips, controllers, previews, and imported metadata.
-- Preserves the older public alias so existing code can keep referring to the same frame type through its legacy name.
+- Defines the minimal frame payload of source rectangle and optional per-frame timing override.
+- Supports clip timing fallback by allowing zero-duration frames to inherit clip-level FPS behavior.
+- Serves as the shared frame unit across import, playback, preview, and rendering pathways.
 
 ### mod.rs
 
-- Provides frame-based sprite animation with clips, playback modes, and named events.
-- Supports Aseprite JSON import, blend layers, property curves, and state machine transitions.
-- Offers Spine skeleton bridge, sync groups, and render-command generation for active frames.
-- Re-exports all primary types so dependents can import from `animation::` directly.
+- Defines the animation module boundary that unifies playback, blending, transitions, and render bridging.
+- Groups import, curve, event, sync, and state-control subsystems into one coherent runtime surface.
+- Keeps frame-based and bridge-based animation features accessible through a consistent composition root.
+- Serves as the high-level integration entry for character animation behavior in engine runtime.
 
 ### render.rs
 
-- Converts the current animation frame quad into a textured draw command.
-- Stores atlas reference, position, rotation, and scale in `AnimRenderParams`.
-- Provides a standalone `quad_to_draw_command` helper reusable outside the controller.
+- Converts active animation frame state into renderer-ready textured draw command payloads.
+- Bundles atlas identity and transform inputs so frame sampling maps cleanly to render execution.
+- Keeps rendering adaptation lightweight while preserving consistent frame-to-visual translation.
+- Serves as the bridge between animation runtime output and command-stream based rendering.
 
 ### spine_bridge.rs
 
-- Bridges a Spine skeleton to an animation state machine via name mapping.
-- Plays mapped Spine clips automatically when the FSM transitions to a new state.
-- Owns the skeleton instance and advances its animation and world transforms each frame.
-- Exposes read and write access to the skeleton and the last applied FSM state.
+- Bridges animation state-machine transitions to Spine clip playback through explicit state mapping.
+- Owns skeleton progression and transform refresh so Spine output remains time-synchronized.
+- Keeps external state changes aligned with internal skeleton animation updates each frame.
+- Serves as the integration layer between engine animation logic and Spine runtime evaluation.
 
 ### state_machine.rs
 
-- Implements a named-state animation FSM driven by typed parameters and parsed conditions.
-- Registers states with clip bindings and transitions with string-based condition expressions.
-- Evaluates transition chains each frame and force-plays the target clip on state change.
-- Supports float, int, and bool parameters compared with standard relational operators.
-- Provides the condition parser and numeric comparison utilities used by transition evaluation.
+- Implements animation finite-state control with typed parameters and condition-driven transitions.
+- Evaluates transition rules each frame to move between clip-bound states deterministically.
+- Parses authored condition expressions into executable checks used during state progression.
+- Activates destination clips immediately on state change to keep visual intent synchronized.
+- Provides parameterized graph control for expressive authored animation behavior.
+- Serves as the transition-governance layer above raw clip playback execution.
 
 ### sync_group.rs
 
-- Groups animation slot-map keys that should stay synchronised during playback.
-- Stores a deduplicated member list with add, remove, clear, and query operations.
-- Provides the membership data higher systems use to align animation timers.
+- Defines synchronization groups for animation instances that must maintain shared playback phase.
+- Tracks unique membership so timing alignment stays stable across coordinated animated entities.
+- Serves as lightweight grouping state for systems that enforce multi-entity animation sync.
 
 ## Lua API Ref
 
@@ -132,9 +140,9 @@ Finally, the module generates textured draw commands from active frame quads via
 
 ### Types
 
-
 #### LAnimCurve Type
 
+- Lua-side animation curve with keyframes and optional custom easing callback.
 
 ##### Fields
 
@@ -151,9 +159,9 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimCurve:type`: Returns the Lua-visible type name for this animation curve handle.
 - `LAnimCurve:typeOf`: Returns whether this animation curve handle matches a supported type name.
 
-
 #### LAnimStateMachine Type
 
+- Lua-side animation state machine that switches clips from named states and parameters.
 
 ##### Fields
 
@@ -173,9 +181,9 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimStateMachine:typeOf`: Returns whether this animation state machine handle matches a supported type name.
 - `LAnimStateMachine:update`: Advances the animation state machine and its owned animation playback.
 
-
 #### LAnimSyncGroup Type
 
+- Lua-side animation synchronization group for coordinating multiple animation handles.
 
 ##### Fields
 
@@ -190,9 +198,9 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimSyncGroup:type`: Returns the Lua-visible type name for this animation sync group handle.
 - `LAnimSyncGroup:typeOf`: Returns whether this animation sync group handle matches a supported type name.
 
-
 #### LAnimation Type
 
+- Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 
 ##### Fields
 
@@ -232,9 +240,35 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LAnimation:typeOf`: Returns whether this animation handle matches a supported type name.
 - `LAnimation:update`: Advances animation playback and records any frame or clip events.
 
+#### LAnimationBuildCharacterResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `animation` (`LAnimation`): Animation handle.
+- `stateMachine` (`LStateMachine`): State machine handle.
+
+##### Methods
+
+- No documented methods.
+
+#### LAnimationPollEventsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `frame` (`integer?`): Frame index when available.
+- `type` (`string`): Event type name.
+
+##### Methods
+
+- No documented methods.
 
 #### LBlendLayerSet Type
 
+- Lua-side blend layer set used to combine animation clips with weights and bone masks.
 
 ##### Fields
 
@@ -251,6 +285,21 @@ Finally, the module generates textured draw commands from active frame quads via
 - `LBlendLayerSet:setWeight`: Sets the blend weight for an existing layer.
 - `LBlendLayerSet:type`: Returns the Lua-visible type name for this blend layer set handle.
 - `LBlendLayerSet:typeOf`: Returns whether this blend layer set handle matches a supported type name.
+
+#### LBlendLayerSetListLayersResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `bones` (`string[]`): Bone mask names.
+- `clip_name` (`string`): Clip name.
+- `name` (`string`): Layer name.
+- `weight` (`number`): Blend weight.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

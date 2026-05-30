@@ -25,89 +25,97 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 
 ### config.rs
 
-- Emitter configuration struct (`ParticleConfig`) with all tunable parameters serialisable to TOML.
-- Enums controlling spawn distribution, insertion order, operating state, and coordinate mode.
-- Geometric emission shapes: point, circle, rectangle, ring, line, cone, star, spiral, and custom callback.
-- Helper types for point attractors and axis-aligned bounce boundaries.
-- Relative-mode and area-distribution strategies for world-space vs emitter-attached particles.
+- Runtime configuration for particle emitters and their tunable behavior.
+- Carries spawn distribution, insertion order, state, and coordinate mode settings.
+- Describes emission shapes from point and circle to cone, star, spiral, and custom callbacks.
+- Includes attractor and bounce helper types for motion control.
+- Covers world-space versus emitter-attached spawning rules.
+- Packs every serializable knob into one config object for scripts and data files.
+- Serves as the authored contract for building particle systems.
 
 ### emission.rs
 
 - Spawn-offset sampling for particle emission shapes and area distributions.
 - Supports uniform, normal, ellipse, border, rectangle, ring, cone, star, and spiral modes.
-- Handles area-angle rotation for distribution-based offsets.
+- Handles area-angle rotation so emitted particles respect the configured shape.
+- Keeps emission math separate from the particle runtime.
+- Supplies the offset generator used by emitters and presets.
 
 ### emitter.rs
 
 - Live particle emitter that owns the active particle pool, physics stepping, and sub-system list.
-- Per-frame integration: gravity, radial/tangential acceleration, linear damping, drag, orbit, and turbulence.
-- Point-attractor influence applied per particle each frame with distance falloff.
-- Axis-aligned bounce boundaries that reflect particles with configurable restitution.
-- Continuous emission via fractional accumulator, burst spawning, and three insert-order modes.
-- Child sub-system spawning on particle death with configurable burst count and config clone.
-- State machine: Active, Paused, Stopped with lifetime-based auto-stop.
-- Render command building: shape mapping, color/alpha/size interpolation, texture quads, and animated frames.
-- Warm-up simulation pre-populates the pool by stepping in fixed 50 ms increments.
-- Custom emission shape callback support via pending offset indices drained by the Lua bridge.
-- Death event queue exposing world-space position and velocity for gameplay hooks.
+- Integrates gravity, drag, orbit, turbulence, and other per-frame forces.
+- Spawns particles continuously or in bursts using fractional accumulation and ordered insertion modes.
+- Applies attractors and axis-aligned bounce boundaries to active particles.
+- Runs child emitters on particle death when sub-systems are configured.
+- Tracks active, paused, and stopped states with lifetime-based auto-stop.
+- Builds render commands from current particle state, shape mapping, and interpolation curves.
+- Supports warm-up simulation so systems can start in a settled state.
+- Exposes custom emission-shape callbacks through the Lua bridge without coupling spawn math to rendering.
+- Provides the runtime core for all particle effects.
 
 ### math.rs
 
-- Keyframe interpolation for particle size, colour, and alpha over normalised lifetime.
-- Uniform and normal random number helpers for emission variance.
-- All evaluators clamp `t` to `[0.0, 1.0]` and return sensible defaults on empty input.
+- Keyframe interpolation for particle size, colour, and alpha over normalized lifetime.
+- Offers uniform and normal random helpers for emission variance.
+- Clamps interpolation inputs and falls back cleanly on empty keyframe sets.
+- Supports the numeric shaping layer used by emitter animation.
 
 ### mod.rs
 
-- Particle emitter lifecycle: spawn, simulate, and recycle pooled particles each frame.
-- Configurable emission shapes, rates, bursts, and per-particle property ranges (colour, size, alpha).
-- Physics collision response, trail ribbons, spawn-shape geometry, and preset constructors.
-- Render integration translating live particle state into batched draw commands.
+- Particle emitter lifecycle for spawn, simulation, and pooled recycling.
+- Collects emission, physics, trail, rendering, and preset helpers under one namespace.
+- Keeps particle effects modular while exposing a single runtime surface.
 
 ### particle.rs
 
-- Per-particle runtime state: position, velocity, lifetime, rotation, and acceleration.
-- Holds spawn-time origin for radial/tangential force calculations.
-- Carries a shape seed for deterministic procedural polygon generation.
+- Per-particle runtime state for position, velocity, lifetime, rotation, and acceleration.
+- Stores spawn origin and shape seed for force calculations and deterministic geometry.
+- Keeps the minimum state needed by the emitter loop.
 
 ### physics_collision.rs
 
 - Bounce particles off rapier colliders using AABB overlap probes.
-- Reflect velocity with a configurable restitution coefficient.
-- Operates per-frame on all live particles in a system.
+- Reflects velocity with configurable restitution per collision pass.
+- Operates on all live particles in a system each frame.
 
 ### presets.rs
 
-- Ready-made `ParticleConfig` constructors for common visual effects (fire, smoke, rain, snow, sparks).
-- Each preset returns a standalone config with tuned lifetime, speed, color ramp, and shape.
-- Designed for one-call usage; callers can override individual fields after construction.
+- Ready-made ParticleConfig constructors for common visual effects.
+- Covers fire, smoke, rain, snow, sparks, and other standard patterns.
+- Returns self-contained configs with tuned lifetime, speed, color ramp, and shape.
+- Lets callers start from a stable preset and override fields afterward.
+- Makes quick particle authoring simple without hiding the underlying config.
 
 ### render.rs
 
 - Render-command generation for particle systems and trails.
-- Expansion of batched `DrawParticleSystem` into individual textured draw calls.
-- Untextured particles remain batched for efficient rendering.
+- Expands textured particle batches into individual draw calls when needed.
+- Keeps untextured particles batched for efficiency.
+- Bridges live particle state to renderer submission.
 
 ### shapes.rs
 
-- Geometric shape primitives controlling how individual particles are rendered.
-- Includes simple fills (square, circle, triangle), directional shapes (spark, ray, capsule), and composite outlines (ring).
-- Each variant may carry inline parameters (edge count, aspect ratio, thickness).
+- Geometric shape primitives that control how individual particles are rendered.
+- Covers fills, directional shapes, and composite outlines with inline parameters.
+- Gives emitters a compact vocabulary for particle silhouette design.
 
 ### trail.rs
 
 - Ribbon trail built from a deque of aged world-space points.
-- Automatic point retirement when age exceeds configurable lifetime.
-- Width tapering and head-to-tail colour interpolation.
-- Render output as triangle-strip render commands or CPU-rasterised image.
+- Retires points automatically when they exceed the configured lifetime.
+- Tapers width and interpolates color from head to tail.
+- Can render as triangle-strip commands or as a CPU-rasterized image.
+- Provides a lightweight motion trail for fast effects and debug views.
 
 ### visualization.rs
 
-- Particle visualization helpers that render live `ParticleSystem` state to `ImageData` bitmaps.
-- Generic renderer using colour/size/alpha keyframes from the emitter configuration.
-- Themed preset renderers for explosions, rain, and spark-trail effects.
-- Compositing support: overlay particles onto an existing background or paint in-place.
-- Bar-chart lifecycle diagram showing particle count over time steps.
+- Particle visualization helpers that render live ParticleSystem state to ImageData bitmaps.
+- Includes a generic renderer plus themed presets for explosions, rain, and spark trails.
+- Supports compositing particles over an existing background or painting in place.
+- Adds a chart-style lifetime view for inspecting particle counts over time.
+- Keeps render inspection separate from the particle simulation core.
+- Helps debug effect tuning without touching the live emitter loop.
 
 ## Lua API Ref
 
@@ -128,9 +136,9 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 
 ### Types
 
-
 #### LParticleSystem Type
 
+- Lua-side handle for a particle system stored in shared runtime state.
 
 ##### Fields
 
@@ -230,9 +238,24 @@ Beyond standalone particles, the module implements a sophisticated `Trail` syste
 - `LParticleSystem:update`: Updates the particle system, applies optional physics collision, and invokes pending callbacks.
 - `LParticleSystem:warmUp`: Advances the system by a warm-up duration.
 
+#### LParticleSystemGetColorsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `a` (`number`): Alpha component.
+- `b` (`number`): Blue component.
+- `g` (`number`): Green component.
+- `r` (`number`): Red component.
+
+##### Methods
+
+- No documented methods.
 
 #### LTrail Type
 
+- Lua-side wrapper for a trail effect.
 
 ##### Fields
 

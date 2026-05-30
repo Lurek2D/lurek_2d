@@ -23,46 +23,40 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 ### bitmap_font.rs
 
-- Bitmap font loader and glyph atlas builder for fixed-size sprite fonts.
-- Parses BMFont `.fnt` descriptor files (text and binary formats).
-- Builds a glyph atlas mapping codepoints to UV rectangles in a texture.
-- Kerning pairs are stored and applied during layout for tighter spacing.
-- Atlas textures are loaded through `GameFS` and cached in the font registry.
-- Used when the game explicitly requests a bitmap font over a TTF/OTF font.
+- Provides bitmap-font loading and atlas-backed glyph lookup for pre-rasterized text rendering workflows.
+- Parses descriptor data to build codepoint-to-glyph mappings with stable UV and metric records.
+- Preserves kerning and sizing information needed for accurate spacing during layout and shaping.
+- Delivers fixed-size sprite font support for pipelines that prefer atlas sampling over runtime rasterization.
 
 ### metrics.rs
 
-- Font metrics and multi-line text measurement utilities.
-- `measure_text` splits on `\n` and returns a `TextMetrics` with width/height.
-- `measure_line` operates on a single line and accounts for kerning pairs.
-- Line height includes ascender, descender, and the configurable line-gap.
-- Results are in logical pixels; caller must apply DPI scale if needed.
+- Provides glyph and line metric structures used to measure text blocks in logical pixel space.
+- Computes single-line and multiline dimensions with kerning-aware advance accumulation.
+- Tracks per-line width and source ranges so layout systems can map metrics back to input text.
+- Exposes aggregate text bounds including line count and total height for UI sizing flows.
+- Delivers measurement primitives required by shaping, wrapping, and render preparation paths.
 
 ### mod.rs
 
-- Font subsystem: glyph metrics, text measurement, word wrapping, and font registry.
-- Bitmap font atlas loading and glyph lookup.
-- Runtime TTF/OTF rasterisation into atlas format via fontdue.
-- Text measurement and word wrapping without GPU dependency.
-- Font registry for named font handles.
+- Provides the high-level font module boundary for glyph data, layout shaping, and registry access.
+- Connects bitmap atlas handling, metrics evaluation, and wrap logic into one typography service surface.
+- Delivers stable text-measurement and font-resolution capabilities for rendering and UI systems.
 
 ### registry.rs
 
-- Font registry: loads, caches, and resolves TTF/OTF and bitmap fonts by name.
-- `FontRegistry` maps `(name, FontStyle)` pairs to loaded `FontHandle` values.
-- Fonts are loaded on first request and cached; duplicates share the same handle.
-- `FontStyle` (Regular, Bold, Italic, BoldItalic) is independent of the file path.
-- File I/O is routed through `GameFS` — no direct filesystem access here.
-- A fallback font is always present; missing fonts degrade gracefully.
+- Provides the runtime font registry that stores, resolves, and returns loaded font handles by name.
+- Maps style and size metadata onto cached font assets for consistent lookup semantics.
+- Supports registration and replacement flows while maintaining stable handle-based access patterns.
+- Centralizes font ownership so rendering systems consume one authoritative source of text assets.
+- Delivers the font-management layer that coordinates typography resources across the engine.
 
 ### shaping.rs
 
-- Text shaping and word-wrap algorithms for multi-line layout.
-- `wrap_words` wraps at word boundaries to fit `max_width` in logical pixels.
-- `wrap_characters` wraps at character boundaries for CJK and monospace fonts.
-- `WordWrap` enum selects the strategy; `None` disables wrapping entirely.
-- Both functions return a `Vec<&str>` of lines; no allocation of the text itself.
-- Called by `measure_text` and the UI text widget before rasterisation.
+- Provides text-shaping and wrapping behavior that transforms raw strings into render-ready line layouts.
+- Supports no-wrap, word-wrap, and character-wrap strategies to match varied language and UI needs.
+- Computes aligned line placement using measured advances and target width constraints.
+- Emits shaped line collections with offsets and widths for downstream rendering stages.
+- Delivers the layout layer that bridges font metrics and final text draw preparation.
 
 ## Lua API Ref
 
@@ -89,9 +83,9 @@ This module is mostly self-contained inside the `Platform Services` group. Cross
 
 ### Types
 
-
 #### LFont Type
 
+- Lua-visible font handle storing the slot key and cached metadata.
 
 ##### Fields
 

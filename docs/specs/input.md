@@ -25,74 +25,74 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 
 ### action_def.rs
 
-- Action definition types for the extended action-binding system.
-- Defines ActionDef with bindings and a grouping category string.
-- Provides ActionMap type alias for the full action map.
-- Derives Serialize/Deserialize for JSON round-trip via serializeBindings and deserializeBindings.
+- Defines action-binding data shapes used to map logical actions onto multiple physical inputs.
+- Stores ordered binding strings and optional category grouping for tooling and menu presentation.
+- Provides serializable action-map structures for loading, saving, and sharing binding presets.
 
 ### combo.rs
 
-- Multi-step key-press combo detection with per-step and total-sequence timeouts.
-- Stateful detector that advances, breaks, or completes on each key feed or timer tick.
-- Used by the `lurek.input` combo API to recognize fighting-game-style input sequences.
+- Implements sequential combo recognition for multi-step input patterns with timing constraints.
+- Tracks progress state across key feeds, validating per-step gaps and whole-sequence deadlines.
+- Emits explicit advanced, completed, and broken states to simplify caller-side response logic.
+- Resets predictably after failures or completion to support repeated combo attempts.
+- Powers gameplay and scripting features that require ordered gesture-style key sequences.
 
 ### events.rs
 
-- Input event types emitted by the winit event loop and queued for Lua consumption.
-- `InputEvent` enum covers keyboard, mouse button, mouse move, scroll, and gamepad.
-- Events are buffered in a ring during the platform event loop and drained each tick.
-- `KeyEvent` carries the logical `KeyCode`, physical scan code, and press/release state.
-- Gamepad events include axis deltas and button states for up to 4 connected pads.
+- Declares normalized input event names and payload types emitted from the platform event loop.
+- Defines keyboard, mouse, wheel, text, and gamepad event variants for unified downstream handling.
+- Serves as the shared event contract consumed by runtime queues and Lua-facing dispatch paths.
 
 ### gamepad.rs
 
-- Per-slot gamepad state tracking: buttons, axes, connection lifecycle, and per-frame delta sets.
-- Vibration request queuing for delivery to the OS force-feedback driver.
-- SDL2-style GUID-based mapping store with file and string parsing.
-- Gilrs button/axis to SDL2 string conversion helpers.
-- Virtual D-pad synthesis from analog stick values with configurable deadzone.
-- Hat (D-pad) direction queries returning 8-way compass strings.
+- Manages gamepad device state per slot, including buttons, axes, and connection lifecycle changes.
+- Tracks per-frame deltas for press and release transitions so polling remains deterministic.
+- Queues rumble requests with normalized motor strengths for runtime delivery to OS backends.
+- Parses and stores mapping profiles using GUID-keyed formats compatible with common controller data.
+- Bridges backend-specific button and axis identities into stable engine-facing naming.
+- Synthesizes virtual directional output from analog sticks with deadzone-aware interpretation.
+- Exposes hat and direction queries used by gameplay code and Lua input APIs.
 
 ### keyboard.rs
 
-- Per-frame keyboard state machine tracking logical keys, physical scan-codes, and frame deltas.
-- Modifier bitmask flags (Shift, Ctrl, Alt, Meta) updated each event.
-- OS key-repeat and text-input (IME) buffer toggling.
-- Bidirectional mapping between logical key names and physical scan-code names.
-- Winit-to-Lurek translation for both logical `Key` and physical `KeyCode` enums.
-- Frame lifecycle: `begin_frame` clears deltas, events accumulate, queries read snapshot.
-- Scan-code layer allows layout-independent bindings for WASD-style controls.
-- Text-input buffer collects composed characters for chat and text fields.
+- Implements per-frame keyboard state with held keys, transition deltas, and modifier tracking.
+- Separates logical key identity from physical scancode paths for layout-aware and layout-agnostic input.
+- Updates modifier bitmasks on each event to keep control-state queries cheap and consistent.
+- Maintains optional key-repeat and text-input buffering for UI fields and chat-like interactions.
+- Performs translation from backend key enums into stable engine key naming conventions.
+- Clears transient deltas at frame boundaries while preserving held-state continuity.
+- Supports binding workflows that combine textual key names with physical scan-code fallback semantics.
 
 ### mod.rs
 
-- Keyboard, mouse, gamepad, and touch input state aggregation.
-- Event constants for Lua callbacks (keypressed, mousemoved, etc.).
-- Combo gesture detection and input recording for replays.
-- Extended action definitions with category metadata for the binding system.
+- High-level input module that groups keyboard, mouse, gamepad, touch, and recording components.
+- Re-exports action and state types so caller code can consume one coherent input surface.
+- Defines the composition boundary where platform events become gameplay-usable input state.
 
 ### mouse.rs
 
-- Per-frame mouse state tracking: position, button held/pressed/released deltas, and scroll accumulators.
-- System cursor shape selection from a fixed set of OS-provided variants.
-- Custom image-based cursor support via raw RGBA pixel buffers with hotspot offsets.
-- Cursor visibility, grab (confinement), and relative (delta) mode toggles.
-- Warp-to-position requests consumed by the runtime window loop.
-- Frame-boundary reset for button deltas and scroll values.
+- Tracks mouse position, button transitions, and scroll deltas with frame-local reset semantics.
+- Stores held, pressed, and released button sets for deterministic polling across gameplay systems.
+- Supports system cursor variants and custom cursor image metadata with hotspot offsets.
+- Exposes cursor visibility, grab, relative mode, and warp requests for runtime window integration.
+- Preserves smooth pointer-control behavior while separating transient and persistent state.
+- Serves as the central mouse state source for UI interaction and gameplay input checks.
 
 ### recorder.rs
 
-- Record and replay input sessions as sparse frame sequences.
-- Capture key/mouse events per frame; skip silent frames to save space.
-- Serialise recordings to versioned JSON envelopes for deterministic replay.
-- Provide stateful recorder with start/stop/load/playback cursor lifecycle.
-- Support both live recording and loaded-file playback in one struct.
+- Records and replays input timelines as frame-indexed event sequences for automation and debugging.
+- Captures sparse frame data so silent periods do not inflate stored replay size.
+- Serializes recordings through versioned JSON envelopes for stable persistence and interchange.
+- Tracks recorder lifecycle state for live capture, loading, seeking, and playback progression.
+- Supports deterministic test scenarios by emitting recorded events on their original frame numbers.
+- Unifies recording and playback behavior in one stateful component used by runtime and tools.
 
 ### touch.rs
 
-- Multi-touch contact tracking with per-frame pressed/released deltas.
-- Position and pressure state for each active touch id.
-- Frame-boundary lifecycle: begin_frame clears deltas, start/move/end mutate state.
+- Tracks multi-touch contacts with active-point state and per-frame transition sets.
+- Stores per-contact position and pressure values keyed by stable touch identifiers.
+- Clears transient pressed and released markers at frame boundaries while preserving active points.
+- Provides touch lifecycle mutation paths for start, move, and end events from the platform layer.
 
 ## Lua API Ref
 
@@ -197,9 +197,9 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 
 ### Types
 
-
 #### LCombo Type
 
+- Lua-side combo detector handle tracking ordered key sequences.
 
 ##### Fields
 
@@ -217,9 +217,22 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `LCombo:type`: Returns the Lua-visible type name for this combo handle.
 - `LCombo:typeOf`: Returns whether this combo handle matches a supported type name.
 
+#### LComboGetStepResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `gap_ms` (`number`): Gap in milliseconds.
+- `key` (`string`): Key name.
+
+##### Methods
+
+- No documented methods.
 
 #### LCursor Type
 
+- Lua-side cursor handle for system and custom cursor requests.
 
 ##### Fields
 
@@ -232,9 +245,52 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `LCursor:type`: Returns the Lua-visible type name for this cursor handle.
 - `LCursor:typeOf`: Returns whether this cursor handle matches a supported type name.
 
+#### LGamepadVirtualDpadResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `direction` (`string`): Direction name.
+- `down` (`boolean`): Down pressed.
+- `left` (`boolean`): Left pressed.
+- `right` (`boolean`): Right pressed.
+- `up` (`boolean`): Up pressed.
+
+##### Methods
+
+- No documented methods.
+
+#### LInputAdvancePlaybackResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `kind` (`string`): Event kind (press, release, hold).
+- `name` (`string`): Event name.
+
+##### Methods
+
+- No documented methods.
+
+#### LInputNewMappingResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `isDown` (`function`): Returns true while the action is held.
+- `wasPressed` (`function`): Returns true on the frame the action was pressed.
+- `wasReleased` (`function`): Returns true on the frame the action was released.
+
+##### Methods
+
+- No documented methods.
 
 #### LInputRecording Type
 
+- Lua-side handle for serialized input recording data.
 
 ##### Fields
 
@@ -247,6 +303,21 @@ To support complex game mechanics, the module includes a highly capable `ComboDe
 - `LInputRecording:totalFrames`: Returns total frame count stored in this recording.
 - `LInputRecording:type`: Returns the Lua-visible type name for this input recording handle.
 - `LInputRecording:typeOf`: Returns whether this input recording handle matches a supported type name.
+
+#### LTouchGetTouchesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Touch point id.
+- `pressure` (`number`): Touch pressure.
+- `x` (`number`): Touch x position.
+- `y` (`number`): Touch y position.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

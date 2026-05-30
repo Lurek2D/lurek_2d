@@ -25,138 +25,162 @@ The module also excels in procedural generation and animation. It features a sop
 
 ### aabb_tree.rs
 
-- Dynamic AABB bounding-volume hierarchy for broad-phase 2D spatial queries.
-- Insertion, removal, and in-place update of axis-aligned bounding boxes keyed by numeric id.
-- Query primitives: rectangle overlap, point containment, circle overlap, and segment intersection.
-- Surface-area heuristic descent for high-quality sibling selection on insert.
-- Free-list node pool avoiding repeated allocation and fragmentation.
-- Incremental bottom-up refit keeping ancestor bounds tight after mutations.
-- Helper geometry routines: AABB area, merged bounds, box-box, box-circle, and box-segment tests.
-- Leaf-centric design mapping each entry id to a single leaf node for O(1) lookup.
-- Suitable for hundreds to low thousands of dynamic bodies at interactive frame rates.
+- Dynamic broad-phase spatial index for 2D world queries and overlap culling.
+- Stores moving bounds in a hierarchy that stays tight as entries shift each frame.
+- Serves fast insert, remove, move, and query flows for dynamic actors.
+- Reuses nodes through an internal pool to reduce allocation churn.
+- Chooses sibling branches with a cost heuristic that keeps the tree balanced.
+- Answers rectangle, point, circle, and segment tests from one entry map.
+- Exposes helper bound math so callers can combine and compare leaves efficiently.
+- Fits game-style workloads where many objects move but only a subset interact.
+- Gives predictable query latency for proximity, visibility, and broad-phase passes.
+- Keeps the data model leaf-centric so Lua-side handles stay simple and stable.
 
 ### bezier.rs
 
-- Arbitrary-degree Bézier curve with dynamic control-point list.
-- Evaluation via Bernstein basis, clamped to `[0,1]`.
-- Sampling helpers for full curves, sub-segments, and arc-length walks.
-- First-derivative computation and tangent-angle extraction.
-- Geometric transforms: translate, rotate, scale relative to an origin.
-- Control-point CRUD with minimum-count safety.
+- Flexible Bézier curve utility for smooth motion paths and procedural shaping.
+- Supports dynamic control points, clamped evaluation, and partial-segment sampling.
+- Provides tangent and derivative queries for orientation and velocity-aware effects.
+- Can be transformed in place with translate, rotate, and scale operations.
+- Designed for path authoring, easing-like shaping, and motion interpolation use cases.
 
 ### circle.rs
 
-- Circle primitive defined by center + radius, clamped non-negative on construction.
-- Point-containment, circle-circle intersection, and AABB queries.
-- Area and perimeter helpers using `std::f32::consts::PI`.
+- Circle primitive for radius-based collision and containment checks.
+- Keeps radius non-negative and treats the center as the shape anchor.
+- Answers point, circle, and AABB overlap queries for gameplay geometry.
+- Includes area and perimeter helpers for higher-level math routines.
 
 ### easing.rs
 
-- Standard easing curves: quad, cubic, quart, sine, expo, elastic, bounce, back.
-- Each family provides in, out, and in-out variants mapping `t∈[0,1]→[0,1]`.
-- Boundary-clamped functions (expo, elastic) handle t≤0 and t≥1 explicitly.
-- Name-based lookup via `apply` and `resolve_easing_fn` for string-driven tween systems.
-- Linear passthrough for identity interpolation.
+- Curated easing family for animation curves and tween response shaping.
+- Covers the standard in, out, and in-out variants across common motion families.
+- Handles edge clamping for curves that need explicit start and end behavior.
+- Exposes name-based resolution for data-driven animation systems.
+- Includes linear passthrough for identity interpolation.
+- Keeps the API focused on normalized t in [0,1] inputs and outputs.
+- Lets higher-level systems drive motion with consistent curve semantics.
 
 ### facade.rs
 
-- Scalar interpolation helpers: lerp, inverse_lerp, remap, smoothstep.
-- Numeric utilities: clamp, sign.
-- All functions operate on `f32` and are pure (no side effects).
+- Small scalar helper layer for interpolation and numeric remapping.
+- Groups lerp, inverse lerp, remap, smoothstep, clamp, and sign behavior.
+- Operates on f32 values only and stays side-effect free.
+- Acts as the lightweight math front door for common numeric tasks.
 
 ### geometry.rs
 
-- Circle queries: containment, circle-circle overlap, circle-line and circle-segment intersection with hit points.
-- Polygon operations: signed area (shoelace), centroid, point-in-polygon (ray cast), convex hull (Andrew monotone chain).
-- Segment and line utilities: segment-segment intersection, closest point on segment, infinite-line intersection.
-- Grid rasterization: Bresenham line for integer cell traversal.
-- Triangulation: Delaunay via Bowyer-Watson with super-triangle removal.
-- Angle computation: atan2-based bearing between two points.
-- All routines are standalone free functions operating on flat coordinate scalars or flat vertex arrays.
-- f32 used for game-facing geometry; f64 used for Delaunay where precision matters.
+- Standalone geometry toolbox for flat coordinate math and polygon routines.
+- Covers circle, segment, line, and point queries used by gameplay systems.
+- Computes polygon area, centroid, convex hull, and point inclusion tests.
+- Provides line rasterization for grid traversal and tile-based effects.
+- Includes Delaunay triangulation helpers for procedural meshes and Voronoi prep.
+- Uses f32 for engine-facing work and f64 where triangulation precision matters.
+- Exposes plain free functions with no shape ownership or scene coupling.
+- Serves as the shared low-level layer for collision, map, and generation code.
 
 ### loot_table.rs
 
-- Walker-Vose alias-method loot table and pity tracker.
-- `LootTable` samples in O(1) using the alias method after an O(n) build.
-- `PityTracker` counts misses and primes a guaranteed drop after `threshold` misses.
-- `sample_with_pity` combines both: forces the tracked item when the pity is primed.
-- Serialisation via `save` / `restore` round-trips the RNG state and all weights.
+- Weighted loot sampling and pity tracking for deterministic drop systems.
+- Uses the alias method for O(1) draws after an O(n) build step.
+- Keeps the raw weight table and RNG state serializable for save files.
+- Supports guaranteed outcomes once a pity threshold is reached.
+- Lets callers combine normal sampling with tracked fail counters.
+- Preserves fast runtime lookups without hiding the probability model.
+- Fits reward tables, gacha-style drops, and event-driven item rolls.
+- Restores exactly to the previous random state when deserialized.
+- Keeps the core data structure simple enough for Lua-driven gameplay flows.
+- Exposes predictable sampling behavior under both normal and pity paths.
 
 ### mat3.rs
 
-- Row-major 3×3 matrix type for 2D affine transformations.
-- Factory constructors for identity, translation, rotation, scale, and shear.
-- Inverse computation with degenerate-determinant fallback.
-- Point transformation and matrix multiplication via `std::ops::Mul`.
+- Row-major 3x3 matrix for 2D affine transforms and coordinate mapping.
+- Builds identity, translation, rotation, scale, and shear matrices.
+- Supports inversion and multiplication for transform composition.
+- Maps points through a compact linear algebra core.
+- Serves as the numeric backbone for higher-level 2D transform code.
 
 ### mod.rs
 
-- Math primitives: Vec2, Vec3, Mat3, Rect, Circle, Transform.
-- Spatial structures: AABB tree, spatial hash grid, rectangle bin-packing.
-- Curves and interpolation: bezier, splines, tweens, easing functions, scalar helpers.
+- Core math module wiring the vector, matrix, shape, curve, and utility submodules.
+- Collects the primitives that other engine systems build on for motion, collision, and mapping.
+- Groups spatial structures with interpolation, geometry, and procedural helpers under one namespace.
+- Keeps the public math surface compact while exposing the full foundation layer.
 
 ### polygon.rs
 
-- Ear-clipping triangulation for simple polygons and convexity testing.
-- Sutherland-Hodgman polygon clipping against arbitrary half-planes.
-- Boolean-style polygon operations: intersection, union, and difference.
-- Andrew monotone-chain convex hull and winding-order normalization.
-- Internal helpers for signed area, point-in-triangle, and cross-product sign tests.
+- Polygon toolkit for clipping, hull building, triangulation, and winding cleanup.
+- Handles simple and concave shapes with routines aimed at gameplay geometry.
+- Provides intersection and boolean-style operations for shape processing.
+- Computes signed area and point-in-triangle tests for structural checks.
+- Normalizes vertex order so downstream consumers can rely on consistent winding.
+- Supplies the low-level machinery behind map, collision, and editor-style geometry flows.
 
 ### random.rs
 
-- Seedable pseudo-random number generator wrapping `fastrand` with save/restore support.
-- Uniform integer, float, and Gaussian sampling primitives.
-- Seed persistence via string serialisation for deterministic replay.
+- Seedable pseudo-random generator wrapper for deterministic gameplay and replay.
+- Produces uniform integer, float, and Gaussian samples from one stateful source.
+- Serializes and restores seed state so saves can resume the same sequence.
+- Gives higher-level systems a simple random facade without exposing backend details.
+- Fits any flow that needs reproducible chance, noise, or procedural variation.
 
 ### rect.rs
 
-- Axis-aligned rectangle defined by top-left corner and size (y-down convention).
-- Containment, intersection, union, and bounding-box construction from point sets.
-- Center-based and corner-based constructors for layout and collision use cases.
+- Axis-aligned rectangle helper for layout, bounds, and collision checks.
+- Stores top-left position plus size under the engine's y-down convention.
+- Supports containment, overlap, union, and bounding-box construction.
+- Offers both corner-based and center-based creation paths.
+- Acts as the basic 2D box type used across spatial code.
 
 ### spatial_hash.rs
 
-- Uniform-grid spatial hashing for broad-phase 2D collision and proximity queries.
-- AABB insert/remove/update with automatic cell-bucket management.
-- Rectangle, circle, and segment query shapes with deduplication.
-- Parametric slab-based segment-vs-AABB intersection test.
-- O(1) cell lookup per query tile; scales with world density, not total item count.
+- Uniform-grid spatial hash for broad-phase collision and proximity search.
+- Buckets moving bounds into cells so query cost follows local density, not world size.
+- Supports insert, remove, update, and deduplicated multi-shape queries.
+- Handles rectangle, circle, and segment probes with shared cell traversal logic.
+- Uses slab-style segment tests for fast box intersection checks.
+- Works best when many objects stay sparse across a large playfield.
 
 ### spline.rs
 
-- Catmull-Rom multi-segment spline with dynamic control-point management.
-- Hermite cubic segment defined by endpoints and tangents.
-- Normalized parameter sampling across full spline or individual segments.
+- Multi-segment spline helper for smooth interpolation across control points.
+- Bridges Catmull-Rom and Hermite style curve handling under one shape.
+- Supports normalized sampling across full paths or individual segments.
+- Tracks control points dynamically so paths can be edited at runtime.
+- Useful for motion trails, camera rails, and other smooth route logic.
 
 ### transform.rs
 
-- Accumulated 2D affine transform backed by a 3×3 matrix.
-- Chainable translate, rotate, scale, and shear mutations.
-- Forward and inverse point mapping plus SRT decomposition.
+- Mutable 2D affine transform that accumulates position, rotation, scale, and shear.
+- Wraps a 3x3 matrix so chained edits stay compact and composable.
+- Exposes forward and inverse point mapping for world and local space conversion.
+- Includes SRT decomposition for systems that need readable transform components.
+- Bridges low-level matrix math with runtime spatial manipulation.
 
 ### vec2.rs
 
-- 2D float vector type used for all position, direction, and velocity math.
-- Arithmetic operators: add, sub, mul, div, negate, and assign variants.
-- Geometric helpers: length, normalize, distance, dot, cross, perpendicular.
-- Rotation, reflection, and angle conversion utilities.
-- Linear interpolation and unit-direction construction from radians.
+- Fundamental 2D float vector for position, velocity, direction, and offsets.
+- Covers arithmetic, normalization, projection, and distance-style helpers.
+- Adds rotation, reflection, and angle conversion support for gameplay math.
+- Offers interpolation and unit-direction construction from radians.
+- Serves as the common scalar pair used throughout the engine.
 
 ### vec3.rs
 
-- 3D float vector for cross-product normals, raycasting directions, and noise inputs.
-- Arithmetic ops (add, sub, mul, div, neg) and geometric helpers (dot, cross, normalize, reflect, project).
-- Lerp, distance, and length utilities for interpolation and spatial queries.
+- 3D float vector for cross products, directions, and other compact spatial math.
+- Provides arithmetic and geometric helpers for dot, cross, normalize, and reflection work.
+- Supports projection, interpolation, distance, and length queries.
+- Acts as the small 3D companion to the 2D math core.
+- Useful for normals, ray direction math, and procedural inputs.
 
 ### voronoi.rs
 
-- Voronoi diagram generation from 2D point sets via Bowyer-Watson Delaunay triangulation.
-- Circumcenter and circumcircle predicates for incremental insertion.
-- Boundary-edge extraction and super-triangle cleanup.
-- CCW vertex sorting and deduplication to produce closed polygonal cells.
-- Input deduplication to handle coincident sites gracefully.
+- Voronoi cell builder from 2D point sets using incremental Delaunay construction.
+- Produces closed polygonal cells with stable point deduplication and cleanup.
+- Relies on circumcircle predicates to drive triangulation updates.
+- Extracts boundary edges and orders vertices counter-clockwise for each region.
+- Handles coincident sites gracefully instead of failing the whole diagram.
+- Gives procedural generation and spatial partitioning code a ready-made diagram source.
 
 ## Lua API Ref
 
@@ -271,9 +295,9 @@ The module also excels in procedural generation and animation. It features a sop
 
 ### Types
 
-
 #### LAabbTree Type
 
+- Lua-side wrapper for an AABB tree spatial index.
 
 ##### Fields
 
@@ -293,9 +317,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LAabbTree:typeOf`: Returns whether this AABB tree handle matches a supported type name.
 - `LAabbTree:update`: Updates an AABB by id. This method is available to Lua scripts.
 
-
 #### LBezierCurve Type
 
+- Lua-side wrapper for a Bezier curve.
 
 ##### Fields
 
@@ -319,9 +343,22 @@ The module also excels in procedural generation and animation. It features a sop
 - `LBezierCurve:type`: Returns the Lua-visible type name for this Bezier curve handle.
 - `LBezierCurve:typeOf`: Returns whether this Bezier curve handle matches a supported type name.
 
+#### LBezierCurveRenderResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LCatmullRom Type
 
+- Lua-side wrapper for a Catmull-Rom spline.
 
 ##### Fields
 
@@ -337,9 +374,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LCatmullRom:type`: Returns the Lua-visible type name for this spline handle.
 - `LCatmullRom:typeOf`: Returns whether this spline handle matches a supported type name.
 
-
 #### LCircle Type
 
+- Lua-side wrapper for a circle primitive.
 
 ##### Fields
 
@@ -358,9 +395,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LCircle:x`: Returns this circle center x coordinate.
 - `LCircle:y`: Returns this circle center y coordinate.
 
-
 #### LHermite Type
 
+- Lua-side wrapper for a Hermite spline.
 
 ##### Fields
 
@@ -372,9 +409,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LHermite:type`: Returns the Lua-visible type name for this spline handle.
 - `LHermite:typeOf`: Returns whether this spline handle matches a supported type name.
 
-
 #### LLootTable Type
 
+- Lua-side wrapper for a Walker-Vose alias-method loot table.
 
 ##### Fields
 
@@ -397,9 +434,48 @@ The module also excels in procedural generation and animation. It features a sop
 - `LLootTable:type`: Returns the Lua-visible type name.
 - `LLootTable:typeOf`: Returns whether this handle matches the given type name.
 
+#### LMathBresenhamResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LMathDelaunayTriangulateResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `[1]` (`integer`): First vertex index.
+- `[2]` (`integer`): Second vertex index.
+- `[3]` (`integer`): Third vertex index.
+
+##### Methods
+
+- No documented methods.
+
+#### LMathTriangulateResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `[1]` (`number`): Point component (interleaved x,y pairs).
+
+##### Methods
+
+- No documented methods.
 
 #### LPityTracker Type
 
+- Lua-side wrapper for a pity tracker.
 
 ##### Fields
 
@@ -418,9 +494,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LPityTracker:type`: Returns the Lua-visible type name.
 - `LPityTracker:typeOf`: Returns whether this handle matches the given type name.
 
-
 #### LRandomGenerator Type
 
+- Lua-side wrapper for a deterministic random generator.
 
 ##### Fields
 
@@ -449,9 +525,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LRandomGenerator:type`: Returns the Lua-visible type name for this random generator handle.
 - `LRandomGenerator:typeOf`: Returns whether this random generator handle matches a supported type name.
 
-
 #### LRectPacker Type
 
+- Lua-side wrapper for a rectangle packer.
 
 ##### Fields
 
@@ -464,9 +540,25 @@ The module also excels in procedural generation and animation. It features a sop
 - `LRectPacker:occupancy`: Returns occupied area ratio. This method is available to Lua scripts.
 - `LRectPacker:pack`: Attempts to pack a rectangle and returns its placement coordinates.
 
+#### LRectPackerGetPackedResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): Height.
+- `id` (`integer?`): Optional identifier.
+- `w` (`number`): Width.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LSpatialHash Type
 
+- Lua-side wrapper for a spatial hash index.
 
 ##### Fields
 
@@ -486,9 +578,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LSpatialHash:typeOf`: Returns whether this spatial hash handle matches a supported type name.
 - `LSpatialHash:update`: Updates an item rectangle in the spatial hash.
 
-
 #### LTransform Type
 
+- Lua-side wrapper for a 2D transform matrix.
 
 ##### Fields
 
@@ -511,9 +603,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LTransform:type`: Returns the Lua-visible type name for this transform handle.
 - `LTransform:typeOf`: Returns whether this transform handle matches a supported type name.
 
-
 #### LTween Type
 
+- Lua-side wrapper for numeric tween state.
 
 ##### Fields
 
@@ -537,9 +629,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LTween:typeOf`: Returns whether this tween handle matches a supported type name.
 - `LTween:update`: Advances the tween clock and returns whether it is complete.
 
-
 #### LVec2 Type
 
+- Represents the Lua-visible LVec2 object exposed by this module.
 
 ##### Fields
 
@@ -566,9 +658,9 @@ The module also excels in procedural generation and animation. It features a sop
 - `LVec2:x`: Returns this vector x component. This method is available to Lua scripts.
 - `LVec2:y`: Returns this vector y component. This method is available to Lua scripts.
 
-
 #### LVec3 Type
 
+- Represents the Lua-visible LVec3 object exposed by this module.
 
 ##### Fields
 

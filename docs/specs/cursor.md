@@ -29,70 +29,59 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 
 ### animated_cursor.rs
 
-- Animated cursor: frame sequences with per-frame timing and pulse scale effects.
-- `AnimatedCursor` holds a `Vec<CustomCursor>` of frames and an index.
-- `PulseConfig` drives a sine-based scale animation independent of frame advance.
-- Frame advance is time-driven; `duration_ms` per frame is set at construction.
-- Used by `CursorState::Animated` and updated each tick in the cursor manager.
+- Implements animated cursor state using frame sequences and time-based frame advancement.
+- Supports optional pulse scaling driven by oscillation parameters independent of frame stepping.
+- Maintains deterministic timing behavior through per-frame duration tracking.
+- Integrates as an active cursor-state variant within context-aware cursor orchestration.
+- Serves as the runtime animation layer for custom cursors with motion feedback.
 
 ### config.rs
 
-- Global cursor system configuration shared across the cursor manager.
-- `CursorConfig` is deserialized from the game TOML config section `[cursor]`.
-- Controls trail, zoom, context rules, idle-hide timeout, and default kind.
-- All fields have safe defaults; the entire struct is optional in the config file.
-- Loaded once at engine startup; changes require a restart.
+- Defines cursor-system configuration values loaded from project settings and startup defaults.
+- Controls feature toggles and behavior for trail effects, zoom lens, contexts, and idle visibility.
+- Serves as the shared config contract consumed by cursor runtime orchestration.
 
 ### context.rs
 
-- Context-sensitive cursor switching: maps named contexts to cursor states.
-- `CursorContext` holds a registry of context-name → `CursorState` mappings.
-- `CursorState` discriminates between system, custom, and animated cursor kinds.
-- Context names are arbitrary strings set by game scripts (e.g. `"dialog"`, `"combat"`).
-- The active context is applied immediately; fallback is the default system cursor.
+- Implements context-sensitive cursor switching by mapping named runtime contexts to cursor states.
+- Supports system, custom, and animated cursor variants under one discriminated state model.
+- Applies context changes immediately while preserving a deterministic default fallback path.
+- Integrates optional trail and zoom behavior into active cursor presentation state.
+- Serves as the policy layer for script-driven cursor-mode transitions.
 
 ### custom_cursor.rs
 
-- Custom image cursor built from RGBA pixel data with configurable hotspot offset.
-- `CustomCursor` stores width, height, hotspot `(x, y)`, and a flat RGBA `Vec<u8>`.
-- Pixel data is validated at construction; mismatched dimensions return an error.
-- Used directly or as frames inside `AnimatedCursor`.
-- Exposed to Lua scripts via `lurek.cursor.set_custom()`.
+- Implements custom cursor images built from RGBA pixel buffers and hotspot metadata.
+- Validates buffer dimensions at construction to prevent malformed cursor payload usage.
+- Supports standalone custom cursors and animated-frame reuse through shared image structure.
+- Serves as the pixel-defined cursor asset contract for script-driven cursor customization.
 
 ### mod.rs
 
-- Cursor management system.
-- System cursors (arrow, crosshair, hand, etc.).
-- Custom image cursors with hotspot.
-- Animated cursors with frame sequences and pulsing.
-- Cursor trails (fade points, particles, lines).
-- Context-sensitive cursor switching.
-- Zoom/magnifier at cursor position.
+- Defines the cursor module boundary for system, custom, animated, contextual, and effect-driven cursor behavior.
+- Groups cursor state types, visual effects, and configuration contracts into one cohesive runtime surface.
+- Serves as the composition entry for engine and script-side cursor control workflows.
 
 ### system_cursor.rs
 
-- System cursor shapes available on all desktop platforms.
-- `SystemCursor` enumerates arrow, hand, crosshair, ibeam, wait, and resize variants.
-- Maps directly to `winit::window::CursorIcon` at the platform integration layer.
-- Parsing from string (used by config deserialization) is case-insensitive.
-- Exposed to Lua via `lurek.cursor.set_system(name)`.
+- Defines cross-platform system cursor shape variants used by runtime cursor state.
+- Maps engine-facing cursor variants to platform-native icon representations.
+- Supports case-insensitive string parsing for config and script-driven selection.
+- Serves as the canonical enum contract for system cursor mode requests.
 
 ### trail.rs
 
-- Cursor trail effects: fading dot trails, connected line trails, and particle modes.
-- `TrailPoint` records position, timestamp, and current alpha for each trail node.
-- `TrailState` holds a ring buffer of `TrailPoint`s capped at `max_points`.
-- `TrailMode` selects: `Dots`, `Line`, `Particles` — each rendered differently.
-- Trail alpha decays linearly; the oldest points are culled when the buffer is full.
-- Updated each tick from the cursor manager; rendered in the overlay pass.
+- Implements cursor-trail effects with fading points, connected strokes, and particle-style variants.
+- Tracks trail samples as timestamped points with alpha decay progression over update ticks.
+- Maintains bounded point history through capped storage to control runtime memory pressure.
+- Supports multiple trail render modes selected by explicit trail behavior configuration.
+- Serves as the visual motion-feedback layer for cursor movement presentation.
 
 ### zoom.rs
 
-- Cursor magnifier lens: a configurable zoom window that follows the cursor.
-- `ZoomConfig` sets lens radius, magnification factor, and optional border style.
-- The lens is rendered as a post-process scissored blit after the main render pass.
-- Magnification clamps between 1.1× and 8.0× to avoid pixel smear at extremes.
-- Enabled/disabled via `lurek.cursor.set_zoom(config)` or the `[cursor]` TOML block.
+- Implements cursor-following zoom-lens state for magnified local inspection around pointer position.
+- Stores radius, magnification, and border settings used by post-process cursor-lens rendering.
+- Serves as the magnifier feature contract controlled through cursor config and scripting paths.
 
 ## Lua API Ref
 
@@ -112,9 +101,9 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 
 ### Types
 
-
 #### LAnimatedCursor Type
 
+- Lua userdata representing an animated cursor that cycles through image frames.
 
 ##### Fields
 
@@ -131,9 +120,9 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 - `LAnimatedCursor:setPulse`: Set the pulse animation speed and scale factor parameters.
 - `LAnimatedCursor:update`: Update animation (call each frame).
 
-
 #### LCursorManager Type
 
+- Lua userdata that controls cursor appearance and system cursor selection.
 
 ##### Fields
 
@@ -160,9 +149,9 @@ Implementation detail and boundary guarantees for cursor: this module keeps resp
 - `LCursorManager:setVisible`: Set cursor visibility for this object.
 - `LCursorManager:update`: Update cursor state (call each frame).
 
-
 #### LCustomCursor Type
 
+- Lua userdata representing a custom-drawn cursor image with a configurable hot-spot.
 
 ##### Fields
 

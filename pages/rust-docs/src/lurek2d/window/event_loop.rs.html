@@ -117,7 +117,7 @@
 <a href=#117 id=117 data-nosnippet>117</a>    })
 <a href=#118 id=118 data-nosnippet>118</a>}
 <a href=#119 id=119 data-nosnippet>119</a><span class="doccomment">/// Move `window` to the center of monitor `display_index`; return `false` when that index doesn't exist.
-<a href=#120 id=120 data-nosnippet>120</a></span><span class="kw">pub fn </span>move_window_to_display(window: <span class="kw-2">&amp;</span>Window, display_index: usize) -&gt; bool {
+<a href=#120 id=120 data-nosnippet>120</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>move_window_to_display(window: <span class="kw-2">&amp;</span>Window, display_index: usize) -&gt; bool {
 <a href=#121 id=121 data-nosnippet>121</a>    <span class="kw">let </span><span class="prelude-val">Some</span>(monitor) = window.available_monitors().nth(display_index) <span class="kw">else </span>{
 <a href=#122 id=122 data-nosnippet>122</a>        <span class="kw">return </span><span class="bool-val">false</span>;
 <a href=#123 id=123 data-nosnippet>123</a>    };
@@ -126,7 +126,7 @@
 <a href=#126 id=126 data-nosnippet>126</a>    <span class="bool-val">true
 <a href=#127 id=127 data-nosnippet>127</a></span>}
 <a href=#128 id=128 data-nosnippet>128</a><span class="doccomment">/// Return the `MonitorHandle` to use at startup for `display_index`; falls back to primary with a warning.
-<a href=#129 id=129 data-nosnippet>129</a></span><span class="kw">pub fn </span>select_startup_monitor(
+<a href=#129 id=129 data-nosnippet>129</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>select_startup_monitor(
 <a href=#130 id=130 data-nosnippet>130</a>    event_loop: <span class="kw-2">&amp;</span>ActiveEventLoop,
 <a href=#131 id=131 data-nosnippet>131</a>    display_index: u32,
 <a href=#132 id=132 data-nosnippet>132</a>) -&gt; <span class="prelude-ty">Option</span>&lt;MonitorHandle&gt; {
@@ -146,7 +146,7 @@
 <a href=#146 id=146 data-nosnippet>146</a>    monitor.or(primary)
 <a href=#147 id=147 data-nosnippet>147</a>}
 <a href=#148 id=148 data-nosnippet>148</a><span class="doccomment">/// Center `window` on `monitor` given its `width` × `height` in physical pixels.
-<a href=#149 id=149 data-nosnippet>149</a></span><span class="kw">pub fn </span>center_window_on_monitor(window: <span class="kw-2">&amp;</span>Window, monitor: <span class="kw-2">&amp;</span>MonitorHandle, width: u32, height: u32) {
+<a href=#149 id=149 data-nosnippet>149</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>center_window_on_monitor(window: <span class="kw-2">&amp;</span>Window, monitor: <span class="kw-2">&amp;</span>MonitorHandle, width: u32, height: u32) {
 <a href=#150 id=150 data-nosnippet>150</a>    <span class="kw">let </span>monitor_size = monitor.size();
 <a href=#151 id=151 data-nosnippet>151</a>    <span class="kw">let </span>monitor_position = monitor.position();
 <a href=#152 id=152 data-nosnippet>152</a>    <span class="kw">let </span>x = monitor_position.x + ((monitor_size.width <span class="kw">as </span>i32 - width <span class="kw">as </span>i32).max(<span class="number">0</span>) / <span class="number">2</span>);

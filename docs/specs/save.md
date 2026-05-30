@@ -25,17 +25,18 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 
 ### mod.rs
 
-- Slot-based save/load with compression and rotation
-- Serialize Lua tables to binary SaveValue format
-- Backup management with configurable slot count
+- This module provides the save-system surface for collecting game state, storing it by slot, and restoring it later.
+- It combines persistence, compression, backup rotation, and migration support under one gameplay-facing feature stack.
+- At the highest level this is the engine subsystem that turns live Lua state into durable save slots.
 
 ### save_manager.rs
 
-- Dirty-tracking, auto-save scheduling, and schema-versioned migration for `lurek.save`.
-- `SaveManager` owns registration of Lua tables, auto-save interval logic, and migration routing.
-- `SaveValue` tree converts between Lua tables and a serializable Rust enum.
-- Serialization emits Lua table literals; compression uses LZ4 + Base64 with a marker header.
-- Slot file naming, parse validation, and summary forwarding to `SlotMeta`.
+- This file implements the practical save manager that coordinates collection, serialization, persistence, and restoration of game state.
+- Registered sections let different gameplay systems contribute their own data while still producing one coherent slot payload.
+- Dirty tracking and auto-save timing live here so disk writes happen when needed instead of on every frame or every small state change.
+- Schema versioning and migration routing are also handled here, which lets older saves evolve forward as projects change over time.
+- Serialization and compression are part of the same flow so slot files remain structured, compact, and easy to validate on load.
+- The file is therefore the operational core of persistence for games built on the engine.
 
 ## Lua API Ref
 
@@ -52,9 +53,9 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 
 ### Types
 
-
 #### LSaveManager Type
 
+- Manages persistent game state: registering data collectors/restorers, serializing to named.
 
 ##### Fields
 
@@ -89,6 +90,36 @@ Crucially, the module provides robust tools for long-term game maintenance via s
 - `LSaveManager:typeOf`: Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
 - `LSaveManager:unregister`: Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
 - `LSaveManager:update`: Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+
+#### LSaveManagerGetSlotInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `slot` (`string`): Slot name.
+- `summary` (`string`): Save summary.
+- `timestamp` (`integer`): Save timestamp.
+- `version` (`integer`): Schema version.
+
+##### Methods
+
+- No documented methods.
+
+#### LSaveManagerGetSlotsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `slot` (`string`): Slot name.
+- `summary` (`string`): Save summary.
+- `timestamp` (`integer`): Save timestamp.
+- `version` (`integer`): Schema version.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

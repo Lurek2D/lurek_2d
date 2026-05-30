@@ -35,29 +35,26 @@ Backward compatibility is maintained via re-exports in `src/audio/mod.rs`. The `
 
 ### mod.rs
 
-- MIDI input and playback sub-system: device discovery, event routing, and sequencing.
-- Enumerates MIDI devices via the `midir` crate; device list is refreshed on demand.
-- Incoming MIDI events are translated to `lurek.midi.*` Lua callbacks each tick.
-- The built-in sequencer plays SMF (`.mid`) files via the audio mixer.
-- MIDI output (to hardware synths) is also supported if an output port is open.
+- MIDI subsystem for device discovery, event routing, and sequenced playback.
+- Bridges live MIDI input, software rendering, and hardware output from one module.
+- Keeps device refresh and callback delivery aligned with the engine tick.
 
 ### player.rs
 
-- `MidiPlayer` stateful transport controller for MIDI file playback via rendered PCM.
-- File loading with parsed metadata: duration, BPM, ticks-per-beat, track names, note count.
-- Transport controls: play, stop, pause, resume, seek, tell, and duration queries.
-- Per-channel volume, mute, instrument, and solo/unsolo operations across 16 MIDI channels.
-- Per-track mute support keyed by track index.
-- Configurable tempo scaling, looping, and output sample rate / channel count.
-- Mixer bus assignment via `BusKey` for routed playback.
-- `MidiData` metadata struct storing parsed song-level attributes.
-- Helper functions for MIDI note-to-frequency conversion and sine-wave note rendering.
+- Stateful MIDI transport for file playback through rendered PCM.
+- Holds parsed song metadata and playback position in one controller object.
+- Handles play, pause, resume, seek, stop, and duration queries.
+- Tracks per-channel mix state such as volume, mute, solo, and instrument selection.
+- Supports per-track muting plus tempo, looping, and output format control.
+- Routes output through the mixer bus so playback fits the engine audio graph.
+- Gives Lua a stable player surface for song-driven sequencing and testing.
 
 ### state.rs
 
-- `MidiState` storage for loaded SoundFont binary data and its source path.
-- RIFF+sfbk header validation on `set_soundfont` to reject malformed SF2 files.
-- Query and clear helpers for SoundFont availability and data access.
+- Storage for loaded MIDI SoundFont data and its source path.
+- Validates SoundFont files before they enter the playback pipeline.
+- Exposes query and clear helpers for runtime availability checks.
+- Keeps the shared sample resource separate from transport state.
 
 ## Lua API Ref
 

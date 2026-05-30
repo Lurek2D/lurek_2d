@@ -27,89 +27,72 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ### adjacency.rs
 
-- Adjacency provider trait: defines the neighbor relationship between map regions.
-- `AdjacencyProvider` trait has one method: `neighbors(region_id) -> Vec<RegionId>`.
-- Grid-based maps implement it via 4-directional or 8-directional cell adjacency.
-- Province maps implement it via the province border index for irregular shapes.
-- Injected into the visibility grid at construction; swappable without engine changes.
+- This file provides the adjacency abstraction that supplies neighborhood topology to visibility.
+- It defines a geometry-agnostic contract so grids, graphs, and region maps share one interface.
+- It enables visibility algorithms to run without coupling to any single world representation.
+- It keeps neighbor queries and region cardinality explicit for deterministic reveal behavior.
 
 ### cost.rs
 
-- Per-region discovery cost and adjacency requirements for visibility reveal logic.
-- `VisibilityCost` stores a movement-point cost and required flag mask per region.
-- Regions with `cost = 0` are revealed instantly when any neighbor becomes visible.
-- Required flags can block reveal until the player has a specific capability.
-- Costs are set from Lua via `lurek.visibility.set_cost(region_id, cost)`.
+- This file provides per-region discovery cost metadata used by reveal progression logic.
+- It encodes adjacency prerequisites and progression thresholds for visibility expansion.
+- It keeps reveal gating explicit so exploration pacing remains tunable and predictable.
 
 ### events.rs
 
-- Visibility state-change events emitted when regions transition between states.
-- `VisibilityEvent` variants: `RegionRevealed`, `RegionDiscovered`, `RegionHidden`.
-- Events are queued during the visibility update pass and drained to Lua each tick.
-- `RegionRevealed` fires when a region moves from Hidden/Discovered to Visible.
-- Used to trigger map-reveal animations, narration, and scripted events.
+- This file provides event types emitted when visibility state transitions occur.
+- It captures reveal, hide, and ownership-related changes as script-consumable signals.
+- It enables frame-coherent reaction flows for fog effects and gameplay scripting hooks.
 
 ### flags.rs
 
-- Per-region bitfield flags: terrain type, unit presence, buildings, and custom bits.
-- `VisibilityFlags` is a `u32` bitfield; bits 0-7 are engine-reserved, 8-31 are game-defined.
-- Flag constants are registered at game startup; names are mapped to bit positions.
-- Used as required-flag masks in `VisibilityCost` to gate region reveal.
-- Modified from Lua via `lurek.visibility.set_flags(region_id, flags)`.
+- This file provides bitflag storage for per-region visibility-related feature markers.
+- It encodes what information layers are present or unlocked for each map region.
+- It supports gated reveal logic by combining flag checks with discovery progression rules.
+- It keeps per-region capability state compact and efficient for frequent visibility queries.
 
 ### fog_render.rs
 
-- Fog-of-war rendering configuration: intensity, colour, and render integration hints.
-- `FogRenderConfig` controls fog opacity for `Hidden` and `Discovered` states.
-- Fog is composited in the tilemap/world render pass as a per-tile colour multiply.
-- `FogColor` is an RGBA value applied to hidden tiles; discovered tiles use a lighter shade.
-- Config is hot-reloadable from `[visibility.fog]` TOML without a restart.
+- This file provides fog rendering configuration that maps visibility state to visual intensity.
+- It defines opacity and transition behavior used by world compositing passes.
+- It keeps fog appearance tunable without altering visibility simulation internals.
 
 ### grid.rs
 
-- Visibility grid: per-region state storage for multiple simultaneous players/factions.
-- `VisibilityGrid` maps `(faction_id, region_id) → VisibilityState`.
-- Update pass: marks visible set, propagates discovery, reverts out-of-range to Discovered.
-- Dirty tracking ensures only changed regions emit events and redraw fog tiles.
-- Grid is serialised into the save file; full snapshot is compact (2 bits per region per faction).
+- This file provides the main visibility grid that stores region state across players and factions.
+- It tracks current and historical knowledge levels to separate visible and discovered outcomes.
+- It drives reveal and hide progression while emitting state-change events for script consumers.
+- It marks dirty regions so rendering and event systems process only meaningful transitions.
+- It supports compact serialization so long-campaign visibility history remains save-friendly.
 
 ### mod.rs
 
-- Universal visibility system for fog-of-war, discovery, and line-of-sight.
-- This module provides a generic visibility layer that can be attached to any
-- region-based system (tilemap, province map, globe, custom). The module is
-- agnostic to geometry — it receives region counts and adjacency lists.
-- # Architecture
-- `VisibilityGrid` — per-region visibility state for multiple players
-- `VisibilityState` — enum: Hidden, Discovered, Visible (+ custom u8 levels)
-- `PlayerOwnership` — which players/groups share visibility
-- `VisibilityFlags` — bitfield per region (terrain, units, buildings, etc.)
-- `DiscoveryCost` — per-region cost to reveal, adjacency requirements
-- `FogConfig` — fog intensity and rendering hints
+- This module delivers the high-level fog, discovery, and line-of-sight system for region maps.
+- It stays geometry-agnostic so tile, province, and custom topologies can share the same model.
+- It unifies state storage, ownership sharing, reveal costs, events, and fog presentation paths.
 
 ### owner.rs
 
-- Player and faction ownership of shared visibility and discovery state.
-- `OwnerMap` tracks which faction owns each region for fog-of-war sharing.
-- Allied factions share visibility when `share_vision` is enabled per-alliance.
-- `OwnerMap::visible_to(faction_id, region_id)` is the hot-path query.
-- Ownership changes trigger re-evaluation of all visibility states for affected factions.
+- This file provides ownership and alliance mapping used for shared visibility semantics.
+- It tracks player grouping so allied entities can inherit reveal information coherently.
+- It answers hot-path sharing queries that visibility updates depend on each frame.
+- It ensures ownership changes can trigger consistent recalculation of affected states.
 
 ### shadowcast.rs
 
-- Tile-grid line-of-sight using recursive shadowcasting (8-octant, Björn Bergström method).
-- `TileFov` computes per-cell visibility on a flat tile grid.
-- Visible cells accumulate into an `explored` mask that persists across frames.
-- The blocker predicate is accepted at `compute` time — no internal cache.
-- `save` / `restore` serialise both `visible` and `explored` as compact binary blobs.
+- This file provides recursive shadowcasting field-of-view for tile-grid visibility queries.
+- It computes current sight masks while preserving explored history across update frames.
+- It accepts blocker predicates at compute time for flexible integration with world state.
+- It serializes visible and explored masks so FOV state can persist across save boundaries.
+- It supports deterministic octant traversal suitable for stealth and roguelike mechanics.
+- It gives visibility systems a fast geometric core for line-of-sight decisions.
+- It keeps FOV computation stable enough for repeated per-frame use in tactical scenarios.
 
 ### state.rs
 
-- Visibility state enum: Hidden, Discovered, Visible, and custom extension levels.
-- `VisibilityState` has three built-in variants and reserves bits for game-defined levels.
-- `Hidden` = never seen; `Discovered` = seen but not currently in sight range; `Visible` = in range.
-- Ordered by ascending information: `Hidden < Discovered < Visible`.
-- Custom levels (e.g. `Remembered`) can be inserted between `Discovered` and `Visible`.
+- This file provides the visibility state model that describes player knowledge per region.
+- It encodes hidden, discovered, visible, and extensible custom levels in one ordered enum.
+- It standardizes information progression so reveal logic and fog rendering stay consistent.
 
 ## Lua API Ref
 
@@ -127,9 +110,9 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 
 ### Types
 
-
 #### LFov Type
 
+- Lua-side wrapper for a tile-grid recursive-shadowcasting FOV.
 
 ##### Fields
 
@@ -150,9 +133,9 @@ Rendering integration is handled via `FogRenderConfig`, which supplies per-state
 - `LFov:typeOf`: Returns whether this FOV handle matches the given type name.
 - `LFov:visibleCells`: Returns an array of `{x, y}` tables for all currently visible cells (one-based).
 
-
 #### LVisibilityGrid Type
 
+- Lua-side wrapper for a visibility grid instance.
 
 ##### Fields
 

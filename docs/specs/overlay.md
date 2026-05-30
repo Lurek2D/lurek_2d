@@ -34,61 +34,65 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 ### ambient.rs
 
 - Global ambient tint state driven by a time-of-day curve.
-- Maps hour values (0–24) to RGBA color through piecewise dawn/day/dusk/night segments.
-- Consumed by the overlay renderer when the ambient effect is enabled.
+- Maps day phases into scene-wide color changes for lighting control.
+- Supplies the ambient baseline consumed by the overlay renderer.
 
 ### atmosphere.rs
 
-- State structs for full-screen atmosphere overlays: clouds, fog, heat haze, vignette, film grain, and lightning flash.
-- Each struct carries enabled flag plus effect-specific parameters (density, intensity, color, speed).
-- All default to disabled so overlays are opt-in per scene.
+- State structs for full-screen atmosphere overlays such as clouds, fog, haze, grain, and lightning.
+- Carries per-effect enable flags plus density, intensity, color, and speed parameters.
+- Keeps overlay features opt-in so scenes can select only the layers they need.
+- Provides the data model for long-lived atmospheric presentation effects.
+- Separates configuration from rendering so effect logic stays lightweight.
 
 ### controller.rs
 
-- Central `Overlay` struct owning every screen-space post-world effect state block.
-- Per-frame update loop advancing weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning.
-- Weather particle spawning and simulation for rain, snow, hail, dust, leaves, ash, and pollen modes.
-- Trigger API for flash, camera shake, screen fade, and lightning flash events.
-- Query helpers for shake offset, flash/lightning alpha, active state, and target dimensions.
-- Render command builder emitting full-screen colored rectangles for flash, fade, lightning, and vignette overlays.
-- Clear/reset restoring all subsystems to default inactive state.
-- Debug visualization: state panels, flash frame strips, shake offset trails, fade transition strips, and combined trigger previews.
+- Central overlay controller owning every screen-space effect state block.
+- Updates weather particles, flash decay, shake decay, fade interpolation, cloud scroll, and lightning each frame.
+- Spawns and simulates weather particles for rain, snow, hail, dust, leaves, ash, and pollen.
+- Triggers flash, shake, fade, and lightning events through a simple runtime API.
+- Reports shake offset, flash alpha, lightning alpha, and active state to callers.
+- Builds render commands for flash, fade, lightning, and vignette overlays.
+- Resets every subsystem back to a clean inactive state when needed.
+- Supports debug visualisation of internal timing and offset trails.
+- Keeps presentation effects together so higher-level scene code stays thin.
+- Acts as the single screen-space effect scheduler for the renderer.
 
 ### mod.rs
 
-- Screen-space overlay sub-system: ambient lighting, atmospheric effects, and scene transitions.
-- `ambient` — ambient colour driven by time-of-day for scene-wide lighting tint.
-- `atmosphere` — atmospheric overlays: clouds, fog layers, and lightning flashes.
-- `controller` — top-level overlay scheduler for weather, fades, haze, and screen burns.
-- `screen_effects` — short-lived screen-space flash, shake, and fade state.
-- `transition` — full-screen scene transition effects with configurable easing.
-- `water` — animated water distortion overlay for underwater and rain scenarios.
-- `weather` — particle-based weather simulation: rain, snow, hail, dust, leaves, and ash.
+- Screen-space overlay subsystem for ambient lighting, atmosphere, and scene transitions.
+- Groups the state and render paths for weather, water, flash, fog, and fade effects.
+- Keeps screen-space presentation logic under one runtime namespace.
 
 ### screen_effects.rs
 
-- Full-screen effect state machines: flash, shake, and fade.
-- Each state tracks active flag, timing, and per-frame parameters.
-- Deterministic PRNG for shake offsets without external RNG dependency.
+- Full-screen effect state machines for flash, shake, and fade.
+- Keeps each state focused on timing, activation, and per-frame parameters.
+- Uses a deterministic PRNG for shake offsets without extra RNG plumbing.
+- Provides the short-lived effect core used by the overlay controller.
 
 ### transition.rs
 
-- Full-screen transition effects: fade, wipe, iris wipe, and dissolve.
-- String-based kind parsing with canonical name round-tripping.
-- Time-based playback lifecycle with forward and reverse modes.
-- Normalized progress query for renderer consumption.
+- Full-screen transition effects for fade, wipe, iris wipe, and dissolve.
+- Supports string-based kind parsing with canonical name round-tripping.
+- Runs with time-based forward and reverse playback modes.
+- Exposes normalized progress for renderer consumption.
+- Gives scene changes a compact state model with predictable timing.
 
 ### water.rs
 
 - Animated water distortion overlay with configurable amplitude, frequency, and speed.
-- Shallow-water tint and depth-based color shift with independent blend strengths.
-- Time-accumulating update loop that advances the wave pattern each frame.
+- Adds shallow-water tint and depth-based color shift with independent blend strengths.
+- Advances the wave pattern through a time-accumulating update loop.
+- Serves as the water-specific screen-space effect for overlays.
 
 ### weather.rs
 
-- Weather particle simulation types and state management.
+- Weather particle simulation state and management for screen-space overlays.
 - Supports rain, snow, hail, dust, leaves, ash, and pollen behaviors.
-- Tracks particle pool, wind parameters, and internal PRNG.
+- Tracks particle pools, wind parameters, and an internal PRNG.
+- Keeps weather spawning and motion separated from the main scene model.
+- Provides reusable state for long-lived atmospheric weather effects.
 
 ## Lua API Ref
 
@@ -106,9 +110,9 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 
 ### Types
 
-
 #### LOverlay Type
 
+- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
 
 ##### Fields
 
@@ -194,9 +198,33 @@ All active layers emit `RenderCommand` entries built by `build_render_commands` 
 - `LOverlay:typeOf`: Returns whether this overlay handle matches a supported type name.
 - `LOverlay:update`: Advances overlay timers and animated effect state.
 
+#### LOverlayGetWaterResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `amplitude` (`number`): Wave amplitude.
+- `depth_b` (`number`): Depth blue component.
+- `depth_g` (`number`): Depth green component.
+- `depth_r` (`number`): Depth red component.
+- `depth_strength` (`number`): Depth strength.
+- `enabled` (`boolean`): Whether water effect is enabled.
+- `frequency` (`number`): Wave frequency.
+- `speed` (`number`): Wave speed.
+- `time` (`number`): Elapsed time.
+- `tint_b` (`number`): Tint blue component.
+- `tint_g` (`number`): Tint green component.
+- `tint_r` (`number`): Tint red component.
+- `tint_strength` (`number`): Tint strength.
+
+##### Methods
+
+- No documented methods.
 
 #### LScreenTransition Type
 
+- Lua-side handle for a timed screen transition effect.
 
 ##### Fields
 

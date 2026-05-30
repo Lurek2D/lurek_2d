@@ -44,94 +44,122 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 
 ### attention.rs
 
-- Attention components for transformer-like sequence models.
+- Implements attention primitives used by sequence-learning stacks in the learning subsystem.
+- Provides positional encodings and multi-head attention flows over row-major tensor buffers.
+- Computes query-key-value interactions and head projection paths for contextual token mixing.
+- Integrates with shared evolutionary-layer contracts so parameters can be flattened and restored.
+- Targets CPU inference and training-style experiments without external deep-learning runtimes.
+- Supplies reusable building blocks consumed by transformer encoder and decoder compositions.
 
 ### bandit.rs
 
-- Compact multi-armed bandit storing per-arm reward history and posterior parameters.
-- Strategy switch for epsilon-greedy, UCB1, and Thompson sampling policies.
-- Selection, reward ingestion, and reset for adaptive arm choice without a planning framework.
-- Internal gamma and beta sampling driven by a deterministic xorshift64 RNG.
-- Per-arm pull counts, cumulative reward, and Bayesian alpha/beta parameter tracking.
+- Implements multi-armed bandit optimization with per-arm reward history and posterior statistics.
+- Supports epsilon-greedy, UCB-style, and Thompson-style selection strategies in one component.
+- Tracks pull counts and cumulative rewards to adapt action choice under uncertain payoffs.
+- Uses deterministic random helpers for reproducible sampling during probabilistic strategies.
+- Exposes reward ingestion, arm selection, and reset operations for online learning loops.
+- Fits lightweight decision problems where full planning frameworks are unnecessary.
 
 ### conv.rs
 
-- Convolution and pooling layers for CPU learning pipelines.
+- Provides convolution and pooling layers for CPU-side learning and feature-extraction pipelines.
+- Implements tensor-shape-aware forward passes over channel-first image-style inputs.
+- Stores trainable kernels and biases in flat buffers compatible with evolutionary parameter flows.
+- Supports stride and padding behavior needed for practical stacked convolution blocks.
+- Supplies compact building blocks consumed by the higher-level neural engine.
 
 ### engine.rs
 
-- Dynamic neural engine for composing heterogeneous learning blocks.
+- Defines a dynamic neural engine that chains heterogeneous learning blocks in one runtime graph.
+- Hosts dense, convolutional, recurrent, and transformer-like components behind a unified interface.
+- Packs and unpacks flat parameter buffers so composite models work with evolutionary optimizers.
+- Executes staged forward passes through configured block sequences on shared tensor carriers.
+- Serves as the composition hub for mixed-architecture experimentation in the learning module.
 
 ### env.rs
 
-- Gym-compatible RL environment wrappers.
+- Provides reinforcement-learning environment wrappers modeled after common Gym-like conventions.
+- Describes action and observation spaces with bounded metadata suitable for generic agents.
+- Includes frame-stack helpers that accumulate temporal context for history-dependent policies.
+- Standardizes reset and step-style interaction shapes for training and evaluation loops.
 
 ### evolutionary.rs
 
-- Shared trait for layers that expose flat trainable parameters.
+- Defines the shared trait contract for layers exposing flat trainable parameter buffers.
+- Standardizes parameter counting, import, and export across heterogeneous learning layers.
+- Enables neuroevolution and genetic workflows to operate on model components uniformly.
 
 ### genetic.rs
 
-- Population-based genetic optimization storing genomes, fitness values, and generation bookkeeping.
-- Evolution step preserving elites, tournament selection, crossover, and in-place mutation.
-- Deterministic random helpers driving parent selection, crossover, and Gaussian mutation.
-- Stable per-chromosome identifiers persisting across generations for lineage tracking.
-- Seeded xorshift64 RNG with Box-Muller normal sampling for reproducible evolution.
+- Implements population-based genetic optimization over flat genomes with explicit generation tracking.
+- Executes elite preservation, parent selection, crossover, and mutation during evolution steps.
+- Maintains stable chromosome identifiers to support lineage tracing across generations.
+- Uses deterministic random and Gaussian sampling helpers for reproducible evolution runs.
+- Serves as a general optimizer backend for learning components and parameter-search tasks.
 
 ### mod.rs
 
-- Machine learning and evolutionary computation algorithms.
-- This module provides standalone learning algorithms that can be used
-- independently or integrated with the AI decision-making systems.
-- # Submodules
-- `neural_net` — Feedforward neural networks with backpropagation
-- `neuroevolution` — Evolving neural network topologies
-- `genetic` — Genetic algorithms with configurable crossover and mutation
-- `qlearner` — Tabular Q-learning for reinforcement learning
-- `bandit` — Multi-armed bandit strategies (UCB1, Thompson, epsilon-greedy)
-- `env` — Gym-compatible RL environment wrappers
-- `onnx` — ONNX model loading and inference via tract-onnx
+- High-level learning module that aggregates neural, evolutionary, and reinforcement components.
+- Re-exports core model, optimizer, tensor, and environment types for unified caller access.
+- Connects lightweight CPU learning primitives with optional ONNX inference capabilities.
+- Defines the integration layer for experimentation-oriented training and decision systems.
 
 ### neural_net.rs
 
-- Lightweight feed-forward neural-network with dense layers, activation modes, and flat parameters.
-- Layer-local forward evaluation, activation application, and parameter counting.
-- Network-level operations: append layers, run forward passes, load/export weight buffers.
+- Implements lightweight feed-forward neural networks with dense layers and selectable activations.
+- Stores weights and biases in flat vectors for compact memory usage and easy serialization.
+- Performs layer-by-layer forward propagation over vector inputs for inference and evaluation.
+- Supports parameter counting plus import and export for optimizer and evolution workflows.
+- Provides network-assembly helpers that append layers into ordered model pipelines.
+- Targets simple ML tasks where minimal dependencies and predictable behavior are preferred.
 
 ### neuroevolution.rs
 
-- Neuroevolution wrapper joining genetic algorithm with neural-network for population-based weight search.
-- Template layer specification for rebuilding networks from flat chromosome genes.
-- Orchestration logic mapping chromosomes to networks, recording fitness, and advancing evolution.
+- Bridges genetic optimization and neural models to run population-based weight search workflows.
+- Rebuilds networks from flat chromosomes using template layer specifications.
+- Evaluates and records fitness before advancing generations through the underlying GA backend.
+- Provides a focused orchestration layer for neuroevolution experiments and gameplay AI prototyping.
 
 ### onnx.rs
 
-- ONNX model loading and inference via tract-onnx.
-- Provides `OnnxModel` which loads and optimises an ONNX file into a runnable plan.
-- `OnnxModel::run` converts `LurekTensor` inputs to tract `Tensor` values, runs the
-- plan, and converts outputs back to `LurekTensor`, preserving output shapes.
-- Used exclusively by `src/lua_api/learning_api.rs`; no game-loop dependencies.
+- Provides ONNX model loading and inference by bridging `LurekTensor` data into tract runtimes.
+- Builds optimized runnable plans from ONNX files for CPU execution paths.
+- Converts input and output tensors between engine-native and tract-native representations.
+- Exposes deterministic inference entry points used by learning APIs without game-loop coupling.
 
 ### qlearner.rs
 
-- Tabular Q-learning model with flat state-action value table and training parameters.
-- Epsilon-greedy action selection, Bellman updates, and episode bookkeeping.
-- Lightweight persistence helpers for serializing and reloading learned policies.
+- Implements tabular Q-learning over discrete state-action spaces with configurable hyperparameters.
+- Stores Q-values in a flat table for fast index-based update and query operations.
+- Applies epsilon-greedy action choice and Bellman updates during reinforcement cycles.
+- Tracks episode and training metadata useful for monitoring learner progression.
+- Supports persistence helpers for saving and reloading learned policy tables.
 
 ### recurrent.rs
 
-- Recurrent learning layers for sequence modeling.
+- Provides recurrent sequence-learning layers including LSTM and GRU style stateful blocks.
+- Stores gate parameters in flat row-major buffers suitable for CPU forward evaluation.
+- Executes timestep iteration while carrying hidden-state context across sequence positions.
+- Integrates with evolutionary parameter interfaces for genome-based optimization workflows.
+- Offers compact recurrent primitives for temporal modeling without heavyweight dependencies.
+- Serves as a reusable foundation for sequence tasks in higher-level learning engines.
 
 ### tensor.rs
 
-- Lightweight tensor helpers for learning features.
-- Stores row-major tensor shape and data.
-- Provides row-major index mapping and flatten helpers.
-- Exposes a minimal GEMM helper used by learning layers.
+- Defines lightweight tensor containers and helpers used by learning components.
+- Stores shape metadata and flat row-major data for predictable indexing behavior.
+- Provides indexing, flattening, and conversion utilities needed by model layers.
+- Includes compact numeric operations that support CPU learning pipelines.
 
 ### transformer.rs
 
-- Transformer blocks built from attention, layer norm, and feed-forward layers.
+- Implements transformer-style blocks composed from attention, normalization, and feed-forward stages.
+- Defines encoder and decoder building units operating over engine-native tensor structures.
+- Applies residual pathways and normalization flows for stable sequence representation updates.
+- Stores trainable parameters in flat vectors to align with evolutionary optimization tooling.
+- Coordinates multi-stage forward execution across attention and projection subcomponents.
+- Provides reusable transformer primitives for sequence learning and inference experiments.
+- Integrates with the wider learning stack through common tensor and layer contracts.
 
 ## Lua API Ref
 
@@ -167,9 +195,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 
 ### Types
 
-
 #### LBandit Type
 
+- Lua handle for multi-armed bandit action selection.
 
 ##### Fields
 
@@ -187,9 +215,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LBandit:typeOf`: Returns whether this bandit handle matches a supported type name.
 - `LBandit:update`: Updates one arm with a received reward.
 
-
 #### LConv2D Type
 
+- Lua wrapper over `Conv2D` for deterministic spatial inference and weight roundtrips.
 
 ##### Fields
 
@@ -204,9 +232,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LConv2D:type`: Returns the Lua-visible type name for this wrapper.
 - `LConv2D:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LEnv Type
 
+- Flat RL environment handle. Stores Lua callbacks and optional wrapping layers.
 
 ##### Fields
 
@@ -221,9 +249,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LEnv:type`: Returns this environment wrapper's type name `"LEnv"`.
 - `LEnv:typeOf`: Returns whether this env handle matches a supported type name.
 
-
 #### LFrameStack Type
 
+- Lua handle wrapping a frame-stacking ring buffer.
 
 ##### Fields
 
@@ -238,9 +266,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LFrameStack:type`: Returns the type name `"LFrameStack"`.
 - `LFrameStack:typeOf`: Returns whether this frame stack handle matches a supported type name.
 
-
 #### LGRU Type
 
+- Stateful Lua wrapper over `GruLayer` with a mutable recurrent hidden-state buffer.
 
 ##### Fields
 
@@ -256,9 +284,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LGRU:type`: Returns the Lua-visible type name for this wrapper.
 - `LGRU:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LGeneticAlgorithm Type
 
+- Lua handle for a floating-point genetic algorithm population.
 
 ##### Fields
 
@@ -275,9 +303,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LGeneticAlgorithm:type`: Returns the Lua-visible type name for this genetic algorithm handle.
 - `LGeneticAlgorithm:typeOf`: Returns whether this genetic algorithm handle matches a supported type name.
 
-
 #### LLSTM Type
 
+- Stateful Lua wrapper over `LstmLayer` with recurrent hidden and cell state buffers.
 
 ##### Fields
 
@@ -293,9 +321,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LLSTM:type`: Returns the Lua-visible type name for this wrapper.
 - `LLSTM:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LMaxPool2D Type
 
+- Lua wrapper over `MaxPool2D` for deterministic non-trainable spatial downsampling.
 
 ##### Fields
 
@@ -307,9 +335,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LMaxPool2D:type`: Returns the Lua-visible type name for this wrapper.
 - `LMaxPool2D:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LModel Type
 
+- Wraps a supported model (LQLearner, LNeuralNet, or LBandit) in a uniform LModel interface.
 
 ##### Fields
 
@@ -321,9 +349,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LModel:type`: Returns this wrapper's stable type name `"LModel"`.
 - `LModel:typeOf`: Returns whether this model wrapper matches a supported type name.
 
-
 #### LMultiHeadAttention Type
 
+- Lua wrapper over `MultiHeadAttention`.
 
 ##### Fields
 
@@ -338,9 +366,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LMultiHeadAttention:type`: Returns the Lua-visible type name for this wrapper.
 - `LMultiHeadAttention:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LNeuralNet Type
 
+- Lua handle for a feed-forward neural network.
 
 ##### Fields
 
@@ -358,9 +386,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LNeuralNet:type`: Returns the Lua-visible type name for this neural network handle.
 - `LNeuralNet:typeOf`: Returns whether this neural network handle matches a supported type name.
 
-
 #### LNeuroevolution Type
 
+- Lua handle for evolving neural network chromosomes.
 
 ##### Fields
 
@@ -378,9 +406,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LNeuroevolution:type`: Returns the Lua-visible type name for this neuroevolution handle.
 - `LNeuroevolution:typeOf`: Returns whether this neuroevolution handle matches a supported type name.
 
-
 #### LOnnxModel Type
 
+- ONNX model handle that wraps a tract runnable plan for Lua-driven inference.
 
 ##### Fields
 
@@ -394,9 +422,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LOnnxModel:type`: Returns the type name `"LOnnxModel"`.
 - `LOnnxModel:typeOf`: Returns whether this model handle matches a supported type name.
 
-
 #### LPositionalEncoding Type
 
+- Lua wrapper over `PositionalEncoding`.
 
 ##### Fields
 
@@ -408,9 +436,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LPositionalEncoding:type`: Returns the Lua-visible type name for this wrapper.
 - `LPositionalEncoding:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LQLearner Type
 
+- Lua handle for a Q-learning table with configurable exploration and learning parameters.
 
 ##### Fields
 
@@ -441,9 +469,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LQLearner:type`: Returns the Lua-visible type name for this Q-learner handle.
 - `LQLearner:typeOf`: Returns whether this Q-learner handle matches a supported type name.
 
-
 #### LTensor Type
 
+- Flat tensor handle exposing shape, element access, and tract conversion to Lua.
 
 ##### Fields
 
@@ -458,9 +486,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LTensor:type`: Returns the type name `"LTensor"`.
 - `LTensor:typeOf`: Returns whether this tensor handle matches a supported type name.
 
-
 #### LTransformerDecoder Type
 
+- Lua wrapper over `TransformerDecoderBlock`.
 
 ##### Fields
 
@@ -475,9 +503,9 @@ All types are pure CPU, headless-testable, and have zero rendering dependencies.
 - `LTransformerDecoder:type`: Returns the Lua-visible type name for this wrapper.
 - `LTransformerDecoder:typeOf`: Returns whether this userdata matches the requested type string.
 
-
 #### LTransformerEncoder Type
 
+- Lua wrapper over `TransformerEncoderBlock`.
 
 ##### Fields
 

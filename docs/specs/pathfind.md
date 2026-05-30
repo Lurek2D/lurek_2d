@@ -25,172 +25,191 @@ Beyond standard square grids, the module offers extensive support for alternativ
 
 ### ai_flow_field.rs
 
-- Precomputed flow field steering multiple agents toward a single goal cell.
-- BFS distance propagation with 8-directional neighbours and diagonal cost.
-- Per-cell normalised direction vectors for smooth unit movement.
-- Walkability mask support for blocking impassable terrain.
+- Precomputed flow field steering many agents toward a single goal cell.
+- Propagates breadth-first distance over 8-directional neighbours with diagonal cost.
+- Stores per-cell direction vectors for smooth unit movement.
+- Respects walkability masks when terrain blocks pathing.
+- Gives group movement code a cheap steering target instead of a full path.
 
 ### astar.rs
 
-- A\* pathfinding on a `NavGrid` with configurable diagonal modes and unit sizes.
-- Heuristic selection: octile distance for diagonal movement, Manhattan otherwise.
-- Early termination via `max_nodes` with partial-path fallback to closest reached cell.
-- Bresenham line-of-sight checks for walkability validation.
-- String-pull path smoothing that removes redundant waypoints.
+- A* pathfinding on a NavGrid with diagonal modes and configurable unit sizes.
+- Chooses octile or Manhattan heuristics to match the movement model.
+- Stops early when a node budget is reached and falls back to a partial path.
+- Uses Bresenham line-of-sight checks for path smoothing and validation.
+- Removes redundant waypoints through string-pull smoothing.
+- Serves as the standard single-unit shortest-path search for grid movement.
 
 ### async_pool.rs
 
 - Fixed-size thread pool that runs A* pathfinding off the game thread.
-- Job submission, cancellation, and non-blocking result polling via channels.
-- Workers share a single work queue and skip cancelled requests early.
+- Submits jobs through channels and polls results without blocking.
+- Shares one work queue across workers while skipping cancelled requests early.
+- Gives pathfinding heavy workloads a parallel execution path.
+- Keeps thread management isolated from callers.
 
 ### bidir.rs
 
-- Bidirectional A* search that expands from both start and goal simultaneously.
-- Meets in the middle when both closed sets overlap, halving explored nodes on large grids.
-- Falls back to a partial forward path when the node budget is exhausted.
+- Bidirectional A* search that expands from both start and goal at once.
+- Meets in the middle when the closed sets overlap to cut explored nodes.
+- Falls back to a partial forward path when the node budget runs out.
 - Respects NavGrid diagonal mode and per-cell movement cost.
 - Supports variable unit sizes for multi-tile pathfinding.
+- Helps large open grids return useful routes with less search work.
 
 ### flow_field.rs
 
-- Dijkstra-based flow field that seeds from one or more goal cells and computes shortest paths across a NavGrid.
-- Each reachable cell stores a normalised direction vector toward the nearest goal and its accumulated travel cost.
-- Supports variable unit sizes for clearance-aware pathfinding using the backing grid's walkability checks.
-- Provides world-space steering that converts pixel coordinates to tile lookups and returns a scaled velocity.
-- Includes a debug visualisation helper that renders the field directions and obstacles to an ImageData bitmap.
+- Dijkstra-based flow field seeded from one or more goal cells over a NavGrid.
+- Stores normalized direction vectors toward the nearest goal beside accumulated cost.
+- Supports variable unit sizes for clearance-aware pathfinding.
+- Converts world-space positions into tile lookups and steering velocities.
+- Includes debug visualisation for directions and obstacles.
+- Provides the group-movement layer above raw path search.
 
 ### goal_map.rs
 
 - Multi-source Dijkstra distance field for goal-oriented AI movement.
-- Builds a cost-to-reach field from N weighted source cells.
-- `gradient_at` returns the downhill direction (move toward goal).
-- `flee_at` returns the uphill direction (move away from goal).
-- `flood_fill` returns all reachable cells within a distance threshold.
-- `bake` accepts a generic blocker predicate; call from Lua bindings.
-- `save` / `restore` serialise the distance field as a compact binary blob.
+- Builds a cost-to-reach map from many weighted source cells.
+- Returns downhill gradient, uphill flee direction, and flood-fill reachability.
+- Supports custom blocker predicates during baking from Lua bindings.
+- Serializes and restores the field as a compact binary blob.
+- Gives AI code a reusable distance surface for steering and influence.
 
 ### graph_nav.rs
 
-- A* shortest-path search over weighted directed/bidirectional graphs.
-- Range query returning all nodes reachable within a cost budget.
-- Heuristic support for informed search; falls back to Dijkstra when omitted.
-- Min-heap priority queue node with reverse ordering for `BinaryHeap`.
-- Path reconstruction from predecessor map.
+- A* shortest-path search over weighted directed or bidirectional graphs.
+- Supports cost-bounded range queries for reachable nodes.
+- Falls back to Dijkstra when no heuristic is provided.
+- Reconstructs paths from predecessor maps for caller consumption.
+- Serves graph-based navigation where grid adjacency is not enough.
 
 ### graph_path.rs
 
 - Province-level A* pathfinding across adjacency graphs with configurable move costs.
-- Dijkstra-based reachability flood to find all provinces within a cost budget.
-- Per-province and per-edge-tag cost modelling with blocked-province exclusion.
-- Min-heap priority queue node with reverse ordering for standard `BinaryHeap`.
-- Euclidean centroid heuristic for A* admissibility.
+- Adds Dijkstra-based reachability flooding for budget-limited travel.
+- Models blocked provinces and edge-tag costs in the search cost.
+- Uses a min-heap priority queue node for standard BinaryHeap ordering.
+- Applies a Euclidean centroid heuristic for admissible A* search.
+- Fits strategic map travel where regions, not cells, are the navigation unit.
 
 ### grid.rs
 
 - Flat 2-D grid with per-cell walkability and movement-cost storage.
-- A* pathfinding with optional diagonal movement and Euclidean/Manhattan heuristic.
-- Dijkstra shortest-path search respecting per-cell costs.
-- BFS unweighted shortest path for uniform-cost grids.
-- Dijkstra-based flow-field generation toward a single goal cell.
-- Internal min-heap node and path reconstruction utilities.
+- Provides A* with optional diagonal movement and selectable heuristics.
+- Includes Dijkstra and BFS variants for weighted and uniform-cost search.
+- Builds flow fields from a single goal cell for steering behavior.
+- Keeps internal heap and path reconstruction helpers close to the grid model.
+- Supports movement-cost lookups suitable for tile-based gameplay maps.
+- Acts as the basic navigation surface for cell-level routing.
 
 ### hex_grid.rs
 
 - Hex grid with configurable flat-top or pointy-top offset layout.
-- Per-cell blocked flags and movement cost for weighted pathfinding.
-- A* search returning shortest path between two hex cells.
-- Line-of-sight, field-of-view, and range-of-movement queries.
-- Cube-coordinate math for distance, interpolation, and rounding.
+- Stores blocked flags and movement costs for weighted pathfinding.
+- Runs A* search for shortest paths between hex cells.
+- Exposes line-of-sight, field-of-view, and movement-range queries.
+- Uses cube-coordinate math for distance, interpolation, and rounding.
+- Fits tactics and map systems that need hex adjacency instead of squares.
+- Keeps hex navigation self-contained and script-friendly.
 
 ### hpa.rs
 
-- Hierarchical Pathfinding A* (HPA*) over a chunked NavGrid abstraction.
-- Partition the grid into fixed-size chunks and detect entrance nodes at chunk boundaries.
-- Build an abstract graph of entrance-to-entrance edges with A*-computed costs.
-- Run abstract-level A* search using octile distance heuristic.
-- Refine abstract waypoints back into full grid-level paths via per-segment A*.
-- BFS-based reachability test over chunk connectivity without computing a full path.
-- Temporary start/goal insertion into the abstract graph for single queries.
-- Boundary scanning logic handles both horizontal and vertical chunk edges.
-- Supports variable unit sizes passed through to underlying A* refinement.
+- Hierarchical Pathfinding A* over a chunked NavGrid abstraction.
+- Partitions the grid into fixed-size chunks and detects entrance nodes at boundaries.
+- Builds an abstract graph of chunk-to-chunk edges with computed costs.
+- Runs abstract A* search with an octile heuristic.
+- Refines abstract waypoints back into full grid-level paths per segment.
+- Supports BFS reachability checks over chunk connectivity.
+- Temporarily inserts start and goal nodes for single-query routing.
+- Handles both horizontal and vertical chunk boundaries.
+- Accepts variable unit sizes through to the refinement stage.
+- Cuts large map searches down to a smaller navigation graph first.
 
 ### influence_map.rs
 
 - Grid-based influence map with named floating-point layers over a uniform cell grid.
-- Stamp radial influence with distance falloff, propagate via neighbourhood smoothing, and decay over time.
-- Query aggregated influence inside world-space rectangles or locate extrema positions.
-- Blend multiple layers with weighted combination into a destination layer.
-- Debug visualisation rendering layers into an RGBA image for inspection.
+- Stamps radial influence with falloff, smooths through neighbours, and decays over time.
+- Queries aggregated influence in rectangles or locates extrema positions.
+- Blends multiple layers into a destination layer with weighted combination.
+- Exposes debug visualisation into an RGBA image for inspection.
+- Serves tactical scoring and spatial pressure systems.
 
 ### iso_grid.rs
 
 - Grid-based A* pathfinding over a rectangular isometric cell map.
-- Per-cell blocked flags and movement cost support for weighted searches.
-- Bresenham line-of-sight query between two grid positions.
-- 4-directional neighbour expansion with bounds and passability filtering.
+- Stores blocked flags and movement costs for weighted searches.
+- Uses Bresenham line-of-sight checks for visibility and smoothing support.
+- Expands four-direction neighbours with bounds and passability filtering.
+- Gives isometric tile worlds a direct path and visibility helper.
 
 ### jps.rs
 
-- Jump Point Search (JPS) optimised A* on uniform-cost 8-directional grids.
-- Prunes symmetric neighbours to skip large open areas without expanding every cell.
+- Jump Point Search optimized A* on uniform-cost 8-directional grids.
+- Prunes symmetric neighbours to skip large open areas.
 - Identifies forced neighbours and jump points along cardinal and diagonal directions.
-- Produces a full tile-by-tile path by interpolating between jump points.
-- Uses octile distance heuristic and a min-heap open list.
+- Reconstructs a full tile-by-tile path from the jump points.
+- Uses an octile heuristic and a min-heap open list.
+- Works best when long straight corridors dominate the map.
+- Keeps uniform-grid search fast without changing the grid model.
 
 ### mod.rs
 
-- Grid-based and graph-based pathfinding algorithms (A*, bidirectional, JPS, HPA*).
-- `GoalMap`: multi-source Dijkstra distance field for goal-oriented AI movement.
-- Flow fields and influence maps for group movement and tactical queries.
-- Navigation grids, hex grids, isometric grids, and navmesh support.
-- Async thread-pool dispatch for off-thread path computation.
+- Grid-based and graph-based pathfinding algorithms for cells, graphs, and flow fields.
+- Collects A*, bidirectional search, JPS, HPA*, goal maps, and influence maps under one namespace.
+- Includes grid, hex, isometric, and navmesh navigation surfaces.
+- Keeps async dispatch and debug rendering close to the rest of the pathfinding stack.
 
 ### nav_grid.rs
 
 - Integer-cost walkability grid for tile-based pathfinding.
-- Per-cell movement weight (0 = blocked, 1–254 = traversal cost).
-- Cardinal and diagonal neighbour queries with corner-cut policies.
-- Dirty-rectangle tracking for deferred HPA* hierarchy invalidation.
-- Bulk fill, rect fill, byte import/export, and deep-copy snapshot.
-- Debug visualisation: render grid + path overlay to an ImageData buffer.
+- Stores per-cell movement weight where zero means blocked and higher values cost more.
+- Exposes cardinal and diagonal neighbour queries with corner-cut policies.
+- Tracks dirty rectangles for deferred HPA hierarchy invalidation.
+- Supports bulk fill, rect fill, byte import/export, and snapshot cloning.
+- Renders the grid and path overlay into ImageData for debug use.
+- Forms the base grid model used by higher-level navigation layers.
 
 ### navmesh.rs
 
 - Polygon-based navigation mesh for 2D pathfinding.
-- A\* search over polygon adjacency graph with centroid heuristic.
-- Ray-cast point-in-polygon containment test.
-- Centroid waypoint extraction from polygon corridors.
-- Directed and bidirectional polygon connectivity.
+- Runs A* over a polygon adjacency graph with a centroid heuristic.
+- Checks point containment with ray-cast tests and extracts centroid waypoints.
+- Supports directed and bidirectional polygon connectivity.
+- Serves large open areas where cell grids are too coarse.
 
 ### pathgrid.rs
 
 - Grid-based A* pathfinding with 8-directional movement and variable cell costs.
-- Bresenham line-of-sight checks for post-search path smoothing (string-pull).
-- World-space coordinate conversion: cell indices map to centres via configurable cell size.
-- Diagonal corner-cutting prevention to avoid clipping through blocked corners.
-- Octile distance heuristic for consistent and admissible cost estimation.
+- Uses Bresenham line-of-sight for path smoothing after search.
+- Converts cell indices to world-space centres with configurable cell size.
+- Prevents diagonal corner cutting through blocked corners.
+- Uses an octile heuristic for consistent cost estimation.
+- Gives tile maps a direct shortest-path implementation.
 
 ### range_map.rs
 
-- Dijkstra-based budget-limited range expansion over a 2D grid.
-- Produces a cost map showing which cells are reachable within a travel budget.
+- Dijkstra-based budget-limited range expansion over a 2-D grid.
+- Produces a cost map for cells reachable within a travel budget.
 - Supports cardinal and diagonal movement with per-cell cost weights.
+- Useful for movement preview, threat radius, and action-range queries.
+- Keeps reachability and distance budgeting in one helper.
 
 ### render.rs
 
-- Debug visualization for pathfinding structures as colored `RenderCommand` lists.
-- NavGrid renders walkable/blocked cells, FlowField draws directional arrows, InfluenceMap shows signed heat.
-- Each struct exposes `generate_render_commands` returning a `Vec<RenderCommand>` for overlay drawing.
+- Debug visualization for pathfinding structures as colored RenderCommand lists.
+- Draws NavGrid cells, FlowField arrows, and InfluenceMap heat overlays.
+- Returns batches ready for overlay drawing in the renderer.
+- Gives developers a direct view into navigation data.
+- Keeps visual inspection separate from path search logic.
 
 ### unit_pathfinder.rs
 
-- Stateful per-unit pathfinder wrapping a shared `NavGrid` reference.
-- Full A* path search with optional string-pull smoothing for shorter results.
-- Partial-path expansion with configurable node budget for real-time budgets.
-- BFS reachability test and nearest-walkable-cell search within a radius.
-- LRU path cache with configurable max size and manual invalidation.
-- Octile heuristic and Bresenham line-of-sight utility helpers.
+- Stateful per-unit pathfinder wrapping a shared NavGrid reference.
+- Runs full A* searches with optional string-pull smoothing.
+- Supports partial paths, BFS reachability, and nearest-walkable searches.
+- Caches recent routes with an LRU strategy and manual invalidation.
+- Exposes octile heuristic and Bresenham LOS helpers for local decisions.
+- Gives each unit its own path search facade without duplicating grid data.
 
 ## Lua API Ref
 
@@ -219,9 +238,9 @@ Beyond standard square grids, the module offers extensive support for alternativ
 
 ### Types
 
-
 #### LAIFlowField Type
 
+- Lua-side wrapper for an AI flow field over a path grid.
 
 ##### Fields
 
@@ -239,9 +258,9 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LAIFlowField:type`: Returns the Lua-visible type name for this AI flow field handle.
 - `LAIFlowField:typeOf`: Returns whether this AI flow field handle matches a supported type name.
 
-
 #### LFlowField Type
 
+- Lua-side wrapper for a flow field over a navigation grid.
 
 ##### Fields
 
@@ -260,9 +279,22 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LFlowField:type`: Returns the Lua-visible type name for this flow field handle.
 - `LFlowField:typeOf`: Returns whether this flow field handle matches a supported type name.
 
+#### LFlowFieldGetTargetsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LGoalMap Type
 
+- Lua-side wrapper for a multi-source Dijkstra distance-field (goal map).
 
 ##### Fields
 
@@ -285,9 +317,9 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LGoalMap:type`: Returns the Lua-visible type name for this goal map handle.
 - `LGoalMap:typeOf`: Returns whether this goal map handle matches a supported type name.
 
-
 #### LHexGrid Type
 
+- Lua-side wrapper for a hexagonal grid.
 
 ##### Fields
 
@@ -306,9 +338,48 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LHexGrid:type`: Returns the Lua-visible type name for this hex grid handle.
 - `LHexGrid:typeOf`: Returns whether this hex grid handle matches a supported type name.
 
+#### LHexGridFieldOfViewResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `col` (`integer`): Col.
+- `row` (`integer`): Row.
+
+##### Methods
+
+- No documented methods.
+
+#### LHexGridFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `col` (`integer`): Col.
+- `row` (`integer`): Row.
+
+##### Methods
+
+- No documented methods.
+
+#### LHexGridRangeOfMovementResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `col` (`integer`): Col.
+- `row` (`integer`): Row.
+
+##### Methods
+
+- No documented methods.
 
 #### LJpsGrid Type
 
+- Lua-side wrapper for a Jump Point Search grid.
 
 ##### Fields
 
@@ -322,9 +393,22 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LJpsGrid:type`: Returns the Lua-visible type name for this JPS grid handle.
 - `LJpsGrid:typeOf`: Returns whether this JPS grid handle matches a supported type name.
 
+#### LJpsGridFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LNavGrid Type
 
+- Lua-side wrapper for a navigation grid and optional abstract graph cache.
 
 ##### Fields
 
@@ -355,9 +439,9 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LNavGrid:type`: Returns the Lua-visible type name for this navigation grid handle.
 - `LNavGrid:typeOf`: Returns whether this navigation grid handle matches a supported type name.
 
-
 #### LNavMesh Type
 
+- Lua-side wrapper for a navigation mesh.
 
 ##### Fields
 
@@ -372,9 +456,22 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LNavMesh:type`: Returns the Lua-visible type name for this navmesh handle.
 - `LNavMesh:typeOf`: Returns whether this navmesh handle matches a supported type name.
 
+#### LNavMeshFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LPathGrid Type
 
+- Lua-side wrapper for a cell-size path grid.
 
 ##### Fields
 
@@ -394,9 +491,49 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LPathGrid:type`: Returns the Lua-visible type name for this path grid handle.
 - `LPathGrid:typeOf`: Returns whether this path grid handle matches a supported type name.
 
+#### LPathGridFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LPathGridFindPathSmoothedResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LPathfindRangeMapResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cells` (`table`): Array of reachable cell tables, each with integer x, y and number cost fields.
+- `height` (`integer`): Grid height.
+- `width` (`integer`): Grid width.
+
+##### Methods
+
+- No documented methods.
 
 #### LUnitPathfinder Type
 
+- Lua-side wrapper for a unit pathfinder over a navigation grid.
 
 ##### Fields
 
@@ -421,6 +558,58 @@ Beyond standard square grids, the module offers extensive support for alternativ
 - `LUnitPathfinder:setCacheMaxSize`: Sets maximum path cache size for this object.
 - `LUnitPathfinder:type`: Returns the Lua-visible type name for this pathfinder handle.
 - `LUnitPathfinder:typeOf`: Returns whether this pathfinder handle matches a supported type name.
+
+#### LUnitPathfinderFindPartialPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LUnitPathfinderFindPathBidirectionalResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LUnitPathfinderFindPathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LUnitPathfinderFindPathSmoothResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

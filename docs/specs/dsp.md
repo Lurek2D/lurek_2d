@@ -29,64 +29,63 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 
 ### analysis.rs
 
-- Provides RMS level detection, peak tracking, and clipping detection over f32 sample streams.
-- `LevelDetector` accumulates sum-of-squares and peak per sample; exposes RMS, peak, clipping flag, and dBFS conversion.
-- `SpectrumAnalyzer` delegates to `SoundData::analyze_dft` with a bounded bin count clamped to 1–512.
-- Used by audio subsystem and Lua DSP bindings to inspect signal levels and spectrum before mixing.
+- Provides realtime signal analysis primitives for level tracking and spectral inspection of sample streams.
+- Maintains rolling RMS and peak state to expose stable loudness and clipping indicators during processing.
+- Computes bounded frequency summaries that keep analysis cost predictable for scripting and runtime tooling.
+- Supports both engine internals and Lua-facing diagnostics with consistent measurement semantics.
+- Delivers the inspection layer used to observe signal health before and during mix decisions.
 
 ### effects.rs
 
-- Lock-free `AtomicParam` for sharing f32 parameters between the audio thread and Lua API.
-- `EffectType` enum covering biquad filters, reverbs, chorus, flanger, phaser, distortion, limiter, and compressor.
-- `EffectParams` shared parameter block with named `set_param` dispatch per effect type.
-- `ActiveEffect` per-source instantiation holding biquad delay elements, circular comb buffer, LFO phase, and envelope state.
-- Sample-by-sample `process` implementing each algorithm variant with clamped parameter reads.
-- `SharedEffectGraph` Arc-wrapped effect list shared between `Bus` (writer) and `DynamicEffectSource` (reader).
-- `DynamicEffectSource<I>` rodio `Source` wrapper applying the full effect chain per sample with per-frame sync.
-- Comb-buffer sizing derived from sample rate and effect type at construction time.
-- Biquad coefficient computation for lowpass, highpass, bandpass, notch, low-shelf, high-shelf, and bell EQ.
-- LFO-driven modulated delay for flanger and phaser with depth and rate controls.
+- Provides the core DSP effect runtime that defines algorithms, parameters, and per-sample processing behavior.
+- Encodes the supported effect family as stable typed variants consumed by both engine and Lua surfaces.
+- Maintains shared parameter state with lock-free primitives to keep audio-thread reads predictable.
+- Builds active processing instances that hold delay lines, filters, modulation state, and dynamic buffers.
+- Executes effect transforms sample by sample with bounded parameter normalization and clamped control ranges.
+- Supplies graph-backed shared chains for coordinating writer-side updates with reader-side playback.
+- Wraps rodio sources in a dynamic processor that applies full chain processing during streaming.
+- Handles effect-internal sizing from sample-rate context so algorithms remain portable across devices.
+- Keeps filter and modulation math localized to one layer for consistent sonic behavior across call sites.
+- Delivers the central effect-processing backbone for real-time and script-driven DSP workflows.
 
 ### graph.rs
 
-- DSP processing graph: nodes connected by typed audio-rate and control-rate edges.
-- `DspGraph` owns a topologically sorted list of `DspNode` processing units.
-- Edges carry either audio frames (f32 interleaved) or scalar control signals.
-- Evaluated once per audio buffer in the rodio callback on the audio thread.
-- Graph mutation (add/remove node, patch edge) is performed from the game thread
-- via a lock-free command queue consumed at the start of each audio callback.
+- Provides a typed DSP graph model where nodes and edges describe ordered signal-processing flow.
+- Organizes processing units into deterministic traversal order for stable per-buffer execution.
+- Supports audio-rate and control-rate connectivity so routing and parameter signals share one structure.
+- Enables safe runtime mutation patterns that coordinate producer updates with callback-side consumption.
+- Delivers the structural layer used to compose complex effect pipelines from reusable nodes.
 
 ### mod.rs
 
-- Digital signal processing (DSP) sub-system: graph, nodes, and effect chain.
-- Provides a per-source processing graph evaluated on the audio thread.
-- Node types include: gain, pan, low-pass/high-pass filters, reverb, and delay.
-- Graph topology changes are sent via a lock-free command queue to avoid blocking.
-- Re-exported to Lua via `lurek.audio.dsp.*` through `audio_api.rs`.
+- Provides the high-level DSP module boundary that groups analysis, synthesis, effects, graphs, offline, and visualization flows.
+- Coordinates reusable signal-processing capabilities while keeping runtime execution and inspection concerns clearly separated.
+- Delivers one stable composition surface for audio-adjacent digital processing across engine integrations.
 
 ### offline.rs
 
-- Offline audio processing: apply DSP effect chains to files without real-time playback.
-- Peak normalisation with configurable target level.
-- WAV file decode to f32 and encode back to 16-bit PCM via rodio.
-- `OfflineEffect` serialisable struct matching `EffectType` + three parameter slots.
-- Parent directory auto-creation for output paths.
+- Provides offline DSP processing that applies effect chains to stored audio without live playback.
+- Runs decode, transform, and encode stages in one pipeline for reproducible file-based processing.
+- Supports peak normalization and deterministic parameterized effects for batch rendering scenarios.
+- Uses a serializable effect description so external tooling can request stable offline transforms.
+- Delivers the non-realtime processing path for exports, precompute steps, and content baking.
 
 ### synthesis.rs
 
-- Procedural audio synthesis: waveform oscillators, noise generation, ADSR envelope, and multi-oscillator rendering.
-- `Waveform` selects the oscillator shape — sine, square, sawtooth, triangle, or white noise — and exposes `parse()` for name-based construction from Lua configuration.
-- `AdsrEnvelope` applies attack, decay, sustain, and release amplitude shaping; `amplitude_at(elapsed)` returns the gain multiplier at any point in the note's lifetime.
-- `Synthesizer` combines a `Waveform` oscillator and an `AdsrEnvelope` to render a complete `SoundData` PCM buffer at a given frequency, duration, sample rate, and peak amplitude.
-- All rendering is CPU-side in a tight sample loop; the resulting `SoundData` is passed to `rodio` for device mixing via the audio subsystem.
+- Provides procedural audio synthesis primitives for waveform generation and envelope-shaped note rendering.
+- Defines stable oscillator forms and parsing paths that map script choices to deterministic sample output.
+- Applies ADSR gain shaping so rendered notes include natural attack, sustain behavior, and release tails.
+- Combines oscillator and envelope models into renderable buffers ready for playback and further processing.
+- Delivers the synthesis layer used for generated sound effects and lightweight musical content.
+- Keeps synthesis behavior modular so higher-level systems can extend sound generation workflows safely.
 
 ### visualizer.rs
 
-- Waveform-to-PNG rendering: peak min/max per column plotted as vertical bars.
-- Spectrogram-to-PNG rendering: Hann-windowed DFT with frequency bins mapped to heatmap colours.
-- Mono downmix helper for multi-channel input files.
-- Heat-colour mapping from normalised magnitude to RGBA.
-- Parent directory auto-creation for output image paths.
+- Provides DSP visualization utilities that convert audio buffers into readable waveform and spectrogram images.
+- Extracts amplitude and frequency structure into pixel-space summaries for quick offline inspection.
+- Handles multi-channel input normalization so visual output stays coherent across source formats.
+- Maps signal magnitude to consistent color intensity for comparable visual diagnostics over time.
+- Delivers artifact generation used by tooling, debugging workflows, and content analysis pipelines.
 
 ## Lua API Ref
 
@@ -131,9 +130,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 
 ### Types
 
-
 #### LAdsrEnvelope Type
 
+- Lua-visible ADSR envelope object for sample stepping and buffer shaping.
 
 ##### Fields
 
@@ -147,9 +146,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LAdsrEnvelope:trigger_off`: Starts the envelope release phase.
 - `LAdsrEnvelope:trigger_on`: Starts the envelope attack phase for this ADSR object.
 
-
 #### LDspGraph Type
 
+- Lua-visible DSP graph that stores nodes, edges, and offline processing order.
 
 ##### Fields
 
@@ -163,9 +162,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LDspGraph:disconnect`: Removes a connection between two node IDs.
 - `LDspGraph:process`: Processes a sound buffer through the graph and returns transformed data.
 
-
 #### LDspNode Type
 
+- Lua-visible DSP graph node carrying type and simple numeric parameters.
 
 ##### Fields
 
@@ -177,9 +176,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LDspNode:setParam`: Sets one named numeric parameter on the node.
 - `LDspNode:type`: Returns the node type string used by this node.
 
-
 #### LLevelDetector Type
 
+- Lua-visible running detector that tracks RMS, peak, and clipping state for processed audio.
 
 ##### Fields
 
@@ -194,9 +193,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LLevelDetector:reset`: Resets detector state so a new measurement window can begin.
 - `LLevelDetector:to_db`: Converts a linear amplitude value to decibels full scale.
 
-
 #### LSpectrumAnalyzer Type
 
+- Lua-visible spectral analyzer that computes bounded frequency bins from sound buffers.
 
 ##### Fields
 
@@ -207,9 +206,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LSpectrumAnalyzer:analyze`: Analyzes one sound buffer and returns `(frequency, magnitude)` rows.
 - `LSpectrumAnalyzer:setSize`: Sets the frequency-bin count used by subsequent spectrum analysis calls.
 
-
 #### LSynthesizer Type
 
+- Lua-visible synthesizer that combines waveform selection and optional ADSR shaping.
 
 ##### Fields
 
@@ -222,9 +221,9 @@ Implementation detail and boundary guarantees for dsp: this module keeps respons
 - `LSynthesizer:setEnvelope`: Attaches an ADSR envelope used by future render calls.
 - `LSynthesizer:setWaveform`: Sets the oscillator waveform using a kind string or waveform object.
 
-
 #### LWaveform Type
 
+- Lua-visible procedural waveform descriptor used for repeated SoundData rendering.
 
 ##### Fields
 

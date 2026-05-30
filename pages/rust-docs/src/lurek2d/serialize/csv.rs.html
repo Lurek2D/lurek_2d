@@ -29,7 +29,7 @@
 <a href=#29 id=29 data-nosnippet>29</a>    from_csv_reader(s.as_bytes(), opts)
 <a href=#30 id=30 data-nosnippet>30</a>}
 <a href=#31 id=31 data-nosnippet>31</a><span class="doccomment">/// Parse CSV from any `Read` source into a `SerialValue` sequence.
-<a href=#32 id=32 data-nosnippet>32</a></span><span class="kw">pub fn </span>from_csv_reader&lt;R: Read&gt;(reader: R, opts: CsvOptions) -&gt; <span class="prelude-ty">Result</span>&lt;SerialValue, String&gt; {
+<a href=#32 id=32 data-nosnippet>32</a></span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_csv_reader&lt;R: Read&gt;(reader: R, opts: CsvOptions) -&gt; <span class="prelude-ty">Result</span>&lt;SerialValue, String&gt; {
 <a href=#33 id=33 data-nosnippet>33</a>    <span class="kw">let </span><span class="kw-2">mut </span>reader = csv::ReaderBuilder::new()
 <a href=#34 id=34 data-nosnippet>34</a>        .delimiter(opts.delimiter)
 <a href=#35 id=35 data-nosnippet>35</a>        .has_headers(opts.has_headers)

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["combo","events","gamepad","keyboard","mouse","recorder","touch"]};
+window.SIDEBAR_ITEMS = {"mod":["action_def","combo","events","gamepad","keyboard","mouse","recorder","touch"]};

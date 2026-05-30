@@ -25,56 +25,47 @@ All three algorithms return a `LayoutResult` mapping `NodeId` to `(f32, f32)` co
 
 ### dag.rs
 
-- Sugiyama layered layout algorithm for directed acyclic graphs.
-- `layout_dag(nodes, edges, config)` returns a `LayoutResult` with `(x, y)` positions.
-- Phases: cycle removal, layer assignment, crossing minimisation, coordinate assignment.
-- `DagConfig` controls node separation, layer height, and direction (top-down / LR).
-- Output coordinates are in logical pixels; caller applies camera transform.
-- Used by `lurek.layout.dag`; suitable for dependency trees and tech-tree UIs.
+- Provides staged layered layout for directed graphs where flow direction and rank readability are primary goals.
+- Organizes nodes into bands, reorders local neighborhoods to reduce crossings, and then assigns stable screen coordinates.
+- Applies spacing and margin policy from shared layout config so outputs align with other module strategies.
+- Prefers deterministic structure over visual drift to keep dependency and progression maps legible across updates.
+- Serves graph-like UI flows that need clear upstream-downstream interpretation without manual node placement.
 
 ### force.rs
 
-- Fruchterman-Reingold force-directed layout for arbitrary undirected graphs.
-- `layout_force(nodes, edges, config)` iterates attraction/repulsion until convergence.
-- `ForceConfig` controls temperature, cooling rate, repulsion constant, and max iterations.
-- Initialises nodes on a random grid; deterministic given the same seed.
-- Convergence is detected when the max node displacement falls below a threshold.
-- Used by `lurek.layout.force` for social graphs, skill webs, and mind maps.
+- Delivers force-based layout for arbitrary connectivity where organic grouping matters more than strict hierarchy.
+- Balances repulsion and edge tension over iterative cooling to separate clusters while preserving relation cues.
+- Exposes tunable simulation intensity, area bounds, and convergence rhythm for different graph densities.
+- Produces coordinate fields that remain compatible with shared layout result types and downstream alignment passes.
+- Fits exploratory maps, relation webs, and editor views that need natural spacing without hard rank constraints.
 
 ### grid_align.rs
 
-- Post-processing utilities: snap node positions to a grid and centre in a bounding box.
-- `snap_to_grid(positions, cell_size)` rounds each node to the nearest grid cell.
-- `center_layout(positions, viewport)` translates the whole layout to fill a rect.
-- Pure functions; no mutation of the graph structure, only the coordinate map.
-- Applied after any layout algorithm before the positions are returned to Lua.
+- Provides finishing transforms that regularize raw layout coordinates before visual presentation.
+- Snaps node positions to consistent grid rhythm to improve scanability and manual editing behavior.
+- Recenters complete layouts into target areas without changing graph topology or sibling ordering.
+- Acts as the last geometry polish stage shared by multiple upstream layout strategies.
 
 ### mod.rs
 
-- Generic graph/tree/DAG layout algorithms.
-- Provides algorithms for positioning nodes in 2D space:
-- **Tree layout** — Reingold-Tilford algorithm for hierarchical trees
-- **DAG layout** — Sugiyama layered algorithm for directed acyclic graphs
-- **Force-directed** — Fruchterman-Reingold spring simulation for arbitrary graphs
-- **Grid alignment** — Post-processing snap-to-grid and centering
-- Used by: pipeline visualization, dialog tree view, skill trees, node editors.
+- Aggregates graph and tree layout strategies into one coherent coordinate service for runtime visuals.
+- Unifies result and config contracts so callers can switch placement style without changing integration code.
+- Exposes high-level re-exports that keep dependent systems decoupled from per-algorithm file structure.
 
 ### tree.rs
 
-- Reingold-Tilford algorithm for compact hierarchical tree node layout.
-- `layout_tree(root, children, config)` returns a `HashMap<NodeId, (f32, f32)>`.
-- Handles arbitrary branching factors; sibling subtrees are packed as tightly as possible.
-- `TreeConfig` sets horizontal and vertical node separation distances.
-- Supports top-down and left-to-right orientations via the `orientation` field.
-- Used by `lurek.layout.tree` for dialogue trees, skill trees, and org charts.
+- Implements rooted hierarchy placement that keeps parent-child reading order clear and branch spacing compact.
+- Walks subtrees recursively to allocate horizontal extent before anchoring parent coordinates in stable positions.
+- Applies shared spacing controls to balance density and readability for branching structures of uneven depth.
+- Targets dialog flows and progression trees that require explicit structure with minimal manual cleanup.
 
 ### types.rs
 
-- Shared layout types: nodes, edges, configuration structs, and result containers.
-- `LayoutNode` carries an ID and optional size hint for layout algorithms.
-- `LayoutEdge` is a directed `(from, to)` pair with an optional weight.
-- `LayoutResult` is the common return type: a `HashMap<NodeId, (f32, f32)>`.
-- `LayoutConfig` base fields (padding, viewport size) are embedded in every algorithm config.
+- Defines the common data contract that every layout algorithm in this module reads and writes.
+- Encodes node identity, geometry hints, and mutable coordinates in a shape tuned for repeated transforms.
+- Represents graph relations with lightweight edge records that support directional and weighted workflows.
+- Packages algorithm outputs into a uniform result container for renderer and tooling consumption.
+- Keeps configuration and result semantics stable so backends can evolve without breaking caller expectations.
 
 ## Lua API Ref
 

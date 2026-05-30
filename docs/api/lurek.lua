@@ -414,6 +414,16 @@ LMapEntriesResult = {}
 ---@field y number Y.
 LMathBresenhamResult = {}
 
+---@class LMathDelaunayTriangulateResult
+---@field [1] number First vertex index.
+---@field [2] number Second vertex index.
+---@field [3] number Third vertex index.
+LMathDelaunayTriangulateResult = {}
+
+---@class LMathTriangulateResult
+---@field [1] number Point component (interleaved x,y pairs).
+LMathTriangulateResult = {}
+
 ---@class LModGetConfigSchemaResult
 ---@field default string Default value.
 ---@field key string Config key.
@@ -16392,7 +16402,7 @@ lurek.math.deg = function(rad) end
 
 --- Computes Delaunay triangles for a flat point table.
 ---@param pts table Flat numeric point table.
----@return table Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
+---@return LMathDelaunayTriangulateResult Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
 lurek.math.delaunayTriangulate = function(pts) end
 
 --- Returns Euclidean distance between two points.
@@ -16842,7 +16852,7 @@ lurek.math.tan = function(x) end
 
 --- Triangulates a flat polygon point table.
 ---@param pts table Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points.
----@return table Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
+---@return LMathTriangulateResult Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
 lurek.math.triangulate = function(pts) end
 
 --- Creates a 2D vector. This function is exposed to Lua scripts.

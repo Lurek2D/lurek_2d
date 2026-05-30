@@ -25,93 +25,81 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 
 ### api_check.rs
 
-- Mod API compliance checker: validates Lua scripts against registered type schemas.
-- `ApiComplianceRule` inspects each `lurek.*` call site and checks argument types.
-- Unknown function names produce a `Severity::Error`; wrong arg count is a `Warning`.
-- Schema is loaded from `ApiRegistry` at engine startup; rules are stateless.
-- Returns `Vec<Violation>` per file; violations include file path and line number.
+- This file provides API compliance validation for Lua calls targeting the lurek namespace.
+- It scans call sites against registered signatures to catch unknown endpoints early.
+- It detects argument-shape mismatches that often signal migration or integration drift.
+- It emits structured violations with location data for actionable feedback in pipelines.
+- It anchors API contract enforcement within the broader validation engine workflow.
 
 ### asset_check.rs
 
-- Asset existence checker: validates that image, sound, and font paths in scripts exist.
-- `AssetExistenceRule` pattern-matches `lurek.asset.load("path")` call sites.
-- For each matched path string, checks presence via `GameFS::exists` (no I/O decode).
-- Missing assets are reported as `Severity::Error`; path typos as `Warning`.
-- Runs during `lurek.validator.run()` and the CI quality gate.
+- This file provides static asset path validation for script references to game resources.
+- It finds load-site path strings and checks their existence against the configured root.
+- It reports missing files before runtime so broken builds fail early and clearly.
+- It integrates with validator runs used by both local checks and CI quality gates.
 
 ### config.rs
 
-- Validator engine configuration: search paths, rule sets, and extension filters.
-- `ValidatorConfig` is deserialized from `[validator]` TOML or constructed from Lua.
-- `rules` is a list of rule module names; `"all"` enables every built-in rule.
-- `include_paths` and `exclude_paths` scope which files are checked.
-- `severity_threshold` controls which violations are returned (ignore Info, etc.).
+- This file provides configuration structures that shape validator execution policy.
+- It defines thread usage, file limits, and behavior toggles for analysis runs.
+- It gives the engine one coherent source of operational constraints.
 
 ### engine.rs
 
-- Validation engine: orchestrates rule execution across file trees with parallel workers.
-- `ValidationEngine` loads config, builds the rule set, and calls `parallel::validate_parallel`.
-- Returns a `ValidationReport` aggregating all violations from all rules and files.
-- Custom Lua rules registered via `lurek.validator.add_rule` are injected here.
-- Used by `lurek.validator.run()` and the `python tools/validate/` quality gate.
+- This file provides the validation orchestrator that runs rule sets over project content.
+- It composes built-in and custom rules into one execution plan shaped by config.
+- It dispatches checks across files and aggregates findings into structured reports.
+- It serves as the main engine entry used by runtime tooling and validation commands.
+- It keeps rule execution boundaries explicit so validation behavior remains auditable.
 
 ### import_check.rs
 
-- Lua import resolver: validates that all `require()` call targets exist on disk.
-- `ImportCheckRule` scans Lua files for `require("path")` calls via regex.
-- Each required path is resolved against the game's `lua_paths` config list.
-- Missing modules produce a `Severity::Error`; conditional requires a `Warning`.
-- Does not execute Lua; purely textual scan for safety and speed.
+- This file provides import resolution checks for Lua require targets in project scripts.
+- It scans textual require patterns and resolves module paths against configured lookup roots.
+- It surfaces missing dependencies before runtime to reduce integration surprises.
+- It keeps the check static and safe by avoiding script execution during analysis.
 
 ### mod.rs
 
-- Asset and content validation engine.
-- Asset existence checking (images, sounds, fonts referenced in scripts).
-- Lua import resolution validation.
-- Mod API compliance checking.
-- Custom validation rules from Lua callbacks or TOML rule files.
-- Parallel execution across file trees.
-- Structured violation reports with severity and suggestions.
+- This module delivers the validation surface for script content, assets, imports, and API usage.
+- It combines built-in and custom rule paths into one extensible quality-check pipeline.
+- It outputs structured findings that guide fixes in development and continuous integration.
 
 ### parallel.rs
 
-- Parallel file-tree runner: distributes validation rules across worker threads.
-- `validate_parallel(files, rules, config)` runs rules concurrently via Rayon.
-- `collect_lua_files` and `collect_files_with_ext` enumerate files before dispatch.
-- Each worker applies all rules to its file slice; results are merged with no locks.
-- Thread count is sourced from `ValidatorConfig`; 0 forces single-threaded mode.
+- This file provides parallel execution plumbing for validator rule application across files.
+- It enumerates candidate inputs and partitions work over worker threads efficiently.
+- It merges per-file violations into unified reports without unstable ordering surprises.
+- It supports configurable thread control, including single-thread fallback execution.
 
 ### report.rs
 
-- Structured violation report: aggregates, formats, and summarises validation results.
-- `Violation` carries file path, line number, `Severity`, rule name, and message.
-- `ValidationReport` holds `Vec<Violation>` and provides filter/sort helpers.
-- `Severity` enum: `Info`, `Warning`, `Error` — ordered by increasing severity.
-- `ValidationReport::display_summary()` prints a compact human-readable table.
+- This file provides typed report models for storing and presenting validation outcomes.
+- It defines violation records with severity, location, identity, and human-readable message.
+- It supports filtering and summary views so large result sets remain actionable.
+- It standardizes severity ordering for consistent thresholding and pipeline behavior.
+- It anchors validator output contracts consumed by tools and user-facing diagnostics.
 
 ### rule.rs
 
-- Validation rule trait and standard built-in rule implementations.
-- `ValidationRule` trait: `fn check(path, content) -> Vec<Violation>`.
-- All built-in rules implement this trait; Lua custom rules are adapter-wrapped.
-- Rules are stateless and `Send + Sync` so they can be used from any thread.
-- The engine constructs the rule set once from config and reuses it across files.
+- This file provides the rule trait contract that all validator checks implement.
+- It defines the required identity, severity, and check interface for rule execution.
+- It keeps rules composable across built-in logic and externally supplied adapters.
 
 ### rules_lua.rs
 
-- Lua-defined custom validation rules registered via pattern and callback config.
-- `LuaPatternRule` wraps a Lua callback and a file-extension filter.
-- Called from `validation_engine` with `(path, content)` as string arguments.
-- Lua callback must return a table of `{line, severity, message}` entries.
-- Custom rules run in the same validator pass as built-in rules; no ordering guarantee.
+- This file provides Lua-backed custom rule adapters for extending validator coverage.
+- It stores pattern and callback metadata that bridges script-defined checks into Rust flow.
+- It converts callback outputs into typed violations compatible with native reporting.
+- It lets teams add project-specific rules without recompiling engine validator code.
 
 ### rules_toml.rs
 
-- TOML-file-defined validation rules: loaded and compiled from disk at engine startup.
-- `load_rules_from_file` reads a `.toml` rule file and returns `Vec<Box<dyn ValidationRule>>`.
-- `load_rules_from_toml` parses the TOML `[[rule]]` array directly from a string.
-- Each rule entry specifies `pattern`, `severity`, `message`, and optional `extensions`.
-- Loaded rules are appended to the engine rule set before the first validation run.
+- This file provides TOML-driven rule loading for data-defined validation extensions.
+- It parses rule entries into runtime rule objects used by the validation engine.
+- It supports loading from files and raw TOML text for flexible integration points.
+- It enables configurable policy checks without adding new compiled rule types.
+- It keeps external rule definitions deterministic so CI behavior remains reproducible.
 
 ## Lua API Ref
 
@@ -130,9 +118,9 @@ Beyond built-in rules, the engine supports extensibility in two directions. TOML
 
 ### Types
 
-
 #### LValidationEngine Type
 
+- Lua userdata that runs schema and constraint validation on data tables and files.
 
 ##### Fields
 

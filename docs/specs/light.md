@@ -25,79 +25,80 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 
 ### attenuation.rs
 
-- Distance-based light intensity falloff using quadratic attenuation coefficients.
-- Computes attenuation factor from constant, linear, and quadratic terms.
-- Debug visualization of attenuation curves rendered to an image buffer.
+- Defines quadratic attenuation math controlling how light intensity decays with distance.
+- Encapsulates constant, linear, and quadratic coefficients in a compact reusable configuration.
+- Computes attenuation factors used by runtime light contribution evaluation.
+- Includes simple visualization support for tuning falloff curve behavior.
 
 ### blend_mode.rs
 
-- Define blend modes controlling how each light merges into the accumulation buffer.
-- Support additive, subtractive, and alpha-mix compositing strategies.
-- Variants: `Add` (classic glow), `Subtract` (shadow zones), `Mix` (alpha compositing).
+- Defines compositing modes that control how each light contribution merges into accumulated lighting.
+- Encodes additive, subtractive, and mixed behaviors for different artistic lighting goals.
+- Provides compact blend-mode discriminants shared across lighting evaluation and rendering paths.
 
 ### falloff.rs
 
-- Radial intensity falloff shapes applied on top of distance attenuation.
-- Variants control how brightness decreases from a light's center to its radius edge.
-- Modes: `Linear` (default), `Smooth` (smooth-step), and `Constant` (no radial decay).
+- Defines radial falloff profiles that shape brightness between light center and radius boundary.
+- Provides linear, smooth, and constant decay modes for distinct lighting aesthetics.
+- Supplies simple mode flags combined with distance attenuation during light evaluation.
 
 ### flicker.rs
 
-- Sine-based flicker configuration that modulates light intensity over time.
-- Phase accumulates each frame and wraps at TAU for continuous oscillation.
-- Strength controls peak deviation from base intensity; speed sets radians per second.
-- Disabled by default; enable to animate torches, candles, or neon lights.
+- Defines sine-based flicker state that modulates light intensity across time.
+- Tracks oscillation phase, speed, and strength for controllable temporal variation.
+- Supports deterministic per-frame advancement with wrapped phase continuity.
+- Enables torch, candle, and neon style animation without custom update code.
 
 ### light2d.rs
 
-- Complete `Light2D` struct holding position, color, radius, type, shadow, masks, flicker, and attenuation.
-- Constructor defaults to a white point light with full-layer masks and no shadows.
-- Getter/setter API for every field: position, color, intensity, energy, blend mode, falloff, masks.
-- Spot-light parameters: direction, inner/outer cone angles.
-- Shadow controls: enable, tint color, filter preset, smooth, and softness.
-- Normal-map attachment with optional path and contribution strength.
-- Volumetric scattering toggle and group-id batching support.
-- Debug visualization helper rendering falloff-mode comparison panels to `ImageData`.
+- Defines the full per-light data model covering transform, color, energy, and shading behavior.
+- Encapsulates light geometry, blend mode, falloff, attenuation, and layer-mask participation.
+- Stores spot-cone, shadow, normal-map, and volumetric options in one configurable runtime object.
+- Provides constructor defaults tuned for immediate point-light usage without extra setup.
+- Exposes field access patterns used by world management and Lua-facing controls.
+- Supports optional flicker and grouping metadata for batched animation and edits.
+- Includes debug-oriented helpers that visualize key lighting parameter effects.
 
 ### light_type.rs
 
-- Define the geometric illumination models available for 2D lights.
-- Discriminate between point, directional, and spot light behavior.
-- Drive intensity falloff and ray direction logic in the lighting pipeline.
+- Defines geometric light models used by the 2D lighting pipeline.
+- Distinguishes point, directional, and spot semantics for illumination behavior.
+- Supplies compact type discriminants used during shading and shadow evaluation.
 
 ### light_world.rs
 
-- Scene-level container (`LightWorld`) managing all `Light2D` instances and `Occluder` shapes via slotmaps.
-- Add, remove, query, and bulk-update lights and occluders by stable keys.
-- Group operations: enable/disable, intensity, and color changes on a named group ID.
-- Flicker system: lazy-indexed advance loop that only touches lights with active flicker state.
-- Renderer hints: ambient color array, directional light tuples, and normal-map snapshot extraction.
-- Debug visualization: rasterize an approximate light-map preview into an `ImageData` bitmap.
+- Implements scene-level light management for `Light2D` and occluder collections keyed by stable handles.
+- Supports creation, removal, lookup, and bulk mutation of lighting entities across runtime updates.
+- Applies group-based operations for coordinated enable, color, and intensity adjustments.
+- Advances active flicker states efficiently to animate selected lights over time.
+- Exposes renderer-oriented snapshots such as ambient terms and directional data aggregates.
+- Provides debug preview rasterization to inspect approximate light-map outcomes.
 
 ### mod.rs
 
-- 2D lighting system with point, spot, and area light types supporting color, falloff, and flicker.
-- Shadow casting via occluder shapes with configurable filter quality.
-- Light world accumulator that processes all active lights and emits composited render commands.
-- Blend modes and attenuation curves for flexible intensity decay and compositing.
+- High-level lighting module that groups light types, occluders, world state, and transition utilities.
+- Re-exports core enums and structs used to configure 2D illumination behavior across the engine.
+- Defines the module boundary for attenuation, blending, shadows, and runtime light orchestration.
 
 ### occluder.rs
 
-- Convex polygon shape that blocks light and casts shadows in the 2D lighting system.
-- Vertex management: construction from Vec2 list or flat coordinate arrays, runtime replacement.
-- Per-occluder properties: world position offset, shadow opacity, light-layer bitmask, enabled toggle.
+- Defines convex polygon occluders that block light and contribute to shadow casting.
+- Stores local vertices with world offset and opacity controls for flexible scene placement.
+- Supports runtime vertex replacement from typed points or flat coordinate inputs.
+- Applies layer-mask and enable flags to scope occluder influence across light groups.
 
 ### shadow.rs
 
-- Shadow filtering quality presets for soft-shadow rendering.
-- Defines PCF sample kernels at varying tap counts.
-- Default is hard shadows (no filtering) for maximum performance.
+- Defines shadow filtering quality presets used by soft-shadow evaluation paths.
+- Encodes hard-shadow and PCF-based options with different sampling costs.
+- Provides a compact quality enum consumed by light shadow configuration.
 
 ### transition.rs
 
-- Time-based linear interpolation of light color, intensity, and radius.
-- Clamps duration to a safe minimum and tracks elapsed progress.
-- Returns interpolated values each frame until the transition completes.
+- Implements time-based linear transitions for light color, intensity, and radius values.
+- Tracks elapsed progress against duration to produce deterministic interpolated states.
+- Clamps timing parameters to safe bounds for stable update behavior.
+- Supports per-frame stepping until transitions reach their configured targets.
 
 ## Lua API Ref
 
@@ -133,9 +134,9 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 
 ### Types
 
-
 #### LLight Type
 
+- Lua-side handle for a light stored in the shared light world.
 
 ##### Fields
 
@@ -209,9 +210,41 @@ Beyond static illumination, the module excels in dynamic effects. It features a 
 - `LLight:typeOf`: Returns whether this light handle matches a supported type name.
 - `LLight:updateTransition`: Advances this light's active transition and applies interpolated values.
 
+#### LLightGetGodRayHintsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `angle` (`number`): Hint angle in radians.
+- `x` (`number`): Hint x position.
+- `y` (`number`): Hint y position.
+
+##### Methods
+
+- No documented methods.
+
+#### LLightGetNormalMapHintsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `direction` (`number`): Hint direction.
+- `intensity` (`number`): Hint intensity.
+- `normalMap` (`string`): Normal map asset path.
+- `radius` (`number`): Hint radius.
+- `strength` (`number`): Normal map strength.
+- `x` (`number`): Hint x position.
+- `y` (`number`): Hint y position.
+
+##### Methods
+
+- No documented methods.
 
 #### LOccluder Type
 
+- Lua-side handle for an occluder stored in the shared light world.
 
 ##### Fields
 

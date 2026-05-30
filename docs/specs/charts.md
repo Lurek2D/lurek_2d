@@ -27,68 +27,65 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 
 ### area.rs
 
-- Area chart renderer: filled regions below one or more line series.
-- Rasterises each series into an RGBA pixel buffer via `render_area_chart`.
-- Supports stacked and overlapping fill modes with per-series alpha.
-- Delegates coordinate mapping to `charts::render_utils::world_to_screen`.
-- Owned by `lurek.charts.area` Lua API; output is uploaded as a texture.
+- Implements area-chart rasterization where series are rendered as filled regions over plot space.
+- Supports overlapping and stacked accumulation modes for comparative and compositional data views.
+- Maps data coordinates into pixel coordinates through shared chart-space transform helpers.
+- Produces RGBA buffers that downstream systems upload as textures for runtime presentation.
+- Integrates optional DataFrame extraction paths for column-driven area plotting workflows.
+- Serves as the filled-series rendering backend behind the charts area API surface.
 
 ### bar.rs
 
-- Bar chart renderer: vertical or horizontal grouped/stacked bars.
-- Rasterises a `BarChartSpec` into an RGBA pixel buffer.
-- Supports grouped and stacked layouts; bar width and gap are configurable.
-- Uses `render_utils::draw_rect_filled` for individual bar segments.
-- Owned by `lurek.charts.bar`; output is uploaded as a per-frame texture.
+- Implements bar-chart rasterization for categorical comparison through grouped or stacked layouts.
+- Supports configurable bar width, spacing, and orientation behavior across multiple value series.
+- Converts scaled chart coordinates into pixel-aligned rectangle fills for each rendered segment.
+- Produces RGBA image buffers suitable for per-frame upload and display in runtime overlays.
+- Serves as the rectangular-series rendering backend for the charts bar API path.
 
 ### config.rs
 
-- Shared chart configuration types: size, background, margins, and axis labels.
-- `ChartConfig` is the common base embedded in every chart spec.
-- Pixel dimensions, background colour, and title string live here.
-- Axis label and legend settings are optional; missing values use defaults.
-- Referenced by `BarChartSpec`, `LineChartSpec`, `PieChartSpec`, etc.
+- Defines shared chart configuration contracts used across all chart rendering variants.
+- Stores dimensions, margins, titles, palette defaults, and optional legend or axis metadata.
+- Provides common series and DataFrame mapping structures consumed by concrete chart specs.
+- Serves as the canonical option layer for consistent chart behavior and appearance.
 
 ### line.rs
 
-- Line chart renderer: connected data-point series over time or categories.
-- Rasterises a `LineChartSpec` into an RGBA pixel buffer.
-- Supports multiple named series with per-series colour and line width.
-- Pixel coordinates are mapped via `render_utils::world_to_screen`.
-- Owned by `lurek.charts.line`; result is uploaded as a texture each frame.
+- Implements line-chart rasterization for connected series over categorical or continuous domains.
+- Supports multi-series rendering with configurable color, width, and optional point markers.
+- Maps value space into pixel coordinates through shared chart transformation utilities.
+- Produces RGBA output buffers that can be uploaded as frame-local chart textures.
+- Serves as the polyline rendering backend exposed through the charts line API.
 
 ### mod.rs
 
-- Software-rasterised chart rendering for data visualisation.
-- Five chart types: line, bar, scatter, pie, area.
-- Configurable appearance: colors, margins, grid, titles, legends.
-- Renders to CPU pixel buffers (no GPU dependency).
-- DataFrame integration for direct column-to-series mapping.
+- Defines the charts module boundary for CPU-rasterized data-visualization rendering.
+- Groups chart types, shared config contracts, and utility drawing primitives into one surface.
+- Serves as the composition entry for runtime chart image generation from raw series or DataFrames.
 
 ### pie.rs
 
-- Pie chart renderer: proportional slice segments from a single data series.
-- Rasterises a `PieChartSpec` into an RGBA pixel buffer using arc fill.
-- Slice angles are computed from normalised values; labels are optional.
-- A configurable donut-hole radius converts the pie into a ring chart.
-- Owned by `lurek.charts.pie`; output is uploaded as a texture.
+- Implements pie-style chart rasterization where values are mapped to proportional angular slices.
+- Computes normalized slice spans and renders arc-filled sectors into RGBA output buffers.
+- Supports optional donut-hole shaping and label metadata for ring-style visual presentation.
+- Integrates DataFrame-derived value extraction for tabular-to-pie plotting workflows.
+- Serves as the circular-segment rendering backend behind the charts pie API.
 
 ### render_utils.rs
 
-- Internal rasterisation utilities shared by all chart renderers.
-- `fill_buffer` — flood-fills an RGBA buffer with a single background colour.
-- `draw_rect_filled` / `draw_circle_filled` — axis-aligned primitive fill.
-- `world_to_screen` — maps a data-space value to a pixel coordinate.
-- `auto_range` — computes the bounding min/max across all series data.
-- All functions operate on a flat `&mut [u8]` RGBA buffer with stride = width×4.
+- Provides shared CPU rasterization helpers used by all chart renderer implementations.
+- Includes primitive pixel operations for points, lines, circles, rectangles, and full-buffer fills.
+- Converts chart data coordinates to screen-space pixels through normalized range mapping utilities.
+- Computes automatic value ranges across multiple series for default axis domain selection.
+- Serves as the low-level drawing toolkit for consistent chart image generation behavior.
 
 ### scatter.rs
 
-- Scatter plot renderer: (x, y) point series showing distribution and correlation.
-- Rasterises a `ScatterChartSpec` into an RGBA pixel buffer.
-- Each point is drawn as a filled circle; radius and colour are per-series.
-- Axes are auto-ranged or clamped to user-supplied min/max bounds.
-- Owned by `lurek.charts.scatter`; output is uploaded as a texture.
+- Implements scatter-plot rasterization for point-cloud visualization of value distribution and relation.
+- Draws each sample as a configurable filled marker over chart-space transformed coordinates.
+- Supports automatic domain estimation or explicit axis bounds for controlled plot framing.
+- Produces RGBA output buffers suitable for texture upload in runtime chart presentation.
+- Serves as the point-series rendering backend for the charts scatter API path.
 
 ## Lua API Ref
 
@@ -111,9 +108,9 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 
 ### Types
 
-
 #### LAreaChart Type
 
+- Lua userdata for rendering a stacked area series chart.
 
 ##### Fields
 
@@ -128,9 +125,9 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `LAreaChart:render`: Renders the chart contents into a new pixel buffer.
 - `LAreaChart:setTitle`: Set or update the chart's displayed title.
 
-
 #### LBarChart Type
 
+- Lua userdata for rendering a vertical bar series chart.
 
 ##### Fields
 
@@ -146,9 +143,9 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `LBarChart:setBarWidth`: Set the pixel width of individual bars in this chart.
 - `LBarChart:setTitle`: Set or update the chart's displayed title.
 
-
 #### LLineChart Type
 
+- Lua userdata for rendering a connected line series chart.
 
 ##### Fields
 
@@ -163,9 +160,9 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `LLineChart:render`: Renders the chart contents into a new pixel buffer.
 - `LLineChart:setTitle`: Set or update the chart's displayed title.
 
-
 #### LPieChart Type
 
+- Lua userdata for rendering a pie slice chart.
 
 ##### Fields
 
@@ -180,9 +177,9 @@ Because chart rendering can be consumed by UI and reporting paths, the boundary 
 - `LPieChart:render`: Renders the chart contents into a new pixel buffer.
 - `LPieChart:setTitle`: Set or update the chart's displayed title.
 
-
 #### LScatterPlot Type
 
+- Lua-visible scatter plot userdata.
 
 ##### Fields
 

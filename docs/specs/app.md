@@ -29,55 +29,70 @@ Implementation detail and boundary guarantees for app: this module keeps respons
 
 ### app.rs
 
-- Implements the central `LurekApp` runtime driven by winit's `ApplicationHandler`.
-- Manages GPU surface creation, wgpu adapter/device selection, and surface reconfiguration.
-- Orchestrates the frame loop: tick input, call Lua process/draw callbacks, then present.
-- Handles window events (keyboard, mouse, touch, gamepad, drag-drop, resize, focus).
-- Provides splash-screen and error-screen rendering paths when no game is loaded or a fatal occurs.
-- Owns hot-reload watchers for conf.toml, Lua scripts, and asset files with automatic restart.
-- Integrates gilrs for gamepad polling, force-feedback vibration, and axis/button callbacks.
-- Performs viewport letterbox/stretch/pixel scaling and automatic screenshot capture.
-- Boots the Lua VM, loads main.lua, fires `lurek.init()`, and enters the main game loop.
-- Provides `App` bootstrap wrapper that initializes logging and launches the event loop.
+- Implements the primary desktop runtime loop that binds windowing, rendering, input, and Lua execution.
+- Owns application bootstrap from startup configuration through event-loop handoff and steady frame progression.
+- Manages graphics surface lifecycle, device provisioning, and resize-aware presentation reconfiguration.
+- Coordinates tick ordering so input, update callbacks, render callbacks, and presentation stay deterministic.
+- Routes platform events into runtime systems with consistent keyboard, mouse, touch, and controller handling.
+- Integrates gamepad polling and feedback signaling as part of per-frame platform service orchestration.
+- Maintains viewport scaling and letterbox behavior so visual output remains stable across window sizes.
+- Handles splash and fallback presentation paths before gameplay state is fully available.
+- Provides fatal-error rendering transition when execution cannot continue in normal game flow.
+- Controls screenshot timing and capture output as part of frame lifecycle responsibilities.
+- Drives Lua VM startup, script loading, and callback invocation as the script execution spine.
+- Applies guarded callback execution paths to keep runtime responsive under script-side anomalies.
+- Coordinates hot-reload triggers for content and script changes in active development sessions.
+- Preserves state continuity across reload boundaries where restart semantics allow safe recovery.
+- Maintains integration seams between render backend, runtime state, and high-level app orchestration.
+- Centralizes frame-profile collection points for observability and performance diagnostics.
+- Exposes utility operations used by auxiliary app submodules without duplicating orchestration logic.
+- Ensures one coherent ownership model for transient frame state and long-lived application resources.
+- Keeps platform interactions isolated so gameplay modules consume normalized runtime behavior.
+- Serves as the operational heartbeat that advances the engine from launch to shutdown.
+- Anchors the complete desktop execution lifecycle under one deterministic application control surface.
 
 ### debug_overlay.rs
 
-- Owns the lightweight debug HUD toggled by F12 or Lua.
-- Renders FPS counter and draw-call counter in a semi-transparent box.
-- Produces render commands only when the overlay is enabled and a font key is available.
+- Implements a lightweight runtime HUD that visualizes key frame diagnostics during gameplay.
+- Renders compact counters for frame rate and draw workload as overlay command output.
+- Gates all overlay emission behind explicit enable state to avoid accidental rendering noise.
+- Serves as a low-cost observability surface for quick in-session performance inspection.
 
 ### error_screen.rs
 
-- Formats fatal Lua and engine errors into a user-facing screen.
-- Splits message text and traceback, word-wraps long lines, and cleans Lua string markers.
-- Builds full-screen render commands showing error title, body, traceback, and hint footer.
-- Provides clipboard export text for quick copy of error details.
+- Formats fatal runtime failures into a user-facing visual report that remains readable under stress.
+- Splits primary error content from traceback context and normalizes noisy text artifacts.
+- Wraps long lines into screen-friendly layout blocks for predictable in-window readability.
+- Builds full-screen render command payloads for title, detail body, traceback, and guidance text.
+- Provides clipboard-ready export text so failure details can be captured quickly.
+- Serves as the terminal failure presentation path when normal gameplay rendering cannot continue.
 
 ### frame_profile.rs
 
-- Formats per-frame timing data into compact single-line strings for logging.
-- Reads tick, update, render, and callback timings from `FrameProfile`.
-- Output format: `tick=Xms update=Xms render=Xms cb=Xms` for tracing frame budget.
+- Formats frame timing samples into compact textual summaries for trace and diagnostics output.
+- Reads tick, update, render, and callback metrics from the runtime profile snapshot.
+- Emits one stable line shape that supports quick frame-budget scanning in logs.
 
 ### lua_callbacks.rs
 
-- Invokes named `lurek.*` Lua callbacks with error logging and optional timeout.
-- Installs an instruction-count hook to abort runaway callbacks after a deadline.
-- Provides checked and unchecked variants for both timed and untimed invocation.
+- Implements guarded invocation of named `lurek.*` callbacks from engine-side runtime flow.
+- Provides checked and logging variants so callers choose explicit error propagation behavior.
+- Supports optional timeout enforcement via instruction hooks to stop runaway callback execution.
+- Serves as the callback safety boundary between frame orchestration and Lua script handlers.
 
 ### mod.rs
 
-- Orchestrates the Lurek2D application lifecycle from window creation through frame rendering.
-- Bridges winit events to Lua callbacks, GPU rendering, input polling, and hot-reload.
-- Houses the error screen, debug overlay, splash screen, and frame profiling submodules.
-- Provides Lua callback timeout wrappers used across the frame update path.
+- Defines the application module boundary for lifecycle orchestration from startup to shutdown.
+- Groups runtime loop control, visual fallback paths, callback guards, and profiling helpers.
+- Serves as the high-level composition root for app-level execution responsibilities.
 
 ### splash_screen.rs
 
-- Decodes embedded splash icon and banner PNGs into temporary texture storage.
-- Builds render commands for the splash screen layout with centred branding.
-- Shows a drag-and-drop hint that changes colour when a folder is hovered.
-- Provides the `SplashBranding` struct used by the app loop until a game loads.
+- Implements splash branding presentation before gameplay content is loaded into active runtime state.
+- Decodes embedded visual assets into temporary texture storage used by startup rendering.
+- Builds centered splash layout command sequences with icon, banner, and hint messaging elements.
+- Adapts hint styling based on drag-and-drop hover state for clearer startup interaction feedback.
+- Serves as the pre-game visual bridge between process launch and first playable scene.
 
 ## Lua API Ref
 

@@ -175,7 +175,7 @@ def extract_field_entries_from_full_doc(full_doc):
     entries = []
     for line in full_doc.splitlines():
         stripped = line.strip()
-        m = re.match(r"^@field\s*\|\s*(\w+)\s*\|\s*([^|]+?)\s*\|\s*(.+)$", stripped)
+        m = re.match(r"^@field\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(.+)$", stripped)
         if m:
             entries.append({"name": m.group(1), "type": m.group(2).strip(), "description": m.group(3).strip()})
     return entries

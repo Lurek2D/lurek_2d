@@ -25,142 +25,167 @@ The module also includes specialized data structures optimized for game developm
 
 ### behavior_tree.rs
 
-- Behavior tree data structure with Sequence, Selector, Parallel, Inverter, Repeat, and Leaf node kinds.
-- Builder API for allocating nodes, linking children, and setting the root.
-- Per-tick runtime state tracking running nodes and repeat counters.
-- Integer `NodeId` addressing; no heap indirection between parent and child.
-- Fully deterministic tick ordering: left-to-right child evaluation.
+- Behavior tree runtime for composing game and AI decisions as explicit node graphs that evaluate in a stable left-to-right order.
+- The file provides structural node storage for sequences, selectors, parallels, repeaters, inverters, and named leaf actions without hiding execution flow behind opaque callbacks.
+- It keeps build-time graph authoring and tick-time run state close together so trees can be assembled, reset, and stepped with predictable control over parent-child relationships.
+- Repeat counters, running markers, and root selection live alongside compact integer node addressing, which keeps behavior updates easy to reason about and cheap to traverse.
+- Functionally this file delivers the core decision backbone for scripted actors that need readable branching logic, reusable subtrees, and deterministic per-frame evaluation semantics.
 
 ### bimap.rs
 
-- Bidirectional map with O(1) lookup by key or by value.
-- Mirrored forward and reverse `HashMap` tables kept in sync on every mutation.
-- Insert, remove-by-key, remove-by-value, and containment checks in both directions.
+- Bidirectional map storage for cases where game code must move between symbolic keys and canonical values with equal ease.
+- The file maintains mirrored forward and reverse tables so each mutation preserves a single authoritative pairing instead of forcing callers to manage two separate maps by hand.
+- Inserts, removals, and containment checks are shaped around keeping that two-way contract coherent even when entries are replaced or deleted from either side.
+- Functionally this delivers fast reversible lookup for registries, id-name bindings, alias tables, and other systems that need symmetry rather than one-directional indexing.
 
 ### blackboard.rs
 
-- Shared key-value store for passing typed state between AI and game systems.
-- Supports bool, number, text, and nil entries with per-key revision tracking.
-- Global and per-key revision counters enable efficient change detection.
-- Optional parent chain for hierarchical lookup (child inherits parent data).
-- Typed getters with defaults that walk the parent chain on miss.
+- Shared blackboard storage for gameplay and AI systems that need a common language for state without hard-coding direct dependencies between producers and consumers.
+- The file models values as a compact tagged set of common script-facing types and couples each write to revision tracking so readers can cheaply detect what changed and when.
+- Parent-linked lookup lets a local board inherit broader context while still overriding specific keys, which makes squad, faction, and entity state layering practical.
+- Typed getters, defaults, clears, and revision queries turn the store into more than a raw map by giving behavior code a disciplined way to read uncertain state.
+- Functionally this is the coordination memory for systems that want shared facts, incremental change detection, and hierarchical fallback instead of tightly wired state plumbing.
 
 ### collections.rs
 
-- Capacity metadata types for bounded stacks and queues.
-- Full-check logic shared by Lua-facing collection wrappers.
-- Zero capacity means unbounded; non-zero enforces a hard limit.
+- Small shared capacity metadata for collection-style pattern objects that expose bounded or unbounded behavior through one consistent rule set.
+- The file centralizes count, limit, and full-state semantics so stacks, queues, and similar wrappers can agree on what capacity means without duplicating bookkeeping code.
+- Functionally this delivers the lightweight policy layer behind collection limits, especially the convention that zero means unbounded while positive values enforce a hard ceiling.
 
 ### command_stack.rs
 
-- Linear undo/redo command history with cursor-based navigation.
-- Batch grouping for multi-command atomic operations.
-- Configurable max-size eviction of oldest entries.
+- Command history storage for features that need explicit undo and redo flow instead of ad hoc reversal logic spread across many systems.
+- The file tracks a linear timeline with a movable cursor, letting callers push new actions, walk backward through applied work, and replay discarded steps in order.
+- Batch grouping keeps multi-step edits together as one logical unit, which matters for editors, tactics actions, and scripted transactions that should reverse atomically.
+- Size limits and eviction rules keep history bounded without losing the current navigation model or forcing clients to hand-roll trimming behavior.
+- Functionally this delivers the memory of reversible work for tooling and gameplay flows that care about chronological intent, replay, and controlled rollback.
 
 ### event_bus.rs
 
-- Named event bus that routes events to prioritized subscriptions.
-- Supports wildcard listeners, one-shot subscriptions, and per-event clearing.
-- Returns ordered listener ID lists for the Lua callback layer to dispatch.
+- Event bus routing for decoupled gameplay communication where systems publish named signals and interested listeners react without direct caller knowledge.
+- The file organizes subscriptions by event name while preserving listener identity, priority order, and wildcard reach so dispatch can stay predictable as projects grow.
+- One-shot listeners, targeted clearing, and ordered listener extraction make the bus practical both for transient reactions and for long-lived system wiring.
+- Rather than executing script callbacks itself, it prepares the dispatch shape that higher layers can consume while keeping subscription state authoritative in one place.
+- Functionally this is the message circulation core for feature coordination, broadcast-style notifications, and low-friction cross-system signaling.
 
 ### factory.rs
 
-- Named type registry with alias support for dynamic object construction.
-- Register, unregister, and resolve canonical type names at runtime.
-- Alias mapping allows multiple names to reference the same underlying type.
+- Runtime factory registry for systems that construct objects by declared type names instead of hard-wiring every spawn path to concrete branches.
+- The file keeps canonical names and aliases aligned so different labels can converge on the same build target while still allowing registration changes at runtime.
+- Resolution, replacement, and removal are framed around keeping the name graph explicit and queryable rather than letting construction rules disappear into scattered conditionals.
+- Functionally this delivers the naming and lookup backbone for data-driven spawning, pluggable content registration, and alias-friendly creation flows.
 
 ### funnel.rs
 
-- Buffered accumulator that collects tagged numeric entries and flushes on a time window or count threshold.
-- Provides push/update/flush lifecycle: push entries, tick time, drain when ready.
-- Supports immediate flush (window=0), count-triggered flush, and manual discard.
+- Buffered funnel for gathering small tagged numeric events into controlled flush windows instead of reacting to every sample the instant it arrives.
+- The file couples entry accumulation with elapsed-time tracking and count thresholds so callers can model batch release, burst shaping, or windowed aggregation with simple state.
+- Immediate windows, manual discard, and explicit readiness checks make the behavior usable for both deterministic simulation ticks and script-driven control loops.
+- Functionally this delivers a compact batching primitive for telemetry, combo capture, score staging, and other flows where grouping matters more than raw per-event immediacy.
 
 ### graph.rs
 
-- Adjacency-list graph with directed and undirected mode support.
-- Node and edge CRUD with stable integer identifiers.
-- Weighted, labelled edges with automatic reverse-edge insertion for undirected graphs.
-- BFS and DFS traversals from any start node.
-- Connectivity queries and neighbour enumeration.
+- General-purpose graph structure for gameplay relationships, navigation-like topologies, and any domain that benefits from explicit nodes connected by weighted or labelled edges.
+- The file stores graph state as stable integer-addressed nodes and adjacency lists, which keeps structural edits straightforward while preserving identities scripts can hold onto.
+- Directed and undirected operation live behind one representation, including automatic reverse-edge behavior when a connection should semantically exist in both directions.
+- Traversal helpers expose breadth-first and depth-first walks as first-class capabilities so callers can inspect reachability, discover neighborhoods, or derive ordered visits without rebuilding utility code.
+- Connectivity checks, node metadata, and edge labels make the graph more than a bare container by supporting practical gameplay queries around ownership, routes, influence, or dependency webs.
+- Functionally this file delivers the relational map backbone for systems that need editable topology, traversable links, and stable graph identities in script-friendly form.
 
 ### mediator.rs
 
-- Channel-based mediator for decoupled handler registration and dispatch.
-- Register/unregister handlers by string channel with unique ids.
-- Query, count, and clear handlers per channel or globally.
+- Mediator registry for coordinating communication through named channels when systems should meet through a broker rather than pointing at each other directly.
+- The file assigns durable handler identities per channel so registration, removal, counting, and inspection all speak the same compact vocabulary.
+- By storing channel membership centrally it becomes easy to clear one lane of traffic or reset the whole routing surface without leaking per-subscriber bookkeeping into callers.
+- Functionally this delivers a message rendezvous layer for decoupled gameplay features, scripted services, and hub-style coordination flows.
 
 ### mod.rs
 
-- Reusable game-logic design patterns: state machines, behavior trees, event buses, and object pools.
-- Data structures for priority queues, graphs, tries, rings, and bidirectional maps.
-- Command stacking, observer subscriptions, throttling, and weighted random selection.
+- Foundational gameplay pattern toolbox that packages decision flow, state coordination, messaging, reuse, and selection primitives into small reusable building blocks.
+- The module supplies behavior trees, simple and guarded state machines, observer and event distribution layers, mediator routing, factories, service lookup, and undo-oriented command history.
+- It also delivers practical supporting structures such as graphs, tries, rings, priority ordering, bidirectional lookup, weighted picks, throttling windows, buffered funnels, and object reuse pools.
+- At module level this is the high-level kit for assembling decoupled game logic systems in Lua and Rust without re-implementing common orchestration patterns for each feature.
 
 ### object_pool.rs
 
-- Capacity-bounded object pool that tracks idle and active ids for reuse.
-- Supports acquire/release lifecycle, prewarming, and optional capacity limits.
-- Useful for entity recycling, bullet pools, and particle systems.
+- Object pool state for reuse-heavy systems that would rather recycle stable ids than continuously allocate and discard short-lived gameplay resources.
+- The file separates idle and active membership, supports prewarming, and enforces optional capacity so callers can shape reuse policy without inventing their own lifecycle bookkeeping.
+- Acquire and release flow is designed around predictable id turnover, which suits bullets, particles, temporary actors, and other bursty populations.
+- Functionally this delivers the reuse scheduler behind allocation-sensitive gameplay loops that want bounded churn and explicit ownership transitions.
 
 ### observer.rs
 
-- Named observer pattern with per-key subscription lists and wildcard support.
-- One-shot (`once`) and persistent subscription modes with auto-cleanup on dispatch.
-- Key-scoped and global clear operations for lifecycle management.
+- Observer-style notification store for reactive game state where changes on named keys should wake interested listeners without binding readers to writers.
+- The file keeps subscriptions grouped by key while still supporting wildcard reach, so systems can watch a narrow property or an entire stream of change events.
+- Persistent and one-shot modes share one dispatch model, which simplifies lifecycle handling and ensures cleanup happens in the same place that notifications are tracked.
+- Clear operations, listener ids, and stored observer entries make the structure suitable for long-running scenes where subscriptions need explicit ownership and maintenance.
+- Functionally this delivers the change-broadcast layer for reactive UI, quest logic, AI memory watchers, and any flow that responds to named value transitions.
 
 ### priority_queue.rs
 
-- Sorted priority queue with stable FIFO tie-breaking for equal priorities.
-- Push, pop, peek, and remove by id with O(n) insertion via partition point.
-- Each item carries an auto-assigned id, priority, label, and sequence number.
+- Ordered priority queue for gameplay scheduling and selection tasks that need highest-priority work first without losing deterministic order among ties.
+- The file assigns each entry its own identity and insertion sequence so queue mutation remains inspectable even when multiple items share the same score.
+- Push, pop, peek, and targeted removal operate on one consistently sorted store rather than spreading priority semantics across separate containers and side maps.
+- Functionally this delivers stable urgency-based ordering for task systems, AI planners, turn resolution, and any script logic that needs predictable priority arbitration.
 
 ### ring.rs
 
-- Fixed-capacity ring buffer backed by `VecDeque` with automatic eviction of oldest entries.
-- Each entry carries an optional numeric or string payload plus a caller-assigned tag.
-- Provides aggregate helpers (sum, average) and ordered iteration from oldest to newest.
+- Fixed-capacity ring buffer for rolling gameplay history where the newest samples matter most but recent context still needs to remain queryable in order.
+- The file stores tagged entries in arrival order and automatically evicts the oldest data once capacity is reached, keeping the window fresh without manual trimming.
+- Numeric and string payload support makes the structure useful for both measured telemetry and symbolic event trails.
+- Aggregate helpers and ordered iteration turn the buffer into a practical runtime history tool instead of a passive overwrite container.
+- Functionally this delivers short-horizon memory for combo tracking, diagnostics, smoothing inputs, and any system that lives on a moving recent window.
 
 ### service_locator.rs
 
-- Name-based service registry for runtime feature discovery.
-- Register, unregister, and query string-keyed services.
-- Sorted enumeration of all active service names.
+- Lightweight service locator for runtime feature discovery when systems need to find shared capabilities by agreed names instead of direct construction paths.
+- The file keeps registration, removal, lookup, and sorted listing in one compact registry so service presence stays explicit and easy to inspect.
+- Functionally this delivers a simple dependency access hub for loosely coupled gameplay code, especially where availability changes during runtime.
 
 ### simple_state.rs
 
-- Named-state registry with at-most-one active state at a time.
-- Add, remove, query, and switch states; validates transitions against the known set.
-- Sorted enumeration and count helpers for introspection.
+- Minimal named-state tracker for systems that only need one active mode at a time without the heavier transition model of a full state machine.
+- The file focuses on managing the known state set and the current selection, which keeps switching semantics explicit and validation cheap.
+- Enumeration and counting support make the registry easy to inspect from scripts and tooling that want to reason about available modes.
+- Functionally this delivers the lightweight mode switch core for menus, AI phases, control states, and other simple single-state flows.
 
 ### state_machine.rs
 
-- Finite state machine with explicit states, guarded transitions, and bounded history.
-- Transition rules with optional guards control allowed state changes.
-- Maintains a capped history ring of visited states for replay or debugging.
+- Full finite state machine runtime for systems that need named states, validated transitions, and a remembered trail of where control has moved over time.
+- The file separates state membership from transition rules so allowed movement stays explicit and can be guarded rather than implied by arbitrary caller behavior.
+- Bounded history gives each machine a replayable memory of recent changes, which is useful for debugging, analytics, and gameplay rules that depend on prior modes.
+- Current-state management, rule inspection, and history maintenance live together so switching logic stays coherent instead of fragmenting across helpers.
+- Functionally this delivers the structured mode-control layer for actors, encounters, UI flows, and scripted systems with meaningful transition policy.
 
 ### strategy.rs
 
-- Named-strategy registry with id assignment and current-selection tracking.
-- Register, remove, query, and switch strategies by string name.
-- Provides id-based lookup for the active strategy.
+- Strategy registry for features that swap among named behaviors or algorithms while keeping the selection surface explicit and data-driven.
+- The file assigns stable ids to registered strategies and tracks which one is currently active so callers can inspect or switch policy without hidden branching.
+- Registration and removal are treated as first-class operations, which fits systems where available strategies change with content, upgrades, or scripting.
+- Functionally this delivers the hot-swappable behavior catalog behind interchangeable decision rules, tactics, generators, or processing modes.
 
 ### throttle.rs
 
-- Rate-limiting primitives: throttle (fire at most once per interval) and debounce (fire after quiet period).
-- Both track elapsed time, fire counts, and can be enabled/disabled at runtime.
-- Progress query on throttle; trigger/cancel lifecycle on debounce.
+- Timing control primitives for gameplay actions that should be rate-limited or delayed instead of firing on every raw input or event edge.
+- The file pairs throttle and debounce behaviors in one place because both solve cadence control while differing in whether they emit immediately or only after quiet time.
+- Shared state around elapsed time, enable flags, fire counts, and reset flow makes these utilities practical for per-frame ticking and script-side inspection.
+- Progress queries on throttle and trigger-cancel semantics on debounce cover the two common rhythms of spaced repetition and delayed confirmation.
+- Functionally this delivers the pacing layer for input smoothing, cooldown-like gates, UI chatter suppression, and event burst control.
 
 ### trie.rs
 
-- Prefix trie for character-level string key storage and retrieval.
-- Insert, search, remove, and prefix-match operations.
-- DFS collection of all keys sharing a common prefix.
-- Automatic pruning of empty leaf nodes on removal.
+- Prefix trie storage for string-centric gameplay data where whole-key lookup and shared-prefix discovery should both be fast and structurally related.
+- The file models words as character paths, letting inserts and exact searches coexist naturally with prefix queries that expand into many matching keys.
+- Removal includes branch pruning so the structure sheds dead paths instead of accumulating empty nodes after content churn.
+- Depth-first key collection turns the trie into a practical retrieval tool for completions, dictionaries, filters, and lookup-heavy scripting workflows.
+- Functionally this delivers the text-prefix indexing backbone for command palettes, content search, lexicons, and other systems built around incremental string matching.
 
 ### weighted_random.rs
 
-- Weighted random selection over a dynamic entry list with add/remove/update.
-- Single-pick and multi-pick-without-replacement algorithms using normalized samples.
-- Revision counter for detecting structural changes and invalidating external caches.
+- Weighted random selector for content and gameplay systems that want probability-driven picks while still keeping the candidate set editable at runtime.
+- The file stores named weighted entries and supports structural mutation so drops, spawns, behaviors, or narrative beats can rebalance without rebuilding the container.
+- It covers both single draws and multi-pick selection without replacement, which makes the same structure useful for one-off rolls and curated batches.
+- Revision tracking gives outside code a reliable signal that probabilities or membership changed, helping caches and derived tables stay honest.
+- Functionally this delivers the probability orchestration layer for loot tables, encounter variation, weighted choices, and repeat-aware random selection flows.
 
 ## Lua API Ref
 
@@ -200,9 +225,9 @@ The module also includes specialized data structures optimized for game developm
 
 ### Types
 
-
 #### LBehaviorTree Type
 
+- Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
 
 ##### Fields
 
@@ -224,9 +249,9 @@ The module also includes specialized data structures optimized for game developm
 - `LBehaviorTree:setRoot`: Designate a node as the tree's root. Tick evaluation starts here.
 - `LBehaviorTree:tick`: Execute one tick of the behavior tree from the root. Returns the root node's status.
 
-
 #### LBlackboard Type
 
+- Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
 
 ##### Fields
 
@@ -245,9 +270,9 @@ The module also includes specialized data structures optimized for game developm
 - `LBlackboard:unwatch`: Remove a previously registered watcher by its ID.
 - `LBlackboard:watch`: Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
 
-
 #### LCommandStack Type
 
+- Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
 
 ##### Fields
 
@@ -264,9 +289,9 @@ The module also includes specialized data structures optimized for game developm
 - `LCommandStack:redo`: Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
 - `LCommandStack:undo`: Undo the most recent command by calling its undo function. Moves the pointer back in history.
 
-
 #### LDebounce Type
 
+- Lua-facing debounce that delays firing until input stops for a specified wait period.
 
 ##### Fields
 
@@ -281,9 +306,9 @@ The module also includes specialized data structures optimized for game developm
 - `LDebounce:trigger`: Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
 - `LDebounce:update`: Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
 
-
 #### LEventBus Type
 
+- Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
 
 ##### Fields
 
@@ -299,9 +324,9 @@ The module also includes specialized data structures optimized for game developm
 - `LEventBus:off`: Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
 - `LEventBus:on`: Subscribe a callback to a named event. Higher priority listeners fire first.
 
-
 #### LFactory Type
 
+- Lua-facing factory pattern for creating typed game objects from registered constructor functions.
 
 ##### Fields
 
@@ -317,9 +342,9 @@ The module also includes specialized data structures optimized for game developm
 - `LFactory:register`: Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
 - `LFactory:remove`: Unregister a type and discard its constructor function.
 
-
 #### LFunnel Type
 
+- Lua-facing batching funnel that collects events over a time window and flushes them together.
 
 ##### Fields
 
@@ -335,9 +360,9 @@ The module also includes specialized data structures optimized for game developm
 - `LFunnel:push`: Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
 - `LFunnel:update`: Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
 
-
 #### LList Type
 
+- Lua-facing dynamic array list with indexed access, insertion, removal, and search.
 
 ##### Fields
 
@@ -362,9 +387,9 @@ The module also includes specialized data structures optimized for game developm
 - `LList:toArray`: Return all items as an array table. This method is available to Lua scripts.
 - `LList:unshift`: Insert a value at the beginning of the list.
 
-
 #### LMap Type
 
+- Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
 
 ##### Fields
 
@@ -384,9 +409,24 @@ The module also includes specialized data structures optimized for game developm
 - `LMap:set`: Set a key-value pair in the map. Replaces any existing value for the same key.
 - `LMap:values`: Return an array of all values in the map.
 
+#### LMapEntriesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Entry id.
+- `tag` (`string`): Tag string.
+- `text` (`string`): Text content.
+- `value` (`number`): Numeric value.
+
+##### Methods
+
+- No documented methods.
 
 #### LMediator Type
 
+- Lua-facing mediator for channel-based message passing between decoupled game systems.
 
 ##### Fields
 
@@ -403,9 +443,9 @@ The module also includes specialized data structures optimized for game developm
 - `LMediator:removeChannel`: Remove an entire channel and all its handlers.
 - `LMediator:send`: Send a message to all handlers on a specific channel with optional payload arguments.
 
-
 #### LObjectPool Type
 
+- Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
 
 ##### Fields
 
@@ -421,9 +461,9 @@ The module also includes specialized data structures optimized for game developm
 - `LObjectPool:getTotalCount`: Return the total number of objects managed by this pool (active + idle).
 - `LObjectPool:release`: Return an active object back to the pool's idle set so it can be reused.
 
-
 #### LObserver Type
 
+- Lua-facing reactive observer that stores values and notifies subscribers when values change.
 
 ##### Fields
 
@@ -437,9 +477,9 @@ The module also includes specialized data structures optimized for game developm
 - `LObserver:subscribe`: Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
 - `LObserver:unsubscribe`: Remove a subscription by its ID. The callback will no longer fire.
 
-
 #### LPatternGraph Type
 
+- Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
 
 ##### Fields
 
@@ -461,9 +501,9 @@ The module also includes specialized data structures optimized for game developm
 - `LPatternGraph:removeEdge`: Remove an edge by its ID. Returns true if it existed.
 - `LPatternGraph:removeNode`: Remove a node and all its connected edges. Returns true if the node existed.
 
-
 #### LPriorityQueue Type
 
+- Lua-facing priority queue that orders elements by numeric priority (highest first).
 
 ##### Fields
 
@@ -478,9 +518,9 @@ The module also includes specialized data structures optimized for game developm
 - `LPriorityQueue:pop`: Remove and return the highest-priority item. Returns nil if the queue is empty.
 - `LPriorityQueue:push`: Add an item with a numeric priority. Higher priority items are dequeued first.
 
-
 #### LQueue Type
 
+- Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
 
 ##### Fields
 
@@ -503,9 +543,9 @@ The module also includes specialized data structures optimized for game developm
 - `LQueue:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
 - `LQueue:toArray`: Return all queue items as an array table (front to back).
 
-
 #### LRelationshipManager Type
 
+- Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.
 
 ##### Fields
 
@@ -524,9 +564,9 @@ The module also includes specialized data structures optimized for game developm
 - `LRelationshipManager:setValue`: Set the numeric relationship value between two entity IDs.
 - `LRelationshipManager:typeNames`: Return all defined relationship type names.
 
-
 #### LRing Type
 
+- Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
 
 ##### Fields
 
@@ -543,9 +583,39 @@ The module also includes specialized data structures optimized for game developm
 - `LRing:sum`: Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
 - `LRing:toArray`: Return all entries in the ring as an ordered array of tables (oldest to newest).
 
+#### LRingLatestResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Id.
+- `tag` (`string`): Tag.
+- `text` (`string`): Text.
+- `value` (`number`): Value.
+
+##### Methods
+
+- No documented methods.
+
+#### LRingToArrayResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `id` (`integer`): Entry id.
+- `tag` (`string`): Tag string.
+- `text` (`string`): Text content.
+- `value` (`number`): Numeric value.
+
+##### Methods
+
+- No documented methods.
 
 #### LServiceLocator Type
 
+- Lua-facing service locator for registering and retrieving shared services by name at runtime.
 
 ##### Fields
 
@@ -560,9 +630,9 @@ The module also includes specialized data structures optimized for game developm
 - `LServiceLocator:provide`: Register a service instance under a given name. Replaces any previously registered service with the same name.
 - `LServiceLocator:remove`: Unregister and discard a service by name.
 
-
 #### LSet Type
 
+- Lua-facing string set with add/remove/has operations and set algebra (union, intersection).
 
 ##### Fields
 
@@ -580,9 +650,9 @@ The module also includes specialized data structures optimized for game developm
 - `LSet:toArray`: Return all set items as an array table.
 - `LSet:union`: Return a new set containing all items from both this set and another.
 
-
 #### LSimpleState Type
 
+- Lua-facing finite state machine with enter/exit/update callbacks per state.
 
 ##### Fields
 
@@ -598,9 +668,9 @@ The module also includes specialized data structures optimized for game developm
 - `LSimpleState:transitionTo`: Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
 - `LSimpleState:update`: Call the current state's update callback with the frame delta time.
 
-
 #### LStack Type
 
+- Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
 
 ##### Fields
 
@@ -625,9 +695,9 @@ The module also includes specialized data structures optimized for game developm
 - `LStack:removeAt`: Remove and return the value at a 1-based index. Returns nil if out of range.
 - `LStack:toArray`: Return all stack items as an array table (bottom to top).
 
-
 #### LStrategy Type
 
+- Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.
 
 ##### Fields
 
@@ -644,9 +714,9 @@ The module also includes specialized data structures optimized for game developm
 - `LStrategy:remove`: Remove a named strategy. If it was the active strategy, no strategy will be selected.
 - `LStrategy:set`: Switch to a named strategy. Future `execute()` calls will use this implementation.
 
-
 #### LThrottle Type
 
+- Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
 
 ##### Fields
 
@@ -661,9 +731,9 @@ The module also includes specialized data structures optimized for game developm
 - `LThrottle:setEnabled`: Enable or disable the throttle. When disabled, update() will not accumulate time.
 - `LThrottle:update`: Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
 
-
 #### LWeightedRandom Type
 
+- Lua-facing weighted random selection pool. Add items with weights and pick random selections.
 
 ##### Fields
 

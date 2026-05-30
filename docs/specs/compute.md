@@ -29,59 +29,70 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 
 ### analytics.rs
 
-- Cumulative and differential operations (cumsum, diff, convolve1d, correlate1d)
-- Histogram binning with configurable range and bin count
-- Percentile extraction with linear interpolation
-- Pairwise statistical measures (covariance, Pearson correlation)
-- Value normalization helpers (range scaling, z-score standardization)
+- Implements analytical operations over arrays including cumulative, differential, and distribution metrics.
+- Provides histogram generation with configurable domains and binning resolution control.
+- Computes percentile estimates with interpolation for robust quantile-style inspection workflows.
+- Exposes pairwise statistics such as covariance and correlation for relationship analysis.
+- Includes normalization helpers for range scaling and standardized z-score transformations.
+- Serves as the statistical post-processing layer for compute arrays and derived results.
 
 ### array.rs
 
-- Dense n-dimensional array container with typed storage (float32, float64, int32)
-- Shape validation, stride computation, and flat-index addressing
-- Constructors for zeros, ones, range, and from-slice initialization
-- Element access by flat index or multidimensional coordinates
-- Utility iterators, fill, map, and display formatting
+- Implements the dense n-dimensional array container used by all compute submodules.
+- Stores typed scalar buffers with explicit shape metadata and deterministic stride computation.
+- Validates dimensions and element counts to protect allocation and indexing safety boundaries.
+- Provides constructors for common initialization flows including zeros, ones, ranges, and slices.
+- Supports flat and coordinate-based access paths for algorithmic and ergonomic usage patterns.
+- Exposes utility mapping, filling, and iteration helpers for transformation pipelines.
+- Serves as the foundational data model for operations, analytics, spatial, and linalg layers.
 
 ### fft.rs
 
-- Radix-2 in-place FFT and inverse FFT for power-of-two length buffers
-- Real-to-complex forward transform with automatic zero-padding
-- Complex-to-real inverse transform for spectrum reconstruction
-- Magnitude spectrum extraction from complex bin pairs
+- Implements radix-2 fast Fourier transform and inverse transform over power-of-two signal lengths.
+- Supports forward real-to-complex conversion with automatic padding for nonconforming input sizes.
+- Provides inverse reconstruction paths from complex spectra back to real-domain samples.
+- Exposes magnitude extraction helpers for frequency-domain inspection and feature analysis.
+- Serves as the spectral-analysis primitive layer for compute-side signal processing tasks.
 
 ### linalg.rs
 
-- Vector operations (normalize, cross2d, outer product, dot via spatial)
-- 2D transformation matrices (rotation, affine, point transform)
-- Convolution kernels (Gaussian) and edge detection (Sobel)
-- Linear system solving via Gaussian elimination with partial pivoting
-- LU decomposition with row permutation and determinant sign tracking
-- Dominant eigenpair estimation via power iteration
+- Implements linear-algebra and geometric helper operations over compute array structures.
+- Provides vector normalization, cross-style products, and matrix-oriented transformation utilities.
+- Includes kernel builders and edge-oriented operators for signal and image-adjacent workflows.
+- Solves linear systems with Gaussian elimination using pivoting for improved numerical stability.
+- Computes LU decomposition with permutation tracking to support determinant-aware factorization.
+- Exposes dominant eigenpair estimation through iterative power-method style evaluation.
+- Serves as the algebraic backbone for higher-level analytical and spatial compute tasks.
 
 ### mod.rs
 
-- N-dimensional array container, element-wise and reduction operations
-- FFT, linear algebra, spatial filtering, and statistical analytics
-- Configurable parallel dispatch threshold for large arrays
+- Defines the compute module boundary for array math, analytics, transforms, and spatial processing.
+- Groups core numeric submodules under one cohesive surface with shared data contracts.
+- Serves as the composition entry for engine-side compute and numeric utility workflows.
 
 ### ops.rs
 
-- Element-wise arithmetic, comparison, and bitwise operations on NdArray
-- Scalar and array binary operations with row-broadcast support
-- Reduction operations (sum, mean, min, max) globally and along axes
-- In-place mutation variants for add, sub, mul, div
-- Reshape, transpose, clone, fill, threshold, and conditional select
-- Configurable parallel dispatch via rayon above a tunable threshold
-- Argmin, argmax, count_nonzero, any, all logical queries
+- Implements the primary array-operations engine for arithmetic, comparison, logic, and reduction flows.
+- Supports scalar-array and array-array binary operations with bounded broadcast compatibility.
+- Provides global and axis-based reductions including sum, mean, min, max, and related aggregates.
+- Exposes in-place mutation variants for additive, subtractive, multiplicative, and divisive updates.
+- Includes reshape, transpose, cloning, thresholding, and conditional selection utilities.
+- Handles integer and floating operation variants through dtype-aware dispatch behavior.
+- Integrates configurable parallel execution thresholds for rayon-backed large-array workloads.
+- Returns deterministic error messages on shape mismatch, invalid axis, or unsupported operation cases.
+- Provides positional and logical queries such as argmin, argmax, nonzero count, any, and all.
+- Preserves predictable semantics across contiguous and non-trivial shape transformations.
+- Serves as the high-throughput compute workhorse used by analytics and algorithmic systems.
+- Anchors most data-manipulation behavior on top of the shared NdArray contract.
 
 ### spatial.rs
 
-- 2D convolution with zero-padded boundary handling
-- Binary morphology operators (dilate, erode) using Manhattan radius
-- Flood fill with 4-connected BFS propagation
-- Sub-region extraction and insertion for 2D arrays
-- Matrix multiplication and 1D dot product
+- Implements spatial and neighborhood operations over array-based 1D and 2D data surfaces.
+- Provides zero-padded convolution for kernel filtering across image-like matrix inputs.
+- Includes binary morphology operators such as dilation and erosion with radius-based neighborhoods.
+- Supports flood-fill propagation and region extraction or insertion for localized data editing.
+- Exposes matrix multiplication and dot-product helpers for core spatial-numeric composition.
+- Serves as the spatial-processing utility layer built on top of NdArray primitives.
 
 ## Lua API Ref
 
@@ -110,9 +121,9 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 
 ### Types
 
-
 #### LArray Type
 
+- Lua-side multidimensional numeric array handle.
 
 ##### Fields
 
@@ -200,6 +211,74 @@ Implementation detail and boundary guarantees for compute: this module keeps res
 - `LArray:typeOf`: Returns whether this array handle matches a supported type name.
 - `LArray:where`: Selects values from this array or another array using a mask array.
 - `LArray:zscore`: Returns z-score normalized array values.
+
+#### LArrayEigenPowerResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `value` (`number`): Dominant eigenvalue.
+- `vector` (`number[]`): Eigenvector.
+
+##### Methods
+
+- No documented methods.
+
+#### LArrayHistogramResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `count` (`integer`): Number of values in bin.
+- `hi` (`number`): Bin upper bound.
+- `lo` (`number`): Bin lower bound.
+
+##### Methods
+
+- No documented methods.
+
+#### LArrayLuDecomposeResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `det_sign` (`integer`): Det sign.
+- `lu_data` (`number[]`): LU decomposition data.
+- `n` (`integer`): N.
+- `perm` (`integer[]`): Permutation array.
+
+##### Methods
+
+- No documented methods.
+
+#### LArraySobelResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `gx` (`LArray`): Gradient X array.
+- `gy` (`LArray`): Gradient Y array.
+
+##### Methods
+
+- No documented methods.
+
+#### LComputeFftResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `im` (`number`): Imaginary part.
+- `re` (`number`): Real part.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

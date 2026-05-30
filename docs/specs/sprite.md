@@ -25,44 +25,47 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ### atlas.rs
 
-- Named atlas region type (`AtlasEntry`) with pixel rect, rotation, and flip flags.
-- `SpriteAtlas` lookup table: ordered Vec + HashMap for O(1) name lookup.
-- TexturePacker JSON parser supporting both array and object frame formats.
-- Aseprite JSON parser with the same dual-format support.
-- Conversion from `image::TextureAtlas` for runtime atlas building.
+- This file handles named texture-atlas regions so packed art can be addressed by semantic names instead of raw pixel rectangles.
+- It stores atlas entries with the orientation and flip metadata needed to interpret packing-tool output correctly.
+- Parsers for common atlas JSON formats live here because importing packed textures is a content-pipeline concern rather than a render concern.
+- Lookup is structured for fast name access while still retaining ordered iteration when tools or UIs need to inspect atlas contents.
+- Conversion from runtime-built atlas data is also supported so authored and generated atlases can share one representation.
+- The file is the naming and region-mapping layer for packed sprite content.
 
 ### mod.rs
 
-- Sprite, SpriteSheet, and SpriteBatch types for 2D rendering
-- Texture atlas parsing (TexturePacker JSON) and region lookup
-- Nine-slice panel geometry for scalable UI elements
+- This module provides the engine's core 2D sprite asset and batching helpers around individual sprites, sheets, atlases, and scalable panels.
+- It covers both how textured regions are described and how many of them are organized for animation, UI, or efficient drawing.
+- At the highest level this is the feature layer that turns textures into reusable 2D presentation pieces.
 
 ### nine_slice.rs
 
-- Nine-slice (9-patch) descriptor that splits a texture into corners, edges, and a center.
-- Generates source/destination patch tuples for scalable UI borders and panels.
-- Preserves corner pixel ratios while stretching edges and center to fit target dimensions.
+- This file defines nine-slice scaling logic for UI panels and framed elements that must resize without destroying border fidelity.
+- It splits one source region into corners, edges, and center pieces whose destination layout can adapt to arbitrary target sizes.
+- Corner preservation and controlled edge stretching are the core visual promises of this file.
+- It is the geometry helper behind scalable textured panels in the engine.
 
 ### sprite.rs
 
-- Single-sprite data type holding texture, position, scale, rotation, and colour tint.
-- Constructor and transform setters for positioning and styling sprites.
-- Designed as a lightweight value object consumed by the render pipeline.
+- This file defines the lightweight single-sprite record used when one textured image instance needs position, transform, and tint data.
+- It is intentionally small because many systems want sprite-like draw data without carrying atlas, animation, or batching machinery.
+- The type is the simplest textured presentation unit in the sprite subsystem.
 
 ### sprite_batch.rs
 
-- Deferred sprite draw-call collector bound to a single texture atlas.
-- Accumulates positioned, rotated, scaled source-quad entries for batch submission.
-- Supports optional capacity cap to limit per-frame draw volume.
+- This file implements sprite batching for cases where many textured quads share one source texture and should travel together through rendering.
+- It accumulates per-instance transform and source-region data so callers can build dense draw groups without issuing one command per sprite.
+- Capacity limits are part of the design because some workloads want explicit control over how much batch data is retained per frame.
+- The file is the performance-oriented collection layer of the sprite subsystem.
 
 ### sprite_sheet.rs
 
-- Uniform grid frame extraction from a single texture via per-frame width/height.
-- Precomputed Rect lookup by linear index, row, column, or arbitrary range.
-- Named frame groups for tagging animation sequences within the grid.
-- Directional animation layout (rows or columns) for multi-facing character sheets.
-- Preset constructors for RPGMaker 3×4 sheets and SpriteAtlas-backed sheets.
-- Debug visualisation that rasterises the grid into an ImageData with coloured borders.
+- This file turns a texture divided into repeated cells into a navigable sprite-sheet structure for frame-based animation and lookup.
+- Frame rectangles are precomputed so callers can move through rows, columns, ranges, and named groups without recalculating geometry each time.
+- Directional layout helpers matter here because many character sheets encode facing and animation state as a regular grid convention.
+- Preset constructors keep common authoring patterns, such as RPG-style character sheets, easy to adopt without custom math in game code.
+- Debug visualization is included because sheet layout mistakes are easier to catch when the frame grid can be rendered and inspected directly.
+- The file is the animation-frame organization layer of the sprite module.
 
 ## Lua API Ref
 
@@ -83,9 +86,9 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 
 ### Types
 
-
 #### LSpriteAtlas Type
 
+- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 
 ##### Fields
 
@@ -101,9 +104,64 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 - `LSpriteAtlas:type`: Returns the type name of this object.
 - `LSpriteAtlas:typeOf`: Checks whether this object matches the given type name.
 
+#### LSpriteAtlasGetByIndexResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `flip_x` (`boolean`): Flip horizontally.
+- `flip_y` (`boolean`): Flip vertically.
+- `h` (`number`): H.
+- `name` (`string`): Entry name.
+- `rotated` (`boolean`): Whether the entry is rotated.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LSpriteAtlasGetEntryResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): H.
+- `name` (`string`): Entry name.
+- `rotated` (`boolean`): Whether the entry is rotated.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LSpriteAtlasGetFlippedResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `flip_x` (`boolean`): Flip horizontally.
+- `flip_y` (`boolean`): Flip vertically.
+- `h` (`number`): H.
+- `name` (`string`): Entry name.
+- `rotated` (`boolean`): Whether the entry is rotated.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 #### LSpriteSheet Type
 
+- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 
 ##### Fields
 
@@ -123,6 +181,66 @@ To ensure optimal rendering performance, the module provides the `SpriteBatch` m
 - `LSpriteSheet:nameGroup`: Defines a named animation group as a contiguous range of frames.
 - `LSpriteSheet:type`: Returns the type name of this object.
 - `LSpriteSheet:typeOf`: Checks whether this object matches the given type name.
+
+#### LSpriteSheetGetColumnResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): H.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LSpriteSheetGetFrameResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): H.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
+
+#### LSpriteSheetGetGroupFramesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): Height.
+- `w` (`number`): Width.
+- `x` (`number`): X position in atlas.
+- `y` (`number`): Y position in atlas.
+
+##### Methods
+
+- No documented methods.
+
+#### LSpriteSheetGetRowResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `h` (`number`): H.
+- `w` (`number`): W.
+- `x` (`number`): X.
+- `y` (`number`): Y.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

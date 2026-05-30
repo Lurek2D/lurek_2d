@@ -29,66 +29,68 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 
 ### generational_id.rs
 
-- Pack and unpack 24-bit slot + 8-bit generation into a single u32 entity id.
-- Stateless utility struct with no allocation or state.
-- Supports up to ~16M slots and 256 generations per slot.
+- Provides stateless generational id packing that combines slot and generation into one compact handle.
+- Enables cheap decoding of slot and generation fields for validity checks during entity access.
+- Delivers the identity encoding contract used by ECS storage and lifecycle reuse rules.
 
 ### lua_table.rs
 
-- Deep-copy utility for Lua tables via mlua.
-- Recursively clones nested table structures by value.
-- Used by ECS and other systems that need independent table snapshots.
+- Provides Lua table deep-copy behavior for ECS operations that require independent state snapshots.
+- Recursively clones nested table structures so template and runtime data can diverge safely.
+- Delivers a shared cloning primitive used by serialization, blueprints, and diff-friendly workflows.
 
 ### mod.rs
 
-- Lightweight ECS: entities with generational IDs, Lua-table components, tags, and blueprints.
-- Relationship graph for parent/child, ownership, and custom link types between entities.
-- Deep-copy and snapshot utilities for cloning Lua component tables.
+- Provides the high-level ECS module boundary for entities, components, relationships, and lifecycle management.
+- Connects identity, storage, query, and hierarchy capabilities into one composable runtime data model.
+- Delivers a stable integration surface for systems that need structured world state and deterministic access.
 
 ### relationships.rs
 
-- Relationship type definitions with named level labels and validated defaults.
-- Pairwise relationship records storing numeric affinity and per-type level state.
-- Canonical entity-pair ordering for symmetric, order-independent lookups.
-- Directed named links between entities for one-way associations.
-- Query helpers: filter by entity, check existence, iterate all relations.
+- Provides typed relationship modeling for unordered pair links and directed named connections between entities.
+- Defines relationship categories with constrained level labels and validated default values.
+- Stores affinity metrics and per-type state in canonical pair records for stable lookups.
+- Supports directed link sets that capture one-way ownership or routing semantics.
+- Exposes query and mutation helpers that keep relationship operations centralized and consistent.
+- Delivers the graph substrate used by gameplay systems that reason about inter-entity ties.
 
 ### types.rs
 
-- Core ECS type aliases and ID newtypes: entity, component slot, and archetype key.
-- `EntityId` is a `u32` generation-stamped handle; 0 is the null entity.
-- `ComponentSlot` is a dense index into a component storage array.
-- `ArchetypeKey` is a sorted bitset of component type IDs identifying a layout.
-- All types derive `Copy`, `Eq`, and `Hash` so they can be used as map keys.
+- Provides core ECS identifier wrappers used to pass entity handles across module boundaries.
+- Defines lightweight typed ids that keep call sites explicit while preserving compact storage.
+- Delivers a shared identity contract for indexing, mapping, and query-level interoperability.
 
 ### universe.rs
 
-- Entity lifecycle: spawn, kill, recursive kill, alive checks, and generational id packing.
-- Component storage: set, get, has, remove, and name-list queries backed by Lua registry tables.
-- Archetype-style query acceleration via optional component-name index (`ecs-archetype` feature).
-- String tags with reverse index and bitmap tags with 63-bit fast masking.
-- Entity hierarchy: parent/child links, recursive deletion, and child enumeration.
-- Layer assignment and sorted entity retrieval for render ordering.
-- Blueprint templates: define, extend, spawn from template, and list operations.
-- System registration metadata: priorities, phases, names, and dependency lists.
-- Snapshot diff and dirty tracking for component add/remove notification streams.
-- Full universe reset via clear, draining all stores and recycling state.
+- Provides the central ECS Universe storage that owns entity lifecycle, component rows, and indexing state.
+- Manages spawn and deletion flows with generational identity to prevent stale-handle reuse errors.
+- Stores component payloads in Lua-backed tables while exposing predictable set, get, and remove semantics.
+- Maintains tag, layer, and hierarchy structures for efficient grouping and ordered runtime traversal.
+- Tracks blueprint templates and mutation helpers so scripted spawning remains data-driven and reusable.
+- Coordinates system metadata needed for later scheduling and phase-aware execution ordering.
+- Captures snapshot-diff signals so external consumers can observe incremental state changes.
+- Supports query acceleration and deterministic iteration patterns for stable gameplay behavior.
+- Integrates relationship management to keep inter-entity link semantics adjacent to core storage.
+- Provides reset and cleanup behavior that drains stores safely between scenario lifecycles.
+- Keeps ECS responsibilities concentrated in one authoritative runtime world-state container.
+- Delivers the foundational state layer consumed by simulation, rendering, scripting, and tooling.
 
 ### universe_ext.rs
 
-- Extended Universe operations: advanced queries, bulk spawning, and state serialization.
-- query_not filters entities by required and excluded component sets.
-- query_multi invokes a callback with packed ids and multiple component values per entity.
-- spawn_bulk creates many entities from a single blueprint with optional per-entity overrides.
-- serialize_to_table / deserialize_from_table convert live universe state to and from Lua tables.
-- Serialization captures components, tags, layers, bitmap masks, and parent-child hierarchy.
+- Provides extended Universe operations for advanced queries, bulk spawning, and table-based state exchange.
+- Implements inclusion and exclusion query paths that support richer component-selection workflows.
+- Supports callback-oriented multi-component iteration for efficient script-side data access.
+- Enables batch entity creation from blueprints with optional per-instance override payloads.
+- Serializes and deserializes complete world snapshots including hierarchy and tag structures.
+- Delivers high-level utility behavior that augments core ECS storage with practical runtime workflows.
 
 ### universe_systems.rs
 
-- System registration, removal, and count queries on a Universe.
-- Priority-based and dependency-aware topological sorting of systems per phase.
-- Phase filtering with fallback semantics for empty-phase systems.
-- Captures functional behavior for universe systems so callers can compose this capability safely.
+- Provides Universe system-management behavior for registration, removal, and inspection of runtime systems.
+- Computes deterministic execution order using priorities combined with dependency-aware topological sorting.
+- Applies phase filtering rules so system selection remains predictable across update and render passes.
+- Encapsulates scheduling metadata handling to keep orchestration logic separate from core ECS storage.
+- Delivers the execution-order facade used by callers to run systems consistently frame to frame.
 
 ## Lua API Ref
 
@@ -105,9 +107,9 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 
 ### Types
 
-
 #### LUniverse Type
 
+- Lua-side handle for one ECS universe.
 
 ##### Fields
 
@@ -183,6 +185,49 @@ Implementation detail and boundary guarantees for ecs: this module keeps respons
 - `LUniverse:typeOf`: Returns whether this universe handle matches a supported type name.
 - `LUniverse:update`: Runs registered update-phase systems with a frame delta.
 - `LUniverse:updatePhase`: Runs registered systems assigned to a named phase.
+
+#### LUniverseSerializeResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `components` (`table`): Map of entity id to component data tables.
+- `entities` (`integer[]`): Array of entity ids.
+
+##### Methods
+
+- No documented methods.
+
+#### LUniverseSnapshotResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `added_components` (`table`): Added components.
+- `deleted_entities` (`integer[]`): Deleted entity ids.
+- `dirty_entities` (`integer[]`): Dirty entity ids.
+- `removed_components` (`table`): Removed components.
+
+##### Methods
+
+- No documented methods.
+
+#### LUniverseTakeSnapshotDiffResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `added_components` (`table`): Array of {entity_id, name} tables.
+- `deleted_entities` (`integer[]`): Deleted entity ids.
+- `dirty_entities` (`integer[]`): Modified entity ids.
+- `removed_components` (`table`): Array of {entity_id, name} tables.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

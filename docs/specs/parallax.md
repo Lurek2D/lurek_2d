@@ -25,42 +25,43 @@ The visual fidelity of parallax layers can be further customized per-layer. It s
 
 ### draw.rs
 
-- Rasterisation of a single parallax layer into an `ImageData` bitmap.
+- Rasterises a single parallax layer into an ImageData bitmap.
 - Applies tint, opacity, and visibility when drawing.
 - Produces a solid-colour image sized to the requested dimensions.
 
 ### layer.rs
 
 - Single parallax layer definition with scroll factor, autoscroll, tiling, opacity, and tint.
-- Draw-batch struct that collects tile positions and render state for submission.
-- Camera-relative pixel offset computation with optional scroll clamping.
-- Tile repetition logic delegated to `tile_iter` for viewport coverage.
-- Motion-stretch blur effect injection based on autoscroll velocity.
-- Shader effect chain management (set, clear, count) per layer.
+- Carries draw-batch state so render submission stays separated from configuration.
+- Computes camera-relative pixel offsets with optional scroll clamping.
+- Delegates tile repetition to tile_iter for viewport coverage.
+- Supports motion-stretch blur injection based on autoscroll velocity.
+- Manages a small shader effect chain per layer for extra visual variation.
 
 ### mod.rs
 
 - Multi-layer parallax scrolling system with per-layer speed, tiling, and draw-batch accumulation.
-- Preset constructors for common configurations (sky, mountains, clouds).
-- Tile-column iterator and stateless draw-call generation into `RenderCommand` payloads.
+- Provides preset constructors for common depth planes and tile iteration helpers for rendering.
+- Keeps parallax drawing separate from the world and camera systems.
 
 ### presets.rs
 
 - Ready-made parallax layer constructors for common depth planes.
-- Far background, mid background, and foreground fog presets.
-- Each preset configures scroll factor, repeat, z-order, opacity, and blend mode.
+- Covers far background, mid background, and foreground fog presets.
+- Bakes scroll factor, repeat, z-order, opacity, and blend mode into each preset.
 
 ### render.rs
 
-- Convert parallax layer state into flat `RenderCommand` lists for the renderer.
-- Tile position batches into draw-image sequences with color and blend pre-applied.
-- Bridge between the parallax camera math and the GPU submission pipeline.
+- Converts parallax layer state into flat RenderCommand lists for the renderer.
+- Batches tile positions into draw-image sequences with color and blend pre-applied.
+- Bridges parallax camera math to the GPU submission pipeline.
 
 ### tile_iter.rs
 
-- Compute visible tile positions for repeating parallax layers within a screen rect plus cull margin.
-- Walk one axis at a time and combine X/Y into a full grid, capped to prevent runaway allocation.
-- Non-repeating layers emit only the single start position.
+- Computes visible tile positions for repeating parallax layers inside a screen rect and cull margin.
+- Walks one axis at a time and combines X and Y into a full grid with bounded growth.
+- Emits only the single origin position for non-repeating layers.
+- Supplies the viewport coverage iterator used by parallax rendering.
 
 ## Lua API Ref
 
@@ -79,9 +80,9 @@ The visual fidelity of parallax layers can be further customized per-layer. It s
 
 ### Types
 
-
 #### LParallaxLayer Type
 
+- Lua-side wrapper for a parallax layer and shared render state.
 
 ##### Fields
 
@@ -125,9 +126,9 @@ The visual fidelity of parallax layers can be further customized per-layer. It s
 - `LParallaxLayer:type`: Returns the Lua-visible type name for this parallax layer handle.
 - `LParallaxLayer:update`: Advances parallax layer autoscroll by delta time.
 
-
 #### LParallaxSet Type
 
+- Lua-side wrapper for an ordered parallax layer set.
 
 ##### Fields
 

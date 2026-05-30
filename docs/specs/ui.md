@@ -25,100 +25,138 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ### containers.rs
 
-- Container widgets for the retained-mode GUI: Panel, Layout, ScrollPanel, NinePatch, GUIWindow, SplitPanel, DockPanel.
-- Layout engine supports vertical, horizontal, and grid stacking with spacing, alignment, and justification.
-- ScrollPanel provides viewport clipping with clamped 2D scroll offsets and configurable speed.
-- NinePatch implements resolution-independent 9-slice border rendering from pixel insets.
-- GUIWindow adds floating window semantics: title bar, close button, drag, and resize.
-- SplitPanel and DockPanel offer two-pane splitting and edge-based docking respectively.
+- This file provides retained-mode UI containers that structure complex screen hierarchies.
+- It defines panels, layouts, windows, splits, and docks as composable spatial building blocks.
+- It drives vertical, horizontal, and grid arrangement with stable spacing and alignment rules.
+- It supplies scrollable viewports for overflowed content without breaking parent layout flow.
+- It supports nine-slice framing so scalable borders keep visual intent across resolutions.
+- It enables draggable and resizable window shells for tool-like and in-game interface scenes.
+- It anchors container semantics that other widgets rely on for predictable composition.
 
 ### context.rs
 
-- Retained-mode GUI context owning a flat arena of widgets addressed by index.
-- Discriminated `WidgetKind` union covering 35+ control/container/overlay types with shared `WidgetBase` access.
-- Recursive layout pass computing absolute `computed_rect` from parent-relative positions.
-- Focus management with forward/backward cycling and keyboard-driven tab navigation.
-- Drag-and-drop API with cycle detection to prevent parent-into-child drops.
-- Alpha and position transition animations stepped each frame with automatic expiry.
-- Data binding system mapping string keys to numeric, text, or boolean widget values.
-- FNV-hash render signature for fast dirty-check without full tree diffing.
-- Mouse press/release/move and keyboard input dispatch to the focused widget.
-- Toast overlay queue with per-message timers and automatic expiry.
-- Event queue (`GuiEvent`) drained each frame by the Lua binding layer.
+- This file provides the central retained-mode UI context that owns widget state and lifecycle.
+- It stores all widget variants in one indexed arena so references stay compact and stable.
+- It runs recursive layout to compute absolute rectangles from parent-relative placement data.
+- It manages focus traversal and keyboard navigation for consistent interaction behavior.
+- It routes mouse and key events through controlled dispatch paths tied to active widgets.
+- It drives drag-and-drop with safety checks that prevent invalid parent-child cycles.
+- It advances alpha and position transitions so UI motion remains smooth and deterministic.
+- It maintains data bindings that synchronize widget values with script-owned state keys.
+- It tracks render signatures to detect dirtiness without expensive full-tree comparisons.
+- It queues interface events so Lua can consume interactions in a frame-coherent order.
+- It handles toast overlay lifetimes and visibility as transient UI feedback primitives.
+- It maintains root-level viewport and scaling context used by layout and rendering passes.
+- It exposes creation and lookup surfaces that keep widget graph mutations predictable.
+- It centralizes ownership so memory, input, and animation behavior are coordinated.
+- It forms the contract boundary between UI data, behavior, and visual output.
+- It keeps high-volume interface updates efficient enough for runtime and tooling screens.
+- It enables complex widget ecosystems while preserving one coherent execution timeline.
+- It anchors the entire UI subsystem around deterministic per-frame state progression.
 
 ### controls.rs
 
-- Concrete widget structs for buttons, labels, text inputs, checkboxes, sliders, progress bars, combo boxes, list boxes, tab bars, radio buttons, scroll bars, spin boxes, and switches.
-- Each control embeds a `WidgetBase` for shared layout, style, and state; construction sets the correct `WidgetType` discriminant.
-- Editing controls (TextInput, SpinBox, Slider) clamp or validate input at the boundary to guarantee invariants.
-- Collection controls (ComboBox, ListBox, TabBar) auto-adjust selection indices on item removal.
-- All controls derive `Debug` and `Clone` for inspection and snapshot-based undo.
+- This file provides the concrete interactive controls used by the retained-mode UI layer.
+- It defines buttons, text inputs, toggles, selectors, and numeric widgets with shared behavior.
+- It embeds common widget base state so style, layout, and interaction remain consistent.
+- It validates and clamps editable values to enforce reliable control invariants.
+- It normalizes selection behavior when list-like data mutates at runtime.
+- It keeps control construction explicit so type identity is always unambiguous.
+- It supports snapshot-friendly cloning for tooling, testing, and reversible operations.
+- It packages core interaction primitives in one predictable and reusable control set.
+- It establishes stable semantics for input-heavy interfaces across gameplay and tools.
+- It forms the practical interaction surface most UI scripts build on top of.
 
 ### data_graph_renderer.rs
 
-- Multi-series data graph renderer with viewport coordinate mapping.
-- Supports line, scatter, and bar chart series. Provides world↔screen
-- coordinate conversion and auto-range fitting for use in both runtime
-- visualisation and editor panels.
+- This file provides the data graph renderer used for chart-like UI visualization surfaces.
+- It supports multiple series forms so lines, points, and bars share one rendering core.
+- It maps graph space to screen space with reversible coordinate conversion helpers.
+- It computes automatic ranges so diverse datasets fit cleanly into constrained viewports.
+- It serves both runtime HUD analytics and editor-facing diagnostic chart panels.
+- It keeps chart rendering behavior consistent across tooling and in-game dashboards.
 
 ### extras.rs
 
-- Supplemental UI widgets beyond core controls: toasts, separators, spacers, tree views, toolbars, menus, dialogs, and status bars.
-- Accordion panels with optional exclusive-expand mode and tooltip overlays with configurable delay.
-- HSVA/RGB colour picker, column-row data grid with sorting, static image display, numeric badge overlay.
-- TreeView uses a flat `Vec<TreeNode>` with index-based parent/child links; add, remove, expand, collapse, and depth queries are O(n) worst case.
-- Toolbar and MenuBar hold child indices into an external widget list; buttons support enabled/toggled states.
-- Dialog supports modal blocking, optional content slot, and footer action buttons.
-- CustomWidget provides a blank shell for fully user-controlled rendering via Lua callbacks.
-- All widgets embed `WidgetBase` for shared layout, style, and state; widget-type enum discriminant assigned at construction.
+- This file provides the extended widget set that goes beyond baseline UI control primitives.
+- It defines overlays, trees, menus, toolbars, dialogs, grids, and feedback-oriented elements.
+- It supports rich interaction patterns such as accordions, tooltips, and modal UI workflows.
+- It includes color and data-oriented widgets for editor-like and analytics-heavy interfaces.
+- It models hierarchical trees and menu structures in forms suitable for retained updates.
+- It supplies status and notification components that communicate system state to players.
+- It keeps advanced widgets aligned with shared base style and layout semantics.
+- It provides custom widget shells for script-driven rendering and bespoke interactions.
+- It enables dense information surfaces without leaving the core retained UI ecosystem.
+- It expands UI expressiveness while keeping integration with context and renderer coherent.
+- It supports practical tool-building needs alongside in-game menu and HUD requirements.
+- It rounds out the module with specialized pieces required for full product interfaces.
 
 ### layout_loader.rs
 
-- Deserialise TOML layout files into a recursive `WidgetDef` tree and instantiate them into a live `GuiContext`.
-- Map widget-type strings to concrete `GuiContext::add_*` constructors covering 30+ widget kinds.
-- Apply optional base properties (position, size, id, visibility, enabled, tooltip) and type-specific values after creation.
-- Provide a headless `render_to_image` path that saves the engine's default UI rasterisation to PNG.
-- Support recursive child nesting via the `children` field in `WidgetDef`, mirroring the runtime parent–child hierarchy.
-- Integrate with `GuiContext` only; no wgpu dependency — useful for offline layout validation and snapshot tests.
+- This file provides declarative UI loading from TOML definitions into live widget trees.
+- It maps textual widget kinds onto concrete context constructors with consistent defaults.
+- It applies generic and type-specific properties so authored layouts become runtime-ready.
+- It supports recursive child structures that mirror retained parent-child composition.
+- It offers headless image rendering for snapshot checks and offline layout verification.
+- It enables fast iteration on UI structure without hardcoding full trees in Lua scripts.
 
 ### mod.rs
 
-- Immediate-mode GUI toolkit: containers, controls, extras, and theming.
-- Provides layout panels, interactive widgets, and data-bound context.
-- Optional TOML layout-loader feature behind a feature flag.
+- This module delivers the full retained UI toolkit used by gameplay and tooling layers.
+- It combines context, widgets, containers, rendering, and theming into one coherent surface.
+- It keeps interface construction flexible through code-first and data-driven layout paths.
 
 ### render.rs
 
-- GPU render-command emission for all retained-mode UI widget types (buttons, sliders, trees, tables, dialogs, etc.).
-- CPU pixel-rasterisation fallback (`draw_to_image`) for headless screenshot and test verification.
-- Theme-aware style resolution with per-widget alpha compositing applied to all colour channels.
-- Shared helper emitters for common visual patterns: shadow, highlight strip, gradient/rounded box, border.
-- Widget-specific draw routines: slider thumb, progress fill, checkbox mark, radio dot, combo arrow, scroll thumb, switch track.
-- Recursive tree-node rendering in both GPU-command and CPU-pixel paths with expand/collapse indicators.
-- HSV-to-RGB conversion used by the colour-picker hue bar rasteriser.
-- `WidgetRenderer` carrier struct threading `GuiContext`, font key, and output buffer through the render pass.
-- Child-collection logic merging standard `children()` with type-specific slots (menus, accordion sections, dock zones).
-- Font-aware text measurement and alignment using the active UI font when available.
+- This file provides UI render emission for GPU commands and headless pixel raster outputs.
+- It draws the full retained widget catalog with consistent visual behavior across states.
+- It resolves theme style data per widget and applies alpha-aware color composition.
+- It emits shared primitives for shadows, fills, borders, gradients, and highlights.
+- It handles control-specific visuals such as sliders, checks, radios, combos, and switches.
+- It renders hierarchical content like trees and menus while preserving structural readability.
+- It supports color-picker internals with hue-space conversion used during visual generation.
+- It threads context, font, and output carriers through one deterministic render traversal.
+- It merges generic and type-specific child sources so nested widgets render in correct order.
+- It measures and aligns text with active font context to keep typography placement stable.
+- It supports CPU fallback output for screenshots, tests, and non-GPU verification paths.
+- It keeps rendering logic centralized so visual changes remain coherent and maintainable.
+- It scales from lightweight HUDs to complex tool panels using one render architecture.
+- It preserves deterministic draw command shape for regression checks and diagnostics.
+- It bridges widget semantics to backend draw primitives without leaking UI internals.
+- It supports theme-driven look changes without requiring widget logic rewrites.
+- It maintains robust rendering behavior under dynamic UI mutation each frame.
+- It anchors the visual execution layer of the retained UI subsystem.
 
 ### theme.rs
 
-- Visual theming system for the immediate-mode GUI, mapping widget-type/state pairs to style records.
-- Each style carries background, foreground, border colors, font size, shadow, gradient, and text alignment.
-- Lookup falls back from the requested state to `Normal`, letting partial themes work without exhaustive registration.
-- Ships a full dark preset covering all standard widget types (buttons, inputs, panels, layouts, menus, dialogs, etc.).
-- Style records are value types (`Clone + Debug`) so themes can be cheaply forked per-screen.
-- Includes a debug helper that rasterizes button states into an `ImageData` tile for visual validation.
-- Integrates with `GuiContext` at render time; the renderer reads resolved styles per-widget per-frame.
-- Designed for extension: games register custom `(WidgetType, WidgetState)` entries without modifying built-in presets.
+- This file provides the theming system that maps widget type and state to visual style data.
+- It stores colors, typography, borders, shadows, gradients, and alignment in reusable records.
+- It resolves requested styles with controlled fallback so partial themes remain functional.
+- It ships practical defaults that cover standard widgets without requiring custom setup.
+- It keeps style records clonable for cheap per-screen forks and variation experiments.
+- It supports semantic theme tokens so shared visual meanings stay consistent across widgets.
+- It integrates directly with render-time style resolution inside the UI drawing pipeline.
+- It includes debug-oriented raster helpers for quick visual verification of style states.
+- It enables extension through custom type-state registrations without changing core presets.
+- It separates visual policy from interaction logic for cleaner UI architecture boundaries.
+- It supports rapid skin iteration while preserving stable widget behavior contracts.
+- It keeps style lookup deterministic so rendering output stays predictable across frames.
+- It provides one source of truth for interface look-and-feel in the module.
+- It allows games and tools to share a common style backbone with targeted overrides.
+- It anchors maintainable visual customization across the retained UI ecosystem.
 
 ### widget.rs
 
-- UI widget tree node: the fundamental layout and rendering unit of the UI system.
-- `Widget` holds layout properties (size, margin, padding), style, and child list.
-- Widgets are built from Lua tables or TOML layout files and owned by the UI tree.
-- Layout is computed in a single top-down pass; results are cached until dirty.
-- Render commands are emitted per-widget in tree order during the UI render phase.
-- Interaction (click, hover, focus) is dispatched in a second bottom-up hit-test pass.
+- This file provides core widget primitives that define shared UI node state and semantics.
+- It models layout metrics, style linkage, identity, and interaction flags per widget instance.
+- It represents the tree unit that context, layout, and renderer pipelines operate on.
+- It supports state transitions that drive hover, focus, press, and animated visual behavior.
+- It keeps parent-child composition explicit so traversal and ownership rules remain stable.
+- It anchors type and state enums used across all concrete control and container variants.
+- It enables consistent text alignment and font override behavior at the widget boundary.
+- It provides reusable base data that reduces duplication across the larger UI catalog.
+- It ensures widget-level contracts remain predictable for script and engine integrations.
+- It defines the structural vocabulary that the retained UI subsystem builds upon.
 
 ## Lua API Ref
 
@@ -225,9 +263,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 
 ### Types
 
-
 #### LAccordion Type
 
+- Adds accordion-specific methods to an accordion widget table.
 
 ##### Fields
 
@@ -243,9 +281,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LAccordion:setExclusive`: Sets exclusive mode. When true, expanding one section collapses all others.
 - `LAccordion:toggleSection`: Toggles the expanded state of an accordion section by its 1-based index.
 
-
 #### LAreaChart Type
 
+- Lua-exposed area chart for data visualization.
 
 ##### Fields
 
@@ -260,9 +298,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LAreaChart:type`: Returns the type name of this object.
 - `LAreaChart:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LBadge Type
 
+- Adds badge-specific methods to a notification badge widget table.
 
 ##### Fields
 
@@ -274,9 +312,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LBadge:getDisplayText`: Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
 - `LBadge:setCount`: Sets the notification count displayed by this badge.
 
-
 #### LBarChart Type
 
+- Lua-exposed bar chart for data visualization.
 
 ##### Fields
 
@@ -291,9 +329,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LBarChart:type`: Returns the type name of this object.
 - `LBarChart:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LButton Type
 
+- Adds button-specific methods (setText, getText) to a button widget table.
 
 ##### Fields
 
@@ -304,9 +342,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LButton:getText`: Returns the current display text of this button.
 - `LButton:setText`: Sets the display text on this button.
 
-
 #### LCheckbox Type
 
+- Adds checkbox-specific methods to a checkbox widget table.
 
 ##### Fields
 
@@ -319,9 +357,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LCheckbox:setChecked`: Sets the checked state of this checkbox.
 - `LCheckbox:setText`: Sets the label text displayed next to this checkbox.
 
-
 #### LColorPicker Type
 
+- Adds color-picker-specific methods to a color picker widget table.
 
 ##### Fields
 
@@ -337,9 +375,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LColorPicker:setOnChange`: Registers a callback invoked when this color picker's value changes.
 - `LColorPicker:setShowAlpha`: Sets whether the alpha channel slider is visible.
 
-
 #### LComboBox Type
 
+- Adds combo-box-specific methods to a combo box widget table.
 
 ##### Fields
 
@@ -356,9 +394,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LComboBox:removeItem`: Removes the item at the given 1-based index from this combo box.
 - `LComboBox:setSelectedIndex`: Sets the selected item by 1-based index.
 
-
 #### LDialog Type
 
+- Adds dialog-specific methods to a dialog widget table.
 
 ##### Fields
 
@@ -378,9 +416,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LDialog:setOnClose`: Registers a callback invoked when this dialog is closed.
 - `LDialog:setTitle`: Sets the title text of this dialog widget.
 
-
 #### LDockPanel Type
 
+- Adds dock-panel-specific methods to a dock panel widget table.
 
 ##### Fields
 
@@ -394,9 +432,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LDockPanel:setSplitSize`: Sets the size of a dock panel side region.
 - `LDockPanel:undock`: Removes a child widget from this dock panel.
 
-
 #### LGuiTable Type
 
+- Adds GUI-table-specific methods to a table widget.
 
 ##### Fields
 
@@ -419,9 +457,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LGuiTable:setSelectedRow`: Sets the selected row by its 1-based index, or nil to deselect.
 - `LGuiTable:setSortable`: Sets whether columns in this table can be sorted by clicking headers.
 
-
 #### LGuiWindow Type
 
+- Adds GUI-window-specific methods to a window widget table.
 
 ##### Fields
 
@@ -439,9 +477,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LGuiWindow:setResizable`: Sets whether this window can be resized.
 - `LGuiWindow:setTitle`: Sets the title bar text of this GUI window.
 
-
 #### LImageWidget Type
 
+- Adds image-widget-specific methods to an image widget table.
 
 ##### Fields
 
@@ -454,9 +492,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LImageWidget:setScaleMode`: Sets the image scaling mode (e.g. "fit", "fill", "stretch").
 - `LImageWidget:setTint`: Sets the tint color of this image widget as RGBA components.
 
-
 #### LLabel Type
 
+- Adds label-specific methods (setText, getText) to a label widget table.
 
 ##### Fields
 
@@ -467,9 +505,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LLabel:getText`: Returns the current display text of this label.
 - `LLabel:setText`: Sets the display text on this label.
 
-
 #### LLayout Type
 
+- Adds layout-specific methods to a layout container widget table.
 
 ##### Fields
 
@@ -489,9 +527,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LLayout:setSpacing`: Sets the spacing in pixels between child widgets in this layout.
 - `LLayout:setWrap`: Enables or disables wrapping of children to the next row/column when they overflow.
 
-
 #### LLineChart Type
 
+- Lua-exposed line chart for data visualization.
 
 ##### Fields
 
@@ -507,9 +545,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LLineChart:type`: Returns the type name of this object.
 - `LLineChart:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LListBox Type
 
+- Adds list-box-specific methods to a list box widget table.
 
 ##### Fields
 
@@ -526,9 +564,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LListBox:setItemHeight`: Sets the pixel height of each item row in this list box.
 - `LListBox:setSelectedIndex`: Sets the selected item by 1-based index.
 
-
 #### LMenuBar Type
 
+- Adds menu-bar-specific methods to a menu bar widget table.
 
 ##### Fields
 
@@ -541,9 +579,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LMenuBar:getMenus`: Returns a table of widget indices for all menus in this menu bar.
 - `LMenuBar:removeMenu`: Removes a menu from this menu bar by its widget index.
 
-
 #### LMenuItem Type
 
+- Adds menu-item-specific methods to a menu item widget table.
 
 ##### Fields
 
@@ -561,9 +599,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LMenuItem:setShortcut`: Sets the keyboard shortcut text displayed next to this menu item.
 - `LMenuItem:setText`: Sets the display text of this menu item.
 
-
 #### LNinePatch Type
 
+- Adds nine-patch-specific methods to a nine-patch widget table.
 
 ##### Fields
 
@@ -577,9 +615,28 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LNinePatch:setImageDimensions`: Sets the original image dimensions used for nine-patch slice calculations.
 - `LNinePatch:setInsets`: Sets the border insets defining the stretchable center region of the nine-patch image.
 
+#### LNinePatchGetSlicesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `dh` (`number`): Dest height.
+- `dw` (`number`): Dest width.
+- `dx` (`number`): Dest x.
+- `dy` (`number`): Dest y.
+- `sh` (`number`): Source height.
+- `sw` (`number`): Source width.
+- `sx` (`number`): Source x.
+- `sy` (`number`): Source y.
+
+##### Methods
+
+- No documented methods.
 
 #### LPanel Type
 
+- Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
 
 ##### Fields
 
@@ -591,9 +648,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LPanel:setScrollable`: Enables or disables scrolling within this panel.
 - `LPanel:setTitle`: Sets the title text displayed on this panel's header.
 
-
 #### LPieChart Type
 
+- Lua-exposed pie chart for data visualization.
 
 ##### Fields
 
@@ -607,9 +664,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LPieChart:type`: Returns the type name of this object.
 - `LPieChart:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LProgressBar Type
 
+- Adds progress-bar-specific methods to a progress bar widget table.
 
 ##### Fields
 
@@ -624,9 +681,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LProgressBar:setRange`: Sets the minimum and maximum bounds for this progress bar.
 - `LProgressBar:setValue`: Sets the current fill value of this progress bar, clamped to its range.
 
-
 #### LRadioButton Type
 
+- Adds radio-button-specific methods to a radio button widget table.
 
 ##### Fields
 
@@ -642,9 +699,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LRadioButton:setSelected`: Sets the selected state of this radio button.
 - `LRadioButton:setText`: Sets the label text of this radio button.
 
-
 #### LScatterPlot Type
 
+- Lua-exposed scatter plot for data visualization.
 
 ##### Fields
 
@@ -660,9 +717,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LScatterPlot:type`: Returns the type name of this object.
 - `LScatterPlot:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LScrollBar Type
 
+- Adds scroll-bar-specific methods to a scroll bar widget table.
 
 ##### Fields
 
@@ -679,9 +736,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LScrollBar:setScrollPosition`: Sets the scroll position of this scroll bar, clamped to the valid range.
 - `LScrollBar:setViewSize`: Sets the visible viewport size for this scroll bar.
 
-
 #### LScrollPanel Type
 
+- Adds scroll-panel-specific methods to a scroll panel widget table.
 
 ##### Fields
 
@@ -697,9 +754,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LScrollPanel:setScrollPosition`: Sets the scroll offset position of this scroll panel.
 - `LScrollPanel:setScrollSpeed`: Sets the scroll speed multiplier for mouse wheel scrolling.
 
-
 #### LSeparator Type
 
+- Adds separator-specific methods to a separator widget table.
 
 ##### Fields
 
@@ -712,9 +769,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LSeparator:setThickness`: Sets the line thickness of this separator in pixels.
 - `LSeparator:setVertical`: Sets whether this separator draws vertically or horizontally.
 
-
 #### LSlider Type
 
+- Adds slider-specific methods to a slider widget table.
 
 ##### Fields
 
@@ -729,9 +786,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LSlider:setStep`: Sets the step increment for this slider's value snapping.
 - `LSlider:setValue`: Sets the current value of this slider, clamped to its range.
 
-
 #### LSpinBox Type
 
+- Adds spin-box-specific methods to a spin box widget table.
 
 ##### Fields
 
@@ -746,9 +803,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LSpinBox:setStep`: Sets the step increment for this spin box.
 - `LSpinBox:setValue`: Sets the numeric value of this spin box, clamped to its range.
 
-
 #### LSplitPanel Type
 
+- Adds split-panel-specific methods to a split panel widget table.
 
 ##### Fields
 
@@ -767,9 +824,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LSplitPanel:setSecondChild`: Sets the widget index for the second (right/bottom) panel.
 - `LSplitPanel:setSplitPosition`: Sets the split position as a fraction (0.0 to 1.0).
 
-
 #### LStatusBar Type
 
+- Adds status-bar-specific methods to a status bar widget table.
 
 ##### Fields
 
@@ -784,9 +841,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LStatusBar:setSectionText`: Sets the text of a status bar section by its 1-based index.
 - `LStatusBar:setSectionWidget`: Associates a widget with a status bar section (reserved for future use).
 
-
 #### LSwitch Type
 
+- Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
 
 ##### Fields
 
@@ -798,9 +855,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LSwitch:setOn`: Sets the on/off state of this toggle switch.
 - `LSwitch:toggle`: Toggles this switch between on and off states.
 
-
 #### LTabBar Type
 
+- Adds tab-bar-specific methods to a tab bar widget table.
 
 ##### Fields
 
@@ -815,9 +872,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LTabBar:removeTab`: Removes the tab at the given 1-based index.
 - `LTabBar:setActiveTab`: Sets the active (selected) tab by 1-based index.
 
-
 #### LTextInput Type
 
+- Adds text-input-specific methods to a text input widget table.
 
 ##### Fields
 
@@ -833,9 +890,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LTextInput:setPlaceholder`: Sets the placeholder text shown when the input is empty.
 - `LTextInput:setText`: Sets the text content of this text input field and moves the cursor to the end.
 
-
 #### LTheme Type
 
+- Lua-exposed wrapper around a GUI theme for styling widgets.
 
 ##### Fields
 
@@ -847,9 +904,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LTheme:type`: Returns the type name of this object.
 - `LTheme:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LToast Type
 
+- Adds toast-specific methods to a toast notification widget table.
 
 ##### Fields
 
@@ -864,9 +921,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LToast:setDuration`: Sets how long this toast is displayed in seconds.
 - `LToast:setMessage`: Sets the message text displayed by this toast notification.
 
-
 #### LToolbar Type
 
+- Adds toolbar-specific methods to a toolbar widget table.
 
 ##### Fields
 
@@ -884,9 +941,24 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LToolbar:setButtonToggled`: Sets the toggle state of a toolbar button by its ID.
 - `LToolbar:setOrientation`: Sets the toolbar orientation ("horizontal" or "vertical").
 
+#### LToolbarGetButtonResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `enabled` (`boolean`): Whether the button is enabled.
+- `id` (`integer`): Id.
+- `toggled` (`boolean`): Whether the button is toggled.
+- `tooltip` (`string?`): Tooltip text.
+
+##### Methods
+
+- No documented methods.
 
 #### LTooltipPanel Type
 
+- Adds tooltip-panel-specific methods to a tooltip panel widget table.
 
 ##### Fields
 
@@ -901,9 +973,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LTooltipPanel:setTarget`: Sets the widget index that this tooltip is attached to.
 - `LTooltipPanel:setText`: Sets the tooltip panel display text content.
 
-
 #### LTreeView Type
 
+- Registers tree-view-specific Lua methods on a widget method table.
 
 ##### Fields
 
@@ -931,9 +1003,9 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LTreeView:setSelectedNode`: Sets the selected node by 1-based index.
 - `LTreeView:toggleNode`: Toggles the expanded/collapsed state of the node at the given 1-based index.
 
-
 #### LUiWidget Type
 
+- Creates a Lua table representing a widget with all shared base methods common to every widget type.
 
 ##### Fields
 
@@ -1014,9 +1086,20 @@ Beyond standard UI components and input routing, the module integrates powerful 
 - `LUiWidget:typeOf`: Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
 - `LUiWidget:unbind`: Removes the data binding from this widget.
 
+#### LUiWidgetGetChildrenResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `_idx` (`integer`): Widget index.
+
+##### Methods
+
+- No documented methods.
+
 ## References
 
-- `charts`: Imports or references `src/charts/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `color`: Imports or references `src/color/`. Cross-group dependency from `Feature Systems` into `Edge/Integration`.
 - `dataframe`: Imports or references `src/dataframe/`. Cross-group dependency from `Feature Systems` into `Foundations`.
 - `image`: Imports or references `image` from `src/image/`.

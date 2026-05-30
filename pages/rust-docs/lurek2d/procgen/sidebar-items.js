@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["biome","bsp","cellular","color","flood_fill","heightmap","lcg","lsystem","namegen","noise","poisson","render","rooms","voronoi","wfc","world_graph"]};
+window.SIDEBAR_ITEMS = {"mod":["biome","bsp","cellular","cellular_world","color","flood_fill","heightmap","lcg","lsystem","namegen","noise","poisson","render","rooms","voronoi","wfc","wfc_llm","world_graph"]};

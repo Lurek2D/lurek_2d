@@ -30,59 +30,62 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 
 ### draw.rs
 
-- Render a preview image summarizing the current post-FX stack state.
-- Produce a solid-color thumbnail indicating whether any effects are active.
-- Image colour differs between an empty stack and a stack with at least one enabled effect.
+- Provides lightweight stack-preview rendering that converts effect activity into a quick diagnostic image.
+- Distinguishes active and inactive stack states through deterministic color selection.
+- Delivers a minimal visual probe for tooling and debug-side effect inspection.
 
 ### effect.rs
 
-- Post-processing effect instance holding type, parameters, and enabled state.
-- Built-in effects carry default params; custom effects bind to an explicit shader id.
-- Parameter accessors for reading, writing, and listing scalar uniforms.
+- Provides runtime post-effect instances that couple effect kind with mutable parameter state.
+- Supports built-in and custom shader-backed variants under one unified runtime shape.
+- Exposes parameter and enable controls for live effect tuning without pipeline rebuilds.
+- Delivers the per-effect state object consumed by stack management and rendering stages.
 
 ### effect_type.rs
 
-- Post-processing effect type enumeration and name registry.
-- Canonical lowercase name mapping for Lua-facing effect lookup.
-- Debug label generation for renderer diagnostics.
-- Default parameter tables for each built-in effect.
-- Built-in effect catalog excluding the custom shader pass.
+- Provides the canonical post-effect type catalog that defines all built-in processing identities.
+- Maps stable Lua-facing names to typed variants for predictable script and engine interoperability.
+- Supplies debug labels and parsing helpers that normalize user input into supported effect forms.
+- Defines default parameter sets so each effect starts from consistent baseline behavior.
+- Separates built-in variants from custom-shader paths while preserving one shared lookup model.
+- Delivers the naming and typing backbone used by effect instances, stacks, and presets.
 
 ### image_effect.rs
 
-- Image-scoped post-processing effect pipeline that groups and orders shader passes.
-- Provides add, remove, lookup-by-index/name, and clear operations on owned or shared effects.
-- Converts the active pipeline into renderer-ready `ShaderPassDescriptor` sequences.
+- Provides image-scoped post-effect pipelines that group shared and owned effects into ordered pass chains.
+- Supports add, remove, and lookup workflows so runtime code can manage effect sets incrementally.
+- Converts active effects into renderer-facing pass descriptors for downstream execution.
+- Delivers the per-target composition layer for reusable shader effect application.
 
 ### mod.rs
 
-- Visual effect sub-system: particle effects, screen-space post-processing, and shakes.
-- Orchestrates `particle`, `tween`, `dsp` integrations for composite effects.
-- All effects are data-driven: configured from Lua tables, not hard-coded structs.
-- Effects are lifetime-managed; expired effects are removed at the start of each tick.
-- No GPU work is performed here — effect data is converted to `RenderCommand`s.
+- Provides the high-level visual effects module boundary for post-processing composition and runtime control.
+- Connects effect instances, stacks, presets, and renderer integration into one coherent pipeline surface.
+- Delivers a data-driven effect orchestration layer that scripts and systems can configure predictably.
 
 ### presets.rs
 
-- Built-in post-processing effect presets (retro TV, horror, dream, neon, sepia).
-- Preset construction with viewport-sized stack initialization.
-- Static name lookup for canonical preset identifiers.
-- Captures functional behavior for presets so callers can compose this capability safely.
+- Provides built-in post-effect presets that package curated visual moods into ready-to-use chains.
+- Builds effect sets with viewport-aware stack initialization for immediate runtime application.
+- Exposes canonical preset names so scripts can select consistent looks with stable identifiers.
+- Encapsulates preset assembly logic to keep stylistic recipes centralized and reusable.
+- Delivers one-call factories that return enabled stacks configured for direct deployment.
 
 ### render.rs
 
-- Render-command integration for the post-effects stack.
-- Emits begin/end/apply command sequences consumed by the renderer.
-- Skips command generation when no effects are enabled.
+- Provides render-command generation for post-effect capture and application flows.
+- Emits deterministic begin, end, and apply command sequences consumed by the renderer.
+- Delivers no-op behavior when stacks have no active effects to process.
 
 ### stack.rs
 
-- Ordered post-processing effect stack with per-entry enable flags.
-- Index-based effect references aligned with a parallel enabled vector.
-- Stack manipulation: add, remove, insert, reorder, deduplicate.
-- Query helpers for enabled subset, dimensions, and positional lookup.
-- Debug visualization renderers for stack state, catalogs, parameters, and type bars.
-- Captures functional behavior for stack so callers can compose this capability safely.
+- Provides ordered post-effect stack management with per-entry enable state and target dimensions.
+- Stores effect references in application order while preserving synchronized activation flags.
+- Supports insertion, removal, reordering, and dedup operations for dynamic runtime composition.
+- Exposes query helpers that report active subsets and positional stack metadata.
+- Includes stack-introspection render helpers for debugging and visual tooling overlays.
+- Applies defensive index handling so invalid operations fail safely at runtime boundaries.
+- Delivers the sequencing core that determines how effect chains are executed frame to frame.
 
 ## Lua API Ref
 
@@ -108,9 +111,9 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 
 ### Types
 
-
 #### LImageEffect Type
 
+- Lua-side handle for an image effect chain detached from live post-effect capture.
 
 ##### Fields
 
@@ -132,9 +135,9 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - `LImageEffect:type`: Returns the Lua-visible type name for this image effect handle.
 - `LImageEffect:typeOf`: Returns whether this image effect handle matches a supported type name.
 
-
 #### LPostFxEffect Type
 
+- Lua-side handle for a single post-processing effect instance.
 
 ##### Fields
 
@@ -167,9 +170,9 @@ Implementation detail and boundary guarantees for effect: this module keeps resp
 - `LPostFxEffect:type`: Returns the Lua-visible type name for this post-processing effect handle.
 - `LPostFxEffect:typeOf`: Returns whether this effect handle matches a supported type name.
 
-
 #### LPostFxStack Type
 
+- Lua-side handle for an ordered post-processing stack.
 
 ##### Fields
 

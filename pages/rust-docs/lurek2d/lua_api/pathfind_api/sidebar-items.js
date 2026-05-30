@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaAiFlowField","LuaFlowField","LuaHexGrid","LuaJpsGrid","LuaNavGrid","LuaNavMesh","LuaPathGrid","LuaUnitPathfinder"]};
+window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaAiFlowField","LuaFlowField","LuaGoalMap","LuaHexGrid","LuaJpsGrid","LuaNavGrid","LuaNavMesh","LuaPathGrid","LuaUnitPathfinder"]};

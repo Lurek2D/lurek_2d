@@ -25,54 +25,54 @@ Once loaded, the module bridges the gap between engine architecture and user con
 
 ### api_registry.rs
 
-- Mod API registry: records which `lurek.*` namespaces are available to mod scripts.
-- `ApiRegistry` maps API name strings to the set of permitted function identifiers.
-- Populated at engine startup from the built-in API schema and any engine plugins.
-- Mods declare their required API surface in `mod.toml`; the sandbox checks against it.
-- Unknown API requests produce a sandbox violation error before the mod is loaded.
+- Registry of which lurek namespaces and functions a mod may use.
+- Maps API names to permitted callable identifiers for sandbox checks.
+- Loads from the built-in API schema and any engine plugins at startup.
+- Lets mods declare required API surface in manifest data.
+- Rejects unknown API requests before they can reach mod scripts.
 
 ### api_schema.rs
 
-- Mod API schema: JSON-serialisable description of every `lurek.*` function signature.
-- `ApiSchema` is generated from `docs/api/lurek.json` at startup.
-- Used by the sandbox to validate that a mod only calls permitted, typed API entries.
-- Schema entries carry parameter types, return types, and a human-readable summary.
-- Versioned by the engine semver; mods may declare a minimum engine version.
+- Serializable description of the engine API surface exposed to mods.
+- Stores parameter types, return types, and short summaries for each entry.
+- Loads from generated API metadata at startup.
+- Supports version checks so mods can declare a minimum engine release.
+- Gives the sandbox a typed contract to validate against.
 
 ### mod.rs
 
-- Mod system entry point exposing lifecycle management for game mods.
-- Handles discovery, enabling/disabling, and Lua script integration of mods.
-- Game API registry for type-safe mod content declarations.
-- Sandboxing to restrict mod capabilities.
-- Instance loading from TOML content files.
+- Entry point for the mod system and its lifecycle management.
+- Groups discovery, enable/disable flow, sandboxing, and Lua integration.
+- Keeps the mod runtime surface compact and centralised.
 
 ### mod_loader.rs
 
-- Mod loader: discovers, validates, and loads mod packages from the mods directory.
-- Scans `content/mods/` for `mod.toml` manifests and loads each into a `ModInstance`.
-- `load_instances_from_toml` parses a single manifest and builds the instance.
-- Validates API requirements against the `ApiRegistry` before executing any Lua.
-- Load order is deterministic (alphabetical by mod ID) and overrideable via priority.
+- Discovers, validates, and loads mod packages from disk.
+- Scans manifests, builds instances, and applies deterministic load order.
+- Verifies API requirements before any Lua code starts running.
+- Supports priority-based override and atomic reload of changed packages.
+- Provides the bootstrap path from content folders into live mod instances.
 
 ### mod_manager.rs
 
-- Mod registry: register, unregister, and look up mods by id or capability.
-- Manifest parsing: load `mod.toml` files, validate fields, and compute SHA-256 signatures.
-- Load ordering: topological sort with dependency resolution, priority tie-breaking, and custom override.
-- Asset conflict detection: prevent two mods from declaring the same asset path.
-- Hot-reload queue: mark mods dirty, re-parse their manifests, and re-register atomically.
-- Folder scanning: discover mod directories on disk and batch-register valid entries.
-- Dependency validation: detect missing deps and circular dependency cycles.
-- Config schema: carry typed key/default triples from manifests for runtime config UI.
+- Registry and coordination layer for live mods and their dependencies.
+- Tracks enabled mods by id and capability for lookup and lifecycle control.
+- Parses manifests and validates the required fields before registration.
+- Resolves dependency order with topological sorting and priority ties.
+- Detects missing dependencies and circular relationships early.
+- Prevents asset path collisions across simultaneously loaded mods.
+- Manages hot reload by marking dirty mods and re-registering them atomically.
+- Scans folders on disk and batches valid entries into the registry.
+- Carries typed config schema data from manifests into runtime UI.
+- Serves as the central authority for mod registration and load sequencing.
 
 ### mod_sandbox.rs
 
-- Mod sandbox: restricts mod Lua API access to the declared capability set.
-- Wraps the shared Lua state with a per-mod permission filter over `lurek.*`.
-- Attempts to call undeclared API functions raise a Lua error instead of panicking.
-- File system access for mods is limited to their own `content/mods/<id>/` directory.
-- Sandbox is re-applied after each hot-reload; capability set cannot expand at runtime.
+- Sandbox wrapper that restricts mod Lua access to declared capabilities.
+- Applies per-mod permission filtering over the shared lurek namespace.
+- Converts undeclared API calls into Lua errors instead of crashes.
+- Limits file-system access to each mod's own content directory.
+- Reapplies the sandbox after reload so capabilities never expand at runtime.
 
 ## Lua API Ref
 
@@ -92,9 +92,9 @@ Once loaded, the module bridges the gap between engine architecture and user con
 
 ### Types
 
-
 #### LContentRegistry Type
 
+- Lua-side content registry for storing typed Lua values by id.
 
 ##### Fields
 
@@ -110,9 +110,9 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - `LContentRegistry:type`: Returns the Lua-visible type name for this content registry handle.
 - `LContentRegistry:typeOf`: Returns whether this content registry handle matches a supported type name.
 
-
 #### LMod Type
 
+- Lua-side wrapper for mod metadata, hooks, and config references.
 
 ##### Fields
 
@@ -146,9 +146,23 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - `LMod:type`: Returns the Lua-visible type name for this mod handle.
 - `LMod:typeOf`: Returns whether this mod handle matches a supported type name.
 
+#### LModGetConfigSchemaResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `default` (`string`): Default value.
+- `key` (`string`): Config key.
+- `type` (`string`): Type hint.
+
+##### Methods
+
+- No documented methods.
 
 #### LModManager Type
 
+- Lua-side wrapper for the mod manager.
 
 ##### Fields
 
@@ -175,6 +189,82 @@ Once loaded, the module bridges the gap between engine architecture and user con
 - `LModManager:typeOf`: Returns whether this mod manager handle matches a supported type name.
 - `LModManager:unregisterMod`: Unregisters a mod by id. This method is available to Lua scripts.
 - `LModManager:validateDependencies`: Returns dependency validation messages.
+
+#### LModManagerGetAllModsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `author` (`string`): Author name.
+- `description` (`string`): Mod description.
+- `enabled` (`boolean`): Whether enabled.
+- `id` (`string`): Mod id.
+- `loaded` (`boolean`): Whether loaded.
+- `name` (`string`): Mod display name.
+- `priority` (`integer`): Load priority.
+- `version` (`string`): Version string.
+
+##### Methods
+
+- No documented methods.
+
+#### LModManagerGetLoadOrderResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `author` (`string`): Author name.
+- `description` (`string`): Mod description.
+- `enabled` (`boolean`): Whether enabled.
+- `id` (`string`): Mod id.
+- `loaded` (`boolean`): Whether loaded.
+- `name` (`string`): Mod display name.
+- `priority` (`integer`): Load priority.
+- `version` (`string`): Version string.
+
+##### Methods
+
+- No documented methods.
+
+#### LModManagerGetModsByCapabilityResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `author` (`string`): Author name.
+- `description` (`string`): Mod description.
+- `enabled` (`boolean`): Whether enabled.
+- `id` (`string`): Mod id.
+- `loaded` (`boolean`): Whether loaded.
+- `name` (`string`): Mod display name.
+- `priority` (`integer`): Load priority.
+- `version` (`string`): Version string.
+
+##### Methods
+
+- No documented methods.
+
+#### LModManagerScanFolderResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `author` (`string`): Author name.
+- `description` (`string`): Mod description.
+- `enabled` (`boolean`): Whether enabled.
+- `id` (`string`): Mod id.
+- `loaded` (`boolean`): Whether loaded.
+- `name` (`string`): Mod display name.
+- `priority` (`integer`): Load priority.
+- `version` (`string`): Version string.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

@@ -25,37 +25,41 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 
 ### dag.rs
 
-- DAG-based pipeline representing named steps with explicit dependency edges.
-- Topological ordering via Kahn's algorithm with cycle detection.
-- Parallel-level grouping for concurrent scheduling of independent steps.
-- Sub-pipeline merging under a namespace prefix with outer dependency wiring.
-- Validation of dependency references, execution-order queries, and ASCII diagram rendering.
-- Result collection from final step statuses into a typed `PipelineResult`.
+- Dependency-ordered pipeline graph that models work as named steps linked by explicit prerequisites instead of implicit call ordering.
+- The file gives the module its structural brain by storing step topology, validating references, and determining which work can safely happen before or beside other work.
+- Topological sorting and cycle detection keep invalid orchestration from reaching runtime execution, which matters when workflows are composed dynamically from scripts or tools.
+- Parallel grouping exposes natural concurrency boundaries without abandoning dependency correctness, letting unrelated branches advance together when the graph permits it.
+- Sub-pipeline merging makes larger workflows composable by folding one graph into another under namespaced identities and inherited outer dependencies.
+- ASCII visualization and execution-order queries turn the graph into something inspectable, not just executable, which is important for debugging author intent.
+- Functionally this file delivers the orchestration map that every pipeline run relies on to know what can start, what must wait, and how the whole workflow hangs together.
 
 ### mod.rs
 
-- DAG-based pipeline for dependency-ordered step execution.
-- Frame-driven scheduler ticks steps when delay timers expire.
-- Per-step error policies with abort-on-failure or continue modes.
-- Result types report completed, skipped, and failed steps after a run.
+- Workflow orchestration module for building dependency-aware task graphs, advancing them over time, and collecting explicit run outcomes.
+- It ties together graph structure, per-step policy, frame-driven scheduling, and result reporting into one coherent surface for asynchronous or staged work.
+- Functionally this file is the high-level entry point for pipeline execution, dependency management, retry-aware progress, and summarized completion state.
 
 ### result.rs
 
-- Lifecycle status enum tracking pipeline progression from pending through completion or failure.
-- Aggregated result struct collecting per-step outcomes, durations, and error messages.
-- Convenience queries for success checks and human-readable summaries.
+- Pipeline outcome model for turning many individual step endings into one readable picture of how a workflow actually finished.
+- The file records lifecycle state, per-step timing, errors, and completion data so callers can inspect success, failure, skips, and duration after a run.
+- Convenience queries keep common result questions cheap and direct instead of forcing every user to re-interpret raw status fields.
+- Functionally this delivers the post-run memory and reporting surface for pipeline execution.
 
 ### scheduler.rs
 
-- Frame-driven delay scheduler that counts down per-step timers each update.
-- Report which pipeline steps become ready once their configured delay expires.
-- Track wall-clock elapsed time and running state for the owning pipeline.
+- Frame-driven scheduler for pipeline steps whose readiness depends on elapsed time as well as graph dependencies.
+- The file counts down configured delays, tracks overall runtime progress, and reports which waiting steps are now allowed to begin.
+- Keeping this timing logic separate from the graph keeps execution pacing explicit without diluting structural dependency rules.
+- Functionally this delivers the temporal gatekeeper for delayed and frame-advanced pipeline work.
 
 ### step.rs
 
-- Pipeline step definition: named unit of work with dependency, timing, and retry config.
-- Execution lifecycle via `StepStatus` (pending → waiting → running → terminal).
-- Per-step error policy overriding pipeline-level failure behavior.
+- Pipeline step model for expressing one unit of work together with the policy that controls when and how it should run.
+- The file combines identity, dependencies, delays, retries, timeout-like settings, metadata, and callback hooks into a single authored execution record.
+- Status tracking gives each step a visible lifecycle from pending through terminal outcomes, which keeps orchestration state legible during async progress.
+- Error policy at step level lets important and optional work coexist inside the same pipeline without flattening all failures into one rule.
+- Functionally this file delivers the configurable work atom from which larger dependency graphs are assembled.
 
 ## Lua API Ref
 
@@ -74,9 +78,9 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 
 ### Types
 
-
 #### LPipeline Type
 
+- A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
 
 ##### Fields
 
@@ -120,9 +124,45 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 - `LPipeline:update`: Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
 - `LPipeline:validate`: Validates the pipeline structure, checking for missing dependencies and circular references.
 
+#### LPipelineGetResultResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cancelled` (`string[]`): Cancelled step names.
+- `completed` (`string[]`): Completed step names.
+- `errors` (`table`): Array of error entries.
+- `failed` (`string[]`): Failed step names.
+- `skipped` (`string[]`): Skipped step names.
+- `success` (`boolean`): Success flag.
+- `totalDuration` (`number`): Total duration in seconds.
+
+##### Methods
+
+- No documented methods.
+
+#### LPipelineRunResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `cancelled` (`string[]`): Cancelled step names.
+- `completed` (`string[]`): Completed step names.
+- `errors` (`table`): Array of error entries.
+- `failed` (`string[]`): Failed step names.
+- `skipped` (`string[]`): Skipped step names.
+- `success` (`boolean`): Success flag.
+- `totalDuration` (`number`): Total duration in seconds.
+
+##### Methods
+
+- No documented methods.
 
 #### LPipelineStep Type
 
+- A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
 
 ##### Fields
 
@@ -158,6 +198,20 @@ Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven a
 - `LPipelineStep:setTimeout`: Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
 - `LPipelineStep:type`: Returns the type name of this object ("LPipelineStep").
 - `LPipelineStep:typeOf`: Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
+
+#### LPipelineToTableResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `errorMode` (`string`): Error handling mode.
+- `name` (`string`): Pipeline name.
+- `steps` (`table`): Array of step tables.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

@@ -29,18 +29,19 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 
 ### cache.rs
 
-- Ref-counted asset registry used by `lurek.asset`.
-- `AssetCache` stores asset metadata, optional text payload, and reference counts.
-- Decoded runtime resources remain owned by feature modules such as image, font, and audio.
-- This module provides load bookkeeping, metadata/tag queries, and handle lifecycle helpers.
+- Implements a reference-counted asset registry for tracking media lifecycle across runtime systems.
+- Stores normalized metadata, optional text payloads, and ownership counters for shared access.
+- Separates cache bookkeeping from decoded resource ownership handled by feature-specific modules.
+- Supports acquisition, release, and eviction decisions through explicit handle lifecycle updates.
+- Provides metadata and tag-query surfaces for tooling, filtering, and runtime introspection.
+- Preserves deterministic cache semantics so repeated asset flow remains predictable.
+- Serves as the core state container behind the engine-facing `lurek.asset` behavior.
 
 ### mod.rs
 
-- `lurek.asset` — ref-counted media cache for images, fonts, audio, and text assets.
-- Asset registry module for `lurek.asset`.
-- Re-exports [`AssetCache`], [`AssetEntry`], and [`AssetType`] from
-- `cache.rs`.  All business logic lives in `cache.rs`; `asset_api.rs`
-- contains only the thin Lua bindings.
+- Defines the top-level asset module boundary for cache-backed media lifecycle management.
+- Exposes shared cache contracts while concentrating concrete registry behavior in the cache layer.
+- Serves as the composition entry for engine-side `lurek.asset` state and operations.
 
 ## Lua API Ref
 
@@ -79,9 +80,26 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 
 ### Types
 
+#### LAssetGetInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `group` (`string`): Group label, or empty string when none is set.
+- `name` (`string`): Display name, or the path file-stem when none is set.
+- `path` (`string`): Filesystem path to the asset.
+- `refcount` (`integer`): Current reference count.
+- `tags` (`table`): Array of tag strings.
+- `type` (`string`): Asset type string.
+
+##### Methods
+
+- No documented methods.
 
 #### LAssetHandle Type
 
+- Lua-side handle for a single cached asset entry.
 
 ##### Fields
 
@@ -91,6 +109,21 @@ In practical usage, `asset` is the lookup and lifetime contract that other syste
 
 - `LAssetHandle:type`: Returns the Lua-visible type name for this asset handle.
 - `LAssetHandle:typeOf`: Returns whether this handle matches a supported type name.
+
+#### LAssetStatsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `groups` (`table`): Sorted array of unique group labels in the cache.
+- `loaded` (`integer`): Number of distinct assets currently cached.
+- `total_refs` (`integer`): Sum of all ref counts across all cached assets.
+- `types` (`table`): Per-type entry counts keyed by type string.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

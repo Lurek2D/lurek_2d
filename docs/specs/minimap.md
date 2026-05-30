@@ -25,55 +25,57 @@ The module also features a robust rendering pipeline that composites these layer
 
 ### minimap.rs
 
-- Grid-based minimap with configurable terrain types, colours, and per-cell fog-of-war.
-- Object tracking with typed, owner-coloured dots and optional texture icons.
-- Political and terrain colour modes for strategic map overlays.
-- Zoom, pan, and camera-tracking viewport with outline rectangle.
-- Timed pings and persistent markers with blink, pulse, and rotate animations.
-- Vector overlay shapes (lines, rectangles) and named polyline paths.
-- Multi-layer cell data for stacked map views.
-- Coordinate conversion between screen pixels and grid cells, with hover info lookup.
-- CPU rasterisation to `ImageData` for export and full `RenderCommand` generation.
+- Grid-based minimap model with configurable terrain colors and fog-of-war.
+- Tracks world cells, visible state, and overlay layers in one structure.
+- Stores object markers, pings, and path shapes for live HUD feedback.
+- Supports terrain and political color modes for strategic presentation.
+- Manages zoom, pan, camera tracking, and viewport framing.
+- Projects screen and grid coordinates in both directions for interaction.
+- Renders CPU-side image buffers for export and preview use cases.
+- Includes timed animation behaviors for pings and persistent markers.
+- Separates layer data so the minimap can stack multiple map representations.
+- Keeps hover and hit information available for UI and debug tools.
+- Balances compact runtime state with flexible overlay composition.
+- Provides the main data source for both generic and raycaster-style minimaps.
 
 ### mod.rs
 
-- Minimap state, layer composition, marker tracking, and fog-of-war reveal.
-- Pixel-buffer rendering pipeline that writes the minimap texture each frame.
-- Province-map adapter bridging world regions into minimap layers.
-- Raycaster-specific tile extraction with lighting, LOS, and FOV reveal.
-- Shared types for markers, overlays, pings, and color modes.
+- Minimap subsystem for terrain layers, fog, markers, overlays, and export rendering.
+- Connects the grid model with renderer output, province data, and raycaster-specific views.
+- Keeps all minimap-facing state under one runtime namespace.
 
 ### province_adapter.rs
 
-- Bridge between `ProvinceRegistry` terrain/visibility data and the minimap grid.
-- Copy terrain types, fog levels, and political palette colours into a `Minimap`.
-- Clips to the smaller of the two grids so mismatched sizes never panic.
+- Bridge between province world data and the minimap grid.
+- Copies terrain, fog, and palette state into a minimap representation.
+- Clips to the smaller grid so size mismatches stay safe.
+- Lets world-region data feed the minimap without custom glue code.
 
 ### raycaster_overlay.rs
 
-- Raycaster-specific minimap overlay rendering.
-- Tile-based minimap window construction with per-tile lighting and line-of-sight checks.
-- Bresenham grid traversal for fast obstruction testing between player and map cells.
-- FOV ray fan that reveals all traversed cells within a max distance and step size.
-- Pixel-grid minimap extraction producing raw RGBA buffers with wall/floor coloring.
-- Player arrow rendering (filled circle plus direction line) composited onto the minimap.
+- Raycaster-specific minimap overlay renderer for tile-based visibility views.
+- Builds a pixel-grid minimap from wall, floor, and lighting information.
+- Uses line-of-sight and Bresenham traversal to reveal reachable cells.
+- Fills raw RGBA buffers for fast image output and preview rendering.
+- Draws the player indicator as a compact orientation cue on top of the map.
+- Serves as the specialised bridge between raycasting state and minimap output.
 
 ### render.rs
 
-- Convert minimap state into an ordered list of `RenderCommand` values for the renderer.
-- Draw the background, terrain grid cells with zoom and center offset, and fog-of-war tinting.
-- Render overlay shapes (lines, rectangles), multi-segment paths, and the viewport indicator.
-- Draw animated pings with fade, map objects with optional icons, and markers with crosshairs.
-- All coordinates are projected from grid-space to screen-space via the minimap's transform.
+- Converts minimap state into an ordered render command stream.
+- Draws terrain, fog, overlays, objects, pings, markers, and viewport guides.
+- Projects grid coordinates through the minimap transform into screen space.
+- Keeps the drawing order stable so HUD elements stack predictably.
+- Supports zoom-dependent and animated presentation without mutating the world model.
+- Acts as the generic renderer path for the minimap subsystem.
 
 ### types.rs
 
-- Shared data types for the minimap subsystem: enums, structs, and overlay shapes.
-- `ColorMode` selects between terrain-coloured and political-coloured cell rendering.
-- `FogLevel` encodes per-cell fog-of-war visibility as a three-state enum.
-- Object, ping, and marker structs hold live map overlays with position, colour, and animation.
-- `OverlayShape` and `OverlayPath` describe vector geometry drawn over the terrain grid.
-- `LayerData` stores raw cell bytes for named minimap layers.
+- Shared minimap data types for colors, fog, overlays, and live markers.
+- Defines the small enums and structs that other minimap files reuse.
+- Carries per-object and per-path state for animated overlays.
+- Separates raw layer bytes from higher-level minimap behavior.
+- Provides the data vocabulary for the whole minimap subsystem.
 
 ## Lua API Ref
 
@@ -90,9 +92,9 @@ The module also features a robust rendering pipeline that composites these layer
 
 ### Types
 
-
 #### LMinimap Type
 
+- Lua-side wrapper for a minimap instance and access to render command state.
 
 ##### Fields
 

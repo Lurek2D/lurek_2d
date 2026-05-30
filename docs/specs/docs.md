@@ -29,43 +29,45 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 
 ### catalog.rs
 
-- Provide in-memory catalog storage for documentation entries collected from Rust source.
-- Support insertion-order preservation, module grouping, and text search.
-- Offer merge, filter, and deduplication for multi-source doc aggregation.
+- Provides the in-memory documentation catalog used to collect and organize normalized API entries.
+- Preserves insertion order while supporting grouping, filtering, and lookup across module boundaries.
+- Enables merge and dedup workflows for combining multiple documentation sources into one view.
+- Delivers the central container that feeds both export generation and quality analysis stages.
 
 ### entry.rs
 
-- Define normalized documentation record types for lurek API symbols.
-- Model parameter, return, and metadata fields used by export and report stages.
-- Provide completeness validation helpers for entry quality checks.
+- Provides normalized documentation record types that represent public API symbols and their metadata.
+- Models parameter and return descriptors so downstream export and reporting stages share one data shape.
+- Includes completeness checks that help quality tooling detect thin or malformed documentation entries.
+- Delivers the common in-memory contract used across collection, transformation, and reporting flows.
 
 ### export.rs
 
-- Build JSON payloads for IDE completion, hover, and signature help from doc entries.
-- Support compact and rich output modes for different consumer needs.
-- Write individual or bundled JSON files to an output directory.
-- Serialize via buffered writers with human-readable pretty formatting.
-- Separate public export entry points from internal payload builders.
+- Provides export builders that transform normalized doc entries into IDE-oriented JSON payloads.
+- Produces completion, hover, and signature datasets in shapes tailored to extension and tooling consumers.
+- Supports compact or rich payload modes to match different integration and footprint constraints.
+- Writes single or bundled artifacts through stable serialization paths for predictable output handling.
+- Delivers the final packaging stage that turns in-memory documentation into distributable files.
 
 ### mod.rs
 
-- Aggregate documentation infrastructure: catalog, entry models, export, reporting, and schema.
-- Re-export primary types so callers can import from the top-level docs module.
-- Support the doc generation pipeline and IDE tooling data flow.
+- Provides the top-level documentation module surface that connects collection, schema, export, and reporting stages.
+- Centralizes re-exports so tooling callers can consume doc pipeline capabilities from one stable integration point.
+- Delivers a coherent module boundary for transforming source metadata into validated documentation artifacts.
 
 ### report.rs
 
-- Compute per-entry quality scores from completeness of description, params, and metadata.
-- Convert scores to letter grades for human-readable reporting.
-- Validate catalogs for missing, phantom, and incomplete entries.
-- Aggregate module-level and overall quality metrics from a catalog snapshot.
-- Support both catalog-based and standalone entry-based report construction.
+- Provides documentation quality evaluation logic that scores completeness and classifies report grades.
+- Validates catalog integrity by tracking missing, phantom, and incomplete documentation records.
+- Aggregates per-entry and per-module metrics into actionable quality snapshots for maintainers.
+- Supports both full-catalog analysis and direct entry-based reporting for flexible pipeline usage.
+- Delivers consistent quality signals that guide doc cleanup and release readiness checks.
 
 ### schema.rs
 
-- Re-export schema validation types from the lurek_schema crate.
-- Provide field rules, type definitions, and error types to docs modules.
-- Keep schema source of truth external; this file is an access bridge.
+- Provides the schema bridge that exposes shared validation contracts used by the docs pipeline.
+- Connects documentation tooling with canonical field and type rules defined in the schema crate.
+- Delivers one access point that keeps schema usage consistent across docs modules.
 
 ## Lua API Ref
 
@@ -107,9 +109,9 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 
 ### Types
 
-
 #### LApiCatalog Type
 
+- Provides Lua methods for querying, merging, filtering, and exporting catalog data.
 
 ##### Fields
 
@@ -131,9 +133,26 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `LApiCatalog:type`: Returns the Lua-visible type name for this API catalog handle.
 - `LApiCatalog:typeOf`: Returns whether this API catalog handle matches a supported type name.
 
+#### LApiCatalogToTableResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `description` (`string`): Symbol description.
+- `kind` (`string`): Symbol kind.
+- `module` (`string`): Module name.
+- `name` (`string`): Symbol name.
+- `qualifiedName` (`string`): Fully qualified name.
+- `score` (`number`): Relevance score.
+
+##### Methods
+
+- No documented methods.
 
 #### LDocEntry Type
 
+- Provides Lua accessors for documentation entry metadata.
 
 ##### Fields
 
@@ -159,9 +178,66 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `LDocEntry:type`: Returns the Lua-visible type name for this documentation entry handle.
 - `LDocEntry:typeOf`: Returns whether this documentation entry handle matches a supported type name.
 
+#### LDocEntryGetParametersResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `default` (`string?`): Default value when present.
+- `description` (`string`): Parameter description.
+- `name` (`string`): Parameter name.
+- `optional` (`boolean`): Whether the parameter is optional.
+- `type` (`string`): Parameter type.
+
+##### Methods
+
+- No documented methods.
+
+#### LDocEntryGetReturnsResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `description` (`string`): Return description.
+- `type` (`string`): Return type.
+
+##### Methods
+
+- No documented methods.
+
+#### LDocsCheckStalenessResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `current` (`string[]`): Current file paths.
+- `missing` (`string[]`): Missing file paths.
+- `stale` (`string[]`): Stale file paths.
+
+##### Methods
+
+- No documented methods.
+
+#### LDocsReflectTableResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `name` (`string`): Item name.
+- `qualifiedName` (`string`): Fully qualified name.
+- `type` (`string`): Item type.
+
+##### Methods
+
+- No documented methods.
 
 #### LQualityReport Type
 
+- Provides Lua accessors for documentation quality scoring results.
 
 ##### Fields
 
@@ -181,9 +257,23 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `LQualityReport:type`: Returns the Lua-visible type name for this quality report handle.
 - `LQualityReport:typeOf`: Returns whether this quality report handle matches a supported type name.
 
+#### LQualityReportToTableResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `grade` (`string`): Quality grade letter.
+- `moduleScores` (`table`): Per-module score table.
+- `overallScore` (`number`): Overall quality score.
+
+##### Methods
+
+- No documented methods.
 
 #### LSchema Type
 
+- Lua-side schema validator built from docs field rules.
 
 ##### Fields
 
@@ -199,9 +289,22 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `LSchema:typeOf`: Returns whether this schema handle matches a supported type name.
 - `LSchema:validate`: Validates a Lua table and returns a success flag plus structured error rows.
 
+#### LSchemaValidateResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `field` (`string`): Field name that failed validation.
+- `message` (`string`): Validation error message.
+
+##### Methods
+
+- No documented methods.
 
 #### LValidationReport Type
 
+- Provides Lua accessors for documentation validation results.
 
 ##### Fields
 
@@ -221,6 +324,20 @@ Implementation detail and boundary guarantees for docs: this module keeps respon
 - `LValidationReport:toTable`: Converts this validation report into a plain Lua table.
 - `LValidationReport:type`: Returns the Lua-visible type name for this validation report handle.
 - `LValidationReport:typeOf`: Returns whether this validation report handle matches a supported type name.
+
+#### LValidationReportToTableResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `incomplete` (`string[]`): Incomplete symbols.
+- `missing` (`string[]`): Missing symbols.
+- `phantom` (`string[]`): Phantom symbols.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

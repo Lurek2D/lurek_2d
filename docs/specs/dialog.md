@@ -27,41 +27,45 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 
 ### condition.rs
 
-- Provides reusable gate predicates that decide whether dialog branches and topics are currently eligible.
-- Encodes state checks and numeric-threshold checks in declarative data so selection logic stays data-driven.
-- Combines predicates with all/any semantics to support layered narrative gating from runtime context.
+- Provides reusable gate rules that decide whether dialog options are eligible under the current runtime context.
+- Encodes state and threshold checks as portable data so narrative gating stays configurable and data-first.
+- Supports composable all-or-any logic for layered progression constraints across branching conversations.
+- Delivers a deterministic condition engine that keeps availability checks consistent between systems and scripts.
 
 ### events.rs
 
-- Provides the event payloads emitted by the dialog runtime while a conversation is advancing.
-- Carries progression and selection signals so UI and script layers can react without inspecting engine internals.
-- Keeps integration boundaries explicit by representing conversation lifecycle changes as typed records.
+- Defines the dialogue event vocabulary used to publish lifecycle milestones and selection outcomes.
+- Carries typed payloads so UI, scripting, and telemetry can react without digging into internal state.
+- Delivers a clean event contract that keeps conversation flow observable across integration points.
 
 ### mod.rs
 
-- Provides the runtime conversation stack for branching dialogue, speaker metadata, and progression state.
-- Combines gate-aware topic and branch selection with lightweight context signals for adaptive narrative flow.
-- Exposes a clean integration surface where scripts consume events while core logic remains in typed dialog data.
+- Provides the high-level dialog module surface that unifies authored conversation flow with runtime progression state.
+- Connects speaker identity, gating logic, selection models, and lifecycle events into one coherent interaction layer.
+- Delivers a stable module boundary that scripts and systems consume as the canonical dialogue orchestration entry point.
 
 ### speaker.rs
 
-- Provides character identity records used by dialogue nodes to resolve display and voice context.
-- Centralizes participant lookup in a registry keyed by stable speaker identifiers across a session.
-- Keeps conversation content decoupled from presentation assets by storing metadata separately from tree flow.
+- Provides canonical speaker identity records used by dialogue flow to resolve who is talking at each step.
+- Centralizes speaker lookup in a stable registry keyed by durable identifiers shared across a session.
+- Keeps narrative content decoupled from presentation metadata like portraits, voices, and character tags.
+- Delivers a single reference layer that makes speaker data consistent for tree logic and runtime state.
 
 ### state.rs
 
-- Provides mutable conversation state that tracks active position, visit history, and per-run variables.
-- Supports lifecycle transitions for starting, advancing, ending, and resetting dialogue progression.
-- Preserves narrative continuity data in a compact structure that runtime systems can read each tick.
+- Provides mutable dialogue runtime state that tracks active position, visit history, and per-run variables.
+- Supports conversation lifecycle transitions for start, advance, end, and subsequent re-entry handling.
+- Preserves continuity data in a compact snapshot that dependent systems can query every frame.
+- Delivers the authoritative progression record used to keep branching dialogue behavior coherent over time.
 
 ### tree.rs
 
-- Provides the core dialogue graph data used to model selectable topics, branches, and authored node content.
-- Applies contextual filtering so only candidates compatible with current runtime state remain eligible.
-- Scores eligible options with base weights and optional utility signals to choose the strongest narrative path.
-- Keeps selection deterministic and inspectable by storing gating and scoring inputs directly in dialog records.
-- Serves as the central planning layer that higher-level dialogue state and scripting flows execute over time.
+- Provides the core dialogue graph model for authored topics, branches, nodes, and selectable progression paths.
+- Applies runtime gate filtering so only context-compatible narrative candidates remain available.
+- Combines base weights with utility-driven influence to rank candidates and pick strong conversation outcomes.
+- Keeps decision flow transparent by storing gating and scoring inputs directly with authored records.
+- Serves as the planning backbone executed by dialogue state, scripting hooks, and event publication.
+- Delivers data-first branching behavior that stays testable, tunable, and stable across gameplay sessions.
 
 ## Lua API Ref
 
@@ -80,9 +84,9 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 
 ### Types
 
-
 #### LDialogueAI Type
 
+- Lua handle for topic and branch selection driven by dialogue AI state.
 
 ##### Fields
 
@@ -102,9 +106,9 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 - `LDialogueAI:type`: Returns the Lua-visible type name for this dialogue AI handle.
 - `LDialogueAI:typeOf`: Returns whether this dialogue AI handle matches a supported type name.
 
-
 #### LDialogueState Type
 
+- Lua handle for dialog conversation state tracking.
 
 ##### Fields
 
@@ -125,9 +129,9 @@ In feature-system terms, `dialog` should remain focused on conversation evaluati
 - `LDialogueState:typeOf`: Returns whether this handle matches a supported type name.
 - `LDialogueState:visitCount`: Returns the number of visited nodes.
 
-
 #### LSpeakerRegistry Type
 
+- Lua userdata handle for managing a named speaker registry.
 
 ##### Fields
 

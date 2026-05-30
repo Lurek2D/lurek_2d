@@ -29,62 +29,68 @@ Implementation detail and boundary guarantees for camera: this module keeps resp
 
 ### effects.rs
 
-- Camera effect primitives for transient motion overlays on top of base camera state.
-- ZoomPulse provides a one-shot sinusoidal zoom spike triggered by game events.
-- CameraSway adds oscillating positional offset with configurable frequency and decay.
-- CameraBreathing delivers subtle periodic zoom modulation for idle camera presence.
-- Each effect is composable: the parent camera sums their outputs each frame.
+- Implements transient camera-motion effects layered on top of the base follow transform state.
+- Provides pulse-based zoom bursts for impact moments and short-lived cinematic emphasis.
+- Adds oscillatory sway offsets with tunable frequency and damping for dynamic camera motion feel.
+- Supplies breathing-style zoom modulation for subtle ambient life during low-action periods.
+- Keeps each effect independently updateable so compositions remain modular and controllable.
+- Serves as the reusable effect toolkit consumed by camera runtime state integration.
 
 ### mod.rs
 
-- Camera subsystem module root: effects, multi-view, path, render, types, and viewport.
-- Re-exports all primary types for ergonomic access from engine code.
-- Submodules own distinct concerns: transform state, viewport scaling, render commands.
+- Defines the camera module boundary that groups transform state, effects, viewport, and rendering helpers.
+- Exposes a coherent camera surface while keeping pathing, rigs, and scaling concerns modularized.
+- Serves as the high-level composition root for runtime camera behavior across engine systems.
 
 ### multi.rs
 
-- Multi-camera rig that stores and manages named Camera2D instances.
-- Provides preset viewport layouts: split-screen, minimap, and picture-in-picture.
-- Supports bulk update and deterministic iteration for multi-view rendering passes.
+- Implements multi-camera rig management over named camera instances for concurrent view setups.
+- Provides preset layout helpers for split-screen, minimap, and picture-in-picture arrangements.
+- Supports deterministic iteration and bulk mutation flows for multi-pass rendering integration.
+- Serves as the orchestration layer for scenarios requiring more than one active camera view.
 
 ### path.rs
 
-- Waypoint-based camera path interpolation for scripted camera movement.
-- CameraZoomTween provides eased transitions between zoom levels over time.
-- CameraEasing selects interpolation curve: linear, smooth-step, or ease-out-cubic.
-- CameraPath segments multi-point paths with linear interpolation and progress tracking.
-- ZoomTween is a type alias preserving backwards compatibility.
+- Implements waypoint-driven camera path interpolation for scripted movement and guided shots.
+- Provides zoom tweening with easing control for smooth focal transitions over fixed durations.
+- Tracks segment progress across multi-point paths to produce continuous positional interpolation.
+- Supports reusable easing selection so authored camera motion keeps consistent temporal character.
+- Serves as the timeline-friendly movement layer above direct camera transform manipulation.
 
 ### render.rs
 
-- Render command generation from camera transform state.
-- Builds PushTransform/Translate/Rotate/Scale/PopTransform sequences for Camera and Camera2D.
-- Separates begin/end phases so callers can sandwich scene commands between transforms.
+- Converts camera transform state into renderer command sequences for scene-space projection.
+- Emits ordered push, translate, rotate, scale, and pop operations for deterministic visual mapping.
+- Splits begin and end phases so callers can bracket arbitrary scene draw commands safely.
+- Serves as the render-bridge layer between camera math state and command-stream execution.
 
 ### types.rs
 
-- Core camera state containers: Camera (minimal) and Camera2D (full runtime).
-- Camera2D drives follow-target tracking with dead-zone, smoothing, and look-ahead.
-- Integrates shake, zoom pulse, sway, and breathing effects into effective transforms.
-- Viewport, bounds, and coordinate conversion for world/screen mapping.
-- Zoom and rotation damping with configurable constraint ranges.
-- Easing selection for follow interpolation: linear, smooth-step, ease-out-cubic.
-- View matrix generation composing position, rotation, zoom, and all active effects.
-- Presets for common follow behaviors: tight, cinematic, balanced, aggressive.
+- Defines core camera state models that represent both minimal and fully featured 2D camera behavior.
+- Implements follow logic with dead-zone handling, smoothing response, and look-ahead displacement control.
+- Integrates transient effects such as shake, pulse, sway, and breathing into effective camera transforms.
+- Maintains zoom and rotation state with damping and bounded constraint ranges for runtime stability.
+- Provides viewport-aware world-to-screen and screen-to-world mapping through explicit conversion utilities.
+- Builds view matrices by composing position, rotation, zoom, and active effect contributions coherently.
+- Exposes easing-driven interpolation options for authored motion character and follow response tuning.
+- Supports target-follow presets that package common control profiles for gameplay camera styles.
+- Keeps transform ownership centralized so dependent render and logic systems read consistent state.
+- Serves as the primary camera runtime contract consumed across movement, rendering, and tooling layers.
 
 ### viewport.rs
 
-- Viewport scaling strategies for mapping a fixed game surface into variable window sizes.
-- ScaleMode selects Letterbox (aspect-preserving), Stretch, or PixelPerfect scaling.
-- Viewport struct holds computed scale factors and offsets after each window resize.
-- Bidirectional coordinate conversion between screen pixels and game-space units.
-- Recomputes transforms on resize without allocating new state.
+- Implements viewport scaling policies that map fixed game space into dynamic window dimensions.
+- Defines scale modes for aspect-preserving letterbox, free stretch, and pixel-perfect presentation.
+- Stores computed scale and offset transforms recalculated on resize without recreating viewport state.
+- Provides bidirectional coordinate conversion between screen pixels and logical game coordinates.
+- Serves as the canonical scaling contract consumed by camera and render integration paths.
 
 ### viewport_scale.rs
 
-- Viewport scale state object used by the engine resize flow.
-- Stores computed scale, offset, and scaled dimensions after each resize.
-- Provides bidirectional game/screen coordinate conversion helpers.
+- Implements runtime viewport-scale state used by resize and projection update workflows.
+- Stores computed scale factors, offsets, and scaled dimensions after each window-size change.
+- Provides bidirectional conversion helpers between logical game space and screen pixel coordinates.
+- Serves as a compact scaling container for systems that need fast coordinate remapping.
 
 ## Lua API Ref
 
@@ -103,9 +109,9 @@ Implementation detail and boundary guarantees for camera: this module keeps resp
 
 ### Types
 
-
 #### LCamera Type
 
+- Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
 
 ##### Fields
 
@@ -185,9 +191,9 @@ Implementation detail and boundary guarantees for camera: this module keeps resp
 - `LCamera:zoomPulse`: Triggers a temporary zoom pulse effect.
 - `LCamera:zoomTo`: Starts a zoom tween toward a target zoom factor.
 
-
 #### LCameraRig Type
 
+- Lua-side camera rig that manages named cameras and viewport layouts.
 
 ##### Fields
 

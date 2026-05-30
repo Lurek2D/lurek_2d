@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaBiomeClassifier","LuaNoiseGenerator"]};
+window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaBiomeClassifier","LuaCellular","LuaNoiseGenerator"]};

@@ -27,137 +27,145 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 ### composition.rs
 
-- Compose multiple globe views into a single frame via split viewports.
-- Emit render commands for each named globe with per-entry screen center overrides.
-- Iterate the registry, clone camera state, and collect draw output into one batch.
+- Provides split-view globe composition that merges multiple named views into one render batch.
+- Applies per-entry viewport centers while preserving each globe's camera-relative projection behavior.
+- Delivers multi-panel frame assembly for comparative or tactical map presentation.
 
 ### draw.rs
 
-- Emit a complete globe frame as a list of render commands.
-- Draw regions with fog-of-war, lighting, heat-layer blending, and texture mapping.
-- Render borders with optional polyline smoothing passes.
-- Project and draw great-circle arcs between coordinate pairs.
-- Display animated markers with pulse, rotation, and labels.
-- Emit atmosphere halo circles and LOD-gated text labels.
+- Provides full globe frame emission that converts world map state into ordered render commands.
+- Draws projected regions with fog, lighting, overlays, and optional texture contribution.
+- Renders borders, atmosphere, and arcs to preserve geographic structure and visual depth cues.
+- Integrates marker and label drawing with animation and LOD-aware visibility rules.
+- Applies camera projection and world parameters consistently across all rendered primitives.
+- Supports layered heat and style effects so thematic map signals remain legible.
+- Delivers the end-to-end draw pipeline for globe visualization in runtime frames.
 
 ### export.rs
 
-- Export globe region geometry to standard mesh formats.
-- Generate flat OBJ output with one named object per region polygon.
-- Vertex data uses (lon, lat) mapping onto a 2D plane at z=0.
+- Provides globe geometry export helpers that convert region polygons into portable mesh text output.
+- Emits flat OBJ data with deterministic region object grouping for downstream tooling.
+- Delivers a simple export path for inspection, conversion, and offline map processing workflows.
 
 ### fog.rs
 
-- Compact per-region fog mask storing hidden, explored, and visible states.
-- Bit-packed base64 serialization for save/load round-trips.
-- Per-viewer fog store keyed by viewer name with automatic mask creation.
-- Reveal, hide, explore, and toggle operations on individual or batched regions.
-- Query helpers for visible/explored id lists and region counts.
+- Provides compact per-region fog state storage with hidden, explored, and visible visibility tiers.
+- Supports per-viewer mask ownership so different observers can maintain independent map knowledge.
+- Exposes reveal, hide, explore, and toggle operations for direct gameplay-state updates.
+- Includes serialization-friendly encoding to persist fog state across save and restore cycles.
+- Supplies query helpers that report visible and explored subsets for UI and logic consumers.
+- Delivers the fog-of-war backbone used by globe rendering and strategic information gating.
 
 ### label.rs
 
-- Id-keyed label storage for globe map annotations.
-- Insert, remove, move, and toggle visibility of positioned text labels.
-- LOD-aware iteration filters labels by minimum detail tier.
-- Captures functional behavior for label so callers can compose this capability safely.
+- Provides id-keyed globe label storage for map annotations positioned by latitude and longitude.
+- Supports add, remove, update, and visibility operations for dynamic labeling workflows.
+- Applies LOD-aware filtering so text density scales with camera detail level.
+- Maintains stable iteration outputs used by rendering and debugging interfaces.
+- Delivers the label-management layer for readable and controllable geographic annotation.
 
 ### layer.rs
 
-- Named layer storage keyed by string, with insert, remove, and lookup.
-- Per-region color overrides, visibility toggling, and alpha clamping.
-- Z-order–aware color resolution across all visible layers.
+- Provides named globe layer storage that overlays per-region color and visibility modifications.
+- Supports insert, remove, lookup, and alpha control for composable thematic map styling.
+- Resolves effective colors in z-order so stacked overlays produce deterministic final output.
+- Delivers the overlay-composition layer used by draw logic and gameplay visualization.
 
 ### lighting.rs
 
-- Globe day/night lighting: sun direction from rotation and time-of-day.
-- Per-region diffuse intensity with ambient floor.
-- Batch intensity computation for region centroid sequences.
-- Terminator-band alpha for smooth day/night transition rendering.
+- Provides globe lighting helpers that derive sun direction and regional light intensity over time.
+- Computes diffuse contribution with ambient floors to keep night-side visuals readable.
+- Supports batch intensity and terminator blending calculations for smooth day-night transitions.
+- Delivers reusable illumination math consumed by globe rendering passes.
 
 ### loader.rs
 
-- Load regions from TOML strings or files using a lightweight inline parser.
-- Load regions from PNG province-grid images with bounding-box extraction and adjacency detection.
-- Generate approximate region geometry from Voronoi seed points.
-- Convert between internal builder representations and the shared `Region` type.
-- Parse TOML primitives: u32 literals, float pairs, float-4 arrays, string key-value lines.
-- Captures functional behavior for loader so callers can compose this capability safely.
+- Provides globe region-loading workflows from TOML, raster grids, and generated Voronoi seed sources.
+- Parses lightweight structured input into normalized region records with geometry and adjacency data.
+- Converts intermediate builder state into shared globe region types used across the subsystem.
+- Extracts bounds and neighbor hints from image-driven province maps for quick content bootstrapping.
+- Handles primitive parsing and validation to keep load-time failures explicit and actionable.
+- Supports both in-memory string input and file-based ingestion paths for tooling flexibility.
+- Delivers the map-ingestion layer that seeds topology and rendering state for globe runtime use.
 
 ### marker.rs
 
-- Stable-id marker collection for globe pin management.
-- Insert, remove, move, and query markers by id or type.
-- Per-marker visibility toggle and arbitrary string attributes.
-- Captures functional behavior for marker so callers can compose this capability safely.
+- Provides stable-id globe marker storage for pins and point annotations on planetary surfaces.
+- Supports marker insertion, removal, movement, and lookup by id or classification type.
+- Manages marker visibility and custom attributes for flexible runtime presentation.
+- Keeps marker collections deterministic for rendering and interaction queries.
+- Delivers the marker-management layer used by tactical and informational map overlays.
 
 ### mod.rs
 
-- Globe rendering with orbit camera projection and LOD tiers.
-- Region registry, fog-of-war masks, and picking queries.
-- Label, marker, and layer management for map overlays.
-- Synchronization channels for background globe updates.
+- Provides the high-level globe module boundary for region topology, projection, and visual overlay orchestration.
+- Connects rendering, fog state, markers, labels, layers, and picking into one map-runtime surface.
+- Supports synchronization and loading flows so globe state can be updated from external game systems.
+- Delivers a cohesive planetary-view feature set for strategic map presentation and interaction.
 
 ### picking.rs
 
-- Screen-space region picking via ray-polygon intersection.
-- Projects region polygons from 3D globe to 2D screen for hit testing.
-- Selects the front-most visible region under a pointer position.
+- Provides screen-space globe picking that identifies visible regions under pointer coordinates.
+- Projects region geometry into 2D and applies point-in-polygon hit testing for selection.
+- Chooses the front-most valid candidate using camera-facing depth information.
+- Delivers interaction picking results consumed by UI and gameplay selection flows.
 
 ### projection.rs
 
-- Orbit camera with latitude, longitude, zoom, and level-of-detail selection.
-- View-matrix construction from globe rotation, axial tilt, and camera angles.
-- Single-point and polygon projection from lat/lon to screen space.
-- Back-face culling via z-depth test for hidden-hemisphere rejection.
-- Screen-drag-to-pan conversion and vector normalization helpers.
+- Provides globe projection math driven by an orbit camera with latitude, longitude, and zoom control.
+- Builds view transforms from globe rotation, axial tilt, and camera orientation inputs.
+- Projects points and regions from spherical coordinates into screen-space render geometry.
+- Applies facing checks and depth culling to reject back-hemisphere geometry during projection.
+- Delivers camera and projection utilities used by drawing, picking, and interaction code paths.
 
 ### province_adapter.rs
 
-- Sync political colors and fog visibility from the province registry into the globe.
-- Bridge between province game-state and globe rendering data.
-- Copies color and fog state from `ProvinceRegistry` into matching `Globe` region entries.
+- Provides a bridge that applies province-registry ownership and visibility state onto globe regions.
+- Synchronizes political coloring so map visuals reflect current simulation authority data.
+- Delivers adapter logic that keeps province gameplay state aligned with globe presentation.
 
 ### registry.rs
 
-- Mutable globe state combining topology, fog, markers, labels, layers, and arcs.
-- Region add/remove/get and sector grouping operations.
-- Heat-layer and arc overlay management with add/replace/remove.
-- Orbit camera integration and screen-space region picking.
-- Frame emission producing render commands for the full globe state.
-- Named globe registry for storing and retrieving multiple globes by name.
-- Reachability caching per faction for path-cost queries.
+- Provides mutable globe state that aggregates topology, camera, fog, overlays, and interaction data.
+- Owns region storage operations together with markers, labels, layers, arcs, and heat visual layers.
+- Integrates camera projection and picking paths so selection and rendering share one state container.
+- Emits full-frame render commands from current globe state for deterministic map visualization.
+- Caches sector and reachability information to support strategic lookup and path-cost workflows.
+- Delivers named registry management for handling multiple independent globe instances.
 
 ### sphere.rs
 
-- Sphere-surface coordinate helpers: latitude/longitude ↔ unit-sphere Vec3 conversion.
-- Great-circle distance (Haversine) and arc interpolation between two geo-points.
-- Ray-sphere intersection returning the nearest positive hit distance.
-- Column-major 3×3 rotation matrices (axis-aligned X/Y/Z plus axial-tilt convenience).
-- Matrix-vector and matrix-matrix multiplication for globe-view transforms.
+- Provides spherical geometry helpers for converting between latitude-longitude and unit-vector space.
+- Computes great-circle distance and interpolation for geodesic path and arc construction.
+- Supplies ray-sphere intersection tests used by projection and picking style calculations.
+- Defines lightweight 3x3 rotation matrices and multiplication helpers for globe transforms.
+- Delivers foundational math primitives shared across lighting, projection, and topology tools.
 
 ### sync.rs
 
-- Snapshot serialization of globe state for cross-thread transfer.
-- Channel pair for sending and receiving globe snapshots.
-- Build and apply helpers to capture or restore globe state.
+- Provides globe snapshot transfer structures for cross-thread synchronization and state exchange.
+- Defines channel wrappers and snapshot payload shapes used to move globe state safely.
+- Supports building and applying snapshots to keep remote and local globe views aligned.
+- Delivers the synchronization utility layer for background simulation integration.
 
 ### topology.rs
 
-- Region graph structure with adjacency caching, centroid lookup, and edge tags.
-- Pathfinding integration via cost functions and reachability queries.
-- Region attribute storage and neighbor-list access.
-- Cache rebuild for bulk topology mutations.
-- Default-cost convenience wrappers for quick path and range checks.
+- Provides region-topology graph storage with cached adjacency, centroids, and tagged border edges.
+- Supports insertion, removal, and mutation workflows while keeping lookup caches coherent.
+- Integrates pathfinding-friendly queries for route, cost, and reachability evaluation across regions.
+- Exposes neighbor and region iteration helpers used by rendering and gameplay systems.
+- Delivers the structural map-graph backbone that powers globe connectivity logic.
 
 ### types.rs
 
-- Core data types for the globe subsystem: regions, markers, labels, arcs, and layers.
-- Region geometry with polygon vertices, centroids, adjacency, and per-edge tags.
-- Render parameters via GlobeSpec: lighting, atmosphere, borders, rotation.
-- Overlay and heat-map layers with per-region color overrides.
-- Marker and label types with style, LOD gating, and pulse animation.
-- Projection output types for screen-space rendering of regions and arcs.
-- Globe-level error enum for load, lookup, and pathfinding failures.
+- Provides the shared globe data model defining regions, overlays, markers, labels, arcs, and view artifacts.
+- Encodes geographic geometry with centroids, adjacency, edge tags, and per-region render attributes.
+- Defines globe specification parameters that drive atmosphere, lighting, rotation, and border behavior.
+- Supplies layer and heat-overlay structures used to blend thematic map information at runtime.
+- Models marker and label style data with visibility, pulse, and level-of-detail controls.
+- Includes projection result types for screen-space rendering and interaction pipelines.
+- Declares subsystem error variants for loading, lookup, and path-related failure handling.
+- Delivers the canonical type contract consumed by all globe modules and integration surfaces.
 
 ## Lua API Ref
 
@@ -184,9 +192,9 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 
 ### Types
 
-
 #### LGlobe Type
 
+- Lua-side handle for a named globe stored inside a shared registry.
 
 ##### Fields
 
@@ -261,9 +269,36 @@ To support gameplay mechanics, the `globe` module features a robust `FogMask` sy
 - `LGlobe:update`: Advances globe simulation timers and animated state.
 - `LGlobe:zoom`: Multiplies the globe camera zoom by a factor.
 
+#### LGlobeGreatCirclePathResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `lat` (`number`): Lat.
+- `lon` (`number`): Lon.
+
+##### Methods
+
+- No documented methods.
+
+#### LGlobeLatLonToUnitResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `x` (`number`): X.
+- `y` (`number`): Y.
+- `z` (`number`): Z.
+
+##### Methods
+
+- No documented methods.
 
 #### LGlobeRegistry Type
 
+- Lua-side handle for creating and locating named globes in one registry.
 
 ##### Fields
 

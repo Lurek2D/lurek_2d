@@ -29,37 +29,38 @@ Implementation detail and boundary guarantees for automation: this module keeps 
 
 ### mod.rs
 
-- Automation subsystem for deterministic input replay and visual regression testing.
-- Script stores time-sorted steps parsed from TOML with repeat expansion.
-- Simulator drives playback, dispatches events, evaluates conditions, and runs asserts.
-- Step and Action types describe timed input events and control flow actions.
+- Defines the automation module boundary for deterministic input replay and scripted verification flows.
+- Groups script parsing, playback simulation, and typed step contracts under one coherent runtime surface.
+- Serves as the composition entry for test-like interaction automation inside engine execution.
 
 ### script.rs
 
-- Automation script container: named, time-sorted step sequences for deterministic replay.
-- Expands repeat markers into cloned steps at computed time offsets.
-- Parses TOML input with meta description and typed step fields.
-- Enforces a configurable step limit (default MAX_STEPS = 100,000).
-- Sorts steps by time after expansion for correct playback ordering.
+- Implements automation script storage as named, time-ordered step sequences for deterministic replay.
+- Parses TOML definitions into typed runtime steps with metadata and validated field extraction.
+- Expands repeat directives into concrete scheduled steps at computed temporal offsets.
+- Enforces bounded script size to protect playback and memory behavior under large inputs.
+- Maintains stable chronological ordering so simulator playback semantics stay predictable.
 
 ### simulator.rs
 
-- Automation simulator: drives script playback by advancing time and dispatching events.
-- Manages a registry of named scripts and macros with load/unload lifecycle.
-- Evaluates condition expressions (&&, ||, !, parentheses) against named boolean flags.
-- Supports pause, resume, speed control, and visual highlight mode for debug tools.
-- CallMacro steps inline macro scripts at the current playback position.
-- VisualAssert steps compare baseline and actual images with pixel-diff tolerance.
-- Assert steps halt playback when condition expressions evaluate to false.
-- StepEventSink trait decouples event dispatch from EventQueue for testing.
+- Implements deterministic automation playback that advances script time and dispatches input events.
+- Maintains registries of named scripts and macros for reusable scenario composition.
+- Evaluates boolean condition expressions to gate control-flow steps and assertion behavior.
+- Supports pause, resume, and speed scaling so runs can be inspected or accelerated as needed.
+- Inlines macro calls into active playback flow while preserving temporal consistency.
+- Executes visual assertions through baseline comparison with configurable tolerance thresholds.
+- Stops or reports on failed assertions to provide reliable test-signal semantics during playback.
+- Decouples event emission via sink abstractions to support runtime and test harness integration.
+- Tracks simulator state transitions and progression indices for deterministic repeatability.
+- Serves as the execution core for scripted automation scenarios and regression validation.
 
 ### step.rs
 
-- Action enum and Step struct: typed event descriptors for automation playback.
-- Action variants cover keyboard, mouse, wheel, text, wait, repeat, macro, and asserts.
-- Step carries all optional fields (key, position, delta, button, text, conditions).
-- Parse support maps lowercase action strings to Action variants.
-- Repeat and interval fields drive expansion in Script construction.
+- Defines typed automation step contracts that describe input actions and control-flow intent.
+- Covers keyboard, mouse, wheel, text, wait, macro, and assertion-oriented event categories.
+- Stores optional action payload fields in one flexible step record consumed by script playback.
+- Maps textual action tags to enum variants for deterministic parse and dispatch behavior.
+- Supplies repeat and interval semantics used during script expansion and schedule construction.
 
 ## Lua API Ref
 

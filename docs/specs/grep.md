@@ -134,9 +134,9 @@ Beyond general text search, the module includes two specialized engines. The `js
 
 ### Types
 
-
 #### LFileFilter Type
 
+- Lua userdata that controls which files are scanned by a LGrepEngine instance.
 
 ##### Fields
 
@@ -149,9 +149,9 @@ Beyond general text search, the module includes two specialized engines. The `js
 - `LFileFilter:excludePattern`: Add path pattern to exclude for this object.
 - `LFileFilter:setIncludeHidden`: Set whether hidden files are included.
 
-
 #### LGrepEngine Type
 
+- Lua userdata that performs pattern-based search across game content files.
 
 ##### Fields
 

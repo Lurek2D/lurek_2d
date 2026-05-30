@@ -27,14 +27,17 @@ As the toolset grows, the quality bar is discoverability and reliability: clear 
 
 ### lurek_headless.rs
 
-- Headless CLI entry point for offline game validation, archive packaging, and batch screenshot capture.
-- Accepts a subcommand — `validate`, `pack`, or `screenshot-batch` — from argv and dispatches to the matching function.
-- `validate` runs the Python game-validation script on a target directory; `pack` zips a game folder into a `.lurek` archive.
-- `screenshot-batch` iterates a games root directory, captures a fixed number of frames from each game, and writes PNG files to an output directory for CI smoke-test comparison.
+- Implements the headless CLI runner used for validation, packaging, and screenshot batch workflows.
+- Dispatches subcommands into deterministic offline operations without opening an interactive runtime window.
+- Runs game validation tooling and archive packaging against target directories for CI and release prep.
+- Captures batch screenshots across multiple games to support visual smoke checks in automation pipelines.
+- Serves as the command-line entrypoint for non-interactive engine operations.
 
 ### lurekc.rs
 
-- Console-less launcher variant for the shared `lurek_run()` bootstrap path.
+- Defines the console-suppressed desktop launcher that delegates to the shared engine bootstrap.
+- Reuses the main runtime startup path while controlling subsystem behavior on Windows.
+- Serves as the minimal binary entrypoint for standard interactive game launch.
 
 ## Lua API Ref
 

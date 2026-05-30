@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["constants","error","host","http","lobby","message","net_sync","net_thread","relay","tcp","websocket"]};
+window.SIDEBAR_ITEMS = {"mod":["constants","error","host","http","lobby","message","net_sync","net_thread","relay","sse","tcp","websocket"]};

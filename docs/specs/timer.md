@@ -25,37 +25,40 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 
 ### accumulator.rs
 
-- Drift-free microsecond accumulation for scaled elapsed-time tracking.
-- Fractional sub-microsecond carry prevents rounding loss across frames.
-- All negative inputs clamped to zero for monotonic guarantees.
+- This file provides drift-safe microsecond accumulation for scaled runtime timekeeping.
+- It preserves fractional carry between ticks so long sessions avoid rounding erosion.
+- It clamps negative inputs to keep elapsed time monotonic and scheduler-safe.
 
 ### clock.rs
 
-- Per-frame clock that tracks delta time, total elapsed, FPS, and a rolling average delta.
-- FPS is measured over one-second windows; average delta uses a fixed-size ring buffer.
-- Designed for the runtime main loop — one `tick()` call per frame drives all counters.
+- This file provides the core frame clock that drives delta, elapsed time, and fps metrics.
+- It computes stable per-frame timing and rolling averages for smoother runtime decisions.
+- It maintains one-second fps windows so performance telemetry stays readable and comparable.
+- It exposes one tick-driven timeline that other subsystems can trust each frame.
+- It anchors deterministic game-loop timing for update, scheduling, and diagnostics paths.
 
 ### mod.rs
 
-- Time tracking, fixed-step accumulation, and frame-independent scheduling.
-- Provides a high-resolution clock, scaled delta, and sleep utilities.
-- Exposes a tick-based scheduler for deferred and repeating callbacks.
+- This module delivers the runtime time backbone for clocks, accumulation, sleeping, and scheduling.
+- It keeps frame progression measurable and controllable across gameplay and engine services.
+- It unifies timing primitives so deferred logic behaves consistently under load.
 
 ### scheduler.rs
 
-- Time-based and frame-based event scheduling with one-shot and repeating modes.
-- Named events with automatic deduplication on re-registration.
-- Global time-scale multiplier applied to wall-clock updates; clamped to safe range.
-- Per-event pause/resume, interval mutation, and remaining-time queries.
-- Swap-remove expiry during update to avoid O(n) shifts on large event lists.
-- Monotonic ID allocation for stable external references into the scheduler.
-- Integration point for `lurek.timer` Lua bindings via ID-keyed callback dispatch.
+- This file provides a scheduler for time-based and frame-based deferred execution flows.
+- It supports one-shot and repeating events with stable identifiers for external control.
+- It handles named event replacement so restartable behaviors stay clean and predictable.
+- It applies global time scaling while preserving safe clamping boundaries for runtime stability.
+- It exposes pause, resume, interval mutation, and remaining-time inspection for live orchestration.
+- It removes expired events efficiently to keep update costs steady at larger event counts.
+- It serves as the central dispatch surface for timer callbacks used by Lua bindings.
+- It keeps callback timing coherent even when many scheduled entries mutate concurrently.
 
 ### sleep.rs
 
-- Thread-blocking sleep utility for the timer subsystem.
-- Clamps non-positive durations to a no-op, preventing panics from negative `Duration`.
-- Delegates to `std::thread::sleep` with no spin-wait or busy-loop overhead.
+- This file provides the blocking sleep primitive used by timer-facing runtime code.
+- It treats non-positive durations as no-op calls to preserve predictable behavior.
+- It delegates to standard thread sleeping without busy waiting or spin loops.
 
 ## Lua API Ref
 
@@ -92,9 +95,9 @@ The module also caters to diverse asynchronous scripting patterns. It provides r
 
 ### Types
 
-
 #### LScheduler Type
 
+- A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
 
 ##### Fields
 

@@ -29,26 +29,28 @@ Implementation detail and boundary guarantees for debugbridge: this module keeps
 
 ### bridge.rs
 
-- Define shared state and queue structures for the debug bridge protocol.
-- Hold pending request and response buffers for runtime-client communication.
-- Track rolling frame-time performance metrics with bounded sample windows.
-- Maintain bounded print history captured from runtime Lua output.
-- Manage session configuration: port, protocol version, capabilities, and nonce.
-- Provide broadcast queue for event delivery to all connected clients.
+- Implements shared state and queue structures for runtime-to-client debug bridge communication.
+- Stores pending requests and responses exchanged between network server and runtime logic.
+- Tracks rolling performance metrics and bounded print history for debugger-side inspection.
+- Maintains session configuration and capability metadata used across active bridge connections.
+- Provides broadcast event queues for fan-out delivery to all connected debug clients.
+- Serves as the core synchronization layer under the debug bridge protocol subsystem.
 
 ### mod.rs
 
-- Expose the debug bridge subsystem for runtime-to-IDE communication.
-- Provide shared state queues, TCP server loop, and JSON-RPC dispatch.
-- Re-export integration types used by the engine runtime layer.
+- Defines the debugbridge module boundary for runtime-to-IDE transport and state exchange.
+- Groups shared bridge state and TCP server functionality under one integration surface.
+- Serves as the composition entry for engine-side debugbridge capabilities.
 
 ### server.rs
 
-- Run a non-blocking TCP server loop accepting debug bridge client connections.
-- Parse JSON-RPC messages and dispatch to built-in handlers or runtime queue.
-- Deliver pending responses and broadcast events to connected clients.
-- Handle protocol handshake, nonce authentication, and version negotiation.
-- Support ping, hello, eval, performance, print history, and screenshot requests.
+- Implements the non-blocking TCP server loop for debugbridge client connectivity and dispatch.
+- Accepts client sessions and parses JSON-RPC messages into runtime and built-in command handlers.
+- Delivers queued responses and broadcast events across connected debugger endpoints.
+- Handles handshake, protocol version checks, and nonce-based authentication workflows.
+- Supports eval, ping, performance, print-history, and screenshot-oriented protocol requests.
+- Serves as the network transport execution layer for the debugbridge subsystem.
+- Preserves deterministic request lifecycle behavior across concurrent debugger client sessions.
 
 ## Lua API Ref
 
@@ -80,7 +82,34 @@ Implementation detail and boundary guarantees for debugbridge: this module keeps
 
 ### Types
 
-- No documented module types.
+#### LDebugbridgeGetPrintHistoryResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `line` (`integer`): Line number.
+- `message` (`string`): Log message.
+- `source` (`string`): Source file or module.
+- `timestamp` (`number`): Unix timestamp.
+
+##### Methods
+
+- No documented methods.
+
+#### LDebugbridgeGetProtocolInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `capabilities` (`table`): Capabilities table.
+- `nonce` (`string`): Nonce.
+- `version` (`string`): Protocol version.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

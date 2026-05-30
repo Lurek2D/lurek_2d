@@ -25,32 +25,33 @@ The module also handles critical rendering integration points. VSync configurati
 
 ### event_loop.rs
 
-- Multi-monitor enumeration, display info snapshots, and primary-monitor detection.
-- Monitor selection with fallback logic (current → primary → first available).
-- Window centering and cross-display movement helpers.
-- Startup monitor resolution for initial window placement.
+- This file provides event-loop side monitor and display helpers for window placement flow.
+- It enumerates displays and captures snapshot metadata used by window-facing APIs.
+- It selects startup and fallback monitors with deterministic preference ordering.
+- It supports centering and cross-display movement operations for runtime window control.
+- It anchors monitor-aware behavior required by multi-display desktop setups.
 
 ### management.rs
 
-- Stage deferred window property changes (title, size, position, icon, display).
-- Fullscreen and vsync mode switching with exclusive/desktop variants.
-- Minimize, maximize, restore, close, and attention-request staging.
-- Focus, visibility, and mouse-focus queries.
-- DPI-aware pixel conversion helpers.
-- Combined mode update and snapshot via `set_mode`/`get_mode`.
-- Native OS message-box dialog via `rfd`.
+- This file provides deferred window management operations staged for safe event-loop apply.
+- It controls title, size, position, display target, and icon updates through queued state.
+- It manages fullscreen and vsync mode changes across desktop and exclusive variants.
+- It exposes minimize, maximize, restore, close, and attention requests for app lifecycle flow.
+- It provides focus, visibility, and pointer-presence queries for runtime interaction logic.
+- It includes DPI conversion and mode snapshot helpers used by Lua and engine integration.
 
 ### mod.rs
 
-- OS window lifecycle: creation, sizing, positioning, fullscreen, and DPI handling.
-- Multi-monitor support: display enumeration, selection, and window placement.
-- Virtual viewport: logical-to-pixel scaling and scale-mode selection.
+- This module delivers the high-level desktop window subsystem for lifecycle and display control.
+- It unifies monitor handling, mode changes, viewport scaling, and state query surfaces.
+- It provides the runtime boundary between OS window behavior and script-facing APIs.
 
 ### viewport.rs
 
-- Logical game viewport size queries and scale-mode staging.
-- Coordinate conversion between logical game space and physical screen pixels.
-- Viewport scale/offset snapshot via `ScaleInfo`.
+- This file provides viewport scaling helpers between logical game space and physical pixels.
+- It exposes logical dimensions and scale mode state used by rendering and input mapping.
+- It computes conversion factors and offsets so coordinate translation remains consistent.
+- It supports runtime staging of scale behavior without direct renderer coupling.
 
 ## Lua API Ref
 
@@ -121,7 +122,70 @@ The module also handles critical rendering integration points. VSync configurati
 
 ### Types
 
-- No documented module types.
+#### LWindowGetDisplaysResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `height` (`integer`): Height in pixels.
+- `index` (`integer`): Display index.
+- `name` (`string`): Display name.
+- `primary` (`boolean`): Whether this is the primary display.
+- `refreshRate` (`number`): Refresh rate in Hz.
+- `scale` (`number`): Scale factor.
+- `width` (`integer`): Width in pixels.
+- `x` (`integer`): X position.
+- `y` (`integer`): Y position.
+
+##### Methods
+
+- No documented methods.
+
+#### LWindowGetFullscreenModesResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `height` (`integer`): Height in pixels.
+- `refreshRate` (`number`): Refresh rate in Hz.
+- `width` (`integer`): Width in pixels.
+
+##### Methods
+
+- No documented methods.
+
+#### LWindowGetModeResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `fullscreen` (`boolean`): Whether fullscreen is active.
+- `fullscreentype` (`string`): Fullscreen type.
+- `vsync` (`boolean`): Whether VSync is enabled.
+
+##### Methods
+
+- No documented methods.
+
+#### LWindowGetScaleInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `game_height` (`number`): Game height.
+- `game_width` (`number`): Game width.
+- `offset_x` (`number`): Offset x.
+- `offset_y` (`number`): Offset y.
+- `scale_x` (`number`): Scale x.
+- `scale_y` (`number`): Scale y.
+
+##### Methods
+
+- No documented methods.
 
 ## References
 

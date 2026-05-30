@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["engine","handle","interpolator","spring","state"]};
+window.SIDEBAR_ITEMS = {"mod":["chain","engine","handle","interpolator","spring","state"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["chat","client","memory","ollama","orchestration","state","types"]};

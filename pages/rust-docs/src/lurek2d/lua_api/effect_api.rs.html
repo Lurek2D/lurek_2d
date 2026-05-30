@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\lua_api\effect_api.rs`."><title>effect_api.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurek2d" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.1 (e408947bf 2026-03-25)" data-channel="1.94.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">lurek2d\lua_api/</div>effect_api.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! `lurek.effect` -- Visual effect bindings for post-processing passes, effect stacks, and image effect chains used by the renderer command queue.
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src\lua_api\effect_api.rs`."><title>effect_api.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-77263533.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="lurek2d" data-themes="" data-resource-suffix="" data-rustdoc-version="1.94.1 (e408947bf 2026-03-25)" data-channel="1.94.1" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-7bab91a1.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-ffcac47a.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">lurek2d\lua_api/</div>effect_api.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-3"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="doccomment">//! File: src/lua_api/effect_api.rs
 <a href=#2 id=2 data-nosnippet>2</a>
 <a href=#3 id=3 data-nosnippet>3</a></span><span class="kw">use </span><span class="kw">super</span>::SharedState;
 <a href=#4 id=4 data-nosnippet>4</a><span class="kw">use </span><span class="kw">crate</span>::effect::{
-<a href=#5 id=5 data-nosnippet>5</a>    presets::build_preset, ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
+<a href=#5 id=5 data-nosnippet>5</a>    presets::{build_preset, preset_names}, ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack,
 <a href=#6 id=6 data-nosnippet>6</a>};
 <a href=#7 id=7 data-nosnippet>7</a><span class="kw">use </span><span class="kw">crate</span>::render::renderer::{PostFxPass, RenderCommand};
 <a href=#8 id=8 data-nosnippet>8</a><span class="kw">use </span>mlua::prelude::<span class="kw-2">*</span>;
@@ -680,83 +680,90 @@
 <a href=#680 id=680 data-nosnippet>680</a>        <span class="string">"getEffectTypes"</span>,
 <a href=#681 id=681 data-nosnippet>681</a>        lua.create_function(|<span class="kw">_</span>, ()| <span class="prelude-val">Ok</span>(PostFxEffectType::built_in_names()))<span class="question-mark">?</span>,
 <a href=#682 id=682 data-nosnippet>682</a>    )<span class="question-mark">?</span>;
-<a href=#683 id=683 data-nosnippet>683</a>    <span class="comment">// -- newImageEffect --
-<a href=#684 id=684 data-nosnippet>684</a>    </span><span class="doccomment">/// Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
-<a href=#685 id=685 data-nosnippet>685</a>    /// @param | spec | LuaValue? | Optional effect type string, or an array table of effect entries, or nil for an empty chain.
-<a href=#686 id=686 data-nosnippet>686</a>    /// @param | params | table? | Optional parameter table used when `spec` is an effect type string.
-<a href=#687 id=687 data-nosnippet>687</a>    /// @return | LImageEffect | New image effect chain handle.
-<a href=#688 id=688 data-nosnippet>688</a>    </span>tbl.set(
-<a href=#689 id=689 data-nosnippet>689</a>        <span class="string">"newImageEffect"</span>,
-<a href=#690 id=690 data-nosnippet>690</a>        lua.create_function(|lua, args: LuaMultiValue| {
-<a href=#691 id=691 data-nosnippet>691</a>            <span class="kw">let </span><span class="kw-2">mut </span>ie = ImageEffect::new(<span class="string">""</span>);
-<a href=#692 id=692 data-nosnippet>692</a>            <span class="kw">match </span>args.iter().next() {
-<a href=#693 id=693 data-nosnippet>693</a>                <span class="prelude-val">None </span>=&gt; {}
-<a href=#694 id=694 data-nosnippet>694</a>                <span class="prelude-val">Some</span>(LuaValue::String(s)) =&gt; {
-<a href=#695 id=695 data-nosnippet>695</a>                    <span class="kw">let </span>name = s.to_str().map_err(LuaError::external)<span class="question-mark">?</span>.to_string();
-<a href=#696 id=696 data-nosnippet>696</a>                    <span class="kw">let </span>et = PostFxEffectType::from_name(<span class="kw-2">&amp;</span>name).ok_or_else(|| {
-<a href=#697 id=697 data-nosnippet>697</a>                        LuaError::RuntimeError(<span class="macro">format!</span>(<span class="string">"unknown effect type: {name}"</span>))
-<a href=#698 id=698 data-nosnippet>698</a>                    })<span class="question-mark">?</span>;
-<a href=#699 id=699 data-nosnippet>699</a>                    <span class="kw">let </span><span class="kw-2">mut </span>eff = PostFxEffect::new(et);
-<a href=#700 id=700 data-nosnippet>700</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(LuaValue::Table(params)) = args.iter().nth(<span class="number">1</span>) {
-<a href=#701 id=701 data-nosnippet>701</a>                        <span class="kw">for </span>(k, v) <span class="kw">in </span>params.clone().pairs::&lt;String, f32&gt;().flatten() {
-<a href=#702 id=702 data-nosnippet>702</a>                            eff.set_parameter(<span class="kw-2">&amp;</span>k, v);
-<a href=#703 id=703 data-nosnippet>703</a>                        }
-<a href=#704 id=704 data-nosnippet>704</a>                    }
-<a href=#705 id=705 data-nosnippet>705</a>                    ie.add_effect(eff);
-<a href=#706 id=706 data-nosnippet>706</a>                }
-<a href=#707 id=707 data-nosnippet>707</a>                <span class="prelude-val">Some</span>(LuaValue::Table(chain)) =&gt; {
-<a href=#708 id=708 data-nosnippet>708</a>                    <span class="kw">for </span>entry <span class="kw">in </span>chain.clone().sequence_values::&lt;LuaTable&gt;() {
-<a href=#709 id=709 data-nosnippet>709</a>                        <span class="kw">let </span>entry = entry<span class="question-mark">?</span>;
-<a href=#710 id=710 data-nosnippet>710</a>                        <span class="kw">let </span>name: String = entry
-<a href=#711 id=711 data-nosnippet>711</a>                            .get(<span class="string">"type"</span>)
-<a href=#712 id=712 data-nosnippet>712</a>                            .or_else(|<span class="kw">_</span>| entry.get(<span class="number">1</span>))
-<a href=#713 id=713 data-nosnippet>713</a>                            .unwrap_or_default();
-<a href=#714 id=714 data-nosnippet>714</a>                        <span class="kw">let </span>et = PostFxEffectType::from_name(<span class="kw-2">&amp;</span>name).ok_or_else(|| {
-<a href=#715 id=715 data-nosnippet>715</a>                            LuaError::RuntimeError(<span class="macro">format!</span>(<span class="string">"unknown effect type: {name}"</span>))
-<a href=#716 id=716 data-nosnippet>716</a>                        })<span class="question-mark">?</span>;
-<a href=#717 id=717 data-nosnippet>717</a>                        <span class="kw">let </span><span class="kw-2">mut </span>eff = PostFxEffect::new(et);
-<a href=#718 id=718 data-nosnippet>718</a>                        <span class="kw">for </span>(k, v) <span class="kw">in </span>entry.pairs::&lt;String, LuaValue&gt;().flatten() {
-<a href=#719 id=719 data-nosnippet>719</a>                            <span class="kw">if </span><span class="macro">k !</span>= <span class="string">"type" </span>{
-<a href=#720 id=720 data-nosnippet>720</a>                                <span class="kw">if let </span>LuaValue::Number(n) = v {
-<a href=#721 id=721 data-nosnippet>721</a>                                    eff.set_parameter(<span class="kw-2">&amp;</span>k, n <span class="kw">as </span>f32);
-<a href=#722 id=722 data-nosnippet>722</a>                                } <span class="kw">else if let </span>LuaValue::Integer(i) = v {
-<a href=#723 id=723 data-nosnippet>723</a>                                    eff.set_parameter(<span class="kw-2">&amp;</span>k, i <span class="kw">as </span>f32);
-<a href=#724 id=724 data-nosnippet>724</a>                                }
-<a href=#725 id=725 data-nosnippet>725</a>                            }
-<a href=#726 id=726 data-nosnippet>726</a>                        }
-<a href=#727 id=727 data-nosnippet>727</a>                        ie.add_effect(eff);
-<a href=#728 id=728 data-nosnippet>728</a>                    }
-<a href=#729 id=729 data-nosnippet>729</a>                }
-<a href=#730 id=730 data-nosnippet>730</a>                <span class="kw">_ </span>=&gt; {
-<a href=#731 id=731 data-nosnippet>731</a>                    <span class="kw">return </span><span class="prelude-val">Err</span>(LuaError::RuntimeError(
-<a href=#732 id=732 data-nosnippet>732</a>                        <span class="string">"newImageEffect: invalid arguments"</span>.to_string(),
-<a href=#733 id=733 data-nosnippet>733</a>                    ))
-<a href=#734 id=734 data-nosnippet>734</a>                }
-<a href=#735 id=735 data-nosnippet>735</a>            }
-<a href=#736 id=736 data-nosnippet>736</a>            lua.create_userdata(LuaImageEffect { inner: ie })
-<a href=#737 id=737 data-nosnippet>737</a>        })<span class="question-mark">?</span>,
-<a href=#738 id=738 data-nosnippet>738</a>    )<span class="question-mark">?</span>;
-<a href=#739 id=739 data-nosnippet>739</a>    <span class="kw">let </span>s = state.clone();
-<a href=#740 id=740 data-nosnippet>740</a>    <span class="comment">// -- setShaderErrorDisplay --
-<a href=#741 id=741 data-nosnippet>741</a>    </span><span class="doccomment">/// Enables or disables renderer shader error display overlays.
-<a href=#742 id=742 data-nosnippet>742</a>    /// @param | enabled | boolean | New shader error display flag.
-<a href=#743 id=743 data-nosnippet>743</a>    </span>tbl.set(
-<a href=#744 id=744 data-nosnippet>744</a>        <span class="string">"setShaderErrorDisplay"</span>,
-<a href=#745 id=745 data-nosnippet>745</a>        lua.create_function(<span class="kw">move </span>|<span class="kw">_</span>, enabled: bool| {
-<a href=#746 id=746 data-nosnippet>746</a>            s.borrow_mut().shader_error_display_enabled = enabled;
-<a href=#747 id=747 data-nosnippet>747</a>            <span class="prelude-val">Ok</span>(())
-<a href=#748 id=748 data-nosnippet>748</a>        })<span class="question-mark">?</span>,
-<a href=#749 id=749 data-nosnippet>749</a>    )<span class="question-mark">?</span>;
-<a href=#750 id=750 data-nosnippet>750</a>    <span class="kw">let </span>s = state.clone();
-<a href=#751 id=751 data-nosnippet>751</a>    <span class="comment">// -- getShaderErrorDisplay --
-<a href=#752 id=752 data-nosnippet>752</a>    </span><span class="doccomment">/// Returns whether renderer shader error display overlays are enabled.
-<a href=#753 id=753 data-nosnippet>753</a>    /// @return | boolean | True when shader error display is enabled.
-<a href=#754 id=754 data-nosnippet>754</a>    </span>tbl.set(
-<a href=#755 id=755 data-nosnippet>755</a>        <span class="string">"getShaderErrorDisplay"</span>,
-<a href=#756 id=756 data-nosnippet>756</a>        lua.create_function(<span class="kw">move </span>|<span class="kw">_</span>, ()| <span class="prelude-val">Ok</span>(s.borrow().shader_error_display_enabled))<span class="question-mark">?</span>,
-<a href=#757 id=757 data-nosnippet>757</a>    )<span class="question-mark">?</span>;
-<a href=#758 id=758 data-nosnippet>758</a>    <span class="doccomment">/// Performs the 'effect' operation.
-<a href=#759 id=759 data-nosnippet>759</a>    </span>lurek.set(<span class="string">"effect"</span>, tbl)<span class="question-mark">?</span>;
-<a href=#760 id=760 data-nosnippet>760</a>    <span class="prelude-val">Ok</span>(())
-<a href=#761 id=761 data-nosnippet>761</a>}
+<a href=#683 id=683 data-nosnippet>683</a>    <span class="comment">// -- getPresetNames --
+<a href=#684 id=684 data-nosnippet>684</a>    </span><span class="doccomment">/// Returns all built-in post-processing preset names.
+<a href=#685 id=685 data-nosnippet>685</a>    /// @return | string[] | Built-in preset name strings.
+<a href=#686 id=686 data-nosnippet>686</a>    </span>tbl.set(
+<a href=#687 id=687 data-nosnippet>687</a>        <span class="string">"getPresetNames"</span>,
+<a href=#688 id=688 data-nosnippet>688</a>        lua.create_function(|<span class="kw">_</span>, ()| <span class="prelude-val">Ok</span>(preset_names()))<span class="question-mark">?</span>,
+<a href=#689 id=689 data-nosnippet>689</a>    )<span class="question-mark">?</span>;
+<a href=#690 id=690 data-nosnippet>690</a>    <span class="comment">// -- newImageEffect --
+<a href=#691 id=691 data-nosnippet>691</a>    </span><span class="doccomment">/// Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
+<a href=#692 id=692 data-nosnippet>692</a>    /// @param | spec | LuaValue? | Optional effect type string, or an array table of effect entries, or nil for an empty chain.
+<a href=#693 id=693 data-nosnippet>693</a>    /// @param | params | table? | Optional parameter table used when `spec` is an effect type string.
+<a href=#694 id=694 data-nosnippet>694</a>    /// @return | LImageEffect | New image effect chain handle.
+<a href=#695 id=695 data-nosnippet>695</a>    </span>tbl.set(
+<a href=#696 id=696 data-nosnippet>696</a>        <span class="string">"newImageEffect"</span>,
+<a href=#697 id=697 data-nosnippet>697</a>        lua.create_function(|lua, args: LuaMultiValue| {
+<a href=#698 id=698 data-nosnippet>698</a>            <span class="kw">let </span><span class="kw-2">mut </span>ie = ImageEffect::new(<span class="string">""</span>);
+<a href=#699 id=699 data-nosnippet>699</a>            <span class="kw">match </span>args.iter().next() {
+<a href=#700 id=700 data-nosnippet>700</a>                <span class="prelude-val">None </span>=&gt; {}
+<a href=#701 id=701 data-nosnippet>701</a>                <span class="prelude-val">Some</span>(LuaValue::String(s)) =&gt; {
+<a href=#702 id=702 data-nosnippet>702</a>                    <span class="kw">let </span>name = s.to_str().map_err(LuaError::external)<span class="question-mark">?</span>.to_string();
+<a href=#703 id=703 data-nosnippet>703</a>                    <span class="kw">let </span>et = PostFxEffectType::from_name(<span class="kw-2">&amp;</span>name).ok_or_else(|| {
+<a href=#704 id=704 data-nosnippet>704</a>                        LuaError::RuntimeError(<span class="macro">format!</span>(<span class="string">"unknown effect type: {name}"</span>))
+<a href=#705 id=705 data-nosnippet>705</a>                    })<span class="question-mark">?</span>;
+<a href=#706 id=706 data-nosnippet>706</a>                    <span class="kw">let </span><span class="kw-2">mut </span>eff = PostFxEffect::new(et);
+<a href=#707 id=707 data-nosnippet>707</a>                    <span class="kw">if let </span><span class="prelude-val">Some</span>(LuaValue::Table(params)) = args.iter().nth(<span class="number">1</span>) {
+<a href=#708 id=708 data-nosnippet>708</a>                        <span class="kw">for </span>(k, v) <span class="kw">in </span>params.clone().pairs::&lt;String, f32&gt;().flatten() {
+<a href=#709 id=709 data-nosnippet>709</a>                            eff.set_parameter(<span class="kw-2">&amp;</span>k, v);
+<a href=#710 id=710 data-nosnippet>710</a>                        }
+<a href=#711 id=711 data-nosnippet>711</a>                    }
+<a href=#712 id=712 data-nosnippet>712</a>                    ie.add_effect(eff);
+<a href=#713 id=713 data-nosnippet>713</a>                }
+<a href=#714 id=714 data-nosnippet>714</a>                <span class="prelude-val">Some</span>(LuaValue::Table(chain)) =&gt; {
+<a href=#715 id=715 data-nosnippet>715</a>                    <span class="kw">for </span>entry <span class="kw">in </span>chain.clone().sequence_values::&lt;LuaTable&gt;() {
+<a href=#716 id=716 data-nosnippet>716</a>                        <span class="kw">let </span>entry = entry<span class="question-mark">?</span>;
+<a href=#717 id=717 data-nosnippet>717</a>                        <span class="kw">let </span>name: String = entry
+<a href=#718 id=718 data-nosnippet>718</a>                            .get(<span class="string">"type"</span>)
+<a href=#719 id=719 data-nosnippet>719</a>                            .or_else(|<span class="kw">_</span>| entry.get(<span class="number">1</span>))
+<a href=#720 id=720 data-nosnippet>720</a>                            .unwrap_or_default();
+<a href=#721 id=721 data-nosnippet>721</a>                        <span class="kw">let </span>et = PostFxEffectType::from_name(<span class="kw-2">&amp;</span>name).ok_or_else(|| {
+<a href=#722 id=722 data-nosnippet>722</a>                            LuaError::RuntimeError(<span class="macro">format!</span>(<span class="string">"unknown effect type: {name}"</span>))
+<a href=#723 id=723 data-nosnippet>723</a>                        })<span class="question-mark">?</span>;
+<a href=#724 id=724 data-nosnippet>724</a>                        <span class="kw">let </span><span class="kw-2">mut </span>eff = PostFxEffect::new(et);
+<a href=#725 id=725 data-nosnippet>725</a>                        <span class="kw">for </span>(k, v) <span class="kw">in </span>entry.pairs::&lt;String, LuaValue&gt;().flatten() {
+<a href=#726 id=726 data-nosnippet>726</a>                            <span class="kw">if </span><span class="macro">k !</span>= <span class="string">"type" </span>{
+<a href=#727 id=727 data-nosnippet>727</a>                                <span class="kw">if let </span>LuaValue::Number(n) = v {
+<a href=#728 id=728 data-nosnippet>728</a>                                    eff.set_parameter(<span class="kw-2">&amp;</span>k, n <span class="kw">as </span>f32);
+<a href=#729 id=729 data-nosnippet>729</a>                                } <span class="kw">else if let </span>LuaValue::Integer(i) = v {
+<a href=#730 id=730 data-nosnippet>730</a>                                    eff.set_parameter(<span class="kw-2">&amp;</span>k, i <span class="kw">as </span>f32);
+<a href=#731 id=731 data-nosnippet>731</a>                                }
+<a href=#732 id=732 data-nosnippet>732</a>                            }
+<a href=#733 id=733 data-nosnippet>733</a>                        }
+<a href=#734 id=734 data-nosnippet>734</a>                        ie.add_effect(eff);
+<a href=#735 id=735 data-nosnippet>735</a>                    }
+<a href=#736 id=736 data-nosnippet>736</a>                }
+<a href=#737 id=737 data-nosnippet>737</a>                <span class="kw">_ </span>=&gt; {
+<a href=#738 id=738 data-nosnippet>738</a>                    <span class="kw">return </span><span class="prelude-val">Err</span>(LuaError::RuntimeError(
+<a href=#739 id=739 data-nosnippet>739</a>                        <span class="string">"newImageEffect: invalid arguments"</span>.to_string(),
+<a href=#740 id=740 data-nosnippet>740</a>                    ))
+<a href=#741 id=741 data-nosnippet>741</a>                }
+<a href=#742 id=742 data-nosnippet>742</a>            }
+<a href=#743 id=743 data-nosnippet>743</a>            lua.create_userdata(LuaImageEffect { inner: ie })
+<a href=#744 id=744 data-nosnippet>744</a>        })<span class="question-mark">?</span>,
+<a href=#745 id=745 data-nosnippet>745</a>    )<span class="question-mark">?</span>;
+<a href=#746 id=746 data-nosnippet>746</a>    <span class="kw">let </span>s = state.clone();
+<a href=#747 id=747 data-nosnippet>747</a>    <span class="comment">// -- setShaderErrorDisplay --
+<a href=#748 id=748 data-nosnippet>748</a>    </span><span class="doccomment">/// Enables or disables renderer shader error display overlays.
+<a href=#749 id=749 data-nosnippet>749</a>    /// @param | enabled | boolean | New shader error display flag.
+<a href=#750 id=750 data-nosnippet>750</a>    </span>tbl.set(
+<a href=#751 id=751 data-nosnippet>751</a>        <span class="string">"setShaderErrorDisplay"</span>,
+<a href=#752 id=752 data-nosnippet>752</a>        lua.create_function(<span class="kw">move </span>|<span class="kw">_</span>, enabled: bool| {
+<a href=#753 id=753 data-nosnippet>753</a>            s.borrow_mut().shader_error_display_enabled = enabled;
+<a href=#754 id=754 data-nosnippet>754</a>            <span class="prelude-val">Ok</span>(())
+<a href=#755 id=755 data-nosnippet>755</a>        })<span class="question-mark">?</span>,
+<a href=#756 id=756 data-nosnippet>756</a>    )<span class="question-mark">?</span>;
+<a href=#757 id=757 data-nosnippet>757</a>    <span class="kw">let </span>s = state.clone();
+<a href=#758 id=758 data-nosnippet>758</a>    <span class="comment">// -- getShaderErrorDisplay --
+<a href=#759 id=759 data-nosnippet>759</a>    </span><span class="doccomment">/// Returns whether renderer shader error display overlays are enabled.
+<a href=#760 id=760 data-nosnippet>760</a>    /// @return | boolean | True when shader error display is enabled.
+<a href=#761 id=761 data-nosnippet>761</a>    </span>tbl.set(
+<a href=#762 id=762 data-nosnippet>762</a>        <span class="string">"getShaderErrorDisplay"</span>,
+<a href=#763 id=763 data-nosnippet>763</a>        lua.create_function(<span class="kw">move </span>|<span class="kw">_</span>, ()| <span class="prelude-val">Ok</span>(s.borrow().shader_error_display_enabled))<span class="question-mark">?</span>,
+<a href=#764 id=764 data-nosnippet>764</a>    )<span class="question-mark">?</span>;
+<a href=#765 id=765 data-nosnippet>765</a>    <span class="doccomment">/// Performs the 'effect' operation.
+<a href=#766 id=766 data-nosnippet>766</a>    </span>lurek.set(<span class="string">"effect"</span>, tbl)<span class="question-mark">?</span>;
+<a href=#767 id=767 data-nosnippet>767</a>    <span class="prelude-val">Ok</span>(())
+<a href=#768 id=768 data-nosnippet>768</a>}
 </code></pre></div></section></main></body></html>

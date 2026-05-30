@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["register"],"struct":["LuaAISystem","LuaAgent","LuaAgentChat","LuaAgentManager","LuaAgentMemory","LuaAgentTemplate","LuaEpisodicMemory","LuaOllamaManager","LuaSemanticMemory","LuaWorkingMemory"]};

@@ -25,38 +25,40 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 
 ### channel.rs
 
-- Thread-safe MPMC channel for passing typed values between Lua VMs.
-- Bounded and unbounded variants with configurable overflow policy.
-- Blocking `push`/`demand` and non-blocking `try_push`/`pop`/`peek` operations.
-- Recursive Lua-to-ChannelValue and ChannelValue-to-Lua conversion (nil, bool, number, string, table, bytes).
-- Named channels for diagnostics; monotonic push-count IDs for tracing.
+- This file provides the thread-safe message bus that moves typed payloads between isolated Lua VMs.
+- It defines a stable transport value model that preserves scalar values, nested tables, and binary blobs.
+- It supports bounded and unbounded queues so gameplay code can choose backpressure or open throughput.
+- It offers blocking and non-blocking push and pull flows for deterministic runtime synchronization.
+- It bridges Rust and Lua value domains with explicit conversion rules that avoid hidden sharing.
+- It keeps channel identity and message sequencing visible so concurrent data flow stays debuggable.
 
 ### mod.rs
 
-- Cross-thread messaging via typed MPMC channels for Lua VM isolation.
-- Fixed-size thread pool for CPU-bound background tasks.
-- Promise containers for single-value async results.
-- Worker harness owning secondary Lua VMs for parallel script execution.
+- This module delivers the high-level concurrency layer for isolated Lua workers in the runtime.
+- It combines channels, worker execution, pools, and one-shot promises into one coherent flow model.
+- It keeps cross-thread scripting safe by enforcing message passing instead of shared VM state.
 
 ### pool.rs
 
-- Fixed-size worker pool backed by LuaThread instances sharing input/output channels.
-- Submit work items, collect results non-blocking, and join with optional timeout.
-- Workers auto-register `__pool_input`/`__pool_output` named channels for Lua-side access.
+- This file provides a fixed worker pool that executes Lua jobs in parallel with stable throughput.
+- It binds shared input and output channels so tasks and results travel on a predictable pipeline.
+- It exposes a practical lifecycle of submit, collect, and join for frame-safe orchestration.
+- It keeps named channel wiring consistent across engine and script boundaries during pooled execution.
 
 ### promise.rs
 
-- One-shot async computation that spawns a LuaThread and collects a single result.
-- Lifecycle tracking via PromiseState (Pending, Done, Error).
-- Result delivery through an internal named channel polled by the caller.
+- This file provides a one-shot async result container for Lua work running off the main thread.
+- It models pending, success, and error states so callers can poll progress without blocking frames.
+- It delivers the resolved value through a dedicated channel for safe cross-thread handoff semantics.
+- It makes deferred gameplay logic simple by letting results be consumed cleanly in later updates.
 
 ### worker.rs
 
-- Worker VM lifecycle: spawn an OS thread with an isolated Lua VM, track Pending/Running/Completed/Error states.
-- Restricted API surface: inject only `lurek.thread.getChannel`, `lurek.fs.read`, and `arg` into worker VMs.
-- Channel-based communication: workers receive a shared channel registry for typed cross-VM messaging.
-- Blocking and timeout joins: wait indefinitely or poll with a deadline for worker completion.
-- Path-traversal guard: `fs.read` in worker VMs rejects `..` segments to prevent sandbox escape.
+- This file provides the worker lifecycle that boots an isolated Lua VM on its own OS thread.
+- It tracks execution transitions from pending to running to completed or failed outcomes.
+- It injects a restricted capability surface so background scripts run inside controlled boundaries.
+- It connects workers to shared named channels so inter-VM communication remains explicit and typed.
+- It offers blocking and timeout joins to synchronize background completion with frame progression.
 
 ## Lua API Ref
 
@@ -79,9 +81,9 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 
 ### Types
 
-
 #### LChannel Type
 
+- Creates a new unbounded channel for sending typed values between threads.
 
 ##### Fields
 
@@ -106,9 +108,9 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `LChannel:type`: Returns the type name of this object.
 - `LChannel:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LPromise Type
 
+- Lua-visible handle representing an asynchronous computation that will produce a single result value.
 
 ##### Fields
 
@@ -123,9 +125,9 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `LPromise:type`: Returns the type name of this object.
 - `LPromise:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LThreadHandle Type
 
+- Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
 
 ##### Fields
 
@@ -138,9 +140,9 @@ For simpler, one-off asynchronous tasks, the module offers the `Promise` pattern
 - `LThreadHandle:start`: Launches the worker thread, executing the Lua code string supplied at creation time.
 - `LThreadHandle:wait`: Blocks the calling thread until the worker thread finishes execution.
 
-
 #### LThreadPool Type
 
+- Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
 
 ##### Fields
 

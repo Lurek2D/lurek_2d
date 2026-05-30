@@ -25,57 +25,61 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 
 ### chain.rs
 
-- Tween chain — sequential and parallel tween composition for cinematic sequences.
-- `TweenChain` plays tweens one after another (or in parallel groups).
-- Each step carries an optional label for event-based Lua callbacks.
-- `tick(dt)` advances the chain and returns completed step labels.
+- This file provides composable tween chains for staged motion and timing choreography.
+- It supports sequential and grouped progression so animation beats can be orchestrated clearly.
+- It carries optional step labels that let scripts react to completion boundaries.
+- It advances with frame delta while preserving deterministic chain state transitions.
+- It translates complex cinematic timing into a readable structure for runtime execution.
+- It keeps multi-step animation flow explicit for tools, debugging, and script control.
 
 ### engine.rs
 
-- Tween engine: per-tick interpolation of numeric table fields on Lua objects.
-- `TweenEngine` holds a slab of active `TweenJob` entries; completed jobs are freed.
-- Each job targets a Lua registry key and a list of field names to animate.
-- Easing functions (linear, ease-in, ease-out, spring, bounce) are value-mapped.
-- `on_settle` callback fires once the job reaches its target value within epsilon.
-- Updated synchronously inside `lua_tick`; no background threads.
+- This file provides the active tween engine that updates all running animation handles.
+- It tracks tweens, sequences, parallels, and springs through one coordinated update surface.
+- It resolves easing behavior and value writes directly onto Lua-owned target tables.
+- It manages lifecycle cleanup so completed animations exit without stale runtime state.
+- It keeps tween progression synchronous with frame updates for deterministic visual output.
 
 ### handle.rs
 
-- Lua-visible tween handles: single-field (`LuaTween`), sequence (`LuaTweenSequence`), and parallel (`LuaTweenParallel`).
-- Each handle owns its easing state, target registry key, start/end values, and lifecycle callbacks.
-- Tick-driven interpolation writes computed values directly into Lua tables each frame.
-- Repeat, yoyo, relative-offset, and custom easing function support on single tweens.
-- Sequences consume multiple steps (tween, delay, callback) in order, carrying leftover dt across boundaries.
-- Parallel groups advance all lanes simultaneously and complete when every lane finishes.
-- Coroutine waiter pattern: tweens and sequences resume registered coroutines on completion.
+- This file provides Lua-facing tween handle types that expose animation control to scripts.
+- It defines single tweens, sequences, and parallel groups with a consistent lifecycle contract.
+- It stores progression state, target bindings, and callback hooks close to each animation unit.
+- It writes interpolated values to Lua tables each frame through explicit field mappings.
+- It supports repeat, yoyo, relative targets, and custom easing for expressive motion design.
+- It coordinates sequence boundaries with carry-over delta to avoid timing gaps between steps.
+- It advances parallel lanes together and resolves completion only when all lanes settle.
+- It resumes waiting coroutines on completion so asynchronous script flow stays ergonomic.
 
 ### interpolator.rs
 
-- Multi-channel tween interpolator that drives values from start to target over a fixed duration.
-- Easing resolution accepts both short names and `easeIn*`/`easeOut*` prefixed forms.
-- Each tween holds an independent clock, supports reset, seek, and completion query.
-- Channels are registered dynamically and interpolated per-frame via the resolved easing curve.
-- Falls back to linear when an unknown easing name is provided.
+- This file provides the multi-channel interpolator that converts progress into animated values.
+- It resolves easing names through flexible aliases so script-facing naming remains forgiving.
+- It keeps independent tween clocks with reset and seek support for controlled playback.
+- It interpolates registered channels each frame using the resolved easing curve semantics.
+- It falls back to linear behavior when easing names are unknown to preserve continuity.
 
 ### mod.rs
 
-- Smooth value interpolation with configurable easing curves.
-- Sequence and parallel combinators for complex multi-step animations.
-- Spring-based physics tweening for natural motion.
-- Shared tween engine driving all active tweens each frame.
-- Multi-channel interpolator driven by easing functions over a fixed duration.
+- This module delivers the motion interpolation stack used for scripted and systemic animation.
+- It combines timed easing, spring dynamics, and composition primitives in one cohesive surface.
+- It gives the runtime one predictable path for updating all active tween workflows.
 
 ### spring.rs
 
-- Single-axis damped spring simulation with configurable stiffness, damping, and settle detection.
-- Named spring system aggregating multiple axes under shared default parameters.
-- Euler integration with snap-to-target on settle to eliminate micro-oscillation.
+- This file provides damped spring simulation for motion that should feel physical and responsive.
+- It models spring parameters and settle rules so values converge smoothly toward targets.
+- It groups named spring axes under shared defaults for coordinated multi-field behaviors.
+- It integrates state each tick and snaps on settle to remove micro-jitter residue.
+- It offers a natural animation path where fixed-duration easing is not a good fit.
 
 ### state.rs
 
-- Per-tween progress state tracking elapsed time, duration, pause flag, and resolved easing function.
-- Case-insensitive easing name resolution with fallback aliases for common naming conventions (camelCase, LÖVE-style).
-- Built-in easing catalog query used by tooling and Lua autocomplete.
+- This file provides canonical tween progress state shared across animation handle types.
+- It tracks elapsed time, duration, pause state, and resolved easing behavior in one unit.
+- It resolves easing names case-insensitively with aliases that match common script habits.
+- It exposes built-in easing catalog data for tooling, validation, and autocomplete features.
+- It keeps progress semantics stable so tween updates remain deterministic across runtime paths.
 
 ## Lua API Ref
 
@@ -106,9 +110,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 
 ### Types
 
-
 #### LSpring Type
 
+- Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
 
 ##### Fields
 
@@ -127,9 +131,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LSpring:typeOf`: Checks whether this object matches the given type name.
 - `LSpring:update`: Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
 
-
 #### LTween Type
 
+- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 
 ##### Fields
 
@@ -157,9 +161,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTween:type`: Returns the type name of this object.
 - `LTween:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LTweenChain Type
 
+- Lua-side wrapper for a sequential tween chain.
 
 ##### Fields
 
@@ -195,9 +199,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTweenChain:value`: Returns current legacy scalar value.
 - `LTweenChain:wait`: Adds a fluent delay step to the chain timeline and keeps fluent chaining enabled.
 
-
 #### LTweenParallel Type
 
+- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
 
 ##### Fields
 
@@ -214,9 +218,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTweenParallel:type`: Returns the type name of this object.
 - `LTweenParallel:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LTweenSequence Type
 
+- Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
 
 ##### Fields
 
@@ -236,9 +240,9 @@ The entire system is driven by a centralized `TweenEngine` that efficiently upda
 - `LTweenSequence:type`: Returns the type name of this object.
 - `LTweenSequence:typeOf`: Checks whether this object matches the given type name.
 
-
 #### LTweenState Type
 
+- Lua-exposed standalone tween state for manual interpolation without automatic property updates.
 
 ##### Fields
 

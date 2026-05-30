@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["ollama_embed","ollama_generate","ollama_generate_json","ollama_is_available","ollama_list_models","read_global_config","write_global_config"],"struct":["ChatMessage","GlobalLlmConfig","LlmChat","LlmTemplate"]};

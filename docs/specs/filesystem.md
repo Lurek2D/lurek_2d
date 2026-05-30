@@ -25,56 +25,61 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 
 ### async_loader.rs
 
-- Background file I/O via a dedicated worker thread and bounded request queue.
-- Non-blocking read and write requests returning opaque handles for polling.
-- Capacity-limited channel with graceful overflow reporting.
-- Thread-safe result storage consumed by callers through poll methods.
-- Automatic worker shutdown and join on drop.
+- Provides background file I/O through a dedicated worker thread and bounded request channel.
+- Supports non-blocking read and write scheduling with opaque handles for later status polling.
+- Stores results in thread-safe maps so callers can retrieve outcomes without blocking producers.
+- Enforces queue capacity limits to keep memory and scheduling pressure under control.
+- Handles worker lifecycle shutdown cleanly when the loader is dropped.
+- Delivers asynchronous file transfer behavior for systems that must avoid main-thread stalls.
 
 ### file_data.rs
 
-- Pair raw file bytes with the logical path they were loaded from.
-- Provide length, emptiness, and UTF-8 decode helpers on the cached payload.
-- Serve as the common return type for GameFS load operations.
+- Provides a lightweight file payload container pairing logical paths with loaded raw bytes.
+- Exposes basic size, emptiness, and UTF-8 decode helpers for convenient caller-side consumption.
+- Delivers the shared data object returned by filesystem read operations.
 
 ### file_handle.rs
 
-- Buffered file handle abstraction for GameFS read, write, and append streams.
-- Mode-based state machine: Read, Write, Append, or Closed.
-- Resolves logical game paths through GameFS before opening OS files.
-- Provides line-oriented and byte-oriented read APIs with EOF detection.
-- Seek, tell, flush, and auto-close on drop for safe resource cleanup.
+- Provides buffered file-handle behavior for mode-aware read, write, and append stream operations.
+- Resolves logical game paths through GameFS before touching host filesystem resources.
+- Exposes byte and line reading utilities with EOF-aware iteration semantics.
+- Supports seek, tell, flush, and explicit close workflows for predictable stream control.
+- Enforces access-mode checks so invalid operation mixes fail with clear runtime errors.
+- Delivers safe per-file I/O primitives used by script APIs and engine persistence code.
 
 ### mod.rs
 
-- Virtual filesystem with layered mounts (directory, ZIP archive).
-- Async file loading queue with handle-based status polling.
-- Buffered file I/O with read, write, and append modes.
-- File modification watcher for hot-reload workflows.
+- Provides the high-level filesystem module boundary for virtual mounts, async loading, and file handle access.
+- Connects path resolution, buffered I/O, watch support, and archive overlays into one storage surface.
+- Delivers the core file-service layer used by runtime systems and script-facing persistence flows.
 
 ### vfs.rs
 
-- Virtual filesystem (GameFS) rooted at a game directory with read and write operations.
-- Overlay mount system that layers additional source directories under virtual prefixes.
-- Path-traversal rejection and save-directory write confinement for sandboxed access.
-- JSON validation helpers, file metadata queries, glob matching, and temp-file creation.
-- Recursive and flat directory listing with merged overlay results.
-- File handle creation, copy, move, and remove operations within the save boundary.
-- Captures functional behavior for vfs so callers can compose this capability safely.
-- Provides additional operational detail for vfs workflows in filesystem.
+- Provides the core virtual filesystem implementation rooted at a game directory and save space.
+- Resolves read and write paths through mount overlays and base-root fallback rules.
+- Enforces traversal rejection and write confinement to preserve sandboxed filesystem behavior.
+- Exposes metadata, glob, list, copy, move, and removal operations under one coherent API.
+- Supports layered directory and archive mounts with deterministic conflict resolution order.
+- Builds file-handle and async-loader integration points over canonical resolved paths.
+- Includes JSON helpers and temporary file utilities for common content and tooling workflows.
+- Normalizes separators and path shapes to keep behavior stable across desktop platforms.
+- Keeps mount metadata explicit so runtime systems can inspect and reason about storage topology.
+- Delivers the authoritative storage-routing layer consumed by higher-level filesystem services.
 
 ### watcher.rs
 
-- Poll-based file watcher that detects modification-time changes on registered paths.
-- Maintains a path→mtime cache and reports diffs on each poll cycle.
-- Supports watch/unwatch, forced invalidation, and empty-state queries.
+- Provides poll-based file watch behavior that detects mtime changes for registered paths.
+- Maintains cached modification snapshots and reports deterministic change sets per poll cycle.
+- Supports watch, unwatch, and forced invalidation workflows for runtime refresh control.
+- Delivers a lightweight change-detection utility for assets and config reload pipelines.
 
 ### zip_mount.rs
 
-- ZIP-backed virtual filesystem mount with path-indexed entry lookup.
-- Reads individual files from a ZIP archive on demand without full extraction.
-- Normalizes virtual paths and rejects directory-traversal attempts.
-- Captures functional behavior for zip mount so callers can compose this capability safely.
+- Provides ZIP-backed virtual mount behavior that maps normalized virtual paths to archive entries.
+- Builds an index for fast repeated lookups while reading files on demand without full extraction.
+- Enforces traversal-safe path handling before archive access to maintain sandbox guarantees.
+- Supports listing and existence checks over mounted archive content through a unified interface.
+- Delivers archive overlay functionality used by the virtual filesystem mount stack.
 
 ## Lua API Ref
 
@@ -134,9 +139,9 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 
 ### Types
 
-
 #### LFileData Type
 
+- Lua-side handle for immutable file bytes and their source path.
 
 ##### Fields
 
@@ -150,9 +155,9 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `LFileData:type`: Returns the Lua-visible type name for this file data handle.
 - `LFileData:typeOf`: Returns whether this file data handle matches a supported type name.
 
-
 #### LFileHandle Type
 
+- Lua-side handle for a mutable file stream opened through GameFS.
 
 ##### Fields
 
@@ -173,9 +178,38 @@ To prevent blocking the main engine thread during expensive I/O operations, the 
 - `LFileHandle:typeOf`: Returns whether this file handle matches a supported type name.
 - `LFileHandle:write`: Writes a string to this file handle.
 
+#### LFilesystemGetInfoResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `modtime` (`integer`): Modification time.
+- `readonly` (`boolean`): Whether the file is read-only.
+- `size` (`integer`): Size in bytes.
+- `type` (`string`): File type.
+
+##### Methods
+
+- No documented methods.
+
+#### LFilesystemStatResult Type
+
+- Generated result shape from @field tags.
+
+##### Fields
+
+- `isDir` (`boolean`): Whether the path is a directory.
+- `isFile` (`boolean`): Whether the path is a file.
+- `size` (`integer`): Size in bytes.
+
+##### Methods
+
+- No documented methods.
 
 #### LZipMount Type
 
+- Lua-side handle for a mounted ZIP archive view.
 
 ##### Fields
 

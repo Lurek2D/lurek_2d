@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["database_from_json","from_binary","from_csv","from_json"]};
+window.SIDEBAR_ITEMS = {"fn":["from_binary","from_csv","from_json"]};

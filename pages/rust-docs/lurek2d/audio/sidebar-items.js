@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["bus","decoder","facade","mixer","pool","sound_data","source"]};
+window.SIDEBAR_ITEMS = {"mod":["beat_clock","bus","decoder","facade","mixer","pool","sound_data","source"]};
