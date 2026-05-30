@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `mods` module manages mod discovery, validation, dependency order, sandboxing, and hot-reload for user-generated content.
+- The `mods` module manages the full mod lifecycle: discovery, manifest checks, dependency order, sandbox policy, and reload workflows.
 
 ## General Info
 
@@ -16,15 +16,17 @@
 
 ## Summary
 
-The `mods` module is the engine runtime for user-generated content lifecycle management. It discovers mod packages, parses manifests, validates metadata, and keeps mod state organized through one manager surface.
+The `mods` module is the runtime governance layer for user-generated content. It gives one controlled path to discover mod packages, read their manifests, validate their metadata, and register them for use.
 
-Dependency handling is a core responsibility. The module resolves required mod relationships, detects missing or cyclic links, and computes deterministic load order so startup behavior is stable across runs.
+Its central value is safe and deterministic loading. The module resolves dependency chains, detects missing or circular links, and computes stable load order so startup behavior is reproducible across machines and sessions.
 
-Capability and API checks are built in through schema and registry support. This helps ensure mods request known engine surfaces and stay within declared sandbox boundaries before script execution begins.
+Policy checks are part of the same flow. Declared capabilities and API requirements are validated before execution, which helps keep mods inside known boundaries and reduces runtime surprises from undeclared engine access.
 
-Runtime operations include enabling, disabling, and hot-reload style refresh flows. This allows developers and players to iterate on content quickly without rebuilding the whole game session for every change.
+Lifecycle operations are handled through one manager model: register, enable, disable, scan, and reload. This supports fast iteration for authors while preserving a single authority over active mod state.
 
-In practice, `lurek.mods` provides one consistent contract for mod governance: discover packages, validate constraints, apply ordered loading, enforce sandbox policy, and maintain content registry integration.
+Sandbox integration keeps execution constraints attached to each mod identity, including namespace and file-access boundaries. Combined with content registry support, this lets mods expose assets and hooks in a structured way.
+
+In practice, `lurek.mods` provides one complete contract for mod lifecycle management: discover, validate, order, activate, and maintain mods under predictable runtime policy.
 
 ## Imports
 

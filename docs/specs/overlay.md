@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `overlay` module manages screen-space presentation effects such as weather, atmosphere, flash, shake, fade, transitions, and water distortion.
+- The `overlay` module manages screen-space presentation effects in one controller: weather, atmosphere, flash, shake, fade, transitions, and water distortion.
 
 ## General Info
 
@@ -16,17 +16,17 @@
 
 ## Summary
 
-The `overlay` module is the screen-space effects layer between world rendering and HUD presentation. It centralizes effect state and updates so scenes can combine visual atmosphere and feedback without spreading logic across many systems.
+The `overlay` module is the full-screen presentation layer that sits above world drawing and below final UI composition. It centralizes visual effect state so projects can apply atmosphere and feedback consistently without scattering effect logic across scenes.
 
-Its runtime covers several effect families in one controller: weather particles, fog and cloud-like atmosphere, flash and shake reactions, fade behavior, transition styles, and water distortion overlays.
+Its core role is to manage multiple effect families through one runtime controller: weather particles, fog and cloud ambience, flash and shake reactions, fades, transition effects, and water-style distortion.
 
-Ambient tint and time-of-day style control are integrated as part of the same surface, with helpers to keep overlay ambience aligned with lighting state when needed.
+Ambient color and time-driven mood control are integrated into the same surface. This helps teams align screen-space ambience with broader lighting context while keeping control in one place.
 
-Effects are time-driven and script-triggerable, so teams can fire short reactions or run long-lived environmental layers through one API. This supports both gameplay feedback and cinematic presentation flow.
+Effects can be triggered as short reactions or sustained as long-lived environmental layers. Because updates are time-based and stateful, the same API can support gameplay feedback, cinematic transitions, and persistent scene mood.
 
-Output is provided as render commands and image-oriented debug previews, which keeps integration flexible across compositor and tooling paths. In practice, `lurek.overlay` provides one consistent contract for dynamic full-screen presentation effects.
+The module also supports practical output workflows. It can emit render commands for normal runtime composition and produce image-style previews for tooling and diagnostics.
 
-This makes presentation behavior easier to maintain as projects grow, because effect logic stays centralized instead of being duplicated across scene-specific scripts.
+In practice, `lurek.overlay` provides one stable contract for dynamic presentation effects: schedule, update, and render screen-space ambience and feedback with predictable behavior.
 
 ## Imports
 

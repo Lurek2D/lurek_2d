@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `mapblock` module builds tilemaps from reusable block prefabs using scripted steps and edge-compatibility constraints.
+- The `mapblock` module builds larger tilemaps from reusable block pieces, with scripted placement rules and edge constraints that keep joins coherent.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `mapblock` module is a procedural map assembly system based on reusable block prefabs. Each block carries tile payload and edge semantics, so larger maps can be constructed from authored pieces instead of drawing every tile manually.
+The `mapblock` module is a structured map-construction system for tile worlds built from reusable prefab blocks. Instead of painting every cell by hand, teams define block pieces once and assemble larger maps through repeatable script steps.
 
-Generation is script-driven. Ordered steps define where to fill, what groups to sample, when to place explicit blocks, and when to repeat nested operations. This gives teams deterministic control with optional weighted randomness.
+Its main functional value is controlled procedural assembly. Scripts describe placement flow in explicit order, including region fills, targeted placement, random sampling, and repeat patterns. This gives predictable map shape with enough variation for replay and content diversity.
 
-Constraint checks are built into placement logic. Neighbor edges must be compatible, which helps keep roads, rivers, and other structural connections coherent during automatic generation.
+Compatibility checks are part of the placement core. Neighbor edges must match declared rules, so generated seams stay logical and connected. This is important for paths, walls, channels, and other features that must continue cleanly across block boundaries.
 
-Blocks can be grouped by theme and mapped through shared tileset references, so one generation script can produce varied biome-like regions while still using a manageable asset workflow.
+The module also supports practical production grouping. Blocks can be organized by theme and routed through shared tileset references, so one generation program can build multiple visual styles without rewriting the generator logic.
 
-The module also supports multi-level maps and orientation-aware output. In practice, `lurek.mapblock` provides one complete contract to author blocks, run constrained assembly scripts, and export stable tilemap results for runtime use.
+Layered and orientation-aware output keeps the same assembly model useful for different presentation targets. In practice, `lurek.mapblock` provides one complete pipeline: define blocks, apply constrained scripts, and produce stable runtime tilemap data.
 
 ## Imports
 

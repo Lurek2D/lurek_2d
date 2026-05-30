@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- Province is a GENERIC rendering/property system. Economy logic lives in `library/province_economy/`.
+- The `province` module is the engine runtime for irregular region maps, including registry state, topology, styles, visibility, and map rendering support.
 
 ## General Info
 
@@ -16,13 +16,21 @@
 
 ## Summary
 
-The `province` module is an advanced Edge/Integration tier subsystem that provides a complete, engine-native province map runtime, tailor-made for grand strategy and map-painting games in Lurek2D. Operating independently of tilemaps, it manages irregular, pixel-perfect regions using a `ProvinceRegistry`. This registry acts as the central source of truth, storing metadata for each province—including ownership, terrain type, border styles, capital coordinates, label anchors, and arbitrary string attributes. At its core, the registry maintains a `ProvinceGraph` that tracks undirected adjacencies, allowing for rapid topological queries (e.g., neighbor enumeration) and game-defined border types registered from Lua (e.g., land, coast, river — defined per-game rather than hardcoded).
+The `province` module is the runtime map system for irregular region-based worlds. It manages province identity, adjacency, ownership-facing metadata, and visual state in one authoritative registry designed for strategic and map-centric gameplay.
 
-A standout feature of the module is its highly optimized rendering pipeline. To avoid the overhead of per-pixel evaluation at runtime, a `ProvinceGeometryCache` pre-computes horizontal cell spans, bounding boxes, and border line segments. These structures are packed into a `ProvinceGpuRecord` (a std430-friendly 32-byte payload) for direct GPU upload. Rendering is driven by customizable `ProvinceMapMode`s (such as Political, Terrain, or Visibility), mapping a `ProvinceStyle` to specific fill colors. The module handles viewport culling, screen-to-map transformations, and zoom-to-anchor logic, seamlessly generating render commands for solid fills, border strokes, capital icons, and shadowed text labels.
+Its core value is treating provinces as semantic regions rather than tile cells. Registry data includes topology, per-province properties, labels, capitals, style choices, and visibility/fog-like state, so gameplay and UI can query one consistent source of truth.
 
-Border rendering also supports per-adjacency overrides through `setBorderPairStyle(a, b, style)`. A style can define an optional RGBA override color, a custom line thickness, and semantic flags (`country`, `alliance`, `war`, `truce`). Strategic view can filter to coastlines and country-marked borders, while tactical view draws full detail. Tactical mode can also emit road segments between capitals of visible adjacent provinces.
+Rendering is driven by precomputed geometry and map-mode policy. Region spans, borders, and style records are prepared for efficient draw and GPU upload paths, which keeps large political maps practical without per-frame full raster scans.
 
-The import pipeline is equally robust, automatically converting color-coded PNG maps and RGB CSV metadata into structured registry data. It includes a marker sanitization step that strips out capital (near-white) and label (magenta) pixels, reassigning them to the correct province while computing optimal label line vectors via expanding-ring neighbor searches. To support game logic, the registry employs a monotonic revision counter and change-stream (`get_changes_since`), emitting fine-grained deltas whenever a province's color, terrain, or fog state mutates. Exposed entirely through the `lurek.province.*` API, this module provides the complex topological, visual, and event-driven infrastructure required for high-performance interactive cartography.
+Border behavior supports pair-specific semantics and styling, allowing relationships between neighboring provinces to be encoded visually. This supports strategic overlays such as contested borders, alliance edges, or coast/land distinctions.
+
+Import and conversion workflows turn color-coded assets and metadata into live province runtime state. Marker cleanup, topology extraction, and geometry preparation are integrated so external map files become immediately usable by gameplay systems.
+
+Incremental revision and change-stream support make the module suitable for reactive UI and sync-oriented workflows. In practice, `lurek.province` provides a complete province-map contract: ingest regions, manage state, render modes, and query topology through a single API surface.
+
+This makes the module practical as both a game-state layer and a presentation layer. Systems that reason about control, diplomacy, route planning, or region status can rely on the same province model that the renderer and UI use, which reduces duplication and mismatch between logic and map visuals.
+
+It also gives one stable place to evolve cartographic features over time without splitting map truth across unrelated subsystems.
 
 ### Visibility Rendering Contract
 

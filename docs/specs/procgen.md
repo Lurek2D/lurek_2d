@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `procgen` module is a versatile Feature Systems tier library dedicated to procedural content generation in Lurek2D.
+- The `procgen` module provides deterministic world-generation algorithms for terrain, dungeons, graphs, names, tilings, and cellular simulations.
 
 ## General Info
 
@@ -16,11 +16,23 @@
 
 ## Summary
 
-It offers a rich suite of deterministic, headless-testable algorithms for creating diverse game worlds, terrains, and structures. Central to the module is a robust `NoiseGenerator` built on an internal seeded Linear Congruential Generator (LCG). It supports 2D/3D/4D Perlin and Simplex noise, as well as 2D/3D Worley (cellular) noise with various distance metrics. These base noises can be combined using fractal combinators like Fractal Brownian Motion (FBM), ridged multifractal, and turbulence, and deformed via domain warping. For map generation, `procgen` provides sequential and parallel (`rayon`-powered) heightmap generation with options for hydraulic erosion, which can then be classified into dynamic biomes (e.g., ocean, desert, forest) via the `BiomeClassifier`.
+The `procgen` module is the engine's deterministic content-generation toolbox. It combines low-level seeded randomness with higher-level generators so teams can create reproducible maps, structures, and patterns from data-driven rules.
 
-The module also excels at dungeon and interior generation. The `BspDungeon` generator uses Binary Space Partitioning to recursively divide space and carve rooms connected by L-shaped corridors. Alternatively, the `rooms_dungeon` generator places random non-overlapping rooms. Both systems support a prefab stamping feature that cleanly pastes named template shapes into qualifying rooms in a round-robin fashion. For organic caves, the `cellular_automata` generator applies birth/survival rules to a grid to form natural-looking caverns.
+Terrain and field generation are core strengths. Noise families, fractal combinations, warping, and heightmap utilities provide continuous scalar worlds that can be eroded, classified into biomes, and converted into gameplay-usable surfaces.
 
-For advanced world-building, `procgen` includes a `world_graph` subsystem for generating overworld node topologies, complete with A* pathfinding and Kruskal's minimum spanning tree algorithms. It also features a Wave Function Collapse (`wfc`) solver for constraint-based tile placement, Voronoi tessellation for regional partitioning, and Poisson-disk sampling for natural, evenly-spaced object distribution. L-systems provide string-rewriting and turtle-graphics interpretation for generating fractal trees or road networks. Finally, a Markov-chain `NameGen` creates plausible, random names trained on input word corpora. All these algorithms are thoroughly exposed to Lua via the `lurek.procgen.*` API, enabling script developers to construct infinitely varied, reproducible game content on the fly.
+Interior and dungeon generation are also first-class. BSP and room-based generators support layout construction, corridor linking, and prefab stamping, while cellular approaches produce cave-like structures from local rules.
+
+For region and structure synthesis, the module includes Voronoi partitioning, world-graph helpers, WFC-style constraint placement, Poisson sampling, and L-system generation. This lets projects mix geometric, probabilistic, and grammar-based methods in one workflow.
+
+The module is useful both for runtime generation and offline content workflows. Teams can generate deterministic outputs for builds, previews, and tests, then reproduce the same world state later by seed and config. This reduces debugging friction and helps synchronize design discussion around stable outputs.
+
+It also supports layered generation pipelines. A project can start from broad terrain shape, then add biome semantics, then carve structures, then populate details such as points of interest and names. Because these stages live in one module family, outputs stay compatible and easy to pass forward.
+
+Another practical advantage is method diversity under one deterministic base. Teams can combine noise-driven terrain, rule-based tiling, graph-like region logic, and grammar-style generation in one workflow, then tune style by configuration instead of rewriting systems. This keeps experimentation fast while preserving repeatability.
+
+Supporting utilities such as naming generation, flood-fill extraction, and serializable grid outputs make the module practical for runtime systems, tooling, and offline build pipelines.
+
+In practice, `lurek.procgen` provides a complete procedural pipeline surface: seed generation, build spatial structure, classify and refine outputs, and export deterministic data for gameplay integration.
 
 ## Imports
 

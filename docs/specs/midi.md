@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `midi` module handles MIDI playback and SoundFont-backed synthesis with transport and channel controls.
+- The `midi` module provides MIDI playback with SoundFont synthesis, including transport controls and channel-level mix behavior.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-The `midi` module handles MIDI sequencing and SoundFont synthesis for runtime playback.
+The `midi` module is the runtime playback layer for MIDI content inside the engine audio stack. It separates song transport from instrument sample state, so playback flow and synthesis resources remain predictable.
 
-It provides transport controls and channel-level settings through a dedicated player surface, while SoundFont resource state is managed separately for predictable synthesis behavior.
+Its core function is practical control over sequence playback. Scripts can create player instances, start and stop songs, pause and resume, seek position, and inspect duration or status without managing low-level audio thread details.
 
-In practice, `lurek.midi` keeps MIDI workflows isolated, scriptable, and compatible with the wider audio pipeline.
+SoundFont handling is part of the same module contract. Loading and clearing synthesis banks are explicit operations, which helps keep instrument state stable between tracks and avoids hidden setup behavior.
+
+Channel-level behavior can be adjusted for mix workflows, including per-channel volume and mute/solo style control paths. This allows game logic and tools to adapt playback for debugging, composition checks, and dynamic music behavior.
+
+In practice, `lurek.midi` provides one scriptable MIDI surface for sequencing, synthesis setup, and runtime transport control that integrates cleanly with the broader audio pipeline.
 
 ## Imports
 

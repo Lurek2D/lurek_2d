@@ -30,6 +30,8 @@ Integration flexibility is another key benefit. Different systems can start with
 
 Because parameter handling is standardized, experimentation and deployment use the same model lifecycle. Teams can iterate in controlled training loops, export stable state, and reuse those artifacts in live gameplay or tooling runs with minimal friction.
 
+This also improves long-term maintainability, because model interfaces, persistence paths, and optimization hooks stay aligned under one module contract.
+
 In practice, `lurek.learning` gives one complete learning workspace: define environments, build models, run inference, evolve parameters, and persist state through consistent Lua-facing APIs.
 
 ## Imports

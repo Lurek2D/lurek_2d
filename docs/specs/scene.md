@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `scene` module is a versatile Feature Systems tier component that manages the active game state hierarchy using a robust stack-based architecture.
+- The `scene` module controls game flow with a stack model: move between states, run transitions, keep shared context, and keep scene lifecycle behavior predictable.
 
 ## General Info
 
@@ -16,11 +16,17 @@
 
 ## Summary
 
-It provides the structural backbone for Lurek2D games by coordinating transitions between distinct game states, such as main menus, gameplay levels, and pause screens. The core `SceneStack` maintains the active scene hierarchy. Pushing a new scene pauses the underlying scene, while popping it resumes the previous one. The module supports overlay scenes for logic flow, but rendering now follows a strict engine-level rule: **only the top scene is render-active**.
+The `scene` module is the flow controller for game states. It gives one consistent way to move between menu, gameplay, pause, and result screens, while preserving clear state transitions over time. Instead of manual table swaps in many scripts, teams can rely on one stack model that defines what is active now, what was suspended, and what should resume next.
 
-Visual polish is heavily emphasized through built-in transition effects. When switching scenes, developers can apply animated transitions (including fade, wipe, slide, dissolve, pixelate, and iris effects) with configurable durations and mathematical easing curves (like bounce or back-overshoot). To ensure correct visual layering, the module features a highly optimized `DepthSorter`. This component adaptively selects the most efficient sorting strategy (unstable, stable, radix, or even multi-threaded rayon parallel sorting for 10k+ entries) based on the number of draw calls, ensuring that sprites and UI elements are rendered strictly front-to-back according to their assigned depth values.
+Functionally, this module keeps scene lifecycle behavior stable. Enter, leave, pause, resume, and frame callbacks follow one predictable sequence, which reduces hidden edge cases when projects grow. The same control surface also lets teams freeze selected callback families per scene, so they can pause parts of logic intentionally without tearing scene state apart.
 
-The `scene` module also acts as a central registry and shared data bus. Scenes can be registered by string names, allowing for direct navigation (e.g., `popTo` a specific scene) or deferred loading via `pushPreloaded`, which is ideal for breaking up heavy asset initialization. Furthermore, the stack provides shared data slots, enabling scenes to pass state variables (like selected level indices or player choices) between each other without relying on fragile global variables. Game logic is driven by a deterministic callback lifecycle (`enter`, `leave`, `pause`, `resume`, `update`, `process`, `processPhysics`, `processLate`), and each callback family can be frozen/unfrozen per scene via `set*Enabled` APIs. Rendering remains separated into world-space (`render`) and screen-space (`renderUi`) passes, but both passes render only the current top scene. Exposed via the `lurek.scene.*` API, this module offers a complete solution for structuring complex, multi-state game flows.
+Transition handling is built into the same runtime path, so state changes can be presented as controlled motion rather than abrupt jumps. Fade, slide, wipe, iris, and other effects are not separate custom systems; they are part of the scene contract. This makes cinematic flow and UX polish easier to maintain, because navigation and transition timing live in one place.
+
+The module also supports practical orchestration patterns needed in larger games. Scenes can be registered by name, preloaded lazily, pushed as overlays, replaced in place, or popped back to a known target. Shared scene data keys provide a direct handoff channel between states, so scripts can pass values like selected mode, checkpoint id, or UI intent without depending on broad global state.
+
+Rendering policy is explicit and consistent with stack control: scene logic can involve overlays and layered activity, while render-active output remains deterministic. Depth sorting utilities are available for ordered drawing inside scene rendering flows, helping teams keep visual layering stable across dense sprite and UI compositions.
+
+In practice, `lurek.scene` is the module that turns "screen flow" into a disciplined runtime system. It combines navigation, lifecycle, transition sequencing, shared context, and draw-order support so both small games and complex multi-screen projects can evolve without scene-management chaos.
 
 ## Imports
 

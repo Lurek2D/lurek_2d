@@ -38,6 +38,10 @@ For simulation and gameplay logic, consistency matters as much as feature count.
 
 In tooling contexts, the same math contract enables repeatable editor behavior and reproducible diagnostics. That reduces surprises when the same data is viewed, edited, or simulated through different runtime paths.
 
+By serving both low-level primitives and practical higher-level helpers, the module lets teams move from raw calculations to production-ready geometry and motion behavior without leaving a consistent numerical model.
+
+This shared base reduces numerical drift between systems.
+
 In practice, `lurek.math` is the shared numerical contract for the whole project: compute motion, evaluate geometry, organize space, shape time-based transitions, and drive procedural systems through one stable API surface.
 
 ## Imports

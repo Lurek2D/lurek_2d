@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `save` module is an essential Feature Systems tier component that provides a robust, slot-based persistent save management system for Lurek2D.
+- The `save` module gives one safe, slot-based save flow for games: collect state from many systems, persist it, migrate old versions, and restore it reliably.
 
 ## General Info
 
@@ -16,11 +16,15 @@
 
 ## Summary
 
-It enables developers to reliably save and load game state with built-in support for compression, file rotation, and schema versioning. The architecture is built around the `SaveManager`, which coordinates persistence using a named-section approach. Developers register game modules (like inventory, player stats, or level state) by assigning a string name and providing paired `collect` and `restore` Lua callback functions. During a save operation, the manager queries these collectors to gather the current game state as a Lua table; during load, the state is passed back via the restorers.
+The `save` module is the persistence contract for gameplay state. It lets teams collect data from many systems, store it in named slots, and restore it later through one stable flow.
 
-To optimize performance and minimize disk wear, the system employs dirty tracking. Writes are entirely skipped unless the state is explicitly marked as dirty (changed). An auto-save scheduler can be configured to automatically persist the dirty state to a designated slot at regular intervals. When writing to disk, the `save` module uses a custom serialization format that converts Lua tables into a Rust `SaveValue` tree, emitting valid Lua-literal text. To ensure small file sizes, this text is subsequently compressed using LZ4 and Base64 encoded before being written. The manager also handles slot file rotation, automatically maintaining a configurable number of backup copies for data safety.
+Instead of forcing one monolithic save script, it supports section-based collection and restore callbacks. This keeps save ownership close to each gameplay feature while still producing one coherent save payload.
 
-Crucially, the module provides robust tools for long-term game maintenance via schema versioning and data migrations. Each save file is stamped with a schema version number. If the game is updated and the schema advances, registered migration functions are automatically invoked in sequence to upgrade older save data to the current schema before it is handed back to the `restore` callbacks. Additionally, the system generates lightweight `SlotMeta` metadata for each save slot—including timestamps, play time, and human-readable summary strings (e.g., 'Level 5 – Forest')—enabling UI save-select screens to display save info instantly without needing to deserialize the entire game state. The comprehensive `lurek.save.*` API gives Lua scripts full control over this powerful persistence engine.
+Write behavior is practical for runtime use: state can be marked dirty, unnecessary writes can be skipped, and auto-save can run on interval. This protects progress without constant disk churn.
+
+Slot metadata is available without full data load, so save-selection UI can show summaries and timestamps quickly. Backup rotation and compression are integrated to improve resilience and reduce storage cost.
+
+In practice, `lurek.save` gives one managed persistence layer: collect, persist, migrate and restore state predictably
 
 ## Imports
 

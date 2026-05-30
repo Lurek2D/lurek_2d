@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `parallax` module is a dedicated Feature Systems tier component that implements a highly configurable, multi-layer scrolling background system for Lurek2D.
+- The `parallax` module provides layered background motion with depth-based scrolling, auto-scroll, and render batching for 2D scenes.
 
 ## General Info
 
@@ -16,11 +16,13 @@
 
 ## Summary
 
-It allows developers to easily create a deep sense of 2D perspective by stacking multiple textured layers that scroll at varying speeds relative to camera movement. The core of this system is the `ParallaxLayer`, which defines a single depth plane. By assigning a scroll speed multiplier to each layer (where 0.0 represents a distant static background and 1.0 moves precisely with the camera), the system automatically handles the complex camera-relative pixel offset computations necessary for convincing parallax effects. Layers are sorted back-to-front by their assigned Z-depth, with the lowest scroll factors naturally appearing furthest away.
+The `parallax` module controls layered background motion for 2D scenes. Its main role is to make depth readable by letting distant and near planes move at different rates while the camera moves.
 
-In addition to camera-driven motion, the module features an independent auto-scroll mechanic. This allows layers to maintain a constant baseline velocity regardless of player movement, which is essential for animating ambient atmospheric elements like drifting clouds, flowing water, or moving starfields. The rendering pipeline of the `parallax` module is deeply optimized. It automatically computes `ParallaxDrawBatch`es, utilizing a sophisticated `tile_iter` algorithm to calculate the precise grid of visible repeating tiles required to fill the viewport (plus a safety cull margin). This avoids allocating vast repeating grids and instead generates lightweight, stateless `RenderCommand` sequences for GPU submission.
+Functionally, it gives one shared model for background layers: per-layer speed response, visibility, color treatment, repeat behavior, and optional automatic drift. This lets teams build sky bands, fog, distant silhouettes, and front overlays with stable behavior rules.
 
-The visual fidelity of parallax layers can be further customized per-layer. It supports dynamic opacity adjustments, RGBA tinting, and various accumulation blend modes (such as additive or screen). Advanced visual features include a motion-stretch blur effect, which procedurally stretches layer tiles based on their auto-scroll velocity to simulate high-speed motion. For ease of use, the module includes a `presets` system offering ready-made configurations for common depth planes (e.g., far backgrounds, mid-grounds, and foreground fog). Grouped management is provided via `ParallaxSet`s, and the entire feature suite is fully exposed to the Lua environment through the `lurek.parallax.*` API.
+The module also keeps rendering practical for runtime use. It computes only visible repeated tiles for the current view and emits batch-ready draw data, so scrolling backdrops stay predictable in memory and frame cost.
+
+Preset layers improve iteration speed, while direct per-layer tuning keeps art control flexible. In practice, `lurek.parallax` is the background-depth contract: compose layers, animate them coherently, and render them through one consistent API.
 
 ## Imports
 

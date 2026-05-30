@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `pathfind` module is a comprehensive Feature Systems tier library providing a vast array of pathfinding algorithms and spatial reasoning tools for Lurek2D.
+- The `pathfind` module provides grid, graph, flow-field, and navmesh navigation systems with synchronous and async path query support.
 
 ## General Info
 
@@ -16,11 +16,21 @@
 
 ## Summary
 
-It is designed to handle everything from simple grid-based movement to complex, multi-agent AI steering and hierarchical navigation. The foundation of the module is the `NavGrid`, a robust 2D grid structure supporting per-cell walkability masks, integer-based movement costs, and configurable diagonal movement policies (with corner-cutting prevention). On top of this, the module implements classical algorithms like A* (with octile or Manhattan heuristics), Dijkstra's algorithm for cost-weighted reachability, and unweighted BFS. For high-performance uniform-cost grids, it features Jump Point Search (JPS), which dramatically accelerates A* by pruning symmetric neighbors.
+The `pathfind` module is the navigation toolbox for movement and route reasoning across different world representations. It supports cell grids, graph navigation, flow fields, and mesh-like traversal so games can choose the model that fits each system.
 
-To address the challenges of large open worlds and massive agent counts, the module includes several advanced AI pathing techniques. Hierarchical Pathfinding A* (HPA*) partitions grids into chunks, building an abstract graph of boundary entrances to allow near-instant long-distance path planning that is later refined into tile-by-tile routes. For crowd simulation, the `FlowField` and `ai_flow_field` structures precompute directional vectors across a grid toward a specific goal, allowing hundreds of agents to steer smoothly without calculating individual paths. Additionally, the `InfluenceMap` system allows developers to propagate, blend, and decay scalar values across grids—perfect for tactical AI to evaluate threat levels, control zones, or attractive points of interest.
+On grid-based maps, the module provides classic and optimized search paths such as A*, Dijkstra, BFS, and Jump Point Search. Movement rules include costs, blockers, diagonal policies, and clearance constraints, which keeps path outputs aligned with actual gameplay collision assumptions.
 
-Beyond standard square grids, the module offers extensive support for alternative spatial layouts. It includes a fully featured `HexGrid` with cube-coordinate math, supporting both pointy-top and flat-top layouts, alongside specific line-of-sight and field-of-view queries. An `IsoGrid` provides specialized routing for isometric map layouts. For non-grid environments, the `NavMesh` structure allows A* routing across connected arbitrary polygons, extracting smoothed centroid corridors. To ensure pathfinding never stalls the primary game loop, the module features a dedicated `PathThreadPool`, allowing asynchronous, off-thread path requests via non-blocking channels. Finally, the `UnitPathfinder` provides a high-level, stateful wrapper for individual agents, handling path caching, variable unit sizes (clearance checks), partial paths, and string-pull smoothing. The entire suite is accessible via the `lurek.pathfind.*` Lua API.
+For larger maps and multi-agent workloads, it includes hierarchical and field-based techniques. HPA-style abstraction reduces long-distance search cost, while flow-field navigation lets many agents share directional guidance toward goals.
+
+Alternative layouts are first-class rather than add-ons. Hex and isometric helpers provide layout-specific queries, and graph/navmesh paths cover non-rectangular or region-based traversal styles.
+
+Beyond shortest-path queries, the module supports planning and control use cases. Distance maps, influence surfaces, visibility checks, and reachability queries help AI decide not only where to go, but also where to hold, avoid, flank, or regroup. This allows one module to support both tactical movement and strategic positioning.
+
+It also scales from single-unit requests to high-volume workloads. Async pools keep expensive path jobs off the main update path, while deterministic polling lets callers integrate results without frame stalls. This is important for games that mix player navigation, NPC routing, and background simulation in the same frame budget.
+
+Debug-facing outputs and utility queries make behavior easier to inspect. Teams can test map assumptions, verify blocked corridors, and audit traversal policies directly through the same API family used in production scripts.
+
+Async execution support keeps heavy path requests off the main loop when needed. In practice, `lurek.pathfind` provides one complete routing contract: represent space, query routes, compute reachability, and integrate deterministic navigation results into AI and gameplay logic.
 
 ## Imports
 

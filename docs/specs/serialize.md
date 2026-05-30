@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `serial` module is a fundamental Foundations tier component providing a format-agnostic serialization and deserialization engine.
+- The `serial` module gives one unified data-conversion layer: read, write, detect, and validate multiple formats through a single Lua-facing API.
 
 ## General Info
 
@@ -16,11 +16,17 @@
 
 ## Summary
 
-At its core, it relies on the recursive `SerialValue` enum—an intermediate type-erased representation—to seamlessly map between native Lua tables and six popular text and binary formats: JSON, TOML, CSV, XML, INI, and MessagePack. This design allows developers to read and write diverse data sources using a unified API without worrying about the underlying parsing mechanics. The module features an intelligent auto-detection system that inspects content bytes to automatically guess the correct `SerialFormat` during decoding, making it exceptionally robust for loading arbitrary user-provided files or unknown network payloads.
+The `serial` module is the shared data bridge between Lua values and external file or payload formats. It gives one consistent workflow for decode, encode, and format routing across game runtime and tools.
 
-Each format codec is highly specialized to handle the nuances of its specific specification. For instance, the CSV parser efficiently handles headers, custom delimiters, quoting, and multi-line fields, easily mapping between spreadsheet rows and Lua arrays of tables. The TOML and INI parsers support deep nesting and sections, perfect for configuration files. The XML parser correctly interprets attributes and text nodes, crucial for importing complex assets like Tiled map exports. For performance-critical paths—such as save states or network synchronization—the MessagePack codec provides fast, compact binary encoding that significantly outperforms text formats in both speed and size.
+Its practical advantage is uniform handling of mixed formats. JSON, TOML, CSV, XML, INI, and MessagePack are exposed through one API family, so scripts keep one interaction style instead of many format-specific paths.
 
-Beyond simple format translation, the module includes a powerful schema validation system. Developers can define typed constraints to validate `SerialValue` trees against expected shapes, enforcing required fields, numeric ranges, and string lengths before the data reaches game logic. Additionally, the schema system can apply default values to automatically fill missing fields, ensuring backwards compatibility with older save files or partial configurations. Coupled with seamless bi-directional conversion between `SerialValue` and the Lua runtime, the `lurek.serial.*` API equips developers with an extremely versatile and reliable data pipeline for config loading, state persistence, and external tool integration.
+The module also improves ingestion reliability. It can detect format when content source is unknown, and it keeps conversion boundaries explicit between dynamic Lua data and serialized payload representations.
+
+Validation and defaults are first-class features. Schemas can reject malformed structures early, while default filling can complete partial inputs before gameplay systems consume them.
+
+For performance-sensitive workflows, compact binary transport is available through MessagePack without leaving the same module contract.
+
+In practice, `lurek.serial` is the engine data-gateway layer: normalize payloads, verify structure, and return predictable Lua-ready data for configs, saves, and external integrations.
 
 ## Imports
 

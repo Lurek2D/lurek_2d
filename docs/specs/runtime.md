@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `runtime` module forms the very foundation of the Lurek2D dependency graph.
+- The `runtime` module is the engine core for shared state, configuration, modes, errors, and cross-system coordination.
 
 ## General Info
 
@@ -16,19 +16,19 @@
 
 ## Summary
 
-As a Core Runtime tier component, it defines the essential shared state, engine configuration, unified error handling, and structured logging mechanisms upon which every other engine subsystem relies. At the heart of the module is `SharedState`, a central, mutable state container accessed via `RefCell` borrows. It orchestrates cross-module communication during a frame, tracking window state, input aggregation, timing profiles, asynchronous file I/O (GameFS), render pipeline configurations, and managing slot-map resource pools (textures, fonts, shaders, particle systems, etc.) while enforcing memory budgets via LRU eviction.
+The `runtime` module is the coordination foundation of the engine. It defines the shared state and startup policy that other modules depend on, so frame execution, resources, and system services can stay synchronized.
 
-Configuration is driven by the `Config` struct, which parses the `conf.toml` file at startup. It dictates window settings, renderer preferences, performance caps (like Lua callback timeouts), and feature-toggles (`ModulesConfig`) that selectively load or auto-disable engine subsystems based on prerequisites. The runtime actively supports hot-reloading for many configuration values, allowing live tweaks to target FPS, physics ticks, log levels, and viewport settings without restarting the game. The module also robustly handles different startup modes (`gui`, `tui`, `headless`, `cli`), with the headless path specifically designed for script automation and CI testing without requiring window or audio contexts.
+Its central shared-state model gathers cross-cutting runtime data in one authoritative container. Input snapshots, frame timing, resource pools, async operations, and render-facing queues are coordinated through this hub to avoid fragmented ownership.
 
-Error handling is unified under `EngineError`, an exhaustive enum that categorizes failures across all domains (IO, Lua, GPU, audio, network, physics) with stable, machine-readable codes (e.g., `E1001`) and actionable recovery hints. Complementing this is a comprehensive log message catalog driven by an embedded TOML file. It provides structured, consistent diagnostic output (using codes like `L001` or `G012`) via the `log_msg!` macro. To ensure safe and efficient resource management across the engine, the module defines strongly-typed `slotmap` keys (`TextureKey`, `FontKey`, etc.) that act as lightweight, generationally-checked handles suitable for storage within Lua userdata. Though most of the infrastructure is consumed through higher-level modules, the canonical runtime Lua surface is `lurek.runtime`.
+Configuration and mode handling are also part of the core contract. Startup settings, feature toggles, runtime defaults, and hot-reload-friendly values are parsed and exposed in one typed system that guides subsystem initialization.
 
-### Lua API Bridge and Registration
+Error and diagnostic behavior is unified through common runtime error types and structured log-message mapping. This improves observability by keeping failures and telemetry semantics consistent across module boundaries.
 
-The old `lua_api` spec duplicated this runtime namespace. Its relevant contract now lives here: `src/lua_api/` is the Edge/Integration bridge that creates sandboxed Lua VMs, installs the sealed `lurek` global, and registers every enabled `lurek.*` namespace against the runtime `SharedState`.
+Typed resource keys and runtime metadata helpers provide safe references that can move between Rust and Lua surfaces without exposing internal storage details.
 
-Module registration is trait-based. Each binding file implements a `register(lua, lurek, state)` entry point, and `src/lua_api/register.rs` walks the static `MODULES` slice using `always!` and `gated!` entries. Feature-gated modules that cannot appear in that static slice are registered after the standard pass. Binding files remain translation-only: they parse Lua values, borrow `SharedState`, call domain modules, and convert results back to Lua without owning business logic.
+Because this module owns core coordination rules, it reduces integration drift between systems that run at different frequencies and with different lifecycles. Subsystems can plug into one frame rhythm and one state authority instead of negotiating state transfer in many custom paths.
 
-For the full Lua/Rust boundary design, see [docs/architecture/lua-rust-boundary.md](../architecture/lua-rust-boundary.md).
+In practice, `lurek.runtime` is the engine control spine: initialize policy, host shared mutable state, coordinate frame lifecycle, expose stable diagnostics, and anchor cross-module interaction through one core API surface.
 
 ## Imports
 

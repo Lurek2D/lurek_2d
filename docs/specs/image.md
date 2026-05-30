@@ -28,6 +28,10 @@ Asset pipeline features are included, not externalized. Standard format decode a
 
 The module also supports data-oriented uses of imagery. Region extraction, palette remapping, and visualization helpers let image buffers act as structured inputs for map workflows, diagnostics, and evidence output, not only as final on-screen pictures.
 
+Another practical strength is that the same buffer model works for both tiny UI assets and large content textures. Teams can use identical APIs for quick icon edits, atlas preprocessing, validation snapshots, and heavy batch transforms. This consistency lowers maintenance cost because utility code, tests, and runtime scripts do not need separate image stacks for different asset scales.
+
+It also improves review quality, because visual changes can be reproduced through the same deterministic operations in local runs, CI checks, and debugging tools.
+
 Because the behavior is deterministic and scriptable, the same operations can be reused for gameplay content, CI validation, and developer tooling. In practice, `lurek.image` provides a complete pixel-data contract: ingest, transform, compose, package, and export image state with predictable results.
 
 ## Imports

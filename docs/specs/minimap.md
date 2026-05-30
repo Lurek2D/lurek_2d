@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `minimap` module provides a grid-based tactical map system with terrain layers, fog-of-war, markers, overlays, and render-ready output.
+- The `minimap` module provides a tactical map layer with terrain, fog state, markers, overlays, and render-ready outputs for HUD and tools.
 
 ## General Info
 
@@ -16,15 +16,15 @@
 
 ## Summary
 
-The `minimap` module is the runtime system for compact strategic map views. It maintains its own grid state and converts world information into a readable small-scale representation for HUD and tool interfaces.
+The `minimap` module is the compact map-visualization system for gameplay HUD and development tooling. It keeps its own map state and presents world context in a small, readable format that can update continuously during play.
 
-Its core model includes terrain layers, per-cell color data, and fog-of-war state with hidden, explored, and visible modes. This allows games to express exploration and knowledge clearly without coupling minimap logic to the main world renderer.
+Its functional core combines terrain layers and fog-of-war knowledge states. Hidden, explored, and visible regions are represented directly on the minimap, so exploration progress remains clear without duplicating logic in each UI screen.
 
-Entity and mission feedback are integrated through object points, markers, pings, and overlay shapes. Teams can show tracked units, targets, routes, and alerts using one consistent map surface.
+The module also provides a unified feedback surface for dynamic information. Markers, tracked objects, pings, routes, and shape overlays can be added through one API model, which helps teams keep tactical signals consistent across features.
 
-View behavior is configurable with zoom, panning, viewport framing, and color mode switching. This helps the same minimap system serve both tactical and strategic presentation styles.
+View control supports zoom, center tracking, viewport framing, and mode switching between different map perspectives. This makes one minimap runtime usable for both high-level strategy view and close tactical monitoring.
 
-Output can be generated as image buffers or render commands, which keeps integration flexible across UI paths. In practice, `lurek.minimap` provides one complete contract for map-state display, interaction support, and runtime visual feedback.
+Output paths are flexible: the same state can be rendered as command streams or image buffers, which is useful for runtime UI, previews, and diagnostics. In practice, `lurek.minimap` provides one full contract for map awareness, interaction cues, and screen-space battlefield context.
 
 ## Imports
 

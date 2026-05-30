@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `render` module is a core Platform Services tier subsystem that powers the entire visual output of Lurek2D.
+- The `render` module is the engine's visual backend, translating deferred draw commands into GPU work for shapes, text, textures, meshes, canvases, shaders, and post-effects.
 
 ## General Info
 
@@ -16,11 +16,31 @@
 
 ## Summary
 
-Backed by `wgpu 22`, it utilizes a deferred `RenderCommand` queue architecture. Rather than executing GPU commands immediately during game logic, Lua scripts emit draw commands (for rectangles, circles, lines, polygons, text, textures, and meshes) into a frame-local buffer. At the end of the frame, the `GpuRenderer` sorts these commands by z-order using the `DrawLayer` system, batches compatible operations to minimize state changes, and encodes highly optimized wgpu render passes. This deferred approach ensures that no heavy GPU work stalls the Lua execution thread.
+The `render` module is the engine's visual execution backbone. It receives drawing intent from scripts and systems, keeps that intent in a frame command model, and turns it into ordered GPU work that produces the final image.
 
-The module supports an extensive array of rendering primitives and techniques. It handles both flat-color and textured geometry, advanced compositing via blend modes and stencil write/test operations, and complex nested draw layers. The `Font` system provides built-in Courier New bitmap atlases alongside dynamic TTF/OTF rasterization (via `fontdue`), complete with rich-text styling, word wrapping, and alignment controls. For 3D workflows, the `ObjLoader` seamlessly parses Wavefront OBJ models and MTL materials, projecting them into 2D `Mesh` geometry with back-face culling and Z-buffering. Rendering can target the main window swapchain or off-screen `Canvas` textures, which are essential for layered compositing and UI workflows.
+Its core contract is deferred rendering through one shared command vocabulary. Gameplay code can describe what to draw without issuing low-level GPU operations directly. Later, the backend resolves ordering, batching, state transitions, and pass structure in a single coordinated stage.
 
-A standout feature of the `render` module is its robust `PostFxPipeline`. This full-screen post-processing system supports over 20 built-in WGSL fragment shaders (including bloom, blur, vignette, CRT scanlines, chromatic aberration, pixelation, and depth-of-field). Developers can effortlessly chain these effects using cached ping-pong intermediate textures and even compile and register custom WGSL shaders at runtime via the `Shader` manager, with automatic uniform injection for time and resolution. All GPU resource lifecycles—textures, geometry buffers, and pipelines—are managed automatically and garbage-collected by the engine. The comprehensive `lurek.render.*` Lua API gives script developers complete control over this high-performance rendering pipeline, from simple shapes to complex post-processing stacks.
+This separation is functionally important: feature modules can focus on intent, while render policy stays centralized. As a result, many systems can submit visual output in parallel development flows without each re-implementing buffer policy, blend behavior, or pass sequencing.
+
+The module supports broad visual scope under one API family. Basic primitives, textured draws, mesh content, text rendering, layer-aware ordering, blend and stencil behavior, and depth-related controls are all represented in compatible command forms.
+
+Typography is part of the same contract, not a separate subsystem. Font management, glyph raster paths, and measurement behavior allow UI, debug overlays, and in-world labels to share stable text rules and avoid divergent text pipelines.
+
+Off-screen rendering is integrated through canvas-style targets, which enables composition workflows such as UI staging, intermediate pass rendering, and reusable render surfaces for complex visual assembly.
+
+Post-processing is also built in as a first-class finishing stage. Full-screen effect chains can apply visual style and screen-space treatments after scene draw completion, with built-in and custom shader paths living in one controlled pipeline.
+
+Resource lifecycle is centralized to keep visual execution stable over long sessions. Texture uploads, transient buffers, pipeline variants, and attachment reuse are managed in one backend authority, reducing duplication and state mismatch across modules.
+
+The module is also designed as a shared integration boundary for many feature systems. UI, particles, map renderers, raycaster output, text overlays, and debug tools can all target the same draw grammar and rely on the same backend timing. This matters functionally because visual interoperability is not left to chance; layers from different domains can coexist inside one frame model with predictable ordering and composition.
+
+Another practical benefit is portability of visual workflows. Since command creation is separated from backend execution details, gameplay-side rendering logic can stay stable while backend internals evolve for performance, new effects, or platform maintenance. Teams can improve rendering quality and throughput without rewriting all feature-level drawing code.
+
+This module also supports iterative production work. Artists and developers can tune blend behavior, effect stacks, text presentation, and off-screen composition in stages, while keeping output deterministic enough for debugging and regression checks. The same command stream can be inspected, replayed, and reasoned about as a coherent frame narrative.
+
+Because command grammar and backend execution are unified, debugging and extension are more predictable. New features can target existing render primitives and pass rules instead of adding isolated rendering stacks.
+
+In practice, `lurek.render` is the module that turns frame intent into presented pixels: collect commands, organize passes, manage GPU state, apply composition and effects, and expose one stable rendering surface for the rest of the engine.
 
 ## Imports
 

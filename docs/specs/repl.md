@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `repl` module is a crucial Core Runtime tier component that provides a release-safe, interactive Read-Eval-Print Loop (REPL) for Lurek2D.
+- The `repl` module provides a headless interactive Lua session with evaluation, history, commands, and completion support.
 
 ## General Info
 
@@ -16,11 +16,13 @@
 
 ## Summary
 
-Designed to execute Lua commands dynamically, it empowers developers and users to introspect state, run functions, and tweak variables at runtime. At its center is the `ReplSession`, a stateful evaluator that operates over an existing `mlua::Lua` VM without directly owning it. This design makes the REPL completely headless—processing string input and returning string output—so it can be seamlessly embedded into both in-game GUI developer terminals and external command-line debug bridges.
+The `repl` module gives a live Lua interaction surface over an existing runtime VM for quick diagnostics and experiments.
 
-The REPL supports a rich set of interactive features. It manages a bounded command history (with a configurable capacity, defaulting to 200 entries), allowing users to easily navigate past inputs. The input evaluator intelligently handles expressions (attempting a `return <input>` first) before falling back to statement execution. A suite of built-in colon commands (`:help`, `:clear`, `:vars`, `:time`, `:reset`, `:load <file>`) provides essential session management and file execution capabilities directly from the prompt.
+Its design is headless, so the same session core can run in an in-game console, test harness, or external terminal. Input, evaluation, and output stay in one predictable text contract.
 
-Furthermore, the module includes a sophisticated `completer` that offers tab completion against a static pool of Lua keywords, built-ins, standard libraries, and all `lurek.*` namespaces, while also dynamically resolving dot-separated paths against the live Lua global table. Value formatting is handled by a robust `value_to_string` recursive formatter, which converts all Lua value types (including opaque types like functions and userdata) into stable, human-readable display text with configurable depth limits and table truncation. Entirely free of wgpu or winit dependencies, the `lurek.repl.*` API ensures that interactive scripting is safe, stable, and available across all Lurek2D environments.
+Usability features include bounded history, command-style controls, expression-first evaluation, and deterministic output formatting.
+
+In practice, `lurek.repl` is the engine's stable interactive scripting and inspection tool.
 
 ## Imports
 

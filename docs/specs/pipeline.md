@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `pipeline` module is an Edge/Integration tier component that provides a robust Directed Acyclic Graph (DAG) workflow orchestration engine for Lurek2D.
+- The `pipeline` module orchestrates dependency-ordered workflows as DAGs with retries, delays, async updates, and result reporting.
 
 ## General Info
 
@@ -16,11 +16,19 @@
 
 ## Summary
 
-It is designed to sequence complex, multi-step operations—such as asset processing, test orchestration, analytics batching, or mod build workflows—by strictly enforcing dependency ordering. At the core of the module is the `Pipeline` struct, which stores named `PipelineStep`s and their dependencies. Using Kahn's algorithm, it performs topological sorting to determine the correct execution order and detects cycles before a workflow can run. It also groups independent steps into parallel execution tiers, allowing unrelated tasks to be scheduled concurrently.
+The `pipeline` module is the engine workflow orchestrator for multi-step operations with dependencies. It models tasks as named steps in a DAG, validates the graph, and guarantees execution order before work begins.
 
-Each `PipelineStep` is highly configurable, acting as a discrete unit of work. Steps support conditional execution (via run-if predicates), configurable delayed starts, and maximum timeout limits. To handle transient failures robustly, steps can be configured with automatic retries and custom retry-delay backoffs. A step's error policy (`ErrorMode`) can be explicitly set to either abort the entire pipeline upon failure or allow execution to continue (treating the failure as optional). Pipelines themselves can be nested, with `add_sub_pipeline` allowing complex workflows to be merged under namespace prefixes while automatically wiring outer dependencies into the sub-pipeline's entry points.
+Step behavior is highly configurable. Conditions, delays, retries, tags, optional-failure modes, and callback hooks allow one pipeline to mix strict and best-effort tasks in a controlled way.
 
-Execution of the pipeline is driven by the `PipelineScheduler`, a frame-driven async engine that tracks elapsed wall-clock time, manages countdown timers for delayed steps, and seamlessly handles step progression (from `Pending` to `Waiting`, `Running`, and finally `Completed`, `Failed`, or `Skipped`). The scheduler supports both synchronous blocking runs and asynchronous, coroutine-based execution that yields between frames, ensuring the game loop is never stalled by long-running background pipelines. Upon completion or cancellation, the module generates a detailed `PipelineResult` object, summarizing the outcomes, durations, and error messages for all steps. The entire workflow definition and execution API is cleanly exposed to Lua via the `lurek.pipeline.*` namespace, offering script developers a powerful tool for asynchronous task orchestration.
+Scheduling supports both immediate and frame-advanced execution. Synchronous runs are available for blocking tools, while async updates advance over time without stalling the main loop.
+
+Parallel-friendly grouping is derived from dependency structure, so unrelated work can progress together while preserving ordering guarantees for dependent branches.
+
+This gives teams one shared execution language for content import, staged initialization, batch processing, and runtime job coordination. Instead of writing custom state machines per workflow, scripts can declare intent as steps plus dependencies and let the module handle progression.
+
+Result reporting is part of the same contract. Completion state, failures, skipped steps, durations, and cancellation outcomes are exposed in structured form for diagnostics and automation.
+
+In practice, `lurek.pipeline` provides a complete orchestration surface for build-like, import-like, and runtime task graphs that need deterministic dependency handling with script-level control.
 
 ## Imports
 

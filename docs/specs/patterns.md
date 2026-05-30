@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `patterns` module is a fundamental Foundations tier library providing a comprehensive suite of twelve classic game-programming design patterns and robust data structures for Lurek2D.
+- The `patterns` module is a reusable architecture toolkit for gameplay logic, combining classic coordination patterns with practical runtime data structures.
 
 ## General Info
 
@@ -16,11 +16,31 @@
 
 ## Summary
 
-Designed to be highly reusable, completely decoupled from one another, and fully exposed to the Lua environment, these primitives act as high-level building blocks for complex game logic. At the core of AI decision-making is the `BehaviorTree` system, featuring Sequences, Selectors, Parallels, Inverters, Repeats, and Leaf action nodes. For transition-heavy logic, the module offers a hierarchical `StateMachine` with enter/exit/update callbacks, explicit transition rules, and bounded history, alongside a `SimpleState` alternative for simpler needs.
+The `patterns` module is the architecture toolkit for script-driven systems that need structure without heavy framework overhead. It gives reusable coordination primitives so teams can compose behavior from clear building blocks instead of creating one-off control code in every feature.
 
-To facilitate decoupled communication across systems, the module provides a robust `EventBus` for pub-sub messaging with wildcard listeners and prioritized execution, as well as a channel-based `Mediator`. The `Observer` pattern is available for reactive property-change notifications, and the `Blackboard` provides a shared, typed key-value store with revision tracking—essential for coordinating AI state. For undo/redo functionality (e.g., in editors or turn-based games), the `CommandStack` offers a cursor-based linear history with batching support. Resource management is handled by the `ObjectPool`, which tracks active and idle IDs to reduce allocation churn for frequently spawned entities like bullets or particles. The `Factory` and `ServiceLocator` patterns provide dynamic object construction and dependency injection.
+Its first role is decision flow. Behavior trees, finite-state control, simple state registries, and strategy switching provide multiple ways to express "what should happen next". This helps teams pick the right level of control: lightweight state toggles for simple loops, or explicit branch-and-tick models for richer AI and gameplay logic.
 
-The module also includes specialized data structures optimized for game development. These include a `Graph` (directed/undirected with BFS/DFS traversals), a `Trie` for rapid prefix searches, a `BiMap` for bidirectional lookups, and a `PriorityQueue` with stable FIFO tie-breaking. Time-based operations are supported by a `Ring` buffer for fixed-size rolling histories (useful for telemetry or combo tracking), a `Funnel` for batching events over a time window, and `Throttle`/`Debounce` primitives for rate-limiting inputs or actions. Additionally, the `WeightedRandom` selector enables deterministic, dynamic picking with or without replacement. All these tools are instantiated via `lurek.patterns.*` and operate as standalone userdata objects, ensuring script developers have robust, C-speed architectural primitives at their fingertips.
+Its second role is communication. Event bus, observer, and mediator surfaces let systems publish and react through named channels instead of direct references. That keeps dependencies looser and makes larger gameplay stacks easier to evolve, because producers and consumers can change independently as long as event contracts stay stable.
+
+Shared context is handled through blackboard-style storage with revision-aware behavior. Systems can read common facts, react to updates, and layer local context over broader context without forcing global mutable tables. Functionally, this supports squad-style AI memory, UI state sharing, and feature coordination where many systems need the same facts at different times.
+
+Workflow control is covered by command-history and pacing tools. Command stacks provide undo and redo behavior for reversible actions, while throttle, debounce, and funnel utilities shape noisy input into controlled execution cadence. This is useful not only for tools, but also for gameplay loops where timing and repeat suppression matter for fairness and readability.
+
+Creation and lifecycle patterns are also first-class. Factory and service-locator helpers support named capability lookup and data-driven creation, while object pools provide low-churn reuse for short-lived runtime objects. Together, these tools reduce allocation pressure and centralize object discovery, which helps long sessions remain stable.
+
+The module complements those orchestration patterns with practical data structures used directly by gameplay logic: graph navigation structures, prefix tries, bidirectional maps, priority ordering queues, rolling ring buffers, and weighted random selection. This means teams can keep coordination logic and supporting containers inside one coherent module surface.
+
+A major practical advantage is composability. These primitives share similar runtime semantics and Lua-facing expectations, so they can be layered into larger systems without adapter-heavy glue. For example, a behavior tree can consult blackboard values, emit bus events, enqueue commands, and route work through priority structures using one ecosystem of tools.
+
+Another practical gain is governance of project complexity. When teams adopt the same pattern set, code reviews become easier because control flow, event routing, and lifecycle choices use familiar shapes. New features can align with existing conventions faster, and refactors can replace internals without changing every caller contract.
+
+In day-to-day production this reduces duplicate utility code and lowers maintenance cost. Instead of each feature team inventing custom signaling, state rules, and pacing helpers, projects can standardize on a common vocabulary that remains readable across modules and over time.
+
+It also improves onboarding and long-term maintainability. When architecture patterns are explicit and shared, new contributors can understand intent faster, and legacy systems remain easier to extend because their coordination model is familiar. This practical continuity is often the difference between fast iteration and feature slowdown in larger projects.
+
+With this shared toolkit, gameplay architecture decisions stay visible and repeatable instead of being hidden in feature-specific utility code.
+
+In practice, `lurek.patterns` is the reusable logic architecture layer for modular game systems: decide, communicate, coordinate, pace, and evolve behavior through one consistent toolkit.
 
 ## Imports
 

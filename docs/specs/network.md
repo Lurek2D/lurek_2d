@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `network` module provides the engine's multiplayer and remote-communication stack across host networking, TCP, HTTP, WebSocket, relay, and sync helpers.
+- The `network` module provides multiplayer host networking and service communication in one stack: session transport, HTTP/WebSocket/SSE, relay tools, and sync helpers.
 
 ## General Info
 
@@ -16,19 +16,19 @@
 
 ## Summary
 
-The `network` module is the runtime communication backbone for connected games and services. It combines multiplayer host logic with transport utilities, so scripts can use one module for game session traffic and external service integration.
+The `network` module is the communication backbone for connected gameplay and remote services. It combines multiplayer session transport and service-facing protocols in one runtime surface, so scripts do not need separate networking stacks for each use case.
 
-Its design keeps blocking work off the main loop. Background runtime components process network I/O and return results through request-response channels, which helps maintain frame stability under real network latency.
+Its practical design keeps blocking I/O off the frame-critical path. Background networking components handle transport work and return structured responses through channel-based flows, which helps maintain stable frame timing under real network latency.
 
-Real-time session flows are centered on host-style networking with server, client, and peer-oriented behavior. Events for connection lifecycle and message receipt are exposed in a consistent form, making gameplay networking easier to integrate.
+For multiplayer sessions, the module provides host/client behavior, peer events, and message routing with consistent lifecycle signals. This gives gameplay code one predictable model for connection, disconnection, and payload handling.
 
-The module also includes relay and discovery support for practical connectivity workflows. NAT-punch signals, relay tickets, and LAN lobby discovery reduce friction when peers need to find and reach each other.
+Connectivity support extends beyond raw sockets. Discovery and relay helpers cover LAN lobby finding and NAT traversal signals, reducing friction when peers need to locate each other and establish playable connections.
 
-Beyond transport, synchronization helpers support replicated entity state with prediction and reconciliation patterns. This helps online gameplay stay responsive while still converging toward authoritative state.
+State-sync helpers are included for replicated gameplay entities. Prediction and reconciliation utilities help keep local control responsive while still converging to authoritative state in networked play.
 
-HTTP, WebSocket, and SSE tools are available in the same surface for account services, telemetry feeds, and remote control channels. In practice, `lurek.network` provides one complete script-facing contract for game networking and service communication.
+The same module also serves external integration needs through HTTP, WebSocket, and SSE workflows. This supports account services, telemetry streams, live control channels, and tool-side integrations without leaving the network namespace.
 
-This unified approach reduces integration overhead: session transport, service requests, and sync behavior can be coordinated from one module instead of split across disconnected networking utilities.
+In practice, `lurek.network` provides one complete communication contract: host sessions, exchange messages, discover peers, sync state, and interact with remote services through a unified script-facing API.
 
 ## Imports
 

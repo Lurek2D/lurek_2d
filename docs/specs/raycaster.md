@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `raycaster` module is a powerful Feature Systems tier component that provides a complete Wolfenstein-style 2D grid raycasting engine for Lurek2D.
+- The `raycaster` module provides a grid-based first-person rendering runtime with DDA wall casting, floor/ceiling projection, sprites, doors, and lighting helpers.
 
 ## General Info
 
@@ -16,11 +16,25 @@
 
 ## Summary
 
-It projects a grid-based 2D map into a textured, first-person 3D perspective using Digital Differential Analyzer (DDA) ray-stepping. At the core is the `Raycaster2D` struct, which maintains the tile grid. Each cell in the grid can be assigned per-face wall textures (North, South, East, West), floor/ceiling textures, alpha transparency overrides, and unique height modifiers via the `HeightMap` system (allowing for variable-height floors, ceilings, and lowered pits). The DDA stepper casts rays for each screen column, applies perpendicular distance corrections (to fix "fish-eye" distortion), and emits texture-sampled wall slices.
+The `raycaster` module is the first-person projection system for tile-based worlds. It converts 2D map data into a camera-facing scene using deterministic DDA stepping, then feeds that scene into renderer-friendly outputs.
 
-The rendering pipeline is robust and feature-rich. Floor and ceiling rendering utilizes perspective-correct per-pixel texture mapping with per-tile UV generation and lighting calculations. Transparent and semi-transparent walls are natively supported via multi-hit ray casting (`cast_ray_multi`), which penetrates transparent tiles until an opaque wall is hit. The module also features a fully animated sliding door system (`DoorManager`), and a `SpriteManager` that projects world-space billboard sprites (such as enemies or items) into the camera view. Sprites are correctly distance-sorted and depth-culled against a per-column `DepthBuffer` populated during the wall-casting phase. Furthermore, dynamic 3D OBJ models can be projected into the scene alongside flat sprites.
+Core map representation includes per-cell wall/floor data, optional transparency, and height variation support. This allows classic corridor rendering as well as richer spaces with pits, layered surfaces, and mixed material boundaries.
 
-Lighting and visibility are deeply integrated into the raycaster. It supports a point-light model with Bresenham line-of-sight occlusion, distance-based shading (fog/darkness attenuation), and FOV-aware visibility polygon generation. A comprehensive suite of software-rendered visualization helpers is also included, allowing developers to draw top-down grid maps, minimap overlays, depth maps, line-of-sight rays, and even first-person sweeps directly into `ImageData` buffers for debugging or UI overlays. The scene builder synthesizes all these elements—walls, floors, ceilings, doors, sprites, and models—into a GPU-ready `RaycasterScene` composed of textured quads, which is then handed off to the main renderer. The entire engine is fully scriptable via the `lurek.raycaster.*` Lua API.
+The module supports full scene composition beyond walls: projected floors and ceilings, depth-tested billboards, animated doors, and optional model projection paths. Depth buffering and sorting are integrated so dynamic elements remain visually coherent.
+
+Lighting and visibility helpers are part of the same runtime surface. Distance shading, point-light influence, and line-of-sight checks let gameplay and presentation share a common spatial interpretation.
+
+Debug and tooling outputs are also included through image and overlay helpers, making it easier to inspect hits, depth, and field-of-view behavior during development.
+
+Functionally, this module is more than a draw effect. It is a gameplay-facing spatial contract for first-person systems that need deterministic wall hits, visibility checks, and camera-consistent world sampling. Interaction logic and presentation logic can therefore rely on the same map interpretation.
+
+The module also supports progressive complexity. Teams can start with classic walls and sprites, then add floor and ceiling projection, door dynamics, multi-level behavior, and custom scene injection without replacing the base pipeline. This helps projects evolve visual ambition while preserving stable control and map data flow.
+
+Because scene assembly and output paths are unified, the same runtime can feed real-time rendering and offline/debug rendering with similar semantics. That improves testability and helps diagnose geometric issues early.
+
+This consistency is valuable for teams that use the raycaster as both a player-facing view and a systems-facing visibility layer, because pathing, sensing, and visual feedback can stay aligned to one projection model.
+
+In practice, `lurek.raycaster` provides one complete first-person grid-view contract: cast rays, assemble visible geometry, apply light/depth policy, and emit render-ready scene data through scriptable APIs.
 
 ## Imports
 

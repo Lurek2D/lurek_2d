@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-- The `physics` module is a core Platform Services tier component that provides a robust, high-performance 2D rigid-body simulation for Lurek2D, backed by the industry-standard Rapier2D (v0.32) engine.
+- The `physics` module provides the engine's 2D simulation runtime for bodies, colliders, joints, queries, terrain interaction, and physics-driven events.
 
 ## General Info
 
@@ -16,13 +16,27 @@
 
 ## Summary
 
-At its center is the `World` struct, which completely encapsulates the Rapier simulation state, including body sets, collider sets, joint sets, and the broad/narrow-phase collision pipelines. The simulation is advanced via deterministic fixed-timestep sub-stepping (`step_fixed`), ensuring consistent and predictable physical interactions regardless of frame rate fluctuations.
+The `physics` module is the runtime interaction engine for 2D worlds. It provides one authoritative simulation space where motion, collisions, constraints, and spatial queries are resolved in deterministic step order.
 
-The module supports a full spectrum of physics bodies: `dynamic` (fully simulated), `static` (immovable terrain/walls), `kinematic` (script-driven movement that affects dynamic bodies), and `sensor` (detects overlap without physical collision response). These bodies can be composed of various primitives, including circles, rectangles, convex polygons, edge segments, and chain polylines. Developers have granular control over material properties such as density, friction, and restitution (bounciness). Advanced simulation features like continuous collision detection (CCD, or "bullet mode") are available to prevent fast-moving objects from tunneling through walls, and rotation locking ensures character controllers behave predictably.
+Its main functional value is a unified world contract. Bodies, shapes, and joints are created and controlled through one model, so gameplay code can reason about physical state without splitting logic across separate movement and collision subsystems.
 
-A comprehensive suite of joints enables complex mechanical linkages between bodies, including revolute (hinge), prismatic (slider), distance (rope), weld, wheel, motor, and mouse joints. The module also features a sophisticated `TerrainMap` system for chunked, destructible environments, automatically synchronizing solid bit-grid cells into static physics colliders for high-performance interaction. Further extending environmental interactions, the `PhysicsZone` system allows developers to define spatial areas (rectangles or circles) that override standard physics rules—applying directional gravity, point attractors, repulsors, or custom damping to bodies that enter them.
+Body behavior is intentionally explicit. Dynamic, static, kinematic, and sensor-like roles are available in the same surface, with material and filtering controls that define how entities should move, collide, slide, or ignore each other. This helps teams express gameplay intent directly instead of encoding it through fragile conventions.
 
-Additionally, the `cellular` submodule provides a cellular automaton grid for simulating falling sand, flowing water, and other particle-like materials. For spatial queries, the module offers extensive raycasting, shape-casting, and point intersection tests, alongside pure-geometry collision helpers for lightweight, physics-free checks. The entire system—from body lifecycle management to collision event callbacks and debug rendering—is comprehensively exposed to the Lua environment via the `lurek.physics.*` API, forming the backbone of physical interactions in Lurek2D games.
+Constraint support extends the module from simple collision response to mechanical interaction. Hinges, sliders, ropes, welds, and motor-like links make it possible to build doors, machines, articulated props, and controlled moving structures without custom solvers per feature.
+
+Spatial querying is integrated as part of the same authority. Ray checks, overlap checks, and point or area queries can inspect the exact world that simulation updates use. This keeps AI tests, interaction probes, and gameplay triggers aligned with the same physical truth used by movement and contacts.
+
+The module also supports environmental behavior that goes beyond rigid body motion. Zone effects can alter local simulation rules, while destructible terrain workflows keep world geometry and collision representation in sync when the map changes. Functionally, this allows gameplay spaces to evolve during play without breaking physical consistency.
+
+Collision events and contact-facing utilities provide stable integration points for game logic. Systems can react to begin/end contact changes, apply response logic, and inspect collision outcomes through predictable hooks rather than deep engine coupling.
+
+Debug visibility is treated as a practical requirement, not an afterthought. The same module can expose physical state for visual inspection, which shortens diagnosis time when tuning mass, damping, joint behavior, or collision filtering.
+
+Because these capabilities are grouped in one module, teams can scale from simple arcade motion to richer physically-driven interactions without replacing infrastructure. The same API family can serve prototypes, production gameplay, and tool workflows.
+
+This also improves systemic consistency: movement, collision response, queries, and debug inspection all read from the same evolving world state, so gameplay outcomes are easier to explain and reproduce.
+
+In practice, `lurek.physics` is the full 2D physical interaction contract: define entities, run simulation, constrain motion, query space, react to contacts, and maintain coherent world behavior under changing runtime conditions.
 
 ## Imports
 
